@@ -64,22 +64,14 @@ public class ModuleInstance {
                                         .forGetter((moduleInstance) -> moduleInstance.moduleID),
                                 Codec.unboundedMap(Codec.STRING, selfCodec).xmap((i) -> i, Function.identity())
                                         .optionalFieldOf("child", new LinkedHashMap<>())
-                                        .forGetter((moduleInstance) -> moduleInstance.subModules),
+                                        .forGetter((moduleInstance) -> {
+                                            return moduleInstance.subModules;
+                                        }),
                                 dataJsonCodec
                                         .optionalFieldOf("data", new HashMap<>())
                                         .forGetter((moduleInstance) -> moduleInstance.moduleData)
                         ).apply(instance, (module, children, data) -> {
-                            ItemModule itemModule = RegistryInventory.modules.get(module.toString());
-                            if (itemModule == null) {
-                                itemModule = ItemModule.empty;
-                                Miapi.LOGGER.warn("could not find module " + module + " substituting with empty module");
-                            }
-                            ModuleInstance moduleInstance = new ModuleInstance(itemModule);
-                            moduleInstance.moduleID = module;
-                            moduleInstance.moduleData = new HashMap<>(data);
-                            moduleInstance.subModules = children;
-                            moduleInstance.sortSubModule();
-                            moduleInstance.subModules.values().forEach(childInstance -> childInstance.parent = moduleInstance);
+                            ModuleInstance moduleInstance = new ModuleInstance(module, children, data);
                             return moduleInstance;
                         }))
         );
@@ -90,6 +82,11 @@ public class ModuleInstance {
                 if (ops instanceof RegistryOps<T> registryOps) {
                     //TODO:give moduleinstances guaranteeed registry access
                 }
+                var result = basicResult.getOrThrow().getFirst();
+                if (result.subModules.isEmpty() && result.module != ItemModule.empty) {
+                    Miapi.LOGGER.error("possible problem!");
+                    Miapi.LOGGER.warn("encoded module " + result);
+                }
                 return basicResult;
             }
 
@@ -97,7 +94,12 @@ public class ModuleInstance {
 
             @Override
             public <T> DataResult<T> encode(ModuleInstance input, DynamicOps<T> ops, T prefix) {
-                return basicCodec.encode(input, ops, prefix);
+                var result = basicCodec.encode(input, ops, prefix);
+                if (input.subModules.isEmpty() && input.module != ItemModule.empty) {
+                    Miapi.LOGGER.error("possible problem!");
+                    Miapi.LOGGER.warn("encoded module " + result.getOrThrow());
+                }
+                return result;
             }
         };
         MODULE_INSTANCE_COMPONENT = DataComponentType.<ModuleInstance>builder().persistent(CODEC).networkSynchronized(ByteBufCodecs.fromCodec(CODEC)).build();
@@ -163,6 +165,24 @@ public class ModuleInstance {
     public ModuleInstance(ItemModule module) {
         this.moduleID = module.id();
         this.module = module;
+    }
+
+    /**
+     * Constructs a new module instance with the given item module.
+     *
+     * @param module the item module for the module instance
+     */
+    public ModuleInstance(ResourceLocation module, Map<String, ModuleInstance> subModules, Map<String, JsonElement> data) {
+        this.moduleID  = module;
+        this.subModules = subModules;
+        this.moduleData = data;
+        subModules.values().forEach(subModule -> subModule.parent = this);
+        this.module = RegistryInventory.modules.get(module.toString());
+        if (module == null) {
+            this.module = ItemModule.empty;
+            Miapi.LOGGER.warn("could not find module " + module + " substituting with empty module");
+        }
+        sortSubModule();
     }
 
     /**

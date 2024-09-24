@@ -1,4 +1,8 @@
 accessWidener   v2  named
+accessible field net/minecraft/world/item/CrossbowItem startSoundPlayed Z
+accessible field net/minecraft/world/item/CrossbowItem midLoadSoundPlayed Z
+accessible method net/minecraft/world/item/CrossbowItem tryLoadProjectiles (Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/world/item/ItemStack;)Z
+accessible method net/minecraft/world/item/CrossbowItem getChargingSounds (Lnet/minecraft/world/item/ItemStack;)Lnet/minecraft/world/item/CrossbowItem$ChargingSounds;
 #accessible field net/minecraft/client/gui/screen/ingame/HandledScreens PROVIDERS Ljava/util/Map;
 #extendable method net/minecraft/client/texture/SpriteAtlasHolder afterReload (Lnet/minecraft/client/texture/SpriteLoader$StitchResult;Lnet/minecraft/util/profiler/Profiler;)V
 #accessible field net/minecraft/client/texture/SpriteAtlasHolder atlas Lnet/minecraft/client/texture/SpriteAtlasTexture;

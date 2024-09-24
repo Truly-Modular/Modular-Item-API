@@ -5,6 +5,7 @@ import smartin.miapi.item.modular.Transform;
 
 public class ModelJson {
     public String type = "type";
+    @CodecBehavior.Optional
     public String model = "path";
     @CodecBehavior.Optional
     public String modelType = "default";

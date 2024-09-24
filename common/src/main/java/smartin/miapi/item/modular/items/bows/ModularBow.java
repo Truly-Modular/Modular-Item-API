@@ -9,6 +9,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BowItem;
@@ -24,6 +25,7 @@ import smartin.miapi.item.modular.PlatformModularItemMethods;
 import smartin.miapi.modules.properties.DisplayNameProperty;
 import smartin.miapi.modules.properties.LoreProperty;
 import smartin.miapi.modules.properties.RepairPriority;
+import smartin.miapi.modules.properties.attributes.AttributeUtil;
 import smartin.miapi.modules.properties.enchanment.EnchantAbilityProperty;
 
 import java.util.List;
@@ -90,13 +92,15 @@ public class ModularBow extends BowItem implements PlatformModularItemMethods, M
             ItemStack itemStack = player.getProjectile(stack);
             if (!itemStack.isEmpty()) {
                 int i = this.getUseDuration(stack, livingEntity) - timeCharged;
-                float f = getPowerForTime(i, livingEntity);
+                float f = getPowerForTime(i, stack, livingEntity);
                 if (!((double) f < 0.1)) {
                     List<ItemStack> list = draw(stack, itemStack, player);
                     if (level instanceof ServerLevel) {
                         ServerLevel serverLevel = (ServerLevel) level;
                         if (!list.isEmpty()) {
-                            this.shoot(serverLevel, player, player.getUsedItemHand(), stack, list, f * 3.0F, 1.0F, f == 1.0F, null);
+                            float divergence = (float) Math.pow(12.0, -AttributeUtil.getActualValue(stack, EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_ACCURACY.value()));
+                            float speed = (float) Math.max(0.1, AttributeUtil.getActualValue(stack, EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_SPEED.value()) + 3.0);
+                            this.shoot(serverLevel, player, player.getUsedItemHand(), stack, list, f * speed, divergence, f == 1.0F, null);
                         }
                     }
 
@@ -115,7 +119,7 @@ public class ModularBow extends BowItem implements PlatformModularItemMethods, M
             } else {
                 int a = stack.getUseDuration(entity);
                 int b = entity.getTicksUsingItem();
-                float power = getPowerForTime(entity.getTicksUsingItem(), entity);
+                float power = getPowerForTime(entity.getTicksUsingItem(), stack, entity);
                 return entity.getUseItem() != stack ? 0.0F : power;
             }
         });
@@ -124,8 +128,10 @@ public class ModularBow extends BowItem implements PlatformModularItemMethods, M
         });
     }
 
-    public static float getPowerForTime(int charge, LivingEntity livingEntity) {
-        float maxLevel = Math.max(1.0f, (float) livingEntity.getAttributeValue(AttributeRegistry.DRAW_TIME) * 20);
+    public static float getPowerForTime(int charge, ItemStack itemStack, LivingEntity livingEntity) {
+        double drawTime = AttributeUtil.getActualValue(itemStack, EquipmentSlot.MAINHAND, AttributeRegistry.DRAW_TIME.value());
+        double onPlayer = (float) livingEntity.getAttributeValue(AttributeRegistry.DRAW_TIME);
+        float maxLevel = Math.max(1.0f, (float) drawTime * 20);
         float f = (float) charge / maxLevel;
         f = (f * f + f * 2.0F) / 3.0F;
         if (f > 1.0F) {

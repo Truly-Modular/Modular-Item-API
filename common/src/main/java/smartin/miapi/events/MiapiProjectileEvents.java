@@ -9,7 +9,6 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
@@ -32,9 +31,9 @@ public final class MiapiProjectileEvents {
     public static final PrioritizedEvent<PlayerPickupEvent> MODULAR_PROJECTILE_PICK_UP = PrioritizedEvent.createEventResult();
 
     public static final PrioritizedEvent<CrossbowContext> MODULAR_CROSSBOW_PRE_SHOT = PrioritizedEvent.createEventResult();
-    public static final PrioritizedEvent<CrossbowContextEvent> MODULAR_CROSSBOW_LOAD = PrioritizedEvent.createEventResult();
-    public static final PrioritizedEvent<CrossbowContextEvent> MODULAR_CROSSBOW_LOAD_AFTER = PrioritizedEvent.createEventResult();
     public static final PrioritizedEvent<CrossbowContext> MODULAR_CROSSBOW_POST_SHOT = PrioritizedEvent.createEventResult();
+    public static final PrioritizedEvent<CrossbowContextEvent> MODULAR_CROSSBOW_PRE_LOAD = PrioritizedEvent.createEventResult();
+    public static final PrioritizedEvent<CrossbowContextEvent> MODULAR_CROSSBOW_POST_LOAD = PrioritizedEvent.createEventResult();
 
     public static final PrioritizedEvent<ModularBowShot> MODULAR_BOW_SHOT = PrioritizedEvent.createEventResult();
     public static final PrioritizedEvent<ModularBowShot> MODULAR_BOW_POST_SHOT = PrioritizedEvent.createEventResult();
@@ -65,12 +64,10 @@ public final class MiapiProjectileEvents {
     }
 
     public static class ModularBowShotEvent {
-        public AbstractArrow projectile;
         public ItemStack bowStack;
         public LivingEntity shooter;
 
-        public ModularBowShotEvent(AbstractArrow projectile, ItemStack bowStack, LivingEntity shooter) {
-            this.projectile = projectile;
+        public ModularBowShotEvent(ItemStack bowStack, LivingEntity shooter) {
             this.bowStack = bowStack;
             this.shooter = shooter;
         }

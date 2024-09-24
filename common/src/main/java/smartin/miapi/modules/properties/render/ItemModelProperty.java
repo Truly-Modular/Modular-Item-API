@@ -5,6 +5,7 @@ import com.redpxnda.nucleus.codec.auto.AutoCodec;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.core.component.DataComponentType;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.resources.ResourceLocation;
@@ -58,7 +59,12 @@ public class ItemModelProperty extends CodecProperty<List<ModelJson>> {
                     }
                     case "projectile": {
                         if (stack.getItem() instanceof ModularCrossbow && ModelProperty.isAllowedKey(modelJson.modelType, key)) {
-                            yield () -> ModularCrossbow.getProjectiles(stack).stream().findFirst().orElse(ItemStack.EMPTY);
+                            yield () -> {
+                                if(stack.has(DataComponents.CHARGED_PROJECTILES)){
+                                    return stack.get(DataComponents.CHARGED_PROJECTILES).getItems().stream().findFirst().orElse(ItemStack.EMPTY);
+                                }
+                                return ItemStack.EMPTY;
+                            };
                         }
                         yield () -> ItemStack.EMPTY;
                     }
