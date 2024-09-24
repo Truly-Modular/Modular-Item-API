@@ -26,7 +26,7 @@ import java.util.Map;
  * @description_start
  * This Property allows you to set any component. Whenever the module giving the Component, that component is also removed again.
  * If there was a Component set before, that component will be overwritten
- *
+ * Its a map of id to Component data in json format
  * @description_end
  * @data id:data.
  */
