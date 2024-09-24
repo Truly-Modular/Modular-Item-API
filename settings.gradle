@@ -13,6 +13,6 @@ include("common")
 include("fabric")
 //include("neoforge")
 
-//includeBuild("./archery")
+includeBuild("./archery")
 //includeBuild("./armory")
 includeBuild("./arsenal")

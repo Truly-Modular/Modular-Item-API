@@ -1,4 +1,4 @@
-package smartin.miapi.item.modular.items;
+package smartin.miapi.item.modular.items.bows;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;

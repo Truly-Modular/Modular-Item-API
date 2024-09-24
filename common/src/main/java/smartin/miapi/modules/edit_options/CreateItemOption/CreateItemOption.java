@@ -46,10 +46,12 @@ public class CreateItemOption implements EditOption {
         }), ((isClient, path, data) -> {
             if (isClient) {
                 CreateItem createItem = Miapi.gson.fromJson(data, JsonCreateItem.class);
-                createAbleItems.add(createItem);
-                assert createItem.getItem() != null;
-                assert createItem.getBaseModule() != null;
-                assert createItem.getName() != null;
+                if (createItem.getBaseModule() != null && createItem.getItem() != null) {
+                    createAbleItems.add(createItem);
+                } else {
+                    Miapi.LOGGER.error("could not find module or item for create option " + path);
+                    Miapi.LOGGER.error(data);
+                }
             }
         }), 0);
     }

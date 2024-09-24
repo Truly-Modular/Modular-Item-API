@@ -9,7 +9,7 @@ import net.minecraft.server.level.ServerLevel;
 import smartin.miapi.Miapi;
 import smartin.miapi.events.MiapiProjectileEvents;
 import smartin.miapi.item.modular.ModularItem;
-import smartin.miapi.item.modular.items.ModularCrossbow;
+import smartin.miapi.item.modular.items.bows.ModularCrossbow;
 import smartin.miapi.modules.properties.LoreProperty;
 import smartin.miapi.modules.properties.util.DoubleProperty;
 

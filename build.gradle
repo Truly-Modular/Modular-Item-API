@@ -118,7 +118,7 @@ tasks.register('rebuildArsenal') {
         println "Builds Copied"
     }
 }
-/*
+
 tasks.register('rebuildArchery') {
     ext.projectName = "archery"
     def project = gradle.includedBuild("archery")
@@ -169,6 +169,7 @@ tasks.register('rebuildArchery') {
     }
 }
 
+/*
 tasks.register('rebuildArmory') {
     ext.projectName = "armory"
     def project = gradle.includedBuild("armory")

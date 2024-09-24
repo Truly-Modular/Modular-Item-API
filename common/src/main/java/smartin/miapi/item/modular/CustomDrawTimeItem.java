@@ -9,6 +9,6 @@ public interface CustomDrawTimeItem {
     double getBaseDrawTime(ItemStack itemStack);
 
     default double getActualDrawTime(ItemStack stack){
-        return getBaseDrawTime(stack) - AttributeUtil.getActualValue(stack, EquipmentSlot.MAINHAND, AttributeRegistry.BOW_DRAW_TIME.value());
+        return getBaseDrawTime(stack) - AttributeUtil.getActualValue(stack, EquipmentSlot.MAINHAND, AttributeRegistry.DRAW_TIME.value());
     }
 }

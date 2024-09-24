@@ -113,7 +113,7 @@ dependencies {
     //modLocalRuntime tasks.getByName("buildWithArmory").outputs.files
 
     modLocalRuntime files('libs/arsenal-local.jar')
-    //modLocalRuntime files('libs/archery-local.jar')
+    modLocalRuntime files('libs/archery-local.jar')
     //modLocalRuntime files('libs/armory-local.jar')
 
 

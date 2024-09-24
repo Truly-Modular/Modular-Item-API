@@ -1,4 +1,4 @@
-package smartin.miapi.item.modular.items;
+package smartin.miapi.item.modular.items.bows;
 
 
 import net.minecraft.world.item.CrossbowItem;
@@ -123,7 +123,7 @@ public class ModularCrossbow extends CrossbowItem implements PlatformModularItem
 
     public static int getPullTime(ItemStack stack) {
         int i = EnchantmentHelper.getItemEnchantmentLevel(Enchantments.QUICK_CHARGE, stack);
-        double drawTime = (25 - AttributeProperty.getActualValue(stack, EquipmentSlot.MAINHAND, AttributeRegistry.BOW_DRAW_TIME));
+        double drawTime = (25 - AttributeProperty.getActualValue(stack, EquipmentSlot.MAINHAND, AttributeRegistry.draw_time));
         drawTime = Math.max(5, drawTime - drawTime / 5 * i);
         if (Double.isNaN(drawTime)) return 5;
         return (int) drawTime;

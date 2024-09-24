@@ -44,7 +44,7 @@ const Sidebar: React.FC<SidebarProps> = ({
 	}
 
 	const handleNavigation = () => {
-		console.log('clicked!')
+		setIsOpen(true)
 		navigate(buildLinkPath(page.header))
 	}
 

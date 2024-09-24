@@ -52,6 +52,10 @@ import smartin.miapi.item.modular.ModularItemPart;
 import smartin.miapi.item.modular.PropertyResolver;
 import smartin.miapi.item.modular.items.*;
 import smartin.miapi.item.modular.items.armor.*;
+import smartin.miapi.item.modular.items.bows.ModularArrow;
+import smartin.miapi.item.modular.items.bows.ModularBow;
+import smartin.miapi.item.modular.items.bows.ModularCrossbow;
+import smartin.miapi.item.modular.items.tool_likes.*;
 import smartin.miapi.material.*;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
@@ -499,6 +503,7 @@ public class RegistryInventory {
             registerMiapi(moduleProperties, AllowedEnchantments.KEY, new AllowedEnchantments());
             registerMiapi(moduleProperties, BlueprintCrafting.KEY, new BlueprintCrafting());
             registerMiapi(moduleProperties, SlashingProperty.KEY, new SlashingProperty());
+            registerMiapi(moduleProperties, ComponentProperty.KEY, new ComponentProperty());
             //compat
             //registerMiapi(moduleProperties, BetterCombatProperty.KEY, new BetterCombatProperty());
             //TODO: added this to cleanup logs. this needs to be revisited later

@@ -19,7 +19,6 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import smartin.miapi.Miapi;
 import smartin.miapi.entity.ItemProjectileEntity;
 import smartin.miapi.entity.ShieldingArmorFacet;
@@ -27,7 +26,6 @@ import smartin.miapi.entity.StunHealthFacet;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.events.MiapiProjectileEvents;
 import smartin.miapi.mixin.LivingEntityAccessor;
-import smartin.miapi.modules.properties.attributes.AttributeProperty;
 import smartin.miapi.modules.properties.attributes.AttributeUtil;
 
 import java.util.HashMap;
@@ -63,7 +61,7 @@ public class AttributeRegistry {
 
     public static Holder<Attribute> PROJECTILE_ARMOR;
 
-    public static Holder<Attribute> BOW_DRAW_TIME;
+    public static Holder<Attribute> DRAW_TIME;
 
     public static Holder<Attribute> PLAYER_ITEM_USE_MOVEMENT_SPEED;
 

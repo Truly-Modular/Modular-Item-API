@@ -2,6 +2,7 @@ import React from 'react'
 import { Link } from 'react-router-dom' // Import Link for routing
 import ReactMarkdown from 'react-markdown'
 import Page from './Page'
+import { Editor } from '@monaco-editor/react'
 
 interface PageDetailsProps {
 	page: Page

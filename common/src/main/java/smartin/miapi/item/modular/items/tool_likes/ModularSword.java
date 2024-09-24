@@ -1,15 +1,24 @@
-package smartin.miapi.item.modular.items;
+package smartin.miapi.item.modular.items.tool_likes;
 
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.util.Mth;
+import net.minecraft.util.*;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.*;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Rarity;
+import net.minecraft.world.item.SwordItem;
+import net.minecraft.world.item.Tier;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
@@ -17,37 +26,40 @@ import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.item.FakeItemstackReferenceProvider;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.PlatformModularItemMethods;
+import smartin.miapi.item.modular.items.ModularSetableToolMaterial;
+import smartin.miapi.item.modular.items.ModularToolMaterial;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;
-import smartin.miapi.modules.properties.DisplayNameProperty;
-import smartin.miapi.modules.properties.LoreProperty;
-import smartin.miapi.modules.properties.RepairPriority;
-import smartin.miapi.modules.properties.ToolOrWeaponProperty;
+import smartin.miapi.modules.properties.*;
 import smartin.miapi.modules.properties.enchanment.EnchantAbilityProperty;
 import smartin.miapi.modules.properties.mining.MiningLevelProperty;
 
 import java.util.List;
 
-public class ModularHoe extends HoeItem implements PlatformModularItemMethods, ModularItem, ModularSetableToolMaterial {
+public class ModularSword extends SwordItem implements PlatformModularItemMethods, ModularItem, ModularSetableToolMaterial {
     public Tier currentFakeToolmaterial = ModularToolMaterial.toolMaterial;
 
-    public ModularHoe(Properties settings) {
+    public ModularSword(Properties settings) {
         super(new ModularToolMaterial(), settings.stacksTo(1).durability(500));
     }
 
-    public ModularHoe() {
+    public ModularSword() {
         super(new ModularToolMaterial(), new Properties().stacksTo(1).durability(500).rarity(Rarity.COMMON));
     }
 
     public Tier getTier() {
-        if(MiapiConfig.INSTANCE.server.other.looseToolMaterial){
+        if (MiapiConfig.INSTANCE.server.other.looseToolMaterial) {
             return currentFakeToolmaterial;
         }
         return super.getTier();
     }
 
     @Override
-    public void setToolMaterial(Tier toolMaterial){
+    public void setToolMaterial(Tier toolMaterial) {
         this.currentFakeToolmaterial = toolMaterial;
+    }
+
+    public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlot slot) {
+        return ArrayListMultimap.create();
     }
 
     @Override

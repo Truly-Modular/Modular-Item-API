@@ -1,4 +1,4 @@
-package smartin.miapi.item.modular.items;
+package smartin.miapi.item.modular.items.tool_likes;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -17,6 +17,8 @@ import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.item.FakeItemstackReferenceProvider;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.PlatformModularItemMethods;
+import smartin.miapi.item.modular.items.ModularSetableToolMaterial;
+import smartin.miapi.item.modular.items.ModularToolMaterial;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;
 import smartin.miapi.modules.properties.DisplayNameProperty;
 import smartin.miapi.modules.properties.LoreProperty;
@@ -27,19 +29,15 @@ import smartin.miapi.modules.properties.mining.MiningLevelProperty;
 
 import java.util.List;
 
-public class ModularPickaxe extends PickaxeItem implements PlatformModularItemMethods, ModularItem, ModularSetableToolMaterial {
+public class ModularShovel extends ShovelItem implements PlatformModularItemMethods, ModularItem, ModularSetableToolMaterial {
     public Tier currentFakeToolmaterial = ModularToolMaterial.toolMaterial;
-    public ModularPickaxe(Properties settings) {
+
+    public ModularShovel(Properties settings) {
         super(new ModularToolMaterial(), settings.stacksTo(1).durability(500));
     }
 
-    public ModularPickaxe() {
+    public ModularShovel() {
         super(new ModularToolMaterial(), new Properties().stacksTo(1).durability(500).rarity(Rarity.COMMON));
-    }
-
-    @Override
-    public int getBarWidth(ItemStack stack) {
-        return Math.round(13.0F - (float) stack.getDamageValue() * 13.0F / ModularItem.getDurability(stack));
     }
 
     public Tier getTier() {
@@ -52,6 +50,11 @@ public class ModularPickaxe extends PickaxeItem implements PlatformModularItemMe
     @Override
     public void setToolMaterial(Tier toolMaterial){
         this.currentFakeToolmaterial = toolMaterial;
+    }
+
+    @Override
+    public int getBarWidth(ItemStack stack) {
+        return Math.round(13.0F - (float) stack.getDamageValue() * 13.0F / ModularItem.getDurability(stack));
     }
 
     @Override

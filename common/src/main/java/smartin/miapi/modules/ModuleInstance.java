@@ -561,4 +561,30 @@ public class ModuleInstance {
         }
         return fallback.get();
     }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) return true; // Check for object identity first
+        if (!(object instanceof ModuleInstance)) return false; // Ensure the object is of type ModuleInstance
+
+        ModuleInstance other = (ModuleInstance) object;
+
+        // Compare the 'module' field
+        if (!this.module.equals(other.module)) return false;
+
+        // Compare the 'moduleData' map deeply
+        if (!this.moduleData.equals(other.moduleData)) return false;
+
+        // Compare the 'subModules' map deeply
+        if (this.subModules.size() != other.subModules.size()) return false; // Check size first for efficiency
+        for (Map.Entry<String, ModuleInstance> entry : this.subModules.entrySet()) {
+            ModuleInstance otherSubModule = other.subModules.get(entry.getKey());
+            if (otherSubModule == null || !entry.getValue().equals(otherSubModule)) {
+                return false; // Check if key exists and deeply compare values
+            }
+        }
+
+        return true; // All checks passed, the objects are deeply equal
+    }
+
 }

@@ -13,7 +13,7 @@ import smartin.miapi.Miapi;
 import smartin.miapi.client.model.ItemInModuleMiapiModel;
 import smartin.miapi.client.model.MiapiItemModel;
 import smartin.miapi.client.model.MiapiModel;
-import smartin.miapi.item.modular.items.ModularCrossbow;
+import smartin.miapi.item.modular.items.bows.ModularCrossbow;
 import smartin.miapi.material.MaterialInscribeDataProperty;
 import smartin.miapi.modules.properties.util.CodecProperty;
 import smartin.miapi.modules.properties.util.MergeType;

@@ -22,10 +22,10 @@ import java.util.Optional;
 /**
  * This Property changes the ItemIdentifier of an ModularItem on Craft
  * it only supports preregisterd ids in {@link RegistryInventory#modularItems}
+ *
  * @header Item ID Property
  * @path /data_types/properties/item_id
- * @description_start
- * The ItemIdProperty allows for the modification of an item's identifier upon crafting. When this property is applied,
+ * @description_start The ItemIdProperty allows for the modification of an item's identifier upon crafting. When this property is applied,
  * it changes the `ItemStack`'s item to a different one based on a in java registered Modular Item.
  * This is useful for dynamically altering items during the crafting process, giving you the ability to switch item types
  * according to predefined configurations.
@@ -55,7 +55,7 @@ public class ItemIdProperty extends CodecProperty<ResourceLocation> implements C
             if (item != null) {
                 root.clearCaches();
                 ItemStack newStack = new ItemStack(item);
-                newStack.applyComponents(itemStack.getComponents());
+                newStack.applyComponents(itemStack.getComponentsPatch());
                 newStack.setCount(itemStack.getCount());
                 ModuleInstance newRoot = root.copy();
                 newRoot.writeToItem(newStack);
