@@ -576,6 +576,7 @@ public class RegistryInventory {
             registerMiapi(useAbilityRegistry, HeavyAttackProperty.KEY, new HeavyAttackAbility());
             registerMiapi(useAbilityRegistry, CircleAttackProperty.KEY, new CircleAttackAbility());
             registerMiapi(useAbilityRegistry, CrossbowProperty.KEY, new CrossbowAbility());
+            registerMiapi(useAbilityRegistry, "copy_item", new CopyItemAbility());
             registerMiapi(useAbilityRegistry, AxeAbility.KEY, new AxeAbility());
             registerMiapi(useAbilityRegistry, HoeAbility.KEY, new HoeAbility());
             registerMiapi(useAbilityRegistry, ShovelAbility.KEY, new ShovelAbility());

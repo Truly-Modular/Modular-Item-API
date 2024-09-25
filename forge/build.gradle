@@ -105,7 +105,8 @@ modApi "com.github.EdwinMindcraft:origins-architectury:${project.fabric_apoli_ve
 include "com.github.EdwinMindcraft:origins-architectury:${project.fabric_apoli_version}"
  */
 
-    forgeRuntimeLibrary('com.github.ezylang:EvalEx:3.0.4') // because nucleus uses it
+    forgeRuntimeLibrary('com.github.ezylang:EvalEx:3.0.4')
+    localRuntime('com.github.ezylang:EvalEx:3.0.4')
 
     compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:${rootProject.mixin_extras_version}"))
     implementation(include("io.github.llamalad7:mixinextras-forge:${rootProject.mixin_extras_version}"))
