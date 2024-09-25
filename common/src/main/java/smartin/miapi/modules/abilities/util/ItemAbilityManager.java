@@ -95,7 +95,7 @@ public class ItemAbilityManager {
         if (emptyAbility.equals(ability)) {
             return getItem.get();
         }
-        return ability.ability().getMaxUseTime(itemStack);
+        return ability.ability().getMaxUseTime(itemStack, livingEntity);
     }
 
     public static InteractionResultHolder<ItemStack> use(Level world, Player user, InteractionHand hand, Supplier<InteractionResultHolder<ItemStack>> getItem) {
@@ -221,7 +221,7 @@ public class ItemAbilityManager {
         }
 
         @Override
-        public int getMaxUseTime(ItemStack itemStack) {
+        public int getMaxUseTime(ItemStack itemStack, LivingEntity entity) {
             return 0;
         }
 

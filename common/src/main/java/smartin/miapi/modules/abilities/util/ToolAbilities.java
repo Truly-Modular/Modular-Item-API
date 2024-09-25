@@ -11,6 +11,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.UseAnim;
@@ -38,7 +39,7 @@ public abstract class ToolAbilities implements ItemUseDefaultCooldownAbility<Too
     }
 
     @Override
-    public int getMaxUseTime(ItemStack itemStack) {
+    public int getMaxUseTime(ItemStack itemStack, LivingEntity entity) {
         return 0;
     }
 

@@ -47,7 +47,7 @@ public class EatAbility implements ItemUseDefaultCooldownAbility<EatAbility.EatR
     }
 
     @Override
-    public int getMaxUseTime(ItemStack itemStack) {
+    public int getMaxUseTime(ItemStack itemStack, LivingEntity entity) {
         return getSpecialContext(itemStack).eatTicks();
     }
 

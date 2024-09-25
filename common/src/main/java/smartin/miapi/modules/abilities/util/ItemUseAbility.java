@@ -46,7 +46,7 @@ public interface ItemUseAbility<T> {
      * @param itemStack The item stack being used.
      * @return The maximum use time of the item stack.
      */
-    int getMaxUseTime(ItemStack itemStack);
+    int getMaxUseTime(ItemStack itemStack, LivingEntity livingEntity);
 
     /**
      * Handles the usage of the item in the specified world by the specified player and hand.

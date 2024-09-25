@@ -46,8 +46,7 @@ public class MaterialCondition implements ModuleCondition {
         if (propertyMapOptional.isPresent()) {
             Map<ModuleProperty<?>, Object> propertyMap = propertyMapOptional.get();
             List<Component> reasons = conditionContext.failReasons;
-            Material material = (Material) propertyMap.get(MaterialProperty.property);
-            if (material != null && material.getID().equals(materialKey)) {
+            if (MaterialProperty.getMaterial(propertyMap) instanceof Material material && material.getID().equals(materialKey)) {
                 return true;
             }
             reasons.add(error);

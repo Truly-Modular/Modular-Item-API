@@ -47,7 +47,7 @@ public class RiptideAbility implements ItemUseDefaultCooldownAbility<RiptideAbil
     }
 
     @Override
-    public int getMaxUseTime(ItemStack itemStack) {
+    public int getMaxUseTime(ItemStack itemStack, LivingEntity entity) {
         return 7200;
     }
 
@@ -66,7 +66,7 @@ public class RiptideAbility implements ItemUseDefaultCooldownAbility<RiptideAbil
 
     public void onStoppedUsingAfter(ItemStack stack, Level world, LivingEntity user, int remainingUseTicks) {
         if (user instanceof Player playerEntity && world instanceof ServerLevel serverLevel) {
-            int i = this.getMaxUseTime(stack) - remainingUseTicks;
+            int i = this.getMaxUseTime(stack, user) - remainingUseTicks;
             if (i >= 10) {
                 RiptideContextJson riptideContextJson = getSpecialContext(stack);
                 int j = EnchantmentHelper.getTridentReturnToOwnerAcceleration(serverLevel, stack, user);
@@ -147,7 +147,7 @@ public class RiptideAbility implements ItemUseDefaultCooldownAbility<RiptideAbil
         @AutoCodec.Name("custom_sound")
         public ResourceLocation customSound = null;
 
-        public RiptideContextJson(){
+        public RiptideContextJson() {
 
         }
 

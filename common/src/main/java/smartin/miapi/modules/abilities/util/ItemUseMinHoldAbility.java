@@ -7,7 +7,7 @@ import net.minecraft.world.level.Level;
 public interface ItemUseMinHoldAbility<T> extends ItemUseAbility<T> {
 
 
-     int getMinHoldTime(ItemStack itemStack);
+    int getMinHoldTime(ItemStack itemStack);
 
     @Override
     default void onStoppedUsing(ItemStack stack, Level world, LivingEntity user, int remainingUseTicks) {
@@ -17,7 +17,7 @@ public interface ItemUseMinHoldAbility<T> extends ItemUseAbility<T> {
     }
 
     default boolean finishedMinHold(ItemStack stack, Level world, LivingEntity user, int remainingUseTicks) {
-        return getMaxUseTime(stack) - remainingUseTicks > getMinHoldTime(stack);
+        return getMaxUseTime(stack, user) - remainingUseTicks > getMinHoldTime(stack);
     }
 
     /**

@@ -59,7 +59,7 @@ public class SpecialAttackAbility implements
     }
 
     @Override
-    public int getMaxUseTime(ItemStack itemStack) {
+    public int getMaxUseTime(ItemStack itemStack, LivingEntity entity) {
         return 72000;
     }
 
@@ -75,7 +75,7 @@ public class SpecialAttackAbility implements
     @Override
     public void onStoppedUsingAfter(ItemStack stack, Level world, LivingEntity user, int remainingUseTicks) {
         SpecialAttackJson specialAttackJson = getSpecialContext(stack);
-        if (user instanceof Player player && getMaxUseTime(stack) - remainingUseTicks > specialAttackJson.minHold.getValue()) {
+        if (user instanceof Player player && getMaxUseTime(stack, user) - remainingUseTicks > specialAttackJson.minHold.getValue()) {
             EntityHitResult entityHitResult = AttackUtil.raycastFromPlayer(specialAttackJson.range.evaluate(3.5, 3.5), player);
             if (entityHitResult != null) {
                 Entity target2 = entityHitResult.getEntity();

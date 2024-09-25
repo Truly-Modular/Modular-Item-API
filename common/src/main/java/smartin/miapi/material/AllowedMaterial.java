@@ -106,8 +106,7 @@ public class AllowedMaterial extends CodecProperty<AllowedMaterial.AllowedMateri
             Material material = MaterialProperty.getMaterialFromIngredient(input);
             materialRequirementClient = json.cost * crafting.getCount();
             if (material != null) {
-                boolean isAllowed = (json.allowedMaterials.stream().anyMatch(allowedMaterial ->
-                        material.getGroups().contains(allowedMaterial)));
+                boolean isAllowed = json.isValid(material);
                 wrongMaterial = !isAllowed;
                 if (isAllowed) {
                     materialCostClient = input.getCount() * material.getValueOfItem(input);
@@ -138,8 +137,7 @@ public class AllowedMaterial extends CodecProperty<AllowedMaterial.AllowedMateri
             Material material = MaterialProperty.getMaterialFromIngredient(input);
             if (material != null) {
                 AllowedMaterialData json = optional.get();
-                boolean isAllowed = (json.allowedMaterials.stream().anyMatch(allowedMaterial ->
-                        material.getGroups().contains(allowedMaterial)));
+                boolean isAllowed = json.isValid(material);
                 if (isAllowed) {
                     MaterialProperty.setMaterial(newModule, material.getID());
                 }
@@ -239,5 +237,11 @@ public class AllowedMaterial extends CodecProperty<AllowedMaterial.AllowedMateri
         public List<String> allowedMaterials;
         @CodecBehavior.Optional
         public float cost = 1;
+
+        public boolean isValid(Material material) {
+            return (allowedMaterials.stream().anyMatch(allowedMaterial ->
+                    material.getGroups().contains(allowedMaterial) ||
+                    material.getID().toString().equals(allowedMaterial)));
+        }
     }
 }

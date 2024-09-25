@@ -517,6 +517,7 @@ public class RegistryInventory {
             // ABILITIES
             registerMiapi(useAbilityRegistry, "throw", new ThrowingAbility());
             registerMiapi(useAbilityRegistry, "block", new BlockAbility());
+            registerMiapi(useAbilityRegistry, "copy_item", new CopyItemAbility());
             registerMiapi(useAbilityRegistry, "full_block", new ShieldBlockAbility());
             registerMiapi(useAbilityRegistry, "riptide", new RiptideAbility());
             registerMiapi(useAbilityRegistry, "heavy_attack", new SpecialAttackAbility());

@@ -117,6 +117,19 @@
           },
           "key_words": []
         },
+        "abilities": {
+          "sub_pages": {
+            "copy_item": {
+              "header": "Copy Item Ability",
+              "description": "  \nThis ability aims to be able to copy any other items right click ability.  \nThis might not work with some items/mods, as if they check for the executing item this will fail  \n",
+              "java": "common/src/main/java/smartin/miapi/modules/abilities/CopyItemAbility.java",
+              "data": {
+                "id": "the id of the item to copy from"
+              },
+              "key_words": []
+            }
+          }
+        },
         "condition": {
           "header": "Conditions",
           "description": "  \nConditions! what is there to describe  \n",
@@ -937,7 +950,7 @@
                 },
                 "rapid_fire_crossbow": {
                   "header": "Rapid Fire Crossbow Property",
-                  "description": "  \nThe Rapid Fire Crossbow Property controls how many projectiles can be loaded and fired from a modular crossbow in quick succession.  \nThe number of shots is determined by the property value, and additional projectiles can be loaded from the player's inventory.  \n",
+                  "description": " The Rapid Fire Crossbow Property controls how many projectiles can be loaded and fired from a modular crossbow in quick succession.  \nThe number of shots is determined by the property value, and additional projectiles can be loaded from the player's inventory.  \n",
                   "java": "common/src/main/java/smartin/miapi/modules/properties/projectile/RapidfireCrossbowProperty.java",
                   "data": {
                     "rapid_fire_crossbow": " A double value representing the number of projectiles that can be shot."

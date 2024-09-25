@@ -58,7 +58,7 @@ public class ThrowingAbility implements ItemUseDefaultCooldownAbility<ThrowingAb
     }
 
     @Override
-    public int getMaxUseTime(ItemStack stack) {
+    public int getMaxUseTime(ItemStack stack, LivingEntity entity) {
         return 72000;
     }
 
@@ -71,7 +71,7 @@ public class ThrowingAbility implements ItemUseDefaultCooldownAbility<ThrowingAb
     @Override
     public void onStoppedUsingAfter(ItemStack stack, Level world, LivingEntity user, int remainingUseTicks) {
         if (user instanceof Player playerEntity) {
-            int i = this.getMaxUseTime(stack) - remainingUseTicks;
+            int i = this.getMaxUseTime(stack, user) - remainingUseTicks;
             if (i >= 10) {
                 playerEntity.awardStat(Stats.ITEM_USED.get(stack.getItem()));
                 if (world instanceof ServerLevel serverWorld) {

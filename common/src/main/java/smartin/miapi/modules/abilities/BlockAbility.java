@@ -73,7 +73,7 @@ public class BlockAbility extends EntityAttributeAbility<BlockAbility.BlockAbili
     }
 
     @Override
-    public int getMaxUseTime(ItemStack itemStack) {
+    public int getMaxUseTime(ItemStack itemStack, LivingEntity entity) {
         return 20 * 60 * 60;
     }
 
