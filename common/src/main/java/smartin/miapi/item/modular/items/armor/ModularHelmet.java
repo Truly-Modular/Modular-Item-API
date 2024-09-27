@@ -7,6 +7,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import smartin.miapi.item.FakeItemstackReferenceProvider;
@@ -28,6 +29,11 @@ public class ModularHelmet extends ArmorItem implements PlatformModularItemMetho
 
     public ModularHelmet() {
         super(RegistryInventory.armorMaterial, Type.HELMET, new Properties());
+    }
+
+    @Override
+    public ItemAttributeModifiers getDefaultAttributeModifiers() {
+        return ItemAttributeModifiers.EMPTY;
     }
 
     @Override

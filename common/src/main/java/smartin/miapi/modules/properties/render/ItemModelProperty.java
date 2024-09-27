@@ -14,7 +14,6 @@ import smartin.miapi.Miapi;
 import smartin.miapi.client.model.ItemInModuleMiapiModel;
 import smartin.miapi.client.model.MiapiItemModel;
 import smartin.miapi.client.model.MiapiModel;
-import smartin.miapi.item.modular.items.bows.ModularCrossbow;
 import smartin.miapi.material.MaterialInscribeDataProperty;
 import smartin.miapi.modules.properties.util.CodecProperty;
 import smartin.miapi.modules.properties.util.MergeType;
@@ -58,15 +57,15 @@ public class ItemModelProperty extends CodecProperty<List<ModelJson>> {
                         yield () -> ItemStack.EMPTY;
                     }
                     case "projectile": {
-                        if (stack.getItem() instanceof ModularCrossbow && ModelProperty.isAllowedKey(modelJson.modelType, key)) {
-                            yield () -> {
-                                if(stack.has(DataComponents.CHARGED_PROJECTILES)){
-                                    return stack.get(DataComponents.CHARGED_PROJECTILES).getItems().stream().findFirst().orElse(ItemStack.EMPTY);
-                                }
-                                return ItemStack.EMPTY;
-                            };
-                        }
-                        yield () -> ItemStack.EMPTY;
+                        yield () -> {
+                            if(
+                                    ModelProperty.isAllowedKey(modelJson.modelType, key) &&
+                                    stack.has(DataComponents.CHARGED_PROJECTILES)
+                            ){
+                                return stack.get(DataComponents.CHARGED_PROJECTILES).getItems().stream().findFirst().orElse(ItemStack.EMPTY);
+                            }
+                            return ItemStack.EMPTY;
+                        };
                     }
                     default:
                         throw new IllegalStateException("Unexpected value: " + modelJson.type);

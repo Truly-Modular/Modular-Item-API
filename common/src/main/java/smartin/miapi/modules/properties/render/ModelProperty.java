@@ -170,6 +170,8 @@ public class ModelProperty extends CodecProperty<List<ModelProperty.ModelData>> 
     public static boolean isAllowedKey(@Nullable String jsonKey, @Nullable String modelTypeKey) {
         return jsonKey == null && modelTypeKey == null ||
                jsonKey != null && jsonKey.equals(modelTypeKey) ||
+               jsonKey != null && modelTypeKey == null && jsonKey.equals("default") ||
+               jsonKey == null && modelTypeKey != null && modelTypeKey.equals("default") ||
                ("item".equals(jsonKey) && modelTypeKey == null);
     }
 

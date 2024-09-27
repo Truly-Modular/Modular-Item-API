@@ -11,6 +11,7 @@ import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.item.modular.Transform;
 import smartin.miapi.item.modular.TransformMap;
+import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.util.CodecProperty;
 import smartin.miapi.modules.properties.util.MergeType;
@@ -212,6 +213,16 @@ public class SlotProperty extends CodecProperty<Map<String, SlotProperty.ModuleS
 
         public boolean allowedIn(ModuleInstance instance) {
             List<String> allowedSlots = AllowedSlots.getAllowedSlots(instance.module);
+            for (String key : allowed) {
+                if (allowedSlots.contains(key)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public boolean allowedIn(ItemModule module) {
+            List<String> allowedSlots = AllowedSlots.getAllowedSlots(module);
             for (String key : allowed) {
                 if (allowedSlots.contains(key)) {
                     return true;

@@ -14,5 +14,5 @@ include("fabric")
 //include("neoforge")
 
 includeBuild("./archery")
-//includeBuild("./armory")
+includeBuild("./armory")
 includeBuild("./arsenal")

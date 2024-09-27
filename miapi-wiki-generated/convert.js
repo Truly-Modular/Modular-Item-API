@@ -116,7 +116,7 @@ const path = require('path')
 // Entry point of the script
 main()
 function main() {
-	const rootDir = '../archery/archery-common/src/main/resources/data'
+	const rootDir = '../armory/armory-common/src/main/resources/data'
 	const jsonData = {}
 
 	readJsonFiles(rootDir, jsonData)

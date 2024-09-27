@@ -34,6 +34,7 @@ import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
+import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
 import smartin.miapi.Miapi;
 import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.blocks.ModularWorkBench;
@@ -50,15 +51,16 @@ import smartin.miapi.entity.ItemProjectileEntity;
 import smartin.miapi.item.MaterialSmithingRecipe;
 import smartin.miapi.item.modular.ModularItemPart;
 import smartin.miapi.item.modular.PropertyResolver;
-import smartin.miapi.item.modular.items.*;
+import smartin.miapi.item.modular.items.ExampleModularItem;
+import smartin.miapi.item.modular.items.ExampleModularStrackableItem;
+import smartin.miapi.item.modular.items.ModularVisualOnlyItem;
 import smartin.miapi.item.modular.items.armor.*;
 import smartin.miapi.item.modular.items.bows.ModularArrow;
 import smartin.miapi.item.modular.items.bows.ModularBow;
 import smartin.miapi.item.modular.items.bows.ModularCrossbow;
 import smartin.miapi.item.modular.items.tool_likes.*;
 import smartin.miapi.material.*;
-import smartin.miapi.modules.ItemModule;
-import smartin.miapi.modules.ModuleInstance;
+import smartin.miapi.modules.*;
 import smartin.miapi.modules.abilities.*;
 import smartin.miapi.modules.abilities.toolabilities.AxeAbility;
 import smartin.miapi.modules.abilities.toolabilities.HoeAbility;
@@ -127,6 +129,7 @@ public class RegistryInventory {
     public static final MiapiRegistry<ItemModule> modules = MiapiRegistry.getInstance(ItemModule.class);
     public static final MiapiRegistry<EditOption> editOptions = MiapiRegistry.getInstance(EditOption.class);
     public static final MiapiRegistry<CraftingStat> craftingStats = MiapiRegistry.getInstance(CraftingStat.class);
+    public static final Registrar<LootItemFunctionType<?>> lootItemFunctions = registrar.get().get(Registries.LOOT_FUNCTION_TYPE);
     public static final TagKey<Item> MIAPI_FORBIDDEN_TAG = TagKey.create(Registries.ITEM, ResourceLocation.parse("miapi_forbidden"));
 
     public static <T> RegistrySupplier<T> registerAndSupply(Registrar<T> rg, ResourceLocation id, Supplier<T> object) {
@@ -205,6 +208,9 @@ public class RegistryInventory {
     public static RegistrySupplier<EntityType<ItemProjectileEntity>> itemProjectileType = (RegistrySupplier) registerAndSupply(entityTypes, "thrown_item", () ->
             EntityType.Builder.of(ItemProjectileEntity::new, MobCategory.MISC).sized(0.5F, 0.5F).clientTrackingRange(4).updateInterval(20).build("miapi:thrown_item"));
     public static EntityType<ItemProjectileEntity> registeredItemProjectileType;
+    public static LootItemFunctionType<ModuleSwapLootFunction> moduleSwapLootFunctionLootItemFunctionType = new LootItemFunctionType<>(ModuleSwapLootFunction.CODEC);
+    public static LootItemFunctionType<MaterialSwapLootFunction> materialSwapLootFunctionLootItemFunctionType = new LootItemFunctionType<>(MaterialSwapLootFunction.CODEC);
+
 
     static {
         itemProjectileType.listen(e -> {
@@ -225,6 +231,7 @@ public class RegistryInventory {
                     if (Platform.getEnvironment() == Env.CLIENT) MiapiClient.registerScreenHandler();
                 });
 
+
         RegistryInventory.components.register(
                 Miapi.id("item_module"), () -> ModuleInstance.MODULE_INSTANCE_COMPONENT);
         RegistryInventory.components.register(
@@ -235,6 +242,14 @@ public class RegistryInventory {
                 Miapi.id("magazine_property"), () -> RapidfireCrossbowProperty.ADDITIONAL_PROJECTILES_COMPONENT);
         RegistryInventory.components.register(
                 Miapi.id("item_module_property"), () -> ItemModelProperty.ITEM_MODEL_COMPONENT);
+        RegistryInventory.components.register(
+                Miapi.id("stack_storage"), () -> StackStorageComponent.STACK_STORAGE_COMPONENT);
+
+        RegistryInventory.lootItemFunctions.register(
+                Miapi.id("module_swap"), () -> moduleSwapLootFunctionLootItemFunctionType);
+
+        RegistryInventory.lootItemFunctions.register(
+                Miapi.id("material_swap"), () -> materialSwapLootFunctionLootItemFunctionType);
 
         register(armorMaterials, "modular_armor_material", () ->
                 new ArmorMaterial(
@@ -504,6 +519,9 @@ public class RegistryInventory {
             registerMiapi(moduleProperties, BlueprintCrafting.KEY, new BlueprintCrafting());
             registerMiapi(moduleProperties, SlashingProperty.KEY, new SlashingProperty());
             registerMiapi(moduleProperties, ComponentProperty.KEY, new ComponentProperty());
+            registerMiapi(moduleProperties, MaterialInscribeProperty.KEY, new MaterialInscribeProperty());
+            registerMiapi(moduleProperties, DrawTimeProperty.KEY, new DrawTimeProperty());
+            registerMiapi(moduleProperties, MaterialOverwriteProperty.KEY, new MaterialOverwriteProperty());
             //compat
             //registerMiapi(moduleProperties, BetterCombatProperty.KEY, new BetterCombatProperty());
             //TODO: added this to cleanup logs. this needs to be revisited later

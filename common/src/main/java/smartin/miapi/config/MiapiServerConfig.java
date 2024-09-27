@@ -129,6 +129,28 @@ public class MiapiServerConfig {
         @Comment("Whether Miapi should automatically generate materials based on modded tools")
         @AutoCodec.Name("generate_other_materials")
         public boolean generateOtherMaterials = true;
+
+
+        @Comment("Whether the Ability Property should copy the items abilities for generated Materials")
+        @AutoCodec.Name("ability_property")
+        public GeneratePropertyOption abilityProperty = new GeneratePropertyOption();
+
+        @Comment("Whether the Tags of the Items should be copied as Material Properties for generated Materials")
+        @AutoCodec.Name("tag_property")
+        public GeneratePropertyOption tagProperty = new GeneratePropertyOption();
+
+        @Comment("Whether Custom Components should be added to the generated Materials")
+        @AutoCodec.Name("component_property")
+        public GeneratePropertyOption componentProperty = new GeneratePropertyOption();
+
+        @ConfigAutoCodec.ConfigClassMarker
+        public static class GeneratePropertyOption {
+            @Comment("Whether this property is enabled at all")
+            public boolean enable = true;
+
+            @Comment("A list of blocked regexes, if any material causes issues add their id to here")
+            public List<String> blocked = List.of();
+        }
     }
 
     @ConfigAutoCodec.ConfigClassMarker

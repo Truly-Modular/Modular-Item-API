@@ -33,9 +33,11 @@ import java.util.Map;
 public class ComponentProperty extends CodecProperty<Map<ResourceLocation, JsonElement>> implements ComponentApplyProperty, CraftingProperty {
     public static Codec<Map<ResourceLocation, JsonElement>> CODEC = Codec.unboundedMap(ResourceLocation.CODEC, StatResolver.Codecs.JSONELEMENT_CODEC);
     public static final ResourceLocation KEY = Miapi.id("components");
+    public static ComponentProperty property;
 
     public ComponentProperty() {
         super(CODEC);
+        property = this;
     }
 
     @Override

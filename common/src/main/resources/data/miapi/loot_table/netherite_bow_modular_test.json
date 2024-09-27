@@ -1,0 +1,22 @@
+{
+  "pools": [
+    {
+      "rolls": 50,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:bow",
+          "functions": [
+            {
+              "function": "miapi:module_swap"
+            },
+            {
+              "function": "miapi:material_swap",
+              "material": "miapi:metal/netherite"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

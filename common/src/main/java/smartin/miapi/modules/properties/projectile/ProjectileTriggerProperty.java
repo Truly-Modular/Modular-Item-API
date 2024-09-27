@@ -1,5 +1,6 @@
 package smartin.miapi.modules.properties.projectile;
 
+import com.mojang.serialization.Codec;
 import dev.architectury.event.EventResult;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
@@ -11,21 +12,23 @@ import smartin.miapi.Miapi;
 import smartin.miapi.entity.ItemProjectileEntity;
 import smartin.miapi.events.MiapiProjectileEvents;
 import smartin.miapi.mixin.ThrowablePotionItemAccessor;
+import smartin.miapi.modules.StackStorageComponent;
 import smartin.miapi.modules.properties.util.CodecProperty;
 import smartin.miapi.modules.properties.util.MergeType;
+import smartin.miapi.modules.properties.util.ModuleProperty;
 
-import java.util.Optional;
+import java.util.Map;
 
 /**
  * replaces the projectile with another projectile on impact
  */
-public class ProjectileTriggerProperty extends CodecProperty<ItemStack> {
+public class ProjectileTriggerProperty extends CodecProperty<String> {
     public static final ResourceLocation KEY = Miapi.id("replace_projectile");
     public static ProjectileTriggerProperty property;
 
 
     public ProjectileTriggerProperty() {
-        super(ItemStack.CODEC);
+        super(Codec.STRING);
         property = this;
         MiapiProjectileEvents.MODULAR_PROJECTILE_ENTITY_HIT.register(event -> {
             if (isTriggered(event.projectile, event.entityHitResult)) {
@@ -42,15 +45,16 @@ public class ProjectileTriggerProperty extends CodecProperty<ItemStack> {
     }
 
     public static boolean isTriggered(ItemProjectileEntity projectile, HitResult hitResult) {
-        ItemStack itemStack = projectile.getPickupItem();
-        Optional<ItemStack> storedStack = property.getData(itemStack);
-        if (storedStack.isPresent()) {
-            if (projectile.getOwner() instanceof LivingEntity livingEntity) {
+        ItemStack itemStack = projectile.thrownStack;
+        if (property.getData(itemStack).isPresent() && property.getData(itemStack).get() instanceof String path) {
+            Map<String, ItemStack> map = itemStack.getOrDefault(StackStorageComponent.STACK_STORAGE_COMPONENT, Map.of());
+            ItemStack storedStack = map.get(path);
+            if (storedStack != null && projectile.getOwner() instanceof LivingEntity livingEntity) {
                 if (!projectile.level().isClientSide()) {
-                    if (storedStack.get().getItem() instanceof ThrowablePotionItem) {
+                    if (storedStack.getItem() instanceof ThrowablePotionItem) {
                         ThrownPotion potionEntity = new ThrownPotion(projectile.level(), livingEntity);
                         potionEntity.setPos(projectile.position());
-                        potionEntity.setItem(storedStack.get());
+                        potionEntity.setItem(storedStack);
                         potionEntity.shootFromRotation(livingEntity, projectile.getXRot(), projectile.getYRot(), 0.0f, projectile.flyDist, 0.0f);
                         projectile.level().addFreshEntity(potionEntity);
                         ((ThrowablePotionItemAccessor) potionEntity).onCollisionMixin(hitResult);
@@ -70,7 +74,7 @@ public class ProjectileTriggerProperty extends CodecProperty<ItemStack> {
     }
 
     @Override
-    public ItemStack merge(ItemStack left, ItemStack right, MergeType mergeType) {
-        return right;
+    public String merge(String left, String right, MergeType mergeType) {
+        return ModuleProperty.decideLeftRight(left, right, mergeType);
     }
 }

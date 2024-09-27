@@ -9,6 +9,7 @@ import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.resources.TextureAtlasHolder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.profiling.ProfilerFiller;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -89,12 +90,13 @@ public class MaterialAtlasManager extends TextureAtlasHolder {
 
      */
 
+    @Nullable
     public TextureAtlasSprite getMaterialSprite(ResourceLocation id) {
-        TextureAtlasSprite sprite = getSprite(id);
-        if (sprite == null) {
-            sprite = getSprite(BASE_MATERIAL_ID);
+        try{
+            return getSprite(id);
+        }catch (RuntimeException e){
+            return null;
         }
-        return sprite;
     }
 
     public record AddedSpriteEntry(ResourceLocation id, Consumer<SpriteContents> onCreated) {}

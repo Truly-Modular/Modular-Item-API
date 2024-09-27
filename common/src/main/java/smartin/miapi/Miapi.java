@@ -33,6 +33,10 @@ import smartin.miapi.item.ModularItemStackConverter;
 import smartin.miapi.item.modular.PropertyResolver;
 import smartin.miapi.item.modular.Transform;
 import smartin.miapi.item.modular.VisualModularItem;
+import smartin.miapi.material.ComponentMaterial;
+import smartin.miapi.material.MaterialCommand;
+import smartin.miapi.material.MaterialIcons;
+import smartin.miapi.material.generated.GeneratedMaterialManager;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.MiapiPermissions;
 import smartin.miapi.modules.ModuleDataPropertiesManager;
@@ -42,10 +46,6 @@ import smartin.miapi.modules.cache.CacheCommands;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.conditions.ConditionManager;
 import smartin.miapi.modules.conditions.ModuleCondition;
-import smartin.miapi.material.ComponentMaterial;
-import smartin.miapi.material.MaterialCommand;
-import smartin.miapi.material.MaterialIcons;
-import smartin.miapi.material.generated.GeneratedMaterialManager;
 import smartin.miapi.modules.properties.GlintProperty;
 import smartin.miapi.modules.properties.util.DoubleOperationResolvable;
 import smartin.miapi.modules.properties.util.ModuleProperty;
@@ -104,6 +104,7 @@ public class Miapi {
         CodecBehavior.registerClass(MaterialIcons.SpinSettings.class, MaterialIcons.SpinSettings.CODEC);
         CodecBehavior.registerClass(EquipmentSlotGroup.class, EquipmentSlotGroup.CODEC);
         CodecBehavior.registerClass(EquipmentSlot.class, EquipmentSlot.CODEC);
+
 
         setupConfigs();
         setupNetworking();

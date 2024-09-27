@@ -61,8 +61,6 @@ public class AttributeRegistry {
 
     public static Holder<Attribute> PROJECTILE_ARMOR;
 
-    public static Holder<Attribute> DRAW_TIME;
-
     public static Holder<Attribute> PLAYER_ITEM_USE_MOVEMENT_SPEED;
 
     public static Holder<Attribute> PROJECTILE_DAMAGE;

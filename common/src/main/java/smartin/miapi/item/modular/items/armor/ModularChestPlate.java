@@ -7,6 +7,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import smartin.miapi.item.FakeItemstackReferenceProvider;
@@ -63,6 +64,11 @@ public class ModularChestPlate extends ArmorItem implements PlatformModularItemM
             return (int) EnchantAbilityProperty.getEnchantAbility(itemStack);
         }
         return 15;
+    }
+
+    @Override
+    public ItemAttributeModifiers getDefaultAttributeModifiers() {
+        return ItemAttributeModifiers.EMPTY;
     }
 
     @Override

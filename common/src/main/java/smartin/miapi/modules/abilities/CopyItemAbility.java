@@ -22,21 +22,25 @@ import smartin.miapi.modules.abilities.util.ItemUseAbility;
 
 /**
  * @header Copy Item Ability
- * @description_start
- * This ability aims to be able to copy any other items right click ability.
+ * @description_start This ability aims to be able to copy any other items right click ability.
  * This might not work with some items/mods, as if they check for the executing item this will fail
  * @desciption_end
  * @path /data_types/abilities/copy_item
  * @data id:the id of the item to copy from
  */
 public class CopyItemAbility implements ItemUseAbility<CopyItemAbility.ItemContext> {
+    public static CopyItemAbility ability;
+
+    public CopyItemAbility() {
+        ability = this;
+    }
 
     @Override
     public boolean allowedOnItem(ItemStack stack, Level world, Player player, InteractionHand hand, ItemAbilityManager.AbilityHitContext abilityHitContext) {
-        if (getSpecialContext(stack).item != null) {
-            return true;
-        }
-        return false;
+        ItemContext context = getSpecialContext(stack);
+        context.initialize();
+        Item item = context.item;
+        return item != null;
     }
 
     @Override
@@ -136,5 +140,18 @@ public class CopyItemAbility implements ItemUseAbility<CopyItemAbility.ItemConte
         public ResourceLocation id = Miapi.id("empty");
         @AutoCodec.Ignored
         public Item item;
+
+        public void initialize() {
+            item = BuiltInRegistries.ITEM.get(id);
+        }
+
+        public ItemContext() {
+
+        }
+
+        public ItemContext(Item item) {
+            this.item = item;
+            this.id = item.arch$registryName();
+        }
     }
 }

@@ -43,6 +43,7 @@ public class ModularAxe extends AxeItem implements PlatformModularItemMethods, M
         if (MiapiConfig.INSTANCE.server.other.looseToolMaterial) {
             return currentFakeToolmaterial;
         }
+        MaceItem maceItem;
         return super.getTier();
     }
 
@@ -88,7 +89,11 @@ public class ModularAxe extends AxeItem implements PlatformModularItemMethods, M
         } else {
             stack.hurtAndBreak(2, attacker, EquipmentSlot.MAINHAND);
         }
+        //MiapiEvents.LIVING_HURT.invoker().hurt(new MiapiEvents.LivingHurtEvent());
         return true;
+    }
+
+    public void postHurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
     }
 
     @Override

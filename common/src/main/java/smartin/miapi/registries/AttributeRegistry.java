@@ -70,9 +70,6 @@ public class AttributeRegistry {
                 att -> CRITICAL_CHANCE = att);
 
         //projectile based
-        RegistryInventory.registerAtt("generic.draw_time", true, () ->
-                        new RangedAttribute("miapi.attribute.name.draw_time", 0.0, -1024.0, 1024.0).setSyncable(true),
-                att -> DRAW_TIME = att);
         RegistryInventory.registerAtt("generic.projectile_damage", true, () ->
                         new RangedAttribute("miapi.attribute.name.projectile_damage", 0.0, -1024.0, 1024.0).setSyncable(true),
                 att -> PROJECTILE_DAMAGE = att);

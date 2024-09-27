@@ -9,6 +9,7 @@ import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FastColor;
 import net.minecraft.world.item.ItemStack;
 import smartin.miapi.Miapi;
@@ -18,12 +19,14 @@ import smartin.miapi.client.gui.ScrollingTextWidget;
 import smartin.miapi.client.gui.SimpleButton;
 import smartin.miapi.client.gui.crafting.CraftingScreen;
 import smartin.miapi.config.MiapiConfig;
+import smartin.miapi.modules.ModuleDataPropertiesManager;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.network.Networking;
 import smartin.miapi.registries.RegistryInventory;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -81,12 +84,15 @@ public class PropertyInjectionDev implements EditOption {
                     boolean success = true;
                     if (raw != null) {
                         JsonObject moduleJson = Miapi.gson.fromJson(raw, JsonObject.class);
+                        Map<ModuleProperty<?>, Object> properties = new HashMap<>();
                         if (moduleJson != null) {
                             for (Map.Entry<String, JsonElement> stringJsonElementEntry : moduleJson.entrySet()) {
-                                ModuleProperty property = RegistryInventory.moduleProperties.get(Miapi.id(stringJsonElementEntry.getKey()));
+                                ResourceLocation id = Miapi.id(stringJsonElementEntry.getKey());
+                                ModuleProperty property = RegistryInventory.moduleProperties.get(id);
                                 try {
                                     assert property != null;
                                     property.load(Miapi.id("property-injection"), stringJsonElementEntry.getValue(), true);
+                                    properties.put(property, property.decode(stringJsonElementEntry.getValue()));
                                 } catch (Exception e) {
                                     error.setText(Component.nullToEmpty(e.getMessage()));
                                     error.textColor = FastColor.ARGB32.color(255, 255, 0, 0);
@@ -94,6 +100,14 @@ public class PropertyInjectionDev implements EditOption {
                                     success = false;
                                 }
                             }
+                        }
+                        try {
+                            ModuleDataPropertiesManager.setProperties(moduleInstance, properties);
+                        } catch (RuntimeException e) {
+                            error.setText(Component.nullToEmpty(e.getMessage()));
+                            error.textColor = FastColor.ARGB32.color(255, 255, 0, 0);
+                            e.printStackTrace();
+                            success = false;
                         }
                     }
                     if (success) {

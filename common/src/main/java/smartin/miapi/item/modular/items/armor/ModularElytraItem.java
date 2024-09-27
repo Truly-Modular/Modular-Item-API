@@ -8,6 +8,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import smartin.miapi.item.FakeItemstackReferenceProvider;
@@ -32,6 +33,10 @@ public class ModularElytraItem extends ArmorItem implements PlatformModularItemM
         return new ModularElytraItem(new Properties().stacksTo(1).fireResistant());
     }
 
+    @Override
+    public ItemAttributeModifiers getDefaultAttributeModifiers() {
+        return ItemAttributeModifiers.EMPTY;
+    }
 
     @Override
     public Component getName(ItemStack stack) {

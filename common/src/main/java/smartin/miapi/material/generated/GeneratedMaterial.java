@@ -32,7 +32,6 @@ import smartin.miapi.material.palette.GrayscalePaletteColorer;
 import smartin.miapi.material.palette.MaterialRenderController;
 import smartin.miapi.modules.properties.attributes.AttributeUtil;
 import smartin.miapi.modules.properties.util.ModuleProperty;
-import smartin.miapi.registries.FakeTranslation;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -54,6 +53,7 @@ public class GeneratedMaterial implements Material {
     List<TieredItem> toolItems;
     Optional<ResourceLocation> smithingParent = Optional.empty();
     Component name = null;
+    public Map<String, Map<ModuleProperty<?>, Object>> properties = new HashMap<>();
 
     public static Codec<GeneratedMaterial> CODEC = RecordCodecBuilder.create((instance) ->
             instance.group(
@@ -158,6 +158,7 @@ public class GeneratedMaterial implements Material {
             } else {
                 stats.put("flexibility", (double) (toolMaterial.getSpeed() / 4));
             }
+            properties = GeneratedMaterialPropertyManager.setup(getID(), swordItem, axeItem, toolMaterials, Map.of());
             return true;
         }
         return false;
@@ -224,7 +225,7 @@ public class GeneratedMaterial implements Material {
 
     @Override
     public Map<ModuleProperty<?>, Object> materialProperties(String key) {
-        return Map.of();
+        return properties.getOrDefault(key, Map.of());
     }
 
     @Override

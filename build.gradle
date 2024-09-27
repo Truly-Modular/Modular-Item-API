@@ -169,7 +169,6 @@ tasks.register('rebuildArchery') {
     }
 }
 
-/*
 tasks.register('rebuildArmory') {
     ext.projectName = "armory"
     def project = gradle.includedBuild("armory")
@@ -220,8 +219,6 @@ tasks.register('rebuildArmory') {
     }
 }
 
-
- */
 subprojects {
     apply plugin: "dev.architectury.loom"
 

@@ -27,6 +27,7 @@ import smartin.miapi.modules.properties.LoreProperty;
 import smartin.miapi.modules.properties.RepairPriority;
 import smartin.miapi.modules.properties.attributes.AttributeUtil;
 import smartin.miapi.modules.properties.enchanment.EnchantAbilityProperty;
+import smartin.miapi.modules.properties.projectile.DrawTimeProperty;
 
 import java.util.List;
 import java.util.function.Predicate;
@@ -129,8 +130,7 @@ public class ModularBow extends BowItem implements PlatformModularItemMethods, M
     }
 
     public static float getPowerForTime(int charge, ItemStack itemStack, LivingEntity livingEntity) {
-        double drawTime = AttributeUtil.getActualValue(itemStack, EquipmentSlot.MAINHAND, AttributeRegistry.DRAW_TIME.value());
-        double onPlayer = (float) livingEntity.getAttributeValue(AttributeRegistry.DRAW_TIME);
+        double drawTime = DrawTimeProperty.property.getValue(itemStack).orElse(0.25);
         float maxLevel = Math.max(1.0f, (float) drawTime * 20);
         float f = (float) charge / maxLevel;
         f = (f * f + f * 2.0F) / 3.0F;

@@ -46,12 +46,18 @@ public class SinglePropertyStatDisplay extends SingleStatDisplayDouble {
         public DecimalFormat modifierFormat;
         public double min = 0;
         public double max = 100;
+        public boolean inverse = false;
 
         private Builder(DoubleProperty property) {
             this.property = property;
             modifierFormat = Util.make(new DecimalFormat("##.##"), (decimalFormat) -> {
                 decimalFormat.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ROOT));
             });
+        }
+
+        public Builder setInverse(boolean inverse) {
+            this.inverse = inverse;
+            return this;
         }
 
         public Builder setMax(double maxValue) {
@@ -112,6 +118,7 @@ public class SinglePropertyStatDisplay extends SingleStatDisplayDouble {
             display.maxValue = max;
             display.minValue = min;
             display.modifierFormat = modifierFormat;
+            display.inverse = inverse;
             return display;
         }
     }

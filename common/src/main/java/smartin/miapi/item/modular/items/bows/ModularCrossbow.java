@@ -1,9 +1,12 @@
 package smartin.miapi.item.modular.items.bows;
 
 
+import com.google.common.collect.Lists;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
@@ -13,10 +16,7 @@ import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.CrossbowItem;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
+import net.minecraft.world.item.*;
 import net.minecraft.world.item.component.ChargedProjectiles;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
@@ -28,12 +28,15 @@ import smartin.miapi.item.modular.CustomDrawTimeItem;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.PlatformModularItemMethods;
 import smartin.miapi.modules.properties.DisplayNameProperty;
+import smartin.miapi.modules.properties.LoreProperty;
 import smartin.miapi.modules.properties.RepairPriority;
 import smartin.miapi.modules.properties.attributes.AttributeUtil;
 import smartin.miapi.modules.properties.enchanment.EnchantAbilityProperty;
+import smartin.miapi.modules.properties.projectile.DrawTimeProperty;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 public class ModularCrossbow extends CrossbowItem implements PlatformModularItemMethods, ModularItem, CustomDrawTimeItem {
 
@@ -146,8 +149,7 @@ public class ModularCrossbow extends CrossbowItem implements PlatformModularItem
         if (charge >= 1.0F &&
             !isCharged(stack) &&
             !MiapiProjectileEvents.MODULAR_CROSSBOW_PRE_LOAD.invoker().load(context).interruptsFurtherEvaluation() &&
-            tryLoadProjectiles(livingEntity, stack))
-        {
+            tryLoadProjectiles(livingEntity, stack)) {
             if (MiapiProjectileEvents.MODULAR_CROSSBOW_POST_LOAD.invoker().load(context).interruptsFurtherEvaluation()) {
                 return;
             }
@@ -168,9 +170,30 @@ public class ModularCrossbow extends CrossbowItem implements PlatformModularItem
     }
 
     public static int getChargeDuration(ItemStack stack, LivingEntity shooter) {
-        double drawTime = AttributeUtil.getActualValue(stack, EquipmentSlot.MAINHAND, AttributeRegistry.DRAW_TIME.value());
+        double drawTime = DrawTimeProperty.property.getValue(stack).orElse(0.25);
         float f = EnchantmentHelper.modifyCrossbowChargingTime(stack, shooter, (float) drawTime);
         return Mth.floor(f * 20.0F);
+    }
+
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
+        ChargedProjectiles chargedProjectiles = (ChargedProjectiles) stack.get(DataComponents.CHARGED_PROJECTILES);
+        LoreProperty.appendLoreTop(stack, tooltipComponents, context, tooltipFlag);
+        if (chargedProjectiles != null && !chargedProjectiles.isEmpty()) {
+            ItemStack itemStack = (ItemStack) chargedProjectiles.getItems().get(0);
+            tooltipComponents.add(Component.translatable("item.minecraft.crossbow.projectile").append(CommonComponents.SPACE).append(itemStack.getDisplayName()));
+            if (tooltipFlag.isAdvanced() && itemStack.is(Items.FIREWORK_ROCKET)) {
+                List<Component> list = Lists.newArrayList();
+                Items.FIREWORK_ROCKET.appendHoverText(itemStack, context, list, tooltipFlag);
+                if (!list.isEmpty()) {
+                    for (int i = 0; i < list.size(); ++i) {
+                        list.set(i, Component.literal("  ").append((Component) list.get(i)).withStyle(ChatFormatting.GRAY));
+                    }
+
+                    tooltipComponents.addAll(list);
+                }
+            }
+
+        }
     }
 
     private static float getShootingPower(ChargedProjectiles projectile) {

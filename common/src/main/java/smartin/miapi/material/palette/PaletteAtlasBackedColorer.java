@@ -13,8 +13,8 @@ import smartin.miapi.client.MiapiClient;
 import smartin.miapi.client.atlas.MaterialAtlasManager;
 import smartin.miapi.client.atlas.MaterialSpriteManager;
 import smartin.miapi.client.renderer.NativeImageGetter;
-import smartin.miapi.mixin.client.SpriteContentsAccessor;
 import smartin.miapi.material.Material;
+import smartin.miapi.mixin.client.SpriteContentsAccessor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -81,8 +81,12 @@ public class PaletteAtlasBackedColorer extends SpritePixelReplacer {
     public NativeImage transform(SpriteContents originalSprite) {
         if (contents == null) {
             TextureAtlasSprite sprite = MiapiClient.materialAtlasManager.getMaterialSprite(getSpriteId());
-            MaterialSpriteManager.markTextureAsAnimatedInUse(sprite);
-            contents = sprite.contents();
+            if (sprite != null) {
+                MaterialSpriteManager.markTextureAsAnimatedInUse(sprite);
+                contents = sprite.contents();
+            } else {
+                contents = originalSprite;
+            }
         }
         image = NativeImageGetter.get(contents);
         NativeImage result = super.transform(originalSprite);
@@ -93,7 +97,11 @@ public class PaletteAtlasBackedColorer extends SpritePixelReplacer {
     @Override
     public Color getAverageColor() {
         if (averageColor == null) {
-            NativeImage img = ((SpriteContentsAccessor) MiapiClient.materialAtlasManager.getMaterialSprite(spriteId).contents()).getImage();
+            TextureAtlasSprite sprite = MiapiClient.materialAtlasManager.getMaterialSprite(spriteId);
+            if (sprite == null) {
+                return Color.WHITE;
+            }
+            NativeImage img = ((SpriteContentsAccessor) sprite.contents()).getImage();
 
             List<Color> colors = new ArrayList<>();
             int height = img.getHeight();

@@ -33,6 +33,7 @@ import smartin.miapi.modules.properties.onHit.entity.AquaticDamage;
 import smartin.miapi.modules.properties.onHit.entity.IllagerBane;
 import smartin.miapi.modules.properties.onHit.entity.SmiteDamage;
 import smartin.miapi.modules.properties.onHit.entity.SpiderDamage;
+import smartin.miapi.modules.properties.projectile.DrawTimeProperty;
 import smartin.miapi.modules.properties.projectile.IsCrossbowShootAble;
 import smartin.miapi.modules.properties.projectile.RapidfireCrossbowProperty;
 import smartin.miapi.modules.properties.projectile.WaterDragProperty;
@@ -261,6 +262,13 @@ public class StatListWidget extends InteractAbleWidget {
                 .setTranslationKey("miapi.crit_chance")
                 .setMax(1)
                 .setMin(0).build());
+
+        addStatDisplay(SinglePropertyStatDisplay
+                .builder(DrawTimeProperty.property)
+                .setMax(2.5)
+                .setFormat("##.##")
+                .setInverse(true)
+                .setTranslationKey(DrawTimeProperty.KEY).build());
 
         addStatDisplay(SinglePropertyStatDisplay
                 .builder(IllagerBane.property)

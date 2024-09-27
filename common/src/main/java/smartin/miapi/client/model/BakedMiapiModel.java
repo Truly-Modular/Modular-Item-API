@@ -18,8 +18,10 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
+import smartin.miapi.Miapi;
 import smartin.miapi.client.renderer.TrimRenderer;
 import smartin.miapi.item.modular.Transform;
+import smartin.miapi.material.MaterialProperty;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.EmissivityProperty;
 import smartin.miapi.modules.properties.GlintProperty;
@@ -75,16 +77,20 @@ public class BakedMiapiModel implements MiapiModel {
         Minecraft.getInstance().level.getProfiler().push("BakedModel");
 
         //render normally
-        for (Direction dir : Direction.values()) {
-            currentModel.getQuads(null, dir, RandomSource.create()).forEach(quad -> {
-                VertexConsumer vertexConsumer = modelHolder.colorProvider().getConsumer(vertexConsumers, quad.getSprite(), stack, instance, transformationMode);
-                vertexConsumer.putBulkData(matrices.last(), quad, colors[0], colors[1], colors[2], 1.0f, light, overlay);
-                if (stack.hasFoil()) {
-                    VertexConsumer altConsumer = vertexConsumers.getBuffer(GlintShader.modularItemGlint);
-                    Color glintColor = settings.getColor();
-                    altConsumer.putBulkData(matrices.last(), quad, glintColor.redAsFloat(), glintColor.greenAsFloat(), glintColor.blueAsFloat(), 1.0f, light, overlay);
-                }
-            });
+        try {
+            for (Direction dir : Direction.values()) {
+                currentModel.getQuads(null, dir, RandomSource.create()).forEach(quad -> {
+                    VertexConsumer vertexConsumer = modelHolder.colorProvider().getConsumer(vertexConsumers, quad.getSprite(), stack, instance, transformationMode);
+                    vertexConsumer.putBulkData(matrices.last(), quad, colors[0], colors[1], colors[2], 1.0f, light, overlay);
+                    if (stack.hasFoil()) {
+                        VertexConsumer altConsumer = vertexConsumers.getBuffer(GlintShader.modularItemGlint);
+                        Color glintColor = settings.getColor();
+                        altConsumer.putBulkData(matrices.last(), quad, glintColor.redAsFloat(), glintColor.greenAsFloat(), glintColor.blueAsFloat(), 1.0f, light, overlay);
+                    }
+                });
+            }
+        } catch (RuntimeException e) {
+            Miapi.LOGGER.error("rendering error in module " + instance.moduleID + " " + MaterialProperty.getMaterial(instance), e);
         }
         Minecraft.getInstance().level.getProfiler().pop();
 
@@ -105,11 +111,11 @@ public class BakedMiapiModel implements MiapiModel {
         if (modelHolder.entityRendering()) {
             ModelTransformer.getInverse(currentModel, random).forEach(quad -> {
                 VertexConsumer vertexConsumer = modelHolder.colorProvider().getConsumer(vertexConsumers, quad.getSprite(), stack, instance, transformationMode);
-                vertexConsumer.putBulkData(matrices.last(), quad, colors[0], colors[1], colors[2],1.0f, light, overlay);
+                vertexConsumer.putBulkData(matrices.last(), quad, colors[0], colors[1], colors[2], 1.0f, light, overlay);
                 if (stack.hasFoil()) {
                     VertexConsumer altConsumer = vertexConsumers.getBuffer(GlintShader.modularItemGlint);
                     Color glintColor = settings.getColor();
-                    altConsumer.putBulkData(matrices.last(), quad, glintColor.redAsFloat(), glintColor.greenAsFloat(), glintColor.blueAsFloat(),1.0f, light, overlay);
+                    altConsumer.putBulkData(matrices.last(), quad, glintColor.redAsFloat(), glintColor.greenAsFloat(), glintColor.blueAsFloat(), 1.0f, light, overlay);
                 }
             });
         }

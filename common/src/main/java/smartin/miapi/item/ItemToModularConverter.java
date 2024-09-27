@@ -36,7 +36,7 @@ public class ItemToModularConverter implements ModularItemStackConverter.Modular
                     Miapi.LOGGER.error("could not read modular converter in " + path + " " + decoded.error().toString());
                 }
             } catch (RuntimeException e) {
-                Miapi.LOGGER.error("Error during Modular Converter setup for "+path,e);
+                Miapi.LOGGER.error("Error during Modular Converter setup for " + path, e);
             }
         }, 1);
 
@@ -54,15 +54,19 @@ public class ItemToModularConverter implements ModularItemStackConverter.Modular
         if (preventConvert(stack)) {
             return stack.copy();
         }
-        for (Map.Entry<String, ItemStack> entry : regexes.entrySet()) {
-            if (BuiltInRegistries.ITEM.getKey(stack.getItem()).toString().matches(entry.getKey())) {
-                ItemStack nextStack = entry.getValue().copy();
-                nextStack.applyComponents(stack.getComponents());
-                nextStack.setCount(stack.getCount());
-                MutableObject<ItemStack> mutable = new MutableObject<>(ItemIdProperty.changeId(nextStack));
-                MiapiEvents.CONVERT_ITEM.invoker().convert(stack,mutable);
-                return mutable.getValue();
+        try {
+            for (Map.Entry<String, ItemStack> entry : regexes.entrySet()) {
+                if (BuiltInRegistries.ITEM.getKey(stack.getItem()).toString().matches(entry.getKey())) {
+                    ItemStack nextStack = entry.getValue().copy();
+                    nextStack.applyComponents(stack.getComponents());
+                    nextStack.setCount(stack.getCount());
+                    MutableObject<ItemStack> mutable = new MutableObject<>(ItemIdProperty.changeId(nextStack));
+                    MiapiEvents.CONVERT_ITEM.invoker().convert(stack, mutable);
+                    return mutable.getValue();
+                }
             }
+        } catch (RuntimeException e) {
+            Miapi.LOGGER.error("error during modular convertion", e);
         }
         return stack;
     }

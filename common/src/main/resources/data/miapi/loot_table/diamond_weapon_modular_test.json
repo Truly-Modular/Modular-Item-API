@@ -1,0 +1,21 @@
+{
+  "pools": [
+    {
+      "rolls": 50,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:diamond_sword",
+          "functions": [
+            {
+              "function": "miapi:module_swap"
+            },
+            {
+              "function": "miapi:material_swap"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

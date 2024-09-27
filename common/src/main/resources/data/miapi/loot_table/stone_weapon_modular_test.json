@@ -1,0 +1,18 @@
+{
+  "pools": [
+    {
+      "rolls": 50,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:stone_sword",
+          "functions": [
+            {
+              "function": "miapi:module_swap"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

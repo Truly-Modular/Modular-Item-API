@@ -66,7 +66,7 @@ public class MaterialProperty extends CodecProperty<ResourceLocation> {
             id = id.replace(".json", "");
             ResourceLocation revisedID = ResourceLocation.parse(id);
             JsonObject obj = parser.parse(data).getAsJsonObject();
-            JsonMaterial material = new JsonMaterial(revisedID,obj, isClient);
+            JsonMaterial material = new JsonMaterial(revisedID, obj, isClient);
             if (materials.containsKey(material.getID())) {
                 Miapi.LOGGER.warn("Overwriting Materials isnt 100% safe. The ordering might be wrong, please set the overwrite material in the same path as the origin Material" + path + " is overwriting " + material.getID());
             }
@@ -86,7 +86,7 @@ public class MaterialProperty extends CodecProperty<ResourceLocation> {
                     jsonMaterial.mergeJson(obj, isClient);
                 }
             } else {
-                Miapi.LOGGER.error("Miapi could not find Material for Material extension "+idString+ " " + path);
+                Miapi.LOGGER.error("Miapi could not find Material for Material extension " + idString + " " + path);
             }
         }, -1.5f);
         ReloadEvents.END.subscribe((isClient, registryAccess) -> {
@@ -167,11 +167,11 @@ public class MaterialProperty extends CodecProperty<ResourceLocation> {
         if (property.getData(instance).isPresent()) {
             Material material = MaterialProperty.materials.get(property.getData(instance).get());
             if (material != null) {
-                return material;
+                return MaterialOverwriteProperty.property.adjustMaterial(instance, material);
             }
         }
         if (CopyParentMaterialProperty.property.isTrue(instance) && instance.getParent() != null) {
-            return getMaterial(instance.getParent());
+            return MaterialOverwriteProperty.property.adjustMaterial(instance, getMaterial(instance.getParent()));
         }
         return null;
     }

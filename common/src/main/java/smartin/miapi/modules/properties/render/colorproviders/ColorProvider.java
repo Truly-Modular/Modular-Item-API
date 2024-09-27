@@ -61,7 +61,7 @@ public interface ColorProvider {
                                           ItemStack stack,
                                           ModuleInstance moduleInstance,
                                           ItemDisplayContext mode) {
-            return material.getRenderController().getVertexConsumer(vertexConsumers,sprite, stack, moduleInstance, mode);
+            return material.getRenderController().getVertexConsumer(vertexConsumers, sprite, stack, moduleInstance, mode);
         }
 
         @Override
@@ -114,7 +114,11 @@ public interface ColorProvider {
         }
 
         public PotionColorProvider(ItemStack stack) {
-            potioncolor = new Color( stack.getComponents().get(DataComponents.POTION_CONTENTS).getColor());
+            if (!stack.has(DataComponents.POTION_CONTENTS)) {
+                potioncolor = Color.WHITE;
+            } else {
+                potioncolor = new Color(stack.getComponents().get(DataComponents.POTION_CONTENTS).getColor());
+            }
         }
 
         @Override
