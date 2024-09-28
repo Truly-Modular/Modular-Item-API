@@ -59,6 +59,8 @@ import smartin.miapi.item.modular.items.bows.ModularArrow;
 import smartin.miapi.item.modular.items.bows.ModularBow;
 import smartin.miapi.item.modular.items.bows.ModularCrossbow;
 import smartin.miapi.item.modular.items.tool_likes.*;
+import smartin.miapi.lootFunctions.MaterialSwapLootFunction;
+import smartin.miapi.lootFunctions.ModuleSwapLootFunction;
 import smartin.miapi.material.*;
 import smartin.miapi.modules.*;
 import smartin.miapi.modules.abilities.*;

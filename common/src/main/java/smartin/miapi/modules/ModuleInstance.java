@@ -121,11 +121,11 @@ public class ModuleInstance {
      * The parent module instance of this module instance, if any.
      */
     @Nullable
-    protected ModuleInstance parent;
+    public ModuleInstance parent;
     /**
      * A map of child module instances to their respective module IDs.
      */
-    protected Map<String, ModuleInstance> subModules = new LinkedHashMap<>();
+    public Map<String, ModuleInstance> subModules = new LinkedHashMap<>();
     /**
      * A map of module data keys to their respective values.
      */

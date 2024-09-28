@@ -1,4 +1,4 @@
-package smartin.miapi.modules;
+package smartin.miapi.lootFunctions;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
@@ -20,26 +20,58 @@ import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.material.AllowedMaterial;
 import smartin.miapi.material.Material;
 import smartin.miapi.material.MaterialProperty;
+import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.ItemIdProperty;
 import smartin.miapi.registries.RegistryInventory;
 
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
-public class MaterialSwapLootFunction implements LootItemFunction {
-    public ResourceLocation materialID;
-    public double lowerBounds;
-    public double upperBounds;
-    public double miningLevelFactor;
-    public double tierFactor;
-    public double hardnessFactor;
-    public double flexibilityFactor;
+/**
+ * @header Material Swap Loot Function
+ * @path /data_types/loot_functions/material_swap
+ * @description_start The `MaterialSwapLootFunction` is a loot function that randomizes the materials of a modular item when generated
+ * as loot. This function compares the item’s materials with a specified material and replaces it with a new one based
+ * on several configurable parameters. These parameters control the bounds, mining level, tier, hardness, and flexibility
+ * factors that influence the selection of substitute materials. Additionally, the function can filter materials using
+ * a whitelist or blacklist to limit or exclude certain materials from substitution.
+ * <p>
+ * This allows for very random items within the loot-pool that still retain roughly the same strength level
+ * * Its full ID is ```"miapi:material_swap"```
+ * @description_end
+ * @data material: An optional material ID to substitute, if not set the highest found material will be used instead
+ * @data lowerBounds: An optional (default = -3) double that sets the lower bound of acceptable material differences for substitution.
+ * @data upperBounds: An optional (default = +0.5) double that sets the upper bound of acceptable material differences for substitution.
+ * @data miningLevelFactor: An optional (default = 1.0) double that adjusts the impact of the mining level on material substitution.
+ * @data tierFactor: An optional (default = 1.0) double that influences the selection of materials based on their tier level.
+ * @data hardnessFactor: An optional double (default = 1.0) that influences the selection of materials based on their hardness.
+ * @data flexibilityFactor: An optional (default = 1.0) double that adjusts material substitution based on flexibility values.
+ * @data chance: An optional (default = 1.0) that sets the chance for a swap to occur in the first place.
+ * @data blacklist: An optional list of Material IDs representing materials that cannot be substituted.
+ * @data whitelist: An optional list of Material IDs, if set blocks all entries not on this list.
+ */
+
+public record MaterialSwapLootFunction(
+        ResourceLocation material,
+        double lowerBounds,
+        double upperBounds,
+        double miningLevelFactor,
+        double tierFactor,
+        double hardnessFactor,
+        double flexibilityFactor,
+        double chance,
+        Optional<List<ResourceLocation>> blacklist,
+        Optional<List<ResourceLocation>> whitelist
+
+) implements LootItemFunction {
 
     public static MapCodec<MaterialSwapLootFunction> CODEC = RecordCodecBuilder.mapCodec((instance) ->
             instance.group(
                     ResourceLocation.CODEC.optionalFieldOf("material", Miapi.id("empty"))
-                            .forGetter(c -> c.materialID),
+                            .forGetter(c -> c.material),
                     Codec.DOUBLE.fieldOf("lower_bounds").orElse(-3.0)
                             .forGetter(c -> c.lowerBounds),
                     Codec.DOUBLE.fieldOf("upper_bounds").orElse(0.5)
@@ -51,19 +83,14 @@ public class MaterialSwapLootFunction implements LootItemFunction {
                     Codec.DOUBLE.fieldOf("hardness_factor").orElse(1.0)
                             .forGetter(c -> c.hardnessFactor),
                     Codec.DOUBLE.fieldOf("flexibility_factor").orElse(1.0)
-                            .forGetter(c -> c.flexibilityFactor)
+                            .forGetter(c -> c.flexibilityFactor),
+                    Codec.DOUBLE.fieldOf("chance").orElse(1.0)
+                            .forGetter(c -> c.chance),
+                    Codec.list(ResourceLocation.CODEC).optionalFieldOf("blacklist")
+                            .forGetter(c -> c.blacklist),
+                    Codec.list(ResourceLocation.CODEC).optionalFieldOf("whitelist")
+                            .forGetter(c -> c.whitelist)
             ).apply(instance, MaterialSwapLootFunction::new));
-
-    public MaterialSwapLootFunction(ResourceLocation material, double lowerBounds, double upperBounds, double miningLevelFactor,
-                                    double tierFactor, double hardnessFactor, double flexibilityFactor) {
-        this.materialID = material;
-        this.lowerBounds = lowerBounds;
-        this.upperBounds = upperBounds;
-        this.miningLevelFactor = miningLevelFactor;
-        this.tierFactor = tierFactor;
-        this.hardnessFactor = hardnessFactor;
-        this.flexibilityFactor = flexibilityFactor;
-    }
 
     @Override
     public @NotNull LootItemFunctionType<? extends LootItemFunction> getType() {
@@ -86,8 +113,8 @@ public class MaterialSwapLootFunction implements LootItemFunction {
                     }
                 }
             }
-            if (materialID != null) {
-                Material fromJson = MaterialProperty.materials.get(materialID);
+            if (material != null) {
+                Material fromJson = MaterialProperty.materials.get(material);
                 if (highestMaterial == null || fromJson != null && isHigher(highestMaterial, fromJson) > 0) {
                     highestMaterial = fromJson;
                 }
@@ -104,7 +131,9 @@ public class MaterialSwapLootFunction implements LootItemFunction {
     }
 
     ModuleInstance randomizeMaterialAndChildren(ModuleInstance moduleInstance, Material fallBackMaterial, RandomSource randomSource) {
-        moduleInstance = attemptRandomizeMaterial(moduleInstance, fallBackMaterial, randomSource);
+        if (randomSource.nextFloat() <= chance()) {
+            moduleInstance = attemptRandomizeMaterial(moduleInstance, fallBackMaterial, randomSource);
+        }
         Map<String, ModuleInstance> submodules = new LinkedHashMap<>(moduleInstance.getSubModuleMap());
         for (var entry : submodules.entrySet()) {
             moduleInstance.setSubModule(entry.getKey(), randomizeMaterialAndChildren(entry.getValue(), fallBackMaterial, randomSource));
@@ -122,6 +151,16 @@ public class MaterialSwapLootFunction implements LootItemFunction {
                 .filter(m -> {
                     if (m.getID().toString().contains("custom")) {
                         return false;
+                    }
+                    if (whitelist().isPresent()) {
+                        if (!whitelist().get().contains(m.getID())) {
+                            return false;
+                        }
+                    }
+                    if (blacklist().isPresent()) {
+                        if (blacklist().get().contains(m.getID())) {
+                            return false;
+                        }
                     }
                     if (AllowedMaterial.property.getData(module).isPresent() &&
                         !AllowedMaterial.property.getData(module).get().isValid(m)) {

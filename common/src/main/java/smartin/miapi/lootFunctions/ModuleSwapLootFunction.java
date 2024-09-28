@@ -1,5 +1,6 @@
-package smartin.miapi.modules;
+package smartin.miapi.lootFunctions;
 
+import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -17,6 +18,8 @@ import smartin.miapi.item.ModularItemStackConverter;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.material.Material;
 import smartin.miapi.material.MaterialProperty;
+import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.ItemIdProperty;
 import smartin.miapi.modules.properties.slot.SlotProperty;
 import smartin.miapi.registries.RegistryInventory;
@@ -24,19 +27,42 @@ import smartin.miapi.registries.RegistryInventory;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
-public class ModuleSwapLootFunction implements LootItemFunction {
-    public ResourceLocation materialID;
+/**
+ * @header Module Swap Loot Function
+ * @path /data_types/loot_functions/module_swap
+ * @description_start The `ModuleSwapLootFunction` is a loot function that randomizes the modules of a modular item when generated as loot.
+ * This function attempts to substitute modules with compatible alternatives.
+ * The function also allows for the selection of a fallback material.
+ * This loot function can be used to greatly diversify the loot found.
+ * Its full ID is ```"miapi:module_swap"```
+ * @description_end
+ * @data material: An material ID to target a different material then found on the item. if none are set the most powerfull material on the item is chosen instead
+ * @data chance: An optional (default = 1.0) that sets the chance for a swap to occur in the first place.
+ * @data blacklist: An optional list of Module IDs representing modules that cannot be substituted.
+ * @data whitelist: An optional list of Module IDs, if set blocks all entries not on this list.
+ */
+
+public record ModuleSwapLootFunction(
+        ResourceLocation material,
+        double chance,
+        Optional<List<ResourceLocation>> blacklist,
+        Optional<List<ResourceLocation>> whitelist
+) implements LootItemFunction {
 
     public static MapCodec<ModuleSwapLootFunction> CODEC = RecordCodecBuilder.mapCodec((instance) ->
             instance.group(
                     ResourceLocation.CODEC.optionalFieldOf("material", Miapi.id("empty"))
-                            .forGetter(c -> c.materialID)
+                            .forGetter(c -> c.material),
+                    Codec.DOUBLE.fieldOf("chance").orElse(1.0)
+                            .forGetter(c -> c.chance),
+                    Codec.list(ResourceLocation.CODEC).optionalFieldOf("blacklist")
+                            .forGetter(c -> c.blacklist),
+                    Codec.list(ResourceLocation.CODEC).optionalFieldOf("whitelist")
+                            .forGetter(c -> c.whitelist)
             ).apply(instance, ModuleSwapLootFunction::new));
 
-    public ModuleSwapLootFunction(ResourceLocation material) {
-        this.materialID = material;
-    }
 
     @Override
     public @NotNull LootItemFunctionType<? extends LootItemFunction> getType() {
@@ -59,8 +85,8 @@ public class ModuleSwapLootFunction implements LootItemFunction {
                     }
                 }
             }
-            if (materialID != null) {
-                Material fromJson = MaterialProperty.materials.get(materialID);
+            if (material != null) {
+                Material fromJson = MaterialProperty.materials.get(material);
                 if (highestMaterial == null || fromJson != null && isHigher(highestMaterial, fromJson)) {
                     highestMaterial = fromJson;
                 }
@@ -73,7 +99,9 @@ public class ModuleSwapLootFunction implements LootItemFunction {
     }
 
     ModuleInstance randomizeModuleAndChildren(ModuleInstance moduleInstance, Material fallBackMaterial, RandomSource randomSource) {
-        moduleInstance = findPossibleSubstitute(moduleInstance, randomSource);
+        if (randomSource.nextFloat() <= chance()) {
+            moduleInstance = findPossibleSubstitute(moduleInstance, randomSource);
+        }
         Map<String, ModuleInstance> submodules = new LinkedHashMap<>(moduleInstance.getSubModuleMap());
         for (var entry : submodules.entrySet()) {
             moduleInstance.setSubModule(entry.getKey(), randomizeModuleAndChildren(entry.getValue(), fallBackMaterial, randomSource));
@@ -84,11 +112,18 @@ public class ModuleSwapLootFunction implements LootItemFunction {
 
     ModuleInstance findPossibleSubstitute(ModuleInstance module, RandomSource randomSource) {
         // Collect all possible substitute modules
-        if (module.parent == null) {
-            //return module;
-        }
         List<ItemModule> possibleSubstitutes = RegistryInventory.modules.getFlatMap().values().stream()
                 .filter(m -> {
+                    if (whitelist().isPresent()) {
+                        if (!whitelist().get().contains(m.id())) {
+                            return false;
+                        }
+                    }
+                    if (blacklist().isPresent()) {
+                        if (blacklist().get().contains(m.id())) {
+                            return false;
+                        }
+                    }
                     Map<String, SlotProperty.ModuleSlot> testSlots = SlotProperty.getSlots(module);
                     Map<String, SlotProperty.ModuleSlot> slots = new LinkedHashMap<>(SlotProperty.getInstance().getData(m).orElse(new LinkedHashMap<>()));
                     for (String key : testSlots.keySet()) {
