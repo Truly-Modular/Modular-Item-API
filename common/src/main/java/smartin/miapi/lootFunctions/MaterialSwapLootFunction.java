@@ -33,12 +33,14 @@ import java.util.Optional;
 /**
  * @header Material Swap Loot Function
  * @path /data_types/loot_functions/material_swap
- * @description_start The `MaterialSwapLootFunction` is a loot function that randomizes the materials of a modular item when generated
- * as loot. This function compares the item’s materials with a specified material and replaces it with a new one based
- * on several configurable parameters. These parameters control the bounds, mining level, tier, hardness, and flexibility
- * factors that influence the selection of substitute materials. Additionally, the function can filter materials using
+ * @description_start The `MaterialSwapLootFunction` is a loot function
+ * that randomizes the materials of a modular item when generated
+ * as loot. This function compares the item’s materials with a specified material
+ * and replaces it with a new one based on several configurable parameters.
+ * These parameters control the bounds, mining level, tier, hardness, and flexibility
+ * factors that influence the selection of substitute materials.
+ * Additionally, the function can filter materials using
  * a whitelist or blacklist to limit or exclude certain materials from substitution.
- * <p>
  * This allows for very random items within the loot-pool that still retain roughly the same strength level
  * * Its full ID is ```"miapi:material_swap"```
  * @description_end
