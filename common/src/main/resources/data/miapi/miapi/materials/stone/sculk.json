@@ -10,6 +10,7 @@
     "density": 1.8,
     "flexibility": 0,
     "enchantability": 16,
+    "tier": 2,
     "durability": 111,
     "color": "E0D8AE",
     "color_palette": {

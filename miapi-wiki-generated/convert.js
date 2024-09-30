@@ -116,10 +116,14 @@ const path = require('path')
 // Entry point of the script
 main()
 function main() {
-	const rootDir = '../armory/armory-common/src/main/resources/data'
+	const armoryDir = '../armory/armory-common/src/main/resources/data'
+	const arsenalDir = '../arsenal/arsenal-common/src/main/resources/data'
+	const archeryDir = '../archery/archery-common/src/main/resources/data'
 	const jsonData = {}
 
-	readJsonFiles(rootDir, jsonData)
+	readJsonFiles(arsenalDir, jsonData)
+	readJsonFiles(archeryDir, jsonData)
+	readJsonFiles(armoryDir, jsonData)
 
 	fs.writeFileSync('output.json', JSON.stringify(jsonData, null, 2))
 	console.log('JSON file has been generated.')
@@ -135,10 +139,27 @@ function readJsonFiles(dir, jsonData = {}) {
 			readJsonFiles(filePath, jsonData)
 		} else if (file.endsWith('.json')) {
 			const content = fs.readFileSync(filePath, 'utf-8')
-			let result = convertOldToNew(JSON.parse(content))
-			fs.writeFileSync(filePath, JSON.stringify(result.newJson, null, 4))
-			if (result.issues.length > 0) {
-				console.log('file ' + filePath + ' has issues\n' + result.issues)
+			if (true) {
+				let result = content
+				result = result.replace('material:rainbow_pride_1', 'material:miapi:custom/rainbow/1')
+				result = result.replace('material:rainbow_pride_2', 'material:miapi:custom/rainbow/1')
+				result = result.replace('material:rainbow_pride_3', 'material:miapi:custom/rainbow/1')
+				result = result.replace('material:rainbow_pride_4', 'material:miapi:custom/rainbow/1')
+				result = result.replace('material:rainbow_pride_5', 'material:miapi:custom/rainbow/1')
+				result = result.replace('material:rainbow_pride_ace', 'material:miapi:custom/rainbow/flags/ace')
+				result = result.replace('material:rainbow_pride_bi', 'material:miapi:custom/rainbow/flags/bi')
+				result = result.replace('material:miapi:custom/rainbow/flags/1bi', 'material:miapi:custom/rainbow/flags/bi')
+				result = result.replace('material:rainbow_pride_gay', 'material:miapi:custom/rainbow/flags/gay')
+				result = result.replace('material:rainbow_pride_lesbian', 'material:miapi:custom/rainbow/flags/lesbian')
+				result = result.replace('material:rainbow_pride_nb', 'material:miapi:custom/rainbow/flags/nb')
+				result = result.replace('material:rainbow_pride_trans', 'material:miapi:custom/rainbow/flags/trans')
+				fs.writeFileSync(filePath, result)
+			} else {
+				let result = convertOldToNew(JSON.parse(content))
+				fs.writeFileSync(filePath, JSON.stringify(result.newJson, null, 4))
+				if (result.issues.length > 0) {
+					console.log('file ' + filePath + ' has issues\n' + result.issues)
+				}
 			}
 		}
 	})

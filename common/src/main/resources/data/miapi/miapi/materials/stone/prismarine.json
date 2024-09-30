@@ -7,11 +7,12 @@
     "density": 3,
     "flexibility": 0,
     "enchantability": 17,
+    "tier": 2,
     "durability": 131,
     "color": "78B5A9",
     "color_palette": {
         "type": "from_material_palette_image",
-        "location": "miapi:textures/miapi_materials/stone_prismarine.png"
+        "location": "miapi:miapi_materials/stone_prismarine"
     },
     "mining_speed": 4,
     "mining_level": "minecraft:incorrect_for_stone_tool",

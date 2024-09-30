@@ -25,6 +25,7 @@ import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.events.MiapiEvents;
+import smartin.miapi.lootFunctions.MaterialSwapLootFunction;
 import smartin.miapi.material.Material;
 import smartin.miapi.material.MaterialIcons;
 import smartin.miapi.material.palette.FallbackColorer;
@@ -35,6 +36,8 @@ import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static smartin.miapi.material.generated.TierManager.getEstimatedTier;
 
 public class GeneratedMaterial implements Material {
     ItemStack mainIngredient = ItemStack.EMPTY;
@@ -158,6 +161,7 @@ public class GeneratedMaterial implements Material {
             } else {
                 stats.put("flexibility", (double) (toolMaterial.getSpeed() / 4));
             }
+            stats.put("tier", (double) getEstimatedTier(toolMaterial.getIncorrectBlocksForDrops()));
             properties = GeneratedMaterialPropertyManager.setup(getID(), swordItem, axeItem, toolMaterials, Map.of());
             return true;
         }

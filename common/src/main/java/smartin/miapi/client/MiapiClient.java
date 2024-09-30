@@ -18,7 +18,6 @@ import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.packs.resources.ReloadableResourceManager;
 import net.minecraft.world.item.Item;
 import smartin.miapi.Miapi;
 import smartin.miapi.blocks.ModularWorkBenchRenderer;
@@ -33,14 +32,14 @@ import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.effects.CryoStatusEffect;
 import smartin.miapi.entity.ItemProjectileRenderer;
 import smartin.miapi.events.ClientEvents;
-import smartin.miapi.modules.MiapiPermissions;
-import smartin.miapi.modules.cache.CacheCommands;
-import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.material.Material;
 import smartin.miapi.material.MaterialCommand;
 import smartin.miapi.material.MaterialIcons;
 import smartin.miapi.material.MaterialProperty;
 import smartin.miapi.material.palette.MaterialRenderControllers;
+import smartin.miapi.modules.MiapiPermissions;
+import smartin.miapi.modules.cache.CacheCommands;
+import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.render.colorproviders.ColorProvider;
 import smartin.miapi.network.Networking;
 import smartin.miapi.registries.MiapiRegistry;
@@ -114,6 +113,7 @@ public class MiapiClient {
         ClientLifecycleEvent.CLIENT_SETUP.register(MiapiClient::clientSetup);
         ClientLifecycleEvent.CLIENT_STARTED.register(MiapiClient::clientStart);
         ClientLifecycleEvent.CLIENT_LEVEL_LOAD.register(MiapiClient::clientLevelLoad);
+
         ClientPlayerEvent.CLIENT_PLAYER_JOIN.register(player -> new Thread(() -> MiapiPermissions.getPerms(player)).start());
         ClientPlayerEvent.CLIENT_PLAYER_JOIN.register(player -> {
             ModularItemCache.discardCache();
@@ -128,7 +128,9 @@ public class MiapiClient {
                 }
             }
         });
-        ClientReloadShadersEvent.EVENT.register((resourceFactory, asd) -> ModularItemCache.discardCache());
+        ClientReloadShadersEvent.EVENT.register((resourceFactory, asd) -> {
+            ModularItemCache.discardCache();
+        });
         RegistryInventory.modularItems.addCallback((item -> {
             ModularModelPredicateProvider.registerModelOverride(item, Miapi.id("damage"), (stack, world, entity, seed) -> stack.isDamageableItem() && stack.getDamageValue() > 0 ? ((float) stack.getDamageValue() / stack.getMaxDamage()) : 0.0f);
             ModularModelPredicateProvider.registerModelOverride(item, Miapi.id("damaged"), (stack, world, entity, seed) -> stack.isDamaged() ? 1.0F : 0.0F);
@@ -146,6 +148,9 @@ public class MiapiClient {
         if (sodiumLoaded) {
             ClientEvents.HUD_RENDER.register((drawContext, deltaTick) -> MaterialSpriteManager.onHudRender(drawContext));
         }
+        //Minecraft client = Minecraft.getInstance();
+        //materialAtlasManager = new MaterialAtlasManager(client.getTextureManager());
+        //ReloadListenerRegistry.register(PackType.CLIENT_RESOURCES, materialAtlasManager);
     }
 
     @Environment(EnvType.CLIENT)
@@ -198,9 +203,6 @@ public class MiapiClient {
     }
 
     protected static void clientStart(Minecraft client) {
-        materialAtlasManager = new MaterialAtlasManager(client.getTextureManager());
-        ((ReloadableResourceManager) client.getResourceManager()).registerReloadListener(materialAtlasManager);
-        //((ReloadableResourceManagerImpl) mc.getResourceManager()).registerReloader(new AltModelAtlasManager(mc.getTextureManager()));
         CryoStatusEffect.setupOnClient();
     }
 

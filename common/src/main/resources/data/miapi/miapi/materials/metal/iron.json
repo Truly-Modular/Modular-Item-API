@@ -7,6 +7,7 @@
   "durability": 250,
   "armor_durability_offset": -10,
   "enchantability": 14,
+  "tier": 3,
   "color": "FCFCFC",
   "color_palette": {
     "type": "grayscale_map",

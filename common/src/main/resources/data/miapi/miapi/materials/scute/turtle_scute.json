@@ -11,6 +11,7 @@
         "scute"
     ],
     "hardness": 5,
+    "tier": 2,
     "density": 1,
     "flexibility": 0,
     "durability": 95,

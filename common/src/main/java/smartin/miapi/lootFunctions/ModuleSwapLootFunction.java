@@ -24,10 +24,7 @@ import smartin.miapi.modules.properties.ItemIdProperty;
 import smartin.miapi.modules.properties.slot.SlotProperty;
 import smartin.miapi.registries.RegistryInventory;
 
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * @header Module Swap Loot Function
@@ -152,7 +149,7 @@ public record ModuleSwapLootFunction(
         // Select a random substitute from the list
         int randomIndex = randomSource.nextInt(possibleSubstitutes.size());
         ModuleInstance moduleInstance = new ModuleInstance(possibleSubstitutes.get(randomIndex));
-        moduleInstance.moduleData = module.moduleData;
+        moduleInstance.moduleData = new HashMap<>(module.moduleData);
         moduleInstance.subModules = module.subModules;
         moduleInstance.clearCaches();
         return moduleInstance;

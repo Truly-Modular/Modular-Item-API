@@ -9,6 +9,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FastColor;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.Nullable;
+import smartin.miapi.Miapi;
 import smartin.miapi.client.MiapiClient;
 import smartin.miapi.client.atlas.MaterialAtlasManager;
 import smartin.miapi.client.atlas.MaterialSpriteManager;
@@ -54,6 +55,20 @@ public class PaletteAtlasBackedColorer extends SpritePixelReplacer {
         setupSprite(id);
     }
 
+    public static SpritePixelReplacer createColorer(Material material, JsonElement json) {
+        PaletteAtlasBackedColorer colorer = new PaletteAtlasBackedColorer(material, json);
+        TextureAtlasSprite sprite = MiapiClient.materialAtlasManager.getMaterialSprite(colorer.getSpriteId());
+        if (sprite == null) {
+            Miapi.LOGGER.error("could not locate sprite " + colorer.spriteId);
+            return new FallbackColorer(material);
+        }
+        if (sprite.contents().width() < 255) {
+            Miapi.LOGGER.error("loaded sprite does not have the right dimmensions! It needs a width of 255" + sprite.contents().width());
+            return new FallbackColorer(material);
+        }
+        return colorer;
+    }
+
     @Override
     public int getReplacementColor(int pixelX, int pixelY, int previousAbgr) {
         int red = FastColor.ABGR32.red(previousAbgr);
@@ -62,10 +77,9 @@ public class PaletteAtlasBackedColorer extends SpritePixelReplacer {
 
     public void setupSprite(ResourceLocation id) {
         spriteId = id;
-        MiapiClient.materialAtlasManager.addSpriteToLoad(id, c -> {
-            contents = c;
-            isAnimated = isAnimatedSprite(c);
-        });
+        TextureAtlasSprite sprite = MiapiClient.materialAtlasManager.getMaterialSprite(getSpriteId());
+        contents = sprite.contents();
+        isAnimated = isAnimatedSprite(contents);
     }
 
     @Nullable

@@ -175,7 +175,7 @@ public class ModuleInstance {
     public ModuleInstance(ResourceLocation module, Map<String, ModuleInstance> subModules, Map<String, JsonElement> data) {
         this.moduleID  = module;
         this.subModules = subModules;
-        this.moduleData = data;
+        this.moduleData = new HashMap<>(data);
         subModules.values().forEach(subModule -> subModule.parent = this);
         this.module = RegistryInventory.modules.get(module.toString());
         if (module == null) {

@@ -15,19 +15,6 @@ import smartin.miapi.modules.properties.enchanment.AllowedEnchantments;
 @Mixin(PlatformModularItemMethods.class)
 public interface PlatformModularItemMethodsMixin extends FabricItem {
 
-    /*
-    default Multimap<EntityAttribute, EntityAttributeModifier> getAttributeModifiers(ItemStack stack, EquipmentSlot slot) {
-        Multimap<EntityAttribute, EntityAttributeModifier> attributeModifiers = ArrayListMultimap.create();
-        ITEM_STACK_ATTRIBUTE_EVENT.invoker().adjust(new MiapiEvents.ItemStackAttributeEventHolder(stack, slot, attributeModifiers));
-        return attributeModifiers;
-    }
-
-    default boolean isSuitableFor(ItemStack stack, BlockState state) {
-        return MiningLevelProperty.isSuitable(stack, state);
-    }
-
-     */
-
     @Override
     default boolean canBeEnchantedWith(ItemStack stack, Holder<Enchantment> enchantment, EnchantingContext context) {
         return AllowedEnchantments.isAllowed(stack, enchantment, context == EnchantingContext.PRIMARY

@@ -9,12 +9,13 @@
     "hardness": 3,
     "density": 2,
     "flexibility": 0,
+    "tier": 1,
     "enchantability": 11,
     "durability": 37,
     "color": "642828",
     "color_palette": {
         "type": "from_material_palette_image",
-        "location": "miapi:textures/miapi_materials/stone_magma.png"
+        "location": "miapi:miapi_materials/stone_magma"
     },
     "mining_speed": 2.5,
     "mining_level": "minecraft:incorrect_for_wooden_tool",

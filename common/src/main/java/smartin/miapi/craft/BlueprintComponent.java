@@ -21,6 +21,7 @@ import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.material.AllowedMaterial;
 import smartin.miapi.modules.properties.slot.AllowedSlots;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -132,7 +133,7 @@ public class BlueprintComponent {
 
     public void apply(ModuleInstance old) {
         old.module = this.toMerge.module;
-        old.moduleData = this.toMerge.moduleData;
+        old.moduleData = new HashMap<>(this.toMerge.moduleData);
         this.toMerge.getSubModuleMap().forEach(old::setSubModule);
     }
 

@@ -9,6 +9,7 @@
     "durability": 32,
     "armor_durability_offset": 100,
     "enchantability": 22,
+    "tier": 3,
     "axe_damage": -2,
     "color": "FFD700",
     "color_palette": {

@@ -9,7 +9,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
-import smartin.miapi.client.MiapiClient;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ModuleDataPropertiesManager;
@@ -93,7 +92,7 @@ public class MaterialProperty extends CodecProperty<ResourceLocation> {
             if (isClient) {
                 Minecraft.getInstance().execute(() -> {
                     RenderSystem.assertOnRenderThread();
-                    MiapiClient.materialAtlasManager.apply(null, Minecraft.getInstance().getProfiler());
+                    //MiapiClient.materialAtlasManager.apply(null, Minecraft.getInstance().getProfiler());
                 });
 
             }

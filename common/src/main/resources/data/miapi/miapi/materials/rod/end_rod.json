@@ -9,6 +9,7 @@
   "flexibility": 0.5,
   "durability": 587,
   "enchantability": 21,
+  "tier": 3,
   "color": "A39983",
   "mining_speed": 5,
   "mining_level": "minecraft:incorrect_for_wooden_tool",

@@ -9,6 +9,7 @@
   "flexibility": 3,
   "enchantability": 15,
   "durability": 59,
+  "tier": 1,
   "color": "8B6B45",
   "color_palette": {
     "type": "grayscale_map",

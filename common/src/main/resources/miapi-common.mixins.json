@@ -31,6 +31,8 @@
         "ShovelItemAccessor",
         "SmithingScreenHandlerAccessor",
         "SmithingTransformRecipeAccessor",
+        "TextureAtlasAccessor",
+        "TextureAtlasHolderAccessor",
         "ThrowablePotionItemAccessor"
     ],
     "client": [
@@ -43,6 +45,7 @@
         "client.ItemRendererAccessor",
         "client.ItemRendererMixin",
         "client.LivingEntityRendererAccessor",
+        "client.MinecraftMixin",
         "client.ModelLoaderAccessor",
         "client.ModelLoaderInterfaceAccessor",
         "client.ModelLoaderMixin",

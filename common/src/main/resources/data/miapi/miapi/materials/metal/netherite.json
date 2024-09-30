@@ -3,11 +3,15 @@
     "groups": [
         "smithing"
     ],
+    "hidden_groups": [
+        "netherite"
+    ],
     "hardness": 7,
     "density": 2.8,
     "flexibility": 3,
     "enchantability": 15,
     "durability": 2031,
+    "tier": 5,
     "armor_durability_offset": -1439,
     "color": "695e5f",
     "color_palette": {

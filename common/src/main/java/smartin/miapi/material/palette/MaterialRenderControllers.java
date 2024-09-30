@@ -50,7 +50,7 @@ public class MaterialRenderControllers {
         creators.put("overlay_texture", (json, material) -> new SpriteOverlayer(material, json));
         creators.put("image_generated", (json, material) -> GrayscalePaletteColorer.createForImageJson(material, json,false));
         creators.put("image_generated_item", (json, material) -> GrayscalePaletteColorer.createForImageJson(material, json,true));
-        creators.put("from_material_palette_image", (json, material) -> new PaletteAtlasBackedColorer(material, json));
+        creators.put("from_material_palette_image", (json, material) -> PaletteAtlasBackedColorer.createColorer(material, json));
         creators.put("layered_mask", (json, material) -> MaskColorer.fromJson(material, json));
         /*creators.put("end_portal", (json, material) -> new MaterialRenderController() {
             @Override

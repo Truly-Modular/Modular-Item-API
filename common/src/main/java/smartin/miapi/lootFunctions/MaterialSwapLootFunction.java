@@ -149,6 +149,11 @@ public record MaterialSwapLootFunction(
         if (currentMaterial == null) {
             return module;
         }
+        if (AllowedMaterial.property.getData(module).isPresent() &&
+            !AllowedMaterial.property.getData(module).get().isValid(fallBackMaterial)) {
+            fallBackMaterial = currentMaterial;
+        }
+        Material finalFallBackMaterial = fallBackMaterial;
         List<Material> possibleSubstitutes = MaterialProperty.materials.values().stream()
                 .filter(m -> {
                     if (m.getID().toString().contains("custom")) {
@@ -168,7 +173,7 @@ public record MaterialSwapLootFunction(
                         !AllowedMaterial.property.getData(module).get().isValid(m)) {
                         return false;
                     }
-                    double difToFallback = isHigher(fallBackMaterial, m);
+                    double difToFallback = isHigher(finalFallBackMaterial, m);
                     if (!(difToFallback > lowerBounds && difToFallback < upperBounds)) {
                         return false;
                     }
@@ -204,7 +209,7 @@ public record MaterialSwapLootFunction(
 
         // Calculate tier difference, multiply by a factor of 2
         double tierDiff = isHigher(material, other, "tier", false);
-        difference += tierDiff * 2 * tierFactor;
+        difference += tierDiff * 0.5 * tierFactor;
 
         // Calculate hardness difference
         double hardnessDiff = isHigher(material, other, "hardness", true);
@@ -232,7 +237,7 @@ public record MaterialSwapLootFunction(
         return 0.0;
     }
 
-    public int getTagSize(TagKey<Block> tag) {
+    public static int getTagSize(TagKey<Block> tag) {
         return BuiltInRegistries.BLOCK.getTag(tag).map(holders -> (int) holders.stream().count()).orElse(0);
     }
 }
