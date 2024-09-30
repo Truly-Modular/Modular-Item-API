@@ -1,4 +1,4 @@
-package smartin.miapi.item.modular.items.tool_likes;
+package smartin.miapi.item.modular.items.tools;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;

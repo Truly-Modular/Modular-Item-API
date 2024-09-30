@@ -1,4 +1,4 @@
-package smartin.miapi.item.modular.items.tool_likes;
+package smartin.miapi.item.modular.items.tools;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -17,7 +17,6 @@ import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.item.FakeItemstackReferenceProvider;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.PlatformModularItemMethods;
-import smartin.miapi.item.modular.items.ModularSetableToolMaterial;
 import smartin.miapi.item.modular.items.ModularToolMaterial;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;
 import smartin.miapi.modules.properties.DisplayNameProperty;
@@ -29,31 +28,28 @@ import smartin.miapi.modules.properties.mining.MiningLevelProperty;
 
 import java.util.List;
 
-public class ModularPickaxe extends PickaxeItem implements PlatformModularItemMethods, ModularItem, ModularSetableToolMaterial {
+public class ModularAxe extends AxeItem implements PlatformModularItemMethods, ModularItem {
     public Tier currentFakeToolmaterial = ModularToolMaterial.toolMaterial;
-    public ModularPickaxe(Properties settings) {
+
+    public ModularAxe(Properties settings) {
         super(new ModularToolMaterial(), settings.stacksTo(1).durability(500));
     }
 
-    public ModularPickaxe() {
+    public ModularAxe() {
         super(new ModularToolMaterial(), new Properties().stacksTo(1).durability(500).rarity(Rarity.COMMON));
+    }
+
+    public Tier getTier() {
+        if (MiapiConfig.INSTANCE.server.other.looseToolMaterial) {
+            return currentFakeToolmaterial;
+        }
+        MaceItem maceItem;
+        return super.getTier();
     }
 
     @Override
     public int getBarWidth(ItemStack stack) {
         return Math.round(13.0F - (float) stack.getDamageValue() * 13.0F / ModularItem.getDurability(stack));
-    }
-
-    public Tier getTier() {
-        if(MiapiConfig.INSTANCE.server.other.looseToolMaterial){
-            return currentFakeToolmaterial;
-        }
-        return super.getTier();
-    }
-
-    @Override
-    public void setToolMaterial(Tier toolMaterial){
-        this.currentFakeToolmaterial = toolMaterial;
     }
 
     @Override
@@ -93,7 +89,11 @@ public class ModularPickaxe extends PickaxeItem implements PlatformModularItemMe
         } else {
             stack.hurtAndBreak(2, attacker, EquipmentSlot.MAINHAND);
         }
+        //MiapiEvents.LIVING_HURT.invoker().hurt(new MiapiEvents.LivingHurtEvent());
         return true;
+    }
+
+    public void postHurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
     }
 
     @Override
@@ -142,8 +142,8 @@ public class ModularPickaxe extends PickaxeItem implements PlatformModularItemMe
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, net.minecraft.world.item.Item.TooltipContext tooltipContext, List<Component> list, TooltipFlag tooltipType) {
-        LoreProperty.appendLoreTop(stack, list, tooltipContext, tooltipType);
+    public void appendHoverText(ItemStack itemStack, net.minecraft.world.item.Item.TooltipContext tooltipContext, List<Component> list, TooltipFlag tooltipType) {
+        LoreProperty.appendLoreTop(itemStack, list, tooltipContext, tooltipType);
     }
 
     @Override

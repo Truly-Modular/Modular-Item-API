@@ -1,4 +1,4 @@
-package smartin.miapi.item.modular.items.tool_likes;
+package smartin.miapi.item.modular.items.tools;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -9,16 +9,16 @@ import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.UseAnim;
+import net.minecraft.world.item.*;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.item.FakeItemstackReferenceProvider;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.PlatformModularItemMethods;
+import smartin.miapi.item.modular.items.ModularSetableToolMaterial;
+import smartin.miapi.item.modular.items.ModularToolMaterial;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;
 import smartin.miapi.modules.properties.DisplayNameProperty;
 import smartin.miapi.modules.properties.LoreProperty;
@@ -29,13 +29,27 @@ import smartin.miapi.modules.properties.mining.MiningLevelProperty;
 
 import java.util.List;
 
-public class ModularWeapon extends Item implements PlatformModularItemMethods, ModularItem {
-    public ModularWeapon() {
-        this(new Properties(), true);
+public class ModularShovel extends ShovelItem implements PlatformModularItemMethods, ModularItem, ModularSetableToolMaterial {
+    public Tier currentFakeToolmaterial = ModularToolMaterial.toolMaterial;
+
+    public ModularShovel(Properties settings) {
+        super(new ModularToolMaterial(), settings.stacksTo(1).durability(500));
     }
 
-    public ModularWeapon(Properties settings, boolean withDefaultSettings) {
-        super(withDefaultSettings ? settings.stacksTo(1).durability(500) : settings);
+    public ModularShovel() {
+        super(new ModularToolMaterial(), new Properties().stacksTo(1).durability(500).rarity(Rarity.COMMON));
+    }
+
+    public Tier getTier() {
+        if(MiapiConfig.INSTANCE.server.other.looseToolMaterial){
+            return currentFakeToolmaterial;
+        }
+        return super.getTier();
+    }
+
+    @Override
+    public void setToolMaterial(Tier toolMaterial){
+        this.currentFakeToolmaterial = toolMaterial;
     }
 
     @Override

@@ -9,7 +9,7 @@ import smartin.miapi.item.modular.items.armor.ModularHelmet;
 import smartin.miapi.item.modular.items.armor.ModularLeggings;
 import smartin.miapi.item.modular.items.bows.ModularArrow;
 import smartin.miapi.item.modular.items.bows.ModularCrossbow;
-import smartin.miapi.item.modular.items.tool_likes.*;
+import smartin.miapi.item.modular.items.tools.*;
 import smartin.miapi.registries.RegistryInventory;
 
 public class ModularWeaponBuilder extends ItemBuilder {
