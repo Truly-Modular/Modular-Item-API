@@ -1,69 +1,98 @@
 package smartin.miapi.forge.mixin.item;
 
-import com.google.common.collect.Multimap;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.attribute.EntityAttribute;
-import net.minecraft.entity.attribute.EntityAttributeModifier;
-import net.minecraft.item.ItemStack;
-import net.minecraftforge.common.ToolAction;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.monster.piglin.PiglinAi;
+import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.common.ToolAction;
+import net.neoforged.neoforge.common.ToolActions;
+import net.neoforged.neoforge.common.extensions.IItemExtension;
 import org.spongepowered.asm.mixin.Mixin;
-import smartin.miapi.forge.compat.ModularItemInject;
-import smartin.miapi.item.modular.items.*;
+import smartin.miapi.item.modular.ModularItem;
+import smartin.miapi.item.modular.PlatformModularItemMethods;
+import smartin.miapi.item.modular.items.armor.ModularElytraItem;
+import smartin.miapi.modules.abilities.toolabilities.AxeAbility;
+import smartin.miapi.modules.abilities.toolabilities.HoeAbility;
+import smartin.miapi.modules.abilities.toolabilities.ShovelAbility;
+import smartin.miapi.modules.abilities.util.AbilityMangerProperty;
+import smartin.miapi.modules.abilities.util.ItemUseAbility;
+import smartin.miapi.modules.properties.armor.CanWalkOnSnow;
+import smartin.miapi.modules.properties.armor.EquipmentSlotProperty;
+import smartin.miapi.modules.properties.armor.IsPiglinGold;
+import smartin.miapi.modules.properties.enchanment.EnchantAbilityProperty;
+import smartin.miapi.modules.properties.mining.MiningLevelProperty;
+
+import java.util.function.Predicate;
 
 @Mixin(
         value = {
-                ExampleModularItem.class,
-                ExampleModularStrackableItem.class,
-                ModularArrow.class,
-                ModularAxe.class,
-                ModularBoomerangItem.class,
-                ModularBoots.class,
-                ModularBow.class,
-                ModularChestPlate.class,
-                ModularCrossbow.class,
-                ModularElytraItem.class,
-                ModularHelmet.class,
-                ModularHoe.class,
-                ModularLeggings.class,
-                ModularPickaxe.class,
-                ModularShovel.class,
-                ModularSword.class,
-                ModularWeapon.class
+                PlatformModularItemMethods.class
         })
-public abstract class ModularItemMixin implements ModularItemInject {
-
-    public boolean makesPiglinsNeutral(ItemStack stack, LivingEntity wearer) {
-        return makesPiglinsNeutralModular(stack, wearer);
+public interface ModularItemMixin extends IItemExtension {
+    default boolean isPiglinCurrency(ItemStack stack) {
+        return stack.getItem() == PiglinAi.BARTERING_ITEM;
     }
 
-
-    public EquipmentSlot getEquipmentSlot(ItemStack stack) {
-        return getEquipmentSlotModular(stack);
+    default boolean makesPiglinsNeutral(ItemStack stack, LivingEntity wearer) {
+        return IsPiglinGold.isPiglinGoldItem(stack);
     }
 
-
-    public int getMaxDamage(ItemStack stack) {
-        return getMaxDamageModular(stack);
-
+    default boolean canEquip(ItemStack stack, EquipmentSlot armorType, LivingEntity entity) {
+        return entity.getEquipmentSlotForItem(stack) == armorType || EquipmentSlotProperty.getSlot(stack).test(armorType);
     }
 
-    public boolean isCorrectToolForDrops(ItemStack stack, BlockState state) {
-        return isCorrectToolForDropsModular(stack, state);
+    default boolean canPerformAction(ItemStack stack, ToolAction toolAction) {
+        if (ModularItem.isModularItem(stack)) {
+            if (toolAction.equals(ToolActions.AXE_DIG)) {
+                return canMine(stack, "axe");
+            }
+            if (toolAction.equals(ToolActions.PICKAXE_DIG)) {
+                return canMine(stack, "pickaxe");
+            }
+            if (toolAction.equals(ToolActions.SHOVEL_DIG)) {
+                return canMine(stack, "shovel");
+            }
+            if (toolAction.equals(ToolActions.HOE_DIG)) {
+                return canMine(stack, "hoe");
+            }
+            if (toolAction.equals(ToolActions.SHEARS_DIG)) {
+                return canMine(stack, "shear");
+            }
+            if (toolAction.equals(ToolActions.SWORD_DIG)) {
+                return canMine(stack, "sword");
+            }
+            if (ToolActions.DEFAULT_AXE_ACTIONS.contains(toolAction)) {
+                return hasRightClickBehaviour(stack, AxeAbility.class::isInstance);
+            }
+            if (ToolActions.DEFAULT_HOE_ACTIONS.contains(toolAction)) {
+                return hasRightClickBehaviour(stack, HoeAbility.class::isInstance);
+            }
+            if (ToolActions.DEFAULT_SHOVEL_ACTIONS.contains(toolAction)) {
+                return hasRightClickBehaviour(stack, ShovelAbility.class::isInstance);
+            }
+        }
+        return false;
     }
 
-
-    public boolean canPerformAction(ItemStack stack, ToolAction toolAction) {
-        return canPerformActionModular(stack, toolAction);
+    private static boolean canMine(ItemStack stack, String type) {
+        var optional = MiningLevelProperty.property.getData(stack);
+        return optional.map(stringMiningRuleMap -> stringMiningRuleMap.containsKey(type)).orElse(false);
     }
 
-
-    public int getEnchantmentValue(ItemStack stack) {
-        return getEnchantmentValueModular(stack);
+    private static boolean hasRightClickBehaviour(ItemStack stack, Predicate<? super ItemUseAbility> predicate) {
+        var optional = AbilityMangerProperty.property.getData(stack);
+        return optional.map(itemUseAbilityObjectMap -> itemUseAbilityObjectMap.keySet().stream().anyMatch(predicate)).orElse(false);
     }
 
-    public Multimap<EntityAttribute, EntityAttributeModifier> getAttributeModifiers(EquipmentSlot slot, ItemStack stack) {
-        return getAttributeModifiersModular(slot, stack);
+    default int getEnchantmentValue(ItemStack stack) {
+        return (int) EnchantAbilityProperty.getEnchantAbility(stack);
+    }
+
+    default boolean canElytraFly(ItemStack stack, LivingEntity entity) {
+        return stack.getItem() instanceof ModularElytraItem;
+    }
+
+    default boolean canWalkOnPowderedSnow(ItemStack stack, LivingEntity wearer) {
+        return CanWalkOnSnow.canSnowWalk(stack);
     }
 }

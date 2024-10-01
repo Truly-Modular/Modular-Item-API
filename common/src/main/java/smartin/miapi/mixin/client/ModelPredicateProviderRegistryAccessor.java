@@ -12,7 +12,7 @@ public interface ModelPredicateProviderRegistryAccessor {
 
     @Invoker("register")
     static void register(Item item, ResourceLocation id, ClampedItemPropertyFunction provider) {
-        throw new AssertionError();
+        //throw new AssertionError();
     }
 
 }

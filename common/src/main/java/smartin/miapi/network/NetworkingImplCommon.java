@@ -11,7 +11,6 @@ import smartin.miapi.network.modern.ModernNetworking;
 import smartin.miapi.network.modern.payload.C2SMiapiPayload;
 import smartin.miapi.network.modern.payload.CustomPayload;
 import smartin.miapi.network.modern.payload.S2CMiapiPayload;
-import smartin.miapi.network.payload.CustomDataPayload;
 
 import java.util.UUID;
 
@@ -23,17 +22,17 @@ public class NetworkingImplCommon extends NetworkingImpl {
         if (Platform.getEnv().equals(EnvType.CLIENT)) {
             //NetworkManager.registerS2CPayloadType(CustomDataPayload.TYPE, CustomDataPayload.STREAM_CODEC, List.of());
         }
-        NetworkManager.registerReceiver(NetworkManager.Side.S2C, CustomDataPayload.TYPE, CustomDataPayload.STREAM_CODEC, (value, context) -> {
+        //NetworkManager.registerReceiver(NetworkManager.Side.S2C, CustomDataPayload.TYPE, CustomDataPayload.STREAM_CODEC, (value, context) -> {
 
-        });
+        //});
         ModernNetworking.setup();
     }
 
     public void setupServer() {
         //NetworkManager.registerS2CPayloadType(CustomDataPayload.TYPE, CustomDataPayload.STREAM_CODEC, List.of());
-        NetworkManager.registerReceiver(NetworkManager.Side.C2S, CustomDataPayload.TYPE, CustomDataPayload.STREAM_CODEC, (value, context) -> {
+        //NetworkManager.registerReceiver(NetworkManager.Side.C2S, CustomDataPayload.TYPE, CustomDataPayload.STREAM_CODEC, (value, context) -> {
 
-        });
+        //});
     }
 
 

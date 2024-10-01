@@ -106,7 +106,7 @@ public class MiapiClient {
             }
         });
 
-        GlintShader.registerShaders();
+        //GlintShader.registerShaders();
         MaterialRenderControllers.setup();
         MaterialIcons.setup();
         ColorProvider.setup();

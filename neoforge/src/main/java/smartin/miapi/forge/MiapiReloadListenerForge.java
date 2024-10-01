@@ -1,96 +1,109 @@
 package smartin.miapi.forge;
 
 import com.google.gson.JsonObject;
-import net.minecraft.resource.Resource;
-import net.minecraft.resource.ResourceManager;
-import net.minecraft.resource.SinglePreparationResourceReloader;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.profiler.Profiler;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.resources.PreparableReloadListener;
+import net.minecraft.server.packs.resources.Resource;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.util.profiling.ProfilerFiller;
 import smartin.miapi.Miapi;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.modules.conditions.ConditionManager;
 
 import java.io.BufferedReader;
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 
-public class MiapiReloadListenerForge extends SinglePreparationResourceReloader<Map<String,String>> {
+public class MiapiReloadListenerForge implements PreparableReloadListener {
+    Supplier<RegistryAccess> registryAccess;
     static long timeStart;
 
-    protected void apply(Map<String, String> prepared, ResourceManager manager, Profiler profiler) {
-        Map < String, String> dataMap = new HashMap<>((Map) prepared);
-        Map<String, String> filteredMap = new HashMap<>();
-        dataMap.forEach((key, value) -> {
-            if (!key.endsWith(".json")) {
-                filteredMap.put(key, value);
-                return;
-            }
-            try {
-                JsonObject element = Miapi.gson.fromJson(value, JsonObject.class);
-                if (!element.has("load_condition")) {
-                    filteredMap.put(key, value);
-                    return;
-                }
-                boolean allowed = ConditionManager.get(element.get("load_condition")).isAllowed(new ConditionManager.ConditionContext() {
-                    @Override
-                    public ConditionManager.ConditionContext copy() {
-                        return this;
-                    }
-
-                    @Override
-                    public List<Text> getReasons() {
-                        return new ArrayList<>();
-                    }
-                });
-                if (allowed) {
-                    element.remove("load_condition");
-                    Miapi.LOGGER.info("redid " + key);
-                    filteredMap.put(key, Miapi.gson.toJson(element));
-                }
-            } catch (Exception e) {
-                filteredMap.put(key, value);
-            }
-        });
-
-
-        ReloadEvents.DataPackLoader.trigger(filteredMap);
-        ReloadEvents.MAIN.fireEvent(false);
-        ReloadEvents.END.fireEvent(false);
-        Miapi.LOGGER.info("Server load took " + (double) (System.nanoTime() - timeStart) / 1000 / 1000 + " ms");
-        ReloadEvents.reloadCounter--;
-        if (Miapi.server != null) {
-            Miapi.server.getPlayerManager().getPlayerList().forEach(ReloadEvents::triggerReloadOnClient);
-        }
+    public MiapiReloadListenerForge(Supplier<RegistryAccess> registryAccess) {
+        this.registryAccess = registryAccess;
     }
 
-    @Override
-    protected Map<String, String> prepare(ResourceManager manager, Profiler profiler) {
+    public CompletableFuture load(ResourceManager manager, ProfilerFiller profiler, Executor executor) {
         ReloadEvents.reloadCounter++;
         timeStart = System.nanoTime();
-        ReloadEvents.START.fireEvent(false);
-        Map<String, String> data = new LinkedHashMap<>();
+        ReloadEvents.START.fireEvent(false, registryAccess.get());
+        Map<ResourceLocation, String> data = new LinkedHashMap<>();
 
         ReloadEvents.syncedPaths.forEach((modID, dataPaths) -> {
             dataPaths.forEach(dataPath -> {
-                Map<Identifier, List<Resource>> map = manager.findAllResources(dataPath, (fileName) -> true);
+                Map<ResourceLocation, List<Resource>> map = manager.listResourceStacks(dataPath, (fileName) -> true);
                 map.forEach((identifier, resources) -> {
-                    if (identifier.getNamespace().equals(modID)) {
-                        resources.forEach(resource -> {
-                            try {
-                                BufferedReader reader = resource.getReader();
-                                String dataString = reader.lines().collect(Collectors.joining());
-                                String fullPath = identifier.getPath();
-                                data.put(fullPath, dataString);
-                            } catch (Exception e) {
-                                Miapi.LOGGER.warn("Error Loading Resource" + identifier + " " + resources);
-                            }
-                        });
-                    }
+                    resources.forEach(resource -> {
+                        try {
+                            BufferedReader reader = resource.openAsReader();
+                            String dataString = reader.lines().collect(Collectors.joining());
+                            data.put(identifier, dataString);
+                        } catch (Exception e) {
+                            Miapi.LOGGER.warn("Error Loading Resource" + identifier + " " + resources);
+                        }
+                    });
                 });
             });
         });
-        return data;
+        return CompletableFuture.completedFuture(data);
+    }
+
+    public CompletableFuture<Void> apply(Object data, ResourceManager manager, ProfilerFiller profiler, Executor executor) {
+        return CompletableFuture.runAsync(() -> {
+            Map<ResourceLocation, String> dataMap = new HashMap<>((Map) data);
+            Map<ResourceLocation, String> filteredMap = new HashMap<>();
+            dataMap.forEach((key, value) -> {
+                if (!key.getPath().endsWith(".json")) {
+                    filteredMap.put(key, value);
+                    return;
+                }
+                try {
+                    JsonObject element = Miapi.gson.fromJson(value, JsonObject.class);
+                    if (!element.has("load_condition")) {
+                        filteredMap.put(key, value);
+                        return;
+                    }
+                    boolean allowed = ConditionManager.get(element.get("load_condition")).isAllowed(new ConditionManager.ConditionContext() {
+                        @Override
+                        public ConditionManager.ConditionContext copy() {
+                            return this;
+                        }
+                    });
+                    if (allowed) {
+                        element.remove("load_condition");
+                        Miapi.LOGGER.info("redid " + key);
+                        filteredMap.put(key, Miapi.gson.toJson(element));
+                    }
+                } catch (Exception e) {
+                    filteredMap.put(key, value);
+                }
+            });
+
+
+            ReloadEvents.DataPackLoader.trigger(filteredMap);
+            ReloadEvents.MAIN.fireEvent(false, registryAccess.get());
+            ReloadEvents.END.fireEvent(false, registryAccess.get());
+            Miapi.LOGGER.info("Server load took " + (double) (System.nanoTime() - timeStart) / 1000 / 1000 + " ms");
+            if (Miapi.server != null) {
+                Miapi.server.getPlayerList().getPlayers().forEach(ReloadEvents::triggerReloadOnClient);
+            }
+            ReloadEvents.reloadCounter--;
+        });
+    }
+
+    @Override
+    public CompletableFuture<Void> reload(PreparableReloadListener.PreparationBarrier preparationBarrier, ResourceManager resourceManager, ProfilerFiller preparationsProfiler, ProfilerFiller reloadProfiler, Executor backgroundExecutor, Executor gameExecutor) {
+        return load(resourceManager, preparationsProfiler, backgroundExecutor)
+                .thenCompose(preparationBarrier::wait)
+                .thenAcceptAsync(a -> {
+                    apply(a, resourceManager, reloadProfiler, gameExecutor);
+                });
     }
 }

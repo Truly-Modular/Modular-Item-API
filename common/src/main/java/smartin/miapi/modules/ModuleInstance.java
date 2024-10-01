@@ -395,7 +395,7 @@ public class ModuleInstance {
             this.clearCaches();
         }
         //stack.update(ModuleInstance.MODULE_INSTANCE_COMPONENT, this, (component) -> this);
-        stack.set(ModuleInstance.MODULE_INSTANCE_COMPONENT, this);
+        stack.set(ModuleInstance.MODULE_INSTANCE_COMPONENT, this.copy());
     }
 
     /**
@@ -607,4 +607,8 @@ public class ModuleInstance {
         return true; // All checks passed, the objects are deeply equal
     }
 
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
 }

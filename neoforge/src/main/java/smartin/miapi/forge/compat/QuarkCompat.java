@@ -1,18 +1,9 @@
 package smartin.miapi.forge.compat;
 
-import com.redpxnda.nucleus.util.Color;
-import dev.architectury.event.EventResult;
-import net.minecraft.item.ItemStack;
-import org.violetmoon.quark.content.tools.base.RuneColor;
-import org.violetmoon.quark.content.tools.module.ColorRunesModule;
-import smartin.miapi.modules.ItemModule;
-import smartin.miapi.modules.properties.GlintProperty;
-
-import java.util.concurrent.atomic.AtomicReference;
-
 public class QuarkCompat {
 
     public static void setup() {
+        /*
         GlintProperty.GLINT_RESOLVE.register(new GlintProperty.GlintGetter() {
             @Override
             public EventResult get(ItemStack itemStack, ItemModule.ModuleInstance moduleInstance, AtomicReference<GlintProperty.GlintSettings> currentSettings) {
@@ -64,5 +55,7 @@ public class QuarkCompat {
                 return EventResult.pass();
             }
         });
+
+         */
     }
 }

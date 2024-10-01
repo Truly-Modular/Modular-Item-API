@@ -1,4 +1,4 @@
-package smartin.miapi.mixin.client;
+package smartin.miapi.forge.mixin;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.model.HumanoidModel;
@@ -16,6 +16,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import smartin.miapi.client.atlas.ArmorModelManager;
 import smartin.miapi.item.modular.VisualModularItem;
+import smartin.miapi.mixin.client.FeatureRendererAccessor;
 
 @Mixin(value = HumanoidArmorLayer.class, priority = 700)
 public abstract class ArmorFeatureRendererMixin<T extends LivingEntity, M extends HumanoidModel<T>, A extends HumanoidModel<T>> extends RenderLayer<T, M> {
@@ -38,6 +39,6 @@ public abstract class ArmorFeatureRendererMixin<T extends LivingEntity, M extend
     @Unique
     private void renderPieces(PoseStack matrices, MultiBufferSource vertexConsumers, int light, EquipmentSlot armorSlot, ItemStack itemStack, T entity, A outerModel, RenderLayerParent context) {
         this.getParentModel().copyPropertiesTo(outerModel);
-        ArmorModelManager.renderArmorPiece(matrices, vertexConsumers, light, armorSlot, itemStack, entity, outerModel, this.getParentModel(),context);
+        ArmorModelManager.renderArmorPiece(matrices, vertexConsumers, light, armorSlot, itemStack, entity, outerModel, this.getParentModel());
     }
 }

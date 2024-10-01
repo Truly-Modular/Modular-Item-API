@@ -36,11 +36,9 @@ public class ItemBakedModelReplacement implements UnbakedModel, BakedModel {
         return false;
     }
 
-    private ItemBakedModelOverrides overrides;
-
     @Override
     public ItemOverrides getOverrides() {
-        return overrides;
+        return ItemBakedModelOverrides.EMPTY;
     }
 
     @Override
@@ -95,14 +93,14 @@ public class ItemBakedModelReplacement implements UnbakedModel, BakedModel {
     public BakedModel bake(ModelBaker baker, Function<Material, TextureAtlasSprite> spriteGetter, ModelState state) {
         ModelProperty.textureGetter = spriteGetter;
         DynamicBakery.dynamicBaker = baker;
-        overrides = new ItemBakedModelOverrides();
+        //overrides = new ItemBakedModelOverrides();
         return this;
     }
 
     @Override
     public String toString() {
         return "CustomModel{" +
-               "overrides=" + overrides +
+               //"overrides=" + overrides +
                '}';
     }
 }

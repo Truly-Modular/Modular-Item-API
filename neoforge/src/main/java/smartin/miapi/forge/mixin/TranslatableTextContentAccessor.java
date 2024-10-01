@@ -1,17 +1,16 @@
 package smartin.miapi.forge.mixin;
 
-import net.minecraft.text.StringVisitable;
-import net.minecraft.text.TranslatableTextContent;
+import net.minecraft.network.chat.contents.TranslatableContents;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.gen.Accessor;
 
-import java.util.List;
-
-@Mixin(TranslatableTextContent.class)
+@Mixin(TranslatableContents.class)
 public interface TranslatableTextContentAccessor {
+    /*
     @Accessor
-    List<StringVisitable> getTranslations();
+    List<StringV> getTranslations();
 
     @Accessor
     void setTranslations(List<StringVisitable> translations);
+    
+     */
 }

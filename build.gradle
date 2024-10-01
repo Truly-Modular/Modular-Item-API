@@ -86,7 +86,7 @@ tasks.register('rebuildArsenal') {
         if (forgeJar) {
             copy {
                 from forgeJar
-                into rootProject.file('forge/libs')
+                into rootProject.file('neoforge/libs')
                 rename { fileName -> projectName + "-local.jar" }
             }
             copy {
@@ -136,7 +136,7 @@ tasks.register('rebuildArchery') {
         if (forgeJar) {
             copy {
                 from forgeJar
-                into rootProject.file('forge/libs')
+                into rootProject.file('neoforge/libs')
                 rename { fileName -> projectName + "-local.jar" }
             }
             copy {
@@ -186,7 +186,7 @@ tasks.register('rebuildArmory') {
         if (forgeJar) {
             copy {
                 from forgeJar
-                into rootProject.file('forge/libs')
+                into rootProject.file('neoforge/libs')
                 rename { fileName -> projectName + "-local.jar" }
             }
             copy {
@@ -259,24 +259,24 @@ subprojects {
 
     processResources {
         def expandProps = [
-                "version"                   : mod_version,
-                "group"                     : project.group, //Else we target the task's group.
-                "minecraft_version"         : minecraft_version,
-                "architectury_version"      : architectury_version,
-                "forge_version"             : forge_version,
-                "forge_loader_version_range": forge_loader_version_range,
-                "forge_version_range"       : forge_version_range,
-                "minecraft_version_range"   : minecraft_version,
-                "fabric_api_version"        : fabric_api_version,
-                "fabric_loader_version"     : fabric_loader_version,
-                "mod_name"                  : mod_name,
-                "mod_author"                : mod_author,
-                "mod_id"                    : mod_id,
-                "mod_description"           : mod_description,
-                "credits"                   : credits
+                "version"                       : mod_version,
+                "group"                         : project.group, //Else we target the task's group.
+                "minecraft_version"             : minecraft_version,
+                "architectury_version"          : architectury_version,
+                "neoforge_version"              : neoforge_version,
+                "neoforge_loader_version_range" : neoforge_loader_version_range,
+                "neoforge_version_range"        : neoforge_version_range,
+                "minecraft_version_range"       : minecraft_version,
+                "fabric_api_version"            : fabric_api_version,
+                "fabric_loader_version"         : fabric_loader_version,
+                "mod_name"                      : mod_name,
+                "mod_author"                    : mod_author,
+                "mod_id"                        : mod_id,
+                "mod_description"               : mod_description,
+                "credits"                       : credits
         ]
 
-        filesMatching(['pack.mcmeta', 'fabric.mod.json', 'META-INF/mods.toml', '*.mixins.json']) {
+        filesMatching(['pack.mcmeta', 'fabric.mod.json', 'META-INF/neoforge.mods.toml', '*.mixins.json']) {
             expand expandProps
         }
     }

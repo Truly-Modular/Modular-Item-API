@@ -2,67 +2,50 @@ package smartin.miapi.forge;
 
 import dev.architectury.event.events.common.LifecycleEvent;
 import dev.architectury.platform.Platform;
-import dev.architectury.platform.forge.EventBuses;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.entity.attribute.EntityAttributes;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.registry.Registries;
-import net.minecraft.util.math.MathHelper;
-import net.minecraftforge.client.event.EntityRenderersEvent;
-import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
-import net.minecraftforge.client.event.RenderGuiEvent;
-import net.minecraftforge.common.ForgeMod;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.ToolActions;
-import net.minecraftforge.event.AddReloadListenerEvent;
-import net.minecraftforge.event.entity.living.LivingHurtEvent;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.InterModComms;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraft.client.renderer.entity.ItemRenderer;
+import net.minecraft.client.resources.model.ModelResourceLocation;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.event.lifecycle.InterModEnqueueEvent;
+import net.neoforged.neoforge.client.event.EntityRenderersEvent;
+import net.neoforged.neoforge.client.event.ModelEvent;
+import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.AddReloadListenerEvent;
 import smartin.miapi.Environment;
 import smartin.miapi.Miapi;
-import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.client.MiapiClient;
-import smartin.miapi.client.gui.crafting.CraftingScreen;
-import smartin.miapi.config.MiapiConfig;
+import smartin.miapi.client.model.item.ItemBakedModelReplacement;
 import smartin.miapi.datapack.ReloadEvents;
-import smartin.miapi.entity.ShieldingArmorFacet;
-import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.forge.compat.ApotheosisCompat;
-import smartin.miapi.forge.compat.QuarkCompat;
-import smartin.miapi.modules.properties.AttributeProperty;
-import smartin.miapi.modules.properties.compat.ht_treechop.TreechopUtil;
 import smartin.miapi.registries.RegistryInventory;
 
-import java.util.function.Consumer;
+import java.util.List;
 
 import static smartin.miapi.Miapi.MOD_ID;
-import static smartin.miapi.attributes.AttributeRegistry.SWIM_SPEED;
 
 @Mod(MOD_ID)
 public class TrulyModularForge {
     public TrulyModularForge() {
         // Submit our event bus to let architectury register our content on the right time
-        IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
-        EventBuses.registerModEventBus(MOD_ID, bus);
+        //IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
+        //NeoForge.EVENT_BUS;
+        //EventBuses.registerModEventBus(MOD_ID, bus);
         if (Environment.isClient()) {
-            bus.register(new ClientModEvents());
-            MinecraftForge.EVENT_BUS.register(new ClientEvents());
+            //bus.register(new ClientModEvents());
+            //MinecraftForge.EVENT_BUS.register(new ClientEvents());
         }
-        if(Platform.isModLoaded("quark")){
-            try{
-                QuarkCompat.setup();
-            }catch (Exception e){
-                Miapi.LOGGER.info("couldnt load quark compat",e);
+        if (Platform.isModLoaded("quark")) {
+            try {
+                //QuarkCompat.setup();
+            } catch (Exception e) {
+                Miapi.LOGGER.info("couldnt load quark compat", e);
             }
         }
-        bus.register(new ModEvents());
-        MinecraftForge.EVENT_BUS.register(new ServerEvents());
+        //bus.register(new ModEvents());
+        NeoForge.EVENT_BUS.register(new ServerEvents());
         Miapi.init();
 
         try {
@@ -80,54 +63,33 @@ public class TrulyModularForge {
             }
         }
 
+        ItemRenderer renderer;
+
         //if (Platform.isModLoaded("epicfight"))
         //RegistryInventory.moduleProperties.register(EpicFightCompatProperty.KEY, new EpicFightCompatProperty());
 
 
         LifecycleEvent.SERVER_STARTING.register((instance -> setupAttributes()));
-        ReloadEvents.START.subscribe((isClient -> setupAttributes()));
-
-
-        //ReloadListenerRegistry.register(
-        //        ResourceType.SERVER_DATA,
-        //        new MiapiReloadListenerForge(),
-        //        new Identifier(MOD_ID, "main_reload_listener"),
-        //        List.of(new Identifier("minecraft:tags"), new Identifier("minecraft:recipes")));
-
-        AttributeProperty.replaceMap.put("miapi:generic.reach", ForgeMod.BLOCK_REACH);
-        AttributeProperty.replaceMap.put("miapi:generic.attack_range", ForgeMod.ENTITY_REACH);
-        AttributeProperty.replaceMap.put("forge:block_reach", ForgeMod.BLOCK_REACH);
-        AttributeProperty.replaceMap.put("forge:entity_reach", ForgeMod.ENTITY_REACH);
-        AttributeProperty.replaceMap.put("reach-entity-attributes:reach", ForgeMod.BLOCK_REACH);
-        AttributeProperty.replaceMap.put("reach-entity-attributes:attack_range", ForgeMod.ENTITY_REACH);
-        AttributeProperty.replaceMap.put("miapi:generic.swim_speed", () -> SWIM_SPEED);
+        ReloadEvents.START.subscribe((isClient, access) -> setupAttributes());
 
     }
 
     public static void setupAttributes() {
-        AttributeRegistry.REACH = ForgeMod.BLOCK_REACH.get();
-        AttributeRegistry.ATTACK_RANGE = ForgeMod.ENTITY_REACH.get();
-        AttributeRegistry.SWIM_SPEED = ForgeMod.SWIM_SPEED.get();
-        AttributeProperty.replaceMap.put("miapi:generic.reach", ForgeMod.BLOCK_REACH);
-        AttributeProperty.replaceMap.put("miapi:generic.attack_range", ForgeMod.ENTITY_REACH);
-        AttributeProperty.replaceMap.put("forge:block_reach", ForgeMod.BLOCK_REACH);
-        AttributeProperty.replaceMap.put("forge:entity_reach", ForgeMod.ENTITY_REACH);
-        AttributeProperty.replaceMap.put("reach-entity-attributes:reach", ForgeMod.BLOCK_REACH);
-        AttributeProperty.replaceMap.put("reach-entity-attributes:attack_range", ForgeMod.ENTITY_REACH);
-        AttributeProperty.replaceMap.put("miapi:generic.swim_speed", () -> SWIM_SPEED);
+
+        //AttributeRegistry.SWIM_SPEED = ForgeMod.SWIM_SPEED.get();
+        //AttributeProperty.replaceMap.put("miapi:generic.swim_speed", () -> SWIM_SPEED.value());
     }
 
     public static class ModEvents {
         @SubscribeEvent
         public void enqueueIMC(InterModEnqueueEvent event) {
             if (Platform.isModLoaded("treechop")) {
-                InterModComms.sendTo("treechop", "getTreeChopAPI", () -> (Consumer<Object>) TreechopUtil::setTreechopApi);
+                //InterModComms.sendTo("treechop", "getTreeChopAPI", () -> (Consumer<Object>) TreechopUtil::setTreechopApi);
             }
-            Item item = RegistryInventory.modularAxe;
-            Miapi.LOGGER.info("INJECTION_TEST" + item.canPerformAction(item.getDefaultStack(), ToolActions.AXE_DIG));
         }
     }
 
+    @EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT, modid = Miapi.MOD_ID)
     public static class ClientModEvents {
         @SubscribeEvent
         public static void entityRenderers(EntityRenderersEvent.RegisterRenderers event) {
@@ -136,26 +98,40 @@ public class TrulyModularForge {
         }
 
         @SubscribeEvent
-        public void registerBindings(RegisterKeyMappingsEvent event) {
+        public static void entityRenderers(ModelEvent.ModifyBakingResult registerAdditional) {
+            //dont ask me, but this fixes registration for client
+            List<ModelResourceLocation> ids = RegistryInventory.modularItems.getFlatMap().keySet().stream().map(ModelResourceLocation::inventory).toList();
+            ids.forEach(id -> {
+                registerAdditional.getModels().put(id, new ItemBakedModelReplacement());
+            });
+            setupAttributes();
+        }
+
+        @SubscribeEvent
+        public static void registerBindings(RegisterKeyMappingsEvent event) {
             MiapiClient.KEY_BINDINGS.addCallback(event::register);
         }
     }
 
     public static class ServerEvents {
+        /*
         @SubscribeEvent
-        public void damageEvent(LivingHurtEvent hurtEvent) {
+        public void damageEvent(MiapiEvents.LivingHurtEvent hurtEvent) {
             MiapiEvents.LivingHurtEvent event = new MiapiEvents.LivingHurtEvent(hurtEvent.getEntity(), hurtEvent.getSource(), hurtEvent.getAmount());
             MiapiEvents.LIVING_HURT.invoker().hurt(event);
             hurtEvent.setAmount(event.amount);
         }
 
+         */
+
         @SubscribeEvent
         public void addReloadListeners(AddReloadListenerEvent addReloadListenerEvent) {
-            addReloadListenerEvent.addListener(new MiapiReloadListenerForge());
+            addReloadListenerEvent.addListener(new MiapiReloadListenerForge(() -> addReloadListenerEvent.getRegistryAccess()));
         }
     }
 
     public static class ClientEvents {
+        /*
         @SubscribeEvent
         public void onRenderGameOverlayEventPre(RenderGuiEvent event) {
             DrawContext context = event.getGuiGraphics();
@@ -205,5 +181,7 @@ public class TrulyModularForge {
             }
             smartin.miapi.events.ClientEvents.HUD_RENDER.invoker().render(context, MinecraftClient.getInstance().getTickDelta());
         }
+
+         */
     }
 }

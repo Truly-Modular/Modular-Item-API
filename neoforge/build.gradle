@@ -8,20 +8,6 @@ architectury {
 
 loom {
     accessWidenerPath = project(":common").loom.accessWidenerPath
-
-
-    neoForge {
-        //convertAccessWideners = true
-        //extraAccessWideners.add loom.accessWidenerPath.get().asFile.name
-    }
-
-    //forge { // gone are the days of forge!
-    //    convertAccessWideners = true
-    //    extraAccessWideners.add loom.accessWidenerPath.get().asFile.name
-//
-    //    mixinConfig "miapi-common.mixins.json"
-    //    mixinConfig "miapi.mixins.json"
-    //}
 }
 
 configurations {
@@ -29,7 +15,7 @@ configurations {
     shadowCommon // Don't use shadow from the shadow plugin because we don't want IDEA to index this.
     compileClasspath.extendsFrom common
     runtimeClasspath.extendsFrom common
-    developmentForge.extendsFrom common
+    developmentNeoForge.extendsFrom common
 }
 
 repositories {
@@ -38,7 +24,8 @@ repositories {
     maven { url 'https://maven.kosmx.dev/' }
     maven { url 'https://maven.theillusivec4.top/' }
     maven { url "https://cursemaven.com" }
-    maven { url "https://maven.merchantpug.net" }
+    //maven { url "https://maven.merchantpug.net" }
+    maven { url "https://maven.architectury.dev/" }
     maven { url "https://maven.neoforged.net/releases/" }
     maven {
         url = 'https://api.modrinth.com/maven'
@@ -50,16 +37,16 @@ repositories {
         //forge "net.minecraftforge:forge:${rootProject.forge_version}"
         neoForge "net.neoforged:neoforge:${rootProject.neoforge_version}"
         // Remove the next line if you don't want to depend on the API
-        modApi "dev.architectury:architectury-forge:${rootProject.architectury_version}"
+        modApi "dev.architectury:architectury-neoforge:${rootProject.architectury_version}"
 
         forgeRuntimeLibrary(include("com.ezylang:EvalEx:${rootProject.eval_ex_version}"))
-        modApi("top.theillusivec4.caelus:caelus-forge:${rootProject.forge_caelus_version}")
+        //modApi("top.theillusivec4.caelus:caelus-forge:${rootProject.forge_caelus_version}")
 
-        //modApi(include("com.redpxnda.nucleus:nucleus-core-forge:${rootProject.minecraft_version}+${rootProject.nucleus_core_version}"))
-        //modApi(include("com.redpxnda.nucleus:nucleus-codec-forge:${rootProject.minecraft_version}+${rootProject.nucleus_codec_version}"))
-        //modApi(include("com.redpxnda.nucleus:nucleus-config-forge:${rootProject.minecraft_version}+${rootProject.nucleus_config_version}"))
-        //modApi(include("com.redpxnda.nucleus:nucleus-pose-forge:${rootProject.minecraft_version}+${rootProject.nucleus_pose_version}"))
-        //modApi(include("com.redpxnda.nucleus:nucleus-facet-forge:${rootProject.minecraft_version}+${rootProject.nucleus_facet_version}"))
+        modApi(include("com.redpxnda.nucleus:nucleus-core-forge:${rootProject.minecraft_version}+${rootProject.nucleus_core_version}"))
+        modApi(include("com.redpxnda.nucleus:nucleus-codec-forge:${rootProject.minecraft_version}+${rootProject.nucleus_codec_version}"))
+        modApi(include("com.redpxnda.nucleus:nucleus-config-forge:${rootProject.minecraft_version}+${rootProject.nucleus_config_version}"))
+        modApi(include("com.redpxnda.nucleus:nucleus-pose-forge:${rootProject.minecraft_version}+${rootProject.nucleus_pose_version}"))
+        modApi(include("com.redpxnda.nucleus:nucleus-facet-forge:${rootProject.minecraft_version}+${rootProject.nucleus_facet_version}"))
 
 
         modLocalRuntime files('libs/arsenal-local.jar')
@@ -72,30 +59,30 @@ repositories {
             modCompileOnly "curse.maven:epic-fight-mod-405076:5159623"
         }
 
-        modCompileOnly "curse.maven:minecolonies-245506:5355518"
-        modCompileOnly "curse.maven:apotheosis-313970:5317303"
-        modCompileOnly "curse.maven:quark-243121:5390424"
-        modCompileOnly "curse.maven:zenith-968868:5254672"
-        modCompileOnly "maven.modrinth:treechop:${rootProject.forge_treechop_version}"
+        //modCompileOnly "curse.maven:minecolonies-245506:5355518"
+        //modCompileOnly "curse.maven:apotheosis-313970:5317303"
+        //modCompileOnly "curse.maven:quark-243121:5390424"
+        //modCompileOnly "curse.maven:zenith-968868:5254672"
+        //modCompileOnly "maven.modrinth:treechop:${rootProject.forge_treechop_version}"
 
         //modApi files('libs/apoli-forge-1.20.1-2.9.0.4-all.jar')
 
         if ("${rootProject.run_with_bettercombat}" == "true") {
-            modImplementation "dev.kosmx.player-anim:player-animation-lib-forge:1.0.2-rc1+1.20"
-            modImplementation "curse.maven:bettercombat-639842:5065424"
-            modImplementation "curse.maven:cloth-config-348521:4973441"
+            //modImplementation "dev.kosmx.player-anim:player-animation-lib-forge:1.0.2-rc1+1.20"
+            //modImplementation "curse.maven:bettercombat-639842:5065424"
+            //modImplementation "curse.maven:cloth-config-348521:4973441"
         }
 
 
 
         common(project(path: ":common", configuration: "namedElements")) { transitive false }
-        shadowCommon(project(path: ":common", configuration: "transformProductionForge")) { transitive = false }
+        shadowCommon(project(path: ":common", configuration: "transformProductionNeoForge")) { transitive false }
     }
 
     processResources {
         inputs.property "version", project.version
 
-        filesMatching("META-INF/mods.toml") {
+        filesMatching("META-INF/neoforge.mods.toml") {
             expand "version": project.version
         }
     }

@@ -1,5 +1,5 @@
 modLoader="javafml" #mandatory
-loaderVersion="${forge_loader_version_range}"
+loaderVersion="${neoforge_loader_version_range}"
 license="CC-BY-NC-4.0"
 issueTrackerURL="https://github.com/Truly-Modular/Modular-Item-API/issues"
 [[mods]] #mandatory
@@ -11,31 +11,25 @@ logoFile="icon.png" #optional
 credits="${credits}" #optional
 authors="${mod_author}" #optional
 description='''${mod_description}'''
-[[dependencies.miapi]] #optional
-   modId="forge" #mandatory
+[[dependencies.${mod_id}]] #optional
+   modId="neoforge" #mandatory
    mandatory=true #mandatory
-   versionRange="${forge_version_range}" #mandatory
+   versionRange="${neoforge_version_range}" #mandatory
    ordering="NONE"
    side="BOTH"
-[[dependencies.miapi]] #optional
-   modId="caelus" #mandatory
-   mandatory=true #mandatory
-   versionRange="[3.1.0,)" #mandatory
-   ordering="NONE"
-   side="BOTH"
-[[dependencies.miapi]] #optional
+[[dependencies.${mod_id}]] #optional
    modId="nucleus_config" #mandatory
    mandatory=true #mandatory
    versionRange="[1.0.0,)" #mandatory
    ordering="AFTER"
    side="BOTH"
-[[dependencies.miapi]] #optional
+[[dependencies.${mod_id}]] #optional
    modId="architectury" #mandatory
    mandatory=true #mandatory
    versionRange="[${architectury_version},)" #mandatory
    ordering="NONE"
    side="BOTH"
-[[dependencies.miapi]]
+[[dependencies.${mod_id}]]
    modId="minecraft"
    mandatory=true
    versionRange="[${minecraft_version},)"

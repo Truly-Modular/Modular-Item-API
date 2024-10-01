@@ -105,7 +105,6 @@ public class Miapi {
         CodecBehavior.registerClass(EquipmentSlotGroup.class, EquipmentSlotGroup.CODEC);
         CodecBehavior.registerClass(EquipmentSlot.class, EquipmentSlot.CODEC);
 
-
         setupConfigs();
         setupNetworking();
         RegistryInventory.setup();
