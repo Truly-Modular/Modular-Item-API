@@ -139,6 +139,14 @@ public class MiapiServerConfig {
         @AutoCodec.Name("tag_property")
         public GeneratePropertyOption tagProperty = new GeneratePropertyOption();
 
+        @Comment("Whether the Item Lore of the Items should be copied as Material Properties for generated Materials")
+        @AutoCodec.Name("lore_property")
+        public GeneratePropertyOption loreProperty = new GeneratePropertyOption();
+
+        @Comment("Whether the On Hit Effects of the Items should be attempted to be copied as Material Properties for generated Materials")
+        @AutoCodec.Name("on_hit_property")
+        public GeneratePropertyOption onHitProperty = new GeneratePropertyOption();
+
         @Comment("Whether Custom Components should be added to the generated Materials")
         @AutoCodec.Name("component_property")
         public GeneratePropertyOption componentProperty = new GeneratePropertyOption();

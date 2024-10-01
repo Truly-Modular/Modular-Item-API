@@ -21,6 +21,7 @@ import smartin.miapi.Miapi;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
 import smartin.miapi.craft.CraftAction;
 import smartin.miapi.events.MiapiEvents;
+import smartin.miapi.events.ModularAttackEvents;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.LoreProperty;
@@ -39,8 +40,7 @@ import java.util.Optional;
  *
  * @header Nemesis Property
  * @path /data_types/properties/on_hit/nemesis
- * @description_start
- * The Nemesis Property allows weapons to deal increased damage to certain types of entities. As the weapon is used to kill more of the specified entity type, it gains additional damage potential against them. If the weapon is used against other types of entities, it loses some of its bonus damage.
+ * @description_start The Nemesis Property allows weapons to deal increased damage to certain types of entities. As the weapon is used to kill more of the specified entity type, it gains additional damage potential against them. If the weapon is used against other types of entities, it loses some of its bonus damage.
  * This property tracks the number of kills made and adjusts the damage dealt based on the entity type and the number of kills recorded. It also updates the item's tooltip to reflect the current state of its nemesis status.
  * @description_end
  * @data value:the scaling, how high and fast it gains damage
@@ -116,6 +116,34 @@ public class NemesisProperty extends DoubleProperty implements CraftingProperty 
             }
             return EventResult.pass();
         });
+
+        ModularAttackEvents.ATTACK_DAMAGE_BONUS.register((target, weapon, baseDamage, damageSource, bonusDamage) -> {
+            if (ModularItem.isModularItem(weapon)) {
+                double nemesisScale = getValue(weapon).orElse(0.0);
+                NemesisData data = weapon.get(NEMESIS_COMPONENT);
+                if (data != null && nemesisScale > 0) {
+                    EntityType attackedType = target.getType();
+
+                    Optional<EntityType<?>> entityType1 = EntityType.byString(data.entityType);
+
+                    if (entityType1.isPresent()) {
+                        EntityType targetType = entityType1.get();
+                        if (attackedType.equals(targetType)) {
+                            double factor = scale(data.kills, nemesisScale) - 1;
+                            bonusDamage.add((factor) * baseDamage);
+                        } else {
+                            double factor = scale(data.kills, nemesisScale) - 1;
+                            factor = Math.min(0.95, factor);
+                            bonusDamage.add((factor) * baseDamage);
+                        }
+                    }
+                    weapon.set(NEMESIS_COMPONENT, data);
+                }
+            }
+            return EventResult.pass();
+        });
+
+
     }
 
     public void setupLore() {

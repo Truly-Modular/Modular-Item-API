@@ -1,0 +1,40 @@
+{
+    "icon": {
+        "type": "item",
+        "item": "minecraft:breeze_rod"
+    },
+    "groups": [
+        "rod"
+    ],
+    "hardness": 7.2,
+    "density": 3,
+    "flexibility": 4,
+    "durability": 196,
+    "enchantability": 18,
+    "tier": 3,
+    "color": "7A82C4",
+    "color_palette": {
+        "type": "image_generated_item",
+        "item": "minecraft:breeze_rod"
+    },
+    "mining_speed": 5,
+    "mining_level": "minecraft:incorrect_for_wooden_tool",
+    "textures": [
+        "emissive"
+    ],
+    "properties": {
+        "default": {
+            "immolate": "3",
+            "emissive": {
+                "sky": 11,
+                "block": 10
+            }
+        }
+    },
+    "items": [
+        {
+            "item": "minecraft:breeze_rod",
+            "value": 1.0
+        }
+    ]
+}

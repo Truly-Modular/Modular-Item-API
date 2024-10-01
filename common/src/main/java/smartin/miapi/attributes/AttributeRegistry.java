@@ -24,6 +24,7 @@ import smartin.miapi.entity.ItemProjectileEntity;
 import smartin.miapi.entity.ShieldingArmorFacet;
 import smartin.miapi.entity.StunHealthFacet;
 import smartin.miapi.events.MiapiEvents;
+import smartin.miapi.events.ModularAttackEvents;
 import smartin.miapi.events.MiapiProjectileEvents;
 import smartin.miapi.mixin.LivingEntityAccessor;
 import smartin.miapi.modules.properties.attributes.AttributeUtil;
@@ -149,7 +150,7 @@ public class AttributeRegistry {
             }
             return EventResult.pass();
         }));
-        MiapiEvents.LIVING_ATTACK.register(((attacker, defender) -> {
+        ModularAttackEvents.HURT_ENEMY.register((stack, defender, attacker) -> {
             if (attacker != null && defender != null && attacker.getAttributes().hasAttribute(MAGIC_DAMAGE)) {
                 double value = attacker.getAttributeValue(MAGIC_DAMAGE);
                 if (value > 0) {
@@ -157,7 +158,7 @@ public class AttributeRegistry {
                 }
             }
             return EventResult.pass();
-        }));
+        });
         MiapiEvents.LIVING_HURT.register((livingHurtEvent -> {
             if (
                     livingHurtEvent.damageSource != null &&

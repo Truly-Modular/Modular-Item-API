@@ -25,7 +25,11 @@
     ],
     "properties": {
         "default": {
-            "immolate": "1"
+            "immolate": "1",
+            "emissive": {
+                "sky": 8,
+                "block": 8
+            }
         }
     },
     "items": [

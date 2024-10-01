@@ -1,0 +1,13 @@
+{
+    "icon": {
+        "type": "item",
+        "item": "minecraft:heavy_core"
+    },
+    "color": "8C668B",
+    "items": [
+        {
+            "item": "minecraft:heavy_core",
+            "value": 1.0
+        }
+    ]
+}

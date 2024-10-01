@@ -1,5 +1,8 @@
 {
-    "icon": "textures/item/blaze_rod.png",
+    "icon": {
+        "type": "item",
+        "item": "minecraft:blaze_rod"
+    },
     "groups": [
         "rod"
     ],
@@ -30,6 +33,10 @@
     "properties": {
         "default": {
             "immolate": "3"
+        },
+        "emissive": {
+            "sky": 6,
+            "block": 6
         }
     },
     "items": [

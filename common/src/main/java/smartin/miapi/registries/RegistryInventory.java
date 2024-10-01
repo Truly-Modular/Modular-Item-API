@@ -352,6 +352,8 @@ public class RegistryInventory {
         register(modularItems, "modular_hoe", ModularHoe::new);
         register(modularItems, "modular_mattock", ModularAxe::new, i -> modularMattock = i);
 
+        register(modularItems, "modular_mace", ModularMace::new);
+
         register(modularItems, "modular_bow", ModularBow::new);
         register(modularItems, "modular_small_bow", ModularBow::new);
         register(modularItems, "modular_large_bow", ModularBow::new);
@@ -524,6 +526,8 @@ public class RegistryInventory {
             registerMiapi(moduleProperties, MaterialInscribeProperty.KEY, new MaterialInscribeProperty());
             registerMiapi(moduleProperties, DrawTimeProperty.KEY, new DrawTimeProperty());
             registerMiapi(moduleProperties, MaterialOverwriteProperty.KEY, new MaterialOverwriteProperty());
+            registerMiapi(moduleProperties, CopyItemOnHit.KEY, new CopyItemOnHit());
+            registerMiapi(moduleProperties, AllowedInLootProperty.KEY, new AllowedInLootProperty());
             //compat
             //registerMiapi(moduleProperties, BetterCombatProperty.KEY, new BetterCombatProperty());
             //TODO: added this to cleanup logs. this needs to be revisited later

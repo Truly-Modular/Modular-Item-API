@@ -6,14 +6,17 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import org.apache.commons.lang3.mutable.MutableFloat;
 import smartin.miapi.config.MiapiConfig;
+import smartin.miapi.events.ModularAttackEvents;
 import smartin.miapi.item.FakeItemstackReferenceProvider;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.PlatformModularItemMethods;
@@ -23,7 +26,6 @@ import smartin.miapi.modules.abilities.util.ItemAbilityManager;
 import smartin.miapi.modules.properties.DisplayNameProperty;
 import smartin.miapi.modules.properties.LoreProperty;
 import smartin.miapi.modules.properties.RepairPriority;
-import smartin.miapi.modules.properties.ToolOrWeaponProperty;
 import smartin.miapi.modules.properties.enchanment.EnchantAbilityProperty;
 import smartin.miapi.modules.properties.mining.MiningLevelProperty;
 
@@ -38,6 +40,23 @@ public class ModularHoe extends HoeItem implements PlatformModularItemMethods, M
 
     public ModularHoe() {
         super(new ModularToolMaterial(), new Properties().stacksTo(1).durability(500).rarity(Rarity.COMMON));
+    }
+
+    @Override
+    public float getAttackDamageBonus(Entity target, float damage, DamageSource damageSource) {
+        MutableFloat mutableFloat = new MutableFloat(0);
+        ModularAttackEvents.ATTACK_DAMAGE_BONUS.invoker().getAttackDamageBonus(target, target.getWeaponItem(), damage, damageSource, mutableFloat);
+        return mutableFloat.floatValue();
+    }
+
+    @Override
+    public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
+        return ModularAttackEvents.HURT_ENEMY.invoker().hurtEnemy(stack, target, attacker).interruptsFurtherEvaluation();
+    }
+
+    @Override
+    public void postHurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
+        ModularAttackEvents.HURT_ENEMY_POST.invoker().hurtEnemy(stack, target, attacker);
     }
 
     public Tier getTier() {
@@ -85,16 +104,6 @@ public class ModularHoe extends HoeItem implements PlatformModularItemMethods, M
             return (int) EnchantAbilityProperty.getEnchantAbility(itemStack);
         }
         return 15;
-    }
-
-    @Override
-    public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
-        if (ToolOrWeaponProperty.isWeapon(stack)) {
-            stack.hurtAndBreak(1, attacker, EquipmentSlot.MAINHAND);
-        } else {
-            stack.hurtAndBreak(2, attacker, EquipmentSlot.MAINHAND);
-        }
-        return true;
     }
 
     @Override

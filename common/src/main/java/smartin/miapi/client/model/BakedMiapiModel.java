@@ -23,7 +23,7 @@ import smartin.miapi.client.renderer.TrimRenderer;
 import smartin.miapi.item.modular.Transform;
 import smartin.miapi.material.MaterialProperty;
 import smartin.miapi.modules.ModuleInstance;
-import smartin.miapi.modules.properties.EmissivityProperty;
+import smartin.miapi.modules.properties.render.EmissivityProperty;
 import smartin.miapi.modules.properties.GlintProperty;
 import smartin.miapi.client.GlintShader;
 

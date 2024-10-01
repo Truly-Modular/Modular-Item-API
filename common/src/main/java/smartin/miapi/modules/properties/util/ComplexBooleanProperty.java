@@ -2,13 +2,14 @@ package smartin.miapi.modules.properties.util;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
 
 import java.util.Optional;
+
 /**
  * @header Boolean Resolvable
- * @description_start
- * This is in concept just like a Double resolvable.
+ * @description_start This is in concept just like a Double resolvable.
  * This is regarded true if the outcome is > 0.
  * false is equivalent to 0, writing true in the json is the same as writing 1
  * @desciption_end
@@ -34,7 +35,15 @@ public abstract class ComplexBooleanProperty extends DoubleProperty {
         return optional.map(doubleOperationResolvable -> doubleOperationResolvable.evaluate(0.0, 0.0) > 0).orElseGet(() -> defaultValue);
     }
 
+    public boolean isTrue(ItemModule module) {
+        Optional<DoubleOperationResolvable> optional = getData(module);
+        if (optional.isPresent()) {
+            optional = Optional.of(optional.get().initialize(new ModuleInstance(module)));
+        }
+        return optional.map(doubleOperationResolvable -> doubleOperationResolvable.evaluate(0.0, 0.0) > 0).orElseGet(() -> defaultValue);
+    }
+
     public boolean hasValue(ItemStack itemStack) {
-        return isTrue(itemStack) != defaultValue;
+        return getValue(itemStack).isPresent();
     }
 }

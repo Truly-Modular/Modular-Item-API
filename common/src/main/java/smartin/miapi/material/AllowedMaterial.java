@@ -175,25 +175,27 @@ public class AllowedMaterial extends CodecProperty<AllowedMaterial.AllowedMateri
         }
         AllowedMaterialData json = optional.get();
         Material material = MaterialProperty.getMaterialFromIngredient(input);
-        assert material != null;
-        int newCount = (int) (input.getCount() - Math.ceil(json.cost * crafting.getCount() / material.getValueOfItem(input)));
-        if (!player.level().isClientSide()) {
-            input.setCount(newCount);
-        }
-        assert newModule != null;
-        MaterialProperty.setMaterial(newModule, material.getID());
-
-        newModule.getRoot().writeToItem(crafting);
-        //materialStack.setCount(1);
-        MiapiEvents.MaterialCraftEventData eventData = new MiapiEvents.MaterialCraftEventData(crafting, materialStack, material, newModule, craftAction);
-        MiapiEvents.MATERIAL_CRAFT_EVENT.invoker().craft(eventData);
-        crafting = eventData.crafted;
-        if (crafting.isDamageableItem()) {
-            //Miapi.LOGGER.info("dmg " + crafting.getDamage());
-            int durability = (int) (DurabilityProperty.property.getValue(craftAction.getModifyingModuleInstance(crafting)).orElse(0.0).intValue() * MiapiConfig.INSTANCE.server.other.repairRatio);
-            //Miapi.LOGGER.info("set dmg to " + (crafting.getDamage() - durability));
-            crafting.setDamageValue(crafting.getDamageValue() - durability);
-            //Miapi.LOGGER.info("set dmg end " + crafting.getDamage());
+        if (material != null) {
+            int newCount = (int) (input.getCount() - Math.ceil(json.cost * crafting.getCount() / material.getValueOfItem(input)));
+            if (!player.level().isClientSide()) {
+                input.setCount(newCount);
+            }
+            assert newModule != null;
+            MaterialProperty.setMaterial(newModule, material.getID());
+            newModule.getRoot().writeToItem(crafting);
+            //materialStack.setCount(1);
+            MiapiEvents.MaterialCraftEventData eventData = new MiapiEvents.MaterialCraftEventData(crafting, materialStack, material, newModule, craftAction);
+            MiapiEvents.MATERIAL_CRAFT_EVENT.invoker().craft(eventData);
+            crafting = eventData.crafted;
+            if (crafting.isDamageableItem()) {
+                //Miapi.LOGGER.info("dmg " + crafting.getDamage());
+                int durability = (int) (DurabilityProperty.property.getValue(craftAction.getModifyingModuleInstance(crafting)).orElse(0.0).intValue() * MiapiConfig.INSTANCE.server.other.repairRatio);
+                //Miapi.LOGGER.info("set dmg to " + (crafting.getDamage() - durability));
+                crafting.setDamageValue(crafting.getDamageValue() - durability);
+                //Miapi.LOGGER.info("set dmg end " + crafting.getDamage());
+            }
+        } else {
+            Miapi.LOGGER.error("craft was called with no valid material?! this should not be possible. the resulting item wont be changed");
         }
         results.add(crafting);
         results.add(input);

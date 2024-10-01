@@ -4,9 +4,8 @@ import dev.architectury.event.EventResult;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 import smartin.miapi.Miapi;
-import smartin.miapi.events.MiapiEvents;
+import smartin.miapi.events.ModularAttackEvents;
 import smartin.miapi.modules.properties.util.DoubleProperty;
 
 /**
@@ -29,19 +28,18 @@ public class HealthPercentDamage extends DoubleProperty {
     public HealthPercentDamage() {
         super(KEY);
         property = this;
-        MiapiEvents.LIVING_HURT.register((livingHurtEvent -> {
-            if (livingHurtEvent.damageSource.getEntity() instanceof LivingEntity livingAttacker) {
-                ItemStack itemStack = livingHurtEvent.getCausingItemStack();
+        ModularAttackEvents.ATTACK_DAMAGE_BONUS.register((target, itemStack, baseDamage, damageSource, bonusDamage) -> {
+            if (damageSource.getEntity() instanceof LivingEntity livingAttacker && target instanceof LivingEntity livingTarget) {
                 if (livingAttacker instanceof Player player) {
                     if (player.oAttackAnim != 0.0) {
                         return EventResult.pass();
                     }
                 }
                 double percentage = getValue(itemStack).orElse(0.0) / 100;
-                double increasingBy = livingHurtEvent.livingEntity.getHealth() / (100 / percentage);
-                livingHurtEvent.amount += increasingBy;
+                double increasingBy = livingTarget.getHealth() / (100 / percentage);
+                bonusDamage.add(increasingBy);
             }
             return EventResult.pass();
-        }));
+        });
     }
 }

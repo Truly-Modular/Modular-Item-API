@@ -21,6 +21,7 @@ public class JsonStatDisplay extends SingleStatDisplayDouble {
         return statReader.getValue(stack);
     }
 
+
     @Override
     public boolean shouldRender(ItemStack original, ItemStack compareTo) {
         super.shouldRender(original, compareTo);

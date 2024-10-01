@@ -67,7 +67,6 @@ public class HandheldItemProperty extends ComplexBooleanProperty {
         MiapiEvents.LIVING_HURT_AFTER.register(event -> {
             if (event.damageSource != null && event.damageSource.getEntity() instanceof Player serverPlayerEntity) {
                 if (hasTwoHandhelds(serverPlayerEntity) && !Platform.isModLoaded("bettercombat")) {
-                    Miapi.LOGGER.info("swap");
                     swapHands(serverPlayerEntity);
                 }
             }

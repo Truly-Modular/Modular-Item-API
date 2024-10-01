@@ -40,7 +40,6 @@ import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.material.Material;
 import smartin.miapi.material.MaterialProperty;
-import smartin.miapi.modules.properties.EmissivityProperty;
 import smartin.miapi.modules.properties.slot.SlotProperty;
 import smartin.miapi.modules.properties.render.colorproviders.ColorProvider;
 import smartin.miapi.modules.properties.util.CodecProperty;

@@ -22,6 +22,7 @@ import java.util.function.Function;
  * otherwise statresolving will crash out!
  * if the usage of {@link DoubleOperationResolvable#functionTransformer} is desired it should be set during initialize, as setting it in the constructor
  * would be negated by an Autocodec
+ *
  * @header Double Resolvable
  * @description_start this is a complex way to describe a number
  * in short this number allows you to do math like "sin(5)"
@@ -147,7 +148,7 @@ public class DoubleOperationResolvable {
      */
     public DoubleOperationResolvable initialize(ModuleInstance moduleInstance) {
         List<Operation> operationList = new ArrayList<>();
-        if(operations!=null){
+        if (operations != null) {
             operations.forEach(operation -> {
                 Operation copiesOperation = new Operation(operation.value);
                 copiesOperation.attributeOperation = operation.attributeOperation;

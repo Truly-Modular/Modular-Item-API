@@ -20,6 +20,7 @@ import smartin.miapi.material.Material;
 import smartin.miapi.material.MaterialProperty;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
+import smartin.miapi.modules.properties.AllowedInLootProperty;
 import smartin.miapi.modules.properties.ItemIdProperty;
 import smartin.miapi.modules.properties.slot.SlotProperty;
 import smartin.miapi.registries.RegistryInventory;
@@ -97,7 +98,11 @@ public record ModuleSwapLootFunction(
 
     ModuleInstance randomizeModuleAndChildren(ModuleInstance moduleInstance, Material fallBackMaterial, RandomSource randomSource) {
         if (randomSource.nextFloat() <= chance()) {
-            moduleInstance = findPossibleSubstitute(moduleInstance, randomSource);
+            try {
+                moduleInstance = findPossibleSubstitute(moduleInstance, randomSource);
+            } catch (RuntimeException e) {
+                Miapi.LOGGER.error("could not randomize module", e);
+            }
         }
         Map<String, ModuleInstance> submodules = new LinkedHashMap<>(moduleInstance.getSubModuleMap());
         for (var entry : submodules.entrySet()) {
@@ -118,6 +123,11 @@ public record ModuleSwapLootFunction(
                     }
                     if (blacklist().isPresent()) {
                         if (blacklist().get().contains(m.id())) {
+                            return false;
+                        }
+                    }
+                    if (!AllowedInLootProperty.property.isTrue(m)) {
+                        if (!(whitelist().isPresent() && whitelist().get().contains(m.id()))) {
                             return false;
                         }
                     }

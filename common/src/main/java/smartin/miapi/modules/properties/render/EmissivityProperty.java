@@ -1,4 +1,4 @@
-package smartin.miapi.modules.properties;
+package smartin.miapi.modules.properties.render;
 
 import com.mojang.serialization.Codec;
 import com.redpxnda.nucleus.codec.auto.AutoCodec;
@@ -10,7 +10,7 @@ import smartin.miapi.modules.properties.util.MergeType;
 
 /**
  * @header Emissivity Property
- * @path /data_types/properties/emissive
+ * @path /data_types/properties/render/emissive
  * @description_start
  * The EmissivityProperty defines the emissive light levels for an item or block. Emissive properties affect how much light
  * an item or block emits.

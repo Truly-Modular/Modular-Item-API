@@ -1,86 +1,40 @@
 package smartin.miapi.item.modular.items.tools;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.util.*;
+import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.ai.attributes.Attribute;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Rarity;
-import net.minecraft.world.item.SwordItem;
-import net.minecraft.world.item.Tier;
+import net.minecraft.world.item.MaceItem;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import org.apache.commons.lang3.mutable.MutableFloat;
-import smartin.miapi.config.MiapiConfig;
-import smartin.miapi.events.ModularAttackEvents;
 import smartin.miapi.item.FakeItemstackReferenceProvider;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.PlatformModularItemMethods;
-import smartin.miapi.item.modular.items.ModularSetableToolMaterial;
-import smartin.miapi.item.modular.items.ModularToolMaterial;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;
-import smartin.miapi.modules.properties.*;
+import smartin.miapi.modules.properties.DisplayNameProperty;
+import smartin.miapi.modules.properties.LoreProperty;
+import smartin.miapi.modules.properties.RepairPriority;
 import smartin.miapi.modules.properties.enchanment.EnchantAbilityProperty;
 import smartin.miapi.modules.properties.mining.MiningLevelProperty;
 
 import java.util.List;
 
-public class ModularSword extends SwordItem implements PlatformModularItemMethods, ModularItem, ModularSetableToolMaterial {
-    public Tier currentFakeToolmaterial = ModularToolMaterial.toolMaterial;
+public class ModularMace extends MaceItem implements PlatformModularItemMethods, ModularItem {
 
-    public ModularSword(Properties settings) {
-        super(new ModularToolMaterial(), settings.stacksTo(1).durability(500));
+    public ModularMace() {
+        super(new Properties().durability(50).stacksTo(1));
     }
 
-    public ModularSword() {
-        super(new ModularToolMaterial(), new Properties().stacksTo(1).durability(500).rarity(Rarity.COMMON));
-    }
-
-    @Override
-    public float getAttackDamageBonus(Entity target, float damage, DamageSource damageSource) {
-        MutableFloat mutableFloat = new MutableFloat(0);
-        ModularAttackEvents.ATTACK_DAMAGE_BONUS.invoker().getAttackDamageBonus(target, target.getWeaponItem(), damage, damageSource, mutableFloat);
-        return mutableFloat.floatValue();
-    }
-
-    @Override
-    public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
-        return ModularAttackEvents.HURT_ENEMY.invoker().hurtEnemy(stack, target, attacker).interruptsFurtherEvaluation();
-    }
-
-    @Override
-    public void postHurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
-        ModularAttackEvents.HURT_ENEMY_POST.invoker().hurtEnemy(stack, target, attacker);
-    }
-
-    public Tier getTier() {
-        if (MiapiConfig.INSTANCE.server.other.looseToolMaterial) {
-            return currentFakeToolmaterial;
-        }
-        return super.getTier();
-    }
-
-    @Override
-    public void setToolMaterial(Tier toolMaterial) {
-        this.currentFakeToolmaterial = toolMaterial;
-    }
-
-    public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlot slot) {
-        return ArrayListMultimap.create();
+    public ModularMace(Properties properties) {
+        super(properties);
     }
 
     @Override

@@ -86,6 +86,11 @@ public interface ModuleProperty<T> {
         return Optional.ofNullable((T) module.properties().get(this));
     }
 
+    @SuppressWarnings("unchecked")
+    default Optional<T> getData(Map<ModuleProperty<?>, Object> properties) {
+        return Optional.ofNullable((T) properties.get(this));
+    }
+
     /**
      * this should return a copy if {@link T} is a mutable object!
      *

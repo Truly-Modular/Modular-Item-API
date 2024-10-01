@@ -103,38 +103,46 @@ public record MaterialSwapLootFunction(
     public ItemStack apply(ItemStack stack, LootContext lootContext) {
         ItemStack modular = ModularItemStackConverter.getModularVersion(stack);
         if (ModularItem.isModularItem(modular)) {
-            ModuleInstance root = ItemModule.getModules(modular);
-            Material highestMaterial = MaterialProperty.getMaterial(root);
-            for (ModuleInstance module : root.allSubModules()) {
-                Material otherMaterial = MaterialProperty.getMaterial(module);
-                if (highestMaterial == null) {
-                    highestMaterial = otherMaterial;
-                } else {
-                    if (otherMaterial != null && isHigher(highestMaterial, otherMaterial) > 0) {
+            try {
+                ModuleInstance root = ItemModule.getModules(modular);
+                Material highestMaterial = MaterialProperty.getMaterial(root);
+                for (ModuleInstance module : root.allSubModules()) {
+                    Material otherMaterial = MaterialProperty.getMaterial(module);
+                    if (highestMaterial == null) {
                         highestMaterial = otherMaterial;
+                    } else {
+                        if (otherMaterial != null && isHigher(highestMaterial, otherMaterial) > 0) {
+                            highestMaterial = otherMaterial;
+                        }
                     }
                 }
-            }
-            if (material != null) {
-                Material fromJson = MaterialProperty.materials.get(material);
-                if (highestMaterial == null || fromJson != null && isHigher(highestMaterial, fromJson) > 0) {
-                    highestMaterial = fromJson;
+                if (material != null) {
+                    Material fromJson = MaterialProperty.materials.get(material);
+                    if (highestMaterial == null || fromJson != null && isHigher(highestMaterial, fromJson) > 0) {
+                        highestMaterial = fromJson;
+                    }
                 }
-            }
-            try {
-                root = randomizeMaterialAndChildren(root, highestMaterial, lootContext.getRandom());
+                try {
+                    root = randomizeMaterialAndChildren(root, highestMaterial, lootContext.getRandom());
+                } catch (RuntimeException e) {
+                    Miapi.LOGGER.error("error during material swap function", e);
+                }
+                root.writeToItem(modular);
+                modular = ItemIdProperty.changeId(modular);
             } catch (RuntimeException e) {
-                Miapi.LOGGER.error("error during material swap function", e);
+                Miapi.LOGGER.error("Issue during Material Swap", e);
             }
-            root.writeToItem(modular);
-            modular = ItemIdProperty.changeId(modular);
         }
         return modular;
     }
 
     ModuleInstance randomizeMaterialAndChildren(ModuleInstance moduleInstance, Material fallBackMaterial, RandomSource randomSource) {
         if (randomSource.nextFloat() <= chance()) {
-            moduleInstance = attemptRandomizeMaterial(moduleInstance, fallBackMaterial, randomSource);
+            try {
+                moduleInstance = attemptRandomizeMaterial(moduleInstance, fallBackMaterial, randomSource);
+            } catch (RuntimeException runtimeException) {
+                Miapi.LOGGER.error("Issue during Material Swap", runtimeException);
+            }
         }
         Map<String, ModuleInstance> submodules = new LinkedHashMap<>(moduleInstance.getSubModuleMap());
         for (var entry : submodules.entrySet()) {

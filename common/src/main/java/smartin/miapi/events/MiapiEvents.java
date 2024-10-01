@@ -38,20 +38,20 @@ import java.util.List;
 import java.util.Map;
 
 public class MiapiEvents {
-    public static final PrioritizedEvent<LivingAttackEvent> LIVING_ATTACK = PrioritizedEvent.createEventResult();
-    public static final PrioritizedEvent<LivingHurt> LIVING_HURT = PrioritizedEvent.createEventResult();
     /**
-     * the value in this Event reflects the Critical Multiplier instead
+     * make sure {@link ModularAttackEvents} arent what you are looking for.
+     * Generally any kind of modular onhit effect should be implemented in {@link ModularAttackEvents}
+     * While Attribute based stuff should be implemented using these, since they are called regardless of weapon
      */
-    public static final PrioritizedEvent<LivingHurt> LIVING_HURT_CRITICAL_HIT = PrioritizedEvent.createEventResult();
+    public static final PrioritizedEvent<LivingHurt> LIVING_HURT = PrioritizedEvent.createEventResult();
     public static final PrioritizedEvent<LivingHurt> LIVING_HURT_AFTER = PrioritizedEvent.createEventResult();
+
+
     public static final PrioritizedEvent<LivingEntityXpAdjust> ADJUST_DROP_XP = PrioritizedEvent.createEventResult();
     public static final PrioritizedEvent<LivingHurt> LIVING_HURT_AFTER_ARMOR = PrioritizedEvent.createEventResult();
     public static final PrioritizedEvent<EntityRide> START_RIDING = PrioritizedEvent.createLoop(); // only fires on successful rides, and is not cancellable (if I wanted to make it cancellable, i would add mixinextras)
     public static final PrioritizedEvent<EntityRide> STOP_RIDING = PrioritizedEvent.createLoop();
     public static final PrioritizedEvent<StatUpdateEvent> STAT_UPDATE_EVENT = PrioritizedEvent.createEventResult();
-    public static final PrioritizedEvent<ItemStackAttributeEvent> ITEM_STACK_ATTRIBUTE_EVENT = PrioritizedEvent.createEventResult();
-    public static final PrioritizedEvent<ReloadEvent> CACHE_CLEAR_EVENT = PrioritizedEvent.createEventResult();
     public static final PrioritizedEvent<ItemConvertEvent> CONVERT_ITEM = PrioritizedEvent.createEventResult();
     public static final PrioritizedEvent<CreateMaterialModularConvertersEvent> GENERATE_MATERIAL_CONVERTERS = PrioritizedEvent.createEventResult();
     public static final PrioritizedEvent<PlayerTickEvent> PLAYER_TICK_START = PrioritizedEvent.createLoop();
@@ -75,19 +75,6 @@ public class MiapiEvents {
 
     public interface PlayerEquip {
         EventResult equip(Player player, Map<EquipmentSlot, ItemStack> changes);
-    }
-
-    public static class IsCriticalHitEvent {
-        public LivingEntity livingEntity;
-        public float amount;
-        public boolean isCritical = false;
-
-        public IsCriticalHitEvent(LivingEntity livingEntity, float amount, boolean isCritical) {
-            this.livingEntity = livingEntity;
-            this.amount = amount;
-            this.isCritical = isCritical;
-        }
-
     }
 
     public static class LivingHurtEvent {

@@ -105,9 +105,9 @@ public class GuiStatProperty extends CodecProperty<Map<String, GuiStatProperty.G
 
     @Override
     public Map<String, GuiInfo> initialize(Map<String, GuiInfo> property, ModuleInstance context) {
-        Map<String, GuiInfo> initialied = new HashMap<>();
-        property.forEach((key, value) -> initialied.put(key, value.initialize(context)));
-        return super.initialize(property, context);
+        Map<String, GuiInfo> initialized = new HashMap<>();
+        property.forEach((key, value) -> initialized.put(key, value.initialize(context)));
+        return super.initialize(initialized, context);
     }
 
     public static class GuiInfo {
