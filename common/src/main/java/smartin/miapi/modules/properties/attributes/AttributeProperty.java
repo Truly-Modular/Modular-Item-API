@@ -79,6 +79,13 @@ public class AttributeProperty extends CodecProperty<List<AttributeProperty.Attr
         priorityMap.put(AttributeRegistry.BACK_STAB.value(), -6.0f);
         priorityMap.put(AttributeRegistry.SHIELD_BREAK.value(), -6.0f);
         priorityMap.put(AttributeRegistry.ARMOR_CRUSHING.value(), -6.0f);
+
+        AttributeProperty.replaceMap.put("miapi:generic.reach", Attributes.BLOCK_INTERACTION_RANGE::value);
+        AttributeProperty.replaceMap.put("miapi:generic.attack_range", Attributes.ENTITY_INTERACTION_RANGE::value);
+        AttributeProperty.replaceMap.put("forge:block_reach", Attributes.BLOCK_INTERACTION_RANGE::value);
+        AttributeProperty.replaceMap.put("forge:entity_reach", Attributes.ENTITY_INTERACTION_RANGE::value);
+        AttributeProperty.replaceMap.put("reach-entity-attributes:reach", Attributes.BLOCK_INTERACTION_RANGE::value);
+        AttributeProperty.replaceMap.put("reach-entity-attributes:attack_range", Attributes.ENTITY_INTERACTION_RANGE::value);
     }
 
     /**

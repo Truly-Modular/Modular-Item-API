@@ -11,6 +11,11 @@ logoFile="icon.png" #optional
 credits="${credits}" #optional
 authors="${mod_author}" #optional
 description='''${mod_description}'''
+[[mixins]]
+config = "miapi.mixins.json"
+
+[[mixins]]
+config = "miapi-common.mixins.json"
 [[dependencies.${mod_id}]] #optional
    modId="neoforge" #mandatory
    mandatory=true #mandatory

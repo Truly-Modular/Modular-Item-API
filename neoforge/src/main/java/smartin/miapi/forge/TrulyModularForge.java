@@ -9,7 +9,6 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.InterModEnqueueEvent;
-import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.ModelEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.common.NeoForge;
@@ -20,6 +19,7 @@ import smartin.miapi.client.MiapiClient;
 import smartin.miapi.client.model.item.ItemBakedModelReplacement;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.forge.compat.ApotheosisCompat;
+import smartin.miapi.modules.properties.render.ModelProperty;
 import smartin.miapi.registries.RegistryInventory;
 
 import java.util.List;
@@ -92,15 +92,10 @@ public class TrulyModularForge {
     @EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT, modid = Miapi.MOD_ID)
     public static class ClientModEvents {
         @SubscribeEvent
-        public static void entityRenderers(EntityRenderersEvent.RegisterRenderers event) {
-            //dont ask me, but this fixes registration for client
-            setupAttributes();
-        }
-
-        @SubscribeEvent
         public static void entityRenderers(ModelEvent.ModifyBakingResult registerAdditional) {
             //dont ask me, but this fixes registration for client
             List<ModelResourceLocation> ids = RegistryInventory.modularItems.getFlatMap().keySet().stream().map(ModelResourceLocation::inventory).toList();
+            ModelProperty.textureGetter = registerAdditional.getTextureGetter();
             ids.forEach(id -> {
                 registerAdditional.getModels().put(id, new ItemBakedModelReplacement());
             });

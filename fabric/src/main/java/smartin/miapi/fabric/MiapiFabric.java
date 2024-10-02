@@ -7,12 +7,10 @@ import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.ResourceReloadListenerKeys;
 import net.fabricmc.fabric.api.util.TriState;
-import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.profiling.ProfilerFiller;
-import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.attributes.RangedAttribute;
 import smartin.miapi.Environment;
 import smartin.miapi.Miapi;
@@ -26,7 +24,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
-import java.util.function.Supplier;
 
 import static smartin.miapi.attributes.AttributeRegistry.SWIM_SPEED;
 
@@ -58,14 +55,11 @@ public class MiapiFabric implements ModInitializer {
             TrechopUtilFabric.loadTreechopCompat();
         }
 
-        MiapiReloadListener listener = new MiapiReloadListener(new Supplier<RegistryAccess>() {
-            @Override
-            public RegistryAccess get() {
-                if (Miapi.server != null) {
-                    return Miapi.server.registryAccess();
-                }
-                return null;
+        MiapiReloadListener listener = new MiapiReloadListener(() -> {
+            if (Miapi.server != null) {
+                return Miapi.server.registryAccess();
             }
+            return null;
         });
 
         ResourceManagerHelper.get(PackType.SERVER_DATA).registerReloadListener(new IdentifiableResourceReloadListener() {
@@ -85,12 +79,6 @@ public class MiapiFabric implements ModInitializer {
         });
 
         AttributeProperty.replaceMap.put("forge:generic.swim_speed", () -> SWIM_SPEED.value());
-        AttributeProperty.replaceMap.put("miapi:generic.reach", Attributes.BLOCK_INTERACTION_RANGE::value);
-        AttributeProperty.replaceMap.put("miapi:generic.attack_range", Attributes.ENTITY_INTERACTION_RANGE::value);
-        AttributeProperty.replaceMap.put("forge:block_reach", Attributes.BLOCK_INTERACTION_RANGE::value);
-        AttributeProperty.replaceMap.put("forge:entity_reach", Attributes.ENTITY_INTERACTION_RANGE::value);
-        AttributeProperty.replaceMap.put("reach-entity-attributes:reach", Attributes.BLOCK_INTERACTION_RANGE::value);
-        AttributeProperty.replaceMap.put("reach-entity-attributes:attack_range", Attributes.ENTITY_INTERACTION_RANGE::value);
 
         if (Platform.isModLoaded("zenith")) {
             try {

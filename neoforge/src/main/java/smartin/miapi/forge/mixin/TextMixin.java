@@ -1,9 +1,9 @@
 package smartin.miapi.forge.mixin;
 
-import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.contents.TranslatableContents;
 import org.spongepowered.asm.mixin.Mixin;
 
-@Mixin(Component.class)
+@Mixin(TranslatableContents.class)
 public abstract class TextMixin {
 
     /*
