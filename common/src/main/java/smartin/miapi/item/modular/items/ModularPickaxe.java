@@ -51,7 +51,7 @@ public class ModularPickaxe extends PickaxeItem implements PlatformModularItemMe
     }
 
     @Override
-    public void setToolMaterial(ToolMaterial toolMaterial){
+    public void lastItemStack(ToolMaterial toolMaterial){
         this.currentFakeToolmaterial = toolMaterial;
     }
 

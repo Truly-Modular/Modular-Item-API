@@ -47,7 +47,7 @@ public class ModularShovel extends ShovelItem implements PlatformModularItemMeth
     }
 
     @Override
-    public void setToolMaterial(ToolMaterial toolMaterial){
+    public void lastItemStack(ToolMaterial toolMaterial){
         this.currentFakeToolmaterial = toolMaterial;
     }
 

@@ -2,6 +2,7 @@ package smartin.miapi.item.modular.items;
 
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.item.ArmorItem;
+import net.minecraft.item.ArmorMaterial;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Rarity;
@@ -17,13 +18,40 @@ import smartin.miapi.modules.properties.RepairPriority;
 
 import java.util.List;
 
-public class ModularBoots extends ArmorItem implements PlatformModularItemMethods, ModularItem {
+public class ModularBoots extends ArmorItem implements PlatformModularItemMethods, ModularItem, ModularSetableArmorMaterial {
     public ModularBoots(Settings settings) {
         super(new ModularArmorMaterial(), Type.BOOTS, settings);
     }
 
     public ModularBoots() {
         super(new ModularArmorMaterial(), Type.BOOTS, new Settings());
+    }
+
+    public ArmorMaterial armorMaterial = new ModularArmorMaterial();
+
+    @Override
+    public void setArmorMaterial(ArmorMaterial toolMaterial) {
+        this.armorMaterial = toolMaterial;
+    }
+
+    @Override
+    public int getEnchantability() {
+        return armorMaterial.getEnchantability();
+    }
+
+    @Override
+    public ArmorMaterial getMaterial() {
+        return this.armorMaterial;
+    }
+
+    @Override
+    public int getProtection() {
+        return this.armorMaterial.getProtection(this.type);
+    }
+
+    @Override
+    public float getToughness() {
+        return this.armorMaterial.getToughness();
     }
 
     @Override
@@ -55,11 +83,6 @@ public class ModularBoots extends ArmorItem implements PlatformModularItemMethod
     public int getItemBarColor(ItemStack stack) {
         float f = Math.max(0.0F, ((float) ModularItem.getDurability(stack) - (float) stack.getDamage()) / ModularItem.getDurability(stack));
         return MathHelper.hsvToRgb(f / 3.0F, 1.0F, 1.0F);
-    }
-
-    @Override
-    public int getEnchantability() {
-        return 1;
     }
 
     @Override

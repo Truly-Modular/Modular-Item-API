@@ -22,7 +22,7 @@ import smartin.miapi.client.gui.crafting.PreviewManager;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.VisualModularItem;
-import smartin.miapi.item.modular.items.ModularSetableToolMaterial;
+import smartin.miapi.item.modular.items.ItemStackSensitive;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.FakeItemTagProperty;
 import smartin.miapi.modules.properties.HideFlagsProperty;
@@ -70,8 +70,8 @@ abstract class ItemStackMixin {
             at = @At("RETURN"))
     private Item miapi$getItemCallback(Item original) {
         ItemStack stack = (ItemStack) (Object) this;
-        if (original instanceof ModularSetableToolMaterial toolMaterial) {
-            toolMaterial.setToolMaterial(stack);
+        if (original instanceof ItemStackSensitive toolMaterial) {
+            toolMaterial.lastItemStack(stack);
         }
         return original;
     }

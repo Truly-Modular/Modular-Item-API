@@ -47,7 +47,7 @@ public class ModularHoe extends HoeItem implements PlatformModularItemMethods, M
     }
 
     @Override
-    public void setToolMaterial(ToolMaterial toolMaterial){
+    public void lastItemStack(ToolMaterial toolMaterial){
         this.currentFakeToolmaterial = toolMaterial;
     }
 
