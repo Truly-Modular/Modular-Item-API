@@ -149,7 +149,7 @@ public class ModularHoe extends HoeItem implements PlatformModularItemMethods, M
 
     @Override
     public ItemStack finishUsing(ItemStack stack, World world, LivingEntity user) {
-        return ItemAbilityManager.finishUsing(stack, world, user, () -> finishUsing(stack, world, user));
+        return ItemAbilityManager.finishUsing(stack, world, user, () -> super.finishUsing(stack, world, user));
     }
 
     @Override
