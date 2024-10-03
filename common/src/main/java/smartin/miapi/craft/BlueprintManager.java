@@ -11,6 +11,7 @@ import smartin.miapi.client.gui.crafting.crafter.replace.CraftOption;
 import smartin.miapi.client.gui.crafting.crafter.replace.ReplaceView;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.material.AllowedMaterial;
+import smartin.miapi.modules.properties.slot.AllowedSlots;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,7 +26,15 @@ public class BlueprintManager {
         ReplaceView.optionSuppliers.add(option -> {
             List<CraftOption> options = new ArrayList<>();
             reloadedBlueprints.forEach((id, blueprint) -> {
-                options.add(asCraftOption(option.getScreenHandler(), id, blueprint));
+                boolean isAllowed = false;
+                for (String slotID : AllowedSlots.getAllowedSlots(blueprint.toMerge)) {
+                    if (option.getSlot().allowed.contains(slotID)) {
+                        isAllowed = true;
+                    }
+                }
+                if (isAllowed) {
+                    options.add(asCraftOption(option.getScreenHandler(), id, blueprint));
+                }
             });
             return options;
         });

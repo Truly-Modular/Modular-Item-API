@@ -20,6 +20,7 @@ import smartin.miapi.client.gui.crafting.crafter.replace.ReplaceView;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.material.AllowedMaterial;
 import smartin.miapi.modules.properties.slot.AllowedSlots;
+import smartin.miapi.modules.properties.slot.SlotProperty;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -81,6 +82,8 @@ public class BlueprintComponent {
         this.toMerge = moduleInstance;
         this.ingredient = ingredient;
         this.name = name;
+        //trigger property load to parse property data
+        moduleInstance.getProperty(SlotProperty.getInstance());
     }
 
     public boolean useMaterialCrafting() {
@@ -133,6 +136,7 @@ public class BlueprintComponent {
 
     public void apply(ModuleInstance old) {
         old.module = this.toMerge.module;
+        old.moduleID = this.toMerge.moduleID;
         old.moduleData = new HashMap<>(this.toMerge.moduleData);
         this.toMerge.getSubModuleMap().forEach(old::setSubModule);
     }

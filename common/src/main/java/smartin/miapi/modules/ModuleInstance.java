@@ -1,6 +1,5 @@
 package smartin.miapi.modules;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
@@ -22,10 +21,10 @@ import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.item.modular.PropertyResolver;
 import smartin.miapi.item.modular.StatResolver;
-import smartin.miapi.modules.cache.DataCache;
-import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.material.Material;
 import smartin.miapi.material.MaterialProperty;
+import smartin.miapi.modules.cache.DataCache;
+import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.slot.SlotProperty;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
@@ -84,8 +83,8 @@ public class ModuleInstance {
                 }
                 var result = basicResult.getOrThrow().getFirst();
                 if (result.subModules.isEmpty() && result.module != ItemModule.empty) {
-                    Miapi.LOGGER.error("possible problem!");
-                    Miapi.LOGGER.warn("encoded module " + result);
+                    //Miapi.LOGGER.error("possible problem!");
+                    //Miapi.LOGGER.warn("encoded module " + result);
                 }
                 return basicResult;
             }
@@ -96,8 +95,8 @@ public class ModuleInstance {
             public <T> DataResult<T> encode(ModuleInstance input, DynamicOps<T> ops, T prefix) {
                 var result = basicCodec.encode(input, ops, prefix);
                 if (input.subModules.isEmpty() && input.module != ItemModule.empty) {
-                    Miapi.LOGGER.error("possible problem!");
-                    Miapi.LOGGER.warn("encoded module " + result.getOrThrow());
+                    //Miapi.LOGGER.error("possible problem!");
+                    //Miapi.LOGGER.warn("encoded module " + result.getOrThrow());
                 }
                 return result;
             }
@@ -173,12 +172,12 @@ public class ModuleInstance {
      * @param module the item module for the module instance
      */
     public ModuleInstance(ResourceLocation module, Map<String, ModuleInstance> subModules, Map<String, JsonElement> data) {
-        this.moduleID  = module;
+        this.moduleID = module;
         this.subModules = subModules;
         this.moduleData = new HashMap<>(data);
         subModules.values().forEach(subModule -> subModule.parent = this);
         this.module = RegistryInventory.modules.get(module.toString());
-        if (module == null) {
+        if (this.module == null) {
             this.module = ItemModule.empty;
             Miapi.LOGGER.warn("could not find module " + module + " substituting with empty module");
         }
@@ -431,16 +430,6 @@ public class ModuleInstance {
         initializedProperties.clear();
     }
 
-    /**
-     * Returns a JSON string representation of this module instance.
-     *
-     * @return a JSON string representation of this module instance
-     */
-    public String toString() {
-        Gson gson = new Gson();
-        return gson.toJson(CODEC.encodeStart(JsonOps.INSTANCE, this));
-    }
-
     @Environment(EnvType.CLIENT)
     public Component getModuleName() {
         String moduleName = module.id().toString();
@@ -580,6 +569,11 @@ public class ModuleInstance {
             }
         }
         return fallback.get();
+    }
+
+    @Override
+    public String toString() {
+        return CODEC.encodeStart(JsonOps.INSTANCE, this).getOrThrow().toString();
     }
 
     @Override

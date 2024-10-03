@@ -1,6 +1,9 @@
 {
     "module": {
-        "key": "arsenal:blade/normal"
+        "key": "arsenal:blade/normal",
+        "data": {
+            "skin": "summer/sword-flamming_snake"
+        }
     },
     "ingredient": false,
     "name": "Blueprint Works!!!"
