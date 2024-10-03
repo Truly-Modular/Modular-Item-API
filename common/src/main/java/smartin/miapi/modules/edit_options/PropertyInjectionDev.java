@@ -21,7 +21,6 @@ import smartin.miapi.client.gui.crafting.CraftingScreen;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.modules.ModuleDataPropertiesManager;
 import smartin.miapi.modules.ModuleInstance;
-import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.network.Networking;
 import smartin.miapi.registries.RegistryInventory;
@@ -36,12 +35,35 @@ public class PropertyInjectionDev implements EditOption {
     @Override
     public ItemStack preview(FriendlyByteBuf buffer, EditContext context) {
         String raw = buffer.readUtf();
-        assert context.getInstance() != null;
-        context.getInstance().moduleData.put("properties", new JsonObject());
-        ItemStack stack1 = context.getItemstack().copy();
-        context.getInstance().getRoot().writeToItem(stack1);
-        ModularItemCache.discardCache();
-        return stack1;
+        if (raw != null) {
+            JsonObject moduleJson = Miapi.gson.fromJson(raw, JsonObject.class);
+            Map<ModuleProperty<?>, Object> properties = new HashMap<>();
+            if (moduleJson != null) {
+                for (Map.Entry<String, JsonElement> stringJsonElementEntry : moduleJson.entrySet()) {
+                    ResourceLocation id = Miapi.id(stringJsonElementEntry.getKey());
+                    ModuleProperty<?> property = RegistryInventory.moduleProperties.get(id);
+                    try {
+                        assert property != null;
+                        property.load(Miapi.id("property-injection"), stringJsonElementEntry.getValue(), true);
+                        properties.put(property, property.decode(stringJsonElementEntry.getValue()));
+                    } catch (Exception e) {
+                        Miapi.LOGGER.error("error during property injection", e);
+                    }
+                }
+            }
+            try {
+                assert context.getInstance() != null;
+                ModuleInstance current = context.getInstance().copy();
+                ModuleDataPropertiesManager.setProperties(current, properties);
+                ItemStack stack1 = context.getItemstack().copy();
+                current.getRoot().writeToItem(stack1);
+                return stack1;
+
+            } catch (RuntimeException e) {
+                Miapi.LOGGER.error("error during property injection", e);
+            }
+        }
+        return context.getItemstack();
     }
 
     @Override
@@ -88,7 +110,7 @@ public class PropertyInjectionDev implements EditOption {
                         if (moduleJson != null) {
                             for (Map.Entry<String, JsonElement> stringJsonElementEntry : moduleJson.entrySet()) {
                                 ResourceLocation id = Miapi.id(stringJsonElementEntry.getKey());
-                                ModuleProperty property = RegistryInventory.moduleProperties.get(id);
+                                ModuleProperty<?> property = RegistryInventory.moduleProperties.get(id);
                                 try {
                                     assert property != null;
                                     property.load(Miapi.id("property-injection"), stringJsonElementEntry.getValue(), true);
@@ -103,6 +125,7 @@ public class PropertyInjectionDev implements EditOption {
                         }
                         try {
                             ModuleDataPropertiesManager.setProperties(moduleInstance, properties);
+
                         } catch (RuntimeException e) {
                             error.setText(Component.nullToEmpty(e.getMessage()));
                             error.textColor = FastColor.ARGB32.color(255, 255, 0, 0);

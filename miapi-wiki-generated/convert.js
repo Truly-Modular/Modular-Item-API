@@ -141,18 +141,7 @@ function readJsonFiles(dir, jsonData = {}) {
 			const content = fs.readFileSync(filePath, 'utf-8')
 			if (true) {
 				let result = content
-				result = result.replace('material:rainbow_pride_1', 'material:miapi:custom/rainbow/1')
-				result = result.replace('material:rainbow_pride_2', 'material:miapi:custom/rainbow/1')
-				result = result.replace('material:rainbow_pride_3', 'material:miapi:custom/rainbow/1')
-				result = result.replace('material:rainbow_pride_4', 'material:miapi:custom/rainbow/1')
-				result = result.replace('material:rainbow_pride_5', 'material:miapi:custom/rainbow/1')
-				result = result.replace('material:rainbow_pride_ace', 'material:miapi:custom/rainbow/flags/ace')
-				result = result.replace('material:rainbow_pride_bi', 'material:miapi:custom/rainbow/flags/bi')
-				result = result.replace('material:miapi:custom/rainbow/flags/1bi', 'material:miapi:custom/rainbow/flags/bi')
-				result = result.replace('material:rainbow_pride_gay', 'material:miapi:custom/rainbow/flags/gay')
-				result = result.replace('material:rainbow_pride_lesbian', 'material:miapi:custom/rainbow/flags/lesbian')
-				result = result.replace('material:rainbow_pride_nb', 'material:miapi:custom/rainbow/flags/nb')
-				result = result.replace('material:rainbow_pride_trans', 'material:miapi:custom/rainbow/flags/trans')
+				result = result.replaceAll('[material.mining_level]', '([material.tier]-1)')
 				fs.writeFileSync(filePath, result)
 			} else {
 				let result = convertOldToNew(JSON.parse(content))
