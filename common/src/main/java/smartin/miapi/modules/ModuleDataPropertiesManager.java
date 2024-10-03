@@ -12,8 +12,7 @@ import java.util.Map;
 
 /**
  * @header Data Types
- * @description_start
- * Data Types are commonly used Types of json encoded data.
+ * @description_start Data Types are commonly used Types of json encoded data.
  * Different systems all use these same types, so this is an explanation for the individual types
  * @desciption_end
  * @keywords Data Types, datatypes, data_types
@@ -50,11 +49,19 @@ public class ModuleDataPropertiesManager {
         propertyMap.forEach(((moduleProperty, element) -> {
             ResourceLocation key = RegistryInventory.moduleProperties.findKey(moduleProperty);
             assert key != null;
-            JsonElement encoded = encode(moduleProperty, element);
-            if (encoded.isJsonPrimitive()) {
-                object.add(key.toString(), encoded);
-            } else {
-                object.add(key.toString(), encoded);
+            try {
+                JsonElement encoded = encode(moduleProperty, element);
+                if (encoded != null) {
+                    if (encoded.isJsonPrimitive()) {
+                        object.add(key.toString(), encoded);
+                    } else {
+                        object.add(key.toString(), encoded);
+                    }
+                } else {
+                    Miapi.LOGGER.error("could not encode property " + key);
+                }
+            } catch (RuntimeException e) {
+                Miapi.LOGGER.error("could not encode property " + key, e);
             }
             //object.add(key, encode(moduleProperty, element));
         }));

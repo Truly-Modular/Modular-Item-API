@@ -10,17 +10,21 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import com.mojang.math.Transformation;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.redpxnda.nucleus.codec.auto.AutoCodec;
 import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.renderer.block.model.ItemTransform;
 import net.minecraft.client.resources.model.ModelState;
-import org.joml.*;
+import org.joml.Matrix4f;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
+import org.joml.Vector4f;
 import smartin.miapi.Miapi;
 
 import java.io.IOException;
-import java.lang.Math;
+import java.util.Optional;
 
 /**
  * A Transform represents a transformation in 3D space, including rotation, translation, and scaling.
@@ -28,15 +32,29 @@ import java.lang.Math;
  */
 @JsonAdapter(Transform.TransformJsonAdapter.class)
 public class Transform {
-    public static Codec<Transform> CODEC = AutoCodec.of(Transform.class).codec();
+    public static Codec<Vector3f> VECTOR_CODEC = AutoCodec.of(Vector3f.class).codec();
     @CodecBehavior.Optional
-    public String origin = null;
+    public String origin;
     @CodecBehavior.Optional
-    public Vector3f rotation = new Vector3f();
+    public Vector3f rotation;
     @CodecBehavior.Optional
-    public Vector3f translation = new Vector3f();
+    public Vector3f translation;
     @CodecBehavior.Optional
-    public Vector3f scale = new Vector3f();
+    public Vector3f scale;
+
+    public static final Codec<Transform> CODEC = RecordCodecBuilder.create((instance) ->
+            instance.group(
+                    VECTOR_CODEC.optionalFieldOf("rotation", new Vector3f())
+                            .forGetter((transform) -> transform.rotation),
+                    VECTOR_CODEC.optionalFieldOf("translation", new Vector3f())
+                            .forGetter((transform) -> transform.translation),
+                    VECTOR_CODEC.optionalFieldOf("scale", new Vector3f())
+                            .forGetter((transform) -> transform.scale),
+                    Codec.STRING.optionalFieldOf("origin")
+                            .forGetter((transform) -> Optional.ofNullable(transform.origin))
+            ).apply(instance, Transform::new)
+    );
+
     /**
      * The identity bakedTransform, representing no transformation at all.
      */
@@ -56,10 +74,17 @@ public class Transform {
     }
 
     /**
-     * DO NOT USE! this is only for autocodecs
+     * Creates a new Transform with the given rotation, translation, and scale.
+     *
+     * @param rotation    the rotation vector, as a Vec3f
+     * @param translation the translation vector, as a Vec3f
+     * @param scale       the scale vector, as a Vec3f
      */
-    public Transform() {
-
+    public Transform(Vector3f rotation, Vector3f translation, Vector3f scale, Optional<String> origin) {
+        this(rotation, translation, scale);
+        if (origin.isPresent()) {
+            this.origin = origin.get();
+        }
     }
 
     @Environment(EnvType.CLIENT)

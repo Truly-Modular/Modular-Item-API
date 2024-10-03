@@ -57,6 +57,8 @@ public class PropertyInjectionDev implements EditOption {
                 ModuleDataPropertiesManager.setProperties(current, properties);
                 ItemStack stack1 = context.getItemstack().copy();
                 current.getRoot().writeToItem(stack1);
+                current.getRoot().clearCaches();
+
                 return stack1;
 
             } catch (RuntimeException e) {
@@ -124,7 +126,7 @@ public class PropertyInjectionDev implements EditOption {
                             }
                         }
                         try {
-                            ModuleDataPropertiesManager.setProperties(moduleInstance, properties);
+                            ModuleDataPropertiesManager.setProperties(moduleInstance.copy(), properties);
 
                         } catch (RuntimeException e) {
                             error.setText(Component.nullToEmpty(e.getMessage()));
