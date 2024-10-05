@@ -3,6 +3,7 @@ package smartin.miapi.modules;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.minecraft.resources.ResourceLocation;
+import smartin.miapi.Environment;
 import smartin.miapi.Miapi;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.registries.RegistryInventory;
@@ -31,6 +32,11 @@ public class ModuleDataPropertiesManager {
                             .get(Miapi.id(stringJsonElementEntry.getKey()));
                     if (property != null) {
                         map.put(property, property.decode(stringJsonElementEntry.getValue()));
+                        try {
+                            property.load(Miapi.id("runtime_data"), stringJsonElementEntry.getValue(), Environment.isClient());
+                        } catch (Exception e) {
+                            Miapi.LOGGER.info("could not load property " + stringJsonElementEntry.getKey());
+                        }
                     }
                 });
             }
