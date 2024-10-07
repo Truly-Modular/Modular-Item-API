@@ -1,1 +1,1144 @@
-{}
+{
+  "sub_pages": {
+    "datapack": {
+      "header": "Datapack Types",
+      "description": "Datapack Types is what we use to describe different types of json formats under different folders that were added by Truly Modular.\r  \nTruly Modular adds various different types for various different reasons, shown in subpages",
+      "data": {},
+      "key_words": [
+        "Datapack Type",
+        "Datapack",
+        ""
+      ],
+      "sub_pages": {
+        "blueprint": {
+          "header": "Blueprint Datapack Type",
+          "description": "Blueprints also can exist in Datapack with the same data as the Blueprint Component.",
+          "data": {},
+          "key_words": [
+            "Blueprint Datapack"
+          ]
+        },
+        "modular_converters": {
+          "header": "Modular Converters",
+          "description": "These are used to convert existing items into modular items when placed into the workbench.\r  \nThey are a ItemId:Module Instance component\r  \nThey can be found/added in mod-id:miapi/modular_converter/any-path-and-file-name.json",
+          "data": {},
+          "key_words": []
+        },
+        "material-extension": {
+          "header": "Material Extension",
+          "description": "Material Extensions are used to extend existing materials.  \r  \nThey can be found/added in mod-id:miapi/material-extensions/any-path-and-file-name.json\r  \nThey can be used to augment existing materials,  \r  \nFor example Arsenal uses them to add gemstone stats to some materials.\r  \n\r  \n### `id` \r  \nthe id of the material to be extended",
+          "data": {},
+          "key_words": []
+        },
+        "material": {
+          "header": "Materials",
+          "description": "JsonMaterials is a file format used to define materials within the mod.\r  \nThey can be found/added in mod-id:miapi/materials/any-path-and-file-name.json\r  \nThese materials can have various stats such as hardness, density, flexibility, etc.,\r  \n# Required Fields\r  \n### `translation`\r  \nThe language key of the material, points to the language file.\r  \n### `icon`\r  \nthe Icon of the Material, can either be the path to a texture or a more complex icon, for that see [this](https://github.com/Truly-Modular/Modular-Item-API/blob/main/common/src/main/resources/data/miapi/materials/glass/black_glass.json#L4) as an example\r  \n### `color`\r  \nThe Hex color of the Material. Please use RGB and NOT RGBA here.\r  \n# Optional Fields\r  \n## Module Stats\r  \nModule stats is a weird subcategory.\r  \nAny open key can be used to define a Modulestat, such as ` hardness` or ` mining level` , for [Example](https://github.com/Truly-Modular/Modular-Item-API/blob/main/common/src/main/resources/data/miapi/materials/glass/black_glass.json#L4) these can be dynamicly called from by calling [material.hardness] in a complex double as reference.\r  \n\r  \n### `groups`\r  \na list of group keys. by default `stone` `wood` `metal` `bone` `glass` `fabric` `crystal` `gemstone` `flint` `rod` `fletching` `smithing` are used\r  \n### `items`\r  \nA List of Items to create the Material, can either be \"item\", \"tag\" or \"ingredient\". requires also a \"value\" to define the value in relation to the cost of the modules.\r  \n### `properties`\r  \nThis is a complex field . It has subfield sorted by key. Those keys can be referenced by Modules to search for Material Properties. Default keys include `default`  \r  \n`handheld` `tool` `blade`  `head`  `axe` `pickaxe` `hammer` `hoe` `shovel`\r  \n`armor` `helmet` `chest` `pants` `boots`\r  \nAfter the respective key a property map can be added to apply additional properties if this material is used on a matching Module.\r  \n\r  \n### `hidden_properties`\r  \nThis field is similar to properties, but wont display in UI\r  \n\r  \n### `display_properties`\r  \nThis field is similar to properties, but they wont apply, but show up in the UI. This is usefull to communicate Material information to the player\r  \n\r  \n# Color Palette\r  \nColor Palettes should be defined for all actual materials, and they need to be under the key `color_palette`\r  \nThey can have different Types:\r  \n### `grayscale_map`\r  \nThis is a Map where brigthness values of the raw texture are mapped to direct color values. [Example](https://github.com/Truly-Modular/Modular-Item-API/blob/main/common/src/main/resources/data/miapi/materials/glass/black_glass.json#L17)\r  \n### `from_material_palette_image`\r  \nThis is a Map where brigthness values of the raw texture are mapped to direct color values. Unlike the grayscale_map this uses a 1x256 texture to remap instead [Example](https://github.com/Truly-Modular/Modular-Item-API/blob/main/common/src/main/resources/data/miapi/materials/stone/magma.json#L17)\r  \n### `image_generated`\r  \nThis requires the json to mention a texture and this texture will be used to generate a palette similar to how generated Materials work.\r  \n```json\r  \n\"color_palette\": {\r  \n    \"type\": \"image_generated\",\r  \n    \"atlas\": \"block\",\r  \n    \"texture\": \"minecraft:block/dirt\"\r  \n}\r  \n```\r  \n### `image_generated_item`\r  \nThis requires the json to mention a valid ItemId. This might be easier to use than the option above\r  \n```json\r  \n\"color_palette\": {\r  \n    \"type\": \"image_generated_item\",\r  \n    \"item\": \"minecraft:dirt\"\r  \n}\r  \n```\r  \n### `overlay_texture`\r  \nThis overlays a Texture over the existing Model, allowing for cooler looking custom motives. Well repeating texures are recommended. [Example](https://github.com/Truly-Modular/Modular-Item-API/blob/main/common/src/main/resources/data/miapi/materials/stone/sculk.json#L17)\r  \n\r  \n### `layered_mask`\r  \nThis mask between two other Color Palettes via a Texture. Example:\r  \n```json\r  \n\"color_palette\": {\r  \n    \"type\": \"layered_mask\",\r  \n    \"base\": {\r  \n        \"type\": \"grayscale_map\",\r  \n        \"colors\": {\r  \n            \"24\": \"2D0500\",\r  \n            \"68\": \"4A0800\",\r  \n            \"107\": \"720C00\",\r  \n            \"150\": \"720C00\",\r  \n            \"190\": \"BB2008\",\r  \n            \"255\": \"E32008\"\r  \n        }\r  \n    },\r  \n    \"layer\": {\r  \n        \"type\": \"grayscale_map\",\r  \n        \"colors\": {\r  \n            \"24\": \"002d00\",\r  \n            \"68\": \"005300\",\r  \n            \"107\": \"007b18\",\r  \n            \"150\": \"009529\",\r  \n            \"190\": \"00aa2c\",\r  \n            \"216\": \"17dd62\",\r  \n            \"255\": \"41f384\"\r  \n        }\r  \n    },\r  \n    \"mask\": {\r  \n        \"type\": \"texture\",\r  \n        \"atlas\": \"block\",\r  \n        \"texture\": \"minecraft:block/water_still\"\r  \n    }\r  \n}\r  \n```\r  \n\r  \n\r  \n\r  \n# NBT Materials\r  \nNBT Materials are Materials that are only defined by a single NBT tag.  \r  \nYou need to put it under the nbt-tag \"miapi_material\".   \r  \nA Valid Parent needs to be defined to extract the stats from.\r  \nAnother optional property \"cost\" exists to set the value of the Item in the Modular Workbench\r  \nAll the other Json material properties can be used.\r  \n\r  \nExample command:\r  \n`/give @p dirt{miapi_material:{parent:gold,flexibility:20,cost:4}} 64`",
+          "data": {},
+          "key_words": []
+        },
+        "create-option": {
+          "header": "Create Option",
+          "description": "Create Options show up when the + Button is pressed.\r  \nThey can be found/added in mod-id:miapi/create_options/any-path-and-file-name.json\r  \n\r  \n### `item` \r  \nThe id of the item to be created, usually \"miapi:modular_item\" will work.\r  \n### `module`\r  \nThe id of the base module to be added.\r  \n### `translation`\r  \nThe Translation key of the name\r  \n### `count`\r  \nHow many will be created at once",
+          "data": {},
+          "key_words": []
+        },
+        "module": {
+          "header": "Modules",
+          "description": "  \nModules are the core of Truly Modular\rThey can be found/added in mod-id:/miapi/modules/any-path-and-file-name.json\rThey consist of a Map of Properties\r",
+          "java": "common/src/main/java/smartin/miapi/modules/ItemModule.java",
+          "data": {},
+          "key_words": []
+        },
+        "module-extension": {
+          "header": "Module Extension",
+          "description": "Module Extensions are used to extend existing module.  \r  \nThey can be found/added in mod-id:miapi/module-extensions/any-path-and-file-name.json\r  \nThey can be used to augment existing modules, but usually synergies are a better way of doing this\r  \n\r  \n### `id` \r  \nthe id of the material to be extended",
+          "data": {},
+          "key_words": []
+        },
+        "synergies": {
+          "header": "Synergies",
+          "description": "Synergies are used to adjust a ModuleInstances properties based on condition.\r  \nThey can be found/added in mod-id:miapi/synergies/any-path-and-file-name.json\r  \n\r  \n### `type`\r  \nThe Type of synergy, can either by \"tag\", \"material\", \"all\", if no type is given module is asumed.\r  \n- tag applies to module with the tag.   \r  \n- all applies to all modules    \r  \n- material applies to a certain material  \r  \n\r  \n\r  \n### `condition`\r  \nA complex Condition\r  \n\r  \n### `module/material/tag mentioned above`\r  \nthis is the key, the inner data is split into\r  \n- `replace` Replaces the property, erasing previous data\r  \n- `merge` properties to be merged into the modules property\r  \n- `remove` a list of properties to remove",
+          "data": {},
+          "key_words": []
+        }
+      }
+    },
+    "components": {
+      "header": "Itemstack Components",
+      "description": "Components are a new 1.21 concept in Minecraft. They replace the old NBT tags with to help with structure and organisation.\r  \nTruly Modular adds a couple of their own Components, many for different reasons.\r  \nFor more information we do recommend to check the [Minecraft Wiki](https://minecraft.wiki/w/Data_component_format) page on components.\r  \nThe Sub Pages on this wiki will go indepth about the different components Truly Modular adds and their respective use cases.",
+      "data": {},
+      "key_words": [
+        "Components",
+        "Component"
+      ],
+      "sub_pages": {
+        "blueprint": {
+          "header": "Blueprint Component",
+          "description": " This Component allows the attachment of additional Craft Options for the crafting UI.  \nThe Cost can be configured via the Ingredient in the data. Setting it to false will use the default module cost of the root module to be added.\rSetting it to true will require whatever item this component is attached to.\rIt can also be set to an ingredient with count, in this case the inner data is a number, the amount of the ingredient needed and\rthe ingredient itself, following minecrafts default ingredient logic, like for recipes.\r",
+          "java": "common/src/main/java/smartin/miapi/craft/BlueprintComponent.java",
+          "data": {
+            "module": "a Module Instance, not a module, see the Module Component for more details",
+            "ingredient": " This can either be a boolean or an ingredient with Count.",
+            "name": " (Optional) This allows for a custom name in the Crafting UI."
+          },
+          "key_words": []
+        },
+        "module": {
+          "header": "ModuleInstance Component",
+          "description": " This Component stores the main Modules for the Itemstack in question.  \nThis Component can be attached to any Itemstack, but many of the properties only correctly work on Modular Items,\rso It's recommended to only attach his to Modular Item\r",
+          "java": "common/src/main/java/smartin/miapi/modules/ModuleInstance.java",
+          "data": {
+            "key": "the ID of the module to be attached",
+            "child": " a slotId -> submodule map to map all submodules. This will be sorted in relation to the Slot Properties priority.",
+            "data": " this is a String->custom data map to store additional custom data for properties to use. This is a per module savedata system."
+          },
+          "key_words": []
+        }
+      }
+    },
+    "data_types": {
+      "header": "Data Types",
+      "description": " Data Types are commonly used Types of json encoded data.  \nDifferent systems all use these same types, so this is an explanation for the individual types\r",
+      "java": "common/src/main/java/smartin/miapi/modules/ModuleDataPropertiesManager.java",
+      "data": {},
+      "key_words": [
+        "DataTypes",
+        "datatypes",
+        "data_types"
+      ],
+      "sub_pages": {
+        "ingredient_count": {
+          "header": "Ingredient with Count",
+          "description": "  \nThis is an expansions of vanillas default ingredient to also allow for a count, how much of that ingredient is required.\rYou can check [Minecrafts Wiki](https://minecraft.wiki/w/Recipe#JSON_Format) for more information on the ingredient structure.\r",
+          "java": "common/src/main/java/smartin/miapi/craft/IngredientWithCount.java",
+          "data": {
+            "ingredient": " Same as minecrafts default ingredient, check datapack recipes for more information.",
+            "count": " a simple integer, how much of the ingredient is actually needed."
+          },
+          "key_words": []
+        },
+        "loot_functions": {
+          "header": "Loot Functions",
+          "description": "Loot Functions are functions within minecraft that can adjust Items for loot within any loot table.\r  \nYou can read up on them on the [wiki](https://minecraft.wiki/w/Loot_table),\r  \nor visit [misodes beautifull site](https://misode.github.io/loot-table/) to help with understanding their structure.\r  \nTruly Modular introduces new loot functions to diversify and modularise looted items dynamically.",
+          "data": {},
+          "key_words": [],
+          "sub_pages": {
+            "material_swap": {
+              "header": "Material Swap Loot Function",
+              "description": " The `MaterialSwapLootFunction` is a loot function  \nthat randomizes the materials of a modular item when generated\ras loot. This function compares the item’s materials with a specified material\rand replaces it with a new one based on several configurable parameters.\rThese parameters control the bounds, mining level, tier, hardness, and flexibility\rfactors that influence the selection of substitute materials.\rAdditionally, the function can filter materials using\ra whitelist or blacklist to limit or exclude certain materials from substitution.\rThis allows for very random items within the loot-pool that still retain roughly the same strength level\r* Its full ID is ```\"miapi:material_swap\"```\r",
+              "java": "common/src/main/java/smartin/miapi/lootFunctions/MaterialSwapLootFunction.java",
+              "data": {
+                "material": " An optional material ID to substitute, if not set the highest found material will be used instead",
+                "lowerBounds": " An optional (default = -3) double that sets the lower bound of acceptable material differences for substitution.",
+                "upperBounds": " An optional (default = +0.5) double that sets the upper bound of acceptable material differences for substitution.",
+                "miningLevelFactor": " An optional (default = 1.0) double that adjusts the impact of the mining level on material substitution.",
+                "tierFactor": " An optional (default = 1.0) double that influences the selection of materials based on their tier level.",
+                "hardnessFactor": " An optional double (default = 1.0) that influences the selection of materials based on their hardness.",
+                "flexibilityFactor": " An optional (default = 1.0) double that adjusts material substitution based on flexibility values.",
+                "chance": " An optional (default = 1.0) that sets the chance for a swap to occur in the first place.",
+                "blacklist": " An optional list of Material IDs representing materials that cannot be substituted.",
+                "whitelist": " An optional list of Material IDs, if set blocks all entries not on this list."
+              },
+              "key_words": []
+            },
+            "module_swap": {
+              "header": "Module Swap Loot Function",
+              "description": " The `ModuleSwapLootFunction` is a loot function that randomizes the modules of a modular item when generated as loot.  \nThis function attempts to substitute modules with compatible alternatives.\rThe function also allows for the selection of a fallback material.\rThis loot function can be used to greatly diversify the loot found.\rIts full ID is ```\"miapi:module_swap\"```\r",
+              "java": "common/src/main/java/smartin/miapi/lootFunctions/ModuleSwapLootFunction.java",
+              "data": {
+                "material": " An material ID to target a different material then found on the item. if none are set the most powerfull material on the item is chosen instead",
+                "chance": " An optional (default = 1.0) that sets the chance for a swap to occur in the first place.",
+                "blacklist": " An optional list of Module IDs representing modules that cannot be substituted.",
+                "whitelist": " An optional list of Module IDs, if set blocks all entries not on this list."
+              },
+              "key_words": []
+            }
+          }
+        },
+        "abilities": {
+          "sub_pages": {
+            "copy_item": {
+              "header": "Copy Item Ability",
+              "description": " This ability aims to be able to copy any other items right click ability.  \nThis might not work with some items/mods, as if they check for the executing item this will fail\r",
+              "java": "common/src/main/java/smartin/miapi/modules/abilities/CopyItemAbility.java",
+              "data": {
+                "id": "the id of the item to copy from"
+              },
+              "key_words": []
+            }
+          }
+        },
+        "condition": {
+          "header": "Conditions",
+          "description": "  \nConditions! what is there to describe\r",
+          "java": "common/src/main/java/smartin/miapi/modules/conditions/ConditionManager.java",
+          "data": {},
+          "key_words": [
+            "Condition"
+          ],
+          "sub_pages": {
+            "advancement_condition": {
+              "header": "Advancement Condition",
+              "description": "  \nthis condition checks if the associated player has a specific advancement. This is set to false if there is no associated Player\r",
+              "java": "common/src/main/java/smartin/miapi/modules/conditions/AdvancementCondition.java",
+              "data": {
+                "type": "advancement",
+                "advancement": " the id of the advancement, you can use the /advancement command to get a list of these"
+              },
+              "key_words": []
+            },
+            "and_condition": {
+              "header": "And Condition",
+              "description": "  \nthis condition requires all sub conditions to be true\r",
+              "java": "common/src/main/java/smartin/miapi/modules/conditions/AndCondition.java",
+              "data": {
+                "type": "and",
+                "conditions": "sub Conditions to be checked"
+              },
+              "key_words": []
+            },
+            "child_condition": {
+              "header": "Child Condition",
+              "description": "  \nthis condition moves the context to any direct child module\r",
+              "java": "common/src/main/java/smartin/miapi/modules/conditions/ChildCondition.java",
+              "data": {
+                "type": "child",
+                "condition": "sub Condition to be tested on the child modules"
+              },
+              "key_words": []
+            },
+            "is_mod_loaded": {
+              "header": "Mod Loaded Condition",
+              "description": "  \nthis condition checks if a mod is loaded, you should consider using this as a Load Condition\r",
+              "java": "common/src/main/java/smartin/miapi/modules/conditions/IsModLoadedCondition.java",
+              "data": {
+                "type": "mod_loaded",
+                "mod": "the mod ID to be checked"
+              },
+              "key_words": []
+            },
+            "item_in_inventory": {
+              "header": "Item in inventory Condition",
+              "description": "  \nthis condition checks if a certain amount of a certain item is in a players inventory\r",
+              "java": "common/src/main/java/smartin/miapi/modules/conditions/ItemInInventoryCondition.java",
+              "data": {
+                "type": "item_in_inventory",
+                "item": "Item in the form of an Ingredient",
+                "count": "the amount of items needed to be present"
+              },
+              "key_words": []
+            },
+            "material": {
+              "header": "Material Condition",
+              "description": "  \nthis condition checks if this Module has a certain material\r",
+              "java": "common/src/main/java/smartin/miapi/modules/conditions/MaterialCondition.java",
+              "data": {
+                "type": "material",
+                "material": "the material to be checked"
+              },
+              "key_words": []
+            },
+            "material_count": {
+              "header": "Material Count Condition",
+              "description": "  \nthis condition checks if the item has a certain material a certain amount of times\r",
+              "java": "common/src/main/java/smartin/miapi/modules/conditions/MaterialCountCondition.java",
+              "data": {
+                "type": "material_count",
+                "material": "the material to be checked",
+                "count": "how often the material is used"
+              },
+              "key_words": []
+            },
+            "miapi_perm": {
+              "header": "Miapi Perm Condition",
+              "description": "  \nthis condition is to check patreon or other types of outside conditions like time of year.\rThis is mostly used to give patreon subscribers their skins/enable free skins depending on the season\r",
+              "java": "common/src/main/java/smartin/miapi/modules/conditions/MiapiPerm.java",
+              "data": {
+                "type": "miapi_perm",
+                "perm": "a list of perms or UUIDS"
+              },
+              "key_words": []
+            },
+            "module": {
+              "header": "Module Type Condition",
+              "description": "  \nthis condition if the associated module instance uses this module\r",
+              "java": "common/src/main/java/smartin/miapi/modules/conditions/ModuleTypeCondition.java",
+              "data": {
+                "type": "module",
+                "module": "the id of the module"
+              },
+              "key_words": []
+            },
+            "not": {
+              "header": "Not Condition",
+              "description": "  \nthis condition inverses another condition\r",
+              "java": "common/src/main/java/smartin/miapi/modules/conditions/NotCondition.java",
+              "data": {
+                "type": "not",
+                "condition": "the sub condition to be inversed"
+              },
+              "key_words": []
+            },
+            "number": {
+              "header": "Number Condition",
+              "description": "  \nthis condition inverses another condition\r",
+              "java": "common/src/main/java/smartin/miapi/modules/conditions/NumberCondition.java",
+              "data": {
+                "type": "number",
+                "condition": "a Double Resolvable, if the result is higher than 0 is considered true"
+              },
+              "key_words": []
+            },
+            "or_condition": {
+              "header": "Or Condition",
+              "description": "  \nthis condition requires one sub conditions to be true\r",
+              "java": "common/src/main/java/smartin/miapi/modules/conditions/OrCondition.java",
+              "data": {
+                "type": "or",
+                "conditions": "sub Conditions to be checked"
+              },
+              "key_words": []
+            },
+            "other_module": {
+              "header": "Other Module Condition",
+              "description": "  \nthis condition moves the context to any other module of the item\r",
+              "java": "common/src/main/java/smartin/miapi/modules/conditions/OtherModuleModuleCondition.java",
+              "data": {
+                "type": "other_module",
+                "condition": "sub Condition to be tested on all other modules of the item"
+              },
+              "key_words": []
+            },
+            "parent": {
+              "header": "Parent Condition",
+              "description": " this condition moves the context to the parent module  \n",
+              "java": "common/src/main/java/smartin/miapi/modules/conditions/ParentCondition.java",
+              "data": {
+                "type": "parent",
+                "condition": "sub Condition to be tested on the parent module"
+              },
+              "key_words": []
+            },
+            "tag": {
+              "header": "Tag Condition",
+              "description": " this condition checks if the associated module has a specific module tag. Not to be confused with Item Tags  \n",
+              "java": "common/src/main/java/smartin/miapi/modules/conditions/TagCondition.java",
+              "data": {
+                "type": "tag",
+                "tag": "the tag to be checked"
+              },
+              "key_words": []
+            },
+            "true": {
+              "header": "True Condition",
+              "description": " this condition is always true  \n",
+              "java": "common/src/main/java/smartin/miapi/modules/conditions/TrueCondition.java",
+              "data": {
+                "type": "true"
+              },
+              "key_words": []
+            }
+          }
+        },
+        "properties": {
+          "header": "Properties",
+          "description": " Properties are the main way any stat is assigned to anything  \nThey are usually found in an id -> data map like\r``` json\r{\r\"miapi:fire_proof\":true\r}\r```\rNote that in this example \"miapi\" can be removed as it is implied if no mod id is set\rMost Properties have more complex inner data than a boolean\r",
+          "java": "common/src/main/java/smartin/miapi/modules/properties/util/ModuleProperty.java",
+          "data": {},
+          "key_words": [
+            "Properties",
+            "moduleProperties"
+          ],
+          "sub_pages": {
+            "allowed_loot": {
+              "header": "Allowed in Loot Property",
+              "description": "  \nif this modular can be found in randomized loot. should be turned off for rare/special modules.\r",
+              "java": "common/src/main/java/smartin/miapi/modules/properties/AllowedInLootProperty.java",
+              "data": {
+                "value": "a boolean value, default is true"
+              },
+              "key_words": []
+            },
+            "armor": {
+              "header": "Armor Properties",
+              "description": "  \nArmor Properties are properties specificly made for armor\r",
+              "java": "common/src/main/java/smartin/miapi/modules/properties/armor/ArmorFolder.java",
+              "data": {},
+              "key_words": [],
+              "sub_pages": {
+                "can_walk_on_snow": {
+                  "header": "Snow Walking Property",
+                  "description": "  \nThis Property allows the player to walk over powdered snow\r",
+                  "java": "common/src/main/java/smartin/miapi/modules/properties/armor/CanWalkOnSnow.java",
+                  "data": {
+                    "can_walk_on_snow": "a Boolean Resolvable"
+                  },
+                  "key_words": []
+                },
+                "equipment_slot": {
+                  "header": "Equipment Slot Property",
+                  "description": "  \nIt is recommneded to use the correct Item as well as this for better mod compatibility\r",
+                  "java": "common/src/main/java/smartin/miapi/modules/properties/armor/EquipmentSlotProperty.java",
+                  "data": {
+                    "equipment_slot": "the preferred Equipment Slot Group"
+                  },
+                  "key_words": []
+                },
+                "food_exhaustion": {
+                  "header": "Exhaustion Property",
+                  "description": "  \nThis property was made for heavy armor, it increases the food exhaustion of the player\r",
+                  "java": "common/src/main/java/smartin/miapi/modules/properties/armor/ExhaustionProperty.java",
+                  "data": {
+                    "food_exhaustion": "a Double Resolvable"
+                  },
+                  "key_words": []
+                },
+                "is_piglin_gold": {
+                  "header": "IsPiglinGold Property",
+                  "description": "  \nThis Property allows to set armor pieces as Piglin pacifying like gold is\r",
+                  "java": "common/src/main/java/smartin/miapi/modules/properties/armor/IsPiglinGold.java",
+                  "data": {
+                    "is_piglin_gold": "a Boolean Resolvable"
+                  },
+                  "key_words": []
+                },
+                "pillager_guard": {
+                  "header": "PillagesGuard Property",
+                  "description": "  \nThis property allows you to have reduced damage intake from pillagers/raid related mobs\r",
+                  "java": "common/src/main/java/smartin/miapi/modules/properties/armor/PillagesGuard.java",
+                  "data": {
+                    "pillager_guard": "a Double Resolvable"
+                  },
+                  "key_words": []
+                },
+                "step_noise_cancel": {
+                  "header": "Step Canceling Property",
+                  "description": "  \nThis Property cancels the step sounds, this is meant to interact with wardens and sculk sensors\r",
+                  "java": "common/src/main/java/smartin/miapi/modules/properties/armor/StepCancelingProperty.java",
+                  "data": {
+                    "step_noise_cancel": "a Boolean Resolvable"
+                  },
+                  "key_words": []
+                },
+                "water_gravity": {
+                  "header": "Water Gravity Property",
+                  "description": "  \nThis property increases Gravity while under water, used to make players sink faster\r",
+                  "java": "common/src/main/java/smartin/miapi/modules/properties/armor/WaterGravityProperty.java",
+                  "data": {
+                    "water_gravity": "a Double Resolvable"
+                  },
+                  "key_words": []
+                }
+              }
+            },
+            "attributes": {
+              "header": "Attribute Properties",
+              "description": "  \nProperties related to attributes\r",
+              "java": "common/src/main/java/smartin/miapi/modules/properties/attributes/AttributeFolder.java",
+              "data": {},
+              "key_words": [],
+              "sub_pages": {
+                "item_attributes": {
+                  "header": "Attribute Property",
+                  "description": " The Attribute Property is used to modify various attributes for items  \nIt can set basic, multiply and resolve complex attributes. This is a core part of the api\r",
+                  "java": "common/src/main/java/smartin/miapi/modules/properties/attributes/AttributeProperty.java",
+                  "data": {
+                    "attributes": "a list of item attributes, allowing each for the following fields",
+                    "attribute": " the ID of the attribute",
+                    "value": " double resolvable",
+                    "operation": " the operation to execute, + * ** are allowed",
+                    "slot": " the target slot group",
+                    "targetOperation ": " optional, the operation to be merged to"
+                  },
+                  "key_words": []
+                },
+                "attribute_split": {
+                  "header": "Attribute Split Property",
+                  "description": " The Attribute Split Property is used to divide attributes across different contexts.  \nIt enables assigning attributes to multiple slots and merging them based on a percentage split.\rThis Doesnt by default remove the attribute, if you wish to remove the existing attribute you need to split that attribute in\rwith the percentage -100\rThis property is essential to re-balance certain attributes for usage with other mods like alembic.\rThis Example would give 20% of the weapons attack damage as offhand damage\r```json\r\"attribute_split\": {\r  \"minecraft:generic.attack_damage\": {\r    \"mainhand\": [\r      {\r        \"attribute\": \"minecraft:generic.attack_damage\",\r        \"percentage\": \"20\",\r        \"target\":\"offhand\"\r      }\r    ]\r  }\r}\r```\r",
+                  "java": "common/src/main/java/smartin/miapi/modules/properties/attributes/AttributeSplitProperty.java",
+                  "data": {
+                    "context": " a map containing the attribute context and split configurations.",
+                    "attribute": "the attribute to be added",
+                    "percentage": "how much of the attribute should be added, 100 means same amount, 0.0 means nothing",
+                    "target": "(Optional) a target slot overwriting the source, if not set uses source slot"
+                  },
+                  "key_words": []
+                }
+              }
+            },
+            "component": {
+              "header": "Component Property",
+              "description": "  \nThis Property allows you to set any component. Whenever the module giving the Component, that component is also removed again.\rIf there was a Component set before, that component will be overwritten\rIts a map of id to Component data in json format\r",
+              "java": "common/src/main/java/smartin/miapi/modules/properties/ComponentProperty.java",
+              "data": {
+                "id": "data."
+              },
+              "key_words": []
+            },
+            "crafting_condition": {
+              "header": "Crafting Condition Property",
+              "description": "  \nThe CraftingConditionProperty defines conditions for crafting modules, including whether they are visible, selectable, and\rcraftable. Conditions are evaluated using {@link ModuleCondition} instances, which can be customized for different scenarios.\rThe property also supports event-based evaluations to manage crafting permissions dynamically.\r",
+              "java": "common/src/main/java/smartin/miapi/modules/properties/CraftingConditionProperty.java",
+              "data": {
+                "crafting_condition": " An instance of {@link CraftingConditionJson} containing conditions for visibility, selection, and crafting ability.",
+                "visible": " (optional) that determines if the module is visible for crafting.",
+                "selectAble": " (optional) that determines if the module can be selected for crafting.",
+                "craftAble": " (optional) that determines if the module can be crafted."
+              },
+              "key_words": []
+            },
+            "display_name": {
+              "header": "Display Name Property",
+              "description": "  \nThe DisplayNameProperty enables the customization of item display names based on module data. It retrieves the display name\rby resolving it through module instances and materials. The display name can be dynamically generated using translation keys\rand material-specific translations.\r",
+              "java": "common/src/main/java/smartin/miapi/modules/properties/DisplayNameProperty.java",
+              "data": {
+                "display_name": " A Text element representing the display name of the item."
+              },
+              "key_words": []
+            },
+            "durability": {
+              "header": "Durability Property",
+              "description": "  \nThe DurabilityProperty controls the maximum durability of an item. The durability is specified as a Double Resolvable value,\rwhich determines the item's maximum damage capacity. This value is applied to the item stack, influencing how much wear and\rtear the item can withstand before breaking.\r",
+              "java": "common/src/main/java/smartin/miapi/modules/properties/DurabilityProperty.java",
+              "data": {
+                "durability": " A Double value representing the maximum durability of the item."
+              },
+              "key_words": []
+            },
+            "enchantments": {
+              "header": "Enchantment Properties",
+              "description": "  \nProperties related to enchantments\r",
+              "java": "common/src/main/java/smartin/miapi/modules/properties/enchanment/EnchantFolder.java",
+              "data": {},
+              "key_words": [],
+              "sub_pages": {
+                "allowed_enchantments": {
+                  "header": "Allowed Enchantments Property",
+                  "description": "  \nThe Allowed Enchantments Property is used to specify and manage enchantments that can or cannot be applied to certain items.\rIt handles enchantment restrictions based on item types and also allows extensions to be detected and dynamically added.\rThis property is crucial for controlling item enchantment compatibility within the modular item system.\r",
+                  "java": "common/src/main/java/smartin/miapi/modules/properties/enchanment/AllowedEnchantments.java",
+                  "data": {
+                    "allowed": " a list of allowed enchantments (ResourceLocation).",
+                    "forbidden": " a list of forbidden enchantments (ResourceLocation)."
+                  },
+                  "key_words": []
+                },
+                "crafting_enchants": {
+                  "header": "Crafting Enchantments Property",
+                  "description": "  \nThe Crafting Enchantments Property adds specific enchantments to an item when it is crafted.\rThese enchantments are permanently added to the item and remain during subsequent uses or modifications.\rThe property dynamically calculates the level of the enchantment using a resolvable operation that can reference the previous level of the enchantment.\rIt integrates with the core enchantment system and ensures compatibility with existing enchantment handling mechanisms.\r",
+                  "java": "common/src/main/java/smartin/miapi/modules/properties/enchanment/CraftingEnchantProperty.java",
+                  "data": {
+                    "enchantment": " The enchantment being applied.",
+                    "value": " Double Resolvable, used to calculate the level of the enchantment."
+                  },
+                  "key_words": []
+                },
+                "enchantability": {
+                  "header": "Enchantability Property",
+                  "description": "  \nThe Enchantability Property defines how effective an item is for enchanting purposes.\rThis value influences the quality of enchantments available through the enchanting table.\rBy default, enchantability is derived from the material properties of the item, but this property allows for modification through module instances.\rIf no specific value is set, a default enchantability of 15 is used.\r",
+                  "java": "common/src/main/java/smartin/miapi/modules/properties/enchanment/EnchantAbilityProperty.java",
+                  "data": {
+                    "enchantability": " double, representing the enchantability value used for enchantment calculations.",
+                    "default_value": " 15.0, the default enchantability if no custom value is provided.",
+                    "material_controlled": " By default, enchantability is determined by material properties through the `MaterialProperty` module.",
+                    "module_instance": " Allows for custom enchantability values through module instances, which are averaged if multiple values are present."
+                  },
+                  "key_words": []
+                },
+                "fake_enchants": {
+                  "header": "Fake Enchantment Property",
+                  "description": "  \nThe Fake Enchantment Property simulates enchantment levels on items during specific operations.\rThese enchantments are not shown in the item's tooltip and are purely functional.\rThe property evaluates enchantment levels dynamically using the `[old_level]` placeholder, which allows referencing prior levels in the calculation.\rOnce the property is removed, the enchantments no longer affect the item.\r",
+                  "java": "common/src/main/java/smartin/miapi/modules/properties/enchanment/FakeEnchantmentProperty.java",
+                  "data": {
+                    "enchantment": " The fake enchantment being applied (Holder<Enchantment>).",
+                    "value": " DoubleOperationResolvable, which defines how the level of the fake enchantment is calculated."
+                  },
+                  "key_words": []
+                }
+              }
+            },
+            "fake_item_tag": {
+              "header": "Fake Item Tag Property",
+              "description": "  \nThe FakeItemTagProperty allows you to manage custom item tags for items. This property can be used to assign fake or\rplaceholder tags to items, which can be useful for various in-game functionalities or for modding purposes. These tags\rare stored as a list of strings, and the property provides methods to retrieve and check these tags.\r *\rFor example, you can use this property to simulate item tags that do not exist in the default Minecraft item tag system.\r",
+              "java": "common/src/main/java/smartin/miapi/modules/properties/FakeItemTagProperty.java",
+              "data": {
+                "tags": " A list of strings representing the fake tags assigned to the item."
+              },
+              "key_words": []
+            },
+            "fire_proof": {
+              "header": "Fire Proof Property",
+              "description": "  \nThe FireProof property allows items to be marked as fireproof, making them immune to Lava. When an item is set with this\rproperty, it will not be damaged or affected by fire or lava.\rThis property is represented as a boolean value where `true` indicates that the item is fireproof, and `false` means it is not.\r",
+              "java": "common/src/main/java/smartin/miapi/modules/properties/FireProof.java",
+              "data": {
+                "fireProof": " A boolean value indicating whether the item is immune to fire and lava."
+              },
+              "key_words": []
+            },
+            "gui_stat": {
+              "header": "GUI Stat Property",
+              "description": "  \nThe GuiStatProperty manages statistics displayed in the GUI for items. It allows the attachment of custom statistics\rto items, which can be displayed in the GUI with a header, description, and a range of values. Each statistic is defined\rwith a minimum and maximum value, and the current value is dynamically resolved based on the item instance.\rThis property is used to enhance the user interface by providing detailed item statistics.\r",
+              "java": "common/src/main/java/smartin/miapi/modules/properties/GuiStatProperty.java",
+              "data": {
+                "min": " A Double Operation representing the minimum value of the statistic.",
+                "max": " A Double Operation representing the maximum value of the statistic.",
+                "value": " A Double Operation representing the current value of the statistic.",
+                "header": " A Text Element used as the header for the statistic display.",
+                "description": " An optional Text Element providing a description for the statistic."
+              },
+              "key_words": []
+            },
+            "handheld_item": {
+              "header": "Handheld Item Property",
+              "description": "  \nThe HandheldItemProperty provides functionality for items that grant bonuses or perform special actions when held in\rboth the main hand and off hand. Specifically, this property gives +50% attack speed if both hands contain items with\rthis property. Additionally, it can automatically swap items between hands when better combat is not present.\r",
+              "java": "common/src/main/java/smartin/miapi/modules/properties/HandheldItemProperty.java",
+              "data": {
+                "handheld_item": " a boolean value if this is a handheld item. default is false"
+              },
+              "key_words": []
+            },
+            "item_id": {
+              "header": "Item ID Property",
+              "description": " The ItemIdProperty allows for the modification of an item's identifier upon crafting. When this property is applied,  \nit changes the `ItemStack`'s item to a different one based on a in java registered Modular Item.\rThis is useful for dynamically altering items during the crafting process, giving you the ability to switch item types\raccording to predefined configurations.\r",
+              "java": "common/src/main/java/smartin/miapi/modules/properties/ItemIdProperty.java",
+              "data": {
+                "item_id": " the desired Item ID."
+              },
+              "key_words": []
+            },
+            "item_lore": {
+              "header": "Lore Property",
+              "description": "  \nThe LoreProperty manages the lore (or descriptive text) of an item. This property allows items to display custom lore\rthat can be added either at the top or bottom of the item's tooltip. The lore is defined as a list of {@link Holder} objects,\reach specifying the text, position, and priority of the lore entry.\r *\rThe lore can be customized based on whether the item is modular or not, and additional configurations are available\rthrough {@link MiapiConfig}. Depending on the environment (client or server), different lore might be injected.\r",
+              "java": "common/src/main/java/smartin/miapi/modules/properties/LoreProperty.java",
+              "data": {
+                "a list of Lore Entires, compromoised of": "",
+                "text": " The {@link Component} text to display.",
+                "position": " The position of the lore (\"top\" or \"bottom\").",
+                "priority": " The priority of the lore entry, used for sorting."
+              },
+              "key_words": []
+            },
+            "luminous_learning": {
+              "header": "Luminous Learning Property",
+              "description": "  \nThe LuminousLearningProperty enhances the experience drops from both blocks and entities. When an item with this property\ris used to break blocks or when a player slays a mob, the amount of XP dropped is increased based on the configured value.\r *\r",
+              "java": "common/src/main/java/smartin/miapi/modules/properties/LuminousLearningProperty.java",
+              "data": {
+                "luminious_learning": " the amount of XP increase."
+              },
+              "key_words": []
+            },
+            "mining": {
+              "header": "Mining Properties",
+              "description": "  \nThese are mining Related Properties\r",
+              "java": "common/src/main/java/smartin/miapi/modules/properties/mining/MiningFolder.java",
+              "data": {},
+              "key_words": [],
+              "sub_pages": {
+                "shape": {
+                  "header": "Mining Shape Property",
+                  "description": "  \nThe MiningShapeProperty controls how tools mine multiple blocks based on the configured mining shapes, conditions, and modes.\rThis allows for varied mining behaviors such as mining entire veins or large areas with a single action.\r *\rThe property supports different mining shapes (e.g., cubes, veins), conditions (e.g., block tags, always mine), and modes (e.g., instant, staggered).\rIt also incorporates mining modifiers that can influence mining behavior, such as requiring all blocks to be the same type.\r",
+                  "java": "common/src/main/java/smartin/miapi/modules/properties/mining/MiningShapeProperty.java",
+                  "data": {
+                    "mining_modes": " instant or staggered exist by default",
+                    "mining_conditions": " always and block_tag exist by default",
+                    "mining_modifiers": "require_same exists by default"
+                  },
+                  "key_words": [],
+                  "sub_pages": {
+                    "always": {
+                      "header": "Always Mining Condition",
+                      "description": "  \nThis is condition less, you can just always mine whatever\r",
+                      "java": "common/src/main/java/smartin/miapi/modules/properties/mining/condition/AlwaysMiningCondition.java",
+                      "data": {},
+                      "key_words": []
+                    },
+                    "block_tag": {
+                      "header": "Block Tag Condition",
+                      "description": "  \nThe `BlockTagCondition` implements the `MiningCondition` interface and is used to enforce that mining shapes only apply to blocks that have one of the specified tags.\rIt is useful for scenarios where you want to restrict the mining operation to blocks that are categorized under specific tags.\r",
+                      "java": "common/src/main/java/smartin/miapi/modules/properties/mining/condition/BlockTagCondition.java",
+                      "data": {
+                        "block_tag": " A list of block tags that are used to determine which blocks are eligible for mining. The mining operation will only apply to blocks with these tags."
+                      },
+                      "key_words": []
+                    },
+                    "instant_mining": {
+                      "header": "Instant Mining",
+                      "description": "  \nThis mode processes all blocks in the list instantly, creating drops at the exact location where each block was mined. It also includes a durability break chance which determines the likelihood of breaking the item during mining.\r *\r *\r",
+                      "java": "common/src/main/java/smartin/miapi/modules/properties/mining/mode/InstantMiningMode.java",
+                      "data": {
+                        "codec": " Defines the codec used to serialize and deserialize `InstantMiningMode` instances.",
+                        "id": " The unique identifier for this mining mode, used in configurations and data definitions.",
+                        "durabilityBreakChance": " The probability that the item's durability will decrease during mining. This value ranges from 0.0 (no chance) to 1.0 (guaranteed breakage)."
+                      },
+                      "key_words": []
+                    },
+                    "staggered_mining": {
+                      "header": "Staggered Mining",
+                      "description": "  \nThis mode processes blocks in a staggered manner, giving a more gradual mining experience compared to instant mining. It handles mining tasks in a delayed fashion, which can help manage performance and resource usage during mining operations.\r",
+                      "java": "common/src/main/java/smartin/miapi/modules/properties/mining/mode/StaggeredMiningMode.java",
+                      "data": {
+                        "speed": " The rate at which blocks are mined. Higher values result in faster mining speeds.",
+                        "durabilityBreakChance": " The probability that the item's durability will decrease during mining, ranging from 0.0 (no chance) to 1.0 (guaranteed breakage)."
+                      },
+                      "key_words": []
+                    },
+                    "same_block_modifier": {
+                      "header": "Same Block modifier",
+                      "description": "  \nThis modifier ensures that only blocks of the same type as the one being initially mined are processed. If the `requireSame` flag is set to true, the modifier will filter the list of blocks to only include those of the same type as the starting block. If set to false, all blocks in the list will be processed.\r",
+                      "java": "common/src/main/java/smartin/miapi/modules/properties/mining/modifier/SameBlockModifier.java",
+                      "data": {
+                        "requireSame": " A boolean flag indicating whether only blocks of the same type as the initial block should be mined."
+                      },
+                      "key_words": []
+                    }
+                  }
+                },
+                "mining_level": {
+                  "header": "Mining Level Property",
+                  "description": "  \nThe MiningLevelProperty manages the mining capabilities of tools, determining their effectiveness based on various rules and configurations.\rThese configurations include block-specific mining speeds, block blacklists, and conditions for correct tool usage.\r *\rBy default, the mining level is influenced by the material properties associated with the tool.\rCustom rules can be defined to adjust mining speeds and tool compatibilities dynamically.\r",
+                  "java": "common/src/main/java/smartin/miapi/modules/properties/mining/MiningLevelProperty.java",
+                  "data": {
+                    "mining_capabilities": " A map linking mining rules to specific block tags for determining tool effectiveness.",
+                    "codec": " A codec for serializing and deserializing mining rules, allowing for flexible data handling.",
+                    "caching": " The property uses a caching mechanism to optimize performance when accessing mining rules.",
+                    "mining_rules": "",
+                    "`blocks`": " List of blocks that the tool can mine.",
+                    "`block_list | blacklist_tag`": " List of blocks that the tool cannot mine.",
+                    "`speed`": " A resolvable value that determines the mining speed for the tool.",
+                    "`correctForDrops`": " Optional boolean indicating whether the tool is correct for drops.",
+                    "`useMaterial`": " Boolean indicating if material properties should affect mining rules."
+                  },
+                  "key_words": []
+                }
+              }
+            },
+            "module_stats": {
+              "header": "Module Stats Property",
+              "description": "  \nThe ModuleStats property allows for the specification of various statistics associated with a module, where each statistic\ris represented by a key-value pair.\rThis property is integrated with the Stat Resolver and can be queried by using [module.custom_stat_name].\r *\r",
+              "java": "common/src/main/java/smartin/miapi/modules/properties/ModuleStats.java",
+              "data": {
+                "stats": " A {@link Map} where each entry consists of a {@link String} key and a {@link Double} value, representing different"
+              },
+              "key_words": []
+            },
+            "on_hit": {
+              "header": "OnHit Properties",
+              "description": "  \nThese are basic properties that apply (mostly) on melee attacks\r",
+              "java": "common/src/main/java/smartin/miapi/modules/properties/onHit/OnHitFolder.java",
+              "data": {},
+              "key_words": [],
+              "sub_pages": {
+                "armor_pen": {
+                  "header": "Armor Penetration Property",
+                  "description": "  \nThe Armor Penetration Property is used to reduce the effectiveness of armor on entities when hit by items with this property.\rIt adjusts the damage calculation by applying a temporary attribute modifier to decrease the armor value of the target. This allows weapons to bypass a portion of the target's armor.\rThe value specified for armor penetration is treated as a percentage reduction of the armor's effectiveness.\r",
+                  "java": "common/src/main/java/smartin/miapi/modules/properties/onHit/ArmorPenProperty.java",
+                  "data": {
+                    "value": " The percentage of armor penetration applied. A value of 100 means complete armor penetration, while a lower value means less reduction."
+                  },
+                  "key_words": []
+                },
+                "entity": {
+                  "header": "OnHit Entity Properties",
+                  "description": "  \nThese are basic properties that increase damage against certain entity types. this probably should be reworked to use tags!\r",
+                  "java": "common/src/main/java/smartin/miapi/modules/properties/onHit/entity/OnHitEntityFolder.java",
+                  "data": {},
+                  "key_words": [],
+                  "sub_pages": {
+                    "aquatic_damage": {
+                      "header": "Aquatic Damage Property",
+                      "description": "  \nThe Aquatic Damage Property enhances damage dealt to entities that are classified as sensitive to impaling.\rThis includes aquatic creatures like fish and other water-dwelling entities.\r",
+                      "java": "common/src/main/java/smartin/miapi/modules/properties/onHit/entity/AquaticDamage.java",
+                      "data": {
+                        "aquatic_damage": " the amount of damage increase."
+                      },
+                      "key_words": []
+                    },
+                    "illager_bane": {
+                      "header": "Illager Bane Property",
+                      "description": "  \nThe Illager Bane Property boosts damage dealt to entities classified as Illagers or their allies. This includes Illagers and their associated friends, providing enhanced effectiveness against these specific entity types.\rThis property is particularly useful in scenarios where players need to deal additional damage to Illager-type mobs, such as during raids or in areas populated with these enemies.\r",
+                      "java": "common/src/main/java/smartin/miapi/modules/properties/onHit/entity/IllagerBane.java",
+                      "data": {
+                        "illager_bane": " the amount of damage increase."
+                      },
+                      "key_words": []
+                    },
+                    "smite_damage": {
+                      "header": "Smite Damage Property",
+                      "description": "  \nThe Smite Damage Property enhances damage against undead entities.\rThis includes all entities that are classified as sensitive to the Smite effect, which typically encompasses various undead mobs.\r",
+                      "java": "common/src/main/java/smartin/miapi/modules/properties/onHit/entity/SmiteDamage.java",
+                      "data": {
+                        "smite_damage": " the amount of damage increase."
+                      },
+                      "key_words": []
+                    },
+                    "spider_damage": {
+                      "header": "Spider Damage Property",
+                      "description": "  \nThe Spider Damage Property enhances damage against spiders and other entities that are sensitive to the Bane of Arthropods enchantment.\r",
+                      "java": "common/src/main/java/smartin/miapi/modules/properties/onHit/entity/SpiderDamage.java",
+                      "data": {
+                        "spider_damage": " the amount of damage increase."
+                      },
+                      "key_words": []
+                    }
+                  }
+                },
+                "fracturing": {
+                  "header": "Fracturing Property",
+                  "description": "  \nThe Fracturing Property enhances the attack damage of a weapon as its durability decreases. This means that the lower the durability of the weapon, the higher its attack damage becomes.\rThis property is useful for creating weapons that become more powerful as they are used, adding a dynamic element to their performance.\rThe damage increase is calculated as a percentage of the weapon's current durability relative to its maximum durability.\r",
+                  "java": "common/src/main/java/smartin/miapi/modules/properties/onHit/FracturingProperty.java",
+                  "data": {
+                    "value": " The percentage of increased attack damage relative to the weapon's remaining durability. A value of 100 means a 100% increase in attack damage at full wear."
+                  },
+                  "key_words": []
+                },
+                "health_percent": {
+                  "header": "Health Percent Damage Property",
+                  "description": " The Health Percent Damage Property adds extra damage to a target based on the percentage of their current health. This means that the lower the target's health, the more damage they will receive from the attack.  \nThis property is useful for creating weapons or effects that scale their damage relative to the health of the target, making them more effective against low-health enemies.\rThe additional damage is calculated as a percentage of the target's current health, providing a dynamic scaling effect during combat.\rIt is recommended to use this sparingly, since against modded bosses this might escalate fairly quickly!\r",
+                  "java": "common/src/main/java/smartin/miapi/modules/properties/onHit/HealthPercentDamage.java",
+                  "data": {
+                    "value": " The percentage of the target's current health that is added as extra damage. For example, a value of 10 means an additional 10% of the target's current health is added to the damage dealt."
+                  },
+                  "key_words": []
+                },
+                "immolate": {
+                  "header": "Immolate Property",
+                  "description": "  \nThis is currently not implemented\r",
+                  "java": "common/src/main/java/smartin/miapi/modules/properties/onHit/ImmolateProperty.java",
+                  "data": {
+                    "value": ""
+                  },
+                  "key_words": []
+                },
+                "leeching": {
+                  "header": "Leeching Property",
+                  "description": "  \nThe Leeching Property enables a lifesteal effect, where a portion of the damage dealt by an entity is converted into health for that entity.\rThe amount of healing is proportional to the damage dealt and is affected by the level of the leeching property.\r",
+                  "java": "common/src/main/java/smartin/miapi/modules/properties/onHit/LeechingProperty.java",
+                  "data": {
+                    "value": " The percentage of damage dealt that is converted into health. For example, a value of 10 means that 10% of the damage dealt is used to heal the attacker."
+                  },
+                  "key_words": []
+                },
+                "lightning": {
+                  "header": "Lightning On Hit Property",
+                  "description": "  \nThe Lightning On Hit Property causes lightning bolts to strike the location of the entity that was hit when the attacker has this property active.\rThis effect is applied every time the entity with the property deals damage, making it a dramatic and powerful feature for weapons or abilities.\rThe number of lightning bolts and their intensity are determined by the value of the property.\r",
+                  "java": "common/src/main/java/smartin/miapi/modules/properties/onHit/LightningOnHit.java",
+                  "data": {
+                    "value": " The number of lightning bolts that will strike the location of the entity being hit. For example, a value of 3 means three lightning bolts will appear."
+                  },
+                  "key_words": []
+                },
+                "nemesis": {
+                  "header": "Nemesis Property",
+                  "description": " The Nemesis Property allows weapons to deal increased damage to certain types of entities. As the weapon is used to kill more of the specified entity type, it gains additional damage potential against them. If the weapon is used against other types of entities, it loses some of its bonus damage.  \nThis property tracks the number of kills made and adjusts the damage dealt based on the entity type and the number of kills recorded. It also updates the item's tooltip to reflect the current state of its nemesis status.\r",
+                  "java": "common/src/main/java/smartin/miapi/modules/properties/onHit/NemesisProperty.java",
+                  "data": {
+                    "value": "the scaling, how high and fast it gains damage"
+                  },
+                  "key_words": []
+                },
+                "explosion": {
+                  "header": "Explosion On Hit Property",
+                  "description": "  \nExplosion on a melee kill, the explosion is configurable like other explosion\r",
+                  "java": "common/src/main/java/smartin/miapi/modules/properties/onHit/OnKillExplosion.java",
+                  "data": {
+                    "value": " The number of lightning bolts that will strike the location of the entity being hit. For example, a value of 3 means three lightning bolts will appear."
+                  },
+                  "key_words": []
+                },
+                "slashing": {
+                  "header": "Slashing Property",
+                  "description": " The SlashingProperty introduces additional slashing damage to attacks based on the equipped item.  \nThis property calculates the slashing damage and adjusts the damage dealt to entities in the game by factoring\rin the target's **Armor** / 3 and **Armor Toughness** attributes.\r<p>\rWhen an entity is hurt, this property retrieves the slashing value of the item being used to cause the damage,\rand reduces the slashing effect based on the target's armor attributes. If the slashing damage remains greater than\rzero after reductions, the damage is added to the base damage dealt to the target.\r<p>\rThis property is useful for defining weapons or tools that focus on cutting-based damage or bypassing armor,\rgiving certain items more versatility in combat scenarios.\r",
+                  "java": "common/src/main/java/smartin/miapi/modules/properties/onHit/SlashingProperty.java",
+                  "data": {
+                    "slashing": " A double value indicating the amount of slashing damage that the item can deal."
+                  },
+                  "key_words": []
+                }
+              }
+            },
+            "potion": {
+              "header": "Potion Properties",
+              "description": "  \nProperties related to Potion\r",
+              "java": "common/src/main/java/smartin/miapi/modules/properties/potion/PotionFolder.java",
+              "data": {},
+              "key_words": [],
+              "sub_pages": {
+                "on_damaged_effects": {
+                  "header": "On Damaged Effects Property",
+                  "description": "  \nThis property triggers specific potion effects on an entity when it is damaged. The effects and their\rproperties (such as duration, amplifier, probability) are defined by `PossibleEffect` instances. The effects\rcan be configured to apply to either the attacker or the target entity, based on the `targetSelf` parameter.\r",
+                  "java": "common/src/main/java/smartin/miapi/modules/properties/potion/OnDamagedEffects.java",
+                  "data": {
+                    "effects": " A list of `PossibleEffect` instances, each defining a potion effect to be applied under certain conditions."
+                  },
+                  "key_words": []
+                },
+                "on_hit_target_effects": {
+                  "header": "On Hit Target Effects Property",
+                  "description": "  \nThis property triggers specific potion effects on the target entity when the attacker hits it. The effects\rare defined by `PossibleEffect` instances, which include parameters like probability, duration, and amplifier.\rThe effects can be configured to apply based on various conditions, and the tooltip will display relevant\rinformation about these effects.\r",
+                  "java": "common/src/main/java/smartin/miapi/modules/properties/potion/OnHitTargetEffects.java",
+                  "data": {
+                    "effects": " A list of `PossibleEffect` instances that define the potion effects to be applied when hitting the target entity."
+                  },
+                  "key_words": []
+                },
+                "on_kill_effects": {
+                  "header": "On Kill Effects Property",
+                  "description": "  \nThis property triggers specific potion effects on the attacker when a living entity they have hit is killed.\rThe effects are defined by `PossibleEffect` instances, which include parameters such as probability, duration,\rand amplifier. These effects are applied to the attacker upon the death of the target entity.\rThe tooltip will display relevant information about these effects when the property is used in-game.\r",
+                  "java": "common/src/main/java/smartin/miapi/modules/properties/potion/OnKillEffects.java",
+                  "data": {
+                    "effects": " A list of `PossibleEffect` instances that define the potion effects to be applied when the attacker successfully kills an entity."
+                  },
+                  "key_words": []
+                }
+              }
+            },
+            "priority": {
+              "header": "UI Priority Property",
+              "description": "  \nThe PriorityProperty affects the ordering of items or modules within the GUI. This property assigns a priority value\rto each item or module, which influences its placement or sorting in graphical user interfaces where multiple items\ror modules are displayed. A lower value will be placed first in the list and higher values at the end.\r *\r",
+              "java": "common/src/main/java/smartin/miapi/modules/properties/PriorityProperty.java",
+              "data": {
+                "priority": " the priority for sorting"
+              },
+              "key_words": []
+            },
+            "projectile": {
+              "header": "Projectile Properties",
+              "description": "  \nProperties related to projectiles, mostly used for arrows and throwables\r",
+              "java": "common/src/main/java/smartin/miapi/modules/properties/projectile/ProjectileFolder.java",
+              "data": {},
+              "key_words": [],
+              "sub_pages": {
+                "air_drag": {
+                  "header": "Air Drag Property",
+                  "description": "  \nThe air drag affects the speed loss of projectiles as they travel through the air. The drag is represented as a double\rvalue, 1.0 means no loss, 0.0 means full loss of velocity.\r",
+                  "java": "common/src/main/java/smartin/miapi/modules/properties/projectile/AirDragProperty.java",
+                  "data": {
+                    "air_drag": "multiplied to air speed each tick."
+                  },
+                  "key_words": []
+                },
+                "arrow": {
+                  "header": "Arrow Property",
+                  "description": " The Arrow Property modifies the behavior of projectiles to simulate arrow-like characteristics. This includes  \nadjusting projectile hit behavior and properties when interacting with entities. For example, arrows may have\rspecific behaviors such as sticking to targets or interacting differently with enchantments.\r",
+                  "java": "common/src/main/java/smartin/miapi/modules/properties/projectile/ArrowProperty.java",
+                  "data": {
+                    "is_arrow": " Indicates whether the projectile behaves like an arrow, affecting its hit behavior and other attributes."
+                  },
+                  "key_words": []
+                },
+                "channeling": {
+                  "header": "Channeling Property",
+                  "description": "  \nThe Channeling Property grants a modular projectile the channeling effect.\rThis means it will strike lightning on a target when its rainstorming.\r",
+                  "java": "common/src/main/java/smartin/miapi/modules/properties/projectile/ChannelingProperty.java",
+                  "data": {
+                    "channeling": " Indicates whether the projectile has the channeling effect applied."
+                  },
+                  "key_words": []
+                },
+                "cryo": {
+                  "header": "Cryo Property",
+                  "description": "  \nThe Cryo Property causes modular projectiles to apply a Cryo effect to entities they hit. The strength and\rduration of the Cryo effect are determined by the value of this property. The effect is only applied on arrow hits.\r",
+                  "java": "common/src/main/java/smartin/miapi/modules/properties/projectile/CryoProperty.java",
+                  "data": {
+                    "cryo": " A double value representing the strength and duration of the Cryo effect. Higher values increase the effect's potency."
+                  },
+                  "key_words": []
+                },
+                "enderpearl": {
+                  "header": "Enderpearl Property",
+                  "description": "  \nThe Enderpearl Property allows modular projectiles to mimic the teleportation behavior of ender pearls. When a\rprojectile with this property hits an entity or block, it teleports the owner (if possible) to the point of impact,\rsimilar to the effect of throwing an ender pearl.\r",
+                  "java": "common/src/main/java/smartin/miapi/modules/properties/projectile/EnderpearlProperty.java",
+                  "data": {
+                    "is_enderpearl": " A boolean value that determines if the projectile behaves like an ender pearl."
+                  },
+                  "key_words": []
+                },
+                "explosion": {
+                  "header": "Explosion Property",
+                  "description": "  \nThe Explosion Property makes a projectile explode upon hitting an entity or block. The explosion parameters such as\rstrength, radius, and whether or not blocks are destroyed can be customized. The explosion may also affect entities\rwith a configurable maximum damage and radius.\r",
+                  "java": "common/src/main/java/smartin/miapi/modules/properties/projectile/ExplosionProperty.java",
+                  "data": {
+                    "explosion_projectile": " An instance of `ExplosionInfo`, containing the properties for explosion behavior.",
+                    "`destroyBlocks`": " (optional) Whether blocks are destroyed by the explosion.",
+                    "`chance`": " (optional) Probability of the explosion occurring upon impact.",
+                    "`strength`": " Strength of the explosion.",
+                    "`entityStrength`": " (optional) Damage multiplier for entities caught in the explosion.",
+                    "`entityMaxDamage`": " (optional) Maximum damage the explosion can deal to entities.",
+                    " `entityRadius`": " (optional) Radius of the explosion's effect on entities."
+                  },
+                  "key_words": []
+                },
+                "crossbow_ammunition": {
+                  "header": "Crossbow Shootable Property",
+                  "description": "  \nThe Crossbow Shootable Property allows non-arrow items to be used as ammunition for crossbows. If this property is\rset to true on an item, it can be fired from a crossbow.\r",
+                  "java": "common/src/main/java/smartin/miapi/modules/properties/projectile/IsCrossbowShootAble.java",
+                  "data": {
+                    "crossbow_ammunition": " A boolean value indicating whether the item can be shot by a crossbow."
+                  },
+                  "key_words": []
+                },
+                "rapid_fire_crossbow_delay": {
+                  "header": "Rapid Fire Crossbow Delay Property",
+                  "description": "  \nThe Rapid Fire Crossbow Delay Property controls the time delay between consecutive shots when using a crossbow\rconfigured for rapid fire. The delay is specified as a double value, where lower values allow faster firing.\r",
+                  "java": "common/src/main/java/smartin/miapi/modules/properties/projectile/MagazineCrossbowShotDelay.java",
+                  "data": {
+                    "rapid_fire_crossbow_delay": " A double value representing the time (in ticks) between consecutive shots."
+                  },
+                  "key_words": []
+                },
+                "rapid_fire_crossbow": {
+                  "header": "Rapid Fire Crossbow Property",
+                  "description": " The Rapid Fire Crossbow Property controls how many projectiles can be loaded and fired from a modular crossbow in quick succession.  \nThe number of shots is determined by the property value, and additional projectiles can be loaded from the player's inventory.\r",
+                  "java": "common/src/main/java/smartin/miapi/modules/properties/projectile/RapidfireCrossbowProperty.java",
+                  "data": {
+                    "rapid_fire_crossbow": " A double value representing the number of projectiles that can be shot."
+                  },
+                  "key_words": []
+                },
+                "teleport_target": {
+                  "header": "Teleport Target Projectile Property",
+                  "description": "  \nThe Teleport Target Property adds the ability for projectiles to teleport any living entity they hit.\rUpon impact, the entity is teleported using the same mechanic as consuming a chorus fruit.\rIf the property is true, and the hit entity is a living entity, the teleportation occurs.\rThe projectile is discarded after impact.\r",
+                  "java": "common/src/main/java/smartin/miapi/modules/properties/projectile/TeleportTarget.java",
+                  "data": {
+                    "teleport_target": " A boolean value indicating whether the teleport behavior is enabled for the projectile."
+                  },
+                  "key_words": []
+                },
+                "water_drag": {
+                  "header": "Water Drag Property",
+                  "description": "  \nThe water drag affects the speed loss of projectiles when they travel through water. The drag is represented as a double\rvalue, where 1.0 means no speed loss and 0.0 means full loss of velocity in water.\r",
+                  "java": "common/src/main/java/smartin/miapi/modules/properties/projectile/WaterDragProperty.java",
+                  "data": {
+                    "water_drag": " Multiplied to the projectile's speed each tick when underwater."
+                  },
+                  "key_words": []
+                }
+              }
+            },
+            "rarity": {
+              "header": "Rarity Property",
+              "description": "  \nThe RarityProperty determines the rarity level of an item. This property can influence the rarity displayed for\ritems in the game, affecting their default coloring, think of golden apples, totems and co.\r",
+              "java": "common/src/main/java/smartin/miapi/modules/properties/RarityProperty.java",
+              "data": {
+                "rarity": " A {@link Rarity} value representing the item's rarity level. Rarity levels are typically"
+              },
+              "key_words": []
+            },
+            "render": {
+              "sub_pages": {
+                "emissive": {
+                  "header": "Emissivity Property",
+                  "description": "  \nThe EmissivityProperty defines the emissive light levels for an item or block. Emissive properties affect how much light\ran item or block emits.\rThese values are applied to the item or block to control its visual appearance in lighting conditions.\r",
+                  "java": "common/src/main/java/smartin/miapi/modules/properties/render/EmissivityProperty.java",
+                  "data": {
+                    "sky": " An integer representing the light level emitted in the sky.",
+                    "block": " An integer representing the light level emitted from the block."
+                  },
+                  "key_words": []
+                }
+              }
+            },
+            "repair_priority": {
+              "header": "Repair Priority Property",
+              "description": "  \nThe RepairPriority property controls the materials used to repair an item and assigns a priority value to these\rmaterials. This value determines how effectively the item can be repaired using different materials.\r *\rThe priority value is a double, where a higher value represents a more effective repair material. The system\rmaintains a list of materials that can be used for repair, and the highest priority material is used when\rrepairing an item. If multiple materials have the same priority, all of them can be used interchangeably.\r *\r",
+              "java": "common/src/main/java/smartin/miapi/modules/properties/RepairPriority.java",
+              "data": {
+                "repair_priority": " A double value that determines the priority of repair materials for the item."
+              },
+              "key_words": []
+            },
+            "slot": {
+              "header": "Slot Properties",
+              "description": "  \nProperties related to slot management\r",
+              "java": "common/src/main/java/smartin/miapi/modules/properties/slot/SlotProperties.java",
+              "data": {},
+              "key_words": [],
+              "sub_pages": {
+                "allowed_in_slots": {
+                  "header": "Allowed Slots Property",
+                  "description": "  \nThe Allowed Slots Property controls where a module can be placed by defining which slot types it is compatible with.\rA module can specify multiple slots by their IDs, ensuring that only certain modules can fit into designated slots\rwhen assembling items. This helps define logical compatibility between modules and item slots.\r",
+                  "java": "common/src/main/java/smartin/miapi/modules/properties/slot/AllowedSlots.java",
+                  "data": {
+                    "allowed_in_slots": " A list of strings representing the slot IDs where the module can be placed.",
+                    "`slotId`": " (required) The ID of the slot that allows this module."
+                  },
+                  "key_words": []
+                },
+                "allow_change_parent": {
+                  "header": "Can Change Parent Module Property",
+                  "description": "  \nThe Can Change Parent Module Property validates if a module's parent can be changed by checking specified conditions.\rIf the conditions are not met, the change is disallowed, and a failure reason is communicated. This is particularly\rimportant in crafting or upgrading scenarios where a module's placement or modification depends on parent-child\rrelationships between modules.\r",
+                  "java": "common/src/main/java/smartin/miapi/modules/properties/slot/CanChangeParentModule.java",
+                  "data": {
+                    "allow_change_parent": " A condition that determines whether a parent module can be changed.",
+                    "`condition`": " The condition that must be met to allow changing the parent module."
+                  },
+                  "key_words": []
+                },
+                "can_child_be_empty": {
+                  "header": "Can Child Be Empty Property",
+                  "description": "  \nThe Can Child Be Empty Property determines whether a child slot in a module can be left empty. This property is\ruseful in crafting systems where some modules may allow their child slots to remain unoccupied, while others require\rthem to be filled for proper functionality.\r",
+                  "java": "common/src/main/java/smartin/miapi/modules/properties/slot/CanChildBeEmpty.java",
+                  "data": {
+                    "can_child_be_empty": " A boolean value indicating whether the child slot can be empty."
+                  },
+                  "key_words": []
+                },
+                "slots": {
+                  "header": "Slot Property",
+                  "description": "  \nThe SlotProperty defines how modules handle submodule slots. Each slot can have attributes such as transformation,\rtranslation key, and priority. Slots can also define allowed submodules and whether they can merge with others.\rThe property provides methods to retrieve and manage slots within modules, including their transformation stacks and\rallowed submodules.\r",
+                  "java": "common/src/main/java/smartin/miapi/modules/properties/slot/SlotProperty.java",
+                  "data": {
+                    "slots": " A map where keys are slot identifiers and values are {@link ModuleSlot} instances defining the slot's properties."
+                  },
+                  "key_words": []
+                }
+              }
+            },
+            "tag": {
+              "header": "Tag Property",
+              "description": "  \nThe TagProperty allows modules to define and associate tags with themselves. These tags can be used\rto categorize and identify modules based on their associated tags.\r *\rTags are represented as a list of strings and can be used to filter or group items and modules. For example,\ryou could use tags to identify items that belong to a certain category or have specific properties, or to\rfind modules that share common attributes.\r *\rTags are mostly meant to be targeted by synergies.\r",
+              "java": "common/src/main/java/smartin/miapi/modules/properties/TagProperty.java",
+              "data": {
+                "tag": " A list of strings representing the tags associated with an item or module."
+              },
+              "key_words": []
+            },
+            "tool_or_weapon": {
+              "header": "Tool or Weapon Property",
+              "description": " The ToolOrWeaponProperty designates whether an item is classified as a tool or a weapon. This classification  \nprimarily affects how the item's durability is calculated and managed.\r",
+              "java": "common/src/main/java/smartin/miapi/modules/properties/ToolOrWeaponProperty.java",
+              "data": {
+                "is_weapon": " A boolean value indicating if the item is considered a weapon."
+              },
+              "key_words": []
+            }
+          }
+        },
+        "boolean_resolvable": {
+          "header": "Boolean Resolvable",
+          "description": " This is in concept just like a Double resolvable.  \nThis is regarded true if the outcome is > 0.\rfalse is equivalent to 0, writing true in the json is the same as writing 1\r",
+          "java": "common/src/main/java/smartin/miapi/modules/properties/util/ComplexBooleanProperty.java",
+          "data": {},
+          "key_words": [
+            "BooleanResolvable",
+            "BooleanResolvable"
+          ]
+        },
+        "double_resolvable": {
+          "header": "Double Resolvable",
+          "description": " this is a complex way to describe a number  \nin short this number allows you to do math like \"sin(5)\"\rbut it also allows you to reference certain other numbers, for more information see StatResolver\rthis allows you to do stuff like \"[material.hardness]*5\" as a number\r",
+          "java": "common/src/main/java/smartin/miapi/modules/properties/util/DoubleOperationResolvable.java",
+          "data": {},
+          "key_words": [
+            "DoubleResolvable",
+            "DoubleResolvable"
+          ]
+        }
+      }
+    }
+  },
+  "header": "Wiki for 1.21",
+  "description": " Welcome to the Wiki for Truly Modular 1.21  \nThis Wiki is structured to help Modpack developers/people who want to add/modify content in Truly Modular via Datapacks\rIt goes in-depth about various Unique things to truly modular, but also over some common Datapack things,\rIt is aimed at all people\r",
+  "java": "",
+  "data": {},
+  "key_words": []
+}

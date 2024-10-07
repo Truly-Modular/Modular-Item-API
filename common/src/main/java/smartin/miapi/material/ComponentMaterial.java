@@ -6,6 +6,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.architectury.event.EventResult;
 import net.minecraft.core.component.DataComponentType;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -72,6 +73,13 @@ public class ComponentMaterial extends JsonMaterial {
         super.mergeJson(rootElement, isClient);
     }
 
+    public Component getTranslation() {
+        if (parent == null) {
+            return super.getTranslation();
+        }
+        return parent.getTranslation();
+    }
+
     @Override
     public ResourceLocation getID() {
         return KEY;
@@ -89,6 +97,7 @@ public class ComponentMaterial extends JsonMaterial {
         MiapiEvents.MATERIAL_CRAFT_EVENT.register(data -> {
             if (data.material instanceof ComponentMaterial componentMaterial) {
                 componentMaterial.writeMaterial(data.moduleInstance);
+                data.moduleInstance.getRoot().writeToItem(data.crafted);
             }
             return EventResult.pass();
         });
@@ -120,7 +129,7 @@ public class ComponentMaterial extends JsonMaterial {
     public Optional<Material> decode(JsonObject object) {
         try {
             String parentID = object.get("parent").getAsString();
-            Material parentMaterial = MaterialProperty.materials.get(parentID);
+            Material parentMaterial = MaterialProperty.materials.get(ResourceLocation.parse(parentID));
             if (parentMaterial == null) {
                 Miapi.LOGGER.error("Could not find Material:" + parentID);
                 return Optional.empty();

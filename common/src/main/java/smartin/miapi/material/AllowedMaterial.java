@@ -139,7 +139,7 @@ public class AllowedMaterial extends CodecProperty<AllowedMaterial.AllowedMateri
                 AllowedMaterialData json = optional.get();
                 boolean isAllowed = json.isValid(material);
                 if (isAllowed) {
-                    MaterialProperty.setMaterial(newModule, material.getID());
+                    MaterialProperty.setMaterial(newModule, material);
                 }
                 MiapiEvents.MaterialCraftEventData eventData = new MiapiEvents.MaterialCraftEventData(crafting, materialStack, material, newModule, craftAction);
                 MiapiEvents.MATERIAL_CRAFT_EVENT.invoker().craft(eventData);
@@ -181,7 +181,7 @@ public class AllowedMaterial extends CodecProperty<AllowedMaterial.AllowedMateri
                 input.setCount(newCount);
             }
             assert newModule != null;
-            MaterialProperty.setMaterial(newModule, material.getID());
+            MaterialProperty.setMaterial(newModule, material);
             newModule.getRoot().writeToItem(crafting);
             //materialStack.setCount(1);
             MiapiEvents.MaterialCraftEventData eventData = new MiapiEvents.MaterialCraftEventData(crafting, materialStack, material, newModule, craftAction);

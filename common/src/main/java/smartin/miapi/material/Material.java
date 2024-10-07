@@ -63,6 +63,9 @@ public interface Material {
         return this;
     }
 
+    default void setMaterial(ModuleInstance moduleInstance) {
+    }
+
     default Material getMaterialFromIngredient(ItemStack ingredient) {
         return this;
     }

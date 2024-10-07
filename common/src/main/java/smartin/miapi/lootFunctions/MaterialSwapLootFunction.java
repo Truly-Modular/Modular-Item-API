@@ -189,10 +189,10 @@ public record MaterialSwapLootFunction(
                 }).toList();
         int randomIndex = randomSource.nextInt(possibleSubstitutes.size() + 1);
         if (randomIndex == possibleSubstitutes.size()) {
-            MaterialProperty.setMaterial(module, fallBackMaterial.getID());
+            MaterialProperty.setMaterial(module, fallBackMaterial);
         } else {
             Material m = possibleSubstitutes.get(randomIndex);
-            MaterialProperty.setMaterial(module, m.getID());
+            MaterialProperty.setMaterial(module, m);
         }
         return module;
     }
