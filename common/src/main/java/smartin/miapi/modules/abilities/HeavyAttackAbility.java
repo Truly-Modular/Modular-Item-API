@@ -97,7 +97,7 @@ public class HeavyAttackAbility implements ItemUseDefaultCooldownAbility, ItemUs
                 if (target2 instanceof LivingEntity target) {
                     ((LivingEntityAccessor) player).attacking(target);
                     float basedamage = ((float) player.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE));
-                    damage = EnchantmentHelper.getAttackDamage(stack, target.getGroup()) * damage + basedamage;
+                    damage = (EnchantmentHelper.getAttackDamage(stack, target.getGroup()) + basedamage) * damage;
                     AttackUtil.performAttack(player, target, (float) damage, true);
                     if (sweeping > 0) {
                         AttackUtil.performSweeping(player, target, (float) sweeping, (float) damage);
