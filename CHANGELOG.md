@@ -3,3 +3,4 @@
 - changed ability logic to allow other mods to take right click action if truly modular doesnt set one
 - added "copy_item" ability, trying to copy another items ability
 - improved armor compatibility
+- fixed heavy attack not multiplying damage
