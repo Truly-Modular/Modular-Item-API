@@ -147,6 +147,7 @@ public class JsonMaterial implements Material {
                         }
                     } else {
                         Miapi.LOGGER.error("Could not find property " + stringJsonElementEntry.getKey());
+                        Miapi.LOGGER.error(String.valueOf(propertyElement));
                     }
                     properties.put(id, specificPropertyMap);
                 });

@@ -16,6 +16,7 @@ import smartin.miapi.client.gui.crafting.statdisplay.JsonStatDisplay;
 import smartin.miapi.client.gui.crafting.statdisplay.SingleStatDisplay;
 import smartin.miapi.client.gui.crafting.statdisplay.SingleStatDisplayDouble;
 import smartin.miapi.client.gui.crafting.statdisplay.StatListWidget;
+import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.util.CodecProperty;
 import smartin.miapi.modules.properties.util.DoubleOperationResolvable;
 import smartin.miapi.modules.properties.util.MergeType;
@@ -29,10 +30,10 @@ import static smartin.miapi.modules.properties.enchanment.FakeEnchantmentManager
  * This property allows the application of "fake" enchantments that simulate certain enchantment levels.
  * The enchantments are not visible in the item tooltips and can utilize `[old_level]` to reference previous enchantment levels in the Double Resolvable.
  * If the property is removed, the fake enchantments no longer apply, but they do not persist beyond their activation.
+ *
  * @header Fake Enchantment Property
  * @path /data_types/properties/enchantments/fake_enchants
- * @description_start
- * The Fake Enchantment Property simulates enchantment levels on items during specific operations.
+ * @description_start The Fake Enchantment Property simulates enchantment levels on items during specific operations.
  * These enchantments are not shown in the item's tooltip and are purely functional.
  * The property evaluates enchantment levels dynamically using the `[old_level]` placeholder, which allows referencing prior levels in the calculation.
  * Once the property is removed, the enchantments no longer affect the item.
@@ -70,6 +71,12 @@ public class FakeEnchantmentProperty extends CodecProperty<Map<Holder<Enchantmen
         if (Environment.isClient()) {
             setupClient();
         }
+    }
+
+    public Map<Holder<Enchantment>, DoubleOperationResolvable> initialize(Map<Holder<Enchantment>, DoubleOperationResolvable> property, ModuleInstance context) {
+        Map<Holder<Enchantment>, DoubleOperationResolvable> init = new LinkedHashMap<>();
+        property.forEach((key, value) -> init.put(key, value.initialize(context)));
+        return init;
     }
 
     @net.fabricmc.api.Environment(EnvType.CLIENT)

@@ -18,6 +18,7 @@ import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ModuleInstance;
 
+import java.util.Objects;
 import java.util.Optional;
 
 import static smartin.miapi.material.MaterialProperty.materials;
@@ -49,6 +50,9 @@ public class ComponentMaterial extends JsonMaterial {
 
     public ComponentMaterial(Material parent, JsonElement overwrite, double cost, boolean isClient) {
         super(KEY, parent.getDebugJson().deepCopy(), isClient);
+        while (parent instanceof ComponentMaterial componentMaterial) {
+            parent = componentMaterial.parent;
+        }
         this.parent = parent;
         this.overWrite = overwrite.getAsJsonObject();
         this.mergeJson(overwrite, isClient);
@@ -58,6 +62,9 @@ public class ComponentMaterial extends JsonMaterial {
 
     public ComponentMaterial(Material parent, JsonObject overwrite, boolean isClient) {
         super(KEY, parent.getDebugJson().deepCopy(), isClient);
+        while (parent instanceof ComponentMaterial componentMaterial) {
+            parent = componentMaterial.parent;
+        }
         this.parent = parent;
         this.overWrite = overwrite;
         this.mergeJson(overwrite, isClient);
@@ -156,5 +163,25 @@ public class ComponentMaterial extends JsonMaterial {
             return -5.0;
         }
         return null;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        ComponentMaterial other = (ComponentMaterial) obj;
+        return Double.compare(other.cost, cost) == 0
+               && Objects.equals(overWrite, other.overWrite)
+               && (parent == other.parent || (parent != null && other.parent != null
+                                              && Objects.equals(parent.getID(), other.parent.getID())));
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(overWrite, parent != null ? parent.getID() : null, cost);
     }
 }

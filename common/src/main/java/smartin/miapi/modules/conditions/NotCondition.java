@@ -5,30 +5,35 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
 import smartin.miapi.Miapi;
+
 /**
  * @header Not Condition
- * @description_start
- * this condition inverses another condition
+ * @description_start this condition inverses another condition
  * @desciption_end
  * @path /data_types/condition/not
  * @data type:not
  * @data condition:the sub condition to be inversed
  */
 public class NotCondition implements ModuleCondition {
+    public static ModuleCondition condition = new TrueCondition();
     public static Codec<NotCondition> CODEC = RecordCodecBuilder.create((instance) ->
             instance.group(
-                    ConditionManager.CONDITION_CODEC.fieldOf("condition")
-                            .forGetter(NotCondition::getCondition),
-                    ComponentSerialization.CODEC
-                            .optionalFieldOf("error", Component.translatable(Miapi.MOD_ID + ".error"))
-                            .forGetter((condition) -> condition.error)
-            ).apply(instance, NotCondition::new));
+                            ConditionManager.CONDITION_CODEC.optionalFieldOf("condition", getTrue())
+                                    .forGetter(NotCondition::getCondition),
+                            ComponentSerialization.CODEC
+                                    .optionalFieldOf("error", Component.translatable(Miapi.MOD_ID + ".error"))
+                                            .
+
+                                    forGetter((condition) -> condition.error)
+                    ).
+
+                    apply(instance, NotCondition::new));
 
     ModuleCondition conditions;
-    Component error = null;
+    Component error;
 
-    public NotCondition() {
-
+    public static <T extends ModuleCondition> T getTrue (){
+        return (T) new TrueCondition();
     }
 
     public NotCondition(ModuleCondition conditions, Component error) {
@@ -37,7 +42,7 @@ public class NotCondition implements ModuleCondition {
     }
 
     @SuppressWarnings("unchecked")
-    public <T extends ModuleCondition > T getCondition(){
+    public <T extends ModuleCondition> T getCondition() {
         return (T) conditions;
     }
 

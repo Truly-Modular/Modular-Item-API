@@ -8,8 +8,10 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import smartin.miapi.Miapi;
+import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.util.*;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -46,6 +48,12 @@ public class CraftingEnchantProperty extends CodecProperty<Map<Holder<Enchantmen
                 });
             }));
         });
+    }
+
+    public Map<Holder<Enchantment>, DoubleOperationResolvable> initialize(Map<Holder<Enchantment>, DoubleOperationResolvable> property, ModuleInstance context) {
+        Map<Holder<Enchantment>, DoubleOperationResolvable> init = new LinkedHashMap<>();
+        property.forEach((key, value) -> init.put(key, value.initialize(context)));
+        return init;
     }
 
     @Override

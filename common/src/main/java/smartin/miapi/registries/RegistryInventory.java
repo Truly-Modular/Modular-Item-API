@@ -530,6 +530,7 @@ public class RegistryInventory {
             registerMiapi(moduleProperties, MaterialOverwriteProperty.KEY, new MaterialOverwriteProperty());
             registerMiapi(moduleProperties, CopyItemOnHit.KEY, new CopyItemOnHit());
             registerMiapi(moduleProperties, AllowedInLootProperty.KEY, new AllowedInLootProperty());
+            registerMiapi(moduleProperties, PogoAbility.KEY, new PogoAbility());
             //compat
             //registerMiapi(moduleProperties, BetterCombatProperty.KEY, new BetterCombatProperty());
             //TODO: added this to cleanup logs. this needs to be revisited later

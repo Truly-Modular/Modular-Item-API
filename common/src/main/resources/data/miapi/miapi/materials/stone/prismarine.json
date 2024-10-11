@@ -21,8 +21,8 @@
     ],
     "properties": {
         "armor": {
-            "fake_enchantments": {
-                "minecrtaft:thorns": 2
+            "fake_enchants": {
+                "minecraft:thorns": 2
             }
         }
     },

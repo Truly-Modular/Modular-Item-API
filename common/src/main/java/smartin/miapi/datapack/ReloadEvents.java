@@ -188,9 +188,11 @@ public class ReloadEvents {
                 receivedSyncer.clear();
                 Minecraft.getInstance().execute(() -> {
                     reloadCounter++;
-                    RegistryAccess access = null;
+                    RegistryAccess access;
                     if (Minecraft.getInstance().level != null) {
                         access = Minecraft.getInstance().level.registryAccess();
+                    } else {
+                        access = Minecraft.getInstance().getConnection().registryAccess();
                     }
                     ReloadEvents.START.fireEvent(true, access);
                     ReloadEvents.MAIN.fireEvent(true, access);

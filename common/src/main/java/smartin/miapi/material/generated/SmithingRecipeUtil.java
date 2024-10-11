@@ -14,9 +14,9 @@ import net.minecraft.world.item.crafting.SmithingTransformRecipe;
 import smartin.miapi.Environment;
 import smartin.miapi.Miapi;
 import smartin.miapi.item.MaterialSmithingRecipe;
-import smartin.miapi.mixin.SmithingTransformRecipeAccessor;
 import smartin.miapi.material.Material;
 import smartin.miapi.material.MaterialProperty;
+import smartin.miapi.mixin.SmithingTransformRecipeAccessor;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,6 +30,9 @@ import java.util.List;
 public class SmithingRecipeUtil {
     public static void setupSmithingRecipe(List<GeneratedMaterial> materials) {
         try {
+            if(Environment.isClient()){
+                return;
+            }
             RecipeManager recipeManager = findManager(Environment.isClient());
             RegistryAccess registryAccess = findRegistryManager(Environment.isClient());
             materials.forEach(material -> testForSmithingMaterial(recipeManager, registryAccess, material));

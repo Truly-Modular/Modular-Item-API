@@ -32,11 +32,11 @@
     ],
     "properties": {
         "default": {
-            "immolate": "3"
-        },
-        "emissive": {
-            "sky": 6,
-            "block": 6
+            "immolate": "3",
+            "emissive": {
+                "sky": 6,
+                "block": 6
+            }
         }
     },
     "items": [

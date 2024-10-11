@@ -6,10 +6,14 @@ import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.JsonOps;
 import io.netty.handler.codec.DecoderException;
 import io.netty.handler.codec.EncoderException;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.world.item.ItemStack;
+import smartin.miapi.Miapi;
 import smartin.miapi.modules.ModuleInstance;
 
 /**
@@ -33,9 +37,32 @@ public abstract class CodecProperty<T> implements ModuleProperty<T> {
     }
 
     public T decode(JsonElement element) {
+        RegistryOps<JsonElement> ops = RegistryOps.create(
+                JsonOps.INSTANCE,
+                RegistryAccess.fromRegistryOfRegistries(BuiltInRegistries.REGISTRY));
+        if (Miapi.server != null) {
+            Miapi.server.reloadableRegistries().get();
+            ops = RegistryOps.create(
+                    JsonOps.INSTANCE, Miapi.server.reloadableRegistries().get()
+            );
+        } else {
+            try {
+                ops = clientCodec();
+            } catch (RuntimeException e) {
+
+            }
+        }
         return codec.parse(
                 ops, element).getOrThrow((s) -> new DecoderException("could not decode CodecProperty " + this.getClass().getName() + " " + s));
     }
+
+    @Environment(EnvType.CLIENT)
+    private RegistryOps<JsonElement> clientCodec() {
+        return RegistryOps.create(
+                JsonOps.INSTANCE,
+                Minecraft.getInstance().getConnection().registryAccess());
+    }
+
 
     public JsonElement encode(T property) {
         BuiltInRegistries.REGISTRY.asLookup();

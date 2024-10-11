@@ -23,6 +23,7 @@ import smartin.miapi.item.modular.PropertyResolver;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.material.Material;
 import smartin.miapi.material.MaterialProperty;
+import smartin.miapi.mixin.RegistryOpsAccessor;
 import smartin.miapi.modules.cache.DataCache;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.slot.SlotProperty;
@@ -79,6 +80,9 @@ public class ModuleInstance {
             public <T> DataResult<Pair<ModuleInstance, T>> decode(DynamicOps<T> ops, T input) {
                 var basicResult = basicCodec.decode(ops, input);
                 if (ops instanceof RegistryOps<T> registryOps) {
+                    if (basicResult.isSuccess()) {
+                        basicResult.getOrThrow().getFirst().lookup = ((RegistryOpsAccessor) registryOps).getLookupProvider();
+                    }
                     //TODO:give moduleinstances guaranteeed registry access
                 }
                 var result = basicResult.getOrThrow().getFirst();
@@ -106,6 +110,9 @@ public class ModuleInstance {
 
     @Nullable
     public RegistryAccess registryAccess;
+
+    @Nullable
+    public RegistryOps.RegistryInfoLookup lookup;
 
     /**
      * this is kept separately in case the module doesn't exist, otherwise the id would be defaulted to empty in case no module is found, permanently breaking the item
@@ -295,6 +302,7 @@ public class ModuleInstance {
         calculatePosition(position);
 
         ModuleInstance root = this.getRoot().deepCopy();
+        root.registryAccess = this.registryAccess;
 
         return root.getPosition(position);
     }
@@ -365,10 +373,12 @@ public class ModuleInstance {
      */
     private ModuleInstance deepCopy() {
         ModuleInstance copy = new ModuleInstance(this.module);
+        copy.registryAccess = this.registryAccess;
         copy.moduleData = new HashMap<>(this.moduleData);
         this.subModules.forEach(((id, subModule) -> {
             ModuleInstance subModuleCopy = subModule.deepCopy();
             copy.setSubModule(id, subModuleCopy);
+            subModule.registryAccess = this.registryAccess;
         }));
         return copy;
     }
