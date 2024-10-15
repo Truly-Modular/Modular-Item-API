@@ -18,7 +18,7 @@ import java.util.Map;
 
 public class NBTWriteProperty implements ModuleProperty, CraftingProperty {
     public static NBTWriteProperty property;
-    public static String KEY;
+    public static String KEY = "nbt";
 
     public NBTWriteProperty() {
         property = this;
@@ -31,7 +31,7 @@ public class NBTWriteProperty implements ModuleProperty, CraftingProperty {
         if (data != null) {
             data.getAsJsonObject().asMap().forEach((key, json) -> map.put(key, JsonOps.INSTANCE.convertTo(NbtOps.INSTANCE, json)));
         }
-        return new HashMap<>();
+        return map;
     }
 
     @Override
