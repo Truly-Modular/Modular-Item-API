@@ -6,6 +6,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
+import org.jetbrains.annotations.Nullable;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
 import smartin.miapi.craft.CraftAction;
 import smartin.miapi.modules.ItemModule;
@@ -32,6 +33,10 @@ public class NBTWriteProperty implements ModuleProperty, CraftingProperty {
             data.getAsJsonObject().asMap().forEach((key, json) -> map.put(key, JsonOps.INSTANCE.convertTo(NbtOps.INSTANCE, json)));
         }
         return map;
+    }
+
+    public boolean shouldExecuteOnCraft(@Nullable ItemModule.ModuleInstance module, ItemModule.ModuleInstance root, ItemStack stack) {
+        return true;
     }
 
     @Override

@@ -675,9 +675,9 @@ public class ItemModule {
             }
             stack.getOrCreateNbt().putString(ItemModule.NBT_MODULE_KEY, this.toString());
             if (stack.getOrCreateNbt().contains(MODULE_KEY)) {
-                //stack.getOrCreateNbt().remove(MODULE_KEY);
+                stack.getOrCreateNbt().remove(MODULE_KEY);
             }
-            stack.getOrCreateNbt().putString(ItemModule.MODULE_KEY, this.toString());
+            //stack.getOrCreateNbt().putString(ItemModule.MODULE_KEY, this.toString());
             if (clearCache) {
                 ModularItemCache.clearUUIDFor(stack);
             }
