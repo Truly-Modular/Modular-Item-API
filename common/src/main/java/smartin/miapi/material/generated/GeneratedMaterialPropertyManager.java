@@ -41,24 +41,27 @@ public class GeneratedMaterialPropertyManager {
     }
 
     private static void setupProperties(Item item, ResourceLocation id, String type, Item vanillaCompare, Item vanillaCompare2, Map<String, Map<ModuleProperty<?>, Object>> properties) {
+        // Create an intermediate map to accumulate the properties
+        Map<ModuleProperty<?>, Object> propertyMap = new HashMap<>();
+
         if (shouldApplyProperty(MiapiConfig.INSTANCE.server.generatedMaterials.abilityProperty, id.toString())) {
-            properties.put(type, Map.of(
-                    AbilityMangerProperty.property, Map.of(CopyItemAbility.ability, new CopyItemAbility.ItemContext(item))
-            ));
+            propertyMap.put(
+                    AbilityMangerProperty.property,
+                    Map.of(CopyItemAbility.ability, new CopyItemAbility.ItemContext(item))
+            );
         }
 
         if (shouldApplyProperty(MiapiConfig.INSTANCE.server.generatedMaterials.loreProperty, id.toString())) {
             List<Component> loreAdd = new ArrayList<>();
             item.appendHoverText(item.getDefaultInstance(), Item.TooltipContext.EMPTY, loreAdd, TooltipFlag.ADVANCED);
-            properties.put(type, Map.of(
-                    LoreProperty.property, loreAdd
-            ));
+            propertyMap.put(LoreProperty.property, loreAdd);
         }
 
         if (shouldApplyProperty(MiapiConfig.INSTANCE.server.generatedMaterials.onHitProperty, id.toString())) {
-            properties.put(type, Map.of(
-                    CopyItemOnHit.property, BuiltInRegistries.ITEM.wrapAsHolder(item)
-            ));
+            propertyMap.put(
+                    CopyItemOnHit.property,
+                    BuiltInRegistries.ITEM.wrapAsHolder(item)
+            );
         }
 
         if (shouldApplyProperty(MiapiConfig.INSTANCE.server.generatedMaterials.tagProperty, id.toString())) {
@@ -77,9 +80,8 @@ public class GeneratedMaterialPropertyManager {
                     .filter(tag -> !commonTags.contains(tag))
                     .map(tag -> tag.location().toString())
                     .toList();
-            properties.put(type, Map.of(
-                    FakeItemTagProperty.property, uniqueTags
-            ));
+
+            propertyMap.put(FakeItemTagProperty.property, uniqueTags);
         }
 
         if (shouldApplyProperty(MiapiConfig.INSTANCE.server.generatedMaterials.componentProperty, id.toString())) {
@@ -95,10 +97,11 @@ public class GeneratedMaterialPropertyManager {
                     components.put(componentId, element);
                 }
             });
-            properties.put(type, Map.of(
-                    ComponentProperty.property, components
-            ));
+            propertyMap.put(ComponentProperty.property, components);
         }
+
+        // Add the collected propertyMap to the properties map
+        properties.put(type, propertyMap);
     }
 
     public static boolean shouldApplyProperty(

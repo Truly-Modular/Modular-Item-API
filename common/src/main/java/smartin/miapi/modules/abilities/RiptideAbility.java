@@ -109,14 +109,15 @@ public class RiptideAbility implements ItemUseDefaultCooldownAbility<RiptideAbil
         return (int) getSpecialContext(itemStack).minUse.getValue();
     }
 
-    @Override
-    public RiptideContextJson initialize(RiptideContextJson json, ModuleInstance moduleInstance) {
-        return json.initialize(moduleInstance);
-    }
 
     @Override
     public int getCooldown(ItemStack itemStack) {
         return (int) getSpecialContext(itemStack).cooldown.getValue();
+    }
+
+    @Override
+    public RiptideContextJson initialize(RiptideContextJson json, ModuleInstance moduleInstance) {
+        return json.initialize(moduleInstance);
     }
 
     @Override

@@ -44,7 +44,7 @@ public class MiapiFabric implements ModInitializer {
         if (Platform.isModLoaded("treechop")) {
             TrechopUtilFabric.loadTreechopCompat();
         }
-        ResourceManagerHelper.get(PackType.SERVER_DATA).registerReloadListener(new IdentifiableMiapiReloadListener());
+        ResourceManagerHelper.get(PackType.SERVER_DATA).registerReloadListener(new IdentifiableMiapiReloadListenerFixed());
 
         AttributeProperty.replaceMap.put("forge:generic.swim_speed", () -> SWIM_SPEED.value());
 

@@ -11,10 +11,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.item.ItemStack;
@@ -34,6 +31,7 @@ import smartin.miapi.mixin.AbstractArrowAccessor;
 import smartin.miapi.modules.abilities.util.WrappedSoundEvent;
 import smartin.miapi.modules.properties.attributes.AttributeUtil;
 import smartin.miapi.modules.properties.projectile.AirDragProperty;
+import smartin.miapi.modules.properties.projectile.ChannelingProperty;
 import smartin.miapi.registries.RegistryInventory;
 
 public class ItemProjectileEntity extends AbstractArrow {
@@ -266,6 +264,15 @@ public class ItemProjectileEntity extends AbstractArrow {
                 this.doKnockback(victim, event.damageSource);
                 this.doPostHurtEffects(victim);
             }
+        }
+        if (ChannelingProperty.hasChanneling(this.getPickupItem())) {
+            LightningBolt lightningEntity = EntityType.LIGHTNING_BOLT.create(this.level());
+            assert lightningEntity != null;
+            lightningEntity.moveTo(Vec3.atBottomCenterOf(entityHitResult.getEntity().getOnPos()));
+            if(this.getOwner() instanceof ServerPlayer serverPlayer){
+                lightningEntity.setCause(serverPlayer);
+            }
+            this.level().addFreshEntity(lightningEntity);
         }
 
         if (this.projectileHitBehaviour != null) {

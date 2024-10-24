@@ -141,9 +141,7 @@ public class GeneratedMaterialManager {
                         });
             }
 
-            generatedMaterials.forEach(material -> {
-                materials.put(material.getID(), material);
-            });
+            generatedMaterials.forEach(material -> materials.put(material.getID(), material));
             SmithingRecipeUtil.setupSmithingRecipe(generatedMaterials);
 
             if (MiapiConfig.INSTANCE.server.generatedMaterials.generateWoodMaterials) {

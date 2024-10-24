@@ -23,23 +23,28 @@ public class ModuleDataPropertiesManager {
 
     public static Map<ModuleProperty<?>, Object> getProperties(ModuleInstance moduleInstance) {
         Map<ModuleProperty<?>, Object> map = new HashMap<>();
-        JsonElement properties = moduleInstance.moduleData.get("properties");
-        if (properties != null) {
-            JsonObject moduleJson = properties.getAsJsonObject();
-            if (moduleJson != null) {
-                moduleJson.entrySet().forEach(stringJsonElementEntry -> {
-                    ModuleProperty<?> property = RegistryInventory.moduleProperties
-                            .get(Miapi.id(stringJsonElementEntry.getKey()));
-                    if (property != null) {
-                        map.put(property, property.decode(stringJsonElementEntry.getValue()));
-                        try {
-                            property.load(Miapi.id("runtime_data"), stringJsonElementEntry.getValue(), Environment.isClient());
-                        } catch (Exception e) {
-                            Miapi.LOGGER.info("could not load property " + stringJsonElementEntry.getKey());
+        try {
+            JsonElement properties = moduleInstance.moduleData.get("properties");
+            if (properties != null) {
+                JsonObject moduleJson = properties.getAsJsonObject();
+                if (moduleJson != null) {
+                    moduleJson.entrySet().forEach(stringJsonElementEntry -> {
+                        ModuleProperty<?> property = RegistryInventory.moduleProperties
+                                .get(Miapi.id(stringJsonElementEntry.getKey()));
+                        if (property != null) {
+                            try {
+                                if(property.load(Miapi.id("runtime_data"), stringJsonElementEntry.getValue(), Environment.isClient())){
+                                    map.put(property, property.decode(stringJsonElementEntry.getValue()));
+                                }
+                            } catch (Exception e) {
+                                Miapi.LOGGER.info("could not load property " + stringJsonElementEntry.getKey());
+                            }
                         }
-                    }
-                });
+                    });
+                }
             }
+        } catch (RuntimeException e) {
+            Miapi.LOGGER.warn("could not decode properties", e);
         }
         return map;
     }

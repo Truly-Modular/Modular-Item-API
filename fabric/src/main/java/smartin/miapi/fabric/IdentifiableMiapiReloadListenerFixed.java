@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
-public class IdentifiableMiapiReloadListener implements IdentifiableResourceReloadListener {
+public class IdentifiableMiapiReloadListenerFixed implements IdentifiableResourceReloadListener {
     MiapiReloadListener listener = new MiapiReloadListener(() -> {
         if (Miapi.server != null) {
             return Miapi.server.registryAccess();

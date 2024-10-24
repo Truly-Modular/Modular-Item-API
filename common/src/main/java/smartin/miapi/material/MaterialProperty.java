@@ -5,17 +5,22 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.HolderSet;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.item.modular.StatResolver;
+import smartin.miapi.mixin.NamedAccessor;
 import smartin.miapi.modules.ModuleDataPropertiesManager;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.util.CodecProperty;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
+import smartin.miapi.registries.RegistryInventory;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -98,6 +103,12 @@ public class MaterialProperty extends CodecProperty<ResourceLocation> {
             }
         }, 1);
         ReloadEvents.END.subscribe(((isClient, registryAccess) -> {
+            HolderSet.Named<Item> named = BuiltInRegistries.ITEM.getOrCreateTag(RegistryInventory.MIAPI_MATERIALS);
+            if (named instanceof NamedAccessor namedAccessor) {
+                materials.forEach((id, material) -> {
+                });
+                namedAccessor.callBind(List.of());
+            }
             Miapi.LOGGER.info("Loaded " + materials.size() + " Materials");
         }));
     }

@@ -45,14 +45,15 @@ public class ModularAxe extends AxeItem implements PlatformModularItemMethods, M
         if (MiapiConfig.INSTANCE.server.other.looseToolMaterial) {
             return currentFakeToolmaterial;
         }
-        MaceItem maceItem;
         return super.getTier();
     }
 
     @Override
     public float getAttackDamageBonus(Entity target, float damage, DamageSource damageSource) {
         MutableFloat mutableFloat = new MutableFloat(0);
-        ModularAttackEvents.ATTACK_DAMAGE_BONUS.invoker().getAttackDamageBonus(target, target.getWeaponItem(), damage, damageSource, mutableFloat);
+        if (damageSource.getWeaponItem() != null) {
+            ModularAttackEvents.ATTACK_DAMAGE_BONUS.invoker().getAttackDamageBonus(target, damageSource.getWeaponItem(), damage, damageSource, mutableFloat);
+        }
         return mutableFloat.floatValue();
     }
 

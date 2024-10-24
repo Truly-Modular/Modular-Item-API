@@ -44,7 +44,9 @@ public class ModularPickaxe extends PickaxeItem implements PlatformModularItemMe
     @Override
     public float getAttackDamageBonus(Entity target, float damage, DamageSource damageSource) {
         MutableFloat mutableFloat = new MutableFloat(0);
-        ModularAttackEvents.ATTACK_DAMAGE_BONUS.invoker().getAttackDamageBonus(target, target.getWeaponItem(), damage, damageSource, mutableFloat);
+        if (damageSource.getWeaponItem() != null) {
+            ModularAttackEvents.ATTACK_DAMAGE_BONUS.invoker().getAttackDamageBonus(target, damageSource.getWeaponItem(), damage, damageSource, mutableFloat);
+        }
         return mutableFloat.floatValue();
     }
 

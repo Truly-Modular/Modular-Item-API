@@ -12,11 +12,9 @@ import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
 /**
- *
  * @header Copy On Hit
  * @path /data_types/properties/on_hit/copy_from_item
- * @description_start
- * Attempts to copy on hit effects from item, is implemented to work with onhits implemented like the maces
+ * @description_start Attempts to copy on hit effects from item, is implemented to work with onhits implemented like the maces
  * @description_end
  * @data copy_item_on_hit:the id of the item to copy
  */
@@ -45,9 +43,11 @@ public class CopyItemOnHit extends CodecProperty<Holder<Item>> {
         });
         ModularAttackEvents.HURT_ENEMY_POST.register((stack, target, attacker) -> {
             var optional = getData(stack);
+            Miapi.LOGGER.info("post hit for item " + optional);
             if (
                     optional.isPresent() &&
                     optional.get().value() instanceof Item item) {
+                Miapi.LOGGER.info("post hit for item " + item);
                 item.postHurtEnemy(stack, target, attacker);
             }
             return EventResult.pass();

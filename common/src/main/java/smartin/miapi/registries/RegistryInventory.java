@@ -62,7 +62,9 @@ import smartin.miapi.item.modular.items.tools.*;
 import smartin.miapi.lootFunctions.MaterialSwapLootFunction;
 import smartin.miapi.lootFunctions.ModuleSwapLootFunction;
 import smartin.miapi.material.*;
-import smartin.miapi.modules.*;
+import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.ModuleInstance;
+import smartin.miapi.modules.StackStorageComponent;
 import smartin.miapi.modules.abilities.*;
 import smartin.miapi.modules.abilities.toolabilities.AxeAbility;
 import smartin.miapi.modules.abilities.toolabilities.HoeAbility;
@@ -133,6 +135,7 @@ public class RegistryInventory {
     public static final MiapiRegistry<CraftingStat> craftingStats = MiapiRegistry.getInstance(CraftingStat.class);
     public static final Registrar<LootItemFunctionType<?>> lootItemFunctions = registrar.get().get(Registries.LOOT_FUNCTION_TYPE);
     public static final TagKey<Item> MIAPI_FORBIDDEN_TAG = TagKey.create(Registries.ITEM, ResourceLocation.parse("miapi_forbidden"));
+    public static final TagKey<Item> MIAPI_MATERIALS = TagKey.create(Registries.ITEM, ResourceLocation.parse("miapi_materials"));
 
     public static <T> RegistrySupplier<T> registerAndSupply(Registrar<T> rg, ResourceLocation id, Supplier<T> object) {
         return rg.register(id, object);
@@ -232,7 +235,6 @@ public class RegistryInventory {
                     craftingScreenHandler = scr;
                     if (Platform.getEnvironment() == Env.CLIENT) MiapiClient.registerScreenHandler();
                 });
-
 
         RegistryInventory.components.register(
                 Miapi.id("item_module"), () -> ModuleInstance.MODULE_INSTANCE_COMPONENT);
@@ -553,6 +555,8 @@ public class RegistryInventory {
             registerMiapi(useAbilityRegistry, ShovelAbility.KEY, new ShovelAbility());
             registerMiapi(useAbilityRegistry, EatAbility.KEY, new EatAbility());
             registerMiapi(useAbilityRegistry, AreaHarvestReplant.KEY, new AreaHarvestReplant());
+            registerMiapi(useAbilityRegistry, CastLightingAbility.KEY, new CastLightingAbility());
+            registerMiapi(useAbilityRegistry, SonicBoomAbility.KEY, new SonicBoomAbility());
 
             Miapi.LOGGER.info("Registered Truly Modulars Property resolvers:");
             PropertyResolver.registry.forEach((pair) -> {
