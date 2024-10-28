@@ -5,3 +5,4 @@
 - improved armor compatibility
 - fixed heavy attack not multiplying damage
 - actually enabled NBT Property
+- fixed crash with minecolonies
