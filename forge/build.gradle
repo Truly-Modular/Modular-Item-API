@@ -68,7 +68,7 @@ dependencies {
         modCompileOnly "curse.maven:epic-fight-mod-405076:5159623"
     }
 
-    modCompileOnly "curse.maven:minecolonies-245506:5355518"
+    //modCompileOnly "curse.maven:minecolonies-245506:5355518"
     modCompileOnly "curse.maven:apotheosis-313970:5317303"
     modCompileOnly "curse.maven:quark-243121:5390424"
     modCompileOnly "curse.maven:zenith-968868:5254672"

@@ -67,7 +67,11 @@ public class SynergyManager {
                 if (type.equals("tag")) {
                     String tagKey = entry.getKey();
                     TagProperty.getModulesWithTag(tagKey).forEach(itemModule -> {
-                        loadSynergy(itemModule, entry.getValue().getAsJsonObject());
+                        if (itemModule == null) {
+                            Miapi.LOGGER.warn("Module does not exist " + entry.getKey() + " cannot load synergy");
+                        } else {
+                            loadSynergy(itemModule, entry.getValue().getAsJsonObject());
+                        }
                     });
                 }
                 if (type.equals("material")) {
@@ -75,28 +79,30 @@ public class SynergyManager {
                     Material material = MaterialProperty.materials.get(tagKey);
                     if (material != null) {
                         loadSynergy(material, entry.getValue().getAsJsonObject());
+                    } else {
+                        Miapi.LOGGER.warn("could not find material " + entry.getKey()+" synergy will not be loaded");
                     }
                 }
                 if (type.equals("all")) {
-                    if(entry.getValue().isJsonObject()){
+                    if (entry.getValue().isJsonObject()) {
                         RegistryInventory.modules.getFlatMap().forEach((id, module) -> {
                             loadSynergy(module, entry.getValue().getAsJsonObject());
                         });
                     }
                 }
             } else {
-                ItemModule property = RegistryInventory.modules.get(entry.getKey());
+                ItemModule module = RegistryInventory.modules.get(entry.getKey());
                 JsonObject entryData = entry.getValue().getAsJsonObject();
-                loadSynergy(property, entryData);
+                if (module == null) {
+                    Miapi.LOGGER.warn("ItemModule does not exist " + entry.getKey() + " cannot load synergy");
+                } else {
+                    loadSynergy(module, entryData);
+                }
             }
         });
     }
 
     public static void loadSynergy(ItemModule itemModule, JsonObject entryData) {
-        if (itemModule == null) {
-            Miapi.LOGGER.warn("ItemModule is null?");
-            return;
-        }
         Synergy synergy = new Synergy();
         synergy.condition = ConditionManager.get(entryData.get("condition"));
         List<Synergy> synergies = maps.computeIfAbsent(itemModule, (module) -> {
@@ -108,7 +114,7 @@ public class SynergyManager {
 
     public static void loadSynergy(Material material, JsonObject entryData) {
         if (material == null) {
-            Miapi.LOGGER.warn("ItemModule is null?");
+            Miapi.LOGGER.warn("Material is null? synergy wont load");
             return;
         }
         Synergy synergy = new Synergy();
