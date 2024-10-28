@@ -271,7 +271,7 @@
             },
             "not": {
               "header": "Not Condition",
-              "description": "  \nthis condition inverses another condition\r",
+              "description": " this condition inverses another condition  \n",
               "java": "common/src/main/java/smartin/miapi/modules/conditions/NotCondition.java",
               "data": {
                 "type": "not",
@@ -546,7 +546,7 @@
                 },
                 "fake_enchants": {
                   "header": "Fake Enchantment Property",
-                  "description": "  \nThe Fake Enchantment Property simulates enchantment levels on items during specific operations.\rThese enchantments are not shown in the item's tooltip and are purely functional.\rThe property evaluates enchantment levels dynamically using the `[old_level]` placeholder, which allows referencing prior levels in the calculation.\rOnce the property is removed, the enchantments no longer affect the item.\r",
+                  "description": " The Fake Enchantment Property simulates enchantment levels on items during specific operations.  \nThese enchantments are not shown in the item's tooltip and are purely functional.\rThe property evaluates enchantment levels dynamically using the `[old_level]` placeholder, which allows referencing prior levels in the calculation.\rOnce the property is removed, the enchantments no longer affect the item.\r",
                   "java": "common/src/main/java/smartin/miapi/modules/properties/enchanment/FakeEnchantmentProperty.java",
                   "data": {
                     "enchantment": " The fake enchantment being applied (Holder<Enchantment>).",
@@ -733,6 +733,15 @@
                   "java": "common/src/main/java/smartin/miapi/modules/properties/onHit/ArmorPenProperty.java",
                   "data": {
                     "value": " The percentage of armor penetration applied. A value of 100 means complete armor penetration, while a lower value means less reduction."
+                  },
+                  "key_words": []
+                },
+                "copy_from_item": {
+                  "header": "Copy On Hit",
+                  "description": " Attempts to copy on hit effects from item, is implemented to work with onhits implemented like the maces  \n",
+                  "java": "common/src/main/java/smartin/miapi/modules/properties/onHit/CopyItemOnHit.java",
+                  "data": {
+                    "copy_item_on_hit": "the id of the item to copy"
                   },
                   "key_words": []
                 },
@@ -1131,6 +1140,25 @@
           "key_words": [
             "DoubleResolvable",
             "DoubleResolvable"
+          ]
+        }
+      }
+    },
+    "examples": {
+      "header": "Tutorials / Examples",
+      "description": "These Pages are to help you to create various Data or Resourcepacks and combinations adding content to truly modular",
+      "data": {},
+      "key_words": [
+        "Tutorial",
+        "exmaples"
+      ],
+      "sub_pages": {
+        "skin": {
+          "header": "Creating a Skin Resource + Texture Pack",
+          "description": "This guide will walk you through setting up a skin resource and texture pack for your Minecraft mod. The resource configuration file should be named as `skin.json` and placed within your mod's directory.\r  \n\r  \nThe directory structure should look like this:\r  \n```mod-id/miapi/skins/module/any-name-or-path.json```\r  \n\r  \n\r  \n## Structure of `skin.json`\r  \n\r  \nHere's an example of what your `skin.json` file should look like:\r  \n\r  \n```json\r  \n{\r  \n    \"path\": \"bident\",\r  \n    \"module\": \"arsenal:blade/trident\",\r  \n    \"replace\": {\r  \n        \"model\": [\r  \n            {\r  \n                \"path\": \"miapi:models/item/sword/blade/trident/bident/[material.texture].json\",\r  \n                \"color\": \"[material.color]\",\r  \n                \"transform\": {\r  \n                    \"rotation\": {\r  \n                        \"x\": 0.0,\r  \n                        \"y\": 0.0,\r  \n                        \"z\": 0.0\r  \n                    },\r  \n                    \"translation\": {\r  \n                        \"x\": -5.0,\r  \n                        \"y\": -5.0,\r  \n                        \"z\": 0.0\r  \n                    },\r  \n                    \"scale\": {\r  \n                        \"x\": 1,\r  \n                        \"y\": 1,\r  \n                        \"z\": 1\r  \n                    }\r  \n                }\r  \n            }\r  \n        ],\r  \n        \"gui_offset\": {\r  \n            \"sizeX\": -6,\r  \n            \"sizeY\": -6\r  \n        }\r  \n    },\r  \n    \"condition\": {\r  \n        \"type\": \"true\"\r  \n    },\r  \n    \"model\": {\r  \n        \"color\": \"FFFFFF\",\r  \n        \"scale\": 0,\r  \n        \"borderSize\": 0\r  \n    }\r  \n}\r  \n```\r  \n### `path`\r  \n\r  \nThe `path` is used to specify the unique identifier for this skin in the UI. Using `/` in the path allows you to set up groups or subcategories for better organization. For example, `path: \"skyrim/bident\"` would group this skin under a \"skyrim\" category in the UI.\r  \n### `module`\r  \n\r  \nThe `module` specifies the exact module this skin will apply to. Alternatively, you can use `\"tag\"` with a module tag to apply the skin to multiple modules that share the specified tag. This flexibility allows you to target a single module or groups of related modules.\r  \n### `replace`\r  \n\r  \nThe `replace` section defines specific properties within the module that should be replaced. This might include the model path, color, transformations, and GUI offsets. There are additional options like `\"merge\"` and `\"remove\"` which allow you to combine or remove specific properties, similar to the synergy system.\r  \n### `condition`\r  \n\r  \nThe `condition` section utilizes the internal Condition system. Here, you can define requirements that must be met for a user to access this skin. Usually you just want to use `\"type:true\"` to always unlock this skin.\r  \n\r  \n### `model`\r  \n\r  \nThe `model` refers to the background texture displayed on the button for this skin in the UI. It’s recommended to leave this section unchanged.\r  \n### `hover` (optional)\r  \n\r  \nThe `hover` property is an optional field that adds a tooltip when hovering over the skin in the UI. This can be a helpful place to provide information, such as credit to the skin creator or additional details about the skin.\r  \n\r  \n\r  \n# Examples\r  \n- example Datapack https://github.com/Truly-Modular/Modular-Item-API/blob/release/1.21-mojmaps/common/src/main/java/smartin/miapi/wiki/examples/example_skin_datapack.zip\r  \n- example Resource Pack https://github.com/Truly-Modular/Modular-Item-API/blob/release/1.21-mojmaps/common/src/main/java/smartin/miapi/wiki/examples/example_skin_resourcepack.zip",
+          "data": {},
+          "key_words": [
+            "skin"
           ]
         }
       }

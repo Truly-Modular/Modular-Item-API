@@ -74,3 +74,8 @@ The `model` refers to the background texture displayed on the button for this sk
 ### `hover` (optional)
 
 The `hover` property is an optional field that adds a tooltip when hovering over the skin in the UI. This can be a helpful place to provide information, such as credit to the skin creator or additional details about the skin.
+
+
+# Examples
+- example Datapack https://github.com/Truly-Modular/Modular-Item-API/blob/release/1.21-mojmaps/common/src/main/java/smartin/miapi/wiki/examples/example_skin_datapack.zip
+- example Resource Pack https://github.com/Truly-Modular/Modular-Item-API/blob/release/1.21-mojmaps/common/src/main/java/smartin/miapi/wiki/examples/example_skin_resourcepack.zip

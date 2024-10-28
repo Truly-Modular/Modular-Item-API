@@ -9,7 +9,7 @@ accessible class net/minecraft/client/resources/model/ModelBakery$ModelBakerImpl
 #accessible field net/minecraft/client/texture/SpriteAtlasHolder atlas Lnet/minecraft/client/texture/SpriteAtlasTexture;
 #accessible field net/minecraft/item/CrossbowItem charged Z
 #accessible field net/minecraft/item/CrossbowItem loaded Z
-#accessible method net/minecraft/client/texture/Sprite <init> (Lnet/minecraft/util/Identifier;Lnet/minecraft/client/texture/SpriteContents;IIII)V
+#accessible method net/minecraft/client/texture/Sprite <execute> (Lnet/minecraft/util/Identifier;Lnet/minecraft/client/texture/SpriteContents;IIII)V
 #accessible class net/minecraft/enchantment/EnchantmentHelper$Consumer
 
 #accessible field net/minecraft/client/texture/TextureManager textures Ljava/util/Map; # was used for testing
