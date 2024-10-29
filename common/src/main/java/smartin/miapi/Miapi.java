@@ -11,6 +11,7 @@ import com.redpxnda.nucleus.config.ConfigBuilder;
 import com.redpxnda.nucleus.config.ConfigManager;
 import com.redpxnda.nucleus.config.ConfigType;
 import com.redpxnda.nucleus.registry.NucleusNamespaces;
+import dev.architectury.event.EventResult;
 import dev.architectury.event.events.common.CommandRegistrationEvent;
 import dev.architectury.event.events.common.LifecycleEvent;
 import dev.architectury.event.events.common.PlayerEvent;
@@ -28,6 +29,7 @@ import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.craft.BlueprintManager;
 import smartin.miapi.craft.stat.StatActorType;
 import smartin.miapi.datapack.ReloadEvents;
+import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.item.ItemToModularConverter;
 import smartin.miapi.item.ModularItemStackConverter;
 import smartin.miapi.item.modular.PropertyResolver;
@@ -36,6 +38,8 @@ import smartin.miapi.item.modular.VisualModularItem;
 import smartin.miapi.material.ComponentMaterial;
 import smartin.miapi.material.MaterialCommand;
 import smartin.miapi.material.MaterialIcons;
+import smartin.miapi.material.generated.GenerateConvertersHelper;
+import smartin.miapi.material.generated.GenerateConvertersHelperArmor;
 import smartin.miapi.material.generated.GeneratedMaterialManager;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.MiapiPermissions;
@@ -174,6 +178,16 @@ public class Miapi {
             }
         }));
         BlueprintManager.setup();
+
+        MiapiEvents.GENERATE_MATERIAL_CONVERTERS.register((material, tools, armorItems, isClient) -> {
+            try {
+                GenerateConvertersHelperArmor.setup(armorItems, material);
+                GenerateConvertersHelper.setupTools(tools, material);
+            } catch (Exception e) {
+                Miapi.LOGGER.warn("failed to setup converters for " + material.getID());
+            }
+            return EventResult.pass();
+        });
     }
 
 

@@ -89,7 +89,7 @@ public class GeneratedMaterialFromCopy implements Material {
         if (smartin.miapi.Environment.isClient()) {
             setupClient();
         }
-        MiapiEvents.GENERATE_MATERIAL_CONVERTERS.invoker().generated(this, new ArrayList<>(), smartin.miapi.Environment.isClient());
+        MiapiEvents.GENERATE_MATERIAL_CONVERTERS.invoker().generated(this, new ArrayList<>(), new ArrayList<>(), smartin.miapi.Environment.isClient());
     }
 
     @Override

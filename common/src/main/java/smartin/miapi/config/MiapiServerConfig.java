@@ -130,6 +130,9 @@ public class MiapiServerConfig {
         @AutoCodec.Name("generate_other_materials")
         public boolean generateOtherMaterials = true;
 
+        @Comment("Whether the Attribute Property should copy the items other attributes for generated Materials")
+        @AutoCodec.Name("attribute_property")
+        public GeneratePropertyOption attributeProperty = new GeneratePropertyOption();
 
         @Comment("Whether the Ability Property should copy the items abilities for generated Materials")
         @AutoCodec.Name("ability_property")

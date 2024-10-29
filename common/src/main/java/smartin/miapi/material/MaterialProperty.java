@@ -176,8 +176,8 @@ public class MaterialProperty extends CodecProperty<ResourceLocation> {
     public static Material getMaterial(ModuleInstance instance) {
         if (property.getData(instance).isPresent()) {
             Material material = MaterialProperty.materials.get(property.getData(instance).get());
-            material = material.getMaterial(instance);
             if (material != null) {
+                material = material.getMaterial(instance);
                 return MaterialOverwriteProperty.property.adjustMaterial(instance, material);
             }
         }

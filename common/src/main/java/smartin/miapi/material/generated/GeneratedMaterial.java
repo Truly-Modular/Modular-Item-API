@@ -25,7 +25,6 @@ import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.events.MiapiEvents;
-import smartin.miapi.lootFunctions.MaterialSwapLootFunction;
 import smartin.miapi.material.Material;
 import smartin.miapi.material.MaterialIcons;
 import smartin.miapi.material.palette.FallbackColorer;
@@ -46,6 +45,7 @@ public class GeneratedMaterial implements Material {
     List<String> groups = new ArrayList<>();
     List<String> textureKeys = new ArrayList<>();
     Map<String, Double> stats = new HashMap<>();
+    List<ArmorItem> armorItems = new ArrayList<>();
     TagKey<Block> incorrectForTool = BlockTags.INCORRECT_FOR_WOODEN_TOOL;
     GrayscalePaletteColorer palette;
     @Nullable
@@ -125,7 +125,7 @@ public class GeneratedMaterial implements Material {
         stats.put("enchantability", (double) toolMaterial.getEnchantmentValue());
         isValid = assignStats(toolItems);
         if (isValid) {
-            MiapiEvents.GENERATE_MATERIAL_CONVERTERS.invoker().generated(this, toolItems, smartin.miapi.Environment.isClient());
+            MiapiEvents.GENERATE_MATERIAL_CONVERTERS.invoker().generated(this, toolItems, armorItems, smartin.miapi.Environment.isClient());
         }
     }
 
@@ -139,10 +139,10 @@ public class GeneratedMaterial implements Material {
             swordItemOptional.get() instanceof SwordItem foundSwordItem &&
             axeItemOptional.get() instanceof DiggerItem axeItem) {
             swordItem = foundSwordItem;
-            stats.put("hardness", (double) foundSwordItem.getTier().getAttackDamageBonus());
-            double swordAttackDmg = foundSwordItem.getTier().getAttackDamageBonus();
+            double swordAttackDmg = AttributeUtil.getActualValue(swordItem.getDefaultInstance(), EquipmentSlot.MAINHAND, Attributes.ATTACK_DAMAGE.value(), 0.0);
             double axeAttackDmg = AttributeUtil.getActualValue(axeItem.getDefaultInstance(), EquipmentSlot.MAINHAND, Attributes.ATTACK_DAMAGE.value(), 0.0);
             double calculatedDamage = Math.floor(Math.pow((swordAttackDmg - 3.4) * 2.3, 1.0 / 3.0)) + 7;
+            stats.put("hardness", swordAttackDmg);
 
             if (groups.contains("stone")) {
                 stats.put("density", swordAttackDmg / 1.5);
@@ -162,7 +162,8 @@ public class GeneratedMaterial implements Material {
                 stats.put("flexibility", (double) (toolMaterial.getSpeed() / 4));
             }
             stats.put("tier", (double) getEstimatedTier(toolMaterial.getIncorrectBlocksForDrops()));
-            properties = GeneratedMaterialPropertyManager.setup(getID(), swordItem, axeItem, toolMaterials, Map.of());
+            armorItems = BuiltInRegistries.ITEM.stream().filter(a -> a instanceof ArmorItem).map(r -> (ArmorItem) r).filter(armorItem -> armorItem.getMaterial().value().repairIngredient().get().test(mainIngredient)).toList();
+            properties = GeneratedMaterialPropertyManager.setup(getID(), swordItem, axeItem, toolMaterials, armorItems, Map.of());
             return true;
         }
         return false;

@@ -17,6 +17,7 @@ import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TieredItem;
@@ -206,7 +207,7 @@ public class MiapiEvents {
     }
 
     public interface CreateMaterialModularConvertersEvent {
-        EventResult generated(Material material, List<TieredItem> tools, boolean isClient);
+        EventResult generated(Material material, List<TieredItem> tools, List<ArmorItem> armorItems, boolean isClient);
     }
 
     public interface SmithingEvent {

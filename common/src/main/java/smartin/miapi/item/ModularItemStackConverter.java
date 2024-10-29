@@ -3,6 +3,7 @@ package smartin.miapi.item;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
+import smartin.miapi.Miapi;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.modules.properties.util.ComponentApplyProperty;
 import smartin.miapi.registries.RegistryInventory;
@@ -40,10 +41,14 @@ public class ModularItemStackConverter {
             ));
         }
         for (ModularConverter converter : converters) {
-            converted = converter.convert(converted);
+            try {
+                converted = converter.convert(converted);
+            } catch (RuntimeException e) {
+                Miapi.LOGGER.warn("failed to convert item" + original.getItem());
+            }
         }
         if (ModularItem.isModularItem(converted)) {
-            ComponentApplyProperty.updateItemStack(converted, null);
+            ComponentApplyProperty.updateItemStack(converted, Miapi.server.reloadableRegistries().get());
         }
         return converted;
     }

@@ -3,19 +3,25 @@ package smartin.miapi.material.generated;
 import com.google.gson.JsonElement;
 import com.mojang.serialization.JsonOps;
 import net.minecraft.core.component.DataComponentType;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.component.TypedDataComponent;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.*;
+import net.minecraft.world.item.component.ItemAttributeModifiers;
+import smartin.miapi.Miapi;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.config.MiapiServerConfig;
+import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.abilities.CopyItemAbility;
 import smartin.miapi.modules.abilities.util.AbilityMangerProperty;
 import smartin.miapi.modules.properties.ComponentProperty;
+import smartin.miapi.modules.properties.CopyItemLoreProperty;
 import smartin.miapi.modules.properties.FakeItemTagProperty;
-import smartin.miapi.modules.properties.LoreProperty;
+import smartin.miapi.modules.properties.attributes.AttributeProperty;
 import smartin.miapi.modules.properties.onHit.CopyItemOnHit;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
@@ -26,21 +32,29 @@ import java.util.stream.Stream;
 public class GeneratedMaterialPropertyManager {
 
 
-    public static Map<String, Map<ModuleProperty<?>, Object>> setup(ResourceLocation id, SwordItem swordItem, DiggerItem axeItem, List<Item> toolMaterials, Map<String, Map<ModuleProperty<?>, Object>> old) {
+    public static Map<String, Map<ModuleProperty<?>, Object>> setup(ResourceLocation id, SwordItem swordItem, DiggerItem axeItem, List<Item> toolMaterials, List<ArmorItem> armorItems, Map<String, Map<ModuleProperty<?>, Object>> old) {
         Map<String, Map<ModuleProperty<?>, Object>> properties = new HashMap<>(old);
-        setupProperties(swordItem, id, "blade", Items.DIAMOND_SWORD, Items.WOODEN_SWORD, properties);
-        setupProperties(axeItem, id, "axe", Items.DIAMOND_AXE, Items.WOODEN_AXE, properties);
-        setupProperties(toolMaterials.stream().filter(PickaxeItem.class::isInstance).findFirst(), id, "pickaxe", Items.DIAMOND_PICKAXE, Items.WOODEN_PICKAXE, properties);
-        setupProperties(toolMaterials.stream().filter(ShovelItem.class::isInstance).findFirst(), id, "shovel", Items.DIAMOND_SHOVEL, Items.WOODEN_SHOVEL, properties);
-        setupProperties(toolMaterials.stream().filter(HoeItem.class::isInstance).findFirst(), id, "hoe", Items.DIAMOND_HOE, Items.WOODEN_HOE, properties);
+        setupProperties(swordItem, id, "blade", Items.DIAMOND_SWORD, Items.WOODEN_SWORD, properties, null);
+        setupProperties(axeItem, id, "axe", Items.DIAMOND_AXE, Items.WOODEN_AXE, properties, null);
+        setupProperties(toolMaterials.stream().filter(PickaxeItem.class::isInstance).findFirst(), id, "pickaxe", Items.DIAMOND_PICKAXE, Items.WOODEN_PICKAXE, properties, null);
+        setupProperties(toolMaterials.stream().filter(ShovelItem.class::isInstance).findFirst(), id, "shovel", Items.DIAMOND_SHOVEL, Items.WOODEN_SHOVEL, properties, null);
+        setupProperties(toolMaterials.stream().filter(HoeItem.class::isInstance).findFirst(), id, "hoe", Items.DIAMOND_HOE, Items.WOODEN_HOE, properties, null);
+        setupProperties(armorItems.stream()
+                .filter(a -> a.getEquipmentSlot() == EquipmentSlot.HEAD).map(a -> (Item) a).findFirst(), id, "helmet", Items.DIAMOND_HELMET, Items.IRON_HELMET, properties, 5);
+        setupProperties(armorItems.stream()
+                .filter(a -> a.getEquipmentSlot() == EquipmentSlot.CHEST).map(a -> (Item) a).findFirst(), id, "chest", Items.DIAMOND_CHESTPLATE, Items.IRON_CHESTPLATE, properties, 8);
+        setupProperties(armorItems.stream()
+                .filter(a -> a.getEquipmentSlot() == EquipmentSlot.LEGS).map(a -> (Item) a).findFirst(), id, "pants", Items.DIAMOND_LEGGINGS, Items.IRON_LEGGINGS, properties, 7);
+        setupProperties(armorItems.stream()
+                .filter(a -> a.getEquipmentSlot() == EquipmentSlot.FEET).map(a -> (Item) a).findFirst(), id, "boot", Items.DIAMOND_BOOTS, Items.IRON_BOOTS, properties, 4);
         return properties;
     }
 
-    private static void setupProperties(Optional<Item> item, ResourceLocation id, String type, Item vanillaCompare, Item vanillaCompare2, Map<String, Map<ModuleProperty<?>, Object>> properties) {
-        item.ifPresent(i -> setupProperties(i, id, type, vanillaCompare, vanillaCompare2, properties));
+    private static void setupProperties(Optional<Item> item, ResourceLocation id, String type, Item vanillaCompare, Item vanillaCompare2, Map<String, Map<ModuleProperty<?>, Object>> properties, Integer cost) {
+        item.ifPresent(i -> setupProperties(i, id, type, vanillaCompare, vanillaCompare2, properties, cost));
     }
 
-    private static void setupProperties(Item item, ResourceLocation id, String type, Item vanillaCompare, Item vanillaCompare2, Map<String, Map<ModuleProperty<?>, Object>> properties) {
+    private static void setupProperties(Item item, ResourceLocation id, String type, Item vanillaCompare, Item vanillaCompare2, Map<String, Map<ModuleProperty<?>, Object>> properties, Integer cost) {
         // Create an intermediate map to accumulate the properties
         Map<ModuleProperty<?>, Object> propertyMap = new HashMap<>();
 
@@ -52,9 +66,9 @@ public class GeneratedMaterialPropertyManager {
         }
 
         if (shouldApplyProperty(MiapiConfig.INSTANCE.server.generatedMaterials.loreProperty, id.toString())) {
-            List<Component> loreAdd = new ArrayList<>();
-            item.appendHoverText(item.getDefaultInstance(), Item.TooltipContext.EMPTY, loreAdd, TooltipFlag.ADVANCED);
-            propertyMap.put(LoreProperty.property, loreAdd);
+            propertyMap.put(
+                    CopyItemLoreProperty.property,
+                    BuiltInRegistries.ITEM.wrapAsHolder(item));
         }
 
         if (shouldApplyProperty(MiapiConfig.INSTANCE.server.generatedMaterials.onHitProperty, id.toString())) {
@@ -86,8 +100,8 @@ public class GeneratedMaterialPropertyManager {
 
         if (shouldApplyProperty(MiapiConfig.INSTANCE.server.generatedMaterials.componentProperty, id.toString())) {
             // Get the tags from both vanillaCompare and vanillaCompare2
-            var componentTypes = vanillaCompare.components().stream().map(c -> c.type()).collect(Collectors.toSet());
-            var commonComponents = vanillaCompare2.components().stream().map(c -> c.type()).filter(c -> componentTypes.contains(c)).collect(Collectors.toSet());
+            var componentTypes = vanillaCompare.components().stream().map(TypedDataComponent::type).collect(Collectors.toSet());
+            var commonComponents = vanillaCompare2.components().stream().map(TypedDataComponent::type).filter(componentTypes::contains).collect(Collectors.toSet());
 
             Map<ResourceLocation, JsonElement> components = new HashMap<>();
             item.components().forEach(typedDataComponent -> {
@@ -98,6 +112,38 @@ public class GeneratedMaterialPropertyManager {
                 }
             });
             propertyMap.put(ComponentProperty.property, components);
+        }
+
+        if (shouldApplyProperty(MiapiConfig.INSTANCE.server.generatedMaterials.attributeProperty, id.toString())) {
+            // Get the tags from both vanillaCompare and vanillaCompare2
+            var firstAttributes = vanillaCompare.getDefaultInstance().get(DataComponents.ATTRIBUTE_MODIFIERS).modifiers().stream().map(ItemAttributeModifiers.Entry::attribute).toList();
+            var secondAttributes = vanillaCompare2.getDefaultInstance().get(DataComponents.ATTRIBUTE_MODIFIERS).modifiers().stream().map(ItemAttributeModifiers.Entry::attribute).toList();
+
+            var modifiers = item.getDefaultInstance().get(DataComponents.ATTRIBUTE_MODIFIERS).modifiers()
+                    .stream()
+                    .filter(a -> !firstAttributes.contains(a.attribute()) && !secondAttributes.contains(a.attribute()))
+                    .filter(a -> a.modifier().operation() == AttributeModifier.Operation.ADD_VALUE)
+                    .toList();
+
+            List<AttributeProperty.AttributeJson> jsonList = modifiers.stream().map(e -> {
+                var json = new AttributeProperty.AttributeJson();
+                json.targetOperation = "+";
+                json.operation = "+";
+                json.attribute = e.attribute().getRegisteredName();
+                if (cost != null) {
+                    json.value = new StatResolver.DoubleFromStat("" + e.modifier().amount() + "/" + cost + " * [module.cost]");
+                } else {
+                    json.value = new StatResolver.DoubleFromStat(e.modifier().amount());
+                }
+                json.slot = e.slot();
+                Miapi.LOGGER.warn(type);
+                Miapi.LOGGER.warn(item.getDescriptionId());
+                Miapi.LOGGER.warn(Miapi.gson.toJson(json));
+                return json;
+                //TODO: for some reason this does NOT work. i dont know
+            }).toList();
+
+            propertyMap.put(AttributeProperty.property, jsonList);
         }
 
         // Add the collected propertyMap to the properties map
