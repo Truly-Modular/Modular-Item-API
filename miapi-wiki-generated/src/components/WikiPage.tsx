@@ -13,20 +13,17 @@ const WikiPage: React.FC = () => {
 	const [searchParams] = useSearchParams()
 	const [data, setData] = useState<Page | null>(null)
 	const [loading, setLoading] = useState(true)
-	const [branch, setBranch] = useState<string>('release/1.21-mojmaps')
+	const [branch, setBranch] = useState<string>(searchParams.get('branch') || '')
 	const [page, setPage] = useState<string>('home')
 
 	useEffect(() => {
-		const branchParam = searchParams.get('branch') || ''
-		const pageParam = searchParams.get('page') || 'home'
-		if (branch !== branchParam || page !== pageParam) {
-			setBranch(branchParam)
-			setPage(pageParam)
-		}
-	}, [searchParams, branch, page])
-
-	useEffect(() => {
 		const fetchData = async () => {
+			const branchParam = searchParams.get('branch') || ''
+			const pageParam = searchParams.get('page') || 'home'
+			if (branch !== branchParam || page !== pageParam) {
+				await setBranch(branchParam)
+				await setPage(pageParam)
+			}
 			if (!branch) return
 			setLoading(true)
 			try {
@@ -42,7 +39,7 @@ const WikiPage: React.FC = () => {
 			}
 		}
 		fetchData()
-	}, [branch])
+	}, [searchParams, branch, page])
 
 	const findPageByPath = (rootPage: Page | null, pagePath: string): Page => {
 		if (!rootPage || !pagePath) return new Page()
