@@ -4,10 +4,12 @@ import com.google.gson.JsonElement;
 import dev.architectury.event.EventResult;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.sound.SoundEvents;
 import smartin.miapi.entity.ItemProjectileEntity;
 import smartin.miapi.entity.arrowhitbehaviours.EntityStickBehaviour;
 import smartin.miapi.events.MiapiProjectileEvents;
 import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.abilities.util.WrappedSoundEvent;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
 /**
@@ -32,6 +34,8 @@ public class ArrowProperty implements ModuleProperty {
             if (element != null && !element.getAsBoolean()) {
                 nbtCompound.set(ItemProjectileEntity.SPEED_DAMAGE, false);
             }
+
+            projectile.hitEntitySound = new WrappedSoundEvent(SoundEvents.ENTITY_ARROW_HIT, 1, 1);
             return EventResult.pass();
         });
         MiapiProjectileEvents.MODULAR_PROJECTILE_ENTITY_HIT.register(event -> {

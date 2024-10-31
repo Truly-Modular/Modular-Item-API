@@ -244,7 +244,7 @@ public class CraftAction {
      */
     private ItemStack craft() {
         ItemStack craftingStack = old.copy();
-        if (toAdd == null || toAdd == ItemModule.empty || toAdd.getName().equals("empty")) {
+        if (toAdd == null) {
             return ItemStack.EMPTY;
         }
         if (slotId.size() == 1) {

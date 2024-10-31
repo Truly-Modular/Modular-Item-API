@@ -29,7 +29,7 @@ public abstract class EntityMixin {
 
     @ModifyVariable(
             method = "stepOnBlock(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;ZZLnet/minecraft/util/math/Vec3d;)Z",
-            at = @At(value = "HEAD"),
+            at = @At(value = "RETURN"),
             ordinal = 1)
     private boolean miapi$adjustMakeStepNoiseEvent(boolean value) {
         Entity entity = (Entity) (Object) (this);
@@ -39,7 +39,7 @@ public abstract class EntityMixin {
 
     @ModifyVariable(
             method = "stepOnBlock(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;ZZLnet/minecraft/util/math/Vec3d;)Z",
-            at = @At(value = "HEAD"),
+            at = @At(value = "RETURN"),
             ordinal = 0)
     private boolean miapi$adjustMakeStepNoiseSound(boolean value) {
         Entity entity = (Entity) (Object) (this);

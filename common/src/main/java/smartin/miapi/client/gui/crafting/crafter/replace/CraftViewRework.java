@@ -38,7 +38,7 @@ import java.util.function.Consumer;
 public class CraftViewRework extends InteractAbleWidget {
     public List<Slot> currentSlots = new ArrayList<>();
     private int currentGuiIndex = 0;
-    int backgroundWidth = 278;
+    int backgroundWidth = 284;
     int backgroundHeight = 221;
     List<Text> warnings = new ArrayList<>();
     boolean firstRender = true;

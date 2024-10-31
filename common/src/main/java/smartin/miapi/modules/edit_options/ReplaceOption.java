@@ -9,7 +9,7 @@ import net.minecraft.network.PacketByteBuf;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.InteractAbleWidget;
-import smartin.miapi.client.gui.PreviewManager;
+import smartin.miapi.client.gui.crafting.PreviewManager;
 import smartin.miapi.client.gui.crafting.CraftingScreen;
 import smartin.miapi.client.gui.crafting.crafter.CraftEditOption;
 import smartin.miapi.craft.CraftAction;
@@ -67,7 +67,7 @@ public class ReplaceOption implements EditOption {
     }
 
     public static void tryPreview() {
-        Miapi.LOGGER.info("try preview " + (unsafeEditContext != null) + " " + (unsafeCraftAction != null));
+        //Miapi.LOGGER.info("try preview " + (unsafeEditContext != null) + " " + (unsafeCraftAction != null));
         if (unsafeEditContext != null && unsafeCraftAction != null) {
             try {
                 unsafeEditContext.preview(unsafeCraftAction.toPacket(Networking.createBuffer()));

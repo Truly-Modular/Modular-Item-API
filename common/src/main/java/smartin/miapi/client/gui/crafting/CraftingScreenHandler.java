@@ -223,7 +223,7 @@ public class CraftingScreenHandler extends ScreenHandler {
             this.setItem(blockEntity.getItem());
         }
         int yOffset = 2 * 18 + 2 + 12 - 20 + 102 - 1;
-        int xOffset = 30 + 2 * 18 + 138 + 7 + 2;
+        int xOffset = 30 + 2 * 18 + 138 + 7 + 2 - 3;
         for (int j = 0; j < 3; ++j) {
             for (int k = 0; k < 9; ++k) {
                 this.addSlot(new PlayerInventorySlot(playerInventory, k + j * 9 + 9, k * 18 + xOffset - 15, j * 18 + yOffset - 14));
@@ -234,11 +234,11 @@ public class CraftingScreenHandler extends ScreenHandler {
             this.addSlot(new PlayerInventorySlot(playerInventory, j, j * 18 + xOffset - 15, 3 * 18 + 4 + yOffset - 14));
         }
 
-        this.addSlot(new ModifyingSlot(inventory, 0, 112 - 60 - 15, 118 + 72 - 14, blockEntity));
+        this.addSlot(new ModifyingSlot(inventory, 0, 112 - 60 - 15 - 3, 118 + 72 - 14, blockEntity));
         for (int i = 0; i < 4; ++i) {
             final EquipmentSlot equipmentSlot = EQUIPMENT_SLOT_ORDER[i];
             int offset = i < 2 ? 0 : 1;
-            this.addSlot(new Slot(playerInventory, 39 - i, 87 + i * 18 - offset - 15, 118 + 71 - 14) {
+            this.addSlot(new Slot(playerInventory, 39 - i, 87 - 3 + i * 18 - offset - 15, 118 + 71 - 14) {
                 @Override
                 public int getMaxItemCount() {
                     return 1;
@@ -264,7 +264,7 @@ public class CraftingScreenHandler extends ScreenHandler {
                 }
             });
         }
-        this.addSlot(new Slot(playerInventory, 40, 111 - 61 + 5 * 18 + 18 - 15, 118 + 71 - 14) {
+        this.addSlot(new Slot(playerInventory, 40, 111 - 61 + 5 * 18 + 18 - 15 - 3, 118 + 71 - 14) {
             @Override
             public Pair<Identifier, Identifier> getBackgroundSprite() {
                 return Pair.of(BLOCK_ATLAS_TEXTURE, EMPTY_OFFHAND_ARMOR_SLOT);
@@ -322,6 +322,12 @@ public class CraftingScreenHandler extends ScreenHandler {
         buf.writeInt(slot.id);
         mutableSlots.remove(slot);
         Networking.sendC2S(packetIDSlotRemove, buf);
+    }
+
+    public void clearSlots() {
+        slots.stream()
+                .filter(MutableSlot.class::isInstance)
+                .forEach(this::removeSlotByClient);
     }
 
     /**
@@ -389,17 +395,16 @@ public class CraftingScreenHandler extends ScreenHandler {
 
     public ItemStack quickMove(PlayerEntity player, int index) {
         inventory.markDirty();
-        ItemStack itemStack = ItemStack.EMPTY;
         Slot slot = this.slots.get(index);
 
         if (slot != null && slot.hasStack()) {
             ItemStack itemStack2 = slot.getStack();
-            itemStack = itemStack2.copy();
-            if (index >= 36) {
+            if (index == 36 || index > 41) {
                 //case 1: tool slot to player
                 slot.onTakeItem(player, itemStack2);
-                if (!this.insertItem(itemStack2, 0, 36, true)) {
-                    return ItemStack.EMPTY;
+                //attempt armor slots
+                if (!this.insertItem(itemStack2, 37, 41, true)) {
+                    this.insertItem(itemStack2, 0, 36, true);
                 }
 
                 if (index == 36 && blockEntity != null) {
@@ -407,6 +412,7 @@ public class CraftingScreenHandler extends ScreenHandler {
                     if (notClient()) blockEntity.saveAndSync();
                 }
                 slot.markDirty();
+                return ItemStack.EMPTY;
             } else {
                 //PlayerInv
                 for (Slot slot1 : mutableSlots) {

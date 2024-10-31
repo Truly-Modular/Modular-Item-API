@@ -144,8 +144,6 @@ public class AttributeSplitProperty implements ModuleProperty {
     public JsonElement merge(JsonElement old, JsonElement toMerge, MergeType type) {
         if (old != null && toMerge != null) {
             Map<String, JsonElement> elementMap = new HashMap<>();
-            Miapi.LOGGER.info(Miapi.gson.toJson(old));
-            Miapi.LOGGER.info(Miapi.gson.toJson(toMerge));
             old.getAsJsonObject().asMap().forEach((key, data) -> {
                 if (elementMap.containsKey(key)) {
                     JsonElement element = elementMap.get(key);

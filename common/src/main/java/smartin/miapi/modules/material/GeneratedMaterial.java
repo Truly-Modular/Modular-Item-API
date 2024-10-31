@@ -28,6 +28,7 @@ import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.item.MaterialSmithingRecipe;
+import smartin.miapi.item.ModularItemStackConverter;
 import smartin.miapi.mixin.MiningToolItemAccessor;
 import smartin.miapi.mixin.SmithingTransformRecipeAccessor;
 import smartin.miapi.modules.material.palette.FallbackColorer;
@@ -239,21 +240,19 @@ public class GeneratedMaterial implements Material {
             if (MiapiConfig.INSTANCE.server.generatedMaterials.generateWoodMaterials) {
                 Registries.ITEM.stream()
                         .filter(item -> item.getDefaultStack().isIn(ItemTags.PLANKS) &&
-                                        !item.getDefaultStack().isIn(RegistryInventory.MIAPI_FORBIDDEN_TAG))
+                                        isValidItem(item))
                         .limit(MiapiConfig.INSTANCE.server.generatedMaterials.maximumGeneratedMaterials)
                         .forEach(item -> {
                             try {
-                                if (isValidItem(item)) {
-                                    GeneratedMaterial generatedMaterial = new GeneratedMaterial(ToolMaterials.WOOD, item.getDefaultStack(), false);
-                                    Material old = MaterialProperty.getMaterialFromIngredient(item.getDefaultStack());
-                                    if (old == null || old == materials.get("wood")) {
-                                        woodItems.add(item);
-                                        toRegister.add(generatedMaterial);
-                                        generatedMaterial.setupWood();
-                                        materials.put(generatedMaterial.getKey(), generatedMaterial);
-                                        if (verboseLogging()) {
-                                            Miapi.LOGGER.info("FOUND WOOD MATERIAL " + generatedMaterial.getKey());
-                                        }
+                                GeneratedMaterial generatedMaterial = new GeneratedMaterial(ToolMaterials.WOOD, item.getDefaultStack(), false);
+                                Material old = MaterialProperty.getMaterialFromIngredient(item.getDefaultStack());
+                                if (old == null || old == materials.get("wood")) {
+                                    woodItems.add(item);
+                                    toRegister.add(generatedMaterial);
+                                    generatedMaterial.setupWood();
+                                    materials.put(generatedMaterial.getKey(), generatedMaterial);
+                                    if (verboseLogging()) {
+                                        Miapi.LOGGER.info("FOUND WOOD MATERIAL " + generatedMaterial.getKey());
                                     }
                                 }
                             } catch (Exception e) {
@@ -265,21 +264,19 @@ public class GeneratedMaterial implements Material {
             if (MiapiConfig.INSTANCE.server.generatedMaterials.generateStoneMaterials) {
                 Registries.ITEM.stream()
                         .filter(item -> item.getDefaultStack().isIn(ItemTags.STONE_TOOL_MATERIALS) &&
-                                        !item.getDefaultStack().isIn(RegistryInventory.MIAPI_FORBIDDEN_TAG))
+                                        isValidItem(item))
                         .limit(MiapiConfig.INSTANCE.server.generatedMaterials.maximumGeneratedMaterials)
                         .forEach(item -> {
                             try {
-                                if (isValidItem(item) && !item.equals(Items.COBBLESTONE)) {
-                                    GeneratedMaterial generatedMaterial = new GeneratedMaterial(ToolMaterials.STONE, item.getDefaultStack(), false);
-                                    Material old = MaterialProperty.getMaterialFromIngredient(item.getDefaultStack());
-                                    if (old == null || old == materials.get("stone")) {
-                                        toRegister.add(generatedMaterial);
-                                        generatedMaterial.setupStone();
-                                        stoneItems.add(item);
-                                        materials.put(generatedMaterial.getKey(), generatedMaterial);
-                                        if (verboseLogging()) {
-                                            Miapi.LOGGER.info("FOUND STONE MATERIAL " + generatedMaterial.getKey());
-                                        }
+                                GeneratedMaterial generatedMaterial = new GeneratedMaterial(ToolMaterials.STONE, item.getDefaultStack(), false);
+                                Material old = MaterialProperty.getMaterialFromIngredient(item.getDefaultStack());
+                                if (old == null || old == materials.get("stone")) {
+                                    toRegister.add(generatedMaterial);
+                                    generatedMaterial.setupStone();
+                                    stoneItems.add(item);
+                                    materials.put(generatedMaterial.getKey(), generatedMaterial);
+                                    if (verboseLogging()) {
+                                        Miapi.LOGGER.info("FOUND STONE MATERIAL " + generatedMaterial.getKey());
                                     }
                                 }
                             } catch (Exception e) {
@@ -303,12 +300,18 @@ public class GeneratedMaterial implements Material {
                         Material material = MaterialProperty.getMaterialFromIngredient(toolMaterial.getRepairIngredient().getMatchingStacks()[0]);
                         List<Item> toolMaterials = toolItems.stream()
                                 .filter(toolMat -> toolMaterial.equals(toolMat.getMaterial()))
+                                .filter(tool -> {
+                                    ItemStack toolItem = tool.getDefaultStack();
+                                    return ModularItemStackConverter.getModularVersion(toolItem)==toolItem;
+                                })
                                 .collect(Collectors.toList());
-                        if (material != null && material.generateConverters()) {
-                            try {
-                                MiapiEvents.GENERATE_MATERIAL_CONVERTERS.invoker().generated(material, toolMaterials, false);
-                            } catch (Exception e) {
-                                Miapi.LOGGER.error("error during Material Creation event " + material + " ", e);
+                        if (material != null) {
+                            if (material.generateConverters()) {
+                                try {
+                                    MiapiEvents.GENERATE_MATERIAL_CONVERTERS.invoker().generated(material, toolMaterials, false);
+                                } catch (Exception e) {
+                                    Miapi.LOGGER.error("error during Material Creation event " + material + " ", e);
+                                }
                             }
                         }
                     });
@@ -326,6 +329,9 @@ public class GeneratedMaterial implements Material {
 
     public static boolean isValidItem(Item item) {
         Identifier identifier = Registries.ITEM.getId(item);
+        if(item.getDefaultStack().isIn(RegistryInventory.MIAPI_FORBIDDEN_TAG)){
+            return false;
+        }
         Pattern pattern = Pattern.compile(MiapiConfig.INSTANCE.server.generatedMaterials.blockRegex);
         return !pattern.matcher(identifier.toString()).find();
     }
@@ -721,6 +727,14 @@ public class GeneratedMaterial implements Material {
             return 1;
         }
         return isComplex && item.getItem().equals(mainIngredient.getItem()) ? 1 : 0;
+    }
+
+    @Override
+    public Ingredient getIngredient() {
+        if (toolMaterial != null) {
+            return toolMaterial.getRepairIngredient();
+        }
+        return Ingredient.ofItems(mainIngredient.getItem());
     }
 
     @Override

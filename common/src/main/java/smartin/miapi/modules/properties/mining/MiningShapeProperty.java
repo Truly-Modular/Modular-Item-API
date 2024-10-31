@@ -8,6 +8,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ItemModule;
@@ -42,13 +43,14 @@ public class MiningShapeProperty implements ModuleProperty {
     public static Map<String, MiningShape> miningShapeMap = new HashMap<>();
     public static Map<String, MiningMode> miningModeMap = new HashMap<>();
     public static Map<String, MiningModifier> miningModifierMap = new HashMap<>();
+    public static List<BlockPos> blockedPositions = new ArrayList<>();
 
 
     public MiningShapeProperty() {
         property = this;
         ModularItemCache.setSupplier(KEY, MiningShapeProperty::getCache);
         BlockEvent.BREAK.register((level, pos, state, player, xp) -> {
-            if (!level.isClient() && !player.isSneaking()) {
+            if (!level.isClient() && !player.isSneaking() && !blockedPositions.contains(pos)) {
                 ItemStack miningItem = player.getMainHandStack();
                 List<MiningShapeJson> miningShapeJsons = get(miningItem);
                 HitResult hitResult = player.raycast(getBlockBreakDistance(player), 0, false);

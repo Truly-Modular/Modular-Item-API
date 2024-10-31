@@ -557,6 +557,9 @@ public class RegistryInventory {
             registerMiapi(moduleProperties, MagazineCrossbowShotDelay.KEY, new MagazineCrossbowShotDelay());
             registerMiapi(moduleProperties, HandheldItemProperty.KEY, new HandheldItemProperty());
             registerMiapi(moduleProperties, AttributeSplitProperty.KEY, new AttributeSplitProperty());
+            registerMiapi(moduleProperties, SlashingProperty.KEY, new SlashingProperty());
+            registerMiapi(moduleProperties, NBTWriteProperty.KEY, new NBTWriteProperty());
+            registerMiapi(moduleProperties, StringNBTWriteProperty.KEY, new StringNBTWriteProperty());
             //compat
             registerMiapi(moduleProperties, BetterCombatProperty.KEY, new BetterCombatProperty());
             registerMiapi(moduleProperties, ApoliPowersProperty.KEY, new ApoliPowersProperty());
@@ -574,6 +577,7 @@ public class RegistryInventory {
             registerMiapi(useAbilityRegistry, HeavyAttackProperty.KEY, new HeavyAttackAbility());
             registerMiapi(useAbilityRegistry, CircleAttackProperty.KEY, new CircleAttackAbility());
             registerMiapi(useAbilityRegistry, CrossbowProperty.KEY, new CrossbowAbility());
+            registerMiapi(useAbilityRegistry, "copy_item", new CopyItemAbility());
             registerMiapi(useAbilityRegistry, AxeAbility.KEY, new AxeAbility());
             registerMiapi(useAbilityRegistry, HoeAbility.KEY, new HoeAbility());
             registerMiapi(useAbilityRegistry, ShovelAbility.KEY, new ShovelAbility());

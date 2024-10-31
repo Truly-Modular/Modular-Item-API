@@ -3,6 +3,7 @@ package smartin.miapi.item.modular.items;
 import dev.architectury.injectables.annotations.ExpectPlatform;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.item.ArmorItem;
+import net.minecraft.item.ArmorMaterial;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Rarity;
@@ -18,7 +19,7 @@ import smartin.miapi.modules.properties.RepairPriority;
 
 import java.util.List;
 
-public class ModularElytraItem extends ArmorItem implements PlatformModularItemMethods, ModularItem {
+public class ModularElytraItem extends ArmorItem implements PlatformModularItemMethods, ModularItem,ModularSetableArmorMaterial{
     public ModularElytraItem(Settings settings) {
         super(new ModularArmorMaterial(), Type.CHESTPLATE, settings);
     }
@@ -26,6 +27,33 @@ public class ModularElytraItem extends ArmorItem implements PlatformModularItemM
     @ExpectPlatform
     public static ModularElytraItem getInstance() {
         return new ModularElytraItem(new Settings().maxCount(1).fireproof());
+    }
+
+    public ArmorMaterial armorMaterial = new ModularArmorMaterial();
+
+    @Override
+    public void setArmorMaterial(ArmorMaterial toolMaterial) {
+        this.armorMaterial = toolMaterial;
+    }
+
+    @Override
+    public int getEnchantability() {
+        return armorMaterial.getEnchantability();
+    }
+
+    @Override
+    public ArmorMaterial getMaterial() {
+        return this.armorMaterial;
+    }
+
+    @Override
+    public int getProtection() {
+        return this.armorMaterial.getProtection(this.type);
+    }
+
+    @Override
+    public float getToughness() {
+        return this.armorMaterial.getToughness();
     }
 
 
@@ -47,11 +75,6 @@ public class ModularElytraItem extends ArmorItem implements PlatformModularItemM
     @Override
     public Rarity getRarity(ItemStack stack) {
         return RarityProperty.getRarity(stack);
-    }
-
-    @Override
-    public int getEnchantability() {
-        return 1;
     }
 
     @Override

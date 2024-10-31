@@ -141,9 +141,9 @@ public class StatResolver {
             public double resolveDouble(String data, ItemModule.ModuleInstance instance) {
                 if (data.contains(".")) {
                     String[] parts = data.split("\\.", 2);
-                    Stream<Double> numbers = instance.getRoot().allSubModules().stream().map(module -> StatResolver.resolveDouble(parts[1], module));
+                    Stream<Double> numbers = instance.getRoot().allSubModules().stream().map(module -> StatResolver.resolveDouble("["+parts[1]+"]", module));
                     double result = 0;
-                    switch (parts[1]) {
+                    switch (parts[0]) {
                         case "add":
                             result = numbers.collect(Collectors.summarizingDouble(Double::doubleValue)).getSum();
                             break;
@@ -157,7 +157,7 @@ public class StatResolver {
                             result = numbers.collect(Collectors.averagingDouble(Double::doubleValue));
                             break;
                         default: {
-                            Miapi.LOGGER.warn("invalid collect Operation " + parts[1] + " add, max, min, average are valid operations");
+                            Miapi.LOGGER.warn("invalid collect Operation " + parts[0] + " add, max, min, average are valid operations");
                         }
                     }
                     return result;

@@ -6,6 +6,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.item.ItemStack;
+import net.minecraft.recipe.Ingredient;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
@@ -68,9 +69,32 @@ public interface Material {
         return false;
     }
 
+    /**
+     * Retuns all Material Properties for this key, see {@link MaterialProperties} for more details
+     * @param key
+     * @return
+     */
     Map<ModuleProperty, JsonElement> materialProperties(String key);
 
+    /**
+     * be sure to also implement {@link Material#getAllDisplayPropertyKeys()}
+     * if you implement this
+     * @param key
+     * @return
+     */
+    default Map<ModuleProperty, JsonElement> getDisplayMaterialProperties(String key) {
+        return materialProperties(key);
+    }
+
+    /**
+     * retuns all unique property keys this Material has Properties for.
+     * @return
+     */
     List<String> getAllPropertyKeys();
+
+    default List<String> getAllDisplayPropertyKeys() {
+        return getAllPropertyKeys();
+    }
 
     double getDouble(String property);
 
@@ -88,6 +112,8 @@ public interface Material {
     }
 
     double getValueOfItem(ItemStack item);
+
+    Ingredient getIngredient();
 
     /**
      * return null if itemstack is not assosiated with the material

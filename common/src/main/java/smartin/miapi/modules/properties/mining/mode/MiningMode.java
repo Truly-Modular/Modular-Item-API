@@ -7,6 +7,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.properties.mining.MiningShapeProperty;
 import smartin.miapi.modules.properties.mining.modifier.MiningModifier;
 
 import java.util.List;
@@ -32,6 +33,13 @@ public interface MiningMode {
         if (Math.floor(durability) > 0) {
             itemStack.damage((int) Math.floor(durability), player, (p) -> p.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND));
         }
+    }
+
+    default boolean tryBreakBlock(ServerPlayerEntity player, BlockPos pos) {
+        MiningShapeProperty.blockedPositions.add(pos);
+        boolean didBreak = player.interactionManager.tryBreakBlock(pos);
+        MiningShapeProperty.blockedPositions.remove(pos);
+        return didBreak;
     }
 
 }

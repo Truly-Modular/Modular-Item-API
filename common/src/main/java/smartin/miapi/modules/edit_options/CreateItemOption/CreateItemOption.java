@@ -15,7 +15,7 @@ import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
 import smartin.miapi.client.gui.InteractAbleWidget;
-import smartin.miapi.client.gui.PreviewManager;
+import smartin.miapi.client.gui.crafting.PreviewManager;
 import smartin.miapi.client.gui.crafting.CraftingScreen;
 import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
 import smartin.miapi.client.gui.crafting.crafter.create_module.CreateListView;
@@ -198,6 +198,8 @@ public class CreateItemOption implements EditOption {
         default boolean isAllowed(PlayerEntity player, ModularWorkBenchEntity entity) {
             return true;
         }
+
+        double getPriority();
     }
 
     public static class JsonCreateItem implements CreateItem {
@@ -205,6 +207,7 @@ public class CreateItemOption implements EditOption {
         public String module;
         public String translation;
         public int count = 1;
+        public double priority = 0;
 
         @Override
         public ItemStack getItem() {
@@ -221,6 +224,10 @@ public class CreateItemOption implements EditOption {
         @Override
         public Text getName() {
             return Text.translatable(translation);
+        }
+
+        public double getPriority(){
+            return priority;
         }
     }
 }

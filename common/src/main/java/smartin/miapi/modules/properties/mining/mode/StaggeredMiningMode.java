@@ -7,7 +7,6 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import smartin.miapi.modules.ItemModule;
-import smartin.miapi.modules.properties.mining.MiningLevelProperty;
 import smartin.miapi.modules.properties.mining.MiningShapeProperty;
 
 import java.util.ArrayList;
@@ -48,15 +47,15 @@ public class StaggeredMiningMode implements MiningMode {
             int success = 0;
             do {
                 pos = reducedList.remove(0);
-                if (world.breakBlock(pos, MiningLevelProperty.canMine(world.getBlockState(pos), world, pos, player) && !player.isCreative(), player)) {
+                if (tryBreakBlock(player, pos)) {
                     success++;
-                    if(!player.isCreative()){
+                    if (!player.isCreative()) {
                         removeDurability(durabilityBreakChance, itemStack, world, player);
                     }
                 }
             } while (
                     success < speed
-                            && !reducedList.isEmpty() && itemStack.getMaxDamage() - itemStack.getDamage() > 1
+                    && !reducedList.isEmpty() && itemStack.getMaxDamage() - itemStack.getDamage() > 1
             );
             if (!reducedList.isEmpty() && itemStack.getMaxDamage() - itemStack.getDamage() > 1) {
                 execute(reducedList, world, player, origin, itemStack);

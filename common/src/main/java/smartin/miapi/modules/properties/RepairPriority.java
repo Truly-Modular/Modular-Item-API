@@ -1,6 +1,7 @@
 package smartin.miapi.modules.properties;
 
 import net.minecraft.item.ItemStack;
+import net.minecraft.recipe.Ingredient;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.material.Material;
@@ -34,6 +35,16 @@ public class RepairPriority extends DoubleProperty {
             highestValue = Math.max(highestValue, material1.getValueOfItem(material));
         }
         return highestValue;
+    }
+
+    public static Ingredient asRepairIngredient(ItemStack tool) {
+        for (Material repairing : property.getRepairMaterials(tool)) {
+            Ingredient found = repairing.getIngredient();
+            if (found != null) {
+                return found;
+            }
+        }
+        return Ingredient.EMPTY;
     }
 
 

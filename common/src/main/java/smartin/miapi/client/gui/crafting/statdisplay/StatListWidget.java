@@ -6,7 +6,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Element;
-import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
@@ -173,6 +172,11 @@ public class StatListWidget extends InteractAbleWidget {
                 .setMax(50)
                 .setTranslationKey(ArmorPenProperty.KEY).build());
         addStatDisplay(SinglePropertyStatDisplay
+                .builder(SlashingProperty.property)
+                .setMin(-20)
+                .setMax(50)
+                .setTranslationKey(SlashingProperty.KEY).build());
+        addStatDisplay(SinglePropertyStatDisplay
                 .builder(BlockProperty.property)
                 .setMax(50)
                 .setTranslationKey(BlockProperty.KEY).build());
@@ -236,6 +240,10 @@ public class StatListWidget extends InteractAbleWidget {
         addStatDisplay(AttributeSingleDisplay
                 .builder(EntityAttributes.GENERIC_ARMOR)
                 .setTranslationKey("armor")
+                .setMax(8).build());
+        addStatDisplay(AttributeSingleDisplay
+                .builder(AttributeRegistry.SHIELDING_ARMOR)
+                .setTranslationKey("shielding_armor")
                 .setMax(8).build());
         addStatDisplay(AttributeSingleDisplay
                 .builder(AttributeRegistry.PROJECTILE_ARMOR)
@@ -373,7 +381,7 @@ public class StatListWidget extends InteractAbleWidget {
     }
 
     public StatListWidget(int x, int y, int width, int height) {
-        super(x, y, width, height, Text.empty());
+        super(x, y, width, height, Text.literal("miapi.module.statdisplay"));
         transformableWidget = new TransformableWidget(x, y, width, height, Text.empty());
         boxList = new BoxList(x, y, width, height, Text.empty(), new ArrayList<>());
         ScrollList list = new ScrollList(x, y, width, height, List.of(boxList));
@@ -414,13 +422,21 @@ public class StatListWidget extends InteractAbleWidget {
     }
 
     private <T extends InteractAbleWidget & SingleStatDisplay> void update() {
+        setAttributeCaches(original, compareTo);
+        boxList.setWidgets(collectWidgets(original, compareTo), 0);
+    }
+
+    public static void setAttributeCaches(ItemStack original, ItemStack compareTo) {
         for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
             Multimap<EntityAttribute, EntityAttributeModifier> oldAttr = original.getAttributeModifiers(equipmentSlot);
             Multimap<EntityAttribute, EntityAttributeModifier> compAttr = compareTo.getAttributeModifiers(equipmentSlot);
             AttributeSingleDisplay.oldItemCache.put(equipmentSlot, oldAttr);
             AttributeSingleDisplay.compareItemCache.put(equipmentSlot, compAttr);
         }
-        List<ClickableWidget> widgets = new ArrayList<>();
+    }
+
+    public static <T extends InteractAbleWidget & SingleStatDisplay> List<InteractAbleWidget> collectWidgets(ItemStack original, ItemStack compareTo) {
+        List<InteractAbleWidget> widgets = new ArrayList<>();
         for (StatWidgetSupplier supplier : statWidgetSupplier) {
             List<T> statWidgets = supplier.currentList(original, compareTo);
             for (T statDisplay : statWidgets) {
@@ -439,7 +455,26 @@ public class StatListWidget extends InteractAbleWidget {
 
             }
         }
-        boxList.setWidgets(widgets, 0);
+        List<InteractAbleWidget> sortedWidgets = new ArrayList<>();
+        int shortSize = 80;
+        InteractAbleWidget buffered = null;
+        for (InteractAbleWidget widget : widgets) {
+            if (widget.getWidth() <= shortSize) {
+                if (buffered == null) {
+                    buffered = widget;
+                } else {
+                    sortedWidgets.add(buffered);
+                    sortedWidgets.add(widget);
+                    buffered = null;
+                }
+            } else {
+                sortedWidgets.add(widget);
+            }
+        }
+        if (buffered != null) {
+            sortedWidgets.add(buffered);
+        }
+        return sortedWidgets;
     }
 
     public interface StatWidgetSupplier {
@@ -464,6 +499,12 @@ public class StatListWidget extends InteractAbleWidget {
     }
 
     public void setCompareTo(ItemStack compareTo) {
+        this.compareTo = compareTo;
+        update();
+    }
+
+    public void setItemsOriginal(ItemStack original, ItemStack compareTo) {
+        this.original = original;
         this.compareTo = compareTo;
         update();
     }

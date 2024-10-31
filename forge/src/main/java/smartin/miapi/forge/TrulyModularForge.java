@@ -3,12 +3,14 @@ package smartin.miapi.forge;
 import dev.architectury.event.events.common.LifecycleEvent;
 import dev.architectury.platform.Platform;
 import dev.architectury.platform.forge.EventBuses;
+import dev.architectury.registry.ReloadListenerRegistry;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.registry.Registries;
+import net.minecraft.resource.ResourceType;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
@@ -86,6 +88,7 @@ public class TrulyModularForge {
 
         LifecycleEvent.SERVER_STARTING.register((instance -> setupAttributes()));
         ReloadEvents.START.subscribe((isClient -> setupAttributes()));
+        ReloadListenerRegistry.register(ResourceType.SERVER_DATA,new MiapiReloadListenerForge());
 
 
         //ReloadListenerRegistry.register(
@@ -152,6 +155,7 @@ public class TrulyModularForge {
         @SubscribeEvent
         public void addReloadListeners(AddReloadListenerEvent addReloadListenerEvent) {
             addReloadListenerEvent.addListener(new MiapiReloadListenerForge());
+
         }
     }
 

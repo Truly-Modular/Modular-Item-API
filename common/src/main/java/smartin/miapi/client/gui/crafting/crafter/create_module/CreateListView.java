@@ -14,6 +14,7 @@ import smartin.miapi.modules.edit_options.EditOption;
 import smartin.miapi.modules.edit_options.ReplaceOption;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
@@ -27,6 +28,7 @@ public class CreateListView extends InteractAbleWidget {
         this.editContext = editContext;
         CreateItemOption.createAbleItems.stream()
                 .filter(item -> item.isAllowed(editContext.getPlayer(), editContext.getWorkbench()))
+                .sorted(Comparator.comparingDouble(CreateItemOption.CreateItem::getPriority))
                 .forEach(item -> widgets.add(new CreateItemEntry(0, 0, 100, 14, item)));
         scrollList = new ScrollList(getX(), getY(), getWidth(), getHeight(), widgets);
         this.addChild(scrollList);

@@ -15,6 +15,7 @@ import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
+import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.modules.material.palette.FallbackColorer;
 import smartin.miapi.modules.material.palette.MaterialRenderController;
 import smartin.miapi.modules.material.palette.MaterialRenderControllers;
@@ -23,10 +24,7 @@ import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.registries.FakeTranslation;
 import smartin.miapi.registries.RegistryInventory;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class JsonMaterial implements Material {
     public String key;
@@ -35,6 +33,8 @@ public class JsonMaterial implements Material {
     public MaterialIcons.MaterialIcon icon;
     protected MaterialRenderController palette;
     public Map<String, Map<ModuleProperty, JsonElement>> propertyMap = new HashMap<>();
+    public Map<String, Map<ModuleProperty, JsonElement>> displayPropertyMap = new HashMap<>();
+    public Optional<Boolean> generateConvertersOptional = Optional.empty();
 
     public JsonMaterial(JsonObject element, boolean isClient) {
         rawJson = element;
@@ -64,22 +64,16 @@ public class JsonMaterial implements Material {
         rootElement.getAsJsonObject().asMap().forEach((elementName, propertyElement) -> {
             switch (elementName) {
                 case "properties": {
-                    propertyElement.getAsJsonObject().asMap().forEach((id, element) -> {
-                        if (element != null) {
-                            element.getAsJsonObject().entrySet().forEach(stringJsonElementEntry -> {
-                                ModuleProperty property = RegistryInventory.moduleProperties.get(stringJsonElementEntry.getKey());
-                                Map<ModuleProperty, JsonElement> specificPropertyMap = propertyMap.getOrDefault(id, new HashMap<>());
-                                if (property != null) {
-                                    if (specificPropertyMap.containsKey(property)) {
-                                        specificPropertyMap.put(property, property.merge(specificPropertyMap.get(property), stringJsonElementEntry.getValue(), MergeType.SMART));
-                                    } else {
-                                        specificPropertyMap.put(property, stringJsonElementEntry.getValue());
-                                    }
-                                }
-                                propertyMap.put(id, specificPropertyMap);
-                            });
-                        }
-                    });
+                    mergeProperties(propertyElement, propertyMap);
+                    mergeProperties(propertyElement, displayPropertyMap);
+                    break;
+                }
+                case "display_properties": {
+                    mergeProperties(propertyElement, displayPropertyMap);
+                    break;
+                }
+                case "hidden_properties": {
+                    mergeProperties(propertyElement, propertyMap);
                     break;
                 }
                 case "color_palette": {
@@ -103,9 +97,32 @@ public class JsonMaterial implements Material {
                     }
                     break;
                 }
+                case "generate_converters": {
+                    generateConvertersOptional = Optional.of(propertyElement.getAsBoolean());
+                    break;
+                }
                 default: {
                     rawJson.getAsJsonObject().add(elementName, propertyElement);
                 }
+            }
+        });
+    }
+
+    private static void mergeProperties(JsonElement propertyElement, Map<String, Map<ModuleProperty, JsonElement>> properties) {
+        propertyElement.getAsJsonObject().asMap().forEach((id, element) -> {
+            if (element != null) {
+                element.getAsJsonObject().entrySet().forEach(stringJsonElementEntry -> {
+                    ModuleProperty property = RegistryInventory.moduleProperties.get(stringJsonElementEntry.getKey());
+                    Map<ModuleProperty, JsonElement> specificPropertyMap = properties.getOrDefault(id, new HashMap<>());
+                    if (property != null) {
+                        if (specificPropertyMap.containsKey(property)) {
+                            specificPropertyMap.put(property, property.merge(specificPropertyMap.get(property), stringJsonElementEntry.getValue(), MergeType.SMART));
+                        } else {
+                            specificPropertyMap.put(property, stringJsonElementEntry.getValue());
+                        }
+                    }
+                    properties.put(id, specificPropertyMap);
+                });
             }
         });
     }
@@ -115,23 +132,31 @@ public class JsonMaterial implements Material {
         return key;
     }
 
+    public boolean generateConverters() {
+        return generateConvertersOptional.orElse(MiapiConfig.INSTANCE.server.generatedMaterials.defaultGenerateConverters);
+    }
+
     @Override
     public List<String> getGroups() {
         List<String> groups = new ArrayList<>();
         groups.add(key);
-        if (rawJson.getAsJsonObject().has("groups")) {
-            JsonArray groupsJson = rawJson.getAsJsonObject().getAsJsonArray("groups");
-            for (JsonElement groupElement : groupsJson) {
-                String group = groupElement.getAsString();
-                groups.add(group);
+        try {
+            if (rawJson.getAsJsonObject().has("groups")) {
+                JsonArray groupsJson = rawJson.getAsJsonObject().getAsJsonArray("groups");
+                for (JsonElement groupElement : groupsJson) {
+                    String group = groupElement.getAsString();
+                    groups.add(group);
+                }
             }
-        }
-        if (rawJson.getAsJsonObject().has("hidden_groups")) {
-            JsonArray groupsJson = rawJson.getAsJsonObject().getAsJsonArray("hidden_groups");
-            for (JsonElement groupElement : groupsJson) {
-                String group = groupElement.getAsString();
-                groups.add(group);
+            if (rawJson.getAsJsonObject().has("hidden_groups")) {
+                JsonArray groupsJson = rawJson.getAsJsonObject().getAsJsonArray("hidden_groups");
+                for (JsonElement groupElement : groupsJson) {
+                    String group = groupElement.getAsString();
+                    groups.add(group);
+                }
             }
+        } catch (RuntimeException e) {
+            Miapi.LOGGER.warn("Groups were not correctly set up in json Material!" + getKey() + " " + rawJson);
         }
         return groups;
     }
@@ -140,12 +165,16 @@ public class JsonMaterial implements Material {
     public List<String> getGuiGroups() {
         List<String> groups = new ArrayList<>();
         groups.add(key);
-        if (rawJson.getAsJsonObject().has("groups")) {
-            JsonArray groupsJson = rawJson.getAsJsonObject().getAsJsonArray("groups");
-            for (JsonElement groupElement : groupsJson) {
-                String group = groupElement.getAsString();
-                groups.add(group);
+        try {
+            if (rawJson.getAsJsonObject().has("groups")) {
+                JsonArray groupsJson = rawJson.getAsJsonObject().getAsJsonArray("groups");
+                for (JsonElement groupElement : groupsJson) {
+                    String group = groupElement.getAsString();
+                    groups.add(group);
+                }
             }
+        } catch (RuntimeException e) {
+            Miapi.LOGGER.warn("Groups were not correctly set up in json Material!" + getKey() + " " + rawJson);
         }
         return groups;
     }
@@ -156,12 +185,18 @@ public class JsonMaterial implements Material {
     }
 
     @Override
+    public Map<ModuleProperty, JsonElement> getDisplayMaterialProperties(String key) {
+        return displayPropertyMap.getOrDefault(key, new HashMap<>());
+    }
+
+    @Override
     public List<String> getAllPropertyKeys() {
-        JsonElement propertyElement = rawJson.getAsJsonObject().get("properties");
-        if (propertyElement != null) {
-            return new ArrayList<>(propertyElement.getAsJsonObject().keySet());
-        }
-        return new ArrayList<>();
+        return new ArrayList<>(propertyMap.keySet());
+    }
+
+    @Override
+    public List<String> getAllDisplayPropertyKeys() {
+        return new ArrayList<>(displayPropertyMap.keySet());
     }
 
     public JsonElement getRawElement(String key) {
@@ -203,23 +238,17 @@ public class JsonMaterial implements Material {
         return "";
     }
 
-    public boolean generateConverters() {
-        if (rawJson.getAsJsonObject().has("generate_converters")) {
-            JsonElement element = rawJson.getAsJsonObject().get("generate_converters");
-            if (element != null && !element.isJsonNull() && element.isJsonPrimitive()) {
-                return element.getAsBoolean();
-            }
-        }
-        return false;
-    }
-
     @Override
     public List<String> getTextureKeys() {
         List<String> textureKeys = new ArrayList<>();
         if (rawJson.getAsJsonObject().has("textures")) {
-            JsonArray textures = rawJson.getAsJsonObject().getAsJsonArray("textures");
-            for (JsonElement texture : textures) {
-                textureKeys.add(texture.getAsString());
+            try {
+                JsonArray textures = rawJson.getAsJsonObject().getAsJsonArray("textures");
+                for (JsonElement texture : textures) {
+                    textureKeys.add(texture.getAsString());
+                }
+            } catch (RuntimeException e) {
+                Miapi.LOGGER.warn("textures in material " + getKey() + " is not setup correctly");
             }
         }
         textureKeys.add("default");
@@ -230,8 +259,12 @@ public class JsonMaterial implements Material {
     @Override
     public int getColor() {
         if (rawJson.getAsJsonObject().get("color") != null) {
-            long longValue = Long.parseLong(rawJson.getAsJsonObject().get("color").getAsString(), 16);
-            return (int) (longValue & 0xffffffffL);
+            try {
+                long longValue = Long.parseLong(rawJson.getAsJsonObject().get("color").getAsString(), 16);
+                return (int) (longValue & 0xffffffffL);
+            } catch (RuntimeException e) {
+                Miapi.LOGGER.warn("textures in material " + getKey() + " is not setup correctly");
+            }
         }
         return getRenderController().getAverageColor().argb();
     }
@@ -256,10 +289,11 @@ public class JsonMaterial implements Material {
         return icon != null;
     }
 
+    Ingredient matching;
+
     @Override
     public double getValueOfItem(ItemStack item) {
         JsonArray items = rawJson.getAsJsonObject().getAsJsonArray("items");
-
         for (JsonElement element : items) {
             JsonObject itemObj = element.getAsJsonObject();
 
@@ -267,6 +301,8 @@ public class JsonMaterial implements Material {
                 String itemId = itemObj.get("item").getAsString();
                 if (Registries.ITEM.getId(item.getItem()).toString().equals(itemId)) {
                     try {
+                        Item item1 = Registries.ITEM.get(new Identifier(itemId));
+                        matching = Ingredient.ofItems(item1);
                         return itemObj.get("value").getAsDouble();
                     } catch (Exception surpressed) {
                         return 1;
@@ -275,6 +311,7 @@ public class JsonMaterial implements Material {
             } else if (itemObj.has("tag")) {
                 String tagId = itemObj.get("tag").getAsString();
                 TagKey<Item> tag = TagKey.of(Registries.ITEM.getKey(), new Identifier(tagId));
+                matching = Ingredient.fromTag(tag);
                 if (tag != null && item.isIn(tag)) {
                     try {
                         return itemObj.get("value").getAsDouble();
@@ -282,9 +319,10 @@ public class JsonMaterial implements Material {
                         return 1;
                     }
                 }
-            }else if(itemObj.has("ingredient")){
+            } else if (itemObj.has("ingredient")) {
                 Ingredient ingredient = Ingredient.fromJson(itemObj.get("ingredient"));
-                if(ingredient.test(item)){
+                matching = ingredient;
+                if (ingredient.test(item)) {
                     try {
                         return itemObj.get("value").getAsDouble();
                     } catch (Exception suppressed) {
@@ -294,6 +332,14 @@ public class JsonMaterial implements Material {
             }
         }
         return 0;
+    }
+
+    @Override
+    public Ingredient getIngredient() {
+        if (matching == null) {
+            getValueOfItem(ItemStack.EMPTY);
+        }
+        return matching;
     }
 
     @Override

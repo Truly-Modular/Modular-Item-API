@@ -64,7 +64,7 @@ public class LoreProperty implements ModuleProperty {
                 holders.add(getFromSingleElement(element));
             }
         }
-        return holders.stream().sorted().collect(Collectors.toCollection(ArrayList::new));
+        return holders.stream().filter(holder -> holder.position != null && holder.getText() != null).sorted().collect(Collectors.toCollection(ArrayList::new));
     }
 
     public JsonElement merge(JsonElement old, JsonElement toMerge, MergeType type) {
@@ -76,9 +76,13 @@ public class LoreProperty implements ModuleProperty {
     }
 
     private Holder getFromSingleElement(JsonElement element) {
-        return codec.parse(JsonOps.INSTANCE, element).getOrThrow(false, s -> {
-            Miapi.LOGGER.error("Failed to decode using codec during cache creation for a CodecBasedProperty! -> " + s);
-        });
+        try {
+            return codec.parse(JsonOps.INSTANCE, element).getOrThrow(false, s -> {
+                Miapi.LOGGER.error("Failed to decode using codec during cache creation for a CodecBasedProperty! -> " + s);
+            });
+        } catch (RuntimeException e) {
+        }
+        return new Holder();
     }
 
     private Text gray(Text text) {

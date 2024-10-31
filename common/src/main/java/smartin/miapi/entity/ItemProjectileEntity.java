@@ -175,6 +175,7 @@ public class ItemProjectileEntity extends PersistentProjectileEntity {
     }
 
     protected void age() {
+        ++this.age;
         if (this.age >= 1200 * 20) {
             this.discard();
         }

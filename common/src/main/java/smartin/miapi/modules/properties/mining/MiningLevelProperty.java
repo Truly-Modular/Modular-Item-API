@@ -8,7 +8,6 @@ import net.minecraft.block.Blocks;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
-import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -23,10 +22,7 @@ import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.cache.ModularItemCache;
-import smartin.miapi.modules.properties.AttributeProperty;
-import smartin.miapi.modules.properties.DurabilityProperty;
-import smartin.miapi.modules.properties.EnchantAbilityProperty;
-import smartin.miapi.modules.properties.ToolOrWeaponProperty;
+import smartin.miapi.modules.properties.*;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
@@ -114,7 +110,7 @@ public class MiningLevelProperty implements ModuleProperty {
 
             @Override
             public float getAttackDamage() {
-                return (float) AttributeProperty.getActualValue(itemStack, EquipmentSlot.MAINHAND, EntityAttributes.GENERIC_ATTACK_DAMAGE, 1);
+                return 1;
             }
 
             @Override
@@ -129,7 +125,7 @@ public class MiningLevelProperty implements ModuleProperty {
 
             @Override
             public Ingredient getRepairIngredient() {
-                return Ingredient.EMPTY;
+                return RepairPriority.asRepairIngredient(itemStack);
             }
         };
     }
@@ -171,48 +167,38 @@ public class MiningLevelProperty implements ModuleProperty {
     }
 
     public static float getMiningSpeedMultiplier(ItemStack stack, String type) {
-        Multimap<EntityAttribute, EntityAttributeModifier> attributes;
-        attributes = AttributeProperty.equipmentSlotMultimapMap(stack).get(EquipmentSlot.MAINHAND);
+        Multimap<EntityAttribute, EntityAttributeModifier> attributes =
+                AttributeProperty.equipmentSlotMultimapMap(stack).get(EquipmentSlot.MAINHAND);
         //attributes = stack.getAttributeModifiers(EquipmentSlot.MAINHAND);
         //deprecated actual attribute check because checking attributes to get mining speed is a bad idea for forge mods,
         //as they check the mining speed during attribute resolve, creating a circular deadlock
-        switch (type) {
-            case "axe": {
-                return (float) AttributeProperty.getActualValue(attributes, AttributeRegistry.MINING_SPEED_AXE, 1);
-            }
-            case "pickaxe": {
-                return (float) AttributeProperty.getActualValue(attributes, AttributeRegistry.MINING_SPEED_PICKAXE, 1);
-            }
-            case "shovel": {
-                return (float) AttributeProperty.getActualValue(attributes, AttributeRegistry.MINING_SPEED_SHOVEL, 1);
-            }
-            case "hoe": {
-                return (float) AttributeProperty.getActualValue(attributes, AttributeRegistry.MINING_SPEED_HOE, 1);
-            }
-            case "sword": {
-                return stack.getItem() instanceof SwordItem ? 1.5f : 0;
-            }
-            default: {
-                return 1;
-            }
-        }
+        return switch (type) {
+            case "axe" -> (float) AttributeProperty.getActualValue(attributes, AttributeRegistry.MINING_SPEED_AXE, 1);
+            case "pickaxe" ->
+                    (float) AttributeProperty.getActualValue(attributes, AttributeRegistry.MINING_SPEED_PICKAXE, 1);
+            case "shovel" ->
+                    (float) AttributeProperty.getActualValue(attributes, AttributeRegistry.MINING_SPEED_SHOVEL, 1);
+            case "hoe" -> (float) AttributeProperty.getActualValue(attributes, AttributeRegistry.MINING_SPEED_HOE, 1);
+            case "sword" -> stack.getItem() instanceof SwordItem ? 1.5f : 0;
+            default -> 1;
+        };
     }
 
     public static float getMiningSpeedMultiplier(ItemStack stack, BlockState state) {
         if (state.isIn(BlockTags.PICKAXE_MINEABLE)) {
-            double value = AttributeProperty.getActualValue(stack, EquipmentSlot.MAINHAND, AttributeRegistry.MINING_SPEED_PICKAXE, 1);
+            double value = AttributeProperty.getActualValueCache(stack, EquipmentSlot.MAINHAND, AttributeRegistry.MINING_SPEED_PICKAXE, 1);
             return (value == 0) ? 1.0f : (float) value;
         }
         if (state.isIn(BlockTags.AXE_MINEABLE)) {
-            double value = AttributeProperty.getActualValue(stack, EquipmentSlot.MAINHAND, AttributeRegistry.MINING_SPEED_AXE, 1);
+            double value = AttributeProperty.getActualValueCache(stack, EquipmentSlot.MAINHAND, AttributeRegistry.MINING_SPEED_AXE, 1);
             return (value == 0) ? 1.0f : (float) value;
         }
         if (state.isIn(BlockTags.SHOVEL_MINEABLE)) {
-            double value = AttributeProperty.getActualValue(stack, EquipmentSlot.MAINHAND, AttributeRegistry.MINING_SPEED_SHOVEL, 1);
+            double value = AttributeProperty.getActualValueCache(stack, EquipmentSlot.MAINHAND, AttributeRegistry.MINING_SPEED_SHOVEL, 1);
             return (value == 0) ? 1.0f : (float) value;
         }
         if (state.isIn(BlockTags.HOE_MINEABLE)) {
-            double value = AttributeProperty.getActualValue(stack, EquipmentSlot.MAINHAND, AttributeRegistry.MINING_SPEED_HOE, 1);
+            double value = AttributeProperty.getActualValueCache(stack, EquipmentSlot.MAINHAND, AttributeRegistry.MINING_SPEED_HOE, 1);
             return (value == 0) ? 1.0f : (float) value;
         }
         if (stack.getItem() instanceof SwordItem) {
@@ -227,10 +213,10 @@ public class MiningLevelProperty implements ModuleProperty {
 
     public static float getHighestMiningSpeedMultiplier(ItemStack stack) {
         float start = 0.0f;
-        start = (float) Math.max(start, AttributeProperty.getActualValue(stack, EquipmentSlot.MAINHAND, AttributeRegistry.MINING_SPEED_PICKAXE, 1));
-        start = (float) Math.max(start, AttributeProperty.getActualValue(stack, EquipmentSlot.MAINHAND, AttributeRegistry.MINING_SPEED_AXE, 1));
-        start = (float) Math.max(start, AttributeProperty.getActualValue(stack, EquipmentSlot.MAINHAND, AttributeRegistry.MINING_SPEED_SHOVEL, 1));
-        start = (float) Math.max(start, AttributeProperty.getActualValue(stack, EquipmentSlot.MAINHAND, AttributeRegistry.MINING_SPEED_HOE, 1));
+        start = (float) Math.max(start, AttributeProperty.getActualValueCache(stack, EquipmentSlot.MAINHAND, AttributeRegistry.MINING_SPEED_PICKAXE, 1));
+        start = (float) Math.max(start, AttributeProperty.getActualValueCache(stack, EquipmentSlot.MAINHAND, AttributeRegistry.MINING_SPEED_AXE, 1));
+        start = (float) Math.max(start, AttributeProperty.getActualValueCache(stack, EquipmentSlot.MAINHAND, AttributeRegistry.MINING_SPEED_SHOVEL, 1));
+        start = (float) Math.max(start, AttributeProperty.getActualValueCache(stack, EquipmentSlot.MAINHAND, AttributeRegistry.MINING_SPEED_HOE, 1));
         return start;
     }
 

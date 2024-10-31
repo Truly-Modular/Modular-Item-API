@@ -8,7 +8,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.text.Text;
 import smartin.miapi.client.gui.InteractAbleWidget;
+import smartin.miapi.client.gui.crafting.CraftingScreen;
 import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
+import smartin.miapi.client.gui.crafting.crafter.help.HelpGuiInfo;
 import smartin.miapi.client.gui.crafting.crafter.replace.CraftOption;
 import smartin.miapi.client.gui.crafting.crafter.replace.ReplaceView;
 import smartin.miapi.craft.CraftAction;
@@ -99,6 +101,9 @@ public class ModuleCrafter extends InteractAbleWidget {
             if (material != null) {
                 mode = Mode.MATERIAL;
             }
+            if (stack.isEmpty()) {
+                mode = Mode.HELP;
+            }
         }
         switch (mode) {
             case DETAIL -> {
@@ -153,8 +158,17 @@ public class ModuleCrafter extends InteractAbleWidget {
                 });
                 this.addChild(detailView);
             }
+            case HELP -> {
+                this.children().clear();
+                CraftingScreen craftingScreen = CraftingScreen.getInstance();
+                this.addChild(new HelpGuiInfo(this.getX(), this.getY(), this.width, this.getHeight(), Text.literal("miapi.help.helper"), (toFocus) -> {
+                    craftingScreen.hoverElement = toFocus;
+                }, (toRemove) -> {
+                    craftingScreen.hoverElement = null;
+                }));
+            }
         }
-        preview.accept(stack);
+        //preview.accept(stack);
     }
 
     @Override
@@ -167,6 +181,7 @@ public class ModuleCrafter extends InteractAbleWidget {
         EDIT,
         REPLACE,
         CRAFT,
-        MATERIAL
+        MATERIAL,
+        HELP
     }
 }

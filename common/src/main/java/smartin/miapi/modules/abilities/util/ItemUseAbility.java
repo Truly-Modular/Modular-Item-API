@@ -107,6 +107,16 @@ public interface ItemUseAbility<T> {
     }
 
     /**
+     * if the last tick on abort should still call the use function
+     *
+     * @param itemStack the context itemstack
+     * @return
+     */
+    default boolean isUsedOnRelease(ItemStack itemStack) {
+        return false;
+    }
+
+    /**
      * Handles the usage of the item on a block.
      *
      * @param context The item usage context, including the item stack, player, and block information.
@@ -124,7 +134,7 @@ public interface ItemUseAbility<T> {
         String key = ItemAbilityManager.useAbilityRegistry.findKey(this);
         if (key != null) {
             AbilityMangerProperty.AbilityContext context1 = AbilityMangerProperty.getContext(itemStack, key);
-            if(context1!=null){
+            if (context1 != null) {
                 return context1;
             }
         }
@@ -133,6 +143,7 @@ public interface ItemUseAbility<T> {
 
     /**
      * This can be implemented for caching related context, abilities should use this if they are highly complex
+     *
      * @param jsonObject
      * @return
      */

@@ -25,7 +25,7 @@ public interface ModularItemInject extends IForgeItem {
 
 
     default Multimap<EntityAttribute, EntityAttributeModifier> getAttributeModifiersModular(EquipmentSlot slot, ItemStack stack) {
-        Multimap < EntityAttribute, EntityAttributeModifier> attributeModifiers = ArrayListMultimap.create();
+        Multimap<EntityAttribute, EntityAttributeModifier> attributeModifiers = ArrayListMultimap.create();
         ITEM_STACK_ATTRIBUTE_EVENT.invoker().adjust(new MiapiEvents.ItemStackAttributeEventHolder(stack, slot, attributeModifiers));
         return attributeModifiers;
     }
@@ -41,8 +41,7 @@ public interface ModularItemInject extends IForgeItem {
     }
 
 
-    default int getMaxDamageModular(ItemStack stack)
-    {
+    default int getMaxDamageModular(ItemStack stack) {
         return (int) DurabilityProperty.property.getValueSafe(stack);
 
     }
@@ -82,13 +81,16 @@ public interface ModularItemInject extends IForgeItem {
             if (ToolActions.DEFAULT_SHOVEL_ACTIONS.contains(toolAction)) {
                 return AbilityMangerProperty.get(stack).stream().anyMatch(ShovelAbility.class::isInstance);
             }
+            if (ToolActions.SWORD_SWEEP.equals(toolAction)) {
+                return ToolOrWeaponProperty.isWeapon(stack);
+            }
+
         }
         return false;
     }
 
 
-    default int getEnchantmentValueModular(ItemStack stack)
-    {
+    default int getEnchantmentValueModular(ItemStack stack) {
         return (int) EnchantAbilityProperty.getEnchantAbility(stack);
     }
 }

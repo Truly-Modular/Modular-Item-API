@@ -51,17 +51,21 @@ public class CacheCommands {
 
     private static int executeMiapiReload(CommandContext<ServerCommandSource> context) {
         context.getSource().sendFeedback(() -> Text.literal("starting reload"), false);
+        triggerServerReload();
         return 1; // Return success
     }
 
-    public static void triggerServerReload(){
+    public static void triggerServerReload() {
+
         ReloadEvents.reloadCounter++;
+        long timeStart = System.nanoTime();
         Map<String, String> cacheDatapack = new LinkedHashMap<>(ReloadEvents.DATA_PACKS);
         ReloadEvents.START.fireEvent(false);
         ReloadEvents.DataPackLoader.trigger(cacheDatapack);
         ReloadEvents.MAIN.fireEvent(false);
         ReloadEvents.END.fireEvent(false);
         ReloadEvents.reloadCounter--;
+        Miapi.LOGGER.info("Server load took " + (double) (System.nanoTime() - timeStart) / 1000 / 1000 + " ms");
         Miapi.server.getPlayerManager().getPlayerList().forEach(ReloadEvents::triggerReloadOnClient);
     }
 

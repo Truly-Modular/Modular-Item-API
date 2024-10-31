@@ -10,22 +10,22 @@ import smartin.miapi.registries.RegistryInventory;
 
 @Environment(EnvType.CLIENT)
 public class ModularModelPredicateProvider {
-    private ModularModelPredicateProvider(){
+    private ModularModelPredicateProvider() {
 
     }
 
-    public static void registerModularModelOverride(Identifier id, ClampedModelPredicateProvider provider){
+    public static void registerModularModelOverride(Identifier id, ClampedModelPredicateProvider provider) {
         RegistryInventory.addCallback(RegistryInventory.modularItems, item -> {
-            ModelPredicateProviderRegistryAccessor.register(item,id,provider);
+            ModelPredicateProviderRegistryAccessor.register(item, id, provider);
         });
     }
 
-    public static void registerModelOverride(Item item, Identifier id, ClampedModelPredicateProvider provider){
-        ModelPredicateProviderRegistryAccessor.register(item,id,provider);
+    public static void registerModelOverride(Item item, Identifier id, ClampedModelPredicateProvider provider) {
+        ModelPredicateProviderRegistryAccessor.register(item, id, provider);
     }
 
-    public static void registerModularItemModelOverride(Identifier identifier, Identifier id, ClampedModelPredicateProvider provider){
+    public static void registerModularItemModelOverride(Identifier identifier, Identifier id, ClampedModelPredicateProvider provider) {
         Item item = RegistryInventory.modularItems.get(identifier);
-        ModelPredicateProviderRegistryAccessor.register(item,id,provider);
+        ModelPredicateProviderRegistryAccessor.register(item, id, provider);
     }
 }
