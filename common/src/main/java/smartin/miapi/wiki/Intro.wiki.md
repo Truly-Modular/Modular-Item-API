@@ -1,5 +1,5 @@
 @header 1.20.1 Wiki
-@path /
+@path 
 @keywords 1.20.1 Wiki
 Welcome to the Modular-Item-API wiki! This wiki aims to provide documentation and best practices for handling datapacks and resources using the Modular Item API.  
 
