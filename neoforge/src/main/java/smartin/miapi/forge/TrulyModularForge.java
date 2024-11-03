@@ -2,7 +2,6 @@ package smartin.miapi.forge;
 
 import dev.architectury.event.events.common.LifecycleEvent;
 import dev.architectury.platform.Platform;
-import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -10,12 +9,10 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.InterModEnqueueEvent;
 import net.neoforged.neoforge.client.event.ModelEvent;
-import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
 import smartin.miapi.Environment;
 import smartin.miapi.Miapi;
-import smartin.miapi.client.MiapiClient;
 import smartin.miapi.client.model.item.ItemBakedModelReplacement;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.forge.compat.ApotheosisCompat;
@@ -41,7 +38,7 @@ public class TrulyModularForge {
             try {
                 //QuarkCompat.setup();
             } catch (Exception e) {
-                Miapi.LOGGER.info("couldnt load quark compat", e);
+                Miapi.LOGGER.info("couldn't load quark compat", e);
             }
         }
         //bus.register(new ModEvents());
@@ -53,17 +50,15 @@ public class TrulyModularForge {
                 //RegistryInventory.moduleProperties.register(EpicFightCompatProperty.KEY, new EpicFightCompatProperty());
             }
         } catch (Exception e) {
-            Miapi.LOGGER.info("couldnt load epic fight compat");
+            Miapi.LOGGER.info("couldn't load epic fight compat");
         }
         if (Platform.isModLoaded("apotheosis")) {
             try {
                 ApotheosisCompat.setup();
             } catch (RuntimeException surpressed) {
-                Miapi.LOGGER.warn("couldnt load Apotheosis compat", surpressed);
+                Miapi.LOGGER.warn("couldn't load Apotheosis compat", surpressed);
             }
         }
-
-        ItemRenderer renderer;
 
         //if (Platform.isModLoaded("epicfight"))
         //RegistryInventory.moduleProperties.register(EpicFightCompatProperty.KEY, new EpicFightCompatProperty());
@@ -72,6 +67,8 @@ public class TrulyModularForge {
         LifecycleEvent.SERVER_STARTING.register((instance -> setupAttributes()));
         ReloadEvents.START.subscribe((isClient, access) -> setupAttributes());
 
+        //TODO: why no worky
+        //KEY_BINDINGS.addCallback((KeyBindingRegistryImpl::registerKeyBinding));
     }
 
     public static void setupAttributes() {
@@ -101,11 +98,6 @@ public class TrulyModularForge {
             });
             setupAttributes();
         }
-
-        @SubscribeEvent
-        public static void registerBindings(RegisterKeyMappingsEvent event) {
-            MiapiClient.KEY_BINDINGS.addCallback(event::register);
-        }
     }
 
     public static class ServerEvents {
@@ -121,7 +113,7 @@ public class TrulyModularForge {
 
         @SubscribeEvent
         public void addReloadListeners(AddReloadListenerEvent addReloadListenerEvent) {
-            addReloadListenerEvent.addListener(new MiapiReloadListenerForge(() -> addReloadListenerEvent.getRegistryAccess()));
+            addReloadListenerEvent.addListener(new MiapiReloadListenerForge(addReloadListenerEvent::getRegistryAccess));
         }
     }
 

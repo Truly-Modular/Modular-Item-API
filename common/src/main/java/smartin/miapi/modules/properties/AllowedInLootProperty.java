@@ -8,7 +8,7 @@ import smartin.miapi.modules.properties.util.ComplexBooleanProperty;
  * @header Allowed in Loot Property
  * @path /data_types/properties/allowed_loot
  * @description_start
- * if this modular can be found in randomized loot. should be turned off for rare/special modules.
+ * if this module can be found in randomized loot. should be turned off for rare/special modules.
  * @description_end
  * @data value:a boolean value, default is true
  * */

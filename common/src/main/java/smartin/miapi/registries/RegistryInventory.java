@@ -187,7 +187,7 @@ public class RegistryInventory {
 
         RegistrySupplier<Attribute> obj = attributes.register(rl, sup); // actually register the object
         obj.listen((attribute -> {
-            onRegister.accept(obj.getRegistrar().getHolder(obj.getKey()));
+            onRegister.accept(attributes.getHolder(rl));
         })); // attach the onRegister callback, usually used to set the value of fields.
 
         if (attach) // if it should automatically attach to an entity, add another listener to do that (this is equivalent to the old registerOnEntity)
@@ -558,6 +558,8 @@ public class RegistryInventory {
             registerMiapi(useAbilityRegistry, AreaHarvestReplant.KEY, new AreaHarvestReplant());
             registerMiapi(useAbilityRegistry, CastLightingAbility.KEY, new CastLightingAbility());
             registerMiapi(useAbilityRegistry, SonicBoomAbility.KEY, new SonicBoomAbility());
+
+            smartin.miapi.registries.AttributeRegistry.registerAttributes();
 
             Miapi.LOGGER.info("Registered Truly Modulars Property resolvers:");
             PropertyResolver.registry.forEach((pair) -> {

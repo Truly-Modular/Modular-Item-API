@@ -7,11 +7,21 @@ import static smartin.miapi.attributes.AttributeRegistry.*;
 
 public class AttributeRegistry {
     static boolean init = false;
+
     public static void registerAttributes() {
-        if(init){
+        if (init) {
             return;
         }
         init = true;
+
+        /*
+        EntityAttributeRegistry.register(() -> {
+            return null;
+        }, () -> {
+            return null;
+        });
+        
+         */
         //ATTRIBUTE
 
         // mining
