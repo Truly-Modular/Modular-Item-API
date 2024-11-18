@@ -1,4 +1,4 @@
-@header Creating a Module Resource + Texture Pack
+@header Creating a Module Data + Texture Pack
 @path /examples/module
 @keywords module , modules
 

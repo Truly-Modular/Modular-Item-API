@@ -1,4 +1,4 @@
-@header Creating a Skin Resource + Texture Pack
+@header Creating a Skin Data + Texture Pack
 @path /examples/skin
 @keywords skin
 
