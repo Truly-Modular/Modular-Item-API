@@ -86,5 +86,5 @@ Creating a Module Resource + Texture Pack allows for deep customization in *Trul
 
 
 # Examples
-- [example Datapack](https://github.com/Truly-Modular/Modular-Item-API/blob/release/1.21-mojmaps/common/src/main/java/smartin/miapi/wiki/examples/module/example_skin_datapack.zip)
-- [example Resource Pack](https://github.com/Truly-Modular/Modular-Item-API/blob/release/1.21-mojmaps/common/src/main/java/smartin/miapi/wiki/examples/module/example_skin_resourcepack.zip)
+- [example Datapack](https://github.com/Truly-Modular/Modular-Item-API/blob/release/1.21-mojmaps/common/src/main/java/smartin/miapi/wiki/examples/module/example_module_datapack.zip)
+- [example Resource Pack](https://github.com/Truly-Modular/Modular-Item-API/blob/release/1.21-mojmaps/common/src/main/java/smartin/miapi/wiki/examples/module/example_module_resourcepack.zip)
