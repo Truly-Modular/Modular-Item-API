@@ -107,7 +107,7 @@ public class DoubleOperationResolvable {
         operations = new ArrayList<>();
     }
 
-    protected DoubleOperationResolvable(List<Operation> operations) {
+    public DoubleOperationResolvable(List<Operation> operations) {
         this.operations = operations;
     }
 
@@ -133,6 +133,9 @@ public class DoubleOperationResolvable {
      */
     public void setFunctionTransformer(Function<Pair<String, ModuleInstance>, String> functionTransformer) {
         this.functionTransformer = functionTransformer;
+        for (Operation operation : operations) {
+            operation.functiontransformer = this.functionTransformer;
+        }
         this.cachedResult = null;
     }
 
@@ -158,6 +161,7 @@ public class DoubleOperationResolvable {
             });
         }
         DoubleOperationResolvable initialized = new DoubleOperationResolvable(operationList, functionTransformer);
+        initialized.fallback = this.fallback;
         initialized.getValue();
         return initialized;
     }
@@ -286,9 +290,16 @@ public class DoubleOperationResolvable {
         public String value;
         @AutoCodec.Ignored
         public ModuleInstance instance;
+        @AutoCodec.Ignored
+        public Function<Pair<String, ModuleInstance>, String> functiontransformer = (Pair::getFirst);
 
         public Operation() {
             this.value = "1";
+        }
+
+        public Operation(double value, AttributeModifier.Operation operation) {
+            this.value = String.valueOf(value);
+            this.attributeOperation = operation;
         }
 
         public Operation(String value) {
@@ -301,7 +312,8 @@ public class DoubleOperationResolvable {
                 Miapi.LOGGER.error("Double Resolvable was never initialized!", error);
                 return 0;
             }
-            return StatResolver.resolveDouble(value, instance);
+            String transformed = functiontransformer.apply(new Pair<>(value, instance));
+            return StatResolver.resolveDouble(transformed, instance);
         }
 
         private static AttributeModifier.Operation getOperation(String operationString) {

@@ -75,7 +75,10 @@ public class FakeEnchantmentProperty extends CodecProperty<Map<Holder<Enchantmen
 
     public Map<Holder<Enchantment>, DoubleOperationResolvable> initialize(Map<Holder<Enchantment>, DoubleOperationResolvable> property, ModuleInstance context) {
         Map<Holder<Enchantment>, DoubleOperationResolvable> init = new LinkedHashMap<>();
-        property.forEach((key, value) -> init.put(key, value.initialize(context)));
+        property.forEach((key, value) -> {
+            value.setFunctionTransformer((stringModuleInstancePair -> stringModuleInstancePair.getFirst().replace("[old_level]", "0")));
+            init.put(key, value.initialize(context));
+        });
         return init;
     }
 

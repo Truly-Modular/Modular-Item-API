@@ -58,6 +58,9 @@ import smartin.miapi.item.modular.items.armor.*;
 import smartin.miapi.item.modular.items.bows.ModularArrow;
 import smartin.miapi.item.modular.items.bows.ModularBow;
 import smartin.miapi.item.modular.items.bows.ModularCrossbow;
+import smartin.miapi.item.modular.items.shield.ModularNonVanillaShield;
+import smartin.miapi.item.modular.items.shield.ModularVanillaShield;
+import smartin.miapi.item.modular.items.shield.TowerShieldComponent;
 import smartin.miapi.item.modular.items.tools.*;
 import smartin.miapi.lootFunctions.MaterialSwapLootFunction;
 import smartin.miapi.lootFunctions.ModuleSwapLootFunction;
@@ -66,6 +69,8 @@ import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.StackStorageComponent;
 import smartin.miapi.modules.abilities.*;
+import smartin.miapi.modules.abilities.shield.ParryShieldBlock;
+import smartin.miapi.modules.abilities.shield.TowerShieldBlock;
 import smartin.miapi.modules.abilities.toolabilities.AxeAbility;
 import smartin.miapi.modules.abilities.toolabilities.HoeAbility;
 import smartin.miapi.modules.abilities.toolabilities.ShovelAbility;
@@ -250,6 +255,8 @@ public class RegistryInventory {
                 Miapi.id("item_module_property"), () -> ItemModelProperty.ITEM_MODEL_COMPONENT);
         RegistryInventory.components.register(
                 Miapi.id("stack_storage"), () -> StackStorageComponent.STACK_STORAGE_COMPONENT);
+        RegistryInventory.components.register(
+                Miapi.id("tower_shield"), () -> TowerShieldComponent.TOWER_SHIELD_COMPONENT);
 
         RegistryInventory.lootItemFunctions.register(
                 Miapi.id("module_swap"), () -> moduleSwapLootFunctionLootItemFunctionType);
@@ -373,6 +380,9 @@ public class RegistryInventory {
         register(modularItems, "modular_chestplate", ModularChestPlate::new);
         register(modularItems, "modular_leggings", ModularLeggings::new);
         register(modularItems, "modular_boots", ModularBoots::new);
+
+        register(modularItems, "modular_tower_shield", ModularVanillaShield::new);
+        register(modularItems, "modular_shield", ModularNonVanillaShield::new);
 
         register(modularItems, "modular_elytra", ModularElytraItem::getInstance);
 
@@ -546,9 +556,9 @@ public class RegistryInventory {
 
             // ABILITIES
             registerMiapi(useAbilityRegistry, "throw", new ThrowingAbility());
-            registerMiapi(useAbilityRegistry, "block", new BlockAbility());
+            registerMiapi(useAbilityRegistry, "sword_block", new BlockAbility());
+            registerMiapi(useAbilityRegistry, "block", new TowerShieldBlock());
             registerMiapi(useAbilityRegistry, "copy_item", new CopyItemAbility());
-            registerMiapi(useAbilityRegistry, "full_block", new ShieldBlockAbility());
             registerMiapi(useAbilityRegistry, "riptide", new RiptideAbility());
             registerMiapi(useAbilityRegistry, "heavy_attack", new SpecialAttackAbility());
             registerMiapi(useAbilityRegistry, AxeAbility.KEY, new AxeAbility());
@@ -559,6 +569,9 @@ public class RegistryInventory {
             registerMiapi(useAbilityRegistry, CastLightingAbility.KEY, new CastLightingAbility());
             registerMiapi(useAbilityRegistry, SonicBoomAbility.KEY, new SonicBoomAbility());
 
+            registerMiapi(useAbilityRegistry, "full_block", new ShieldBlockAbility());
+            registerMiapi(useAbilityRegistry, "parry_block", new ParryShieldBlock());
+
             smartin.miapi.registries.AttributeRegistry.registerAttributes();
 
             Miapi.LOGGER.info("Registered Truly Modulars Property resolvers:");
@@ -567,6 +580,4 @@ public class RegistryInventory {
             });
         });
     }
-
-
 }

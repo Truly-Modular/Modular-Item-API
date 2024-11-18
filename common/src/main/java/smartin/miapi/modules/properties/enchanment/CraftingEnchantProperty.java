@@ -16,9 +16,9 @@ import java.util.Map;
 
 /**
  * This property allows modules to apply enchantments during crafting, which will persist on the item.
+ *
  * @header Crafting Enchantments Property
- * @description_start
- * The Crafting Enchantments Property adds specific enchantments to an item when it is crafted.
+ * @description_start The Crafting Enchantments Property adds specific enchantments to an item when it is crafted.
  * These enchantments are permanently added to the item and remain during subsequent uses or modifications.
  * The property dynamically calculates the level of the enchantment using a resolvable operation that can reference the previous level of the enchantment.
  * It integrates with the core enchantment system and ensures compatibility with existing enchantment handling mechanisms.
@@ -44,7 +44,9 @@ public class CraftingEnchantProperty extends CodecProperty<Map<Holder<Enchantmen
                 stringDoubleOperationResolvableMap.forEach((enchantment, value) -> {
                     int prevLevel = mutable.getLevel(enchantment);
                     value.setFunctionTransformer((s) -> s.getFirst().replace("[old_level]", String.valueOf(prevLevel)));
-                    mutable.set(enchantment, (int) value.evaluate(0.0, prevLevel));
+                    int nextLevel = (int) value.evaluate(0.0, prevLevel);
+                    Miapi.LOGGER.info("updated level to " + enchantment.value().description() + " " + nextLevel);
+                    mutable.set(enchantment, nextLevel);
                 });
             }));
         });

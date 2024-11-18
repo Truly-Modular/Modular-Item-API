@@ -7,7 +7,6 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Axis;
 import com.mojang.math.Transformation;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -17,6 +16,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.renderer.block.model.ItemTransform;
 import net.minecraft.client.resources.model.ModelState;
+import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
@@ -24,6 +24,7 @@ import org.joml.Vector4f;
 import smartin.miapi.Miapi;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -32,7 +33,6 @@ import java.util.Optional;
  */
 @JsonAdapter(Transform.TransformJsonAdapter.class)
 public class Transform {
-    public static Codec<Vector3f> VECTOR_CODEC = AutoCodec.of(Vector3f.class).codec();
     @CodecBehavior.Optional
     public String origin;
     @CodecBehavior.Optional
@@ -41,6 +41,14 @@ public class Transform {
     public Vector3f translation;
     @CodecBehavior.Optional
     public Vector3f scale;
+
+    public static final Codec<Vector3f> VECTOR_CODEC = Codec.withAlternative(AutoCodec.of(Vector3f.class).codec(),
+            Codec.list(Codec.DOUBLE).xmap((list)->
+                    new Vector3f(
+                            list.getFirst().floatValue(),
+                            list.get(1).floatValue(),
+                            list.get(2).floatValue()),
+                    vector -> List.of((double)vector.x(),(double)vector.y(),(double)vector.z())));
 
     public static final Codec<Transform> CODEC = RecordCodecBuilder.create((instance) ->
             instance.group(
@@ -82,9 +90,7 @@ public class Transform {
      */
     public Transform(Vector3f rotation, Vector3f translation, Vector3f scale, Optional<String> origin) {
         this(rotation, translation, scale);
-        if (origin.isPresent()) {
-            this.origin = origin.get();
-        }
+        origin.ifPresent(string -> this.origin = string);
     }
 
     @Environment(EnvType.CLIENT)
@@ -133,7 +139,6 @@ public class Transform {
 
     public static void applyPosition(PoseStack matrixStack, Matrix4f matrix4f) {
         matrixStack.mulPose(matrix4f);
-        //matrixStack.last().normal().mul(matrix4f.get3x3(new Matrix3f()));
     }
 
     public static void applyPosition(PoseStack matrixStack, Transform transform) {
@@ -147,12 +152,6 @@ public class Transform {
     public Matrix4f toMatrix() {
         // Create the translation matrix
         Matrix4f translationMatrix = new Matrix4f().translate(translation);
-
-        //Alt Rotation Matrix
-        Quaternionf a = new Quaternionf(Axis.XP.rotationDegrees(rotation.x));
-        Quaternionf b = new Quaternionf(Axis.YP.rotationDegrees(rotation.y));
-        Quaternionf c = new Quaternionf(Axis.ZP.rotationDegrees(rotation.z));
-        Quaternionf d = a.add(b).add(c);
 
         // Create the rotation matrix
         Matrix4f rotationMatrix = new Matrix4f()
@@ -302,7 +301,7 @@ public class Transform {
         Transformation affineTransformation = transform.toAffineTransformation();
         return new ModelState() {
             @Override
-            public Transformation getRotation() {
+            public @NotNull Transformation getRotation() {
                 return affineTransformation;
             }
 

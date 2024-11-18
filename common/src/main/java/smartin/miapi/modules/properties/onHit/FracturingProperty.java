@@ -42,7 +42,7 @@ public class FracturingProperty extends DoubleProperty {
                         new AttributeProperty.EntityAttributeModifierHolder(
                                 new AttributeModifier(
                                         ATTRIBUTE_ID,
-                                        percentageIncrease + 1,
+                                        percentageIncrease,
                                         AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL),
                                 EquipmentSlotGroup.MAINHAND,
                                 AttributeModifier.Operation.ADD_VALUE));

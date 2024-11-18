@@ -15,6 +15,7 @@ import dev.architectury.event.EventResult;
 import dev.architectury.event.events.common.CommandRegistrationEvent;
 import dev.architectury.event.events.common.LifecycleEvent;
 import dev.architectury.event.events.common.PlayerEvent;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
@@ -83,6 +84,7 @@ public class Miapi {
     public static final Logger DEBUG_LOGGER = LoggerFactory.getLogger("miapi debug");
     public static NetworkingImplCommon networkingImplementation;
     public static MinecraftServer server;
+    public static RegistryAccess registryAccess;
     public static Gson gson = new GsonBuilder()
             .create();
     public static Codec<ResourceLocation> ID_CODEC = new Codec<>() {
@@ -120,7 +122,10 @@ public class Miapi {
         ComponentMaterial.setup();
         GeneratedMaterialManager.setup();
 
-        LifecycleEvent.SERVER_BEFORE_START.register(minecraftServer -> server = minecraftServer);
+        LifecycleEvent.SERVER_BEFORE_START.register(minecraftServer -> {
+            server = minecraftServer;
+            registryAccess = minecraftServer.reloadableRegistries().get();
+        });
         PlayerEvent.PLAYER_JOIN.register((player -> new Thread(() -> MiapiPermissions.getPerms(player)).start()));
 
         registerReloadHandler(ReloadEvents.MAIN, "miapi/modules", RegistryInventory.modules,
@@ -184,7 +189,7 @@ public class Miapi {
                 GenerateConvertersHelperArmor.setup(armorItems, material);
                 GenerateConvertersHelper.setupTools(tools, material);
             } catch (Exception e) {
-                Miapi.LOGGER.warn("failed to setup converters for " + material.getID());
+                Miapi.LOGGER.warn("failed to setup converters for " + material.getID(), e);
             }
             return EventResult.pass();
         });

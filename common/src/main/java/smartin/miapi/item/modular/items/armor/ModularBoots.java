@@ -11,6 +11,7 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import org.lwjgl.system.NonnullDefault;
 import smartin.miapi.item.FakeItemstackReferenceProvider;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.PlatformModularItemMethods;
@@ -23,6 +24,7 @@ import smartin.miapi.registries.RegistryInventory;
 
 import java.util.List;
 
+@NonnullDefault
 public class ModularBoots extends ArmorItem implements PlatformModularItemMethods, ModularItem {
     public ModularBoots(Properties settings) {
         super(RegistryInventory.armorMaterial, Type.BOOTS, settings);
@@ -49,12 +51,12 @@ public class ModularBoots extends ArmorItem implements PlatformModularItemMethod
 
     @Override
     public int getBarWidth(ItemStack stack) {
-        return Math.round(13.0F - (float) stack.getDamageValue() * 13.0F / ModularItem.getDurability(stack));
+        return Math.round(13.0F - stack.getDamageValue() * 13.0F / ModularItem.getDurability(stack));
     }
 
     @Override
     public int getBarColor(ItemStack stack) {
-        float f = Math.max(0.0F, ((float) ModularItem.getDurability(stack) - (float) stack.getDamageValue()) / ModularItem.getDurability(stack));
+        float f = Math.max(0.0F, ((float) ModularItem.getDurability(stack) - stack.getDamageValue()) / ModularItem.getDurability(stack));
         return Mth.hsvToRgb(f / 3.0F, 1.0F, 1.0F);
     }
 

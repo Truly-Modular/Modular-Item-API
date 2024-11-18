@@ -2,6 +2,8 @@ package smartin.miapi.material.generated;
 
 import com.google.gson.JsonElement;
 import com.mojang.serialization.JsonOps;
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.component.TypedDataComponent;
@@ -12,6 +14,9 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.ItemEnchantments;
+import net.minecraft.world.level.storage.loot.functions.LootItemFunctions;
 import smartin.miapi.Miapi;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.config.MiapiServerConfig;
@@ -22,9 +27,12 @@ import smartin.miapi.modules.properties.ComponentProperty;
 import smartin.miapi.modules.properties.CopyItemLoreProperty;
 import smartin.miapi.modules.properties.FakeItemTagProperty;
 import smartin.miapi.modules.properties.attributes.AttributeProperty;
+import smartin.miapi.modules.properties.enchanment.CraftingEnchantProperty;
 import smartin.miapi.modules.properties.onHit.CopyItemOnHit;
+import smartin.miapi.modules.properties.util.DoubleOperationResolvable;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
+import java.lang.reflect.Method;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -114,12 +122,22 @@ public class GeneratedMaterialPropertyManager {
             propertyMap.put(ComponentProperty.property, components);
         }
 
+        if (shouldApplyProperty(MiapiConfig.INSTANCE.server.generatedMaterials.enchantProperty, id.toString())) {
+            Map<Holder<Enchantment>, DoubleOperationResolvable> enchantments = new HashMap<>();
+            ItemEnchantments itemEnchantments = getDefaultStack(item).getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY);
+            itemEnchantments.keySet().forEach(enchantment -> {
+                DoubleOperationResolvable resolvable = new DoubleOperationResolvable(List.of(new DoubleOperationResolvable.Operation(itemEnchantments.getLevel(enchantment), AttributeModifier.Operation.ADD_VALUE)));
+                enchantments.put(enchantment, resolvable);
+            });
+            propertyMap.put(CraftingEnchantProperty.property, enchantments);
+        }
+
         if (shouldApplyProperty(MiapiConfig.INSTANCE.server.generatedMaterials.attributeProperty, id.toString())) {
             // Get the tags from both vanillaCompare and vanillaCompare2
-            var firstAttributes = vanillaCompare.getDefaultInstance().get(DataComponents.ATTRIBUTE_MODIFIERS).modifiers().stream().map(ItemAttributeModifiers.Entry::attribute).toList();
-            var secondAttributes = vanillaCompare2.getDefaultInstance().get(DataComponents.ATTRIBUTE_MODIFIERS).modifiers().stream().map(ItemAttributeModifiers.Entry::attribute).toList();
+            var firstAttributes = getDefaultStack(vanillaCompare).get(DataComponents.ATTRIBUTE_MODIFIERS).modifiers().stream().map(ItemAttributeModifiers.Entry::attribute).toList();
+            var secondAttributes = getDefaultStack(vanillaCompare2).get(DataComponents.ATTRIBUTE_MODIFIERS).modifiers().stream().map(ItemAttributeModifiers.Entry::attribute).toList();
 
-            var modifiers = item.getDefaultInstance().get(DataComponents.ATTRIBUTE_MODIFIERS).modifiers()
+            var modifiers = getDefaultStack(item).get(DataComponents.ATTRIBUTE_MODIFIERS).modifiers()
                     .stream()
                     .filter(a -> !firstAttributes.contains(a.attribute()) && !secondAttributes.contains(a.attribute()))
                     .filter(a -> a.modifier().operation() == AttributeModifier.Operation.ADD_VALUE)
@@ -166,6 +184,18 @@ public class GeneratedMaterialPropertyManager {
         }
 
         return true; // Passes all checks, apply the property
+    }
+
+    public static ItemStack getDefaultStack(Item item) {
+        ItemStack itemStack = item.getDefaultInstance();
+        try {
+            //attempt to load betterx itemstack stuffs to grab enchants and other stuffs reliably
+            Class<?> itemStackHelperClass = Class.forName("org.betterx.wover.item.api.ItemStackHelper");
+            Method method = itemStackHelperClass.getDeclaredMethod("callItemStackSetupIfPossible", ItemStack.class, HolderLookup.Provider.class);
+            itemStack = (ItemStack) method.invoke(null, itemStack, Miapi.registryAccess);
+        } catch (Exception ignored) {
+        }
+        return LootItemFunctions.IDENTITY.apply(itemStack, null);
     }
 
     public static <T> JsonElement encode(TypedDataComponent<T> typedDataComponent) {

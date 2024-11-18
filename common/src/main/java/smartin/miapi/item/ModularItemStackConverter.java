@@ -44,7 +44,7 @@ public class ModularItemStackConverter {
             try {
                 converted = converter.convert(converted);
             } catch (RuntimeException e) {
-                Miapi.LOGGER.warn("failed to convert item" + original.getItem());
+                Miapi.LOGGER.warn("failed to convert item" + original.getItem(), e);
             }
         }
         if (ModularItem.isModularItem(converted)) {

@@ -9,7 +9,6 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
@@ -20,6 +19,7 @@ import net.minecraft.world.item.*;
 import net.minecraft.world.item.component.ChargedProjectiles;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
+import org.lwjgl.system.NonnullDefault;
 import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.client.model.ModularModelPredicateProvider;
 import smartin.miapi.events.MiapiProjectileEvents;
@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+@NonnullDefault
 public class ModularCrossbow extends CrossbowItem implements PlatformModularItemMethods, ModularItem {
 
 
@@ -135,6 +136,7 @@ public class ModularCrossbow extends CrossbowItem implements PlatformModularItem
         }
     }
 
+    @Override
     public void releaseUsing(ItemStack stack, Level level, LivingEntity livingEntity, int timeCharged) {
         int ticks = this.getUseDuration(stack, livingEntity) - timeCharged;
         float charge = getPowerForTime(ticks, stack, livingEntity);
@@ -149,7 +151,7 @@ public class ModularCrossbow extends CrossbowItem implements PlatformModularItem
             }
             ChargingSounds chargingSounds = this.getChargingSounds(stack);
             chargingSounds.end().ifPresent((holder) -> {
-                level.playSound((Player) null, livingEntity.getX(), livingEntity.getY(), livingEntity.getZ(), (SoundEvent) holder.value(), livingEntity.getSoundSource(), 1.0F, 1.0F / (level.getRandom().nextFloat() * 0.5F + 1.0F) + 0.2F);
+                level.playSound((Player) null, livingEntity.getX(), livingEntity.getY(), livingEntity.getZ(), holder.value(), livingEntity.getSoundSource(), 1.0F, 1.0F / (level.getRandom().nextFloat() * 0.5F + 1.0F) + 0.2F);
             });
         }
     }
@@ -169,18 +171,19 @@ public class ModularCrossbow extends CrossbowItem implements PlatformModularItem
         return Mth.floor(f * 20.0F);
     }
 
+    @Override
     public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
-        ChargedProjectiles chargedProjectiles = (ChargedProjectiles) stack.get(DataComponents.CHARGED_PROJECTILES);
+        ChargedProjectiles chargedProjectiles = stack.get(DataComponents.CHARGED_PROJECTILES);
         LoreProperty.appendLoreTop(stack, tooltipComponents, context, tooltipFlag);
         if (chargedProjectiles != null && !chargedProjectiles.isEmpty()) {
-            ItemStack itemStack = (ItemStack) chargedProjectiles.getItems().get(0);
+            ItemStack itemStack = chargedProjectiles.getItems().getFirst();
             tooltipComponents.add(Component.translatable("item.minecraft.crossbow.projectile").append(CommonComponents.SPACE).append(itemStack.getDisplayName()));
             if (tooltipFlag.isAdvanced() && itemStack.is(Items.FIREWORK_ROCKET)) {
                 List<Component> list = Lists.newArrayList();
                 Items.FIREWORK_ROCKET.appendHoverText(itemStack, context, list, tooltipFlag);
                 if (!list.isEmpty()) {
                     for (int i = 0; i < list.size(); ++i) {
-                        list.set(i, Component.literal("  ").append((Component) list.get(i)).withStyle(ChatFormatting.GRAY));
+                        list.set(i, Component.literal("  ").append(list.get(i)).withStyle(ChatFormatting.GRAY));
                     }
 
                     tooltipComponents.addAll(list);

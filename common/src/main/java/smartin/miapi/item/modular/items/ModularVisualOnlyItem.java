@@ -5,6 +5,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import org.lwjgl.system.NonnullDefault;
 import smartin.miapi.item.modular.PlatformModularItemMethods;
 import smartin.miapi.item.modular.VisualModularItem;
 import smartin.miapi.modules.properties.DisplayNameProperty;
@@ -13,6 +14,7 @@ import smartin.miapi.modules.properties.RepairPriority;
 
 import java.util.List;
 
+@NonnullDefault
 public class ModularVisualOnlyItem extends Item implements PlatformModularItemMethods, VisualModularItem {
     public ModularVisualOnlyItem() {
         super(new Properties().stacksTo(1).durability(1000));

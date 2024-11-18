@@ -67,8 +67,8 @@ public class BakedMiapiModel implements MiapiModel {
         int sky = LightTexture.sky(packedLight);
         int block = LightTexture.block(packedLight);
 
-        if (skyLight != -1) sky = skyLight;
-        if (blockLight != -1) block = blockLight;
+        if (skyLight > sky ) sky = skyLight;
+        if (blockLight > block ) block = blockLight;
 
         int light = LightTexture.pack(block, sky);
 

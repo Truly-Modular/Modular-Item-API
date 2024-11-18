@@ -2,6 +2,7 @@ package smartin.miapi.modules.action.effect;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.advancements.Advancement;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
@@ -43,6 +44,7 @@ public record DamageActionEffect(String sourceKey, String targetKey, boolean use
     @Override
     public List<String> dependency(ActionContext context) {
         // This effect depends on a source entity and a list of target entities in the context
+        Advancement advancement;
         return List.of(sourceKey, targetKey);
     }
 

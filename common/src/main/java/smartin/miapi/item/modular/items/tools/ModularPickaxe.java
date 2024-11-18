@@ -15,6 +15,7 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import org.apache.commons.lang3.mutable.MutableFloat;
+import org.lwjgl.system.NonnullDefault;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.events.ModularAttackEvents;
 import smartin.miapi.item.FakeItemstackReferenceProvider;
@@ -31,8 +32,9 @@ import smartin.miapi.modules.properties.mining.MiningLevelProperty;
 
 import java.util.List;
 
+@NonnullDefault
 public class ModularPickaxe extends PickaxeItem implements PlatformModularItemMethods, ModularItem, ModularSetableToolMaterial {
-    public Tier currentFakeToolmaterial = ModularToolMaterial.toolMaterial;
+    public Tier currentFakeToolMaterial = ModularToolMaterial.toolMaterial;
     public ModularPickaxe(Properties settings) {
         super(new ModularToolMaterial(), settings.stacksTo(1).durability(500));
     }
@@ -62,24 +64,25 @@ public class ModularPickaxe extends PickaxeItem implements PlatformModularItemMe
 
     @Override
     public int getBarWidth(ItemStack stack) {
-        return Math.round(13.0F - (float) stack.getDamageValue() * 13.0F / ModularItem.getDurability(stack));
+        return Math.round(13.0F - stack.getDamageValue() * 13.0F / ModularItem.getDurability(stack));
     }
 
+    @Override
     public Tier getTier() {
         if(MiapiConfig.INSTANCE.server.other.looseToolMaterial){
-            return currentFakeToolmaterial;
+            return currentFakeToolMaterial;
         }
         return super.getTier();
     }
 
     @Override
     public void setToolMaterial(Tier toolMaterial){
-        this.currentFakeToolmaterial = toolMaterial;
+        this.currentFakeToolMaterial = toolMaterial;
     }
 
     @Override
     public int getBarColor(ItemStack stack) {
-        float f = Math.max(0.0F, ((float) ModularItem.getDurability(stack) - (float) stack.getDamageValue()) / ModularItem.getDurability(stack));
+        float f = Math.max(0.0F, ((float) ModularItem.getDurability(stack) - stack.getDamageValue()) / ModularItem.getDurability(stack));
         return Mth.hsvToRgb(f / 3.0F, 1.0F, 1.0F);
     }
 

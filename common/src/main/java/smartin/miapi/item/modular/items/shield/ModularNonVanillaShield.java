@@ -1,4 +1,4 @@
-package smartin.miapi.item.modular.items.tools;
+package smartin.miapi.item.modular.items.shield;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -6,19 +6,19 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.MaceItem;
-import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.UseAnim;
+import net.minecraft.world.item.*;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import org.apache.commons.lang3.mutable.MutableFloat;
 import org.lwjgl.system.NonnullDefault;
+import smartin.miapi.events.ModularAttackEvents;
 import smartin.miapi.item.FakeItemstackReferenceProvider;
 import smartin.miapi.item.modular.ModularItem;
-import smartin.miapi.item.modular.PlatformModularItemMethods;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;
 import smartin.miapi.modules.properties.DisplayNameProperty;
 import smartin.miapi.modules.properties.LoreProperty;
@@ -29,14 +29,33 @@ import smartin.miapi.modules.properties.mining.MiningLevelProperty;
 import java.util.List;
 
 @NonnullDefault
-public class ModularMace extends MaceItem implements PlatformModularItemMethods, ModularItem {
+public class ModularNonVanillaShield extends Item implements ModularItem {
 
-    public ModularMace() {
-        this(new Properties().durability(50).stacksTo(1));
+    public ModularNonVanillaShield() {
+        this(new Properties().stacksTo(1).durability(500).rarity(Rarity.COMMON));
     }
 
-    public ModularMace(Properties properties) {
+    public ModularNonVanillaShield(Properties properties) {
         super(properties);
+    }
+
+    @Override
+    public float getAttackDamageBonus(Entity target, float damage, DamageSource damageSource) {
+        MutableFloat mutableFloat = new MutableFloat(0);
+        if (damageSource.getWeaponItem() != null) {
+            ModularAttackEvents.ATTACK_DAMAGE_BONUS.invoker().getAttackDamageBonus(target, damageSource.getWeaponItem(), damage, damageSource, mutableFloat);
+        }
+        return mutableFloat.floatValue();
+    }
+
+    @Override
+    public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
+        return ModularAttackEvents.HURT_ENEMY.invoker().hurtEnemy(stack, target, attacker).interruptsFurtherEvaluation();
+    }
+
+    @Override
+    public void postHurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
+        ModularAttackEvents.HURT_ENEMY_POST.invoker().hurtEnemy(stack, target, attacker);
     }
 
     @Override
@@ -120,7 +139,7 @@ public class ModularMace extends MaceItem implements PlatformModularItemMethods,
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, net.minecraft.world.item.Item.TooltipContext tooltipContext, List<Component> list, TooltipFlag tooltipType) {
+    public void appendHoverText(ItemStack stack, TooltipContext tooltipContext, List<Component> list, TooltipFlag tooltipType) {
         LoreProperty.appendLoreTop(stack, list, tooltipContext, tooltipType);
     }
 

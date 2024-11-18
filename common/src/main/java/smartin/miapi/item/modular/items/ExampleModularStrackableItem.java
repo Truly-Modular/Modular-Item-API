@@ -8,6 +8,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import org.lwjgl.system.NonnullDefault;
 import smartin.miapi.item.FakeItemstackReferenceProvider;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.PlatformModularItemMethods;
@@ -18,12 +19,11 @@ import smartin.miapi.modules.properties.mining.MiningLevelProperty;
 
 import java.util.List;
 
+@NonnullDefault
 public class ExampleModularStrackableItem extends Item implements PlatformModularItemMethods,ModularItem {
-    public static Item modularItem;
 
     public ExampleModularStrackableItem() {
-        super(new Properties().stacksTo(64));
-        modularItem = this;
+        this(new Properties().stacksTo(64));
     }
 
     public ExampleModularStrackableItem(Item.Properties settings) {

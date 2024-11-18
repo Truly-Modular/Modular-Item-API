@@ -17,6 +17,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
+import org.lwjgl.system.NonnullDefault;
 import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.client.model.ModularModelPredicateProvider;
 import smartin.miapi.item.FakeItemstackReferenceProvider;
@@ -32,6 +33,7 @@ import smartin.miapi.modules.properties.projectile.DrawTimeProperty;
 import java.util.List;
 import java.util.function.Predicate;
 
+@NonnullDefault
 public class ModularBow extends BowItem implements PlatformModularItemMethods, ModularItem {
     public static Predicate<ItemStack> projectile = ARROW_ONLY;
 
@@ -58,12 +60,12 @@ public class ModularBow extends BowItem implements PlatformModularItemMethods, M
 
     @Override
     public int getBarWidth(ItemStack stack) {
-        return Math.round(13.0F - (float) stack.getDamageValue() * 13.0F / ModularItem.getDurability(stack));
+        return Math.round(13.0F - stack.getDamageValue() * 13.0F / ModularItem.getDurability(stack));
     }
 
     @Override
     public int getBarColor(ItemStack stack) {
-        float f = Math.max(0.0F, ((float) ModularItem.getDurability(stack) - (float) stack.getDamageValue()) / ModularItem.getDurability(stack));
+        float f = Math.max(0.0F, ((float) ModularItem.getDurability(stack) - stack.getDamageValue()) / ModularItem.getDurability(stack));
         return Mth.hsvToRgb(f / 3.0F, 1.0F, 1.0F);
     }
 
@@ -96,8 +98,7 @@ public class ModularBow extends BowItem implements PlatformModularItemMethods, M
                 float f = getPowerForTime(i, stack, livingEntity);
                 if (!((double) f < 0.1)) {
                     List<ItemStack> list = draw(stack, itemStack, player);
-                    if (level instanceof ServerLevel) {
-                        ServerLevel serverLevel = (ServerLevel) level;
+                    if (level instanceof ServerLevel serverLevel) {
                         if (!list.isEmpty()) {
                             float divergence = (float) Math.pow(12.0, -AttributeUtil.getActualValue(stack, EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_ACCURACY.value()));
                             float speed = (float) Math.max(0.1, AttributeUtil.getActualValue(stack, EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_SPEED.value()) + 3.0);
@@ -105,7 +106,7 @@ public class ModularBow extends BowItem implements PlatformModularItemMethods, M
                         }
                     }
 
-                    level.playSound((Player) null, player.getX(), player.getY(), player.getZ(), SoundEvents.ARROW_SHOOT, SoundSource.PLAYERS, 1.0F, 1.0F / (level.getRandom().nextFloat() * 0.4F + 1.2F) + f * 0.5F);
+                    level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ARROW_SHOOT, SoundSource.PLAYERS, 1.0F, 1.0F / (level.getRandom().nextFloat() * 0.4F + 1.2F) + f * 0.5F);
                     player.awardStat(Stats.ITEM_USED.get(this));
                 }
             }

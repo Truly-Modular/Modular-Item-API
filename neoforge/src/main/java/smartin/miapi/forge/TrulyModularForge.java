@@ -113,6 +113,7 @@ public class TrulyModularForge {
 
         @SubscribeEvent
         public void addReloadListeners(AddReloadListenerEvent addReloadListenerEvent) {
+            Miapi.registryAccess = addReloadListenerEvent.getRegistryAccess();
             addReloadListenerEvent.addListener(new MiapiReloadListenerForge(addReloadListenerEvent::getRegistryAccess));
         }
     }

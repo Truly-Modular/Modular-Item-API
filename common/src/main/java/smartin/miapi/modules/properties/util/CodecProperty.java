@@ -40,10 +40,9 @@ public abstract class CodecProperty<T> implements ModuleProperty<T> {
         RegistryOps<JsonElement> ops = RegistryOps.create(
                 JsonOps.INSTANCE,
                 RegistryAccess.fromRegistryOfRegistries(BuiltInRegistries.REGISTRY));
-        if (Miapi.server != null) {
-            Miapi.server.reloadableRegistries().get();
+        if (Miapi.registryAccess != null) {
             ops = RegistryOps.create(
-                    JsonOps.INSTANCE, Miapi.server.reloadableRegistries().get()
+                    JsonOps.INSTANCE, Miapi.registryAccess
             );
         } else {
             try {

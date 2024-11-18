@@ -1,30 +1,21 @@
 package smartin.miapi.item.modular.items.tools;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.util.*;
+import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.ai.attributes.Attribute;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Rarity;
-import net.minecraft.world.item.SwordItem;
-import net.minecraft.world.item.Tier;
-import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.UseAnim;
+import net.minecraft.world.item.*;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import org.apache.commons.lang3.mutable.MutableFloat;
+import org.lwjgl.system.NonnullDefault;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.events.ModularAttackEvents;
 import smartin.miapi.item.FakeItemstackReferenceProvider;
@@ -33,14 +24,17 @@ import smartin.miapi.item.modular.PlatformModularItemMethods;
 import smartin.miapi.item.modular.items.ModularSetableToolMaterial;
 import smartin.miapi.item.modular.items.ModularToolMaterial;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;
-import smartin.miapi.modules.properties.*;
+import smartin.miapi.modules.properties.DisplayNameProperty;
+import smartin.miapi.modules.properties.LoreProperty;
+import smartin.miapi.modules.properties.RepairPriority;
 import smartin.miapi.modules.properties.enchanment.EnchantAbilityProperty;
 import smartin.miapi.modules.properties.mining.MiningLevelProperty;
 
 import java.util.List;
 
+@NonnullDefault
 public class ModularSword extends SwordItem implements PlatformModularItemMethods, ModularItem, ModularSetableToolMaterial {
-    public Tier currentFakeToolmaterial = ModularToolMaterial.toolMaterial;
+    public Tier currentFakeToolMaterial = ModularToolMaterial.toolMaterial;
 
     public ModularSword(Properties settings) {
         super(new ModularToolMaterial(), settings.stacksTo(1).durability(500));
@@ -69,30 +63,27 @@ public class ModularSword extends SwordItem implements PlatformModularItemMethod
         ModularAttackEvents.HURT_ENEMY_POST.invoker().hurtEnemy(stack, target, attacker);
     }
 
+    @Override
     public Tier getTier() {
         if (MiapiConfig.INSTANCE.server.other.looseToolMaterial) {
-            return currentFakeToolmaterial;
+            return currentFakeToolMaterial;
         }
         return super.getTier();
     }
 
     @Override
     public void setToolMaterial(Tier toolMaterial) {
-        this.currentFakeToolmaterial = toolMaterial;
-    }
-
-    public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlot slot) {
-        return ArrayListMultimap.create();
+        this.currentFakeToolMaterial = toolMaterial;
     }
 
     @Override
     public int getBarWidth(ItemStack stack) {
-        return Math.round(13.0F - (float) stack.getDamageValue() * 13.0F / ModularItem.getDurability(stack));
+        return Math.round(13.0F - stack.getDamageValue() * 13.0F / ModularItem.getDurability(stack));
     }
 
     @Override
     public int getBarColor(ItemStack stack) {
-        float f = Math.max(0.0F, ((float) ModularItem.getDurability(stack) - (float) stack.getDamageValue()) / ModularItem.getDurability(stack));
+        float f = Math.max(0.0F, ((float) ModularItem.getDurability(stack) - stack.getDamageValue()) / ModularItem.getDurability(stack));
         return Mth.hsvToRgb(f / 3.0F, 1.0F, 1.0F);
     }
 

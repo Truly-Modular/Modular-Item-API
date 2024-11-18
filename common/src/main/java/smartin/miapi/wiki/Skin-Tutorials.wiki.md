@@ -77,5 +77,5 @@ The `hover` property is an optional field that adds a tooltip when hovering over
 
 
 # Examples
-- example Datapack https://github.com/Truly-Modular/Modular-Item-API/blob/release/1.21-mojmaps/common/src/main/java/smartin/miapi/wiki/examples/example_skin_datapack.zip
-- example Resource Pack https://github.com/Truly-Modular/Modular-Item-API/blob/release/1.21-mojmaps/common/src/main/java/smartin/miapi/wiki/examples/example_skin_resourcepack.zip
+- [example Datapack](https://github.com/Truly-Modular/Modular-Item-API/blob/release/1.21-mojmaps/common/src/main/java/smartin/miapi/wiki/examples/skin/example_skin_datapack.zip)
+- [example Resource Pack](https://github.com/Truly-Modular/Modular-Item-API/blob/release/1.21-mojmaps/common/src/main/java/smartin/miapi/wiki/examples/skin/example_skin_resourcepack.zip)

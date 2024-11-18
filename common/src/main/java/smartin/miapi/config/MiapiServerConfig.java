@@ -134,6 +134,10 @@ public class MiapiServerConfig {
         @AutoCodec.Name("attribute_property")
         public GeneratePropertyOption attributeProperty = new GeneratePropertyOption();
 
+        @Comment("Whether the Crafting Enchantment Property should copy the items other attributes for generated Materials")
+        @AutoCodec.Name("enchant_property")
+        public GeneratePropertyOption enchantProperty = new GeneratePropertyOption();
+
         @Comment("Whether the Ability Property should copy the items abilities for generated Materials")
         @AutoCodec.Name("ability_property")
         public GeneratePropertyOption abilityProperty = new GeneratePropertyOption();

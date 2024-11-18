@@ -13,8 +13,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.lwjgl.system.NonnullDefault;
 import smartin.miapi.entity.ItemProjectileEntity;
 import smartin.miapi.item.FakeItemstackReferenceProvider;
 import smartin.miapi.item.modular.ModularItem;
@@ -26,6 +26,7 @@ import smartin.miapi.modules.properties.mining.MiningLevelProperty;
 
 import java.util.List;
 
+@NonnullDefault
 public class ModularArrow extends ArrowItem implements PlatformModularItemMethods, ModularItem {
     public ModularArrow() {
         this(new Item.Properties().stacksTo(64));
@@ -37,12 +38,12 @@ public class ModularArrow extends ArrowItem implements PlatformModularItemMethod
 
 
     @Override
-    public @NotNull AbstractArrow createArrow(@NotNull Level level, @NotNull ItemStack ammo, @Nullable LivingEntity shooter, @Nullable ItemStack weapon) {
+    public AbstractArrow createArrow(Level level, ItemStack ammo, @Nullable LivingEntity shooter, @Nullable ItemStack weapon) {
         return new ItemProjectileEntity(level, shooter, ammo.copyWithCount(1), weapon);
     }
 
     @Override
-    public @NotNull Projectile asProjectile(@NotNull Level world, @NotNull Position position, @NotNull ItemStack stack, @NotNull Direction direction) {
+    public Projectile asProjectile(Level world, Position position, ItemStack stack, Direction direction) {
         ItemStack itemStack = stack.copy();
         itemStack.setCount(1);
         ItemProjectileEntity arrowEntity = new ItemProjectileEntity(world, position, itemStack);
@@ -53,12 +54,12 @@ public class ModularArrow extends ArrowItem implements PlatformModularItemMethod
 
 
     @Override
-    public @NotNull Component getName(@NotNull ItemStack stack) {
+    public Component getName(ItemStack stack) {
         return DisplayNameProperty.getDisplayText(stack);
     }
 
     @Override
-    public void appendHoverText(@NotNull ItemStack itemStack, @NotNull TooltipContext tooltipContext, @NotNull List<Component> list, @NotNull TooltipFlag tooltipType) {
+    public void appendHoverText(ItemStack itemStack, TooltipContext tooltipContext, List<Component> list, TooltipFlag tooltipType) {
         LoreProperty.appendLoreTop(itemStack, list, tooltipContext, tooltipType);
     }
 

@@ -29,6 +29,7 @@ public record Action(List<ActionPredicate> predicates, List<ActionEffect> effect
 
     public void execute(ActionContext context) {
         List<ActionPredicate> pendingEffects = new ArrayList<>(effects);
+        pendingEffects.addAll(predicates());
 
         boolean progressMade;
         do {
@@ -36,9 +37,7 @@ public record Action(List<ActionPredicate> predicates, List<ActionEffect> effect
             List<ActionPredicate> resolvedEffects = new ArrayList<>();
 
             for (ActionPredicate effect : pendingEffects) {
-                boolean dependenciesResolved = effect.dependency(context).stream()
-                        .allMatch(key -> context.getList(Object.class, key).isPresent() ||
-                                         context.getObject(Object.class, key).isPresent());
+                boolean dependenciesResolved = effect.dependencyMet(context);
 
                 if (dependenciesResolved) {
                     if (!effect.setup(context)) {
