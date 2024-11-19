@@ -49,6 +49,7 @@ dependencies {
     // Remove the next line if you don't want to depend on the API
     modApi "dev.architectury:architectury-forge:${rootProject.architectury_version}"
 
+    forgeRuntimeLibrary("com.ezylang:EvalEx:${rootProject.eval_ex_version}")
     forgeRuntimeLibrary(include("com.ezylang:EvalEx:${rootProject.eval_ex_version}"))
     modApi("top.theillusivec4.caelus:caelus-forge:${rootProject.forge_caelus_version}")
 

@@ -6,3 +6,4 @@
 - fixed heavy attack not multiplying damage
 - actually enabled NBT Property
 - fixed crash with minecolonies
+- fixed enchantment transformers

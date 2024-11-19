@@ -2,6 +2,8 @@ package smartin.miapi.forge.mixin.item;
 
 import com.google.common.collect.Multimap;
 import net.minecraft.block.BlockState;
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttribute;
@@ -10,7 +12,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.ToolAction;
 import org.spongepowered.asm.mixin.Mixin;
 import smartin.miapi.forge.compat.ModularItemInject;
+import smartin.miapi.item.FakeEnchantment;
 import smartin.miapi.item.modular.items.*;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Mixin(
         value = {
@@ -61,6 +67,16 @@ public abstract class ModularItemMixin implements ModularItemInject {
 
     public int getEnchantmentValue(ItemStack stack) {
         return getEnchantmentValueModular(stack);
+    }
+
+    public int getEnchantmentLevel(ItemStack stack, Enchantment enchantment) {
+        return FakeEnchantment.getFakeLevel(enchantment, stack, EnchantmentHelper.getTagEnchantmentLevel(enchantment, stack));
+    }
+
+    public Map<Enchantment, Integer> getAllEnchantments(ItemStack stack) {
+        Map<Enchantment, Integer> enchants = new HashMap<>(EnchantmentHelper.fromNbt(stack.getEnchantments()));
+        FakeEnchantment.addEnchantments((enchants::put), stack);
+        return enchants;
     }
 
     public Multimap<EntityAttribute, EntityAttributeModifier> getAttributeModifiers(EquipmentSlot slot, ItemStack stack) {

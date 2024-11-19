@@ -6,6 +6,7 @@ import dev.architectury.platform.forge.EventBuses;
 import dev.architectury.registry.ReloadListenerRegistry;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -63,6 +64,7 @@ public class TrulyModularForge {
                 Miapi.LOGGER.info("couldnt load quark compat",e);
             }
         }
+        EnchantmentHelper helper;
         bus.register(new ModEvents());
         MinecraftForge.EVENT_BUS.register(new ServerEvents());
         Miapi.init();
