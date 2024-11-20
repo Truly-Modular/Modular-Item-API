@@ -7,7 +7,6 @@
         "ApoliStackPowerMixin",
         "ArcheryHookMixin",
         "AxeItemAccessor",
-        "BCWeaponRegistryMixin",
         "ChorusFruitMixin",
         "ClientAdvancementManagerAccessor",
         "ConduitBlockEntityAccessor",

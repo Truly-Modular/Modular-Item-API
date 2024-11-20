@@ -31,6 +31,12 @@ public class MiapiServerConfig {
         public boolean developmentMode = Platform.isDevelopmentEnvironment();
 
         @Comment("""
+                Save Area Mining adds additional checks to prevent explosive behaviour when pared with other mods
+                """)
+        @AutoCodec.Name("save_area_mining")
+        public boolean saveAreaMining = true;
+
+        @Comment("""
                 Truly Modular Logs more aggressivly""")
         @AutoCodec.Name("verbose_logging")
         public boolean verboseLogging = false;
