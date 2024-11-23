@@ -33,7 +33,19 @@ description='''${mod_description}'''
    modId="architectury" #mandatory
    mandatory=true #mandatory
    versionRange="[${architectury_version},)" #mandatory
-   ordering="NONE"
+   ordering="AFTER"
+   side="BOTH"
+[[dependencies.miapi]] #optional
+   modId="bettercombat" #mandatory
+   mandatory=false #mandatory
+   versionRange="[0,)" #mandatory
+   ordering="AFTER"
+   side="BOTH"
+[[dependencies.miapi]] #optional
+   modId="bc_nbt_fix" #mandatory
+   mandatory=false #mandatory
+   versionRange="[0,)" #mandatory
+   ordering="AFTER"
    side="BOTH"
 [[dependencies.miapi]]
    modId="minecraft"

@@ -2,7 +2,7 @@
 @path /attributes
 @keywords attribute, attributes
 
-# Attributes
+
 Miapi Implements a couple of custom attributes.
 Some of them will only work on Modular Items, so using them outside of Modular Items is not recommended.
 

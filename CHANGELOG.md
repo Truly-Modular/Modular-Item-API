@@ -6,3 +6,5 @@
 - fixed heavy attack not multiplying damage
 - actually enabled NBT Property
 - fixed crash with minecolonies
+- fixed enchantment transformers
+- added Save Area Mining Config option to only allow area mining to start on blocks the player is looking at

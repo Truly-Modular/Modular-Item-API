@@ -18,7 +18,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import smartin.miapi.events.MiapiEvents;
-import smartin.miapi.item.FakeEnchantment;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.modules.properties.ChannelingProperty;
 import smartin.miapi.modules.properties.EnchantAbilityProperty;
@@ -131,17 +130,6 @@ public class EnchantmentHelperMixin {
         return original;
     }
 
-    @ModifyReturnValue(
-            method = "getLevel(Lnet/minecraft/enchantment/Enchantment;Lnet/minecraft/item/ItemStack;)I",
-            at = @At("RETURN")
-    )
-    private static int miapi$modifyPossibleEntries(int original, Enchantment enchantment, ItemStack stack) {
-        if (stack.getItem() instanceof ModularItem) {
-            return FakeEnchantment.getFakeLevel(enchantment, stack, original);
-        }
-        return original;
-    }
-
     private static List<EnchantmentLevelEntry> getLevels(int power, ItemStack stack, boolean treasureAllowed) {
         ArrayList<EnchantmentLevelEntry> list = Lists.newArrayList();
         if (stack.getItem() instanceof ModularItem) {
@@ -157,13 +145,5 @@ public class EnchantmentHelperMixin {
             }
         }
         return list;
-    }
-
-    @Inject(
-            method = "forEachEnchantment(Lnet/minecraft/enchantment/EnchantmentHelper$Consumer;Lnet/minecraft/item/ItemStack;)V",
-            at = @At("TAIL"),
-            cancellable = true)
-    private static void miapi$addFakeEnchants(EnchantmentHelper.Consumer consumer, ItemStack stack, CallbackInfo ci) {
-        FakeEnchantment.addEnchantments(consumer, stack);
     }
 }

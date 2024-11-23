@@ -91,6 +91,9 @@ public class CraftAction {
         String modules = buf.readString();
         if (!modules.equals("null")) {
             toAdd = RegistryInventory.modules.get(modules);
+            if (toAdd == null) {
+                Miapi.LOGGER.error("could not find module " + modules + " craft action failed!");
+            }
         } else {
             toAdd = null;
         }
@@ -245,7 +248,7 @@ public class CraftAction {
     private ItemStack craft() {
         ItemStack craftingStack = old.copy();
         if (toAdd == null) {
-            return ItemStack.EMPTY;
+            //return ItemStack.EMPTY;
         }
         if (slotId.size() == 1) {
         } else if (!old.hasNbt() || !(old.hasNbt() && old.getOrCreateNbt().contains(ItemModule.MODULE_KEY) || (old.hasNbt() && old.getOrCreateNbt().contains(NBT_MODULE_KEY)))) {
@@ -278,6 +281,10 @@ public class CraftAction {
         ItemModule.ModuleInstance parsingInstance = newBaseModule;
         for (int i = slotId.size() - 1; i > 0; i--) {
             parsingInstance = parsingInstance.subModules.get(slotId.get(i));
+            if (parsingInstance == null) {
+                Miapi.LOGGER.error("cannot find editing Slot aborting craft action!");
+                return craftingStack;
+            }
         }
 
         if (toAdd == null) {

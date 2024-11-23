@@ -2,7 +2,8 @@
 @path /datapack_data_types/modules
 @keywords module, modules, module instance
 
-- a seperate JSON found in miapi/modules
+- a separate JSON found in miapi/modules
+- requires a unique file name/path for each converter file
 - The API does not include any pre-built modules.
 - Modules are not included within the API itself, but instead are outsourced to the addons to add.
 - Modules need to be added to data/miapi/modules/anyPathOrNameFromHere.json

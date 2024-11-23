@@ -10,6 +10,7 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.cache.ModularItemCache;
@@ -55,6 +56,9 @@ public class MiningShapeProperty implements ModuleProperty {
                 List<MiningShapeJson> miningShapeJsons = get(miningItem);
                 HitResult hitResult = player.raycast(getBlockBreakDistance(player), 0, false);
                 if (hitResult instanceof BlockHitResult blockHitResult) {
+                    if (MiapiConfig.INSTANCE.server.other.saveAreaMining && !blockHitResult.getBlockPos().equals(pos)) {
+                        return EventResult.pass();
+                    }
                     Direction facing = blockHitResult.getSide();
                     miningShapeJsons.stream().filter(miningShapeJson ->
                                     miningShapeJson.miningCondition.canMine(player, level, miningItem, pos, facing)).

@@ -2,7 +2,8 @@
 @path /datapack_data_types/modules
 @keywords material, materials
 
-- a seperate JSON found in miapi/materials
+- a separate JSON found in miapi/materials
+- requires a unique file name/path for each converter file
 - The API offers a diverse range of materials.
 - Materials are loosely defined JSON files that serve as references for module statistics.
 - Materials need to be added to data/miapi/materials/anyPathOrNameFromHere.json
