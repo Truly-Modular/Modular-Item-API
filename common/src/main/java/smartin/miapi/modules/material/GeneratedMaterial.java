@@ -295,17 +295,17 @@ public class GeneratedMaterial implements Material {
                     .filter(toolMaterial -> toolMaterial.getRepairIngredient() != null && toolMaterial.getRepairIngredient().getMatchingStacks() != null)
                     .filter(toolMaterial -> toolMaterial.getRepairIngredient().getMatchingStacks().length > 0)
                     .filter(toolMaterial -> !toolMaterial.getRepairIngredient().getMatchingStacks()[0].isIn(RegistryInventory.MIAPI_FORBIDDEN_TAG))
-                    .filter(toolMaterial -> Arrays.stream(toolMaterial.getRepairIngredient().getMatchingStacks()).allMatch(itemStack -> MaterialProperty.getMaterialFromIngredient(itemStack) != null && !itemStack.getItem().equals(Items.BARRIER)))
+                    .filter(toolMaterial -> toolMaterial.getRepairIngredient().getMatchingStacks()[0].getItem().equals(Items.BARRIER))
                     .forEach(toolMaterial -> {
                         Material material = MaterialProperty.getMaterialFromIngredient(toolMaterial.getRepairIngredient().getMatchingStacks()[0]);
-                        List<Item> toolMaterials = toolItems.stream()
-                                .filter(toolMat -> toolMaterial.equals(toolMat.getMaterial()))
-                                .filter(tool -> {
-                                    ItemStack toolItem = tool.getDefaultStack();
-                                    return ModularItemStackConverter.getModularVersion(toolItem)==toolItem;
-                                })
-                                .collect(Collectors.toList());
                         if (material != null) {
+                            List<Item> toolMaterials = toolItems.stream()
+                                    .filter(toolMat -> toolMaterial.equals(toolMat.getMaterial()))
+                                    .filter(tool -> {
+                                        ItemStack toolItem = tool.getDefaultStack();
+                                        return ModularItemStackConverter.getModularVersion(toolItem)==toolItem;
+                                    })
+                                    .collect(Collectors.toList());
                             if (material.generateConverters()) {
                                 try {
                                     MiapiEvents.GENERATE_MATERIAL_CONVERTERS.invoker().generated(material, toolMaterials, false);

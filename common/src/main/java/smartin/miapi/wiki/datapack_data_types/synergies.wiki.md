@@ -3,6 +3,7 @@
 @keywords synergy, synergies
 
 - a separate JSON found in miapi/synergies
+- requires a unique file name/path for each converter file
 - used to augment modules under certain conditions
 - Examples of synergies can be found [here](https://github.com/Truly-Modular/Arsenal/tree/master/arsenal-common/src/main/resources/data/miapi/synergies).
 
