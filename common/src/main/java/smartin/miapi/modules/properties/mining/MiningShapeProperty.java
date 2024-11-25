@@ -70,6 +70,9 @@ public class MiningShapeProperty extends CodecProperty<List<MiningShapeEntry>> {
                 List<MiningShapeEntry> miningShapeJsons = getData(miningItem).orElse(new ArrayList<>());
                 HitResult hitResult = player.pick(player.getAttributeValue(Attributes.BLOCK_INTERACTION_RANGE), 0, false);
                 if (hitResult instanceof BlockHitResult blockHitResult) {
+                    if(!blockHitResult.getBlockPos().equals(pos)){
+                        return EventResult.pass();
+                    }
                     Direction facing = blockHitResult.getDirection();
                     miningShapeJsons.stream().filter(miningShapeJson ->
                                     miningShapeJson.condition().canMine(player, level, miningItem, pos, facing)).

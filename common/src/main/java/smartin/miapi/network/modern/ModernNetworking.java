@@ -6,6 +6,7 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
+import smartin.miapi.Miapi;
 import smartin.miapi.network.Networking;
 import smartin.miapi.network.modern.payload.C2SMiapiPayload;
 import smartin.miapi.network.modern.payload.CustomPayload;
@@ -22,22 +23,27 @@ public class ModernNetworking {
     public static final Map<ResourceLocation, Receiver<?>> c2sReceivers = new HashMap<>();
 
     public static void setup() {
-        NetworkManager.registerReceiver(NetworkManager.Side.S2C, S2CMiapiPayload.TYPE, S2CMiapiPayload.STREAM_CODEC, (packet, context) -> {
-            ModernNetworking.s2cReceivers.computeIfPresent(packet.payload().parseId(), ((location, receiver) -> {
-                RegistryFriendlyByteBuf buf = new RegistryFriendlyByteBuf(Networking.createBuffer(), context.registryAccess());
-                buf.writeBytes(packet.payload().data());
-                receiver.receive(buf);
-                return receiver;
-            }));
-        });
-        NetworkManager.registerReceiver(NetworkManager.Side.C2S, C2SMiapiPayload.TYPE, C2SMiapiPayload.STREAM_CODEC, (packet, context) -> {
-            ModernNetworking.c2sReceivers.computeIfPresent(packet.payload().parseId(), ((location, receiver) -> {
-                RegistryFriendlyByteBuf buf = new RegistryFriendlyByteBuf(Networking.createBuffer(), context.registryAccess());
-                buf.writeBytes(packet.payload().data());
-                receiver.receive(buf);
-                return receiver;
-            }));
-        });
+        try {
+            //TODO:re-add this
+            NetworkManager.registerReceiver(NetworkManager.Side.S2C, S2CMiapiPayload.TYPE, S2CMiapiPayload.STREAM_CODEC, (packet, context) -> {
+                ModernNetworking.s2cReceivers.computeIfPresent(packet.payload().parseId(), ((location, receiver) -> {
+                    RegistryFriendlyByteBuf buf = new RegistryFriendlyByteBuf(Networking.createBuffer(), context.registryAccess());
+                    buf.writeBytes(packet.payload().data());
+                    receiver.receive(buf);
+                    return receiver;
+                }));
+            });
+            NetworkManager.registerReceiver(NetworkManager.Side.C2S, C2SMiapiPayload.TYPE, C2SMiapiPayload.STREAM_CODEC, (packet, context) -> {
+                ModernNetworking.c2sReceivers.computeIfPresent(packet.payload().parseId(), ((location, receiver) -> {
+                    RegistryFriendlyByteBuf buf = new RegistryFriendlyByteBuf(Networking.createBuffer(), context.registryAccess());
+                    buf.writeBytes(packet.payload().data());
+                    receiver.receive(buf);
+                    return receiver;
+                }));
+            });
+        } catch (RuntimeException e) {
+            Miapi.LOGGER.error("could not setup networking", e);
+        }
     }
 
     public static <T> void registerS2CReceiver(ResourceLocation location, StreamCodec<RegistryFriendlyByteBuf, T> codec, BiConsumer<T, RegistryAccess> onReceive) {

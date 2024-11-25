@@ -36,6 +36,12 @@ public class MiapiServerConfig {
         public boolean verboseLogging = false;
 
         @Comment("""
+                If normal Converters should be generated for normal Materials
+                """)
+        @AutoCodec.Name("generate_converters")
+        public boolean generateConverters = true;
+
+        @Comment("""
                 If this is on the Block Teleports effect of Truly Modular will block most teleports,
                 if false it will only block default Enderman,Chorus fruit and Ender Pearls""")
 

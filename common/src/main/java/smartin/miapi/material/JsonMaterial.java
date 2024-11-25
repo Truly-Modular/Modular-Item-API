@@ -40,7 +40,9 @@ public class JsonMaterial implements Material {
     public ResourceLocation id;
     protected JsonElement rawJson;
     @Nullable
+    @Environment(EnvType.CLIENT)
     public MaterialIcons.MaterialIcon icon;
+    @Environment(EnvType.CLIENT)
     protected MaterialRenderController palette;
     public Map<String, Map<ModuleProperty<?>, Object>> propertyMap = new HashMap<>();
     public Map<String, Map<ModuleProperty<?>, Object>> displayPropertyMap = new HashMap<>();
@@ -57,7 +59,6 @@ public class JsonMaterial implements Material {
                     icon = new MaterialIcons.TextureMaterialIcon(ResourceLocation.parse(primitive.getAsString()));
                 else icon = MaterialIcons.getMaterialIcon(this.id, emnt);
             }
-
             if (element.has("color_palette")) {
                 JsonElement innerElement = element.get("color_palette");
                 palette = MaterialRenderControllers.creators.get(innerElement.getAsJsonObject().get("type").getAsString()).createPalette(innerElement, this);

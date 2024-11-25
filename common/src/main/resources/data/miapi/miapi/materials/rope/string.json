@@ -26,10 +26,6 @@
         {
             "item": "minecraft:string",
             "value": 1.0
-        },
-        {
-            "item": "minecraft:wool",
-            "value": 4.0
         }
     ]
 }

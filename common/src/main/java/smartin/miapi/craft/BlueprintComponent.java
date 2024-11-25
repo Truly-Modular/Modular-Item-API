@@ -100,7 +100,7 @@ public class BlueprintComponent {
         }
         if (ingredient.right().isPresent()) {
             IngredientWithCount countIngredient = ingredient.right().get();
-            return countIngredient.count;
+            return (int) countIngredient.count;
         }
         return 0;
     }
@@ -152,7 +152,7 @@ public class BlueprintComponent {
         } else {
             IngredientWithCount countIngredient = ingredient.right().get();
             if (countIngredient.ingredient.test(itemStack) && countIngredient.count <= itemStack.getCount()) {
-                int size = itemStack.getCount() - countIngredient.count;
+                int size = itemStack.getCount() - (int) countIngredient.count;
                 ItemStack adjustedStack = itemStack.copy();
                 adjustedStack.setCount(size);
                 return adjustedStack;

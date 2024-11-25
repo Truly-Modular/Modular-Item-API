@@ -1,0 +1,18 @@
+{
+    "pommel_old": {
+        "data": {
+            "properties": {
+                "miapi:material": "miapi:generated/item.mythicmetals.aquarium_ingot"
+            }
+        },
+        "key": "arsenal:pommel/round"
+    },
+    "pommel_new": {
+        "data": {
+            "miapi:material": {
+                "type": "miapi:generated/item.mythicmetals.aquarium_ingot"
+            }
+        },
+        "key": "arsenal:pommel/round"
+    }
+}

@@ -88,6 +88,7 @@ public class MiapiReloadListener implements PreparableReloadListener {
 
 
             ReloadEvents.DataPackLoader.trigger(filteredMap);
+            //Miapi.registryAccess = Miapi.server.reloadableRegistries().get();
             ReloadEvents.MAIN.fireEvent(false, registryAccess.get());
             ReloadEvents.END.fireEvent(false, registryAccess.get());
             Miapi.LOGGER.info("Server load took " + (double) (System.nanoTime() - timeStart) / 1000 / 1000 + " ms");

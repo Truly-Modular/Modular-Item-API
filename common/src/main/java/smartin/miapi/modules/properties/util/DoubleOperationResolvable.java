@@ -134,7 +134,7 @@ public class DoubleOperationResolvable {
     public void setFunctionTransformer(Function<Pair<String, ModuleInstance>, String> functionTransformer) {
         this.functionTransformer = functionTransformer;
         for (Operation operation : operations) {
-            operation.functiontransformer = this.functionTransformer;
+            operation.transformer = this.functionTransformer;
         }
         this.cachedResult = null;
     }
@@ -156,7 +156,7 @@ public class DoubleOperationResolvable {
                 Operation copiesOperation = new Operation(operation.value);
                 copiesOperation.attributeOperation = operation.attributeOperation;
                 copiesOperation.instance = moduleInstance;
-                operation.value = functionTransformer.apply(new Pair<>(operation.value, moduleInstance));
+                copiesOperation.transformer = this.functionTransformer;
                 operationList.add(copiesOperation);
             });
         }
@@ -291,7 +291,7 @@ public class DoubleOperationResolvable {
         @AutoCodec.Ignored
         public ModuleInstance instance;
         @AutoCodec.Ignored
-        public Function<Pair<String, ModuleInstance>, String> functiontransformer = (Pair::getFirst);
+        public Function<Pair<String, ModuleInstance>, String> transformer = (Pair::getFirst);
 
         public Operation() {
             this.value = "1";
@@ -312,7 +312,7 @@ public class DoubleOperationResolvable {
                 Miapi.LOGGER.error("Double Resolvable was never initialized!", error);
                 return 0;
             }
-            String transformed = functiontransformer.apply(new Pair<>(value, instance));
+            String transformed = transformer.apply(new Pair<>(value, instance));
             return StatResolver.resolveDouble(transformed, instance);
         }
 

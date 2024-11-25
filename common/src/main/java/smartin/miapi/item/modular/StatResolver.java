@@ -74,6 +74,10 @@ public class StatResolver {
     }
 
     @CodecBehavior.Override("fullCodec")
+    @Deprecated
+    /**
+     * use {@link smartin.miapi.modules.properties.util.DoubleOperationResolvable} instead
+     */
     public static class DoubleFromStat extends IntermediateCodec.Median<String, ModuleInstance, Double> {
         public static BiFunction<String, ModuleInstance, Double> func = StatResolver::resolveDouble;
         public static Codec<DoubleFromStat> codec = new CustomIntermediateCodec<>(Codec.STRING, func, (s, b) -> new DoubleFromStat(s));

@@ -4,9 +4,11 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.serialization.JsonOps;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -70,11 +72,17 @@ public class MaterialProperty extends CodecProperty<ResourceLocation> {
             id = id.replace(".json", "");
             ResourceLocation revisedID = ResourceLocation.parse(id);
             JsonObject obj = parser.parse(data).getAsJsonObject();
-            JsonMaterial material = new JsonMaterial(revisedID, obj, isClient);
-            if (materials.containsKey(material.getID())) {
-                Miapi.LOGGER.warn("Overwriting Materials isnt 100% safe. The ordering might be wrong, please set the overwrite material in the same path as the origin Material" + path + " is overwriting " + material.getID());
+            //if (materials.containsKey(material.getID())) {
+            //    Miapi.LOGGER.warn("Overwriting Materials isn't 100% safe. The ordering might be wrong, please set the overwrite material in the same path as the origin Material" + path + " is overwriting " + material.getID());
+            //}
+            try {
+                CodecMaterial codecMaterial = CodecMaterial.CODEC.decode(RegistryOps.create(JsonOps.INSTANCE, Miapi.registryAccess), obj).getOrThrow().getFirst();
+                codecMaterial.setID(revisedID);
+                materials.put(revisedID, codecMaterial);
+            } catch (RuntimeException e) {
+                JsonMaterial material = new JsonMaterial(revisedID, obj, isClient);
+                Miapi.LOGGER.error("FAILED MATERIAL DECODE " + material.getDebugJson(), e);
             }
-            materials.put(material.getID(), material);
         }, -2f);
 
 
@@ -88,6 +96,10 @@ public class MaterialProperty extends CodecProperty<ResourceLocation> {
             if (material != null) {
                 if (material instanceof JsonMaterial jsonMaterial) {
                     jsonMaterial.mergeJson(obj, isClient);
+                }
+                if (material instanceof CodecMaterial codecMaterial) {
+                    CodecMaterial toMerge = CodecMaterial.CODEC.decode(RegistryOps.create(JsonOps.INSTANCE, Miapi.registryAccess), obj).getOrThrow().getFirst();
+                    codecMaterial.merge(toMerge);
                 }
             } else {
                 Miapi.LOGGER.error("Miapi could not find Material for Material extension " + idString + " " + path);

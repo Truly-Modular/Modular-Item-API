@@ -48,14 +48,36 @@ public class GeneratedMaterialPropertyManager {
         setupProperties(toolMaterials.stream().filter(ShovelItem.class::isInstance).findFirst(), id, "shovel", Items.DIAMOND_SHOVEL, Items.WOODEN_SHOVEL, properties, null);
         setupProperties(toolMaterials.stream().filter(HoeItem.class::isInstance).findFirst(), id, "hoe", Items.DIAMOND_HOE, Items.WOODEN_HOE, properties, null);
         setupProperties(armorItems.stream()
-                .filter(a -> a.getEquipmentSlot() == EquipmentSlot.HEAD).map(a -> (Item) a).findFirst(), id, "helmet", Items.DIAMOND_HELMET, Items.IRON_HELMET, properties, 5);
+                .filter(a -> isEquipment(a, EquipmentSlot.HEAD)).map(a -> (Item) a).findFirst(), id, "helmet", Items.DIAMOND_HELMET, Items.IRON_HELMET, properties, 5);
         setupProperties(armorItems.stream()
-                .filter(a -> a.getEquipmentSlot() == EquipmentSlot.CHEST).map(a -> (Item) a).findFirst(), id, "chest", Items.DIAMOND_CHESTPLATE, Items.IRON_CHESTPLATE, properties, 8);
+                .filter(a -> isEquipment(a, EquipmentSlot.CHEST)).map(a -> (Item) a).findFirst(), id, "chest", Items.DIAMOND_CHESTPLATE, Items.IRON_CHESTPLATE, properties, 8);
         setupProperties(armorItems.stream()
-                .filter(a -> a.getEquipmentSlot() == EquipmentSlot.LEGS).map(a -> (Item) a).findFirst(), id, "pants", Items.DIAMOND_LEGGINGS, Items.IRON_LEGGINGS, properties, 7);
+                .filter(a -> isEquipment(a, EquipmentSlot.LEGS)).map(a -> (Item) a).findFirst(), id, "pants", Items.DIAMOND_LEGGINGS, Items.IRON_LEGGINGS, properties, 7);
         setupProperties(armorItems.stream()
-                .filter(a -> a.getEquipmentSlot() == EquipmentSlot.FEET).map(a -> (Item) a).findFirst(), id, "boot", Items.DIAMOND_BOOTS, Items.IRON_BOOTS, properties, 4);
+                .filter(a -> isEquipment(a, EquipmentSlot.FEET)).map(a -> (Item) a).findFirst(), id, "boot", Items.DIAMOND_BOOTS, Items.IRON_BOOTS, properties, 4);
         return properties;
+    }
+
+    public static boolean isEquipment(ArmorItem item, EquipmentSlot slot) {
+        if (item.getEquipmentSlot() == slot) {
+            return true;
+        }
+        if (item.getType().getSlot() == slot) {
+            return true;
+        }
+        if (slot == EquipmentSlot.HEAD) {
+            return item.getType() == ArmorItem.Type.HELMET;
+        }
+        if (slot == EquipmentSlot.CHEST) {
+            return item.getType() == ArmorItem.Type.CHESTPLATE;
+        }
+        if (slot == EquipmentSlot.LEGS) {
+            return item.getType() == ArmorItem.Type.LEGGINGS;
+        }
+        if (slot == EquipmentSlot.FEET) {
+            return item.getType() == ArmorItem.Type.BOOTS;
+        }
+        return false;
     }
 
     private static void setupProperties(Optional<Item> item, ResourceLocation id, String type, Item vanillaCompare, Item vanillaCompare2, Map<String, Map<ModuleProperty<?>, Object>> properties, Integer cost) {
@@ -142,6 +164,13 @@ public class GeneratedMaterialPropertyManager {
                     .filter(a -> !firstAttributes.contains(a.attribute()) && !secondAttributes.contains(a.attribute()))
                     .filter(a -> a.modifier().operation() == AttributeModifier.Operation.ADD_VALUE)
                     .toList();
+            if (modifiers.isEmpty()) {
+                modifiers = item.getDefaultAttributeModifiers().modifiers()
+                        .stream()
+                        .filter(a -> !firstAttributes.contains(a.attribute()) && !secondAttributes.contains(a.attribute()))
+                        .filter(a -> a.modifier().operation() == AttributeModifier.Operation.ADD_VALUE)
+                        .toList();
+            }
 
             List<AttributeProperty.AttributeJson> jsonList = modifiers.stream().map(e -> {
                 var json = new AttributeProperty.AttributeJson();
@@ -154,11 +183,7 @@ public class GeneratedMaterialPropertyManager {
                     json.value = new StatResolver.DoubleFromStat(e.modifier().amount());
                 }
                 json.slot = e.slot();
-                Miapi.LOGGER.warn(type);
-                Miapi.LOGGER.warn(item.getDescriptionId());
-                Miapi.LOGGER.warn(Miapi.gson.toJson(json));
                 return json;
-                //TODO: for some reason this does NOT work. i dont know
             }).toList();
 
             propertyMap.put(AttributeProperty.property, jsonList);

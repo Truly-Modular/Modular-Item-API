@@ -47,7 +47,7 @@ public class RepairPriority extends DoubleProperty {
     public static double getRepairValue(ItemStack tool, ItemStack material) {
         double highestValue = 0;
         for (Material material1 : property.getRepairMaterials(tool)) {
-            highestValue = Math.max(highestValue, material1.getValueOfItem(material));
+            highestValue = Math.max(highestValue, material1.getRepairValueOfItem(material));
         }
         return highestValue;
     }
