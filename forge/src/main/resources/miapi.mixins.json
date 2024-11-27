@@ -4,14 +4,16 @@
     "package": "smartin.miapi.forge.mixin",
     "compatibilityLevel": "JAVA_17",
     "mixins": [
+        "compat.ItemCapabilityProviderMixin",
+        "compat.ItemCapabilityProviderAccessor",
         "LivingEntityMixin",
         "item.ModularItemMixin"
     ],
     "client": [
+        "ArmorFeatureRendererMixin",
         "ModelLoaderMixin",
         "TextMixin",
-        "TranslatableTextContentAccessor",
-        "ArmorFeatureRendererMixin"
+        "TranslatableTextContentAccessor"
     ],
     "injectors": {
         "defaultRequire": 1

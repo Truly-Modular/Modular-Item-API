@@ -60,7 +60,7 @@ public class TrulyModularForge {
             try{
                 QuarkCompat.setup();
             }catch (Exception e){
-                Miapi.LOGGER.info("couldnt load quark compat",e);
+                Miapi.LOGGER.info("couldn't load quark compat",e);
             }
         }
         bus.register(new ModEvents());
@@ -69,16 +69,18 @@ public class TrulyModularForge {
 
         try {
             if (Platform.isModLoaded("epicfight")) {
-                //RegistryInventory.moduleProperties.register(EpicFightCompatProperty.KEY, new EpicFightCompatProperty());
+                RegistryInventory.moduleProperties.register(
+                        smartin.miapi.forge.compat.epic_fight.EpicFightCompatProperty.KEY,
+                        new smartin.miapi.forge.compat.epic_fight.EpicFightCompatProperty());
             }
         } catch (Exception e) {
-            Miapi.LOGGER.info("couldnt load epic fight compat");
+            Miapi.LOGGER.info("couldn't load epic fight compat");
         }
         if (Platform.isModLoaded("apotheosis")) {
             try {
                 ApotheosisCompat.setup();
             } catch (RuntimeException surpressed) {
-                Miapi.LOGGER.warn("couldnt load Apotheosis compat", surpressed);
+                Miapi.LOGGER.warn("couldn't load Apotheosis compat", surpressed);
             }
         }
 

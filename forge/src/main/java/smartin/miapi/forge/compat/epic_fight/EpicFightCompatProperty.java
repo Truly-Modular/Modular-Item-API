@@ -3,13 +3,13 @@ package smartin.miapi.forge.compat.epic_fight;
 import com.google.gson.JsonElement;
 import com.mojang.serialization.JsonOps;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import smartin.miapi.Miapi;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
+import smartin.miapi.registries.RegistryInventory;
 import yesman.epicfight.api.data.reloader.ItemCapabilityReloadListener;
 import yesman.epicfight.world.capabilities.item.CapabilityItem;
 
@@ -17,7 +17,7 @@ public class EpicFightCompatProperty implements ModuleProperty {
     public static EpicFightCompatProperty property;
     public static String KEY = "epic_fight";
 
-    public EpicFightCompatProperty(){
+    public EpicFightCompatProperty() {
         property = this;
         ModularItemCache.setSupplier(KEY, EpicFightCompatProperty::createCache);
     }
@@ -31,7 +31,7 @@ public class EpicFightCompatProperty implements ModuleProperty {
         try {
             NbtCompound compound = NbtCompound.CODEC.parse(JsonOps.INSTANCE, element).result().orElse(null);
             if (compound == null) return null;
-            return ItemCapabilityReloadListener.deserializeWeapon(Items.AIR, compound);
+            return ItemCapabilityReloadListener.deserializeWeapon(RegistryInventory.modularItem, compound);
         } catch (Exception e) {
             Miapi.LOGGER.error("Failed to load epic fight data!", e);
             return null;

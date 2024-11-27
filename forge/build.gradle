@@ -64,9 +64,9 @@ dependencies {
     modLocalRuntime files('libs/armory-local.jar')
 
     if ("${rootProject.run_with_efm}" == "true") {
-        modImplementation "curse.maven:epic-fight-mod-405076:5159623"
+        modImplementation "curse.maven:epic-fight-mod-405076:5922122"
     } else {
-        modCompileOnly "curse.maven:epic-fight-mod-405076:5159623"
+        modCompileOnly "curse.maven:epic-fight-mod-405076:5922122"
     }
 
     //modCompileOnly "curse.maven:minecolonies-245506:5355518"
