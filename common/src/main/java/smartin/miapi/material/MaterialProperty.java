@@ -3,6 +3,7 @@ package smartin.miapi.material;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonPrimitive;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.serialization.JsonOps;
 import net.minecraft.client.Minecraft;
@@ -186,6 +187,32 @@ public class MaterialProperty extends CodecProperty<ResourceLocation> {
      */
     @Nullable
     public static Material getMaterial(ModuleInstance instance) {
+        if (instance.moduleData.containsKey(KEY)) {
+            JsonElement element = instance.moduleData.get(KEY);
+            if (element.isJsonPrimitive()) {
+                ResourceLocation materialID = Miapi.id(element.getAsString());
+                Material material = MaterialProperty.materials.get(materialID);
+                if (material != null) {
+                    return MaterialOverwriteProperty.property.adjustMaterial(instance, material.getMaterial(instance));
+                }
+            } else {
+                try {
+                    JsonObject materialSaveData = element.getAsJsonObject();
+                    ResourceLocation materialID = Miapi.id(materialSaveData.get("type").getAsString());
+                    Material material = MaterialProperty.materials.get(materialID);
+                    if (material != null) {
+                        if (material.codec().isEmpty()) {
+                            return MaterialOverwriteProperty.property.adjustMaterial(instance, material.getMaterial(instance));
+                        } else {
+                            material = material.codec().get().codec().decode(RegistryOps.create(JsonOps.INSTANCE, Miapi.registryAccess), materialSaveData).getOrThrow().getFirst();
+                            return MaterialOverwriteProperty.property.adjustMaterial(instance, material.getMaterial(instance));
+                        }
+                    }
+                } catch (RuntimeException exception) {
+                    Miapi.LOGGER.error("Failed complex material decoding with error", exception);
+                }
+            }
+        }
         if (property.getData(instance).isPresent()) {
             Material material = MaterialProperty.materials.get(property.getData(instance).get());
             if (material != null) {
@@ -220,7 +247,14 @@ public class MaterialProperty extends CodecProperty<ResourceLocation> {
      * @param material
      */
     public static void setMaterial(ModuleInstance instance, Material material) {
-        ModuleDataPropertiesManager.setProperty(instance, MaterialProperty.property, material.getID());
+        if (material.codec().isEmpty()) {
+            instance.moduleData.put(KEY, new JsonPrimitive(material.getID().toString()));
+        } else {
+            JsonElement element = material.codec().get().codec().encodeStart(RegistryOps.create(JsonOps.INSTANCE, Miapi.registryAccess), material).getOrThrow();
+            JsonObject object = element.getAsJsonObject();
+            object.addProperty("type", material.getID().toString());
+        }
+        ModuleDataPropertiesManager.setProperty(instance, property, null);
         material.setMaterial(instance);
     }
 }

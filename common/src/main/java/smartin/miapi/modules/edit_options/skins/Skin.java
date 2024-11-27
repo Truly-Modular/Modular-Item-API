@@ -54,7 +54,7 @@ public class Skin {
     }
 
     public static Optional<Skin> getSkin(ModuleInstance moduleInstance) {
-        JsonElement element = moduleInstance.moduleData.get("skin");
+        JsonElement element = moduleInstance.moduleData.get(Miapi.id("skin"));
         if (element != null) {
             String key = element.getAsString();
             Map<String, Skin> moduleSkins = SkinOptions.skins.get(moduleInstance.module.id());
@@ -67,7 +67,7 @@ public class Skin {
     }
 
     public static void writeSkin(ModuleInstance moduleInstance, String skinKey) {
-        moduleInstance.moduleData.put("skin",new JsonPrimitive(skinKey));
+        moduleInstance.moduleData.put(Miapi.id("skin"),new JsonPrimitive(skinKey));
     }
 
     public static List<ItemModule> getModules(JsonElement element) {

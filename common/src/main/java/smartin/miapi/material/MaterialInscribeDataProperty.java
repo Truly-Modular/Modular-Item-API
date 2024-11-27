@@ -43,11 +43,11 @@ public class MaterialInscribeDataProperty extends CodecProperty<String> {
 
     public static void inscribeModuleInstance(ModuleInstance moduleInstance, ItemStack itemStack, String key) {
         JsonElement element = ItemStack.CODEC.encodeStart(JsonOps.INSTANCE, itemStack).getOrThrow();
-        moduleInstance.moduleData.put(key, element);
+        moduleInstance.moduleData.put(Miapi.id(key), element);
     }
 
     public static ItemStack readStackFromModuleInstance(ModuleInstance moduleInstance, String key) {
-        JsonElement element = moduleInstance.moduleData.get(key);
+        JsonElement element = moduleInstance.moduleData.get(Miapi.id(key));
         if (element!= null) {
             try {
                 return ItemStack.CODEC.decode(JsonOps.INSTANCE, element).getOrThrow().getFirst();

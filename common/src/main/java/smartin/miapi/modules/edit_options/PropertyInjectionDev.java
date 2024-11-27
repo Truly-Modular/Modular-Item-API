@@ -90,7 +90,7 @@ public class PropertyInjectionDev implements EditOption {
 
         public EditDevView(int x, int y, int width, int height, ItemStack stack, ModuleInstance moduleInstance, Consumer<FriendlyByteBuf> craft) {
             super(x, y, width, height, Component.empty());
-            JsonElement context = moduleInstance.moduleData.get("properties");
+            JsonElement context = moduleInstance.moduleData.get(Miapi.id("properties"));
             if (context == null) {
                 context = new JsonObject();
             }

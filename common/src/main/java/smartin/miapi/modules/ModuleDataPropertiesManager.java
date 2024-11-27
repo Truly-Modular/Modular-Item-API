@@ -4,6 +4,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Environment;
 import smartin.miapi.Miapi;
 import smartin.miapi.modules.properties.util.ModuleProperty;
@@ -24,7 +25,7 @@ public class ModuleDataPropertiesManager {
 
     public static Map<ModuleProperty<?>, Object> getProperties(ModuleInstance moduleInstance) {
         try {
-            JsonElement properties = moduleInstance.moduleData.get("properties");
+            JsonElement properties = moduleInstance.moduleData.get(Miapi.id("properties"));
             return resolvePropertiesFromJson(properties);
         } catch (RuntimeException e) {
             Miapi.LOGGER.warn("could not decode properties", e);
@@ -42,7 +43,7 @@ public class ModuleDataPropertiesManager {
                             .get(Miapi.id(stringJsonElementEntry.getKey()));
                     if (property != null) {
                         try {
-                            if(property.load(Miapi.id("runtime_data"), stringJsonElementEntry.getValue(), Environment.isClient())){
+                            if (property.load(Miapi.id("runtime_data"), stringJsonElementEntry.getValue(), Environment.isClient())) {
                                 map.put(property, property.decode(stringJsonElementEntry.getValue()));
                             }
                         } catch (Exception e) {
@@ -78,15 +79,19 @@ public class ModuleDataPropertiesManager {
         return object;
     }
 
-    public static <T> void setProperty(ModuleInstance moduleInstance, ModuleProperty<T> property, T propertyData) {
+    public static <T> void setProperty(ModuleInstance moduleInstance, ModuleProperty<T> property, @Nullable T propertyData) {
         Map<ModuleProperty<?>, Object> map = getProperties(moduleInstance);
-        map.put(property, propertyData);
+        if (propertyData == null) {
+            map.remove(property);
+        } else {
+            map.put(property, propertyData);
+        }
         setProperties(moduleInstance, map);
     }
 
     public static void setProperties(ModuleInstance moduleInstance, Map<ModuleProperty<?>, Object> propertyMap) {
         JsonObject object = createJsonFromProperties(propertyMap);
-        moduleInstance.moduleData.put("properties", object);
+        moduleInstance.moduleData.put(Miapi.id("properties"), object);
     }
 
     @SuppressWarnings("unchecked")

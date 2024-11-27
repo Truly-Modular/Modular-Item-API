@@ -55,7 +55,7 @@ public class ModuleInstance {
     public static DataComponentType<ModuleInstance> MODULE_INSTANCE_COMPONENT;
 
     static {
-        Codec<Map<String, JsonElement>> dataJsonCodec = Codec.unboundedMap(Codec.STRING, StatResolver.Codecs.JSONELEMENT_CODEC).xmap((i) -> i, Function.identity());
+        Codec<Map<ResourceLocation, JsonElement>> dataJsonCodec = Codec.unboundedMap(Miapi.ID_CODEC, StatResolver.Codecs.JSONELEMENT_CODEC).xmap((i) -> i, Function.identity());
         Codec<ModuleInstance> basicCodec = Codec.recursive(
                 "module_instance",
                 selfCodec -> RecordCodecBuilder.create((instance) ->
@@ -64,16 +64,11 @@ public class ModuleInstance {
                                         .forGetter((moduleInstance) -> moduleInstance.moduleID),
                                 Codec.unboundedMap(Codec.STRING, selfCodec).xmap((i) -> i, Function.identity())
                                         .optionalFieldOf("child", new LinkedHashMap<>())
-                                        .forGetter((moduleInstance) -> {
-                                            return moduleInstance.subModules;
-                                        }),
+                                        .forGetter((moduleInstance) -> moduleInstance.subModules),
                                 dataJsonCodec
                                         .optionalFieldOf("data", new HashMap<>())
                                         .forGetter((moduleInstance) -> moduleInstance.moduleData)
-                        ).apply(instance, (module, children, data) -> {
-                            ModuleInstance moduleInstance = new ModuleInstance(module, children, data);
-                            return moduleInstance;
-                        }))
+                        ).apply(instance, ModuleInstance::new))
         );
         CODEC = new Codec<ModuleInstance>() {
             @Override
@@ -135,7 +130,7 @@ public class ModuleInstance {
     /**
      * A map of module data keys to their respective values.
      */
-    public Map<String, JsonElement> moduleData = new HashMap<>();
+    public Map<ResourceLocation, JsonElement> moduleData = new HashMap<>();
 
 
     /**
@@ -178,7 +173,7 @@ public class ModuleInstance {
      *
      * @param module the item module for the module instance
      */
-    public ModuleInstance(ResourceLocation module, Map<String, ModuleInstance> subModules, Map<String, JsonElement> data) {
+    public ModuleInstance(ResourceLocation module, Map<String, ModuleInstance> subModules, Map<ResourceLocation, JsonElement> data) {
         this.moduleID = module;
         this.subModules = subModules;
         this.moduleData = new HashMap<>(data);

@@ -111,7 +111,7 @@ public class ComponentMaterial extends JsonMaterial {
     }
 
     public Material getMaterial(ModuleInstance moduleInstance) {
-        JsonElement data = moduleInstance.moduleData.get("miapi:nbt_material_data");
+        JsonElement data = moduleInstance.moduleData.get(Miapi.id("nbt_material_data"));
         try {
             Optional<Material> material = decode(data.getAsJsonObject());
             return material.orElse(this);
@@ -125,7 +125,7 @@ public class ComponentMaterial extends JsonMaterial {
         JsonObject object1 = this.overWrite.deepCopy();
         object1.addProperty("parent", this.parent.getID().toString());
 
-        moduleInstance.moduleData.put("miapi:nbt_material_data", object1);
+        moduleInstance.moduleData.put(Miapi.id("nbt_material_data"), object1);
     }
 
     @Nullable

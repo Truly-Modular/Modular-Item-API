@@ -56,7 +56,7 @@ public class SkinGui extends InteractAbleWidget {
 
     public String currentSkin() {
         if (instance != null) {
-            JsonElement skinElement = instance.moduleData.get("skin");
+            JsonElement skinElement = instance.moduleData.get(Miapi.id("skin"));
             if(skinElement!=null && skinElement.isJsonPrimitive()){
                 return skinElement.getAsString();
             }
