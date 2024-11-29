@@ -51,8 +51,17 @@ public class StunHealthFacet implements EntityFacet<NbtCompound> {
     public void tick() {
         if (livingEntity.age % 5 == 4) {
             currentAmount = Math.min(getCurrentStunHealth() + 2.0f, getMaxAmount());
-            if (livingEntity instanceof ServerPlayerEntity serverPlayerEntity) {
-                this.sendToClient(serverPlayerEntity);
+            if (
+                    livingEntity instanceof ServerPlayerEntity serverPlayerEntity &&
+                    serverPlayerEntity.networkHandler != null &&
+                    serverPlayerEntity.isLiving() &&
+                    !serverPlayerEntity.notInAnyWorld
+            ) {
+                try {
+                    this.sendToClient(serverPlayerEntity);
+                } catch (RuntimeException e) {
+
+                }
             }
         }
     }

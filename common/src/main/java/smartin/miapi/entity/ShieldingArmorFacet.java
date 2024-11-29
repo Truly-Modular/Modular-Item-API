@@ -42,13 +42,22 @@ public class ShieldingArmorFacet implements EntityFacet<NbtCompound> {
     }
 
     public void tick() {
-        if (livingEntity.age % 5 == 3) {
+        if (livingEntity != null && livingEntity.age % 5 == 3) {
             if (
                     ticksSinceLastAttack() > 100
             ) {
                 currentAmount = Math.min(getCurrentAmount() + 0.25f, getMaxAmount());
-                if (livingEntity instanceof ServerPlayerEntity serverPlayerEntity) {
-                    this.sendToClient(serverPlayerEntity);
+                if (
+                        livingEntity instanceof ServerPlayerEntity serverPlayerEntity &&
+                        serverPlayerEntity.networkHandler != null &&
+                        serverPlayerEntity.isLiving() &&
+                        !serverPlayerEntity.notInAnyWorld
+                ) {
+                    try {
+                        this.sendToClient(serverPlayerEntity);
+                    } catch (RuntimeException e) {
+
+                    }
                 }
             }
         }
