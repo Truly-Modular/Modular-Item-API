@@ -248,7 +248,7 @@ public interface Material {
      * if the optional is empty, its simply encoded and decoded
      * if its set, the codec is called when loading or saving to a module
      */
-    default Optional<MapCodec<Material>> codec() {
+    default Optional<MapCodec<? extends Material>> codec() {
         return Optional.empty();
     }
 

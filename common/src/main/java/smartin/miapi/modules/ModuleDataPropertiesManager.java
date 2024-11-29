@@ -90,6 +90,10 @@ public class ModuleDataPropertiesManager {
     }
 
     public static void setProperties(ModuleInstance moduleInstance, Map<ModuleProperty<?>, Object> propertyMap) {
+        if (propertyMap.isEmpty()) {
+            moduleInstance.moduleData.remove(Miapi.id("properties"));
+            return;
+        }
         JsonObject object = createJsonFromProperties(propertyMap);
         moduleInstance.moduleData.put(Miapi.id("properties"), object);
     }

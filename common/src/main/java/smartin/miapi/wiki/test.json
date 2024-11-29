@@ -1,18 +1,36 @@
 {
-    "pommel_old": {
+    "miapi:item_module": {
         "data": {
-            "properties": {
-                "miapi:material": "miapi:generated/item.mythicmetals.aquarium_ingot"
-            }
+            "miapi:material": "miapi:rod/blaze_rod"
         },
-        "key": "arsenal:pommel/round"
-    },
-    "pommel_new": {
-        "data": {
-            "miapi:material": {
-                "type": "miapi:generated/item.mythicmetals.aquarium_ingot"
+        "key": "arsenal:handle/sword",
+        "child": {
+            "guard": {
+                "data": {
+                    "miapi:material": "miapi:crystal/emerald"
+                },
+                "key": "arsenal:guard/normal",
+                "child": {
+                    "blade": {
+                        "data": {
+                            "miapi:material": {
+                                "parent": "miapi:metal/gold",
+                                "type": "miapi:component_runtime_material",
+                                "overwrite": {
+                                    "hardness": 10
+                                }
+                            }
+                        },
+                        "key": "arsenal:blade/normal"
+                    }
+                }
+            },
+            "pommel": {
+                "data": {
+                    "miapi:material": "miapi:crystal/emerald"
+                },
+                "key": "arsenal:pommel/round"
             }
-        },
-        "key": "arsenal:pommel/round"
+        }
     }
 }

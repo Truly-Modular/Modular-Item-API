@@ -3,6 +3,7 @@ package smartin.miapi.material;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.architectury.event.EventResult;
 import net.minecraft.core.component.DataComponentType;
@@ -28,7 +29,7 @@ public class ComponentMaterial extends JsonMaterial {
     public JsonObject overWrite;
     public Material parent;
     public double cost = 1.0;
-    public static Codec<ComponentMaterial> CODEC = RecordCodecBuilder.create((instance) ->
+    public static MapCodec<ComponentMaterial> CODEC = RecordCodecBuilder.mapCodec((instance) ->
             instance.group(
                     Codec.DOUBLE
                             .optionalFieldOf("cost", 1.0)
@@ -45,8 +46,8 @@ public class ComponentMaterial extends JsonMaterial {
             }));
 
     public static DataComponentType<ComponentMaterial> NBT_MATERIAL_COMPONENT = DataComponentType.<ComponentMaterial>builder()
-            .persistent(CODEC)
-            .networkSynchronized(ByteBufCodecs.fromCodec(CODEC)).build();
+            .persistent(CODEC.codec())
+            .networkSynchronized(ByteBufCodecs.fromCodec(CODEC.codec())).build();
 
     public ComponentMaterial(Material parent, JsonElement overwrite, double cost, boolean isClient) {
         super(KEY, parent.getDebugJson().deepCopy(), isClient);
@@ -111,21 +112,26 @@ public class ComponentMaterial extends JsonMaterial {
     }
 
     public Material getMaterial(ModuleInstance moduleInstance) {
-        JsonElement data = moduleInstance.moduleData.get(Miapi.id("nbt_material_data"));
-        try {
-            Optional<Material> material = decode(data.getAsJsonObject());
-            return material.orElse(this);
-        } catch (Exception e) {
-            Miapi.LOGGER.error("Could not find Material", e);
-        }
+        //JsonElement data = moduleInstance.moduleData.get(Miapi.id("nbt_material_data"));
+        //try {
+        //    Optional<Material> material = decode(data.getAsJsonObject());
+        //    return material.orElse(this);
+        //} catch (Exception e) {
+        //    Miapi.LOGGER.error("Could not find Material", e);
+        //}
         return this;
     }
 
     public void writeMaterial(ModuleInstance moduleInstance) {
-        JsonObject object1 = this.overWrite.deepCopy();
-        object1.addProperty("parent", this.parent.getID().toString());
+        //JsonObject object1 = this.overWrite.deepCopy();
+        //object1.addProperty("parent", this.parent.getID().toString());
 
-        moduleInstance.moduleData.put(Miapi.id("nbt_material_data"), object1);
+        //moduleInstance.moduleData.put(Miapi.id("nbt_material_data"), object1);
+    }
+
+    @Override
+    public Optional<MapCodec<? extends Material>> codec() {
+        return Optional.of(CODEC);
     }
 
     @Nullable
