@@ -243,7 +243,7 @@ function clearDocsFolder(baseDir = '../docs') {
 	}
 
 	// Define the file path for the JSON file
-	const filePath = path.join(__dirname, 'docs', 'sinytra-wiki.json')
+	const filePath = path.join('../docs', 'sinytra-wiki.json')
 
 	// Ensure the docs folder exists
 	if (!fs.existsSync(path.dirname(filePath))) {
