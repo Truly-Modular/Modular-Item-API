@@ -2,12 +2,13 @@ import React from 'react'
 import { BrowserRouter as Router } from 'react-router-dom'
 import WikiPage from './components/WikiPage'
 import { ThemeProvider, useTheme } from './components/ThemeContext'
+import './index.css' // Import globally, apply to all markdown instances
 
 // Define the custom theme you want to use
 const discordTheme = {
 	primaryColor: '#5865F2', // Discord's blurple (primary brand color)
 	secondaryColor: '#28a745', // Green used for online status or highlights
-	backgroundColor: '#36393E', // Discord's dark background
+	backgroundColor: '#1C1C1C', // Discord's dark background
 	lightBackgroundColor: '#80848E', // Discord's dark background
 	textColor: '#FFFFFF', // White for text
 	sidebarBackgroundColor: '#313338', // Slightly darker sidebar background
