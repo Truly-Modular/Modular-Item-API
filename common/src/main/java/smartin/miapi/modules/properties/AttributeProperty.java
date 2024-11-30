@@ -382,8 +382,14 @@ public class AttributeProperty implements ModuleProperty {
     }
 
     public static double getActualValueCache(ItemStack stack, EquipmentSlot slot, EntityAttribute entityAttribute, double fallback) {
-        Collection<EntityAttributeModifier> attributes = AttributeProperty.equipmentSlotMultimapMap(stack).get(slot).get(entityAttribute);
-        return getActualValue(attributes, fallback);
+        var attributesList = AttributeProperty.equipmentSlotMultimapMap(stack).get(slot);
+        if (attributesList != null) {
+            var modifiers = attributesList.get(entityAttribute);
+            if (modifiers != null) {
+                return getActualValue(modifiers, fallback);
+            }
+        }
+        return fallback;
     }
 
     public static boolean hasAttribute(Multimap<EntityAttribute, EntityAttributeModifier> map, EntityAttribute entityAttribute, double fallback) {

@@ -12,6 +12,8 @@ import smartin.miapi.client.model.ModelTransformer;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.VisualModularItem;
+import smartin.miapi.item.modular.items.ModularSetableArmorMaterial;
+import smartin.miapi.item.modular.items.ModularSetableToolMaterial;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -77,6 +79,8 @@ public class ModularItemCache {
         CACHE_CLEAR_EVENT.invoker().onReload(Environment.isClient());
         cache.cleanUp();
         cache.invalidateAll();
+        ModularSetableArmorMaterial.ITEMSTACK_CACHE.clear();
+        ModularSetableToolMaterial.ITEMSTACK_CACHE.clear();
         if (Environment.isClient()) {
             ModelTransformer.clearCaches();
             MaterialSpriteManager.clear();

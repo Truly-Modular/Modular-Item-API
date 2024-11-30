@@ -100,12 +100,22 @@ public class MiningLevelProperty implements ModuleProperty {
         return new ToolMaterial() {
             @Override
             public int getDurability() {
-                return (int) DurabilityProperty.property.getValueSafe(itemStack);
+                try {
+                    return (int) DurabilityProperty.property.getValueSafe(itemStack);
+                } catch (
+                        RuntimeException e) {
+                    return 50;
+                }
             }
 
             @Override
             public float getMiningSpeedMultiplier() {
-                return getHighestMiningSpeedMultiplier(itemStack);
+                try {
+                    return getHighestMiningSpeedMultiplier(itemStack);
+                } catch (
+                        RuntimeException e) {
+                    return 5;
+                }
             }
 
             @Override
@@ -115,19 +125,36 @@ public class MiningLevelProperty implements ModuleProperty {
 
             @Override
             public int getMiningLevel() {
-                return getMiningLevelHighest(itemStack);
+                try {
+                    return getMiningLevelHighest(itemStack);
+                } catch (
+                        RuntimeException e) {
+                    return 0;
+                }
             }
 
             @Override
             public int getEnchantability() {
-                return (int) EnchantAbilityProperty.getEnchantAbility(itemStack);
+                try {
+                    return (int) EnchantAbilityProperty.getEnchantAbility(itemStack);
+                } catch (
+                        RuntimeException e) {
+                    return 10;
+                }
             }
 
             @Override
             public Ingredient getRepairIngredient() {
-                return RepairPriority.asRepairIngredient(itemStack);
+                try {
+                    return RepairPriority.asRepairIngredient(itemStack);
+                } catch (
+                        RuntimeException e) {
+                    return Ingredient.EMPTY;
+                }
             }
-        };
+        }
+
+                ;
     }
 
     public static boolean isSuitable(ItemStack stack, BlockState state) {

@@ -6,6 +6,7 @@
     "mixins": [
         "ApoliStackPowerMixin",
         "ArcheryHookMixin",
+        "ArmorTrimAccessor",
         "AxeItemAccessor",
         "ChorusFruitMixin",
         "ClientAdvancementManagerAccessor",

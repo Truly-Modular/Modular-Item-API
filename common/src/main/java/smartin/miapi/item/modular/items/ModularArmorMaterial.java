@@ -7,6 +7,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Identifier;
+import smartin.miapi.Miapi;
 import smartin.miapi.modules.properties.AttributeProperty;
 import smartin.miapi.modules.properties.DurabilityProperty;
 import smartin.miapi.modules.properties.EnchantAbilityProperty;
@@ -54,20 +55,35 @@ public class ModularArmorMaterial implements ArmorMaterial {
     }
 
     public static ArmorMaterial forItem(ItemStack itemStack) {
+        Miapi.LOGGER.info("build new armor material");
         return new ArmorMaterial() {
             @Override
             public int getDurability(ArmorItem.Type type) {
-                return DurabilityProperty.property.getValue(itemStack).intValue();
+                try {
+                    return DurabilityProperty.property.getValue(itemStack).intValue();
+                } catch (RuntimeException e) {
+                    return 50;
+                }
             }
 
             @Override
             public int getProtection(ArmorItem.Type type) {
-                return (int) AttributeProperty.getActualValueCache(itemStack, type.getEquipmentSlot(), EntityAttributes.GENERIC_ARMOR, 0.0);
+                try {
+                    int result = (int) AttributeProperty.getActualValueCache(itemStack, type.getEquipmentSlot(), EntityAttributes.GENERIC_ARMOR, 1.0);
+                    AttributeProperty.getActualValueCache(itemStack, type.getEquipmentSlot(), EntityAttributes.GENERIC_ARMOR, 1.0);
+                    return result;
+                } catch (RuntimeException e) {
+                    return 1;
+                }
             }
 
             @Override
             public int getEnchantability() {
-                return (int)EnchantAbilityProperty.getEnchantAbility(itemStack);
+                try {
+                    return (int) EnchantAbilityProperty.getEnchantAbility(itemStack);
+                } catch (RuntimeException e) {
+                    return 10;
+                }
             }
 
             @Override
@@ -87,12 +103,20 @@ public class ModularArmorMaterial implements ArmorMaterial {
 
             @Override
             public float getToughness() {
-                return (int) AttributeProperty.getActualValueCache(itemStack, EquipmentSlotProperty.getSlot(itemStack), EntityAttributes.GENERIC_ARMOR, 0.0);
+                try {
+                    return (int) AttributeProperty.getActualValueCache(itemStack, EquipmentSlotProperty.getSlot(itemStack), EntityAttributes.GENERIC_ARMOR_TOUGHNESS, 1.0);
+                } catch (RuntimeException e) {
+                    return 0;
+                }
             }
 
             @Override
             public float getKnockbackResistance() {
-                return 0;
+                try {
+                    return (int) AttributeProperty.getActualValueCache(itemStack, EquipmentSlotProperty.getSlot(itemStack), EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, 0.0);
+                } catch (RuntimeException e) {
+                    return 0;
+                }
             }
         };
     }

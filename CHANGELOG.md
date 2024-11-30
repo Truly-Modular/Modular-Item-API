@@ -1,3 +1,2 @@
-## v1.1.33(1.20.1)
-- re-enabled epic fight compat property
-- fix facet related crash
+## v1.1.34(1.20.1)
+- fixed crash related to project mmo
