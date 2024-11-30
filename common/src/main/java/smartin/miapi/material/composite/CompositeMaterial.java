@@ -25,8 +25,7 @@ public class CompositeMaterial extends DelegatingMaterial {
                             .optionalFieldOf("composites", List.of())
                             .forGetter((material) -> material.composites)
             ).apply(instance, (composites) -> {
-                Material material = new DefaultMaterial();
-                Material buildMaterial = material;
+                Material buildMaterial = new DefaultMaterial();
                 for (Composite composite : composites) {
                     buildMaterial = composite.composite(buildMaterial, Environment.isClient());
                 }

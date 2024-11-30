@@ -27,11 +27,11 @@ import smartin.miapi.registries.RegistryInventory;
 public class MaterialSmithingRecipe implements SmithingRecipe {
     public static MapCodec<MaterialSmithingRecipe> CODEC = RecordCodecBuilder.mapCodec((instance) ->
             instance.group(
-                    Ingredient.CODEC.fieldOf("template").forGetter((recipe)->recipe.smithingTemplate),
-                    ResourceLocation.CODEC.fieldOf("base").forGetter((recipe)->recipe.startMaterial),
-                    Ingredient.CODEC.fieldOf("addition").forGetter((recipe)->recipe.addition),
-                    ResourceLocation.CODEC.fieldOf("result").forGetter((recipe)->recipe.resultMaterial)
-            ).apply(instance,  MaterialSmithingRecipe::new));
+                    Ingredient.CODEC.fieldOf("template").forGetter((recipe) -> recipe.smithingTemplate),
+                    ResourceLocation.CODEC.fieldOf("base").forGetter((recipe) -> recipe.startMaterial),
+                    Ingredient.CODEC.fieldOf("addition").forGetter((recipe) -> recipe.addition),
+                    ResourceLocation.CODEC.fieldOf("result").forGetter((recipe) -> recipe.resultMaterial)
+            ).apply(instance, MaterialSmithingRecipe::new));
     public final ResourceLocation startMaterial;
     public final ResourceLocation resultMaterial;
     public final Ingredient smithingTemplate;
@@ -114,8 +114,7 @@ public class MaterialSmithingRecipe implements SmithingRecipe {
             instance.allSubModules().forEach(module -> {
                 Material material = MaterialProperty.getMaterial(module);
                 if (material != null && material.getID().equals(startMaterial)) {
-                    MaterialProperty.setMaterial(module, material);
-
+                    MaterialProperty.setMaterial(module, MaterialProperty.materials.get(resultMaterial));
                 }
             });
             instance.writeToItem(old);

@@ -18,10 +18,7 @@ import smartin.miapi.modules.ModuleDataPropertiesManager;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import static smartin.miapi.Miapi.MOD_ID;
 
@@ -93,6 +90,8 @@ public interface Material {
     default Material getMaterialFromIngredient(ItemStack ingredient) {
         return this;
     }
+
+    void addSmithingGroup();
 
     /**
      * the name of the Material
@@ -274,5 +273,9 @@ public interface Material {
             encoded.put(key, ModuleDataPropertiesManager.createJsonFromProperties(property));
         });
         return encoded;
+    }
+
+    default List<Component> getDescription(){
+        return List.of();
     }
 }

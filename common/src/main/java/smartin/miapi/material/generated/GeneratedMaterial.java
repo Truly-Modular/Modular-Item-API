@@ -24,9 +24,9 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
-import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.material.Material;
 import smartin.miapi.material.MaterialIcons;
+import smartin.miapi.material.MaterialProperty;
 import smartin.miapi.material.palette.FallbackColorer;
 import smartin.miapi.material.palette.GrayscalePaletteColorer;
 import smartin.miapi.material.palette.MaterialRenderController;
@@ -57,6 +57,7 @@ public class GeneratedMaterial implements Material {
     Optional<ResourceLocation> smithingParent = Optional.empty();
     Component name = null;
     public Map<String, Map<ModuleProperty<?>, Object>> properties = new HashMap<>();
+    SmithingMode smithingMode = SmithingMode.NONE;
 
     public static Codec<GeneratedMaterial> CODEC = RecordCodecBuilder.create((instance) ->
             instance.group(
@@ -95,7 +96,7 @@ public class GeneratedMaterial implements Material {
      * @param toolItems      all the assosiated Tooltitems of the {@link Tier}
      */
     public GeneratedMaterial(ItemStack mainIngredient, Ingredient ingredient, Tier sourceTier, List<TieredItem> toolItems) {
-        key = Miapi.id("generated/" + mainIngredient.getDescriptionId());
+        key = Miapi.id("generated/" + mainIngredient.getDescriptionId() + toolItems.getFirst().getDescriptionId());
         this.toolMaterial = sourceTier;
         this.ingredient = ingredient;
         this.toolItems = toolItems;
@@ -124,9 +125,6 @@ public class GeneratedMaterial implements Material {
         stats.put("mining_speed", (double) toolMaterial.getSpeed());
         stats.put("enchantability", (double) toolMaterial.getEnchantmentValue());
         isValid = assignStats(toolItems);
-        if (isValid) {
-            MiapiEvents.GENERATE_MATERIAL_CONVERTERS.invoker().generated(this, toolItems, armorItems, smartin.miapi.Environment.isClient());
-        }
     }
 
     public boolean assignStats(List<TieredItem> toolItems) {
@@ -139,6 +137,7 @@ public class GeneratedMaterial implements Material {
             swordItemOptional.get() instanceof SwordItem foundSwordItem &&
             axeItemOptional.get() instanceof DiggerItem axeItem) {
             swordItem = foundSwordItem;
+            key = Miapi.id("generated/" + mainIngredient.getDescriptionId() + swordItem.getDescriptionId());
             double swordAttackDmg = AttributeUtil.getActualValue(swordItem.getDefaultInstance(), EquipmentSlot.MAINHAND, Attributes.ATTACK_DAMAGE.value(), 0.0);
             double axeAttackDmg = AttributeUtil.getActualValue(axeItem.getDefaultInstance(), EquipmentSlot.MAINHAND, Attributes.ATTACK_DAMAGE.value(), 0.0);
             double calculatedDamage = Math.floor(Math.pow((swordAttackDmg - 3.4) * 2.3, 1.0 / 3.0)) + 7;
@@ -175,7 +174,24 @@ public class GeneratedMaterial implements Material {
 
     public void setSmithingMaterial(ResourceLocation other) {
         this.smithingParent = Optional.of(other);
-        this.groups = List.of(getID().toString(), "smithing");
+        var otherMat = MaterialProperty.getMaterialFromIngredient(mainIngredient);
+        if (otherMat != this) {
+            smithingMode = SmithingMode.TEMPLATE;
+            if (otherMat != null) {
+                otherMat.addSmithingGroup();
+            }
+        } else {
+            smithingMode = SmithingMode.INGREDIENT;
+            this.groups = new ArrayList<>(this.groups);
+            this.groups = List.of(getStringID(), "smithing");
+        }
+    }
+
+    public void addSmithingGroup() {
+        if (!groups.contains("smithing")) {
+            groups = new ArrayList<>(groups);
+            groups.add("smithing");
+        }
     }
 
     public Component getTranslation() {
@@ -258,6 +274,19 @@ public class GeneratedMaterial implements Material {
 
     @Override
     public double getValueOfItem(ItemStack itemStack) {
+        if (!smithingMode.equals(SmithingMode.TEMPLATE)) {
+            if (mainIngredient.getItem().equals(itemStack.getItem())) {
+                return 1.0;
+            }
+            if (ingredient.test(itemStack)) {
+                return 1.0;
+            }
+        }
+        return 0.0;
+    }
+
+    @Override
+    public double getRepairValueOfItem(ItemStack itemStack) {
         if (mainIngredient.getItem().equals(itemStack.getItem())) {
             return 1.0;
         }
@@ -269,11 +298,13 @@ public class GeneratedMaterial implements Material {
 
     @Override
     public @Nullable Double getPriorityOfIngredientItem(ItemStack itemStack) {
-        if (mainIngredient.getItem().equals(itemStack.getItem())) {
-            return -10.0;
-        }
-        if (ingredient.test(itemStack)) {
-            return -1.0;
+        if (!smithingMode.equals(SmithingMode.TEMPLATE)) {
+            if (mainIngredient.getItem().equals(itemStack.getItem())) {
+                return -10.0;
+            }
+            if (ingredient.test(itemStack)) {
+                return -1.0;
+            }
         }
         return null;
     }
@@ -330,5 +361,11 @@ public class GeneratedMaterial implements Material {
         ingredients.add(otherIngredient);
         object.add("items", ingredients);
         return object;
+    }
+
+    enum SmithingMode {
+        NONE,
+        TEMPLATE,
+        INGREDIENT
     }
 }

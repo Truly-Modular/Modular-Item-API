@@ -117,6 +117,14 @@ public class GeneratedMaterialFromCopy implements Material {
     }
 
     @Override
+    public void addSmithingGroup() {
+        if(!groups.contains("smithing")){
+            groups =  new ArrayList<>(groups);
+            groups.add("smithing");
+        }
+    }
+
+    @Override
     public ResourceLocation getID() {
         return key;
     }

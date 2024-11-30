@@ -12,6 +12,7 @@ import net.minecraft.world.item.TieredItem;
 import smartin.miapi.Miapi;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.datapack.ReloadEvents;
+import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.material.Material;
 import smartin.miapi.material.MaterialProperty;
 import smartin.miapi.registries.RegistryInventory;
@@ -34,7 +35,9 @@ public class GeneratedMaterialManager {
                 onReloadServer();
             } else {
                 basicGeneratedMaterials.forEach(generatedMaterial -> materials.put(generatedMaterial.getID(), generatedMaterial));
-                generatedMaterials.forEach(generatedMaterial -> materials.put(generatedMaterial.getID(), generatedMaterial));
+                SmithingRecipeUtil.setupSmithingRecipe(generatedMaterials, true, (material) -> {
+                    materials.put(material.getID(), material);
+                });
             }
         }, -1);
         ReloadEvents.dataSyncerRegistry.register(Miapi.id("generated_materials"),
@@ -58,7 +61,6 @@ public class GeneratedMaterialManager {
                         }
                         generatedMaterials.clear();
                         generatedMaterials.addAll(data);
-                        SmithingRecipeUtil.setupSmithingRecipe(generatedMaterials);
                     }
                 });
         ReloadEvents.dataSyncerRegistry.register(Miapi.id("generated_simple_materials"),
@@ -141,8 +143,6 @@ public class GeneratedMaterialManager {
                         });
             }
 
-            generatedMaterials.forEach(material -> materials.put(material.getID(), material));
-            SmithingRecipeUtil.setupSmithingRecipe(generatedMaterials);
 
             if (MiapiConfig.INSTANCE.server.generatedMaterials.generateWoodMaterials) {
                 BuiltInRegistries.ITEM.stream()
@@ -197,9 +197,10 @@ public class GeneratedMaterialManager {
                             }
                         });
             }
-            for (Material material : basicGeneratedMaterials) {
+            SmithingRecipeUtil.setupSmithingRecipe(generatedMaterials, false, (material -> {
                 materials.put(material.getID(), material);
-            }
+                MiapiEvents.GENERATE_MATERIAL_CONVERTERS.invoker().generated(material, material.toolItems, material.armorItems, smartin.miapi.Environment.isClient());
+            }));
             if (verboseLogging()) {
                 Miapi.LOGGER.info("MIAPI FINISHED MATERIAL GENERATION");
             }

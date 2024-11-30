@@ -64,6 +64,11 @@ public class DefaultMaterial implements Material {
     }
 
     @Override
+    public void addSmithingGroup() {
+
+    }
+
+    @Override
     public Component getTranslation() {
         return Component.translatable("miapi.material.default_material");
     }

@@ -69,6 +69,11 @@ public class DelegatingMaterial implements Material {
     }
 
     @Override
+    public void addSmithingGroup() {
+        parent.addSmithingGroup();
+    }
+
+    @Override
     public Component getTranslation() {
         return parent.getTranslation();
     }
@@ -169,5 +174,9 @@ public class DelegatingMaterial implements Material {
     @Override
     public Map<String, Map<ModuleProperty<?>, Object>> getHiddenProperty() {
         return parent.getHiddenProperty();
+    }
+
+    public List<Component> getDescription(){
+        return List.of();
     }
 }

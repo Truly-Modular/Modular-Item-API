@@ -12,14 +12,19 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.crafting.RecipeType;
 import org.jetbrains.annotations.NotNull;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.crafting.crafter.replace.HoverMaterialList;
 import smartin.miapi.config.MiapiConfig;
+import smartin.miapi.datapack.ReloadEvents;
+import smartin.miapi.item.MaterialSmithingRecipe;
 import smartin.miapi.item.ModularItemStackConverter;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.material.Material;
 import smartin.miapi.material.MaterialProperty;
+import smartin.miapi.material.generated.SmithingRecipeUtil;
+import smartin.miapi.modules.properties.onHit.NemesisProperty;
 import smartin.miapi.modules.properties.util.CodecProperty;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
@@ -29,11 +34,10 @@ import java.util.*;
 /**
  * @header Lore Property
  * @path /data_types/properties/item_lore
- * @description_start
- * The LoreProperty manages the lore (or descriptive text) of an item. This property allows items to display custom lore
+ * @description_start The LoreProperty manages the lore (or descriptive text) of an item. This property allows items to display custom lore
  * that can be added either at the top or bottom of the item's tooltip. The lore is defined as a list of {@link Holder} objects,
  * each specifying the text, position, and priority of the lore entry.
- *
+ * <p>
  * The lore can be customized based on whether the item is modular or not, and additional configurations are available
  * through {@link MiapiConfig}. Depending on the environment (client or server), different lore might be injected.
  * @description_end
@@ -50,6 +54,7 @@ public class LoreProperty extends CodecProperty<List<LoreProperty.Holder>> {
     public static List<LoreSupplier> bottomLoreSuppliers = Collections.synchronizedList(new ArrayList<>());
     public static List<ToolTipSupplierSupplier> loreSuppliers = Collections.synchronizedList(new ArrayList<>());
     public static Map<ItemStack, Material> materialLookupTable = Collections.synchronizedMap(new WeakHashMap<>());
+    public static Map<Item, List<Component>> smithingTemplate = Collections.synchronizedMap(new WeakHashMap<>());
 
     public LoreProperty() {
         super(Codec.list(codec));
@@ -58,6 +63,27 @@ public class LoreProperty extends CodecProperty<List<LoreProperty.Holder>> {
             if (ModularItem.isModularItem(itemStack)) {
                 tooltip.add(format(Component.translatable("miapi.ui.modular_item"), ChatFormatting.GRAY));
                 getHolders(itemStack).stream().filter(h -> h.position.equals("top")).forEach(holder -> tooltip.add(holder.getText()));
+            }
+        });
+        ReloadEvents.END.subscribe((isClient, registryAccess) -> {
+            try {
+                var recipeManager = SmithingRecipeUtil.findManager(isClient);
+                if (recipeManager != null) {
+                    recipeManager.getAllRecipesFor(RecipeType.SMITHING).forEach(recipeHolder -> {
+                        if (recipeHolder.value() instanceof MaterialSmithingRecipe smithingRecipe) {
+                            smithingTemplate.put(smithingRecipe.smithingTemplate.getItems()[0].getItem(), new ArrayList<>());
+                            List<Component> list = smithingTemplate.getOrDefault(smithingRecipe.smithingTemplate.getItems()[0].getItem(), new ArrayList<>());
+                            Material ingredient = MaterialProperty.materials.get(smithingRecipe.startMaterial);
+                            Material target = MaterialProperty.materials.get(smithingRecipe.resultMaterial);
+                            if (ingredient != null && target != null) {
+                                Component materialDescription = Component.translatable("miapi.material_template.smithing", ingredient.getTranslation().getString(), target.getTranslation().getString()).withStyle(ChatFormatting.GRAY);
+                                list.add(materialDescription);
+                            }
+                        }
+                    });
+                }
+            } catch (RuntimeException e) {
+                Miapi.LOGGER.error("could not setup smithing lore injection", e);
             }
         });
     }
@@ -71,6 +97,7 @@ public class LoreProperty extends CodecProperty<List<LoreProperty.Holder>> {
     }
 
     private Component format(Component text, ChatFormatting... formatting) {
+        NemesisProperty property1;
         return text.toFlatList(Style.EMPTY.applyFormats(formatting)).get(0);
     }
 
@@ -81,7 +108,6 @@ public class LoreProperty extends CodecProperty<List<LoreProperty.Holder>> {
             } else {
                 tooltip.addAll(addToolTipsServer(itemStack));
             }
-
         }
     }
 
@@ -115,6 +141,13 @@ public class LoreProperty extends CodecProperty<List<LoreProperty.Holder>> {
                 lines.add(format(Component.translatable("miapi.ui.modular_item"), ChatFormatting.GRAY));
             }
         }
+        if (MiapiConfig.INSTANCE.client.other.injectLoreModularTemplate) {
+            var description = smithingTemplate.get(itemStack.getItem());
+            if (description != null) {
+                lines.add(Component.translatable("miapi.material_template.smithing.header").withStyle(ChatFormatting.GRAY));
+                lines.addAll(description);
+            }
+        }
         return lines;
     }
 
@@ -128,6 +161,7 @@ public class LoreProperty extends CodecProperty<List<LoreProperty.Holder>> {
                 lines.add(gray(Component.literal(" - " + HoverMaterialList.getTranslation(groupId).getString())));
             }
         }
+        lines.addAll(material.getDescription());
         return lines;
     }
 

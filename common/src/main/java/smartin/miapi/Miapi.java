@@ -178,7 +178,7 @@ public class Miapi {
             if (MiapiConfig.INSTANCE.server.other.doubleReload) {
                 Miapi.LOGGER.info("Truly Modular will now go onto reload twice.");
                 Miapi.LOGGER.info("This is done because for compat reasons and because forge sometimes breaks badly");
-                Miapi.LOGGER.info("This can be turned off in Miapis config.json");
+                Miapi.LOGGER.info("This can be turned off in Miapi`s config.json");
                 CacheCommands.triggerServerReload();
             }
         }));

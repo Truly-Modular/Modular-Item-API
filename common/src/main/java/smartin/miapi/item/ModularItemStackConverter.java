@@ -4,6 +4,7 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 import smartin.miapi.Miapi;
+import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.modules.properties.util.ComponentApplyProperty;
 import smartin.miapi.registries.RegistryInventory;
@@ -30,6 +31,9 @@ public class ModularItemStackConverter {
      */
     public static ItemStack getModularVersion(ItemStack original) {
         if (original.is(RegistryInventory.MIAPI_FORBIDDEN_TAG)) {
+            return original;
+        }
+        if (ReloadEvents.isInReload()) {
             return original;
         }
         ItemStack converted = original.copy();

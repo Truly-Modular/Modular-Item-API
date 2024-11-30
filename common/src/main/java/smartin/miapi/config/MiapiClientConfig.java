@@ -4,9 +4,10 @@ import com.redpxnda.nucleus.codec.auto.AutoCodec;
 import com.redpxnda.nucleus.codec.auto.ConfigAutoCodec;
 import com.redpxnda.nucleus.util.Color;
 import com.redpxnda.nucleus.util.Comment;
+import net.minecraft.resources.ResourceLocation;
+
 import java.util.ArrayList;
 import java.util.List;
-import net.minecraft.resources.ResourceLocation;
 
 @ConfigAutoCodec.ConfigClassMarker
 public class MiapiClientConfig {
@@ -42,6 +43,9 @@ public class MiapiClientConfig {
         @Comment("Whether Miapi displays \"Modular Material\" at all")
         @AutoCodec.Name("inject_lore_material")
         public boolean injectLoreModularMaterial = true;
+        @Comment("Whether Miapi displays \"Modular Smithing Template\" at all")
+        @AutoCodec.Name("inject_lore_template")
+        public boolean injectLoreModularTemplate = true;
         @Comment("The color Miapi uses for its enchanting glint")
         @AutoCodec.Name("enchanting_glint_colors")
         public List<Color> enchantColors = List.of(Color.MAGENTA);

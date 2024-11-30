@@ -307,6 +307,11 @@ public class JsonMaterial implements Material {
         return icon.render(drawContext, x, y);
     }
 
+    @Override
+    public void addSmithingGroup() {
+
+    }
+
     @Environment(EnvType.CLIENT)
     public boolean hasIcon() {
         return icon != null;

@@ -92,6 +92,7 @@ public class CodecMaterial implements Material {
             StatResolver.Codecs.JSONELEMENT_CODEC.optionalFieldOf("icon").forGetter(material -> material.iconJson),
             StatResolver.Codecs.JSONELEMENT_CODEC.optionalFieldOf("color_palette").forGetter(material -> material.paletteJson),
             Codec.STRING.listOf().optionalFieldOf("groups", new ArrayList<>()).forGetter(CodecMaterial::getGroups),
+            Codec.STRING.listOf().optionalFieldOf("hidden_groups", new ArrayList<>()).forGetter(CodecMaterial::getGuiGroups),
             Codec.STRING.listOf().optionalFieldOf("gui_groups", new ArrayList<>()).forGetter(CodecMaterial::getGuiGroups),
             Codec.unboundedMap(Codec.STRING, StatResolver.Codecs.JSONELEMENT_CODEC)
                     .optionalFieldOf("properties", new HashMap<>()).forGetter(m -> Material.toJsonMap(m.getActualProperty())),
@@ -109,6 +110,7 @@ public class CodecMaterial implements Material {
     private CodecMaterial(Optional<JsonElement> iconJson,
                           Optional<JsonElement> paletteJson,
                           List<String> groups,
+                          List<String> hiddenGroups,
                           List<String> guiGroups,
                           Map<String, JsonElement> property,
                           Map<String, JsonElement> visualProperty,
@@ -120,8 +122,10 @@ public class CodecMaterial implements Material {
                           Optional<Boolean> generateConverters) {
         this.iconJson = iconJson;
         this.paletteJson = paletteJson;
-        this.groups = groups;
-        this.guiGroups = guiGroups;
+        this.groups = new ArrayList<>(groups);
+        this.guiGroups = new ArrayList<>(guiGroups);
+        this.guiGroups.addAll(groups);
+        this.groups.addAll(hiddenGroups);
         this.textureKeys = textureKeys;
         var found = BuiltInRegistries.BLOCK.getTags().filter(pair -> pair.getFirst().location().equals(incorrectForToolId)).findAny();
         found.ifPresent(tagKeyNamedPair -> incorrectForTool = Optional.of(tagKeyNamedPair.getFirst()));
@@ -161,6 +165,7 @@ public class CodecMaterial implements Material {
                 this.iconJson,
                 this.paletteJson,
                 new ArrayList<>(this.groups),
+                List.of(),
                 new ArrayList<>(this.guiGroups),
                 Material.toJsonMap(this.getActualProperty()),
                 Material.toJsonMap(this.getDisplayProperty()),
@@ -283,8 +288,11 @@ public class CodecMaterial implements Material {
     public void setID(ResourceLocation id) {
         this.id = id;
         List<String> g = new ArrayList<>(this.groups);
-        g.add(0, getStringID());
+        g.addFirst(getStringID());
         groups = g;
+        List<String> uiGroups = new ArrayList<>(this.guiGroups);
+        uiGroups.addFirst(getStringID());
+        guiGroups = uiGroups;
     }
 
     public void setData(Map<String, String> stringData, Map<String, Double> doubleMap) {
@@ -306,6 +314,18 @@ public class CodecMaterial implements Material {
     public int renderIcon(GuiGraphics drawContext, int x, int y) {
         if (icon == null) return 0;
         return icon.render(drawContext, x, y);
+    }
+
+    @Override
+    public void addSmithingGroup() {
+        if (!groups.contains("smithing")) {
+            groups = new ArrayList<>(groups);
+            groups.add("smithing");
+        }
+        if (!guiGroups.contains("smithing")) {
+            guiGroups = new ArrayList<>(guiGroups);
+            guiGroups.add("smithing");
+        }
     }
 
     @Environment(EnvType.CLIENT)
