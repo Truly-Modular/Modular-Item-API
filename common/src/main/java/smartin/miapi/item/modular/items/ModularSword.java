@@ -88,7 +88,10 @@ public class ModularSword extends SwordItem implements PlatformModularItemMethod
 
     @Override
     public int getEnchantability() {
-        return 1;
+        if (currentFakeToolmaterial == null) {
+            return 10;
+        }
+        return currentFakeToolmaterial.getEnchantability();
     }
 
     @Override
@@ -169,7 +172,7 @@ public class ModularSword extends SwordItem implements PlatformModularItemMethod
 
     @Override
     public boolean isUsedOnRelease(ItemStack stack) {
-        return ItemAbilityManager.isUsedOnRelease(stack,() -> super.isUsedOnRelease(stack));
+        return ItemAbilityManager.isUsedOnRelease(stack, () -> super.isUsedOnRelease(stack));
     }
 
     @Override
@@ -186,4 +189,5 @@ public class ModularSword extends SwordItem implements PlatformModularItemMethod
     public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
         LoreProperty.appendLoreTop(stack, world, tooltip, context);
     }
+
 }

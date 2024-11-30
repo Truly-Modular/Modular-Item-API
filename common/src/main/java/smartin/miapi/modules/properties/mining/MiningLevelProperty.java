@@ -8,6 +8,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -120,7 +121,11 @@ public class MiningLevelProperty implements ModuleProperty {
 
             @Override
             public float getAttackDamage() {
-                return 1;
+                try {
+                    return (int) AttributeProperty.getActualValueCache(itemStack, EquipmentSlot.MAINHAND, EntityAttributes.GENERIC_ATTACK_DAMAGE, 1.0);
+                } catch (RuntimeException e) {
+                    return 1;
+                }
             }
 
             @Override
@@ -152,9 +157,7 @@ public class MiningLevelProperty implements ModuleProperty {
                     return Ingredient.EMPTY;
                 }
             }
-        }
-
-                ;
+        };
     }
 
     public static boolean isSuitable(ItemStack stack, BlockState state) {

@@ -35,10 +35,7 @@ import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.entity.ShieldingArmorFacet;
 import smartin.miapi.events.MiapiEvents;
-import smartin.miapi.forge.compat.ApotheosisCompat;
-import smartin.miapi.forge.compat.QuarkCompat;
 import smartin.miapi.modules.properties.AttributeProperty;
-import smartin.miapi.modules.properties.compat.ht_treechop.TreechopUtil;
 import smartin.miapi.registries.RegistryInventory;
 
 import java.util.function.Consumer;
@@ -56,11 +53,11 @@ public class TrulyModularForge {
             bus.register(new ClientModEvents());
             MinecraftForge.EVENT_BUS.register(new ClientEvents());
         }
-        if(Platform.isModLoaded("quark")){
-            try{
-                QuarkCompat.setup();
-            }catch (Exception e){
-                Miapi.LOGGER.info("couldn't load quark compat",e);
+        if (Platform.isModLoaded("quark")) {
+            try {
+                smartin.miapi.forge.compat.QuarkCompat.setup();
+            } catch (Exception e) {
+                Miapi.LOGGER.info("couldn't load quark compat", e);
             }
         }
         bus.register(new ModEvents());
@@ -76,9 +73,17 @@ public class TrulyModularForge {
         } catch (Exception e) {
             Miapi.LOGGER.info("couldn't load epic fight compat");
         }
+        try {
+            if (Platform.isModLoaded("pmmo")) {
+                Miapi.LOGGER.info("loading pmmo compat");
+                smartin.miapi.forge.compat.pmmo.ToolStats.setup();
+            }
+        } catch (Exception e) {
+            Miapi.LOGGER.info("couldn't load Project MMO compat");
+        }
         if (Platform.isModLoaded("apotheosis")) {
             try {
-                ApotheosisCompat.setup();
+                smartin.miapi.forge.compat.ApotheosisCompat.setup();
             } catch (RuntimeException surpressed) {
                 Miapi.LOGGER.warn("couldn't load Apotheosis compat", surpressed);
             }
@@ -90,7 +95,7 @@ public class TrulyModularForge {
 
         LifecycleEvent.SERVER_STARTING.register((instance -> setupAttributes()));
         ReloadEvents.START.subscribe((isClient -> setupAttributes()));
-        ReloadListenerRegistry.register(ResourceType.SERVER_DATA,new MiapiReloadListenerForge());
+        ReloadListenerRegistry.register(ResourceType.SERVER_DATA, new MiapiReloadListenerForge());
 
 
         //ReloadListenerRegistry.register(
@@ -126,7 +131,7 @@ public class TrulyModularForge {
         @SubscribeEvent
         public void enqueueIMC(InterModEnqueueEvent event) {
             if (Platform.isModLoaded("treechop")) {
-                InterModComms.sendTo("treechop", "getTreeChopAPI", () -> (Consumer<Object>) TreechopUtil::setTreechopApi);
+                InterModComms.sendTo("treechop", "getTreeChopAPI", () -> (Consumer<Object>) smartin.miapi.modules.properties.compat.ht_treechop.TreechopUtil::setTreechopApi);
             }
             Item item = RegistryInventory.modularAxe;
             Miapi.LOGGER.info("INJECTION_TEST" + item.canPerformAction(item.getDefaultStack(), ToolActions.AXE_DIG));

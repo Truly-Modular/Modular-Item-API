@@ -7,6 +7,7 @@
         "compat.ItemCapabilityProviderMixin",
         "compat.ItemCapabilityProviderAccessor",
         "LivingEntityMixin",
+        "AutoItemAccessor",
         "item.ModularItemMixin"
     ],
     "client": [

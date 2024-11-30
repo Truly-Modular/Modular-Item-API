@@ -7,7 +7,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Identifier;
-import smartin.miapi.Miapi;
 import smartin.miapi.modules.properties.AttributeProperty;
 import smartin.miapi.modules.properties.DurabilityProperty;
 import smartin.miapi.modules.properties.EnchantAbilityProperty;
@@ -55,7 +54,6 @@ public class ModularArmorMaterial implements ArmorMaterial {
     }
 
     public static ArmorMaterial forItem(ItemStack itemStack) {
-        Miapi.LOGGER.info("build new armor material");
         return new ArmorMaterial() {
             @Override
             public int getDurability(ArmorItem.Type type) {
@@ -69,9 +67,7 @@ public class ModularArmorMaterial implements ArmorMaterial {
             @Override
             public int getProtection(ArmorItem.Type type) {
                 try {
-                    int result = (int) AttributeProperty.getActualValueCache(itemStack, type.getEquipmentSlot(), EntityAttributes.GENERIC_ARMOR, 1.0);
-                    AttributeProperty.getActualValueCache(itemStack, type.getEquipmentSlot(), EntityAttributes.GENERIC_ARMOR, 1.0);
-                    return result;
+                    return (int) AttributeProperty.getActualValueCache(itemStack, type.getEquipmentSlot(), EntityAttributes.GENERIC_ARMOR, 1.0);
                 } catch (RuntimeException e) {
                     return 1;
                 }

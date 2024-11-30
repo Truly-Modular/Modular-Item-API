@@ -85,7 +85,10 @@ public class ModularAxe extends AxeItem implements PlatformModularItemMethods, M
 
     @Override
     public int getEnchantability() {
-        return 1;
+        if (currentFakeToolmaterial == null) {
+            return 10;
+        }
+        return currentFakeToolmaterial.getEnchantability();
     }
 
     @Override

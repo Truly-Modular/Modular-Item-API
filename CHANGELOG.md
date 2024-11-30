@@ -1,2 +1,2 @@
-## v1.1.34(1.20.1)
-- fixed crash related to project mmo
+## v1.1.35(1.20.1)
+- experimental pmmo compat

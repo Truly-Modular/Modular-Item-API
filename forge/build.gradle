@@ -68,6 +68,7 @@ dependencies {
     } else {
         modCompileOnly "curse.maven:epic-fight-mod-405076:5922122"
     }
+    modCompileOnly ("curse.maven:project-mmo-353935:5944388")
 
     //modCompileOnly "curse.maven:minecolonies-245506:5355518"
     modCompileOnly "curse.maven:apotheosis-313970:5317303"
