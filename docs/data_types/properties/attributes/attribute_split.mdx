@@ -1,0 +1,16 @@
+# Attribute Split Property
+
+## Description
+
+ The Attribute Split Property is used to divide attributes across different contexts.  
+It enables assigning attributes to multiple slots and merging them based on a percentage split.This Doesnt by default remove the attribute, if you wish to remove the existing attribute you need to split that attribute inwith the percentage -100This property is essential to re-balance certain attributes for usage with other mods like alembic.This Example would give 20% of the weapons attack damage as offhand damage```json"attribute_split": {  "minecraft:generic.attack_damage": {    "mainhand": [      {        "attribute": "minecraft:generic.attack_damage",        "percentage": "20",        "target":"offhand"      }    ]  }}```
+
+## Data
+
+- **context**:  a map containing the attribute context and split configurations.
+- **first map key is the Attribute to be split**: undefined
+- **inner map key is the SlotGroup that is used as source**: undefined
+- **attribute**: the attribute to be added
+- **percentage**: how much of the attribute should be added, 100 means same amount, 0.0 means nothing
+- **target**: (Optional) a target slot overwriting the source, if not set uses source slot
+

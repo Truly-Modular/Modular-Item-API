@@ -1,0 +1,12 @@
+# Fake Enchantment Property
+
+## Description
+
+ The Fake Enchantment Property simulates enchantment levels on items during specific operations.  
+These enchantments are not shown in the item's tooltip and are purely functional.The property evaluates enchantment levels dynamically using the `[old_level]` placeholder, which allows referencing prior levels in the calculation.Once the property is removed, the enchantments no longer affect the item.
+
+## Data
+
+- **enchantment**:  The fake enchantment being applied (Holder<Enchantment>).
+- **value**:  DoubleOperationResolvable, which defines how the level of the fake enchantment is calculated.
+

@@ -1,0 +1,19 @@
+# Mining Level Property
+
+## Description
+
+  
+The MiningLevelProperty manages the mining capabilities of tools, determining their effectiveness based on various rules and configurations.These configurations include block-specific mining speeds, block blacklists, and conditions for correct tool usage. *By default, the mining level is influenced by the material properties associated with the tool.Custom rules can be defined to adjust mining speeds and tool compatibilities dynamically.
+
+## Data
+
+- **mining_capabilities**:  A map linking mining rules to specific block tags for determining tool effectiveness.
+- **codec**:  A codec for serializing and deserializing mining rules, allowing for flexible data handling.
+- **caching**:  The property uses a caching mechanism to optimize performance when accessing mining rules.
+- **mining_rules**: 
+- **`blocks`**:  List of blocks that the tool can mine.
+- **`block_list | blacklist_tag`**:  List of blocks that the tool cannot mine.
+- **`speed`**:  A resolvable value that determines the mining speed for the tool.
+- **`correctForDrops`**:  Optional boolean indicating whether the tool is correct for drops.
+- **`useMaterial`**:  Boolean indicating if material properties should affect mining rules.
+

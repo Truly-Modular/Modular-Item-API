@@ -170,9 +170,102 @@ function main() {
 	const jsonData = {}
 
 	readJavaFiles(rootDir, jsonData)
+	clearDocsFolder('../docs')
+	generateMarkdownFiles(jsonData) // Generate markdown files after
 
 	fs.writeFileSync('output.json', JSON.stringify(jsonData, null, 2))
 	console.log('JSON file has been generated.')
 }
 
 main()
+
+// Function to generate Markdown files from the JSON data
+function generateMarkdownFiles(data, baseDir = '../docs') {
+	if (!data) return
+
+	// Loop through each page in the data's sub_pages
+	Object.keys(data.sub_pages || {}).forEach((key) => {
+		const pageData = data.sub_pages[key]
+		const pagePath = path.join(baseDir, key)
+
+		// If the page has sub-pages, create a folder, otherwise create a file
+		if (Object.keys(pageData.sub_pages || {}).length > 0) {
+			// Create a folder for the subpage
+			const folderPath = path.join(baseDir, key)
+			if (!fs.existsSync(folderPath)) {
+				fs.mkdirSync(folderPath, { recursive: true })
+			}
+
+			// Create the info.mdx for this subpage
+			//const filePath = path.join(folderPath, 'info.mdx')
+			const filePath = path.join(baseDir, `${key}.mdx`)
+			const content = createMarkdownContent(pageData)
+			fs.writeFileSync(filePath, content)
+			console.log(`Markdown file created: ${filePath}`)
+
+			// Recursively create markdown files for sub-pages
+			generateMarkdownFiles(pageData, folderPath)
+		} else {
+			// Create a .mdx file for the page if it doesn't have sub-pages
+			const filePath = path.join(baseDir, `${key}.mdx`)
+			const content = createMarkdownContent(pageData)
+			if (!fs.existsSync(path.dirname(filePath))) {
+				fs.mkdirSync(path.dirname(filePath), { recursive: true })
+			}
+			fs.writeFileSync(filePath, content)
+			console.log(`Markdown file created: ${filePath}`)
+		}
+	})
+}
+
+// Function to clear the docs folder
+function clearDocsFolder(baseDir = '../docs') {
+	if (fs.existsSync(baseDir)) {
+		fs.readdirSync(baseDir).forEach((file) => {
+			const filePath = path.join(baseDir, file)
+			const stat = fs.statSync(filePath)
+			if (stat.isDirectory()) {
+				// Recursively delete the folder and its contents
+				clearDocsFolder(filePath)
+				fs.rmdirSync(filePath)
+			} else {
+				// Delete file
+				fs.unlinkSync(filePath)
+			}
+		})
+		console.log('Docs folder cleared.')
+	}
+	// Data to write to the file
+	const data = {
+		id: 'miapi',
+		platform: 'modrinth',
+		slug: 'modular-item-api'
+	}
+
+	// Define the file path for the JSON file
+	const filePath = path.join(__dirname, 'docs', 'sinytra-wiki.json')
+
+	// Ensure the docs folder exists
+	if (!fs.existsSync(path.dirname(filePath))) {
+		fs.mkdirSync(path.dirname(filePath), { recursive: true })
+	}
+
+	// Write data to the JSON file
+	fs.writeFileSync(filePath, JSON.stringify(data, null, 2))
+}
+
+function createMarkdownContent(pageData) {
+	let content = `# ${pageData.header}\n\n`
+	content += `## Description\n\n${pageData.description}\n\n`
+
+	// Add data if available
+	if (pageData.data && Object.keys(pageData.data).length) {
+		content += `## Data\n\n`
+		for (const [key, value] of Object.entries(pageData.data)) {
+			content += `- **${key}**: ${value}\n`
+		}
+		content += '\n'
+	}
+
+	return content
+}

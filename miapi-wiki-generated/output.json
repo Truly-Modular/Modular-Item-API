@@ -109,7 +109,7 @@
       "sub_pages": {
         "ingredient_count": {
           "header": "Ingredient with Count",
-          "description": "  \nThis is an expansions of vanillas default ingredient to also allow for a count, how much of that ingredient is required.\rYou can check [Minecrafts Wiki](https://minecraft.wiki/w/Recipe#JSON_Format) for more information on the ingredient structure.\r",
+          "description": " This is an expansions of vanillas default ingredient to also allow for a count, how much of that ingredient is required.  \nYou can check [Minecrafts Wiki](https://minecraft.wiki/w/Recipe#JSON_Format) for more information on the ingredient structure.\r",
           "java": "common/src/main/java/smartin/miapi/craft/IngredientWithCount.java",
           "data": {
             "ingredient": " Same as minecrafts default ingredient, check datapack recipes for more information.",
@@ -620,7 +620,7 @@
             },
             "item_lore": {
               "header": "Lore Property",
-              "description": "  \nThe LoreProperty manages the lore (or descriptive text) of an item. This property allows items to display custom lore\rthat can be added either at the top or bottom of the item's tooltip. The lore is defined as a list of {@link Holder} objects,\reach specifying the text, position, and priority of the lore entry.\r *\rThe lore can be customized based on whether the item is modular or not, and additional configurations are available\rthrough {@link MiapiConfig}. Depending on the environment (client or server), different lore might be injected.\r",
+              "description": " The LoreProperty manages the lore (or descriptive text) of an item. This property allows items to display custom lore  \nthat can be added either at the top or bottom of the item's tooltip. The lore is defined as a list of {@link Holder} objects,\reach specifying the text, position, and priority of the lore entry.\r<p>\rThe lore can be customized based on whether the item is modular or not, and additional configurations are available\rthrough {@link MiapiConfig}. Depending on the environment (client or server), different lore might be injected.\r",
               "java": "common/src/main/java/smartin/miapi/modules/properties/LoreProperty.java",
               "data": {
                 "a list of Lore Entires, compromoised of": "",

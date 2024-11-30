@@ -1,0 +1,14 @@
+# Module Swap Loot Function
+
+## Description
+
+ The `ModuleSwapLootFunction` is a loot function that randomizes the modules of a modular item when generated as loot.  
+This function attempts to substitute modules with compatible alternatives.The function also allows for the selection of a fallback material.This loot function can be used to greatly diversify the loot found.Its full ID is ```"miapi:module_swap"```
+
+## Data
+
+- **material**:  An material ID to target a different material then found on the item. if none are set the most powerfull material on the item is chosen instead
+- **chance**:  An optional (default = 1.0) that sets the chance for a swap to occur in the first place.
+- **blacklist**:  An optional list of Module IDs representing modules that cannot be substituted.
+- **whitelist**:  An optional list of Module IDs, if set blocks all entries not on this list.
+

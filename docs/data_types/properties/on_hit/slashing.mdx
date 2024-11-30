@@ -1,0 +1,11 @@
+# Slashing Property
+
+## Description
+
+ The SlashingProperty introduces additional slashing damage to attacks based on the equipped item.  
+This property calculates the slashing damage and adjusts the damage dealt to entities in the game by factoringin the target's **Armor** / 3 and **Armor Toughness** attributes.<p>When an entity is hurt, this property retrieves the slashing value of the item being used to cause the damage,and reduces the slashing effect based on the target's armor attributes. If the slashing damage remains greater thanzero after reductions, the damage is added to the base damage dealt to the target.<p>This property is useful for defining weapons or tools that focus on cutting-based damage or bypassing armor,giving certain items more versatility in combat scenarios.
+
+## Data
+
+- **slashing**:  A double value indicating the amount of slashing damage that the item can deal.
+

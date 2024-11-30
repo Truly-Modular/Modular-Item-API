@@ -1,0 +1,13 @@
+# ModuleInstance Component
+
+## Description
+
+ This Component stores the main Modules for the Itemstack in question.  
+This Component can be attached to any Itemstack, but many of the properties only correctly work on Modular Items,so It's recommended to only attach his to Modular Item
+
+## Data
+
+- **key**: the ID of the module to be attached
+- **child**:  a slotId -> submodule map to map all submodules. This will be sorted in relation to the Slot Properties priority.
+- **data**:  this is a String->custom data map to store additional custom data for properties to use. This is a per module savedata system.
+

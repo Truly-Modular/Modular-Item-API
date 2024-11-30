@@ -1,0 +1,14 @@
+# Crafting Condition Property
+
+## Description
+
+  
+The CraftingConditionProperty defines conditions for crafting modules, including whether they are visible, selectable, andcraftable. Conditions are evaluated using {@link ModuleCondition} instances, which can be customized for different scenarios.The property also supports event-based evaluations to manage crafting permissions dynamically.
+
+## Data
+
+- **crafting_condition**:  An instance of {@link CraftingConditionJson} containing conditions for visibility, selection, and crafting ability.
+- **visible**:  (optional) that determines if the module is visible for crafting.
+- **selectAble**:  (optional) that determines if the module can be selected for crafting.
+- **craftAble**:  (optional) that determines if the module can be crafted.
+

@@ -1,0 +1,14 @@
+# Lore Property
+
+## Description
+
+ The LoreProperty manages the lore (or descriptive text) of an item. This property allows items to display custom lore  
+that can be added either at the top or bottom of the item's tooltip. The lore is defined as a list of {@link Holder} objects,each specifying the text, position, and priority of the lore entry.<p>The lore can be customized based on whether the item is modular or not, and additional configurations are availablethrough {@link MiapiConfig}. Depending on the environment (client or server), different lore might be injected.
+
+## Data
+
+- **a list of Lore Entires, compromoised of**: 
+- **text**:  The {@link Component} text to display.
+- **position**:  The position of the lore ("top" or "bottom").
+- **priority**:  The priority of the lore entry, used for sorting.
+
