@@ -16,11 +16,14 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 
-public class MiapiReloadListenerForge extends SinglePreparationResourceReloader<Map<String,String>> {
+public class MiapiReloadListenerForge extends SinglePreparationResourceReloader<Map<String, String>> {
     static long timeStart;
 
     protected void apply(Map<String, String> prepared, ResourceManager manager, Profiler profiler) {
-        Map < String, String> dataMap = new HashMap<>((Map) prepared);
+        ReloadEvents.reloadCounter++;
+        timeStart = System.nanoTime();
+        ReloadEvents.START.fireEvent(false);
+        Map<String, String> dataMap = new HashMap<>((Map) prepared);
         Map<String, String> filteredMap = new HashMap<>();
         dataMap.forEach((key, value) -> {
             if (!key.endsWith(".json")) {
@@ -67,9 +70,6 @@ public class MiapiReloadListenerForge extends SinglePreparationResourceReloader<
 
     @Override
     protected Map<String, String> prepare(ResourceManager manager, Profiler profiler) {
-        ReloadEvents.reloadCounter++;
-        timeStart = System.nanoTime();
-        ReloadEvents.START.fireEvent(false);
         Map<String, String> data = new LinkedHashMap<>();
 
         ReloadEvents.syncedPaths.forEach((modID, dataPaths) -> {

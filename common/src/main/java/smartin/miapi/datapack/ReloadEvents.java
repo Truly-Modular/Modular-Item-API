@@ -146,18 +146,23 @@ public class ReloadEvents {
      * @param entity The player entity to send the packet to.
      */
     public static void triggerReloadOnClient(ServerPlayerEntity entity) {
-        dataSyncerRegistry.getFlatMap().forEach((id, syncer) -> {
-            PacketByteBuf buf = Networking.createBuffer();
-            buf.writeString(id);
-            buf.writeBytes(syncer.createDataServer().copy());
-            Networking.sendS2C(RELOAD_PACKET_ID, entity, buf);
-        });
+        if (!isInReload()) {
+            dataSyncerRegistry.getFlatMap().forEach((id, syncer) -> {
+                PacketByteBuf buf = Networking.createBuffer();
+                buf.writeString(id);
+                buf.writeBytes(syncer.createDataServer().copy());
+                Networking.sendS2C(RELOAD_PACKET_ID, entity, buf);
+            });
+        }
     }
 
     /**
      * returns true if a reload is ongoing
      */
     public static boolean isInReload() {
+        if (reloadCounter < 0) {
+            reloadCounter = 0;
+        }
         return reloadCounter != 0;
     }
 
@@ -180,6 +185,10 @@ public class ReloadEvents {
                     ReloadEvents.END.fireEvent(true);
                     reloadCounter--;
                     Miapi.LOGGER.info("Client load took " + (double) (System.nanoTime() - clientReloadTimeStart) / 1000 / 1000 + " ms");
+                    if (reloadCounter != 0) {
+                        Miapi.LOGGER.error("client believes there is another ongoing reload. This is bad! Reseting Counter" + reloadCounter);
+                        reloadCounter = 0;
+                    }
                 });
             }
         });

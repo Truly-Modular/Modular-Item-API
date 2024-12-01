@@ -50,7 +50,8 @@ public class CacheCommands {
     }
 
     private static int executeMiapiReload(CommandContext<ServerCommandSource> context) {
-        context.getSource().sendFeedback(() -> Text.literal("starting reload"), false);
+        context.getSource().sendFeedback(() -> Text.literal("starting reload " + ReloadEvents.reloadCounter), false);
+        ReloadEvents.reloadCounter = 0;
         triggerServerReload();
         return 1; // Return success
     }
