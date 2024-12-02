@@ -9,6 +9,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -57,6 +58,8 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
     static int editSpace = 30;
     @Nullable
     public InteractAbleWidget hoverElement = null;
+    public NbtCompound nbt = new NbtCompound();
+    public Identifier itemID = null;
     static WeakReference<CraftingScreen> craftingScreenWeakReference = new WeakReference<>(null);
 
     List<InteractAbleWidget> editOptionIcons = new ArrayList<>();
@@ -221,6 +224,14 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
     }
 
     public void updateItem(ItemStack stack) {
+        if (stack.hasNbt()) {
+            Identifier currentID = stack.getItem().arch$registryName();
+            if (this.nbt.equals(stack.getNbt()) && currentID.equals(itemID)) {
+                return;
+            }
+            itemID = currentID;
+            this.nbt = stack.getNbt();
+        }
         PreviewManager.resetCursorStack();
         updatePreviewItemStack(stack);
     }
