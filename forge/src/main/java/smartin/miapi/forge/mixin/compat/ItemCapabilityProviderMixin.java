@@ -22,7 +22,9 @@ public class ItemCapabilityProviderMixin {
         if (itemstack.getItem() instanceof ModularItem) {
             CapabilityItem capabilityItem = smartin.miapi.forge.compat.epic_fight.EpicFightCompatProperty.get(itemstack);
             ItemCapabilityProvider provider = (ItemCapabilityProvider) (Object) this;
-            ((ItemCapabilityProviderAccessor) provider).setCapability(capabilityItem);
+            if (capabilityItem != null) {
+                ((ItemCapabilityProviderAccessor) provider).setCapability(capabilityItem);
+            }
         }
     }
 }
