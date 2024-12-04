@@ -14,13 +14,18 @@ public class PreviewManager {
     private static ItemStack cursorStack = ItemStack.EMPTY;
 
     private static Material lastFramePreviewMaterial = null;
+    public static boolean isOpen = false;
 
     public static void setCursorItemstack(ItemStack itemstack) {
-        if (cursorStack != itemstack) {
+        if (isOpen && cursorStack != itemstack) {
             Material material = MaterialProperty.getMaterialFromIngredient(itemstack);
             if (material != currentPreviewMaterial) {
                 cursorStack = itemstack;
                 updateMaterial(material, cursorStack);
+            }
+
+            if (net.minecraft.client.MinecraftClient.getInstance().currentScreen instanceof CraftingScreen) {
+                isOpen = false;
             }
         }
     }
@@ -43,6 +48,7 @@ public class PreviewManager {
     }
 
     public static void tick() {
+        isOpen = true;
         if (lastFramePreviewMaterial != currentPreviewMaterial) {
             lastFramePreviewMaterial = currentPreviewMaterial;
             if (CraftingScreen.getInstance() != null) {

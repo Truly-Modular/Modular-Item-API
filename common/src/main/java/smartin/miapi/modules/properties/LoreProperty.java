@@ -147,6 +147,9 @@ public class LoreProperty implements ModuleProperty {
     }
 
     List<Text> addToolTipsServer(ItemStack itemStack) {
+        if (!MiapiConfig.INSTANCE.server.other.injectLoreServer) {
+            return List.of();
+        }
         List<Text> lines = new ArrayList<>();
         if (MiapiConfig.INSTANCE.client.other.injectLoreModularMaterial) {
             Material material = materialLookupTable.computeIfAbsent(itemStack, itemStack1 -> MaterialProperty.getMaterialFromIngredient(itemStack));

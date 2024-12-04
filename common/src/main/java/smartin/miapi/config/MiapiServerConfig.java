@@ -24,6 +24,9 @@ public class MiapiServerConfig {
 
     @ConfigAutoCodec.ConfigClassMarker
     public static class OtherCategory {
+        @Comment("if the Tooltips are injected on the logical server as well")
+        @AutoCodec.Name("inject_lore_server")
+        public boolean injectLoreServer = true;
         @Comment("""
                 Whether the development mode of Miapi is enabled
                 DO NOT ENABLE IF U DONT KNOW WHAT IT DOES""")

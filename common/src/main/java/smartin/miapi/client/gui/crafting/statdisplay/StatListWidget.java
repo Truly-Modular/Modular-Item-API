@@ -374,8 +374,12 @@ public class StatListWidget extends InteractAbleWidget {
     public static void reloadEnd() {
         Registries.ATTRIBUTE.forEach(entityAttribute -> {
             if (!AttributeSingleDisplay.attributesWithDisplay.contains(entityAttribute)) {
-                addStatDisplay(AttributeSingleDisplay
-                        .builder(entityAttribute).build());
+                try {
+                    addStatDisplay(AttributeSingleDisplay
+                            .builder(entityAttribute).build());
+                } catch (RuntimeException e) {
+                    Miapi.LOGGER.warn("could not setup stat-display for " + entityAttribute);
+                }
             }
         });
     }

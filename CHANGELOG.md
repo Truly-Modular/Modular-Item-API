@@ -1,3 +1,3 @@
-## v1.1.35(1.20.1)
-- experimental pmmo compat
-- attempt to fix weird forge no module issue
+## v1.1.37 (1.20.1)
+- fix client issue for null-attribute
+- added config option to toggle lore injection on server
