@@ -174,6 +174,9 @@ public class GlintProperty implements ModuleProperty {
             this.strength = strength;
             this.shouldRenderGlint = shouldRenderGlint;
             this.colors = colors;
+            if (colors == null || colors.length == 0) {
+                colors = new Color[]{Color.WHITE};
+            }
         }
 
         public RainbowGlintSettings() {

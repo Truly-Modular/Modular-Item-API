@@ -1,7 +1,6 @@
 package smartin.miapi.client.gui.crafting;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.bettercombat.logic.WeaponAttributesFallback;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.ScreenHandlerProvider;
@@ -61,6 +60,9 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
     public NbtCompound nbt = new NbtCompound();
     public Identifier itemID = null;
     static WeakReference<CraftingScreen> craftingScreenWeakReference = new WeakReference<>(null);
+    //band-aid solution to prevent too many updates from mod compat issues
+    int framesSinceLastUpdate = 15;
+    ItemStack nextItemStack = ItemStack.EMPTY;
 
     List<InteractAbleWidget> editOptionIcons = new ArrayList<>();
 
@@ -80,7 +82,6 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
         if (craftingScreenWeakReference != null && craftingScreenWeakReference.get() != null) {
             return craftingScreenWeakReference.get();
         }
-        WeaponAttributesFallback fallback;
         return null;
     }
 
@@ -224,16 +225,13 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
     }
 
     public void updateItem(ItemStack stack) {
-        if (stack.hasNbt()) {
-            Identifier currentID = stack.getItem().arch$registryName();
-            if (this.nbt.equals(stack.getNbt()) && currentID.equals(itemID)) {
-                return;
-            }
-            itemID = currentID;
-            this.nbt = stack.getNbt();
+        if (framesSinceLastUpdate < 10) {
+            nextItemStack = stack;
+        } else {
+            PreviewManager.resetCursorStack();
+            updatePreviewItemStack(stack);
+            framesSinceLastUpdate = 0;
         }
-        PreviewManager.resetCursorStack();
-        updatePreviewItemStack(stack);
     }
 
     public void updatePreviewItemStack(ItemStack stack) {
@@ -320,7 +318,6 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
             @Override
             public void preview(PacketByteBuf preview) {
                 if (editOption != null) {
-
                     previewStack(editOption.preview(preview, this));
                 }
             }
@@ -376,8 +373,13 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
 
     @Override
     public void render(DrawContext drawContext, int mouseX, int mouseY, float delta) {
+        if (framesSinceLastUpdate > 10 && !nextItemStack.isEmpty()) {
+            updateItem(nextItemStack);
+            nextItemStack = ItemStack.EMPTY;
+        }
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         renderBackground(drawContext);
+        framesSinceLastUpdate++;
         int i = (this.width - this.backgroundWidth - 6) / 2;
         int j = (this.height - this.backgroundHeight) / 2;
         //InteractAbleWidget.drawSquareBorder(drawContext, i, j, this.backgroundWidth, this.backgroundHeight, 1, ColorHelper.Argb.getArgb(255, 255, 0, 0));

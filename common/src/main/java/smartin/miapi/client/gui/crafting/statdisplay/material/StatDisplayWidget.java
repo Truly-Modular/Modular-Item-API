@@ -11,6 +11,7 @@ import smartin.miapi.modules.material.MaterialProperty;
 public class StatDisplayWidget extends InteractAbleWidget {
     StatListWidget statListWidget;
     MaterialStatWidget materialStatWidget;
+    Material lastMaterial = null;
 
     public StatDisplayWidget(int x, int y, int width, int height) {
         super(x, y, width, height, Text.literal("miapi.statdisplay.widget"));
@@ -26,11 +27,15 @@ public class StatDisplayWidget extends InteractAbleWidget {
         Material material = MaterialProperty.getMaterialFromIngredient(itemStack);
         if (material != null && !(itemStack.getItem() instanceof ModularItem)) {
             removeChild(materialStatWidget);
-            materialStatWidget = new MaterialStatWidget(material, getX(), getY(), getWidth(), getHeight(), Text.literal("miapi.material.stat.widget"));
             removeChild(statListWidget);
+            if (material != lastMaterial) {
+                materialStatWidget = new MaterialStatWidget(material, getX(), getY(), getWidth(), getHeight(), Text.literal("miapi.material.stat.widget"));
+                lastMaterial = material;
+            }
             addChild(materialStatWidget);
         } else {
             removeChild(materialStatWidget);
+            removeChild(statListWidget);
             addChild(statListWidget);
             statListWidget.setOriginal(itemStack);
         }
@@ -40,11 +45,12 @@ public class StatDisplayWidget extends InteractAbleWidget {
         Material material = MaterialProperty.getMaterialFromIngredient(itemStack);
         if (material != null && !(itemStack.getItem() instanceof ModularItem)) {
             removeChild(materialStatWidget);
-            materialStatWidget = new MaterialStatWidget(material, getX(), getY(), getWidth(), getHeight(), Text.literal("miapi.material.stat.widget"));
             removeChild(statListWidget);
+            materialStatWidget = new MaterialStatWidget(material, getX(), getY(), getWidth(), getHeight(), Text.literal("miapi.material.stat.widget"));
             addChild(materialStatWidget);
         } else {
             removeChild(materialStatWidget);
+            removeChild(statListWidget);
             addChild(statListWidget);
             statListWidget.setItemsOriginal(itemStack, compareTo);
         }
