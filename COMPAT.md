@@ -1,6 +1,7 @@
 # Compat information
 ## Dedicated Compat
 These Mods have received dedicated compatibility patches/bugfixes in truly modular to ensure compatibility  
+This IS NOT a definitive list of compatible mods, just a list of mods that originally caused issues that we fixed.
 - **Better Combat**:
 dedicated and integrated support  
 But Better Combat sadly has a bug with NBT based Compat. We recommend using https://modrinth.com/mod/better-combat-nbt-fix for multiplayer
