@@ -5,6 +5,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
 import smartin.miapi.Environment;
 import smartin.miapi.Miapi;
 import smartin.miapi.material.DefaultMaterial;
@@ -39,6 +40,11 @@ public class CompositeMaterial extends DelegatingMaterial {
     public CompositeMaterial(Material buildMaterial, List<Composite> composites) {
         super(buildMaterial);
         this.composites = composites;
+    }
+
+    @Override
+    public Material getMaterialFromIngredient(ItemStack ingredient) {
+        return ingredient.getOrDefault(COMPOSITE_MATERIAL_COMPONENT, new DefaultMaterial());
     }
 
     @Override

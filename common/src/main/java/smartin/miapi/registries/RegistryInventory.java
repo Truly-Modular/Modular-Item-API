@@ -65,6 +65,7 @@ import smartin.miapi.item.modular.items.tools.*;
 import smartin.miapi.lootFunctions.MaterialSwapLootFunction;
 import smartin.miapi.lootFunctions.ModuleSwapLootFunction;
 import smartin.miapi.material.*;
+import smartin.miapi.material.composite.CompositeMaterial;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.StackStorageComponent;
@@ -257,6 +258,8 @@ public class RegistryInventory {
                 Miapi.id("stack_storage"), () -> StackStorageComponent.STACK_STORAGE_COMPONENT);
         RegistryInventory.components.register(
                 Miapi.id("tower_shield"), () -> TowerShieldComponent.TOWER_SHIELD_COMPONENT);
+        RegistryInventory.components.register(
+                CompositeMaterial.KEY, () -> CompositeMaterial.COMPOSITE_MATERIAL_COMPONENT);
 
         RegistryInventory.lootItemFunctions.register(
                 Miapi.id("module_swap"), () -> moduleSwapLootFunctionLootItemFunctionType);

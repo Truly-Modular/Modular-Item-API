@@ -979,13 +979,12 @@
                   "description": "  \nThe Explosion Property makes a projectile explode upon hitting an entity or block. The explosion parameters such as\rstrength, radius, and whether or not blocks are destroyed can be customized. The explosion may also affect entities\rwith a configurable maximum damage and radius.\r",
                   "java": "common/src/main/java/smartin/miapi/modules/properties/projectile/ExplosionProperty.java",
                   "data": {
-                    "explosion_projectile": " An instance of `ExplosionInfo`, containing the properties for explosion behavior.",
-                    "`destroyBlocks`": " (optional) Whether blocks are destroyed by the explosion.",
-                    "`chance`": " (optional) Probability of the explosion occurring upon impact.",
-                    "`strength`": " Strength of the explosion.",
-                    "`entityStrength`": " (optional) Damage multiplier for entities caught in the explosion.",
-                    "`entityMaxDamage`": " (optional) Maximum damage the explosion can deal to entities.",
-                    " `entityRadius`": " (optional) Radius of the explosion's effect on entities."
+                    "strength": " Strength of the explosion.",
+                    "chance": " (optional default = 1.0) Probability of the explosion occurring upon impact.",
+                    "destroyBlocks": " (optional default = true) Whether blocks are destroyed by the explosion.",
+                    "entityStrength": " (optional default = strength) Damage multiplier for entities caught in the explosion.",
+                    "entityMaxDamage": " (optional default = strength) Maximum damage the explosion can deal to entities.",
+                    "entityRadius": " (optional default = strength) Radius of the explosion's effect on entities."
                   },
                   "key_words": []
                 },

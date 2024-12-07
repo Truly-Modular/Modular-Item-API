@@ -29,13 +29,12 @@ import java.util.Optional;
  * strength, radius, and whether or not blocks are destroyed can be customized. The explosion may also affect entities
  * with a configurable maximum damage and radius.
  * @description_end
- * @data explosion_projectile: An instance of `ExplosionInfo`, containing the properties for explosion behavior.
- * @data `destroyBlocks`: (optional) Whether blocks are destroyed by the explosion.
- * @data `chance`: (optional) Probability of the explosion occurring upon impact.
- * @data `strength`: Strength of the explosion.
- * @data `entityStrength`: (optional) Damage multiplier for entities caught in the explosion.
- * @data `entityMaxDamage`: (optional) Maximum damage the explosion can deal to entities.
- * @data  `entityRadius`: (optional) Radius of the explosion's effect on entities.
+ * @data strength: Strength of the explosion.
+ * @data chance: (optional default = 1.0) Probability of the explosion occurring upon impact.
+ * @data destroyBlocks: (optional default = true) Whether blocks are destroyed by the explosion.
+ * @data entityStrength: (optional default = strength) Damage multiplier for entities caught in the explosion.
+ * @data entityMaxDamage: (optional default = strength) Maximum damage the explosion can deal to entities.
+ * @data entityRadius: (optional default = strength) Radius of the explosion's effect on entities.
  */
 
 public class ExplosionProperty extends CodecProperty<ExplosionProperty.ExplosionInfo> {

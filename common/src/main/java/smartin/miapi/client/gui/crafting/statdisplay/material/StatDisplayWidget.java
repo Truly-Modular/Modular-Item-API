@@ -31,6 +31,7 @@ public class StatDisplayWidget extends InteractAbleWidget {
             addChild(materialStatWidget);
         } else {
             removeChild(materialStatWidget);
+            removeChild(statListWidget);
             addChild(statListWidget);
             statListWidget.setOriginal(itemStack);
         }
@@ -45,6 +46,7 @@ public class StatDisplayWidget extends InteractAbleWidget {
             addChild(materialStatWidget);
         } else {
             removeChild(materialStatWidget);
+            removeChild(statListWidget);
             addChild(statListWidget);
             statListWidget.setItemsOriginal(itemStack, compareTo);
         }

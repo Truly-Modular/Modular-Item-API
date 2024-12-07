@@ -5,6 +5,7 @@ import net.bettercombat.logic.WeaponAttributesFallback;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.MenuAccess;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -42,7 +43,6 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
     public static final ResourceLocation BACKGROUND_TEXTURE = Miapi.id("textures/gui/crafter/background.png");
     /*public static final InterpolateMode EASE_IN = new InterpolateMode.EaseIn(5);
     public static final InterpolateMode EASE_OUT = new InterpolateMode.EaseOut(5);*/
-    private ItemStack stack;
     private ModuleCrafter moduleCrafter;
     private StatDisplayWidget statDisplay;
     private MaterialStatWidget materialStatWidget;
@@ -58,6 +58,7 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
     static int editSpace = 30;
     @Nullable
     public InteractAbleWidget hoverElement = null;
+    public CompoundTag oldCompound = new CompoundTag();
     static WeakReference<CraftingScreen> craftingScreenWeakReference = new WeakReference<>(null);
 
     List<InteractAbleWidget> editOptionIcons = new ArrayList<>();
