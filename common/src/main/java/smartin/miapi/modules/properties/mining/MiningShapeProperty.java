@@ -21,6 +21,7 @@ import smartin.miapi.modules.properties.mining.condition.MiningTypeCondition;
 import smartin.miapi.modules.properties.mining.mode.InstantMiningMode;
 import smartin.miapi.modules.properties.mining.mode.MiningMode;
 import smartin.miapi.modules.properties.mining.mode.StaggeredMiningMode;
+import smartin.miapi.modules.properties.mining.modifier.FasterMiningModifier;
 import smartin.miapi.modules.properties.mining.modifier.MiningModifier;
 import smartin.miapi.modules.properties.mining.modifier.SameBlockModifier;
 import smartin.miapi.modules.properties.mining.shape.CubeMiningShape;
@@ -73,6 +74,7 @@ public class MiningShapeProperty implements ModuleProperty {
         miningModeMap.put("staggered", new StaggeredMiningMode());
 
         miningModifierMap.put("require_same", new SameBlockModifier());
+        miningModifierMap.put("require_faster", new FasterMiningModifier());
 
         miningConditionMap.put("always", new AlwaysMiningCondition());
         miningConditionMap.put("block_tag", new BlockTagCondition(new ArrayList<>()));

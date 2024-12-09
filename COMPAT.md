@@ -15,7 +15,7 @@ But Better Combat sadly has a bug with NBT based Compat. We recommend using http
 ## Generated Material Info
 Truly Modular attempts to make any mods Tool Materials compatible.
 This is done by scanning a Mods tools and trying to match their stats.
-Most mods should work with this system.
+Most mods should work with this system.vs
 - **Reqirements**  
 A Sword and an Axe implement as the same Toolfamily.
 - **Exceptions**  
