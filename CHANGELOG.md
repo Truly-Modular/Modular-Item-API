@@ -1,4 +1,3 @@
-## v1.1.37 (1.20.1)
-- fix client issue for null-attribute
-- added config option to toggle lore injection on server
-- minor ui-optimisations
+## v1.1.38 (1.20.1)
+- added faster mining modifier
+- adjusted default enchanting glint color
