@@ -156,7 +156,9 @@ public class AttributeSingleDisplay extends SingleStatDisplayDouble {
 
         private Builder(Holder<Attribute> attribute) {
             this.attribute = attribute;
-            name = (itemStack) -> Component.translatable(attribute.value().getDescriptionId());
+            if (attribute != null) {
+                name = (itemStack) -> Component.translatable(attribute.value().getDescriptionId());
+            }
             modifierFormat = Util.make(new DecimalFormat("##.##"), (decimalFormat) -> {
                 decimalFormat.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ROOT));
             });
@@ -240,7 +242,8 @@ public class AttributeSingleDisplay extends SingleStatDisplayDouble {
                 throw new IllegalStateException("Name is required");
             }
             if (attribute == null) {
-                throw new IllegalStateException("Attribute is required");
+                Miapi.LOGGER.error("Attribute is required for Attribute Stat Display!");
+                return new AttributeSingleDisplay[0];
             }
 
             // Create an instance of AttributeProperty with the builder values

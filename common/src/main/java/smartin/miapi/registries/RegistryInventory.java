@@ -189,15 +189,14 @@ public class RegistryInventory {
      */
     public static void registerAtt(String id, boolean attach, Supplier<Attribute> sup, Consumer<Holder<Attribute>> onRegister) {
         ResourceLocation rl = ResourceLocation.fromNamespaceAndPath(MOD_ID, id);
-        String stringId = rl.toString();
 
         RegistrySupplier<Attribute> obj = attributes.register(rl, sup); // actually register the object
         obj.listen((attribute -> {
             onRegister.accept(attributes.getHolder(rl));
-        })); // attach the onRegister callback, usually used to set the value of fields.
-
-        if (attach) // if it should automatically attach to an entity, add another listener to do that (this is equivalent to the old registerOnEntity)
-            obj.listen(att -> AttributeRegistry.entityAttributeMap.put(stringId, att));
+            if (attach) {
+                AttributeRegistry.entityAttributeMap.put(rl, attributes.getHolder(rl));
+            }
+        }));
     }
 
     public static Block modularWorkBench;

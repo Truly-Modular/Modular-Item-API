@@ -1,8 +1,10 @@
 package smartin.miapi.fabric.mixin;
 
 import dev.architectury.event.EventResult;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Arrow;
 import org.spongepowered.asm.mixin.Mixin;
@@ -38,6 +40,19 @@ public class LivingEntityMixin {
         lastEvent = livingHurtEvent;
         storedValue = livingHurtEvent.amount;
         storedDamageSource = livingHurtEvent.damageSource;
+    }
+
+    @Inject(method = "createLivingAttributes", at = @At("TAIL"), cancellable = true)
+    private static void miapi$addAttributes(CallbackInfoReturnable<AttributeSupplier.Builder> cir) {
+        AttributeSupplier.Builder builder = cir.getReturnValue();
+        smartin.miapi.registries.AttributeRegistry.registerAttributes();
+        if (builder != null) {
+            AttributeRegistry.entityAttributeMap.forEach((id, attribute) -> {
+                builder.add(BuiltInRegistries.ATTRIBUTE.wrapAsHolder(attribute.value()));
+                //Miapi.LOGGER.info("added attribute to living entity" + id);
+            });
+            MiapiEvents.LIVING_ENTITY_ATTRIBUTE_BUILD_EVENT.invoker().build(builder);
+        }
     }
 
     @ModifyVariable(

@@ -1,10 +1,8 @@
 package smartin.miapi.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
@@ -12,7 +10,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.attributes.ElytraAttributes;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.events.MiapiEvents;
@@ -42,19 +39,6 @@ abstract class LivingEntityMixin {
             return false;
         }
         return original;
-    }
-
-    @Inject(method = "createLivingAttributes", at = @At("TAIL"), cancellable = true)
-    private static void miapi$addAttributes(CallbackInfoReturnable<AttributeSupplier.Builder> cir) {
-        AttributeSupplier.Builder builder = cir.getReturnValue();
-        smartin.miapi.registries.AttributeRegistry.registerAttributes();
-        if (builder != null) {
-            AttributeRegistry.entityAttributeMap.forEach((id, attribute) -> {
-                builder.add(BuiltInRegistries.ATTRIBUTE.wrapAsHolder(attribute));
-                //Miapi.LOGGER.info("added attribute to living entity" + id);
-            });
-            MiapiEvents.LIVING_ENTITY_ATTRIBUTE_BUILD_EVENT.invoker().build(builder);
-        }
     }
 
 

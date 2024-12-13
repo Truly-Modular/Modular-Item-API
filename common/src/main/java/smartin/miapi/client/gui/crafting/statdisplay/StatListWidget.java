@@ -344,7 +344,7 @@ public class StatListWidget extends InteractAbleWidget {
 
     public static void reloadEnd() {
         BuiltInRegistries.ATTRIBUTE.forEach(entityAttribute -> {
-            if (!AttributeSingleDisplay.attributesWithDisplay.contains(entityAttribute)) {
+            if (entityAttribute != null && !AttributeSingleDisplay.attributesWithDisplay.contains(entityAttribute)) {
                 addStatDisplay(AttributeSingleDisplay
                         .builder(BuiltInRegistries.ATTRIBUTE.wrapAsHolder(entityAttribute)).setDefault(0.0).build());
             }

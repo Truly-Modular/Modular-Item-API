@@ -48,7 +48,7 @@ public class MiapiClientConfig {
         public boolean injectLoreModularTemplate = true;
         @Comment("The color Miapi uses for its enchanting glint")
         @AutoCodec.Name("enchanting_glint_colors")
-        public List<Color> enchantColors = List.of(Color.MAGENTA);
+        public List<Color> enchantColors = List.of(new Color("A755FF80"));
 
         @Comment("Speed of Color Change on enchanting Glint")
         @AutoCodec.Name("enchanting_glint_speed")

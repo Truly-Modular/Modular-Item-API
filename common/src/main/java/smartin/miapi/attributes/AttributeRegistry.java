@@ -35,7 +35,7 @@ import java.util.WeakHashMap;
 
 
 public class AttributeRegistry {
-    public static Map<String, Attribute> entityAttributeMap = new HashMap<>();
+    public static Map<ResourceLocation, Holder<Attribute>> entityAttributeMap = new HashMap<>();
     /**
      * Idk, this is kinda bad but i couldnt do it in the mixin
      */

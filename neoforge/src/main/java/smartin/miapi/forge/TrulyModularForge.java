@@ -11,8 +11,10 @@ import net.neoforged.fml.event.lifecycle.InterModEnqueueEvent;
 import net.neoforged.neoforge.client.event.ModelEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
+import net.neoforged.neoforge.event.entity.EntityAttributeModificationEvent;
 import smartin.miapi.Environment;
 import smartin.miapi.Miapi;
+import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.client.model.item.ItemBakedModelReplacement;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.forge.compat.ApotheosisCompat;
@@ -43,6 +45,7 @@ public class TrulyModularForge {
         }
         //bus.register(new ModEvents());
         NeoForge.EVENT_BUS.register(new ServerEvents());
+        //NeoForge.EVENT_BUS.register(new CommonEvents());
         Miapi.init();
 
         try {
@@ -77,12 +80,21 @@ public class TrulyModularForge {
         //AttributeProperty.replaceMap.put("miapi:generic.swim_speed", () -> SWIM_SPEED.value());
     }
 
+    @EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD, modid = MOD_ID)
     public static class ModEvents {
         @SubscribeEvent
-        public void enqueueIMC(InterModEnqueueEvent event) {
+        public static void enqueueIMC(InterModEnqueueEvent event) {
             if (Platform.isModLoaded("treechop")) {
                 //InterModComms.sendTo("treechop", "getTreeChopAPI", () -> (Consumer<Object>) TreechopUtil::setTreechopApi);
             }
+        }
+        @SubscribeEvent
+        public static void addEntityAttributes(EntityAttributeModificationEvent attributeModificationEvent) {
+            AttributeRegistry.entityAttributeMap.forEach((id, attribute) -> {
+                attributeModificationEvent.getTypes().forEach(entityType -> {
+                    attributeModificationEvent.add(entityType, attribute);
+                });
+            });
         }
     }
 
