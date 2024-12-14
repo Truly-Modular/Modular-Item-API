@@ -146,7 +146,7 @@ public class AttributeRegistry {
 
         MiapiEvents.LIVING_HURT.register((livingHurtEvent -> {
             if (livingHurtEvent.livingEntity.getAttributes().hasAttribute(DAMAGE_RESISTANCE)) {
-                livingHurtEvent.amount = (float) (livingHurtEvent.amount * (100 - livingHurtEvent.livingEntity.getAttributeValue(DAMAGE_RESISTANCE)) / 100);
+                livingHurtEvent.amount = Math.max(0, (float) (livingHurtEvent.amount * (100 - livingHurtEvent.livingEntity.getAttributeValue(DAMAGE_RESISTANCE)) / 100));
             }
             return EventResult.pass();
         }));

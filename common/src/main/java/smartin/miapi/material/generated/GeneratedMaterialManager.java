@@ -42,7 +42,6 @@ public class GeneratedMaterialManager {
         }, -1);
         ReloadEvents.dataSyncerRegistry.register(Miapi.id("generated_materials"),
                 new ReloadEvents.SimpleSyncer<>(ByteBufCodecs.fromCodec(Codec.list(GeneratedMaterial.CODEC))) {
-
                     @Override
                     public List<GeneratedMaterial> getDataServer() {
                         return generatedMaterials;
@@ -137,7 +136,7 @@ public class GeneratedMaterialManager {
                                         generatedMaterials.add(generatedMaterial);
                                     }
                                 }
-                            } catch (Exception e) {
+                            } catch (RuntimeException e) {
                                 Miapi.LOGGER.error("could not generate Material for " + toolMaterial.getRepairIngredient().getItems()[0], e);
                             }
                         });

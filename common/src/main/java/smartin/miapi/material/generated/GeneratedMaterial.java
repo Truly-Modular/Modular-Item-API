@@ -161,11 +161,27 @@ public class GeneratedMaterial implements Material {
                 stats.put("flexibility", (double) (toolMaterial.getSpeed() / 4));
             }
             stats.put("tier", (double) getEstimatedTier(toolMaterial.getIncorrectBlocksForDrops()));
-            armorItems = BuiltInRegistries.ITEM.stream().filter(a -> a instanceof ArmorItem).map(r -> (ArmorItem) r).filter(armorItem -> armorItem.getMaterial().value().repairIngredient().get().test(mainIngredient)).toList();
+            armorItems = findRelatedArmorItems();
             properties = GeneratedMaterialPropertyManager.setup(getID(), swordItem, axeItem, toolMaterials, armorItems, Map.of());
             return true;
         }
         return false;
+    }
+
+    public List<ArmorItem> findRelatedArmorItems() {
+        return BuiltInRegistries.ITEM.stream()
+                .filter(ArmorItem.class::isInstance)
+                .map(r -> (ArmorItem) r)
+                .filter(armorItem -> {
+                    try {
+                        if (armorItem.getMaterial().value().repairIngredient() != null) {
+                            return armorItem.getMaterial().value().repairIngredient().get().test(mainIngredient);
+                        }
+                    } catch (RuntimeException e) {
+                        Miapi.LOGGER.error("Error during armor test", e);
+                    }
+                    return false;
+                }).toList();
     }
 
     public SwordItem getSwordItem() {
