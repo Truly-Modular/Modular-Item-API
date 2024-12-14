@@ -178,7 +178,9 @@ public class GeneratedMaterial implements Material {
                             return armorItem.getMaterial().value().repairIngredient().get().test(mainIngredient);
                         }
                     } catch (RuntimeException e) {
-                        Miapi.LOGGER.error("Error during armor test", e);
+                        if (GeneratedMaterialManager.verboseLogging()) {
+                            Miapi.LOGGER.error("Error during armor test", e);
+                        }
                     }
                     return false;
                 }).toList();

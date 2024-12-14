@@ -1,5 +1,6 @@
 package smartin.miapi.modules.properties.render;
 
+import com.google.common.cache.CacheLoader;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Pair;
@@ -12,17 +13,13 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.BlockModel;
 import net.minecraft.client.renderer.block.model.ItemModelGenerator;
-import net.minecraft.client.renderer.block.model.ItemOverrides;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.ModelBakery;
-import net.minecraft.client.resources.model.ModelState;
-import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.metadata.MetadataSectionSerializer;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.util.FastColor;
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -40,7 +37,6 @@ import smartin.miapi.mixin.client.ModelLoaderInterfaceAccessor;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.render.colorproviders.ColorProvider;
-import smartin.miapi.modules.properties.slot.SlotProperty;
 import smartin.miapi.modules.properties.util.CodecProperty;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
@@ -48,7 +44,6 @@ import smartin.miapi.modules.properties.util.ModuleProperty;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 
 
@@ -183,83 +178,6 @@ public class ModelProperty extends CodecProperty<List<ModelProperty.ModelData>> 
         return ModularItemCache.getRaw(stack, CACHE_KEY_ITEM);
     }
 
-    protected static Map<String, BakedModel> optimize(Map<String, BakedSingleModel> bakedModelMap) {
-        HashMap<String, BakedModel> map = new HashMap<>();
-        bakedModelMap.forEach((id, dynamicModel) -> {
-            map.put(id, dynamicModel.optimize());
-        });
-        return map;
-    }
-
-    protected static Map<String, BakedSingleModel> bakedModelMap(List<TransformedUnbakedModel> unbakedModels) {
-        Map<String, BakedSingleModel> bakedModelMap = new HashMap<>();
-        for (TransformedUnbakedModel unbakedModel : unbakedModels) {
-            ModelState settings = unbakedModel.transform.get().toModelBakeSettings();
-            BakedSingleModel model = DynamicBakery.bakeModel(unbakedModel.unbakedModel, mirroredGetter, unbakedModel.color, unbakedModel.transform.get());
-            BakedSingleModel bakedSIngleModel = bakedModelMap.computeIfAbsent(unbakedModel.transform.primary, (key) ->
-                    new BakedSingleModel(new ArrayList<>())
-            );
-            if (model != null) {
-                if (model.getOverrides() == null || model.getOverrides().equals(ItemOverrides.EMPTY)) {
-                    bakedSIngleModel.quads.addAll(model.getQuads(null, null, RandomSource.create()));
-                    for (Direction dir : Direction.values()) {
-                        bakedSIngleModel.quads.addAll(model.getQuads(null, dir, RandomSource.create()));
-                    }
-                } else {
-                    bakedSIngleModel.addModel(model);
-                }
-            } else {
-                Miapi.LOGGER.warn("Model is null? - this probably indicates another issue");
-            }
-        }
-        return bakedModelMap;
-    }
-
-    protected static List<TransformedUnbakedModel> resolveUnbakedModel(ModuleInstance root) {
-        List<TransformedUnbakedModel> unbakedModels = new ArrayList<>();
-        AtomicReference<Float> scaleAdder = new AtomicReference<>(1.0f);
-        for (ModuleInstance moduleI : root.allSubModules()) {
-            List<ModelData> modelDataList = property.getData(moduleI).orElse(new ArrayList<>());
-            for (ModelData json : modelDataList) {
-                int color = 0;
-                int condition = Material.getColor(StatResolver.resolveString(json.condition, moduleI));
-                if (condition != 0) {
-                    Material material = MaterialProperty.getMaterial(moduleI);
-                    List<String> list = new ArrayList<>();
-                    if (material != null) {
-                        list.add(material.getStringID());
-                        list = material.getTextureKeys();
-                    } else {
-                        list.add("default");
-                    }
-                    BlockModel unbakedModel = null;
-                    for (String str : list) {
-                        String fullPath = json.path.replace("[material.texture]", str);
-                        if (modelCache.containsKey(fullPath)) {
-                            unbakedModel = modelCache.get(fullPath).model;
-                        }
-                    }
-                    assert unbakedModel != null;
-                    TransformMap transformMap = SlotProperty.getTransformStack(moduleI);
-                    if (json.transform == null) {
-                        json.transform = Transform.IDENTITY;
-                    }
-                    transformMap.add(json.transform.copy());
-                    String modelId = transformMap.primary;
-                    Transform transform1 = transformMap.get(transformMap.primary);
-                    if (modelId == null) {
-                        modelId = "item";
-                    }
-                    transformMap.primary = modelId;
-                    transform1.scale.mul(scaleAdder.get());
-                    transformMap.set(transformMap.primary, transform1);
-                    unbakedModels.add(new TransformedUnbakedModel(transformMap, unbakedModel, moduleI, color));
-                }
-            }
-        }
-        return unbakedModels;
-    }
-
     protected static BlockModel loadModelFromFilePath(String filePath2) throws FileNotFoundException {
         if (modelCache.containsKey(filePath2)) {
             return modelCache.get(filePath2).model;
@@ -314,7 +232,7 @@ public class ModelProperty extends CodecProperty<List<ModelProperty.ModelData>> 
                 String path = filePath.replace(materialKey, "default");
                 BlockModel model = loadModelFromFilePath(path);
                 models.put("default", model);
-            } catch (FileNotFoundException fileNotFoundException) {
+            } catch (FileNotFoundException | CacheLoader.InvalidCacheLoadException fileNotFoundException) {
                 throw new RuntimeException(fileNotFoundException);
             }
             MaterialProperty.getTextureKeys().forEach((path) -> {
@@ -324,14 +242,14 @@ public class ModelProperty extends CodecProperty<List<ModelProperty.ModelData>> 
                     if (model != null) {
                         models.put(path, model);
                     }
-                } catch (FileNotFoundException ignored) {
+                } catch (FileNotFoundException | CacheLoader.InvalidCacheLoadException ignored) {
                 }
             });
         } else {
             try {
                 BlockModel model = loadModelFromFilePath(filePath);
                 models.put("default", model);
-            } catch (FileNotFoundException fileNotFoundException) {
+            } catch (FileNotFoundException | CacheLoader.InvalidCacheLoadException fileNotFoundException) {
                 throw new RuntimeException(fileNotFoundException);
             }
         }
