@@ -18,10 +18,7 @@ import smartin.miapi.material.Material;
 import smartin.miapi.material.MaterialProperty;
 import smartin.miapi.mixin.SmithingTransformRecipeAccessor;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
@@ -36,6 +33,11 @@ public class SmithingRecipeUtil {
         try {
             RecipeManager recipeManager = findManager(Environment.isClient());
             RegistryAccess registryAccess = findRegistryManager(isClient);
+            if (registryAccess == null) {
+                Miapi.LOGGER.warn("Could not setup Smithing Materials, could not find Recipes");
+                materials.forEach(register::accept);
+                return;
+            }
             List<GeneratedMaterial> todo = new ArrayList<>(materials);
             List<GeneratedMaterial> done = new ArrayList<>();
             AtomicBoolean hasMadeProgress = new AtomicBoolean(false);
@@ -150,14 +152,19 @@ public class SmithingRecipeUtil {
     }
 
     static RegistryAccess findRegistryManager(boolean isClient) {
-        if (isClient) {
-            if (Miapi.registryAccess != null) {
-                return Miapi.registryAccess;
-            }
-            return Minecraft.getInstance().level.registryAccess();
-        } else {
-            return Miapi.server.registryAccess();
+        if (Miapi.registryAccess != null) {
+            return Miapi.registryAccess;
         }
+        if (isClient) {
+            if (Minecraft.getInstance() != null && Minecraft.getInstance().level != null) {
+                return Minecraft.getInstance().level.registryAccess();
+            }
+        } else {
+            if (Miapi.server != null) {
+                return Miapi.server.registryAccess();
+            }
+        }
+        return null;
     }
 
     public static void addSmithingRecipe

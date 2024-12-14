@@ -9,7 +9,6 @@ import net.minecraft.server.packs.PackType;
 import net.minecraft.world.entity.ai.attributes.RangedAttribute;
 import smartin.miapi.Environment;
 import smartin.miapi.Miapi;
-import smartin.miapi.fabric.compat.ZenithCompat;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.modules.properties.attributes.AttributeProperty;
 import smartin.miapi.modules.properties.enchanment.AllowedEnchantments;
@@ -40,20 +39,21 @@ public class MiapiFabric implements ModInitializer {
         RegistryInventory.registerAtt("generic.swim_speed", true, () ->
                         new RangedAttribute("miapi.attribute.name.swim_speed", 1.0, 0.0, 1024.0).setSyncable(true),
                 att -> SWIM_SPEED = att);
-
-        if (Platform.isModLoaded("treechop")) {
-            TrechopUtilFabric.loadTreechopCompat();
-        }
         ResourceManagerHelper.get(PackType.SERVER_DATA).registerReloadListener(new IdentifiableMiapiReloadListenerFixed());
 
         AttributeProperty.replaceMap.put("forge:generic.swim_speed", () -> SWIM_SPEED.value());
 
-        if (Platform.isModLoaded("zenith")) {
-            try {
-                ZenithCompat.setup();
-            } catch (RuntimeException surpressed) {
-                Miapi.LOGGER.warn("couldnt load Zenith compat", surpressed);
+        loadCompat("zenith", smartin.miapi.fabric.compat.ZenithCompat::setup);
+        loadCompat("treechop", smartin.miapi.fabric.compat.TrechopUtilFabric::loadTreechopCompat);
+    }
+
+    public static void loadCompat(String modId, Runnable onLoaded) {
+        try {
+            if (Platform.isModLoaded(modId)) {
+                onLoaded.run();
             }
+        } catch (RuntimeException e) {
+            Miapi.LOGGER.error("could not setup compat for " + modId, e);
         }
     }
 }

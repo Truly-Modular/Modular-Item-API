@@ -5,6 +5,7 @@ import dev.architectury.platform.Platform;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.InterModComms;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.InterModEnqueueEvent;
@@ -13,57 +14,33 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeModificationEvent;
-import smartin.miapi.Environment;
 import smartin.miapi.Miapi;
 import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.client.model.item.ItemBakedModelReplacement;
 import smartin.miapi.datapack.ReloadEvents;
-import smartin.miapi.forge.compat.ApotheosisCompat;
 import smartin.miapi.modules.properties.attributes.AttributeProperty;
 import smartin.miapi.modules.properties.render.ModelProperty;
 import smartin.miapi.registries.RegistryInventory;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 import static smartin.miapi.Miapi.MOD_ID;
 
 @Mod(MOD_ID)
 public class TrulyModularForge {
     public TrulyModularForge() {
-        // Submit our event bus to let architectury register our content on the right time
-        //IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
-        //NeoForge.EVENT_BUS;
-        //EventBuses.registerModEventBus(MOD_ID, bus);
-        if (Environment.isClient()) {
-            //bus.register(new ClientModEvents());
-            //MinecraftForge.EVENT_BUS.register(new ClientEvents());
-        }
-        if (Platform.isModLoaded("quark")) {
-            try {
-                //QuarkCompat.setup();
-            } catch (Exception e) {
-                Miapi.LOGGER.info("couldn't load quark compat", e);
-            }
-        }
-        //bus.register(new ModEvents());
         NeoForge.EVENT_BUS.register(new ServerEvents());
-        //NeoForge.EVENT_BUS.register(new CommonEvents());
         Miapi.init();
 
-        try {
-            if (Platform.isModLoaded("epicfight")) {
-                //RegistryInventory.moduleProperties.register(EpicFightCompatProperty.KEY, new EpicFightCompatProperty());
-            }
-        } catch (Exception e) {
-            Miapi.LOGGER.info("couldn't load epic fight compat");
-        }
-        if (Platform.isModLoaded("apotheosis")) {
-            try {
-                ApotheosisCompat.setup();
-            } catch (RuntimeException surpressed) {
-                Miapi.LOGGER.warn("couldn't load Apotheosis compat", surpressed);
-            }
-        }
+        loadCompat("epicfight", () -> {
+            //RegistryInventory.moduleProperties.register(EpicFightCompatProperty.KEY, new EpicFightCompatProperty())
+        });
+
+        //use explicit classpath to prevent accidental class loading
+        loadCompat("quark", smartin.miapi.forge.compat.QuarkCompat::setup);
+
+        loadCompat("apotheosis", smartin.miapi.forge.compat.ApotheosisCompat::setup);
 
         //if (Platform.isModLoaded("epicfight"))
         //RegistryInventory.moduleProperties.register(EpicFightCompatProperty.KEY, new EpicFightCompatProperty());
@@ -77,7 +54,6 @@ public class TrulyModularForge {
     }
 
     public static void setupAttributes() {
-
         AttributeRegistry.SWIM_SPEED = NeoForgeMod.SWIM_SPEED;
         AttributeProperty.replaceMap.put("miapi:generic.swim_speed", () -> AttributeRegistry.SWIM_SPEED.value());
     }
@@ -87,9 +63,10 @@ public class TrulyModularForge {
         @SubscribeEvent
         public static void enqueueIMC(InterModEnqueueEvent event) {
             if (Platform.isModLoaded("treechop")) {
-                //InterModComms.sendTo("treechop", "getTreeChopAPI", () -> (Consumer<Object>) TreechopUtil::setTreechopApi);
+                InterModComms.sendTo("treechop", "getTreeChopAPI", () -> (Consumer<Object>) smartin.miapi.modules.properties.compat.ht_treechop.TreechopUtil::setTreechopApi);
             }
         }
+
         @SubscribeEvent
         public static void addEntityAttributes(EntityAttributeModificationEvent attributeModificationEvent) {
             AttributeRegistry.entityAttributeMap.forEach((id, attribute) -> {
@@ -185,5 +162,15 @@ public class TrulyModularForge {
         }
 
          */
+    }
+
+    public static void loadCompat(String modId, Runnable onLoaded) {
+        try {
+            if (Platform.isModLoaded(modId)) {
+                onLoaded.run();
+            }
+        } catch (RuntimeException e) {
+            Miapi.LOGGER.error("could not setup compat for " + modId, e);
+        }
     }
 }
