@@ -230,8 +230,8 @@ public class GrayscalePaletteColorer extends SpritePixelReplacer {
                     current.greenAsFloat() * weight + next.greenAsFloat() * (1 - weight),
                     current.blueAsFloat() * weight + next.blueAsFloat() * (1 - weight),
                     current.alphaAsFloat() * weight + next.alphaAsFloat() * (1 - weight));
-            float weightedPos = Math.min(255, pixels.lastIndexOf(current) + (pixels.lastIndexOf(current) - pixels.indexOf(next)) * 0.5f);
-            finalColorMap.put((int) (weightedPos * scale), weightedAverage);
+            float weightedPos = pixels.lastIndexOf(current) + (pixels.lastIndexOf(current) - pixels.indexOf(next)) * 0.5f;
+            finalColorMap.put(Math.clamp((int) (weightedPos * scale), 0, 255), weightedAverage);
         }
 
         finalColorMap.putIfAbsent(0, Color.BLACK);
