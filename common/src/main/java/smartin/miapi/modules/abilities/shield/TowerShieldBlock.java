@@ -3,6 +3,7 @@ package smartin.miapi.modules.abilities.shield;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DynamicOps;
 import com.redpxnda.nucleus.codec.auto.AutoCodec;
+import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
 import com.redpxnda.nucleus.pose.server.ServerPoseFacet;
 import dev.architectury.event.EventResult;
 import net.minecraft.resources.ResourceLocation;
@@ -131,8 +132,11 @@ public class TowerShieldBlock implements ItemUseDefaultCooldownAbility<TowerShie
     }
 
     public static class BlockData {
+        @CodecBehavior.Optional
         public DoubleOperationResolvable cooldown = new DoubleOperationResolvable(100);
+        @CodecBehavior.Optional
         public DoubleOperationResolvable block = new DoubleOperationResolvable(1);
+        @CodecBehavior.Optional
         public ResourceLocation animation = ResourceLocation.parse("miapi:block");
     }
 }

@@ -156,7 +156,8 @@ public class GrayscalePaletteColorer extends SpritePixelReplacer {
      * Creates the color array from the map of colors
      */
     public static int[] createColorsArray(Map<Integer, Color> colors) {
-        if (colors.size() != 256) throw new IllegalArgumentException("There must be 256 colors!");
+        if (colors.size() != 256)
+            throw new IllegalArgumentException("There must be 256 colors! there are " + colors.size() + " colors!");
         int[] array = new int[256];
         colors.forEach((pos, color) -> array[pos] = color.abgr());
         return array;
@@ -229,12 +230,16 @@ public class GrayscalePaletteColorer extends SpritePixelReplacer {
                     current.greenAsFloat() * weight + next.greenAsFloat() * (1 - weight),
                     current.blueAsFloat() * weight + next.blueAsFloat() * (1 - weight),
                     current.alphaAsFloat() * weight + next.alphaAsFloat() * (1 - weight));
-            float weightedPos = pixels.lastIndexOf(current) + (pixels.lastIndexOf(current) - pixels.indexOf(next)) * 0.5f;
+            float weightedPos = Math.min(255, pixels.lastIndexOf(current) + (pixels.lastIndexOf(current) - pixels.indexOf(next)) * 0.5f);
             finalColorMap.put((int) (weightedPos * scale), weightedAverage);
         }
 
         finalColorMap.putIfAbsent(0, Color.BLACK);
-        finalColorMap.putIfAbsent(255, uniqueColors.get(uniqueColors.size() - 1));
+        if (uniqueColors.isEmpty()) {
+            finalColorMap.putIfAbsent(255, Color.WHITE);
+        } else {
+            finalColorMap.putIfAbsent(255, uniqueColors.getLast());
+        }
 
         return finalColorMap;
     }

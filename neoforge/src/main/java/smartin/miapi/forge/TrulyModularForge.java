@@ -10,6 +10,7 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.InterModEnqueueEvent;
 import net.neoforged.neoforge.client.event.ModelEvent;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeModificationEvent;
 import smartin.miapi.Environment;
@@ -18,6 +19,7 @@ import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.client.model.item.ItemBakedModelReplacement;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.forge.compat.ApotheosisCompat;
+import smartin.miapi.modules.properties.attributes.AttributeProperty;
 import smartin.miapi.modules.properties.render.ModelProperty;
 import smartin.miapi.registries.RegistryInventory;
 
@@ -76,8 +78,8 @@ public class TrulyModularForge {
 
     public static void setupAttributes() {
 
-        //AttributeRegistry.SWIM_SPEED = ForgeMod.SWIM_SPEED.get();
-        //AttributeProperty.replaceMap.put("miapi:generic.swim_speed", () -> SWIM_SPEED.value());
+        AttributeRegistry.SWIM_SPEED = NeoForgeMod.SWIM_SPEED;
+        AttributeProperty.replaceMap.put("miapi:generic.swim_speed", () -> AttributeRegistry.SWIM_SPEED.value());
     }
 
     @EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD, modid = MOD_ID)
