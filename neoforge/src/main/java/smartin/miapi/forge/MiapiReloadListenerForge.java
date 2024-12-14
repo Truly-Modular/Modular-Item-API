@@ -31,9 +31,6 @@ public class MiapiReloadListenerForge implements PreparableReloadListener {
     }
 
     public CompletableFuture load(ResourceManager manager, ProfilerFiller profiler, Executor executor) {
-        ReloadEvents.reloadCounter++;
-        timeStart = System.nanoTime();
-        ReloadEvents.START.fireEvent(false, registryAccess.get());
         Map<ResourceLocation, String> data = new LinkedHashMap<>();
 
         ReloadEvents.syncedPaths.forEach((modID, dataPaths) -> {
@@ -42,8 +39,10 @@ public class MiapiReloadListenerForge implements PreparableReloadListener {
                 map.forEach((identifier, resources) -> {
                     resources.forEach(resource -> {
                         try {
-                            BufferedReader reader = resource.openAsReader();
-                            String dataString = reader.lines().collect(Collectors.joining());
+                            String dataString;
+                            try (BufferedReader reader = resource.openAsReader()) {
+                                dataString = reader.lines().collect(Collectors.joining());
+                            }
                             data.put(identifier, dataString);
                         } catch (Exception e) {
                             Miapi.LOGGER.warn("Error Loading Resource" + identifier + " " + resources);
@@ -57,6 +56,9 @@ public class MiapiReloadListenerForge implements PreparableReloadListener {
 
     public CompletableFuture<Void> apply(Object data, ResourceManager manager, ProfilerFiller profiler, Executor executor) {
         return CompletableFuture.runAsync(() -> {
+            ReloadEvents.reloadCounter++;
+            timeStart = System.nanoTime();
+            ReloadEvents.START.fireEvent(false, registryAccess.get());
             Map<ResourceLocation, String> dataMap = new HashMap<>((Map) data);
             Map<ResourceLocation, String> filteredMap = new HashMap<>();
             dataMap.forEach((key, value) -> {

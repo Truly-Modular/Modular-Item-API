@@ -39,11 +39,7 @@ public class TrulyModularForge {
 
         //use explicit classpath to prevent accidental class loading
         loadCompat("quark", smartin.miapi.forge.compat.QuarkCompat::setup);
-
         loadCompat("apotheosis", smartin.miapi.forge.compat.ApotheosisCompat::setup);
-
-        //if (Platform.isModLoaded("epicfight"))
-        //RegistryInventory.moduleProperties.register(EpicFightCompatProperty.KEY, new EpicFightCompatProperty());
 
 
         LifecycleEvent.SERVER_STARTING.register((instance -> setupAttributes()));
@@ -92,15 +88,6 @@ public class TrulyModularForge {
     }
 
     public static class ServerEvents {
-        /*
-        @SubscribeEvent
-        public void damageEvent(MiapiEvents.LivingHurtEvent hurtEvent) {
-            MiapiEvents.LivingHurtEvent event = new MiapiEvents.LivingHurtEvent(hurtEvent.getEntity(), hurtEvent.getSource(), hurtEvent.getAmount());
-            MiapiEvents.LIVING_HURT.invoker().hurt(event);
-            hurtEvent.setAmount(event.amount);
-        }
-
-         */
 
         @SubscribeEvent
         public void addReloadListeners(AddReloadListenerEvent addReloadListenerEvent) {

@@ -46,10 +46,9 @@ public class MiapiEvents {
      */
     public static final PrioritizedEvent<LivingHurt> LIVING_HURT = PrioritizedEvent.createEventResult();
     public static final PrioritizedEvent<LivingHurt> LIVING_HURT_AFTER = PrioritizedEvent.createEventResult();
-
+    public static final PrioritizedEvent<LivingHurt> LIVING_HURT_AFTER_ARMOR = PrioritizedEvent.createEventResult();
 
     public static final PrioritizedEvent<LivingEntityXpAdjust> ADJUST_DROP_XP = PrioritizedEvent.createEventResult();
-    public static final PrioritizedEvent<LivingHurt> LIVING_HURT_AFTER_ARMOR = PrioritizedEvent.createEventResult();
     public static final PrioritizedEvent<EntityRide> START_RIDING = PrioritizedEvent.createLoop(); // only fires on successful rides, and is not cancellable (if I wanted to make it cancellable, i would add mixinextras)
     public static final PrioritizedEvent<EntityRide> STOP_RIDING = PrioritizedEvent.createLoop();
     public static final PrioritizedEvent<StatUpdateEvent> STAT_UPDATE_EVENT = PrioritizedEvent.createEventResult();
