@@ -56,13 +56,14 @@ public class CacheCommands {
     }
 
     public static void triggerServerReload() {
+
         ReloadEvents.reloadCounter++;
         Map<ResourceLocation, String> cacheDatapack = new LinkedHashMap<>(ReloadEvents.DATA_PACKS);
         ReloadEvents.START.fireEvent(false, Miapi.server.registryAccess());
         ReloadEvents.DataPackLoader.trigger(cacheDatapack);
         ReloadEvents.MAIN.fireEvent(false, Miapi.server.registryAccess());
         ReloadEvents.END.fireEvent(false, Miapi.server.registryAccess());
-        ReloadEvents.reloadCounter--;
+        ReloadEvents.reloadCounter = 0;
         Miapi.server.getPlayerList().getPlayers().forEach(ReloadEvents::triggerReloadOnClient);
     }
 

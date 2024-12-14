@@ -6,6 +6,7 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
+import smartin.miapi.Environment;
 import smartin.miapi.Miapi;
 import smartin.miapi.network.Networking;
 import smartin.miapi.network.modern.payload.C2SMiapiPayload;
@@ -25,14 +26,18 @@ public class ModernNetworking {
     public static void setup() {
         try {
             //TODO:re-add this
-            NetworkManager.registerReceiver(NetworkManager.Side.S2C, S2CMiapiPayload.TYPE, S2CMiapiPayload.STREAM_CODEC, (packet, context) -> {
-                ModernNetworking.s2cReceivers.computeIfPresent(packet.payload().parseId(), ((location, receiver) -> {
-                    RegistryFriendlyByteBuf buf = new RegistryFriendlyByteBuf(Networking.createBuffer(), context.registryAccess());
-                    buf.writeBytes(packet.payload().data());
-                    receiver.receive(buf);
-                    return receiver;
-                }));
-            });
+            if (Environment.isClient()) {
+                NetworkManager.registerReceiver(NetworkManager.Side.S2C, S2CMiapiPayload.TYPE, S2CMiapiPayload.STREAM_CODEC, (packet, context) -> {
+                    ModernNetworking.s2cReceivers.computeIfPresent(packet.payload().parseId(), ((location, receiver) -> {
+                        RegistryFriendlyByteBuf buf = new RegistryFriendlyByteBuf(Networking.createBuffer(), context.registryAccess());
+                        buf.writeBytes(packet.payload().data());
+                        receiver.receive(buf);
+                        return receiver;
+                    }));
+                });
+            } else {
+                NetworkManager.registerS2CPayloadType(S2CMiapiPayload.TYPE, S2CMiapiPayload.STREAM_CODEC);
+            }
             NetworkManager.registerReceiver(NetworkManager.Side.C2S, C2SMiapiPayload.TYPE, C2SMiapiPayload.STREAM_CODEC, (packet, context) -> {
                 ModernNetworking.c2sReceivers.computeIfPresent(packet.payload().parseId(), ((location, receiver) -> {
                     RegistryFriendlyByteBuf buf = new RegistryFriendlyByteBuf(Networking.createBuffer(), context.registryAccess());

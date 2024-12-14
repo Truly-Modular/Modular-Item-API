@@ -16,10 +16,8 @@ import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
 import smartin.miapi.client.gui.crafting.crafter.replace.CraftOption;
-import smartin.miapi.client.gui.crafting.crafter.replace.ReplaceView;
-import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.material.AllowedMaterial;
-import smartin.miapi.modules.properties.slot.AllowedSlots;
+import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.slot.SlotProperty;
 
 import java.util.HashMap;
@@ -56,23 +54,6 @@ public class BlueprintComponent {
     public static ResourceLocation ID = Miapi.id("blueprint_slot_id");
 
     public static DataComponentType<BlueprintComponent> BLUEPRINT_COMPONENT = DataComponentType.<BlueprintComponent>builder().persistent(CODEC).networkSynchronized(ByteBufCodecs.fromCodec(CODEC)).build();
-
-    static {
-        ReplaceView.optionSuppliers.add(option ->
-                option.getScreenHandler().slots
-                        .stream()
-                        .filter(a -> a.getItem().has(BLUEPRINT_COMPONENT))
-                        .map(a -> a.getItem().get(BLUEPRINT_COMPONENT))
-                        .filter(b -> {
-                            for (String id : AllowedSlots.getAllowedSlots(option.getInstance())) {
-                                if (option.getSlot().allowed.contains(id)) {
-                                    return true;
-                                }
-                            }
-                            return false;
-                        })
-                        .map(a -> a.asCraftOption(option.getScreenHandler())).toList());
-    }
 
     public ModuleInstance toMerge;
     public Either<Boolean, IngredientWithCount> ingredient;

@@ -18,7 +18,7 @@ import smartin.miapi.mixin.LivingEntityAccessor;
 public class ShieldingArmorFacet implements EntityFacet<CompoundTag> {
     private final LivingEntity livingEntity;
     private float currentAmount;
-    public static final ResourceLocation facetIdentifier = Miapi.id( "shielding_armor");
+    public static final ResourceLocation facetIdentifier = Miapi.id("shielding_armor");
     public static FacetKey<ShieldingArmorFacet> KEY = FacetRegistry.register(facetIdentifier, ShieldingArmorFacet.class);
 
     public ShieldingArmorFacet(LivingEntity entity) {
@@ -47,7 +47,7 @@ public class ShieldingArmorFacet implements EntityFacet<CompoundTag> {
                     ticksSinceLastAttack() > 100
             ) {
                 currentAmount = Math.min(getCurrentAmount() + 0.25f, getMaxAmount());
-                if (livingEntity instanceof ServerPlayer serverPlayerEntity) {
+                if (livingEntity instanceof ServerPlayer serverPlayerEntity && serverPlayerEntity.connection != null) {
                     this.sendToClient(serverPlayerEntity);
                 }
             }

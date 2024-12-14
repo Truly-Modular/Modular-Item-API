@@ -13,6 +13,7 @@ import smartin.miapi.material.DelegatingMaterial;
 import smartin.miapi.material.Material;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 public class CompositeMaterial extends DelegatingMaterial {
@@ -56,4 +57,20 @@ public class CompositeMaterial extends DelegatingMaterial {
     public Optional<MapCodec<? extends Material>> codec() {
         return Optional.of(CODEC);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true; // Check for reference equality
+        if (o == null || getClass() != o.getClass()) return false; // Check for null or class mismatch
+        CompositeMaterial that = (CompositeMaterial) o; // Cast to CompositeMaterial
+        return Double.compare(that.cost, cost) == 0 && // Compare cost (double) using Double.compare
+               Objects.equals(composites, that.composites) && // Compare composites list
+               Objects.equals(KEY, that.KEY); // Compare KEY (ResourceLocation)
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(KEY, composites, cost); // Compute hash using KEY, composites, and cost
+    }
+
 }

@@ -23,10 +23,13 @@ import smartin.miapi.blocks.ModularWorkBenchRenderer;
 import smartin.miapi.client.atlas.MaterialAtlasManager;
 import smartin.miapi.client.atlas.MaterialSpriteManager;
 import smartin.miapi.client.gui.crafting.CraftingScreen;
+import smartin.miapi.client.gui.crafting.crafter.replace.CraftOption;
+import smartin.miapi.client.gui.crafting.crafter.replace.ReplaceView;
 import smartin.miapi.client.gui.crafting.statdisplay.StatListWidget;
 import smartin.miapi.client.model.ModularModelPredicateProvider;
 import smartin.miapi.client.renderer.SpriteLoader;
 import smartin.miapi.config.MiapiConfig;
+import smartin.miapi.craft.BlueprintManager;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.effects.CryoStatusEffect;
 import smartin.miapi.entity.ItemProjectileRenderer;
@@ -40,11 +43,16 @@ import smartin.miapi.modules.MiapiPermissions;
 import smartin.miapi.modules.cache.CacheCommands;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.render.colorproviders.ColorProvider;
+import smartin.miapi.modules.properties.slot.AllowedSlots;
 import smartin.miapi.network.Networking;
 import smartin.miapi.registries.RegistryInventory;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+
+import static smartin.miapi.craft.BlueprintComponent.BLUEPRINT_COMPONENT;
 
 public class MiapiClient {
     public static MaterialAtlasManager materialAtlasManager;
@@ -146,6 +154,36 @@ public class MiapiClient {
         if (sodiumLoaded) {
             ClientEvents.HUD_RENDER.register((drawContext, deltaTick) -> MaterialSpriteManager.onHudRender(drawContext));
         }
+
+        ReplaceView.optionSuppliers.add(option ->
+                option.getScreenHandler().slots
+                        .stream()
+                        .filter(a -> a.getItem().has(BLUEPRINT_COMPONENT))
+                        .map(a -> a.getItem().get(BLUEPRINT_COMPONENT))
+                        .filter(b -> {
+                            for (String id : AllowedSlots.getAllowedSlots(option.getInstance())) {
+                                if (option.getSlot().allowed.contains(id)) {
+                                    return true;
+                                }
+                            }
+                            return false;
+                        })
+                        .map(a -> a.asCraftOption(option.getScreenHandler())).toList());
+        ReplaceView.optionSuppliers.add(option -> {
+            List<CraftOption> options = new ArrayList<>();
+            BlueprintManager.reloadedBlueprints.forEach((id, blueprint) -> {
+                boolean isAllowed = false;
+                for (String slotID : AllowedSlots.getAllowedSlots(blueprint.toMerge)) {
+                    if (option.getSlot().allowed.contains(slotID)) {
+                        isAllowed = true;
+                    }
+                }
+                if (isAllowed) {
+                    options.add(BlueprintManager.asCraftOption(option.getScreenHandler(), id, blueprint));
+                }
+            });
+            return options;
+        });
         //Minecraft client = Minecraft.getInstance();
         //materialAtlasManager = new MaterialAtlasManager(client.getTextureManager());
         //ReloadListenerRegistry.register(PackType.CLIENT_RESOURCES, materialAtlasManager);

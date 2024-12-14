@@ -2,6 +2,7 @@ package smartin.miapi.fabric;
 
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
 import net.fabricmc.fabric.api.resource.ResourceReloadListenerKeys;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.server.packs.resources.ResourceManager;
@@ -15,7 +16,11 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
 public class IdentifiableMiapiReloadListenerFixed implements IdentifiableResourceReloadListener {
+    public static RegistryAccess access = null;
     MiapiReloadListener listener = new MiapiReloadListener(() -> {
+        if (access != null) {
+            return access;
+        }
         if (Miapi.server != null) {
             Miapi.registryAccess = Miapi.server.reloadableRegistries().get();
             return Miapi.server.registryAccess();

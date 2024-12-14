@@ -30,10 +30,7 @@ import smartin.miapi.modules.properties.util.DoubleProperty;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * The `NemesisProperty` class provides a property for items that deals bonus damage to specific target entities based on the number of kills made.
@@ -193,5 +190,19 @@ public class NemesisProperty extends DoubleProperty implements CraftingProperty 
             this.entityType = entityType;
             this.kills = kills;
         }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true; // Check for reference equality
+            if (o == null || getClass() != o.getClass()) return false; // Check for null or class mismatch
+            NemesisData that = (NemesisData) o; // Cast to NemesisData
+            return kills == that.kills && Objects.equals(entityType, that.entityType); // Compare fields
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(entityType, kills); // Compute hash using both fields
+        }
+
     }
 }

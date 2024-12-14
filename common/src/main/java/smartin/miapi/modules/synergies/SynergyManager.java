@@ -53,7 +53,7 @@ public class SynergyManager {
             }
             return oldMap;
         });
-        Miapi.registerReloadHandler(ReloadEvents.MAIN, "miapi/synergies", moduleSynergies, (isClient, path, data) -> {
+        Miapi.registerReloadHandler(ReloadEvents.MAIN, "miapi/synergies", moduleSynergies, (isClient, path, data, registryAccess) -> {
             load(data, path);
         }, 2);
         ReloadEvents.END.subscribe(((isClient, registryAccess) -> {

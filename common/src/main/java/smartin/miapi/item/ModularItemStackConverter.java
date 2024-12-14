@@ -52,7 +52,10 @@ public class ModularItemStackConverter {
             }
         }
         if (ModularItem.isModularItem(converted)) {
-            ComponentApplyProperty.updateItemStack(converted, Miapi.server.reloadableRegistries().get());
+            if(Miapi.registryAccess!=null){
+
+                ComponentApplyProperty.updateItemStack(converted, Miapi.registryAccess);
+            }
         }
         return converted;
     }

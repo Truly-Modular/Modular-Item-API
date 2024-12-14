@@ -22,7 +22,7 @@ public class ItemToModularConverter implements ModularItemStackConverter.Modular
 
 
     public ItemToModularConverter() {
-        Miapi.registerReloadHandler(ReloadEvents.MAIN, "miapi/modular_converter", regexes, (isClient, path, data) -> {
+        Miapi.registerReloadHandler(ReloadEvents.MAIN, "miapi/modular_converter", regexes, (isClient, path, data, registryAccess) -> {
             try {
                 JsonElement element = Miapi.gson.fromJson(data, JsonElement.class);
                 var decoded = CODEC.decode(JsonOps.INSTANCE, element);

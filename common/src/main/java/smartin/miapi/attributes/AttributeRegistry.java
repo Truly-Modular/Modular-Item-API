@@ -135,7 +135,11 @@ public class AttributeRegistry {
         MiapiEvents.LIVING_ENTITY_TICK_END.register((entity) -> {
             ShieldingArmorFacet facet = ShieldingArmorFacet.KEY.get(entity);
             if (facet != null && !entity.level().isClientSide()) {
-                facet.tick();
+                try {
+                    facet.tick();
+                } catch (RuntimeException e) {
+
+                }
             }
             return EventResult.pass();
         });

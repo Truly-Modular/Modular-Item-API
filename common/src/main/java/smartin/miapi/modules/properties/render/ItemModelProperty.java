@@ -1,14 +1,13 @@
 package smartin.miapi.modules.properties.render;
 
 import com.mojang.serialization.Codec;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import smartin.miapi.Environment;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.model.ItemInModuleMiapiModel;
 import smartin.miapi.client.model.MiapiItemModel;
@@ -22,7 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
-@Environment(EnvType.CLIENT)
 public class ItemModelProperty extends CodecProperty<List<ModelJson>> {
     public static final ResourceLocation KEY = Miapi.id("item_model");
     public static ItemModelProperty property;
@@ -35,6 +33,11 @@ public class ItemModelProperty extends CodecProperty<List<ModelJson>> {
     public ItemModelProperty() {
         super(Codec.list(CODEC));
         property = this;
+        if(Environment.isClient()){
+            clientSetup();
+        }
+    }
+    public void clientSetup(){
         MiapiItemModel.modelSuppliers.add((key, model, stack) -> {
             List<ModelJson> modelJsons = getData(stack).orElse(new ArrayList<>());
             List<MiapiModel> models = new ArrayList<>();

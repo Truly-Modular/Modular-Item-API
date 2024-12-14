@@ -43,7 +43,7 @@ public class CreateItemOption implements EditOption {
     public CreateItemOption() {
         Miapi.registerReloadHandler(ReloadEvents.END, "miapi/create_options", (isClient -> {
             createAbleItems.clear();
-        }), ((isClient, path, data) -> {
+        }), ((isClient, path, data, registryAccess) -> {
             if (isClient) {
                 CreateItem createItem = Miapi.gson.fromJson(data, JsonCreateItem.class);
                 if (createItem.getBaseModule() != null && createItem.getItem() != null) {
@@ -229,7 +229,7 @@ public class CreateItemOption implements EditOption {
             return Component.translatable(translation);
         }
 
-        public double getPriority(){
+        public double getPriority() {
             return priority;
         }
     }

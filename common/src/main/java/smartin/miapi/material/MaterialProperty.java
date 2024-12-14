@@ -68,30 +68,26 @@ public class MaterialProperty extends CodecProperty<ResourceLocation> {
                 return "";
             }
         });
-        Miapi.registerReloadHandler(ReloadEvents.MAIN, "miapi/materials", materials, (isClient, path, data) -> {
-            JsonParser parser = new JsonParser();
-            String id = path.toString();
-            id = id.replace("miapi/materials/", "");
-            id = id.replace(".json", "");
-            ResourceLocation revisedID = ResourceLocation.parse(id);
-            JsonObject obj = parser.parse(data).getAsJsonObject();
-            //if (materials.containsKey(material.getID())) {
-            //    Miapi.LOGGER.warn("Overwriting Materials isn't 100% safe. The ordering might be wrong, please set the overwrite material in the same path as the origin Material" + path + " is overwriting " + material.getID());
-            //}
+        Miapi.registerReloadHandler(ReloadEvents.MAIN, "miapi/materials", materials, (isClient, path, data, registryAccess) -> {
             try {
-                CodecMaterial codecMaterial = CodecMaterial.CODEC.decode(RegistryOps.create(JsonOps.INSTANCE, Miapi.registryAccess), obj).getOrThrow().getFirst();
+                JsonParser parser = new JsonParser();
+                String id = path.toString();
+                id = id.replace("miapi/materials/", "");
+                id = id.replace(".json", "");
+                ResourceLocation revisedID = ResourceLocation.parse(id);
+                JsonObject obj = parser.parse(data).getAsJsonObject();
+                CodecMaterial codecMaterial = CodecMaterial.CODEC.decode(RegistryOps.create(JsonOps.INSTANCE, registryAccess), obj).getOrThrow().getFirst();
                 codecMaterial.setID(revisedID);
                 materials.put(revisedID, codecMaterial);
             } catch (RuntimeException e) {
-                JsonMaterial material = new JsonMaterial(revisedID, obj, isClient);
-                Miapi.LOGGER.error("FAILED MATERIAL DECODE " + material.getDebugJson(), e);
+                Miapi.LOGGER.error("FAILED MATERIAL DECODE " + data, e);
             }
         }, -2f);
 
 
         Miapi.registerReloadHandler(ReloadEvents.MAIN, "miapi/material_extensions", (isClient) -> {
 
-        }, (isClient, path, data) -> {
+        }, (isClient, path, data, registryAccess) -> {
             JsonParser parser = new JsonParser();
             JsonObject obj = parser.parse(data).getAsJsonObject();
             String idString = obj.get("key").getAsString();
@@ -101,7 +97,7 @@ public class MaterialProperty extends CodecProperty<ResourceLocation> {
                     jsonMaterial.mergeJson(obj, isClient);
                 }
                 if (material instanceof CodecMaterial codecMaterial) {
-                    CodecMaterial toMerge = CodecMaterial.CODEC.decode(RegistryOps.create(JsonOps.INSTANCE, Miapi.registryAccess), obj).getOrThrow().getFirst();
+                    CodecMaterial toMerge = CodecMaterial.CODEC.decode(RegistryOps.create(JsonOps.INSTANCE, registryAccess), obj).getOrThrow().getFirst();
                     codecMaterial.merge(toMerge);
                 }
             } else {
@@ -252,7 +248,7 @@ public class MaterialProperty extends CodecProperty<ResourceLocation> {
         if (material.codec().isEmpty()) {
             instance.moduleData.put(KEY, new JsonPrimitive(material.getID().toString()));
         } else {
-            instance.moduleData.put(KEY,encodeMaterial(material));
+            instance.moduleData.put(KEY, encodeMaterial(material));
         }
         ModuleDataPropertiesManager.setProperty(instance, property, null);
         material.setMaterial(instance);

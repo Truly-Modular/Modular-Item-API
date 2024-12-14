@@ -21,7 +21,7 @@ import smartin.miapi.registries.RegistryInventory;
 public class StunHealthFacet implements EntityFacet<CompoundTag> {
     private final LivingEntity livingEntity;
     private float currentAmount = 20;
-    public static final ResourceLocation facetIdentifier = Miapi.id( "stun_current_health");
+    public static final ResourceLocation facetIdentifier = Miapi.id("stun_current_health");
     public static FacetKey<StunHealthFacet> KEY = FacetRegistry.register(facetIdentifier, StunHealthFacet.class);
 
     public StunHealthFacet(LivingEntity entity) {
@@ -51,7 +51,7 @@ public class StunHealthFacet implements EntityFacet<CompoundTag> {
     public void tick() {
         if (livingEntity.tickCount % 5 == 4) {
             currentAmount = Math.min(getCurrentStunHealth() + 2.0f, getMaxAmount());
-            if (livingEntity instanceof ServerPlayer serverPlayerEntity) {
+            if (livingEntity instanceof ServerPlayer serverPlayerEntity && serverPlayerEntity.connection != null) {
                 this.sendToClient(serverPlayerEntity);
             }
         }

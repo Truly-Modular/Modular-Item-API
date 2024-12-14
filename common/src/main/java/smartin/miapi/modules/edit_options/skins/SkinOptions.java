@@ -40,10 +40,10 @@ public class SkinOptions implements EditOption {
             }
             return oldMap;
         }, List.of(Miapi.id("synergy")));
-        Miapi.registerReloadHandler(ReloadEvents.MAIN, "miapi/skins/module", skins, (isClient, path, data) -> {
+        Miapi.registerReloadHandler(ReloadEvents.MAIN, "miapi/skins/module", skins, (isClient, path, data, registryAccess) -> {
             load(data);
         }, 1);
-        Miapi.registerReloadHandler(ReloadEvents.MAIN, "miapi/skins/tab", tabMap, (isClient, path, data) -> {
+        Miapi.registerReloadHandler(ReloadEvents.MAIN, "miapi/skins/tab", tabMap, (isClient, path, data, registryAccess) -> {
             loadTabData(data);
         }, 1);
         ReloadEvents.END.subscribe(((isClient, registryAccess) -> {
@@ -80,7 +80,7 @@ public class SkinOptions implements EditOption {
             Skin.writeSkin(context.getInstance(), skin);
             context.getInstance().getRoot().writeToItem(context.getItemstack());
             context.getInstance().clearCaches();
-        }else{
+        } else {
             Miapi.LOGGER.error("could not set skin, no module found");
         }
         return context.getItemstack();

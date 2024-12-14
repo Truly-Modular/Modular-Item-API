@@ -5,6 +5,8 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.network.codec.ByteBufCodecs;
 
+import java.util.Objects;
+
 public class TowerShieldComponent {
     public static Codec<TowerShieldComponent> CODEC = RecordCodecBuilder.create(instance ->
             instance.group(
@@ -35,4 +37,19 @@ public class TowerShieldComponent {
 
     public int blockCount;
     public long lastTickActive;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true; // Check for reference equality
+        if (o == null || getClass() != o.getClass()) return false; // Check for null or class mismatch
+        TowerShieldComponent that = (TowerShieldComponent) o; // Cast to TowerShieldComponent
+        return blockCount == that.blockCount && lastTickActive == that.lastTickActive; // Compare fields
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(blockCount, lastTickActive); // Compute hash using both fields
+    }
+
+
 }

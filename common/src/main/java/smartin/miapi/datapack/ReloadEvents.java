@@ -268,14 +268,18 @@ public class ReloadEvents {
          * @param isClient a boolean indicating whether the event is occurring on the client side (true) or the server side (false)
          */
         public void fireEvent(boolean isClient, @Nullable RegistryAccess registryAccess) {
-            mainListeners.entrySet().stream()
-                    .sorted(Map.Entry.comparingByValue()).forEach(eventListenerFloatEntry -> {
-                        try {
-                            eventListenerFloatEntry.getKey().onEvent(isClient, registryAccess);
-                        } catch (RuntimeException e) {
-                            Miapi.LOGGER.error("Exception during reload", e);
-                        }
-                    });
+            try {
+                mainListeners.entrySet().stream()
+                        .sorted(Map.Entry.comparingByValue()).forEach(eventListenerFloatEntry -> {
+                            try {
+                                eventListenerFloatEntry.getKey().onEvent(isClient, registryAccess);
+                            } catch (RuntimeException e) {
+                                Miapi.LOGGER.error("Exception during reload", e);
+                            }
+                        });
+            } catch (RuntimeException e) {
+                Miapi.LOGGER.error("Exception during Reload!", e);
+            }
         }
     }
 

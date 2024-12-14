@@ -450,10 +450,10 @@ public class RegistryInventory {
                 registerMiapi(moduleProperties, ConduitModelProperty.KEY, new ConduitModelProperty());
                 registerMiapi(moduleProperties, OverlayModelProperty.KEY, new OverlayModelProperty());
             } else {
-                registerMiapi(moduleProperties, "texture", new ServerReplaceProperty());
-                registerMiapi(moduleProperties, "modelTransform", new ServerReplaceProperty());
-                registerMiapi(moduleProperties, "modelMerge", new ServerReplaceProperty());
-                registerMiapi(moduleProperties, "guiOffset", new ServerReplaceProperty());
+                registerMiapi(moduleProperties, "model", new ServerReplaceProperty());
+                registerMiapi(moduleProperties, "model_transform", new ServerReplaceProperty());
+                //registerMiapi(moduleProperties, "modelMerge", new ServerReplaceProperty());
+                registerMiapi(moduleProperties, "gui_offset", new ServerReplaceProperty());
                 registerMiapi(moduleProperties, "item_model", new ServerReplaceProperty());
                 //registerMiapi(moduleProperties, "itemLore", new ServerReplaceProperty());
                 registerMiapi(moduleProperties, "banner", new ServerReplaceProperty());

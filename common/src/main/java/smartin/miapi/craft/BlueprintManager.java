@@ -8,14 +8,10 @@ import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
 import smartin.miapi.client.gui.crafting.crafter.replace.CraftOption;
-import smartin.miapi.client.gui.crafting.crafter.replace.ReplaceView;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.material.AllowedMaterial;
-import smartin.miapi.modules.properties.slot.AllowedSlots;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class BlueprintManager {
@@ -23,22 +19,7 @@ public class BlueprintManager {
     public static ResourceLocation ID = Miapi.id("reloaded_blueprint");
 
     public static void setup() {
-        ReplaceView.optionSuppliers.add(option -> {
-            List<CraftOption> options = new ArrayList<>();
-            reloadedBlueprints.forEach((id, blueprint) -> {
-                boolean isAllowed = false;
-                for (String slotID : AllowedSlots.getAllowedSlots(blueprint.toMerge)) {
-                    if (option.getSlot().allowed.contains(slotID)) {
-                        isAllowed = true;
-                    }
-                }
-                if (isAllowed) {
-                    options.add(asCraftOption(option.getScreenHandler(), id, blueprint));
-                }
-            });
-            return options;
-        });
-        Miapi.registerReloadHandler(ReloadEvents.MAIN, "miapi/blueprint", reloadedBlueprints, (isClient, id, data) -> {
+        Miapi.registerReloadHandler(ReloadEvents.MAIN, "miapi/blueprint", reloadedBlueprints, (isClient, id, data, registryAccess) -> {
             Miapi.LOGGER.info("loaded Blueprint " + id);
             JsonElement element = Miapi.gson.fromJson(data, JsonElement.class);
             BlueprintComponent component = BlueprintComponent.CODEC.decode(JsonOps.INSTANCE, element).getOrThrow().getFirst();

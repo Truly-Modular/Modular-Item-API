@@ -2,6 +2,7 @@ package smartin.miapi.fabric;
 
 import dev.architectury.platform.Platform;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.item.v1.EnchantmentEvents;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.util.TriState;
@@ -40,6 +41,9 @@ public class MiapiFabric implements ModInitializer {
                         new RangedAttribute("miapi.attribute.name.swim_speed", 1.0, 0.0, 1024.0).setSyncable(true),
                 att -> SWIM_SPEED = att);
         ResourceManagerHelper.get(PackType.SERVER_DATA).registerReloadListener(new IdentifiableMiapiReloadListenerFixed());
+        ServerLifecycleEvents.START_DATA_PACK_RELOAD.register((minecraftServer, manager) -> {
+            IdentifiableMiapiReloadListenerFixed.access = minecraftServer.reloadableRegistries().get();
+        });
 
         AttributeProperty.replaceMap.put("forge:generic.swim_speed", () -> SWIM_SPEED.value());
 

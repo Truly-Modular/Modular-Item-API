@@ -45,10 +45,12 @@ public abstract class CodecProperty<T> implements ModuleProperty<T> {
                     JsonOps.INSTANCE, Miapi.registryAccess
             );
         } else {
-            try {
-                ops = clientCodec();
-            } catch (RuntimeException e) {
+            if(smartin.miapi.Environment.isClient()){
+                try {
+                    ops = clientCodec();
+                } catch (RuntimeException e) {
 
+                }
             }
         }
         return codec.parse(

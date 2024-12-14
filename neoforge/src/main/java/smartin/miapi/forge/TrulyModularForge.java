@@ -46,6 +46,7 @@ public class TrulyModularForge {
         ReloadEvents.START.subscribe((isClient, access) -> setupAttributes());
 
         //TODO: why no worky
+
         //KEY_BINDINGS.addCallback((KeyBindingRegistryImpl::registerKeyBinding));
     }
 

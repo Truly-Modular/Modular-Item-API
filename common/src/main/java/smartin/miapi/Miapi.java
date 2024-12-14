@@ -21,7 +21,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.EquipmentSlotGroup;
-import org.apache.logging.log4j.util.TriConsumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import smartin.miapi.attributes.AttributeRegistry;
@@ -129,9 +128,9 @@ public class Miapi {
         PlayerEvent.PLAYER_JOIN.register((player -> new Thread(() -> MiapiPermissions.getPerms(player)).start()));
 
         registerReloadHandler(ReloadEvents.MAIN, "miapi/modules", RegistryInventory.modules,
-                (isClient, path, data) -> ItemModule.loadFromData(path, data, isClient), -0.5f);
+                (isClient, path, data, access) -> ItemModule.loadFromData(path, data, isClient), -0.5f);
         registerReloadHandler(ReloadEvents.MAIN, "miapi/module_extensions", Collections.synchronizedMap(new LinkedHashMap<>()),
-                (isClient, path, data) -> ItemModule.loadModuleExtension(path, data, isClient), -0.4f);
+                (isClient, path, data, access) -> ItemModule.loadModuleExtension(path, data, isClient), -0.4f);
         ReloadEvents.END.subscribe((isClient, registryAccess) -> {
             RegistryInventory.modules.register(ItemModule.empty.id(), ItemModule.empty);
             RegistryInventory.modules.register(ItemModule.internal.id(), ItemModule.internal);
@@ -175,7 +174,7 @@ public class Miapi {
         });
 
         LifecycleEvent.SERVER_STARTED.register((minecraftServer -> {
-            if (MiapiConfig.INSTANCE.server.other.doubleReload) {
+            if (MiapiConfig.INSTANCE.server.other.doubleReload && false) {
                 Miapi.LOGGER.info("Truly Modular will now go onto reload twice.");
                 Miapi.LOGGER.info("This is done because for compat reasons and because forge sometimes breaks badly");
                 Miapi.LOGGER.info("This can be turned off in Miapi`s config.json");
@@ -269,7 +268,7 @@ public class Miapi {
             String location,
             boolean syncToClient,
             Consumer<Boolean> beforeLoop,
-            TriConsumer<Boolean, ResourceLocation, String> handler,
+            SingleFileHandler handler,
             float priority) {
         if (syncToClient)
             ReloadEvents.registerDataPackPathToSync(MOD_ID, location);
@@ -278,8 +277,8 @@ public class Miapi {
             ReloadEvents.DATA_PACKS.forEach((path, data) -> {
                 if (path.getPath().startsWith(location + "/")) {
                     try {
-                        handler.accept(isClient, path, data);
-                    } catch (Exception e) {
+                        handler.reloadFile(isClient, path, data, registryAccess);
+                    } catch (RuntimeException e) {
                         Miapi.LOGGER.warn("could not load " + path, e);
                     }
                 }
@@ -291,7 +290,7 @@ public class Miapi {
             ReloadEvents.ReloadEvent event,
             String location,
             Consumer<Boolean> beforeLoop,
-            TriConsumer<Boolean, ResourceLocation, String> handler,
+            SingleFileHandler handler,
             float priority) {
         registerReloadHandler(event, location, true, beforeLoop, handler, priority);
     }
@@ -299,14 +298,14 @@ public class Miapi {
     public static void registerReloadHandler(
             ReloadEvents.ReloadEvent event,
             String location, MiapiRegistry<?> toClear,
-            TriConsumer<Boolean, ResourceLocation, String> handler) {
+            SingleFileHandler handler) {
         registerReloadHandler(event, location, true, bl -> toClear.clear(), handler, 0f);
     }
 
     public static void registerReloadHandler(
             ReloadEvents.ReloadEvent event,
             String location, MiapiRegistry<?> toClear,
-            TriConsumer<Boolean, ResourceLocation, String> handler,
+            SingleFileHandler handler,
             float prio) {
         registerReloadHandler(event, location, true, bl -> toClear.clear(), handler, prio);
     }
@@ -315,15 +314,20 @@ public class Miapi {
             ReloadEvents.ReloadEvent event,
             String location,
             Map<?, ?> toClear,
-            TriConsumer<Boolean, ResourceLocation, String> handler) {
+            SingleFileHandler handler) {
         registerReloadHandler(event, location, true, bl -> toClear.clear(), handler, 0f);
     }
 
     public static void registerReloadHandler(
             ReloadEvents.ReloadEvent event,
             String location, Map<?, ?> toClear,
-            TriConsumer<Boolean, ResourceLocation, String> handler,
+            SingleFileHandler handler,
             float prio) {
         registerReloadHandler(event, location, true, bl -> toClear.clear(), handler, prio);
+    }
+
+    @FunctionalInterface
+    public interface SingleFileHandler {
+        void reloadFile(boolean isClient, ResourceLocation path, String data, RegistryAccess registryAccess);
     }
 }

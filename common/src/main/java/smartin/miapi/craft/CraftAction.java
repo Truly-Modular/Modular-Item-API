@@ -310,7 +310,7 @@ public class CraftAction {
                         toAdd,
                         inventory,
                         buffer)));
-        ComponentApplyProperty.updateItemStack(craftingStack.get(), player.level().registryAccess());
+        ComponentApplyProperty.updateItemStack(craftingStack.get(), Miapi.registryAccess);
         ModuleInstance parsingInstance = ItemModule.getModules(craftingStack.get());
         for (int i = slotLocation.size() - 1; i >= 0; i--) {
             if (parsingInstance == null) {
