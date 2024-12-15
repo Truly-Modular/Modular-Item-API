@@ -2,9 +2,10 @@ package smartin.miapi.modules.properties.util;
 
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.registries.RegistryInventory;
 
 /**
@@ -22,10 +23,25 @@ public interface ComponentApplyProperty {
      * @param toUpdate the Itemstack to be updated
      */
     static void updateItemStack(ItemStack toUpdate, @Nullable RegistryAccess registryAccess) {
-        ItemModule.getModules(toUpdate).clearCaches();
-        RegistryInventory.moduleProperties.getFlatMap().values().stream().filter(ComponentApplyProperty.class::isInstance).map(ComponentApplyProperty.class::cast).forEach(componentApplyProperty -> {
-            componentApplyProperty.updateComponent(toUpdate, registryAccess);
-        });
+        if (ReloadEvents.isInReload()) {
+            return;
+        }
+        ModuleInstance module = ItemModule.getModules(toUpdate);
+        if (module == null) {
+            return;
+        }
+        if (module.registryAccess == null) {
+            module.registryAccess = registryAccess;
+        }
+        module.clearCaches();
+        RegistryInventory.moduleProperties
+                .getFlatMap()
+                .values()
+                .stream()
+                .filter(ComponentApplyProperty.class::isInstance)
+                .map(ComponentApplyProperty.class::cast)
+                .forEach(componentApplyProperty ->
+                        componentApplyProperty.updateComponent(toUpdate, module.registryAccess));
     }
 
     /**

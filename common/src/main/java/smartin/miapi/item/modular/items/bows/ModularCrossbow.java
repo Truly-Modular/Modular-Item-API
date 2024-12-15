@@ -20,6 +20,7 @@ import net.minecraft.world.item.component.ChargedProjectiles;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import org.lwjgl.system.NonnullDefault;
+import smartin.miapi.Miapi;
 import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.client.model.ModularModelPredicateProvider;
 import smartin.miapi.events.MiapiProjectileEvents;
@@ -32,6 +33,7 @@ import smartin.miapi.modules.properties.RepairPriority;
 import smartin.miapi.modules.properties.attributes.AttributeUtil;
 import smartin.miapi.modules.properties.enchanment.EnchantAbilityProperty;
 import smartin.miapi.modules.properties.projectile.DrawTimeProperty;
+import smartin.miapi.modules.properties.util.ComponentApplyProperty;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -53,6 +55,11 @@ public class ModularCrossbow extends CrossbowItem implements PlatformModularItem
         if (smartin.miapi.Environment.isClient()) {
             registerAnimations();
         }
+    }
+
+    @Override
+    public void verifyComponentsAfterLoad(ItemStack stack) {
+        ComponentApplyProperty.updateItemStack(stack, Miapi.registryAccess);
     }
 
     @Environment(EnvType.CLIENT)

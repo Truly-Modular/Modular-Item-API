@@ -10,7 +10,8 @@
     "client": [
         "EntityMixin",
         "TextMixin",
-        "client.InGameHudMixin"
+        "client.InGameHudMixin",
+        "client.ShaderRegistryNucleusMixin"
     ],
     "injectors": {
         "defaultRequire": 1

@@ -11,6 +11,7 @@ import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import org.lwjgl.system.NonnullDefault;
+import smartin.miapi.Miapi;
 import smartin.miapi.item.FakeItemstackReferenceProvider;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.PlatformModularItemMethods;
@@ -19,6 +20,7 @@ import smartin.miapi.modules.properties.LoreProperty;
 import smartin.miapi.modules.properties.RepairPriority;
 import smartin.miapi.modules.properties.enchanment.EnchantAbilityProperty;
 import smartin.miapi.modules.properties.mining.MiningLevelProperty;
+import smartin.miapi.modules.properties.util.ComponentApplyProperty;
 import smartin.miapi.registries.RegistryInventory;
 
 import java.util.List;
@@ -31,6 +33,11 @@ public class ModularHelmet extends ArmorItem implements PlatformModularItemMetho
 
     public ModularHelmet() {
         super(RegistryInventory.armorMaterial, Type.HELMET, new Properties());
+    }
+
+    @Override
+    public void verifyComponentsAfterLoad(ItemStack stack) {
+        ComponentApplyProperty.updateItemStack(stack, Miapi.registryAccess);
     }
 
     @Override

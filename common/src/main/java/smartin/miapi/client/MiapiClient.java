@@ -184,6 +184,7 @@ public class MiapiClient {
             });
             return options;
         });
+        GlintShader.registerShaders();
         //Minecraft client = Minecraft.getInstance();
         //materialAtlasManager = new MaterialAtlasManager(client.getTextureManager());
         //ReloadListenerRegistry.register(PackType.CLIENT_RESOURCES, materialAtlasManager);

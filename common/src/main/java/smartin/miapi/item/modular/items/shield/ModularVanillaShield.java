@@ -16,6 +16,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import org.apache.commons.lang3.mutable.MutableFloat;
 import org.lwjgl.system.NonnullDefault;
+import smartin.miapi.Miapi;
 import smartin.miapi.events.ModularAttackEvents;
 import smartin.miapi.item.FakeItemstackReferenceProvider;
 import smartin.miapi.item.modular.ModularItem;
@@ -25,6 +26,7 @@ import smartin.miapi.modules.properties.LoreProperty;
 import smartin.miapi.modules.properties.RepairPriority;
 import smartin.miapi.modules.properties.enchanment.EnchantAbilityProperty;
 import smartin.miapi.modules.properties.mining.MiningLevelProperty;
+import smartin.miapi.modules.properties.util.ComponentApplyProperty;
 
 import java.util.List;
 
@@ -36,6 +38,11 @@ public class ModularVanillaShield extends ShieldItem implements ModularItem {
 
     public ModularVanillaShield(Properties properties) {
         super(properties);
+    }
+
+    @Override
+    public void verifyComponentsAfterLoad(ItemStack stack) {
+        ComponentApplyProperty.updateItemStack(stack, Miapi.registryAccess);
     }
 
     @Override

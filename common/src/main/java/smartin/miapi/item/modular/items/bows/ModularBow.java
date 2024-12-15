@@ -18,6 +18,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import org.lwjgl.system.NonnullDefault;
+import smartin.miapi.Miapi;
 import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.client.model.ModularModelPredicateProvider;
 import smartin.miapi.item.FakeItemstackReferenceProvider;
@@ -29,6 +30,7 @@ import smartin.miapi.modules.properties.RepairPriority;
 import smartin.miapi.modules.properties.attributes.AttributeUtil;
 import smartin.miapi.modules.properties.enchanment.EnchantAbilityProperty;
 import smartin.miapi.modules.properties.projectile.DrawTimeProperty;
+import smartin.miapi.modules.properties.util.ComponentApplyProperty;
 
 import java.util.List;
 import java.util.function.Predicate;
@@ -42,6 +44,11 @@ public class ModularBow extends BowItem implements PlatformModularItemMethods, M
         if (smartin.miapi.Environment.isClient()) {
             registerAnimations();
         }
+    }
+
+    @Override
+    public void verifyComponentsAfterLoad(ItemStack stack) {
+        ComponentApplyProperty.updateItemStack(stack, Miapi.registryAccess);
     }
 
     @Override

@@ -40,15 +40,6 @@ abstract class ItemStackMixin {
         return original;
     }
 
-    @ModifyReturnValue(method = "Lnet/minecraft/world/item/ItemStack;hasFoil()Z", at = @At("RETURN"))
-    public boolean miapi$injectRemoveGlint(boolean original) {
-        ItemStack stack = (ItemStack) (Object) this;
-        if (ModularItem.isModularItem(stack)) {
-            return false;
-        }
-        return original;
-    }
-
     @Inject(method = "getItem", at = @At("TAIL"))
     public void miapi$capturePotentialItemstack(CallbackInfoReturnable<Item> cir) {
         ItemStack stack = (ItemStack) (Object) this;

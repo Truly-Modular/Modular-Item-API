@@ -3,6 +3,7 @@ package smartin.miapi.client;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
+import com.mojang.blaze3d.vertex.VertexFormatElement;
 import com.redpxnda.nucleus.impl.ShaderRegistry;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -27,6 +28,8 @@ public class GlintShader {
     //public static ShaderProgram translucentMaterialShader;
     public static ShaderInstance entityTranslucentMaterialShader;
     public static ShaderInstance glintShader;
+
+    public static VertexFormat GLINT_VERTEX_FORMAT = VertexFormat.builder().add("Position", VertexFormatElement.POSITION).add("Color", VertexFormatElement.COLOR).add("UV0", VertexFormatElement.UV0).add("UV1", VertexFormatElement.UV1).add("UV2", VertexFormatElement.UV2).add("Normal", VertexFormatElement.NORMAL).padding(1).build();
 
     public static final RenderType modularItemGlint = RenderType.create(
             "miapi_glint_direct|immediatelyfast:renderlast",
@@ -60,7 +63,8 @@ public class GlintShader {
                     .setTexturingState(RenderType.ENTITY_GLINT_TEXTURING)
                     .setOverlayState(OVERLAY).createCompositeState(false));
 
-    public static final RenderType TRANSLUCENT_NO_CULL = RenderType.create(
+    public static final RenderType TRANSLUCENT_NO_CULL
+            = RenderType.create(
             "miapi_translucent_no_cull", DefaultVertexFormat.BLOCK, VertexFormat.Mode.QUADS,
             0x200000, true, true, RenderType.CompositeState.builder()
                     .setLightmapState(LIGHTMAP).setShaderState(RENDERTYPE_TRANSLUCENT_SHADER).setTextureState(BLOCK_SHEET_MIPPED).setTransparencyState(TRANSLUCENT_TRANSPARENCY)
@@ -75,21 +79,23 @@ public class GlintShader {
         RenderSystem.setTextureMatrix(matrix4f);
     }
 
-    public static void setupItem(Matrix4f matrix4f){
+    public static void setupItem(Matrix4f matrix4f) {
         //TODO:rework glint rendering as a whole
-        //GlintShader.glintShader.safeGetUniform("ModelMat").set(new Matrix4f(matrix4f));
+        GlintShader.glintShader.safeGetUniform("ModelMat").set(new Matrix4f(matrix4f));
     }
 
     public static void registerShaders() {
         /*ShaderRegistry.register(
                 new Identifier(Miapi.MOD_ID, "rendertype_translucent_material"),
                 VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL, s -> RegistryInventory.Client.translucentMaterialShader = s);*/
-
+/*
         ShaderRegistry.register(
                 Miapi.id( "rendertype_entity_translucent_material"),
                 DefaultVertexFormat.NEW_ENTITY, s -> entityTranslucentMaterialShader = s);
+                 */
         ShaderRegistry.register(
                 Miapi.id("rendertype_item_glint"),
-                DefaultVertexFormat.NEW_ENTITY, s -> glintShader = s);
+                GLINT_VERTEX_FORMAT, s -> glintShader = s);
+
     }
 }

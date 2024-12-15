@@ -16,7 +16,6 @@ uniform sampler2D CustomGlintTexture;
 uniform mat4 ModelViewMat;
 uniform mat4 ModelMat;
 uniform mat4 ProjMat;
-uniform mat3 IViewRotMat;
 uniform mat4 TextureMat;
 uniform int FogShape;
 uniform float GlintSpeed;
@@ -33,7 +32,9 @@ out vec2 localUVs;
 void main() {
     gl_Position = ProjMat * ModelViewMat * vec4(Position, 1.0);
 
-    vertexDistance = fog_distance(ModelViewMat, IViewRotMat * Position, FogShape);
+    //vertexDistance = fog_distance(ModelViewMat, IViewRotMat * Position, FogShape);
+    vertexDistance = fog_distance(Position, FogShape);
+
     texCoord0 = UV0;
     vertexColor = Color;
     normal = vec4(Normal, 1.0);
