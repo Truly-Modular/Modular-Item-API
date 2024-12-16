@@ -77,11 +77,8 @@ import smartin.miapi.modules.abilities.toolabilities.HoeAbility;
 import smartin.miapi.modules.abilities.toolabilities.ShovelAbility;
 import smartin.miapi.modules.abilities.util.AbilityMangerProperty;
 import smartin.miapi.modules.conditions.*;
-import smartin.miapi.modules.edit_options.CosmeticEditOption;
+import smartin.miapi.modules.edit_options.*;
 import smartin.miapi.modules.edit_options.CreateItemOption.CreateItemOption;
-import smartin.miapi.modules.edit_options.EditOption;
-import smartin.miapi.modules.edit_options.PropertyInjectionDev;
-import smartin.miapi.modules.edit_options.ReplaceOption;
 import smartin.miapi.modules.edit_options.skins.SkinOptions;
 import smartin.miapi.modules.properties.*;
 import smartin.miapi.modules.properties.armor.*;
@@ -417,6 +414,7 @@ public class RegistryInventory {
             registerMiapi(editOptions, "skin", new SkinOptions());
             registerMiapi(editOptions, "create", new CreateItemOption());
             registerMiapi(editOptions, "cosmetic", new CosmeticEditOption());
+            registerMiapi(editOptions, "glint", new GlintEditOption());
             SynergyManager.setup();
 
             //CONDITIONS

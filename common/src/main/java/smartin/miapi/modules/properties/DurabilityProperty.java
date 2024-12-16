@@ -8,11 +8,12 @@ import smartin.miapi.Miapi;
 import smartin.miapi.modules.properties.util.ComponentApplyProperty;
 import smartin.miapi.modules.properties.util.DoubleProperty;
 
+import java.util.Optional;
+
 /**
  * @header Durability Property
  * @path /data_types/properties/durability
- * @description_start
- * The DurabilityProperty controls the maximum durability of an item. The durability is specified as a Double Resolvable value,
+ * @description_start The DurabilityProperty controls the maximum durability of an item. The durability is specified as a Double Resolvable value,
  * which determines the item's maximum damage capacity. This value is applied to the item stack, influencing how much wear and
  * tear the item can withstand before breaking.
  * @description_end
@@ -30,6 +31,10 @@ public class DurabilityProperty extends DoubleProperty implements ComponentApply
 
     @Override
     public void updateComponent(ItemStack itemStack, RegistryAccess registryAccess) {
-        itemStack.set(DataComponents.MAX_DAMAGE,getValue(itemStack).orElse(50.0).intValue());
+        itemStack.set(DataComponents.MAX_DAMAGE, Math.max(1, getValue(itemStack).orElse(50.0).intValue()));
+    }
+
+    public Optional<Double> getValue(ItemStack itemStack) {
+        return super.getValue(itemStack).or(() -> Optional.of(50.0));
     }
 }

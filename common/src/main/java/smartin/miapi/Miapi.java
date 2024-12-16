@@ -10,6 +10,7 @@ import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
 import com.redpxnda.nucleus.config.ConfigBuilder;
 import com.redpxnda.nucleus.config.ConfigManager;
 import com.redpxnda.nucleus.config.ConfigType;
+import com.redpxnda.nucleus.config.NucleusConfig;
 import com.redpxnda.nucleus.registry.NucleusNamespaces;
 import dev.architectury.event.EventResult;
 import dev.architectury.event.events.common.CommandRegistrationEvent;
@@ -109,6 +110,7 @@ public class Miapi {
         CodecBehavior.registerClass(MaterialIcons.SpinSettings.class, MaterialIcons.SpinSettings.CODEC);
         CodecBehavior.registerClass(EquipmentSlotGroup.class, EquipmentSlotGroup.CODEC);
         CodecBehavior.registerClass(EquipmentSlot.class, EquipmentSlot.CODEC);
+        NucleusConfig config;
 
         setupConfigs();
         setupNetworking();
