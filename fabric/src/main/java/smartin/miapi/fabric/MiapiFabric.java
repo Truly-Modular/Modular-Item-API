@@ -14,6 +14,7 @@ import net.minecraft.util.profiler.Profiler;
 import smartin.miapi.Environment;
 import smartin.miapi.Miapi;
 import smartin.miapi.attributes.AttributeRegistry;
+import smartin.miapi.fabric.compat.TrechopUtilFabric;
 import smartin.miapi.fabric.compat.ZenithCompat;
 import smartin.miapi.modules.properties.AttributeProperty;
 import smartin.miapi.registries.RegistryInventory;

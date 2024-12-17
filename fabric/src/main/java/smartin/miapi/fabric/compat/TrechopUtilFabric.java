@@ -1,4 +1,4 @@
-package smartin.miapi.fabric;
+package smartin.miapi.fabric.compat;
 
 import ht.treechop.api.ITreeChopAPIProvider;
 import net.fabricmc.loader.api.FabricLoader;

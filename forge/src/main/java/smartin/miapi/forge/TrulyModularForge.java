@@ -53,56 +53,25 @@ public class TrulyModularForge {
             bus.register(new ClientModEvents());
             MinecraftForge.EVENT_BUS.register(new ClientEvents());
         }
-        if (Platform.isModLoaded("quark")) {
-            try {
-                smartin.miapi.forge.compat.QuarkCompat.setup();
-            } catch (Exception e) {
-                Miapi.LOGGER.info("couldn't load quark compat", e);
-            }
-        }
         bus.register(new ModEvents());
         MinecraftForge.EVENT_BUS.register(new ServerEvents());
         Miapi.init();
 
-        try {
-            if (Platform.isModLoaded("epicfight")) {
-                RegistryInventory.moduleProperties.register(
-                        smartin.miapi.forge.compat.epic_fight.EpicFightCompatProperty.KEY,
-                        new smartin.miapi.forge.compat.epic_fight.EpicFightCompatProperty());
-            }
-        } catch (Exception e) {
-            Miapi.LOGGER.info("couldn't load epic fight compat");
-        }
-        try {
-            if (Platform.isModLoaded("pmmo")) {
-                Miapi.LOGGER.info("loading pmmo compat");
-                smartin.miapi.forge.compat.pmmo.ToolStats.setup();
-            }
-        } catch (Exception e) {
-            Miapi.LOGGER.info("couldn't load Project MMO compat");
-        }
-        if (Platform.isModLoaded("apotheosis")) {
-            try {
-                smartin.miapi.forge.compat.ApotheosisCompat.setup();
-            } catch (RuntimeException surpressed) {
-                Miapi.LOGGER.warn("couldn't load Apotheosis compat", surpressed);
-            }
-        }
+        loadCompat("epicfight", () -> {
+            RegistryInventory.moduleProperties.register(
+                    smartin.miapi.forge.compat.epic_fight.EpicFightCompatProperty.KEY,
+                    new smartin.miapi.forge.compat.epic_fight.EpicFightCompatProperty());
+        });
 
-        //if (Platform.isModLoaded("epicfight"))
-        //RegistryInventory.moduleProperties.register(EpicFightCompatProperty.KEY, new EpicFightCompatProperty());
+        loadCompat("quark", smartin.miapi.forge.compat.QuarkCompat::setup);
+        loadCompat("pmmo", smartin.miapi.forge.compat.pmmo.ToolStats::setup);
+        loadCompat("apotheosis", smartin.miapi.forge.compat.ApotheosisCompat::setup);
 
 
         LifecycleEvent.SERVER_STARTING.register((instance -> setupAttributes()));
         ReloadEvents.START.subscribe((isClient -> setupAttributes()));
         ReloadListenerRegistry.register(ResourceType.SERVER_DATA, new MiapiReloadListenerForge());
 
-
-        //ReloadListenerRegistry.register(
-        //        ResourceType.SERVER_DATA,
-        //        new MiapiReloadListenerForge(),
-        //        new Identifier(MOD_ID, "main_reload_listener"),
-        //        List.of(new Identifier("minecraft:tags"), new Identifier("minecraft:recipes")));
 
         AttributeProperty.replaceMap.put("miapi:generic.reach", ForgeMod.BLOCK_REACH);
         AttributeProperty.replaceMap.put("miapi:generic.attack_range", ForgeMod.ENTITY_REACH);
@@ -125,6 +94,16 @@ public class TrulyModularForge {
         AttributeProperty.replaceMap.put("reach-entity-attributes:reach", ForgeMod.BLOCK_REACH);
         AttributeProperty.replaceMap.put("reach-entity-attributes:attack_range", ForgeMod.ENTITY_REACH);
         AttributeProperty.replaceMap.put("miapi:generic.swim_speed", () -> SWIM_SPEED);
+    }
+
+    public static void loadCompat(String modId, Runnable onLoaded) {
+        try {
+            if (Platform.isModLoaded(modId)) {
+                onLoaded.run();
+            }
+        } catch (RuntimeException e) {
+            Miapi.LOGGER.error("could not setup compat for " + modId, e);
+        }
     }
 
     public static class ModEvents {
