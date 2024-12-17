@@ -368,6 +368,7 @@ public class ModuleInstance {
      */
     private ModuleInstance deepCopy() {
         ModuleInstance copy = new ModuleInstance(this.module);
+        copy.moduleID = moduleID;
         copy.registryAccess = this.registryAccess;
         copy.moduleData = new HashMap<>(this.moduleData);
         this.subModules.forEach(((id, subModule) -> {

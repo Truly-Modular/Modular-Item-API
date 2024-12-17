@@ -43,7 +43,7 @@ public class BlueprintComponent {
                     ModuleInstance.CODEC
                             .fieldOf("module")
                             .forGetter((blueprint) -> blueprint.toMerge),
-                    Codec.either(Codec.BOOL, IngredientWithCount.INGREDIENT_WITH_COUNT)
+                    Codec.either(Miapi.FIXED_BOOL_CODEC, IngredientWithCount.INGREDIENT_WITH_COUNT)
                             .fieldOf("ingredient")
                             .forGetter((blueprint) -> blueprint.ingredient),
                     ComponentSerialization.CODEC
@@ -184,7 +184,7 @@ public class BlueprintComponent {
                         i = optional.get().index;
                     }
                     JsonElement element = Codec.INT.encodeStart(JsonOps.INSTANCE, i).getOrThrow();
-                    JsonElement booleanElement = Codec.BOOL.encodeStart(JsonOps.INSTANCE, useMaterialCrafting()).getOrThrow();
+                    JsonElement booleanElement = Miapi.FIXED_BOOL_CODEC.encodeStart(JsonOps.INSTANCE, useMaterialCrafting()).getOrThrow();
                     return Map.of(
                             ID, element,
                             AllowedMaterial.KEY, booleanElement);

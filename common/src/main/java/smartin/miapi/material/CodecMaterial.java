@@ -19,6 +19,7 @@ import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
+import smartin.miapi.Miapi;
 import smartin.miapi.craft.IngredientWithCount;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.material.palette.FallbackColorer;
@@ -104,7 +105,7 @@ public class CodecMaterial implements Material {
             ResourceLocation.CODEC.optionalFieldOf("mining_level").forGetter(material -> Optional.of(material.getIncorrectBlocksForDrops().location())),
             Codec.STRING.optionalFieldOf("color").forGetter(m -> Optional.of(Long.toHexString(m.getColor()))),
             IngredientWithCount.CODEC.listOf().optionalFieldOf("items", new ArrayList<>()).forGetter(material -> material.items),
-            Codec.BOOL.optionalFieldOf("generate_converters").forGetter(m -> Optional.of(m.generateConverters()))
+            Miapi.FIXED_BOOL_CODEC.optionalFieldOf("generate_converters").forGetter(m -> Optional.of(m.generateConverters()))
     ).apply(instance, CodecMaterial::new));
 
     private CodecMaterial(Optional<JsonElement> iconJson,

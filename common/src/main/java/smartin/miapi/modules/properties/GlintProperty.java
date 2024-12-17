@@ -1,8 +1,7 @@
 package smartin.miapi.modules.properties;
 
 import com.mojang.serialization.Codec;
-import com.redpxnda.nucleus.codec.auto.AutoCodec;
-import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.redpxnda.nucleus.event.PrioritizedEvent;
 import com.redpxnda.nucleus.util.Color;
 import dev.architectury.event.EventResult;
@@ -10,13 +9,17 @@ import net.minecraft.Util;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import smartin.miapi.Miapi;
+import smartin.miapi.client.GlintShader;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.util.CodecProperty;
 import smartin.miapi.modules.properties.util.MergeType;
-import smartin.miapi.client.GlintShader;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -27,7 +30,23 @@ public class GlintProperty extends CodecProperty<GlintProperty.RainbowGlintSetti
     public static final ResourceLocation KEY = Miapi.id("glint_settings");
     public static PrioritizedEvent<GlintGetter> GLINT_RESOLVE = PrioritizedEvent.createLoop();
     public static SettingsControlledGlint defaultSettings = new SettingsControlledGlint();
-    public static Codec<RainbowGlintSettings> CODEC = AutoCodec.of(RainbowGlintSettings.class).codec();
+    public static final Codec<RainbowGlintSettings> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+            Codec.FLOAT.optionalFieldOf("speed", 1.0f).forGetter(settings -> settings.speed),
+            Codec.FLOAT.optionalFieldOf("rainbow_speed", 1.0f).forGetter(settings -> settings.rainbowSpeed),
+            Codec.FLOAT.optionalFieldOf("strength", 1.0f).forGetter(settings -> settings.strength),
+            Miapi.FIXED_BOOL_CODEC.optionalFieldOf("should_render_glint", false).forGetter(settings -> settings.shouldRenderGlint),
+            Miapi.FIXED_BOOL_CODEC.optionalFieldOf("is_item", false).forGetter(settings -> settings.isItem),
+            Codec.list(RainbowGlintSettings.COLOR_CODEC).optionalFieldOf("colors", List.of(Color.WHITE)).forGetter(settings -> Arrays.asList(settings.colors))
+    ).apply(instance, (speed, rainbowSpeed, strength, shouldRenderGlint, item, colors) -> {
+        RainbowGlintSettings settings = new RainbowGlintSettings();
+        settings.speed = speed;
+        settings.rainbowSpeed = rainbowSpeed;
+        settings.strength = strength;
+        settings.shouldRenderGlint = shouldRenderGlint;
+        settings.colors = colors.toArray(new Color[0]);
+        settings.isItem = item;
+        return settings;
+    }));
 
     public GlintProperty() {
         super(CODEC);
@@ -36,7 +55,14 @@ public class GlintProperty extends CodecProperty<GlintProperty.RainbowGlintSetti
     }
 
     public GlintSettings getGlintSettings(ModuleInstance instance, ItemStack stack) {
-        AtomicReference<GlintSettings> reference = new AtomicReference<>(getData(instance).orElse(defaultSettings));
+
+        AtomicReference<GlintSettings> reference = new AtomicReference<>(getData(instance).or(() -> {
+            var stackData = getData(stack);
+            if (stackData.isPresent() && stackData.get().isItem) {
+                return stackData;
+            }
+            return Optional.empty();
+        }).orElse(defaultSettings));
         GLINT_RESOLVE.invoker().get(stack, instance, reference);
         return reference.get();
     }
@@ -58,7 +84,7 @@ public class GlintProperty extends CodecProperty<GlintProperty.RainbowGlintSetti
 
     @Override
     public RainbowGlintSettings merge(RainbowGlintSettings left, RainbowGlintSettings right, MergeType mergeType) {
-        if (mergeType.equals(MergeType.EXTEND)) {
+        if (left.isItem) {
             return left;
         }
         return right;
@@ -72,16 +98,13 @@ public class GlintProperty extends CodecProperty<GlintProperty.RainbowGlintSetti
     }
 
     public static class RainbowGlintSettings implements GlintSettings {
-        @CodecBehavior.Optional
+        public static Codec<Color> COLOR_CODEC = Codec.INT.xmap(Color::new, Color::abgr);
         public float speed = 1;
-        @CodecBehavior.Optional
         public float rainbowSpeed = 1;
-        @CodecBehavior.Optional
         public float strength = 1;
-        @CodecBehavior.Optional
         public boolean shouldRenderGlint = false;
-        @CodecBehavior.Optional
-        public Color[] colors = new Color[]{Color.WHITE};
+        public boolean isItem = false;
+        public Color[] colors = new Color[]{Color.RED};
 
         @Override
         public float getA() {
@@ -128,6 +151,35 @@ public class GlintProperty extends CodecProperty<GlintProperty.RainbowGlintSetti
         @Override
         public boolean shouldRender() {
             return shouldRenderGlint;
+        }
+
+        public RainbowGlintSettings copyWithColor(List<Color> newColors) {
+            RainbowGlintSettings copy = new RainbowGlintSettings();
+            copy.speed = this.speed;
+            copy.rainbowSpeed = this.rainbowSpeed;
+            copy.strength = this.strength;
+            copy.shouldRenderGlint = this.shouldRenderGlint;
+            copy.colors = newColors.toArray(new Color[0]);
+            return copy;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            RainbowGlintSettings that = (RainbowGlintSettings) o;
+            return Float.compare(that.speed, speed) == 0 &&
+                   Float.compare(that.rainbowSpeed, rainbowSpeed) == 0 &&
+                   Float.compare(that.strength, strength) == 0 &&
+                   shouldRenderGlint == that.shouldRenderGlint &&
+                   Arrays.equals(colors, that.colors);
+        }
+
+        @Override
+        public int hashCode() {
+            int result = Objects.hash(speed, rainbowSpeed, strength, shouldRenderGlint);
+            result = 31 * result + Arrays.hashCode(colors);
+            return result;
         }
     }
 

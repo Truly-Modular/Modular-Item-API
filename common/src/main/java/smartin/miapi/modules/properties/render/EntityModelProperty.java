@@ -75,10 +75,10 @@ public class EntityModelProperty extends CodecProperty<List<EntityModelProperty.
                         Transform.CODEC
                                 .optionalFieldOf("transform", Transform.IDENTITY)
                                 .forGetter((data) -> data.transform),
-                        Codec.BOOL
+                        Miapi.FIXED_BOOL_CODEC
                                 .optionalFieldOf("tick", false)
                                 .forGetter((data) -> data.tick),
-                        Codec.BOOL
+                        Miapi.FIXED_BOOL_CODEC
                                 .optionalFieldOf("fullBright", false)
                                 .forGetter((data) -> data.fullBright),
                         MaterialIcons.SpinSettings.CODEC

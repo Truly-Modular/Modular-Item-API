@@ -414,7 +414,7 @@ public class RegistryInventory {
             registerMiapi(editOptions, "skin", new SkinOptions());
             registerMiapi(editOptions, "create", new CreateItemOption());
             registerMiapi(editOptions, "cosmetic", new CosmeticEditOption());
-            registerMiapi(editOptions, "glint", new GlintEditOption());
+            registerMiapi(editOptions, "glint_settings", new GlintEditOption());
             SynergyManager.setup();
 
             //CONDITIONS

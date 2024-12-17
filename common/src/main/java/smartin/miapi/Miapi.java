@@ -85,6 +85,10 @@ public class Miapi {
     public static NetworkingImplCommon networkingImplementation;
     public static MinecraftServer server;
     public static RegistryAccess registryAccess;
+    public static Codec<Boolean> FIXED_BOOL_CODEC = Codec.withAlternative(
+            Codec.BOOL,
+            Codec.INT.xmap(i -> i == 1, b -> (b ? 0 : 1)));
+
     public static Gson gson = new GsonBuilder()
             .create();
     public static Codec<ResourceLocation> ID_CODEC = new Codec<>() {

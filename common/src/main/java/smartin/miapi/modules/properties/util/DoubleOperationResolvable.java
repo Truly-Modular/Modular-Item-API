@@ -43,7 +43,7 @@ public class DoubleOperationResolvable {
 
         @Override
         public <T> DataResult<Pair<Operation, T>> decode(DynamicOps<T> ops, T input) {
-            DataResult<Pair<Boolean, T>> decodeBoolean = Codec.BOOL.decode(ops, input);
+            DataResult<Pair<Boolean, T>> decodeBoolean = Miapi.FIXED_BOOL_CODEC.decode(ops, input);
             if (decodeBoolean.isSuccess()) {
                 Operation operation = new Operation(decodeBoolean.getOrThrow().getFirst() ? "1" : "-1");
                 return DataResult.success(new Pair<>(operation, input));
@@ -260,7 +260,7 @@ public class DoubleOperationResolvable {
         public static Codec<String> NUMBERSTRINGCODEC = new Codec<String>() {
             @Override
             public <T> DataResult<Pair<String, T>> decode(DynamicOps<T> ops, T input) {
-                DataResult<Pair<Boolean, T>> decodeBoolean = Codec.BOOL.decode(ops, input);
+                DataResult<Pair<Boolean, T>> decodeBoolean = Miapi.FIXED_BOOL_CODEC.decode(ops, input);
                 if (decodeBoolean.isSuccess()) {
                     return DataResult.success(new Pair<>(decodeBoolean.getOrThrow().getFirst() ? "1" : "-1", input));
                 }

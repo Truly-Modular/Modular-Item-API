@@ -34,8 +34,8 @@ public record DamageActionEffect(String sourceKey, String targetKey, boolean use
             instance.group(
                     Codec.STRING.fieldOf("source").forGetter(DamageActionEffect::sourceKey),
                     Codec.STRING.fieldOf("target").forGetter(DamageActionEffect::targetKey),
-                    Codec.BOOL.optionalFieldOf("use_weapon_effects", true).forGetter(DamageActionEffect::useWeaponOnHit),
-                    Codec.BOOL.optionalFieldOf("use_enchants", true).forGetter(DamageActionEffect::useEnchants),
+                    Miapi.FIXED_BOOL_CODEC.optionalFieldOf("use_weapon_effects", true).forGetter(DamageActionEffect::useWeaponOnHit),
+                    Miapi.FIXED_BOOL_CODEC.optionalFieldOf("use_enchants", true).forGetter(DamageActionEffect::useEnchants),
                     Codec.STRING.optionalFieldOf("item").forGetter(DamageActionEffect::item),
                     DoubleOperationResolvable.CODEC.fieldOf("damage").forGetter(DamageActionEffect::value),
                     ResourceLocation.CODEC.fieldOf("type").orElse(TYPE).forGetter(DamageActionEffect::type)

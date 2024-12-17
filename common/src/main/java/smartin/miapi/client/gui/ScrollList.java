@@ -19,7 +19,7 @@ import java.util.List;
  */
 @Environment(EnvType.CLIENT)
 public class ScrollList extends InteractAbleWidget {
-    private List<InteractAbleWidget> widgets;
+    public List<InteractAbleWidget> widgets;
     private int scrollAmount;
     private int maxScrollAmount;
     public boolean saveMode = true;
@@ -238,6 +238,13 @@ public class ScrollList extends InteractAbleWidget {
             } else {
                 double i = Math.min(1, Math.max(0, (mouseY - getY()) / (getHeight() - 10)));
                 this.scrollAmount = (int) (i * maxScrollAmount);
+                return true;
+            }
+        }
+        for (InteractAbleWidget child : widgets) {
+            if (
+                    child.isMouseOver(mouseX, mouseY) &&
+                    child.mouseDragged(mouseX, mouseY, button, deltaX, deltaY)) {
                 return true;
             }
         }

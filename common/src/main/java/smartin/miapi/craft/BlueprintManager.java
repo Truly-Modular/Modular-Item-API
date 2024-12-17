@@ -1,7 +1,6 @@
 package smartin.miapi.craft;
 
 import com.google.gson.JsonElement;
-import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
@@ -37,7 +36,7 @@ public class BlueprintManager {
                 blueprint.toMerge.module,
                 () -> {
                     var decodeResult = ResourceLocation.CODEC.encodeStart(JsonOps.INSTANCE, location).getOrThrow();
-                    JsonElement booleanElement = Codec.BOOL.encodeStart(JsonOps.INSTANCE, blueprint.useMaterialCrafting()).getOrThrow();
+                    JsonElement booleanElement = Miapi.FIXED_BOOL_CODEC.encodeStart(JsonOps.INSTANCE, blueprint.useMaterialCrafting()).getOrThrow();
                     return Map.of(
                             ID, decodeResult,
                             AllowedMaterial.KEY, booleanElement);

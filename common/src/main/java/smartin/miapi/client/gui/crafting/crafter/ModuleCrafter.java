@@ -15,9 +15,9 @@ import smartin.miapi.client.gui.crafting.crafter.replace.CraftOption;
 import smartin.miapi.client.gui.crafting.crafter.replace.ReplaceView;
 import smartin.miapi.craft.CraftAction;
 import smartin.miapi.item.modular.VisualModularItem;
-import smartin.miapi.modules.edit_options.EditOption;
 import smartin.miapi.material.Material;
 import smartin.miapi.material.MaterialProperty;
+import smartin.miapi.modules.edit_options.EditOption;
 import smartin.miapi.modules.properties.slot.SlotProperty;
 import smartin.miapi.network.Networking;
 
@@ -174,6 +174,11 @@ public class ModuleCrafter extends InteractAbleWidget {
     @Override
     public void renderWidget(GuiGraphics drawContext, int mouseX, int mouseY, float delta) {
         super.renderWidget(drawContext, mouseX, mouseY, delta);
+    }
+
+    @Override
+    public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
+        return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
     }
 
     public enum Mode {

@@ -47,7 +47,7 @@ public class ModuleDataPropertiesManager {
                                 map.put(property, property.decode(stringJsonElementEntry.getValue()));
                             }
                         } catch (Exception e) {
-                            Miapi.LOGGER.info("could not load property " + stringJsonElementEntry.getKey());
+                            Miapi.LOGGER.info("could not load property " + stringJsonElementEntry.getKey(), e);
                         }
                     }
                 });

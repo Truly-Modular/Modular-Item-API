@@ -298,7 +298,7 @@ public class ModelProperty extends CodecProperty<List<ModelProperty.ModelData>> 
                                 .forGetter((modelData) -> modelData.color_provider),
                         Codec.STRING.optionalFieldOf("trim_mode", "none")
                                 .forGetter((modelData) -> modelData.trim_mode),
-                        Codec.BOOL.optionalFieldOf("entity_render", false)
+                        Miapi.FIXED_BOOL_CODEC.optionalFieldOf("entity_render", false)
                                 .forGetter((modelData) -> modelData.entity_render),
                         Codec.STRING.optionalFieldOf("id", "")
                                 .forGetter((modelData) -> modelData.id)

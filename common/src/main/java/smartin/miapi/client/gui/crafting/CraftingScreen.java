@@ -428,7 +428,9 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
         if (hoverElement != null) {
-            return hoverElement.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
+            if(hoverElement.mouseDragged(mouseX, mouseY, button, deltaX, deltaY)){
+                return true;
+            }
         }
         return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
     }

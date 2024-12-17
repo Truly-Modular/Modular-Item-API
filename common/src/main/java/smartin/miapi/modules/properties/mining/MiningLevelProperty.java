@@ -133,10 +133,10 @@ public class MiningLevelProperty extends CodecProperty<Map<String, MiningLevelPr
                             DoubleOperationResolvable.CODEC
                                     .optionalFieldOf("speed", new DoubleOperationResolvable(1))
                                     .forGetter(MiningRule::speed),
-                            Codec.BOOL
+                            Miapi.FIXED_BOOL_CODEC
                                     .optionalFieldOf("correct_for_drops")
                                     .forGetter(MiningRule::correctForDrops),
-                            Codec.BOOL
+                            Miapi.FIXED_BOOL_CODEC
                                     .optionalFieldOf("use_material", false)
                                     .forGetter(MiningRule::useMaterial))
                     .apply(instance, (blockList, blockTag, blacklist, blackTag, speed, correct, useMaterial) -> {

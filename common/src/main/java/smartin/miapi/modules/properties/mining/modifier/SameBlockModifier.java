@@ -29,7 +29,7 @@ public class SameBlockModifier implements MiningModifier {
     public static Codec<SameBlockModifier> CODEC = new Codec<SameBlockModifier>() {
         @Override
         public <T> DataResult<Pair<SameBlockModifier, T>> decode(DynamicOps<T> ops, T input) {
-            var result = Codec.BOOL.decode(ops, input);
+            var result = Miapi.FIXED_BOOL_CODEC.decode(ops, input);
             if (result.isSuccess()) {
                 SameBlockModifier sameBlockModifier = new SameBlockModifier();
                 sameBlockModifier.requireSame = result.getOrThrow().getFirst();
@@ -40,7 +40,7 @@ public class SameBlockModifier implements MiningModifier {
 
         @Override
         public <T> DataResult<T> encode(SameBlockModifier input, DynamicOps<T> ops, T prefix) {
-            return Codec.BOOL.encode(input.requireSame, ops, prefix);
+            return Miapi.FIXED_BOOL_CODEC.encode(input.requireSame, ops, prefix);
         }
     };
     public static ResourceLocation ID = Miapi.id("require_same");
