@@ -1,5 +1,6 @@
 package smartin.miapi.forge;
 
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.block.model.ItemOverrides;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
@@ -16,6 +17,8 @@ import java.util.function.Function;
 
 @NonnullDefault
 public class ForgeModel implements IUnbakedGeometry<ForgeModel> {
+    public static MultiBufferSource source;
+
     @Override
     public BakedModel bake(IGeometryBakingContext iGeometryBakingContext, ModelBaker arg, Function<Material, TextureAtlasSprite> function, ModelState arg2, ItemOverrides arg3) {
         DynamicBakery.dynamicBaker = arg;

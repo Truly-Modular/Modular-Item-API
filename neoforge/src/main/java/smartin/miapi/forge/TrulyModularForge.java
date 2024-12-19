@@ -1,8 +1,17 @@
 package smartin.miapi.forge;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import dev.architectury.event.events.common.LifecycleEvent;
 import dev.architectury.platform.Platform;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.model.HumanoidModel;
+import net.minecraft.client.model.Model;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.resources.model.ModelResourceLocation;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.InterModComms;
@@ -10,19 +19,26 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.InterModEnqueueEvent;
 import net.neoforged.neoforge.client.event.ModelEvent;
+import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
+import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeModificationEvent;
+import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.attributes.AttributeRegistry;
+import smartin.miapi.client.atlas.ArmorModelManager;
 import smartin.miapi.client.model.item.ItemBakedModelReplacement;
 import smartin.miapi.datapack.ReloadEvents;
+import smartin.miapi.item.modular.VisualModularItem;
 import smartin.miapi.modules.properties.attributes.AttributeProperty;
 import smartin.miapi.modules.properties.render.ModelProperty;
 import smartin.miapi.registries.RegistryInventory;
 
 import java.util.List;
+import java.util.Map;
+import java.util.WeakHashMap;
 import java.util.function.Consumer;
 
 import static smartin.miapi.Miapi.MOD_ID;
@@ -86,6 +102,52 @@ public class TrulyModularForge {
             });
             setupAttributes();
         }
+
+        @SubscribeEvent
+        public static void setupArmorRender(RegisterClientExtensionsEvent itemExtention) {
+            RegistryInventory.modularItems.addCallback((item -> {
+                itemExtention.registerItem(new IClientItemExtensions() {
+                    public Map<ItemStack, ModelWithHumanModel> cache = new WeakHashMap<>();
+
+                    @Override
+                    public @Nullable Font getFont(ItemStack stack, FontContext context) {
+                        return IClientItemExtensions.super.getFont(stack, context);
+                    }
+
+                    public Model getGenericArmorModel(LivingEntity livingEntity, ItemStack itemStack, EquipmentSlot equipmentSlot, HumanoidModel<?> original) {
+                        if (VisualModularItem.isModularItem(itemStack)) {
+                            cache.computeIfAbsent(itemStack, (i) -> {
+
+                                return new ModelWithHumanModel((a) -> {
+                                    return RenderType.armorEntityGlint();
+                                }) {
+                                    @Override
+                                    public void renderToBuffer(PoseStack poseStack, VertexConsumer buffer, int packedLight, int packedOverlay, int color) {
+                                        if (getHumanoidModel() != null && ForgeModel.source != null) {
+                                            ArmorModelManager.renderArmorPiece(
+                                                    poseStack,
+                                                    ForgeModel.source,
+                                                    packedLight,
+                                                    equipmentSlot,
+                                                    itemStack,
+                                                    livingEntity,
+                                                    this.getHumanoidModel(),
+                                                    this.getHumanoidModel());
+                                        }
+                                    }
+                                };
+                            });
+                            var model = cache.get(itemStack);
+                            if (model != null) {
+                                model.humanoidModel = original;
+                                return model;
+                            }
+                        }
+                        return IClientItemExtensions.super.getGenericArmorModel(livingEntity, itemStack, equipmentSlot, original);
+                    }
+                }, item);
+            }));
+        }
     }
 
     public static class ServerEvents {
@@ -98,6 +160,9 @@ public class TrulyModularForge {
     }
 
     public static class ClientEvents {
+
+
+
         /*
         @SubscribeEvent
         public void onRenderGameOverlayEventPre(RenderGuiEvent event) {

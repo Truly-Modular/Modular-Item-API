@@ -1,5 +1,6 @@
 package smartin.miapi.client.atlas;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
@@ -9,7 +10,6 @@ import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
-import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.ElytraLayer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -20,7 +20,7 @@ import smartin.miapi.client.model.MiapiItemModel;
 import smartin.miapi.mixin.client.ElytraEntityModelAccessor;
 import smartin.miapi.mixin.client.ElytraFeatureRendererAccessor;
 import smartin.miapi.mixin.client.LivingEntityRendererAccessor;
-import com.mojang.blaze3d.vertex.PoseStack;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;

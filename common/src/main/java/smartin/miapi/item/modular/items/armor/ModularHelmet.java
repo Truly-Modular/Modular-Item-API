@@ -32,7 +32,7 @@ public class ModularHelmet extends ArmorItem implements PlatformModularItemMetho
     }
 
     public ModularHelmet() {
-        super(RegistryInventory.armorMaterial, Type.HELMET, new Properties());
+        super(RegistryInventory.armorMaterial, Type.HELMET, new Properties().stacksTo(1).durability(50));
     }
 
     @Override

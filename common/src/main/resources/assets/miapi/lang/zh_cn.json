@@ -341,23 +341,23 @@
     "miapi.module.empty.description": "空槽位，此次合成将清空该槽位",
     "miapi.module.empty.short_description": "空槽位，此次合成将清空该槽位",
 
-    "miapi.module.banner_1x2": "旗帜装饰",
-    "miapi.module.banner_1x2.name": "[translation.[material.translation]]Left Scuba-Sleeve",
-    "miapi.module.banner_1x2.description": "旗帜装饰",
+    "miapi.module.miapi.banners.1x2": "旗帜装饰",
+    "miapi.module.miapi.banners.1x2.name": "旗帜装饰",
+    "miapi.module.miapi.banners.1x2.description": "旗帜装饰",
 
-    "miapi.module.banner_2x4": "旗帜装饰",
-    "miapi.module.banner_2x4.name": "[translation.[material.translation]]Left Scuba-Sleeve",
-    "miapi.module.banner_2x4.description": "旗帜装饰\n适合展示艺术或旗帜",
+    "miapi.module.miapi.banners.2x4": "旗帜装饰",
+    "miapi.module.miapi.banners.2x4.name": "旗帜装饰",
+    "miapi.module.miapi.banners.2x4.description": "旗帜装饰\n适合展示艺术或旗帜",
 
-    "miapi.module.banner_3x6": "旗帜装饰",
-    "miapi.module.banner_3x6.name": "[translation.[material.translation]]Left Scuba-Sleeve",
-    "miapi.module.banner_3x6.description": "旗帜装饰\n适合展示艺术或旗帜",
+    "miapi.module.miapi.banners.3x6": "旗帜装饰",
+    "miapi.module.miapi.banners.3x6.name": "旗帜装饰",
+    "miapi.module.miapi.banners.3x6.description": "旗帜装饰\n适合展示艺术或旗帜",
 
-    "miapi.module.banner_4x8": "旗帜装饰",
-    "miapi.module.banner_4x8.name": "[translation.[material.translation]]Left Scuba-Sleeve",
-    "miapi.module.banner_4x8.description": "旗帜装饰\n适合展示艺术或旗帜",
+    "miapi.module.miapi.banners.4x8": "旗帜装饰",
+    "miapi.module.miapi.banners.4x8.name": "旗帜装饰",
+    "miapi.module.miapi.banners.4x8.description": "旗帜装饰\n适合展示艺术或旗帜",
 
-    "miapi.module.banner_5x10": "旗帜装饰",
-    "miapi.module.banner_5x10.name": "[translation.[material.translation]]Left Scuba-Sleeve",
-    "miapi.module.banner_5x10.description": "旗帜装饰\n适合展示艺术或旗帜"
+    "miapi.module.miapi.banners.5x10": "旗帜装饰",
+    "miapi.module.miapi.banners.5x10.name": "旗帜装饰",
+    "miapi.module.miapi.banners.5x10.description": "旗帜装饰\n适合展示艺术或旗帜"
 }

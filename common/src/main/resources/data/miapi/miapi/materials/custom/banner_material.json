@@ -3,6 +3,9 @@
         "type": "item",
         "item": "minecraft:white_banner"
     },
+    "hidden_groups": [
+        "banner"
+    ],
     "color": "FFFFFF",
     "items": [
         {

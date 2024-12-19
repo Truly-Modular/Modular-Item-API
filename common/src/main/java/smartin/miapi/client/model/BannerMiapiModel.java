@@ -18,7 +18,6 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BannerPatternLayers;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 
 public class BannerMiapiModel implements MiapiModel {
@@ -36,6 +35,7 @@ public class BannerMiapiModel implements MiapiModel {
         this.patterns = patterns;
         this.mode = mode;
         this.transform = transform;
+        this.baseColor = color;
     }
 
     @Nullable

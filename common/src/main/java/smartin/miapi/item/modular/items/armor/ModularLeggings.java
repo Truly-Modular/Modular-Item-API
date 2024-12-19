@@ -33,7 +33,7 @@ public class ModularLeggings extends ArmorItem implements PlatformModularItemMet
     }
 
     public ModularLeggings() {
-        super(RegistryInventory.armorMaterial, Type.LEGGINGS, new Properties());
+        super(RegistryInventory.armorMaterial, Type.LEGGINGS, new Properties().stacksTo(1).durability(50));
     }
 
     @Override

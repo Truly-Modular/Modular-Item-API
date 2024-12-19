@@ -107,7 +107,6 @@ import smartin.miapi.modules.properties.slot.SlotProperty;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.modules.synergies.SynergyManager;
 
-import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -275,7 +274,7 @@ public class RegistryInventory {
                         5,
                         SoundEvents.ARMOR_EQUIP_IRON,
                         () -> Ingredient.EMPTY,
-                        new ArrayList<>(),
+                        ArmorMaterials.DIAMOND.value().layers(),
                         5.0f, 5.0f
                 ), (s) -> {
             armorMaterial = BuiltInRegistries.ARMOR_MATERIAL.wrapAsHolder(s);

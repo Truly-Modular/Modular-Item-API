@@ -59,6 +59,7 @@ public class GlintEditOption implements EditOption {
     }
 
     @Override
+    @Environment(EnvType.CLIENT)
     public InteractAbleWidget getGui(int x, int y, int width, int height, EditContext editContext) {
         return new GlintEditView(x, y, width, height, editContext, (prev) -> {
             FriendlyByteBuf buffer = Networking.createBuffer();

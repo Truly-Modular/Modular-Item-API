@@ -32,7 +32,7 @@ public class ModularChestPlate extends ArmorItem implements PlatformModularItemM
     }
 
     public ModularChestPlate() {
-        super(RegistryInventory.armorMaterial, Type.CHESTPLATE, new Properties());
+        super(RegistryInventory.armorMaterial, Type.CHESTPLATE, new Properties().stacksTo(1).durability(50));
     }
 
     @Override

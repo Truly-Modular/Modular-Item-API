@@ -33,7 +33,7 @@ public class ModularBoots extends ArmorItem implements PlatformModularItemMethod
     }
 
     public ModularBoots() {
-        super(RegistryInventory.armorMaterial, Type.BOOTS, new Properties());
+        super(RegistryInventory.armorMaterial, Type.BOOTS, new Properties().stacksTo(1).durability(50));
     }
 
     @Override
