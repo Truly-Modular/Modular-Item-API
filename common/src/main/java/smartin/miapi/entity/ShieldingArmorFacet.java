@@ -75,6 +75,17 @@ public class ShieldingArmorFacet implements EntityFacet<CompoundTag> {
     }
 
     @Override
+    public void sendToClient(Entity capHolder, ServerPlayer player) {
+        if (player != null && player.connection != null && player.level() != null) {
+            try {
+                createPacket(capHolder).send(player);
+            } catch (RuntimeException e) {
+                Miapi.LOGGER.error("facet sync issue", e);
+            }
+        }
+    }
+
+    @Override
     public void loadNbt(CompoundTag nbt) {
         currentAmount = nbt.getFloat("miapi:shielding_armor_current");
     }

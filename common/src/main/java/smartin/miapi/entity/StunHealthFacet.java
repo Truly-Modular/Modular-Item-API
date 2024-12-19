@@ -5,6 +5,7 @@ import com.redpxnda.nucleus.facet.FacetRegistry;
 import com.redpxnda.nucleus.facet.entity.EntityFacet;
 import com.redpxnda.nucleus.facet.network.clientbound.FacetSyncPacket;
 import com.redpxnda.nucleus.network.PlayerSendable;
+import dev.architectury.impl.NetworkAggregator;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -75,6 +76,17 @@ public class StunHealthFacet implements EntityFacet<CompoundTag> {
         CompoundTag compound = new CompoundTag();
         compound.putFloat("miapi:stun_current_health", getCurrentStunHealth());
         return compound;
+    }
+
+    @Override
+    public void sendToClient(Entity capHolder, ServerPlayer player) {
+        if (player != null && player.connection != null && player.level() != null) {
+            try {
+                createPacket(capHolder).send(player);
+            } catch (RuntimeException e) {
+                Miapi.LOGGER.error("facet sync issue", e);
+            }
+        }
     }
 
     @Override

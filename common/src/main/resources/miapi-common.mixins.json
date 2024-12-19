@@ -25,6 +25,7 @@
         "LootContextTypesAccessor",
         "MobMixin",
         "NamedAccessor",
+        "NucleusMixin",
         "PiglinBrainMixin",
         "PlayerEntityMixin",
         "PowderSnowBlockMixin",
