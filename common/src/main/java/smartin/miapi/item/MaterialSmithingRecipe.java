@@ -15,10 +15,10 @@ import net.minecraft.world.item.crafting.SmithingRecipeInput;
 import net.minecraft.world.level.Level;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.item.modular.VisualModularItem;
-import smartin.miapi.modules.ItemModule;
-import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.material.Material;
 import smartin.miapi.material.MaterialProperty;
+import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.registries.RegistryInventory;
 
 /**
@@ -118,6 +118,7 @@ public class MaterialSmithingRecipe implements SmithingRecipe {
                 }
             });
             instance.writeToItem(old);
+            //input.getItem(1).setCount(0);
         }
         MiapiEvents.MaterialCraft data = new MiapiEvents.MaterialCraft(old);
         MiapiEvents.SMITHING_EVENT.invoker().craft(data);

@@ -13,6 +13,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ChargedProjectiles;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import oshi.annotation.concurrent.Immutable;
 import smartin.miapi.Miapi;
 import smartin.miapi.events.MiapiProjectileEvents;
 import smartin.miapi.item.modular.ModularItem;
@@ -72,13 +73,13 @@ public class RapidfireCrossbowProperty extends DoubleProperty {
                         }
                     }
                 }
-                writeProjectileListToCrossbow(context.crossbow, projectiles);
+                writeProjectileListToCrossbow(context.crossbow, List.copyOf(projectiles));
             }
             return EventResult.pass();
         });
         MiapiProjectileEvents.MODULAR_CROSSBOW_POST_SHOT.register((player, crossbow) -> {
             if ((crossbow.getItem() instanceof ModularCrossbow) && (player.level() instanceof ServerLevel serverLevel)) {
-                List<ItemStack> projectiles = getSavedProjectilesOnCrossbow(crossbow);
+                List<ItemStack> projectiles = new ArrayList<>(getSavedProjectilesOnCrossbow(crossbow));
                 if (!projectiles.isEmpty()) {
                     ItemStack itemStack = projectiles.remove(0);
                     crossbow.set(DataComponents.CHARGED_PROJECTILES, ChargedProjectiles.of(itemStack));
@@ -107,12 +108,12 @@ public class RapidfireCrossbowProperty extends DoubleProperty {
     }
 
     public static void writeProjectileListToCrossbow(ItemStack crossbow, List<ItemStack> projectiles) {
-        crossbow.getComponents().get(ADDITIONAL_PROJECTILES_COMPONENT);
-        crossbow.set(ADDITIONAL_PROJECTILES_COMPONENT, projectiles);
+        crossbow.set(ADDITIONAL_PROJECTILES_COMPONENT, List.copyOf(projectiles));
     }
 
+    @Immutable
     public static List<ItemStack> getSavedProjectilesOnCrossbow(ItemStack crossbow) {
-        return crossbow.getComponents().getOrDefault(ADDITIONAL_PROJECTILES_COMPONENT, new ArrayList<>());
+        return crossbow.getComponents().getOrDefault(ADDITIONAL_PROJECTILES_COMPONENT, List.of());
     }
 
     public static int getShotCount(ItemStack itemStack) {

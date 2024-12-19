@@ -5,7 +5,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.ArmorItem;
+import net.minecraft.world.item.ElytraItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
@@ -22,14 +22,14 @@ import smartin.miapi.modules.properties.RepairPriority;
 import smartin.miapi.modules.properties.enchanment.EnchantAbilityProperty;
 import smartin.miapi.modules.properties.mining.MiningLevelProperty;
 import smartin.miapi.modules.properties.util.ComponentApplyProperty;
-import smartin.miapi.registries.RegistryInventory;
 
 import java.util.List;
 
 @NonnullDefault
-public class ModularElytraItem extends ArmorItem implements PlatformModularItemMethods, ModularItem {
+public class ModularElytraItem extends ElytraItem implements PlatformModularItemMethods, ModularItem {
     public ModularElytraItem(Properties settings) {
-        super(RegistryInventory.armorMaterial, Type.CHESTPLATE, settings);
+        super(settings);
+        //TODO:revisit cape, fake armor and platform specific elytra stuffs
     }
 
     @ExpectPlatform

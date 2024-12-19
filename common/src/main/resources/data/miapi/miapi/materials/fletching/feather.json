@@ -1,6 +1,7 @@
 {
     "icon": "textures/item/feather.png",
     "groups": [
+        "feather",
         "fletching"
     ],
     "hardness": 0,
