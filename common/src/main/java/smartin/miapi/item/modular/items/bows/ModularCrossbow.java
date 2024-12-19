@@ -27,6 +27,7 @@ import smartin.miapi.events.MiapiProjectileEvents;
 import smartin.miapi.item.FakeItemstackReferenceProvider;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.PlatformModularItemMethods;
+import smartin.miapi.mixin.CrossbowItemAccessor;
 import smartin.miapi.modules.properties.DisplayNameProperty;
 import smartin.miapi.modules.properties.LoreProperty;
 import smartin.miapi.modules.properties.RepairPriority;
@@ -134,8 +135,8 @@ public class ModularCrossbow extends CrossbowItem implements PlatformModularItem
             }
             return InteractionResultHolder.consume(crossbow);
         } else if (!player.getProjectile(crossbow).isEmpty()) {
-            this.startSoundPlayed = false;
-            this.midLoadSoundPlayed = false;
+            ((CrossbowItemAccessor) this).setStartSoundPlayed(false);
+            ((CrossbowItemAccessor) this).setMidLoadSoundPlayed(false);
             player.startUsingItem(usedHand);
             return InteractionResultHolder.consume(crossbow);
         } else {
@@ -152,11 +153,11 @@ public class ModularCrossbow extends CrossbowItem implements PlatformModularItem
         if (charge >= 1.0F &&
             !isCharged(stack) &&
             !MiapiProjectileEvents.MODULAR_CROSSBOW_PRE_LOAD.invoker().load(context).interruptsFurtherEvaluation() &&
-            tryLoadProjectiles(livingEntity, stack)) {
+            CrossbowItemAccessor.callTryLoadProjectiles(livingEntity, stack)) {
             if (MiapiProjectileEvents.MODULAR_CROSSBOW_POST_LOAD.invoker().load(context).interruptsFurtherEvaluation()) {
                 return;
             }
-            ChargingSounds chargingSounds = this.getChargingSounds(stack);
+            ChargingSounds chargingSounds =((CrossbowItemAccessor) this).callGetChargingSounds(stack);
             chargingSounds.end().ifPresent((holder) -> {
                 level.playSound((Player) null, livingEntity.getX(), livingEntity.getY(), livingEntity.getZ(), holder.value(), livingEntity.getSoundSource(), 1.0F, 1.0F / (level.getRandom().nextFloat() * 0.5F + 1.0F) + 0.2F);
             });

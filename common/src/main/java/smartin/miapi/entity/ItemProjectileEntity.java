@@ -269,7 +269,7 @@ public class ItemProjectileEntity extends AbstractArrow {
             LightningBolt lightningEntity = EntityType.LIGHTNING_BOLT.create(this.level());
             assert lightningEntity != null;
             lightningEntity.moveTo(Vec3.atBottomCenterOf(entityHitResult.getEntity().getOnPos()));
-            if(this.getOwner() instanceof ServerPlayer serverPlayer){
+            if (this.getOwner() instanceof ServerPlayer serverPlayer) {
                 lightningEntity.setCause(serverPlayer);
             }
             this.level().addFreshEntity(lightningEntity);
@@ -383,10 +383,16 @@ public class ItemProjectileEntity extends AbstractArrow {
         if (nbt.contains("ThrownItem", 10)) {
             this.thrownStack = ItemStack.parse(registryAccess(), nbt.getCompound("ThrownItem")).get();
             this.entityData.set(THROWING_STACK, thrownStack);
+        } else {
+            this.thrownStack = ItemStack.EMPTY;
+            this.entityData.set(THROWING_STACK, ItemStack.EMPTY);
         }
         if (nbt.contains("BowItem", 10)) {
             ItemStack bowItem = ItemStack.parse(registryAccess(), nbt.getCompound("BowItem")).get();
             this.entityData.set(BOW_ITEM_STACK, bowItem);
+        }
+        else {
+            this.entityData.set(BOW_ITEM_STACK, ItemStack.EMPTY);
         }
         if (nbt.contains("WaterDrag")) {
             this.entityData.set(WATER_DRAG, nbt.getFloat("WaterDrag"));
@@ -406,8 +412,13 @@ public class ItemProjectileEntity extends AbstractArrow {
     @Override
     public void addAdditionalSaveData(CompoundTag nbt) {
         super.addAdditionalSaveData(nbt);
-        nbt.put("ThrownItem", this.thrownStack.save(this.registryAccess(), new CompoundTag()));
-        nbt.put("BowItem", this.getBowItem().save(this.registryAccess(), new CompoundTag()));
+        if (!thrownStack.isEmpty()) {
+            nbt.put("ThrownItem", this.thrownStack.save(this.registryAccess(), new CompoundTag()));
+        }
+        if (!this.getBowItem().isEmpty()) {
+
+            nbt.put("BowItem", this.getBowItem().save(this.registryAccess(), new CompoundTag()));
+        }
         nbt.putBoolean("DealtDamage", this.dealtDamage);
         nbt.putFloat("WaterDrag", this.entityData.get(WATER_DRAG));
         nbt.putBoolean("SpeedDamage", this.entityData.get(SPEED_DAMAGE));

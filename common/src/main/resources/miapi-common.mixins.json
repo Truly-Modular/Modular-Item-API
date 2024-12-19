@@ -11,6 +11,7 @@
         "BCWeaponRegistryMixin",
         "ChorusFruitMixin",
         "CraftingResultInventorMixin",
+        "CrossbowItemAccessor",
         "EnchantmentMixin",
         "EndermanEntityMixin",
         "EnderpearlEntityMixin",
