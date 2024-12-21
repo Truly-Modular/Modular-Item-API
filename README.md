@@ -67,5 +67,6 @@ dependencies {
     compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:0.4.1"))
     implementation(include("io.github.llamalad7:mixinextras-forge:0.4.1"))
     modApi("com.Truly-Modular.Modular-Item-API:Truly-Modular-miapi-forge:${rootProject.miapi_version}-${rootProject.minecraft_version}")
+    forgeRuntimeLibrary(api("com.ezylang:EvalEx:3.2.0"))
 }
 ```
