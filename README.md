@@ -22,7 +22,8 @@ And much more awaits you as you delve into the world of Truly Modular: miapi. Ex
 latest version can be checked https://github.com/Truly-Modular/Modular-Item-API/releases  
 We recommend the usage of any Architectury Template, depending on Architectury is also recommended since Truly Modular already depends on it
 the miapi_version needed is the same as the github release tag
-## Depencencies
+## Repositories
+add this to every subproject
 ```js
 repositories {
     maven {
@@ -55,6 +56,8 @@ dependencies {
 ## Forge
 ```js
 dependencies {
+    compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:0.4.1"))
+    implementation(include("io.github.llamalad7:mixinextras-forge:0.4.1"))
     modApi("com.Truly-Modular.Modular-Item-API:Truly-Modular-miapi-forge:${rootProject.miapi_version}-${rootProject.minecraft_version}")
 }
 ```
