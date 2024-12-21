@@ -12,6 +12,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.DamageTypeTags;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
@@ -99,12 +100,12 @@ public class AttributeRegistry {
         });
 
         MiapiEvents.LIVING_HURT_AFTER_ARMOR.register((livingHurt) -> {
-            StunHealthFacet facet = StunHealthFacet.KEY.get(livingHurt.livingEntity);
+            StunHealthFacet facet = StunHealthFacet.KEY.get(livingHurt.defender);
             if (
                     livingHurt.damageSource != null &&
                     livingHurt.damageSource.getEntity() != null &&
                     livingHurt.damageSource.getEntity() instanceof LivingEntity attacker) {
-                if (facet != null && !livingHurt.livingEntity.level().isClientSide()) {
+                if (facet != null && !livingHurt.defender.level().isClientSide()) {
                     if (attacker.getAttributes().hasAttribute(STUN_DAMAGE)) {
                         double currentStunDamage = attacker.getAttributeValue(STUN_DAMAGE);
                         if (currentStunDamage > 0.1) {
@@ -117,14 +118,14 @@ public class AttributeRegistry {
         });
 
         MiapiEvents.LIVING_HURT_AFTER_ARMOR.register((livingHurt) -> {
-            ShieldingArmorFacet facet = ShieldingArmorFacet.KEY.get(livingHurt.livingEntity);
-            if (facet != null && !livingHurt.livingEntity.level().isClientSide()) {
+            ShieldingArmorFacet facet = ShieldingArmorFacet.KEY.get(livingHurt.defender);
+            if (facet != null && !livingHurt.defender.level().isClientSide()) {
                 if (
                         livingHurt.damageSource != null &&
                         !livingHurt.damageSource.is(DamageTypeTags.BYPASSES_ARMOR)
                 ) {
                     livingHurt.amount = facet.takeDamage(livingHurt.amount);
-                    if (livingHurt.livingEntity instanceof ServerPlayer player) {
+                    if (livingHurt.defender instanceof ServerPlayer player) {
                         facet.sendToClient(player);
                     }
                 }
@@ -149,8 +150,8 @@ public class AttributeRegistry {
         }));
 
         MiapiEvents.LIVING_HURT.register((livingHurtEvent -> {
-            if (livingHurtEvent.livingEntity.getAttributes().hasAttribute(DAMAGE_RESISTANCE)) {
-                livingHurtEvent.amount = Math.max(0, (float) (livingHurtEvent.amount * (100 - livingHurtEvent.livingEntity.getAttributeValue(DAMAGE_RESISTANCE)) / 100));
+            if (livingHurtEvent.defender.getAttributes().hasAttribute(DAMAGE_RESISTANCE)) {
+                livingHurtEvent.amount = Math.max(0, (float) (livingHurtEvent.amount * (100 - livingHurtEvent.defender.getAttributeValue(DAMAGE_RESISTANCE)) / 100));
             }
             return EventResult.pass();
         }));
@@ -168,7 +169,7 @@ public class AttributeRegistry {
                     livingHurtEvent.damageSource != null &&
                     livingHurtEvent.damageSource.getEntity() instanceof LivingEntity attacker) {
                 if (attacker.getAttributes().hasAttribute(BACK_STAB) && attacker.getAttributes().getInstance(BACK_STAB) != null) {
-                    if (livingHurtEvent.damageSource.getEntity().getLookAngle().dot(livingHurtEvent.livingEntity.getLookAngle()) > 0) {
+                    if (livingHurtEvent.damageSource.getEntity().getLookAngle().dot(livingHurtEvent.defender.getLookAngle()) > 0) {
                         attacker.getAttributes().getInstance(BACK_STAB).addTransientModifier(new AttributeModifier(TEMP_BACKSTAB_DMG_UUID, livingHurtEvent.amount, AttributeModifier.Operation.ADD_VALUE));
                         livingHurtEvent.amount = (float) attacker.getAttributeValue(BACK_STAB);
                         attacker.getAttributes().getInstance(BACK_STAB).removeModifier(TEMP_BACKSTAB_DMG_UUID);
@@ -181,8 +182,8 @@ public class AttributeRegistry {
             if (
                     livingHurtEvent.damageSource != null &&
                     livingHurtEvent.damageSource.is(DamageTypeTags.IS_PROJECTILE) &&
-                    livingHurtEvent.livingEntity.getAttributes().hasAttribute(PROJECTILE_ARMOR)) {
-                double projectileArmor = livingHurtEvent.livingEntity.getAttributeValue(PROJECTILE_ARMOR);
+                    livingHurtEvent.defender.getAttributes().hasAttribute(PROJECTILE_ARMOR)) {
+                double projectileArmor = livingHurtEvent.defender.getAttributeValue(PROJECTILE_ARMOR);
                 if (projectileArmor > 0) {
                     double totalDamage = livingHurtEvent.amount * (1 - ((Math.max(20, projectileArmor)) / 25));
                     livingHurtEvent.amount = (float) totalDamage;
@@ -196,7 +197,7 @@ public class AttributeRegistry {
                     livingHurtEvent.damageSource.getEntity() instanceof LivingEntity attacker) {
                 if (attacker.getAttributes().hasAttribute(SHIELD_BREAK)) {
                     double value = attacker.getAttributeValue(SHIELD_BREAK);
-                    if (livingHurtEvent.livingEntity instanceof Player player) {
+                    if (livingHurtEvent.defender instanceof Player player) {
                         if (value > 0 && player.isBlocking()) {
                             player.getCooldowns().addCooldown(Items.SHIELD, (int) (value * 20));
                             player.stopUsingItem();
@@ -213,7 +214,7 @@ public class AttributeRegistry {
                     livingHurtEvent.damageSource.getEntity() instanceof LivingEntity attacker) {
                 if (attacker.getAttributes().hasAttribute(ARMOR_CRUSHING)) {
                     double value = attacker.getAttributeValue(ARMOR_CRUSHING);
-                    ((LivingEntityAccessor) livingHurtEvent.livingEntity).callDamageArmor(livingHurtEvent.damageSource, (float) (livingHurtEvent.livingEntity.getArmorValue() * value));
+                    ((LivingEntityAccessor) livingHurtEvent.defender).callDamageArmor(livingHurtEvent.damageSource, (float) (livingHurtEvent.defender.getArmorValue() * value));
                 }
             }
             return EventResult.pass();
@@ -232,7 +233,7 @@ public class AttributeRegistry {
             if (
                     livingHurtEvent.damageSource != null &&
                     livingHurtEvent.damageSource.getEntity() instanceof LivingEntity attacker &&
-                    !livingHurtEvent.livingEntity.level().isClientSide()
+                    !livingHurtEvent.defender.level().isClientSide()
             ) {
                 if (attacker.getAttributes().hasAttribute(CRITICAL_CHANCE) && !livingHurtEvent.isCritical) {
                     attacker.getAttributes().getInstance(CRITICAL_CHANCE).addTransientModifier(new AttributeModifier(TEMP_CRIT_DMG_UUID, 1, AttributeModifier.Operation.ADD_VALUE));
@@ -243,13 +244,13 @@ public class AttributeRegistry {
                         livingHurtEvent.amount = livingHurtEvent.amount * 1.5f;
                         attacker.level().playSound(null, attacker.getX(), attacker.getY(), attacker.getZ(), SoundEvents.PLAYER_ATTACK_CRIT, attacker.getSoundSource(), 1.0F, 1.0F);
                         if (attacker instanceof Player player) {
-                            player.crit(livingHurtEvent.livingEntity);
+                            player.crit(livingHurtEvent.defender);
                         }
                         if (attacker.level().isClientSide()) {
-                            Minecraft.getInstance().particleEngine.createTrackingEmitter(livingHurtEvent.livingEntity, ParticleTypes.CRIT);
+                            Minecraft.getInstance().particleEngine.createTrackingEmitter(livingHurtEvent.defender, ParticleTypes.CRIT);
                         } else {
                             if (attacker.level() instanceof ServerLevel serverWorld) {
-                                serverWorld.getChunkSource().broadcastAndSend(attacker, new ClientboundAnimatePacket(livingHurtEvent.livingEntity, 4));
+                                serverWorld.getChunkSource().broadcastAndSend(attacker, new ClientboundAnimatePacket(livingHurtEvent.defender, 4));
                             }
                         }
                     }

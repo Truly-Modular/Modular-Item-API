@@ -27,13 +27,13 @@ public class TowerShieldBlock implements ItemUseDefaultCooldownAbility<TowerShie
 
     public TowerShieldBlock() {
         MiapiEvents.LIVING_HURT_AFTER.register(event -> {
-            ItemStack itemStack = event.livingEntity.getUseItem();
+            ItemStack itemStack = event.defender.getUseItem();
             BlockData data = getSpecialContext(itemStack);
             if (data != null) {
-                itemStack.update(TowerShieldComponent.TOWER_SHIELD_COMPONENT, new TowerShieldComponent(event.livingEntity.level().getGameTime()), (towerShieldComponent -> {
+                itemStack.update(TowerShieldComponent.TOWER_SHIELD_COMPONENT, new TowerShieldComponent(event.defender.level().getGameTime()), (towerShieldComponent -> {
                     towerShieldComponent.blockCount++;
                     if (towerShieldComponent.blockCount > data.block.getValue()) {
-                        if (event.livingEntity instanceof Player player) {
+                        if (event.defender instanceof Player player) {
                             double cooldown = data.cooldown.getValue();
                             if (event.damageSource.getDirectEntity() instanceof LivingEntity livingEntity) {
                                 cooldown += livingEntity.getAttributeValue(AttributeRegistry.SHIELD_BREAK) * 20 - 100;
@@ -79,7 +79,7 @@ public class TowerShieldBlock implements ItemUseDefaultCooldownAbility<TowerShie
 
     @Override
     public BlockData getDefaultContext() {
-        return new BlockData();
+        return null;
     }
 
     @Override

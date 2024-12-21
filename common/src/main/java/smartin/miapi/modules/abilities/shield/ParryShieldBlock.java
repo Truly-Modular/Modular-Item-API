@@ -25,12 +25,12 @@ public class ParryShieldBlock implements ItemUseDefaultCooldownAbility<ParryShie
 
     public ParryShieldBlock() {
         MiapiEvents.LIVING_HURT_AFTER.register(event -> {
-            ItemStack itemStack = event.livingEntity.getUseItem();
+            ItemStack itemStack = event.defender.getUseItem();
             BlockData data = getSpecialContext(itemStack);
             if (data != null) {
                 if (event.damageSource.getEntity() instanceof LivingEntity attacker) {
-                    attacker.hurt(event.livingEntity.damageSources().generic(), event.amount);
-                    if (event.livingEntity instanceof Player player) {
+                    attacker.hurt(event.defender.damageSources().generic(), event.amount);
+                    if (event.defender instanceof Player player) {
                         player.getCooldowns().addCooldown(itemStack.getItem(), (int) data.cooldown.getValue());
                     }
                 }
@@ -58,17 +58,19 @@ public class ParryShieldBlock implements ItemUseDefaultCooldownAbility<ParryShie
     public InteractionResultHolder<ItemStack> use(Level world, Player user, InteractionHand hand) {
         ItemStack itemStack = user.getItemInHand(hand);
         BlockData data = getSpecialContext(itemStack);
-        var component = itemStack.get(TowerShieldComponent.TOWER_SHIELD_COMPONENT);
-        if (component != null) {
-            component.update(world.getGameTime(), (int) data.cooldown.getValue());
+        if (data != null) {
+            var component = itemStack.get(TowerShieldComponent.TOWER_SHIELD_COMPONENT);
+            if (component != null) {
+                component.update(world.getGameTime(), (int) data.cooldown.getValue());
+            }
+            setAnimation(user, hand, data.animation);
         }
-        setAnimation(user, hand, data.animation);
         return InteractionResultHolder.pass(user.getItemInHand(hand));
     }
 
     @Override
     public BlockData getDefaultContext() {
-        return new BlockData();
+        return null;
     }
 
     @Override

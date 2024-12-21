@@ -97,7 +97,7 @@ dependencies {
 
     //modImplementation "curse.maven:epic-fight-mod-405076:4785528"
 
-    implementation "com.ezylang:EvalEx:${rootProject.eval_ex_version}"
+    api "com.ezylang:EvalEx:${rootProject.eval_ex_version}"
 }
 
 architectury {

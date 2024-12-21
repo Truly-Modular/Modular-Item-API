@@ -8,6 +8,7 @@ import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Arrow;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -18,7 +19,10 @@ import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.mixin.LivingEntityAccessor;
 
 @Mixin(LivingEntity.class)
-public class LivingEntityMixin {
+public abstract class LivingEntityMixin {
+
+    @Shadow
+    public abstract void stopRiding();
 
     private float storedValue;
     private DamageSource storedDamageSource;
@@ -26,7 +30,7 @@ public class LivingEntityMixin {
 
     @Inject(method = "hurt", at = @At(value = "HEAD"))
     private void miapi$damageEvent(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
-        MiapiEvents.LivingHurtEvent livingHurtEvent = new MiapiEvents.LivingHurtEvent((LivingEntity) (Object) this, source, amount);
+        MiapiEvents.LivingHurtEvent livingHurtEvent = new MiapiEvents.LivingHurtEvent((LivingEntity) (Object) this, source.getEntity(), source, amount);
         if (source.getEntity() instanceof Player entity) {
             livingHurtEvent.isCritical = hasCrited(entity, (LivingEntity) (Object) this);
         }
@@ -63,8 +67,8 @@ public class LivingEntityMixin {
         //float damage = Math.max(0, currentShieldingArmor);
         //amount -= damage;
         //currentShieldingArmor = currentShieldingArmor - Math.min(amount, damage);
-        MiapiEvents.LivingHurtEvent livingHurtEvent = new MiapiEvents.LivingHurtEvent((LivingEntity) (Object) this, storedDamageSource, amount);
-        if(storedDamageSource!=null){
+        MiapiEvents.LivingHurtEvent livingHurtEvent = new MiapiEvents.LivingHurtEvent((LivingEntity) (Object) this, storedDamageSource.getEntity(), storedDamageSource, amount);
+        if (storedDamageSource != null) {
             if (storedDamageSource.getEntity() instanceof Player entity) {
                 livingHurtEvent.isCritical = hasCrited(entity, (LivingEntity) (Object) this);
             }
@@ -85,7 +89,7 @@ public class LivingEntityMixin {
     private void miapi$damageEventAfter(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
         LivingEntity livingEntity = (LivingEntity) (Object) this;
         float lastDamageTaken = ((LivingEntityAccessor) livingEntity).getLastDamageTaken();
-        MiapiEvents.LivingHurtEvent livingHurtEvent = new MiapiEvents.LivingHurtEvent((LivingEntity) (Object) this, source, lastDamageTaken);
+        MiapiEvents.LivingHurtEvent livingHurtEvent = new MiapiEvents.LivingHurtEvent((LivingEntity) (Object) this, source.getEntity(), source, lastDamageTaken);
         livingHurtEvent.isCritical = lastEvent.isCritical;
         MiapiEvents.LIVING_HURT_AFTER.invoker().hurt(livingHurtEvent);
     }

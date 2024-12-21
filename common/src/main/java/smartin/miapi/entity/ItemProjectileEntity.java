@@ -226,7 +226,7 @@ public class ItemProjectileEntity extends AbstractArrow {
 
     @Override
     protected void onHitEntity(EntityHitResult entityHitResult) {
-        Entity entity = entityHitResult.getEntity();
+        Entity defender = entityHitResult.getEntity();
         float damage = getProjectileDamage();
         if (this.getPierceLevel() > 0) {
             projectileHitBehaviour = new EntityPierceBehaviour();
@@ -251,16 +251,16 @@ public class ItemProjectileEntity extends AbstractArrow {
         }
         damage = event.damage;
         this.dealtDamage = true;
-        if (entity.hurt(event.damageSource, (float) Math.ceil(damage))) {
-            if (entity.getType() == EntityType.ENDERMAN) {
+        if (defender.hurt(event.damageSource, (float) Math.ceil(damage))) {
+            if (defender.getType() == EntityType.ENDERMAN) {
                 return;
             }
 
             if (level() instanceof ServerLevel serverLevel) {
-                EnchantmentHelper.doPostAttackEffectsWithItemSource(serverLevel, entity, event.damageSource, this.getWeaponItem());
+                EnchantmentHelper.doPostAttackEffectsWithItemSource(serverLevel, defender, event.damageSource, this.getWeaponItem());
             }
 
-            if (entity instanceof LivingEntity victim) {
+            if (defender instanceof LivingEntity victim) {
                 this.doKnockback(victim, event.damageSource);
                 this.doPostHurtEffects(victim);
             }

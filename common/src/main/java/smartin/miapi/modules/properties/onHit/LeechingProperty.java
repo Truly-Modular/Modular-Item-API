@@ -29,7 +29,7 @@ public class LeechingProperty extends DoubleProperty {
         property = this;
 
         MiapiEvents.LIVING_HURT_AFTER .register((event) -> {
-            if (!event.livingEntity.level().isClientSide()) {
+            if (!event.defender.level().isClientSide()) {
                 if (event.damageSource.getEntity() instanceof LivingEntity livingEntity) {
                     double totalLevel = getForItems(livingEntity.getAllSlots());
                     if (totalLevel > 0) {

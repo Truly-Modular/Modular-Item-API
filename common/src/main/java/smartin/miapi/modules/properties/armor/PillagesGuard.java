@@ -30,7 +30,7 @@ public class PillagesGuard extends DoubleProperty {
             if (livingHurtEvent.damageSource.getEntity() instanceof LivingEntity living) {
                 if (IllagerBane.isIllagerType(living) && !living.level().isClientSide()) {
                     double level = 1;
-                    for (ItemStack itemStack : livingHurtEvent.livingEntity.getArmorSlots()) {
+                    for (ItemStack itemStack : livingHurtEvent.defender.getArmorSlots()) {
                         level -= (1 - valueRemap(getValue(itemStack).orElse(0.0)));
                     }
                     livingHurtEvent.amount *= (float) level;

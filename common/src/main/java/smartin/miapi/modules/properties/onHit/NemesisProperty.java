@@ -93,7 +93,7 @@ public class NemesisProperty extends DoubleProperty implements CraftingProperty 
                 double nemesisScale = getValue(weapon).orElse(0.0);
                 NemesisData data = weapon.get(NEMESIS_COMPONENT);
                 if (data != null && nemesisScale > 0) {
-                    EntityType attackedType = listener.livingEntity.getType();
+                    EntityType attackedType = listener.defender.getType();
 
                     Optional<EntityType<?>> entityType1 = EntityType.byString(data.entityType);
 
