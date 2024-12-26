@@ -1,31 +1,25 @@
 package smartin.miapi.modules.cache;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.datapack.ReloadEvents;
-import smartin.miapi.item.modular.ModularItem;
+import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.item.modular.VisualModularItem;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
 
+import java.util.Collections;
 import java.util.Map;
-import java.util.UUID;
+import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class ModularItemCache {
     protected static Map<String, CacheObjectSupplier> supplierMap = new ConcurrentHashMap<>();
     public static Map<String, DataCache.ModuleCacheSupplier> MODULE_CACHE_SUPPLIER = new ConcurrentHashMap<>();
+    public static WeakInstanceTracker<ModuleInstance> modules = new WeakInstanceTracker<>();
 
     public static void setSupplier(String key, CacheObjectSupplier supplier) {
         supplierMap.put(key, supplier);
@@ -56,12 +50,29 @@ public class ModularItemCache {
     }
 
     public static void discardCache() {
-
+        modules.instances.forEach((m) -> {
+            if (m != null) {
+                m.clearCaches();
+            }
+        });
     }
 
 
     public interface CacheObjectSupplier extends Function<ItemStack, Object> {
         @Override
         Object apply(ItemStack stack);
+    }
+
+
+    public static class WeakInstanceTracker<T> {
+        private final Set<T> instances = Collections.newSetFromMap(new WeakHashMap<>());
+
+        public void addInstance(T instance) {
+            instances.add(instance);
+        }
+
+        public Set<T> getInstances() {
+            return instances;
+        }
     }
 }

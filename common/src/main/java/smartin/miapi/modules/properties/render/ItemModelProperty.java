@@ -38,7 +38,7 @@ public class ItemModelProperty extends CodecProperty<List<ModelJson>> {
         }
     }
     public void clientSetup(){
-        MiapiItemModel.modelSuppliers.add((key, model, stack) -> {
+        MiapiItemModel.modelSuppliers.add((key,mode, model, stack) -> {
             List<ModelJson> modelJsons = getData(stack).orElse(new ArrayList<>());
             List<MiapiModel> models = new ArrayList<>();
             modelJsons.forEach(modelJson -> {

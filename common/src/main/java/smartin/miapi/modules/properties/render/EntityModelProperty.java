@@ -25,10 +25,11 @@ import java.util.Optional;
 public class EntityModelProperty extends CodecProperty<List<EntityModelProperty.EntityModelData>> {
     public static final ResourceLocation KEY = Miapi.id("entity_model");
     public static EntityModelProperty property;
+
     public EntityModelProperty() {
         super(Codec.list(EntityModelData.CODEC));
         property = this;
-        MiapiItemModel.modelSuppliers.add((key, model, stack) -> {
+        MiapiItemModel.modelSuppliers.add((key, mode, model, stack) -> {
             List<MiapiModel> models = new ArrayList<>();
             getData(model).ifPresent(entityModelDataList -> {
                 entityModelDataList.forEach(entityModelData -> {

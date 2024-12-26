@@ -30,7 +30,7 @@ public class BannerModelProperty extends CodecProperty<List<BannerModelProperty.
     public BannerModelProperty() {
         super(CODEC);
         property = this;
-        MiapiItemModel.modelSuppliers.add((key, moduleInstance, stack) -> {
+        MiapiItemModel.modelSuppliers.add((key, displayMode, moduleInstance, stack) -> {
             List<MiapiModel> models = new ArrayList<>();
             getData(moduleInstance).ifPresent(list -> {
                 list.forEach(bannerModelData -> {

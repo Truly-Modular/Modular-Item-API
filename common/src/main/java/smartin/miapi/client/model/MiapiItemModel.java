@@ -1,6 +1,7 @@
 package smartin.miapi.client.model;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.datafixers.util.Pair;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.world.entity.LivingEntity;
@@ -58,7 +59,7 @@ public class MiapiItemModel implements MiapiModel {
     }
 
     public void render(
-            String modelType,
+            String modelTypeRaw,
             ItemStack stack,
             PoseStack matrices,
             ItemDisplayContext mode,
@@ -68,10 +69,12 @@ public class MiapiItemModel implements MiapiModel {
             int light,
             int overlay) {
         if (ReloadEvents.isInReload()) return;
+
+        String modelType = modelTypeRaw == null ? "item" : modelTypeRaw;
         Minecraft.getInstance().level.getProfiler().push("modular_item");
         matrices.pushPose();
         for (ModelTransformer transformer : modelTransformers) {
-            matrices = transformer.transform(matrices, stack, mode, modelType, tickDelta);
+            matrices = transformer.transform(matrices, stack, modelType, mode, tickDelta);
         }
         if (entity == null) {
             //needed because otherwise overwrites dont work
@@ -89,10 +92,14 @@ public class MiapiItemModel implements MiapiModel {
     }
 
     public interface ModelSupplier {
-        List<MiapiModel> getModels(@Nullable String key, ModuleInstance module, ItemStack stack);
+        List<MiapiModel> getModels(String key, @Nullable ItemDisplayContext model, ModuleInstance module, ItemStack stack);
+
+        default List<Pair<Matrix4f, MiapiModel>> filter(List<Pair<Matrix4f, MiapiModel>> models, ModuleInstance module, String key, ItemDisplayContext context) {
+            return models;
+        }
     }
 
     public interface ModelTransformer {
-        PoseStack transform(PoseStack matrices, ItemStack itemStack, ItemDisplayContext mode, String modelType, float tickDelta);
+        PoseStack transform(PoseStack matrices, ItemStack itemStack, String modelType, @Nullable ItemDisplayContext model, float tickDelta);
     }
 }

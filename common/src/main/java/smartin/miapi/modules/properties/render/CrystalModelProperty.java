@@ -17,7 +17,7 @@ public class CrystalModelProperty extends ComplexBooleanProperty {
     public CrystalModelProperty() {
         super(KEY, false);
         property = this;
-        MiapiItemModel.modelSuppliers.add((key, model, stack) -> {
+        MiapiItemModel.modelSuppliers.add((key, mode, model, stack) -> {
             List<MiapiModel> models = new ArrayList<>();
             if (isTrue(model)) {
                 models.add(new CrystalModel());

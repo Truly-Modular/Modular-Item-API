@@ -12,6 +12,8 @@ import java.util.List;
 
 @ConfigAutoCodec.ConfigClassMarker
 public class MiapiServerConfig {
+    public static MiapiServerConfig INSTANCE = new MiapiServerConfig();
+
     @AutoCodec.Name("generated_materials")
     public GeneratedMaterialsCategory generatedMaterials = new GeneratedMaterialsCategory();
 
@@ -26,7 +28,7 @@ public class MiapiServerConfig {
     public static class OtherCategory {
         @Comment("""
                 Whether the development mode of Miapi is enabled
-                DO NOT ENABLE IF U DONT KNOW WHAT IT DOES""")
+                DO NOT ENABLE IF U DO NOT KNOW WHAT IT DOES""")
         @AutoCodec.Name("development_mode")
         public boolean developmentMode = Platform.isDevelopmentEnvironment();
 
@@ -34,6 +36,12 @@ public class MiapiServerConfig {
                 Truly Modular Logs more aggressivly""")
         @AutoCodec.Name("verbose_logging")
         public boolean verboseLogging = false;
+
+        @Comment("""
+                If the same Lore Injections should happen on server as on the client
+                Disabling this improves performance, but might let certain mods nolonger find Modular Material or Items via search""")
+        @AutoCodec.Name("server_lore")
+        public boolean serverLoreInjection = false;
 
         @Comment("""
                 If normal Converters should be generated for normal Materials

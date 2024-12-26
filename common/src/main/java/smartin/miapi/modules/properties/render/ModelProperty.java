@@ -81,7 +81,7 @@ public class ModelProperty extends CodecProperty<List<ModelProperty.ModelData>> 
         mirroredGetter = (identifier) -> textureGetter.apply(identifier);
         generator = new ItemModelGenerator();
         ModularItemCache.setSupplier(CACHE_KEY_ITEM, (stack) -> getModelMap(stack).get("item"));
-        MiapiItemModel.modelSuppliers.add((key, model, stack) -> {
+        MiapiItemModel.modelSuppliers.add((key, mode, model, stack) -> {
             List<MiapiModel> miapiModels = new ArrayList<>();
             for (ModelHolder holder : getForModule(model, key, stack)) {
                 miapiModels.add(new BakedMiapiModel(holder, model, stack));
@@ -107,7 +107,7 @@ public class ModelProperty extends CodecProperty<List<ModelProperty.ModelData>> 
         int condition = Material.getColor(StatResolver.resolveString(json.condition, instance));
         if (condition != 0) {
             if (
-                    json.transform.origin == null && key == null ||
+                    json.transform.origin == null && "item".equals(key) ||
                     json.transform.origin != null && json.transform.origin.equals(key) ||
                     ("item".equals(json.transform.origin) && key == null)) {
                 return bakedModel(instance, json, itemStack);

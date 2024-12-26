@@ -24,7 +24,7 @@ public class ConduitModelProperty extends CodecProperty<List<ConduitModelPropert
     public ConduitModelProperty() {
         super(CODEC);
         property = this;
-        MiapiItemModel.modelSuppliers.add((key, model, stack) -> {
+        MiapiItemModel.modelSuppliers.add((key,mode, model, stack) -> {
             List<MiapiModel> models = new ArrayList<>();
             getData(model).ifPresent(conduitModelData ->
                     conduitModelData.forEach(data ->

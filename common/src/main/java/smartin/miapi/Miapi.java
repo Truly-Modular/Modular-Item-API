@@ -7,10 +7,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
-import com.redpxnda.nucleus.config.ConfigBuilder;
-import com.redpxnda.nucleus.config.ConfigManager;
-import com.redpxnda.nucleus.config.ConfigType;
-import com.redpxnda.nucleus.config.NucleusConfig;
+import com.redpxnda.nucleus.config.*;
 import com.redpxnda.nucleus.registry.NucleusNamespaces;
 import dev.architectury.event.EventResult;
 import dev.architectury.event.events.common.CommandRegistrationEvent;
@@ -26,7 +23,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.client.MiapiClient;
+import smartin.miapi.config.MiapiClientConfig;
 import smartin.miapi.config.MiapiConfig;
+import smartin.miapi.config.MiapiServerConfig;
 import smartin.miapi.craft.BlueprintManager;
 import smartin.miapi.craft.stat.StatActorType;
 import smartin.miapi.datapack.ReloadEvents;
@@ -255,18 +254,29 @@ public class Miapi {
     }
 
     protected static void setupConfigs() {
-        ConfigManager.register(ConfigBuilder.automatic(MiapiConfig.class)
-                .id(MOD_ID + ":merged")
-                .fileLocation(Miapi.MOD_ID)
+        ConfigManager.register(ConfigBuilder.automatic(MiapiClientConfig.class)
+                .id(MOD_ID + ":client")
+                .fileLocation(Miapi.MOD_ID + "_client")
                 .type(ConfigType.COMMON)
-                .creator(MiapiConfig::new)
+                .creator(MiapiClientConfig::new)
                 .updateListener(c -> {
-                    MiapiConfig.INSTANCE = c;
+                    MiapiClientConfig.INSTANCE = c;
+                    MiapiConfig.INSTANCE.client = c;
                     if (Environment.isClient()) {
                         GlintProperty.updateConfig();
                     }
-                })
-                .automaticScreen());
+                    ModularItemCache.discardCache();
+                }));
+        ConfigManager.register(ConfigBuilder.automatic(MiapiServerConfig.class)
+                .id(MOD_ID + ":server")
+                .fileLocation(Miapi.MOD_ID + "_server")
+                .type(ConfigType.SERVER_CLIENT_SYNCED)
+                .creator(MiapiServerConfig::new)
+                .updateListener(c -> {
+                    MiapiServerConfig.INSTANCE = c;
+                    MiapiConfig.INSTANCE.server = c;
+                    ModularItemCache.discardCache();
+                }));
     }
 
     public static void registerReloadHandler(

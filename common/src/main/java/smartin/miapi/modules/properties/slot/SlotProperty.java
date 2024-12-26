@@ -28,14 +28,12 @@ import java.util.concurrent.atomic.AtomicReference;
  *
  * @header Slot Property
  * @path /data_types/properties/slot/slots
- * @description_start
- * The SlotProperty defines how modules handle submodule slots. Each slot can have attributes such as transformation,
+ * @description_start The SlotProperty defines how modules handle submodule slots. Each slot can have attributes such as transformation,
  * translation key, and priority. Slots can also define allowed submodules and whether they can merge with others.
  * The property provides methods to retrieve and manage slots within modules, including their transformation stacks and
  * allowed submodules.
  * @description_end
  * @data slots: A map where keys are slot identifiers and values are {@link ModuleSlot} instances defining the slot's properties.
- *
  * @see CodecProperty
  */
 
@@ -75,6 +73,9 @@ public class SlotProperty extends CodecProperty<Map<String, SlotProperty.ModuleS
             }
             mergedTransform = TransformMap.merge(stack, mergedTransform);
             current = current.getParent();
+        }
+        if (!mergedTransform.isPresent("item")) {
+            mergedTransform.set("item", mergedTransform.get(null));
         }
         mergedTransform = TransformMap.merge(moduleSlot.getTransformStack(), mergedTransform);
         return mergedTransform;

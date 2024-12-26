@@ -36,7 +36,7 @@ public class GuiOffsetProperty extends CodecProperty<GuiOffsetProperty.GuiOffset
         super(AutoCodec.of(GuiOffsetData.class).codec());
         property = this;
         ModularItemCache.setSupplier(KEY + "_pure_gui", (stack -> new HashMap<>()));
-        MiapiItemModel.modelTransformers.add((matrices, itemStack, mode, modelType, tickDelta) -> {
+        MiapiItemModel.modelTransformers.add((matrices, itemStack, modelType, mode, tickDelta) -> {
             if (mode.equals(ItemDisplayContext.GUI)) {
                 Map<String, float[]> cache = ModularItemCache.getVisualOnlyCache(itemStack, KEY + "_pure_gui", new HashMap<>());
                 float[] data = cache.computeIfAbsent(modelType, s -> getGuiOffsets(itemStack, modelType));

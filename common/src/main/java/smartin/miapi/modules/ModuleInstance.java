@@ -166,6 +166,7 @@ public class ModuleInstance {
     public ModuleInstance(ItemModule module) {
         this.moduleID = module.id();
         this.module = module;
+        ModularItemCache.modules.addInstance(this);
     }
 
     /**
@@ -184,6 +185,7 @@ public class ModuleInstance {
             Miapi.LOGGER.warn("could not find module " + module + " substituting with empty module");
         }
         sortSubModule();
+        ModularItemCache.modules.addInstance(this);
     }
 
     /**

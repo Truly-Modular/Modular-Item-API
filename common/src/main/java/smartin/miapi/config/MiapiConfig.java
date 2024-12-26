@@ -6,6 +6,6 @@ import com.redpxnda.nucleus.codec.auto.ConfigAutoCodec;
 public class MiapiConfig {
     public static MiapiConfig INSTANCE = new MiapiConfig();
 
-    public MiapiClientConfig client = new MiapiClientConfig();
-    public MiapiServerConfig server = new MiapiServerConfig();
+    public MiapiClientConfig client = MiapiClientConfig.INSTANCE;
+    public MiapiServerConfig server = MiapiServerConfig.INSTANCE;
 }

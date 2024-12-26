@@ -12,7 +12,7 @@
     "tier": 1,
     "enchantability": 11,
     "durability": 37,
-    "color": "642828",
+    "color": "FF7C26",
     "color_palette": {
         "type": "from_material_palette_image",
         "location": "miapi:miapi_materials/stone_magma"

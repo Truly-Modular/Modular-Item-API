@@ -11,15 +11,13 @@ import net.minecraft.world.item.ItemStack;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.GlintShader;
 import smartin.miapi.config.MiapiConfig;
+import smartin.miapi.material.MaterialProperty;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.util.CodecProperty;
 import smartin.miapi.modules.properties.util.MergeType;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -62,22 +60,41 @@ public class GlintProperty extends CodecProperty<GlintProperty.RainbowGlintSetti
                 return stackData;
             }
             return Optional.empty();
-        }).orElse(defaultSettings));
+        }).orElseGet(() -> {
+            if (MaterialProperty.getMaterial(instance) != null) {
+                Color adjusted = new Color(MaterialProperty.getMaterial(instance).getColor());
+                return defaultSettings.copyWithColor(adjustWith(
+                        adjusted,
+                        MiapiConfig.INSTANCE.client.enchantingGlint.materialRatioColor,
+                        defaultSettings.colors));
+            }
+            return defaultSettings;
+        }));
         GLINT_RESOLVE.invoker().get(stack, instance, reference);
         return reference.get();
     }
 
+    public List<Color> adjustWith(Color adjust, float percent, Color[] previous) {
+        List<Color> adjusted = new ArrayList<>();
+        for (int i = 0; i < previous.length; i++) {
+            Color c = previous[i].copy();
+            c.lerp(percent, adjust);
+            adjusted.add(i, c);
+        }
+        return adjusted;
+    }
+
     public static void updateConfig() {
-        Color[] newColors = new Color[MiapiConfig.INSTANCE.client.other.enchantColors.size()];
+        Color[] newColors = new Color[MiapiConfig.INSTANCE.client.enchantingGlint.enchantColors.size()];
         for (int i = 0; i < newColors.length; i++) {
-            newColors[i] = MiapiConfig.INSTANCE.client.other.enchantColors.get(i);
+            newColors[i] = MiapiConfig.INSTANCE.client.enchantingGlint.enchantColors.get(i);
         }
         if (newColors.length == 0) {
             newColors = new Color[]{Color.WHITE};
         }
         SettingsControlledGlint glintSettings = new SettingsControlledGlint();
         glintSettings.colors = newColors;
-        glintSettings.rainbowSpeed = MiapiConfig.INSTANCE.client.other.enchantingGlintSpeed;
+        glintSettings.rainbowSpeed = MiapiConfig.INSTANCE.client.enchantingGlint.enchantingGlintSpeed;
         defaultSettings = glintSettings;
         ModularItemCache.discardCache();
     }

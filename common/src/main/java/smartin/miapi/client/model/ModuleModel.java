@@ -7,18 +7,15 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import org.joml.Matrix4f;
+import org.lwjgl.system.NonnullDefault;
 import smartin.miapi.item.modular.Transform;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.slot.SlotProperty;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ModuleModel {
-    public List<Pair<Matrix4f, MiapiModel>> models;
-    public Map<String, List<Pair<Matrix4f, MiapiModel>>> otherModels;
+    private final Map<ModuleDisplayContext, List<Pair<Matrix4f, MiapiModel>>> cachedModels = new HashMap<>();
     public final ModuleInstance instance;
     public Map<String, ModuleModel> subModuleModels = new HashMap<>();
     public ItemStack stack;
@@ -26,33 +23,36 @@ public class ModuleModel {
     public ModuleModel(ModuleInstance instance, ItemStack stack) {
         this.instance = instance;
         this.stack = stack;
-        models = generateModel(null);
-        otherModels = new HashMap<>();
-        otherModels.put("item", models);
     }
 
-    private List<Pair<Matrix4f, MiapiModel>> generateModel(String key) {
+    private List<Pair<Matrix4f, MiapiModel>> generateModel(String key, ItemDisplayContext context) {
         List<Pair<Matrix4f, MiapiModel>> modelList = new ArrayList<>();
-        Transform transform = SlotProperty.getTransformStack(instance).get(key).copy();
+        Transform transform = SlotProperty.getTransformStack(instance).get("item".equals(key) ? null : key).copy();
         Matrix4f matrix4f = Transform.toModelTransformation(transform).toMatrix();
         for (MiapiItemModel.ModelSupplier supplier : MiapiItemModel.modelSuppliers) {
-            supplier.getModels(key, instance, stack).forEach(model -> {
+            supplier.getModels(key, context, instance, stack).forEach(model -> {
                 modelList.add(new Pair<>(matrix4f, model));
             });
         }
-        return modelList;
+        List<Pair<Matrix4f, MiapiModel>> model = modelList;
+        for (MiapiItemModel.ModelSupplier supplier : MiapiItemModel.modelSuppliers) {
+            model = supplier.filter(model, instance, key, context);
+        }
+        return model;
     }
 
-    public void render(String modelTypeRaw, ItemStack stack, PoseStack matrices, ItemDisplayContext mode, float tickDelta, MultiBufferSource vertexConsumers, LivingEntity entity, int light, int overlay) {
-        String modelType = modelTypeRaw == null ? "item" : modelTypeRaw;
-        if (!otherModels.containsKey(modelType)) {
-            otherModels.put(modelType, generateModel(modelType));
-        }
-        Matrix4f submoduleMatrix = new Matrix4f();
+    private List<Pair<Matrix4f, MiapiModel>> getModel(String key, ItemDisplayContext context) {
+        ModuleDisplayContext context1 = new ModuleDisplayContext(key, context);
+        return cachedModels.computeIfAbsent(context1, (c) -> generateModel(c.type, c.context));
+    }
 
-        otherModels.get(modelType).forEach(matrix4fMiapiModelPair -> {
+    public void render(@NonnullDefault String modelType, ItemStack stack, PoseStack matrices, ItemDisplayContext mode, float tickDelta, MultiBufferSource vertexConsumers, LivingEntity entity, int light, int overlay) {
+        Matrix4f submoduleMatrix = new Matrix4f();
+        var moduleModels = getModel(modelType, mode);
+
+        moduleModels.forEach(matrix4fMiapiModelPair -> {
             matrices.pushPose();
-            Transform.applyPosition(matrices,matrix4fMiapiModelPair.getFirst());
+            Transform.applyPosition(matrices, matrix4fMiapiModelPair.getFirst());
             matrix4fMiapiModelPair.getSecond().render(matrices, stack, mode, tickDelta, vertexConsumers, entity, light, overlay);
             matrices.popPose();
 
@@ -61,7 +61,7 @@ public class ModuleModel {
         //render submodules
         instance.getSubModuleMap().forEach((id, instance1) -> {
             matrices.pushPose();
-            Transform.applyPosition(matrices,submoduleMatrix);
+            Transform.applyPosition(matrices, submoduleMatrix);
             ModuleModel subModuleModel = subModuleModels.get(id);
             if (subModuleModel == null) {
                 subModuleModel = new ModuleModel(instance1, stack);
@@ -70,5 +70,30 @@ public class ModuleModel {
             subModuleModel.render(modelType, stack, matrices, mode, tickDelta, vertexConsumers, entity, light, overlay);
             matrices.popPose();
         });
+    }
+
+    private static class ModuleDisplayContext {
+        private final String type;
+        private final ItemDisplayContext context;
+        private final int hash;
+
+        public ModuleDisplayContext(String type, ItemDisplayContext context) {
+            this.type = type == null ? "item" : type;
+            this.context = context;
+            this.hash = Objects.hash(type, context);
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            ModuleDisplayContext that = (ModuleDisplayContext) o;
+            return Objects.equals(type, that.type) && Objects.equals(context, that.context);
+        }
+
+        @Override
+        public int hashCode() {
+            return hash;
+        }
     }
 }

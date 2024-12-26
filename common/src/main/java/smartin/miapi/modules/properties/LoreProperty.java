@@ -24,7 +24,6 @@ import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.material.Material;
 import smartin.miapi.material.MaterialProperty;
 import smartin.miapi.material.generated.SmithingRecipeUtil;
-import smartin.miapi.modules.properties.onHit.NemesisProperty;
 import smartin.miapi.modules.properties.util.CodecProperty;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
@@ -97,11 +96,13 @@ public class LoreProperty extends CodecProperty<List<LoreProperty.Holder>> {
     }
 
     private Component format(Component text, ChatFormatting... formatting) {
-        NemesisProperty property1;
         return text.toFlatList(Style.EMPTY.applyFormats(formatting)).get(0);
     }
 
     public void injectTooltipOnNonModularItems(List<Component> tooltip, ItemStack itemStack) {
+        if(!smartin.miapi.Environment.isClient() && MiapiConfig.INSTANCE.server.other.serverLoreInjection){
+            return;
+        }
         synchronized (property) {
             if (smartin.miapi.Environment.isClient()) {
                 tooltip.addAll(addToolTipsClient(itemStack));
@@ -114,12 +115,12 @@ public class LoreProperty extends CodecProperty<List<LoreProperty.Holder>> {
     @Environment(EnvType.CLIENT)
     List<Component> addToolTipsClient(ItemStack itemStack) {
         List<Component> lines = new ArrayList<>();
-        if (MiapiConfig.INSTANCE.client.other.injectLoreModularMaterial) {
+        if (MiapiConfig.INSTANCE.client.loreConfig.injectLoreModularMaterial) {
             Material material = materialLookupTable.computeIfAbsent(itemStack, itemStack1 -> MaterialProperty.getMaterialFromIngredient(itemStack));
             if (material != null) {
                 int i = material.getGroups().size();
                 if (i == 1) {
-                    if (MiapiConfig.INSTANCE.client.other.injectLoreWithoutGroup) {
+                    if (MiapiConfig.INSTANCE.client.loreConfig.injectLoreWithoutGroup) {
                         lines.add(gray(Component.translatable("miapi.ui.material_desc")));
                     }
                 } else {
@@ -131,7 +132,7 @@ public class LoreProperty extends CodecProperty<List<LoreProperty.Holder>> {
                 }
             }
         }
-        if (MiapiConfig.INSTANCE.client.other.injectLoreModularItem) {
+        if (MiapiConfig.INSTANCE.client.loreConfig.injectLoreModularItem) {
             if (ModularItem.isModularItem(itemStack)) {
                 lines.add(format(Component.translatable("miapi.ui.modular_item"), ChatFormatting.GRAY));
                 return lines;
@@ -141,7 +142,7 @@ public class LoreProperty extends CodecProperty<List<LoreProperty.Holder>> {
                 lines.add(format(Component.translatable("miapi.ui.modular_item"), ChatFormatting.GRAY));
             }
         }
-        if (MiapiConfig.INSTANCE.client.other.injectLoreModularTemplate) {
+        if (MiapiConfig.INSTANCE.client.loreConfig.injectLoreModularTemplate) {
             var description = smithingTemplate.get(itemStack.getItem());
             if (description != null) {
                 lines.add(Component.translatable("miapi.material_template.smithing.header").withStyle(ChatFormatting.GRAY));
@@ -167,12 +168,12 @@ public class LoreProperty extends CodecProperty<List<LoreProperty.Holder>> {
 
     List<Component> addToolTipsServer(ItemStack itemStack) {
         List<Component> lines = new ArrayList<>();
-        if (MiapiConfig.INSTANCE.client.other.injectLoreModularMaterial) {
+        if (MiapiConfig.INSTANCE.client.loreConfig.injectLoreModularMaterial) {
             Material material = materialLookupTable.computeIfAbsent(itemStack, itemStack1 -> MaterialProperty.getMaterialFromIngredient(itemStack));
             if (material != null) {
                 int i = material.getGroups().size();
                 if (i == 1) {
-                    if (MiapiConfig.INSTANCE.client.other.injectLoreWithoutGroup) {
+                    if (MiapiConfig.INSTANCE.client.loreConfig.injectLoreWithoutGroup) {
                         lines.add(gray(Component.translatable("miapi.ui.material_desc")));
                     }
                 } else {
@@ -181,7 +182,7 @@ public class LoreProperty extends CodecProperty<List<LoreProperty.Holder>> {
                 }
             }
         }
-        if (MiapiConfig.INSTANCE.client.other.injectLoreModularItem) {
+        if (MiapiConfig.INSTANCE.client.loreConfig.injectLoreModularItem) {
             ItemStack converted = ModularItemStackConverter.getModularVersion(itemStack);
             if (!ItemStack.matches(converted, itemStack) || ModularItem.isModularItem(itemStack)) {
                 lines.add(format(Component.translatable("miapi.ui.modular_item"), ChatFormatting.GRAY));

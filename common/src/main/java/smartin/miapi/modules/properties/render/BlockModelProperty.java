@@ -30,7 +30,7 @@ public class BlockModelProperty extends CodecProperty<List<BlockModelProperty.Bl
     public BlockModelProperty() {
         super(CODEC);
         property = this;
-        MiapiItemModel.modelSuppliers.add((key, model, stack) -> {
+        MiapiItemModel.modelSuppliers.add((key,mode, model, stack) -> {
             List<MiapiModel> models = new ArrayList<>();
             getData(model).ifPresent(modelDataList -> {
                 modelDataList.forEach(blockModelData -> {

@@ -33,8 +33,8 @@ public class ModelTransformationProperty extends CodecProperty<ModelTransformati
         super(AutoCodec.of(ModelTransformationData.class).codec());
         property = this;
         ModularItemCache.setSupplier(KEY.toString(), ModelTransformationProperty::getTransformation);
-        MiapiItemModel.modelTransformers.add((matrices, itemStack, mode, modelType, tickDelta) -> {
-            applyTransformation(itemStack, mode, matrices);
+        MiapiItemModel.modelTransformers.add((matrices, itemStack, type, modelType, tickDelta) -> {
+            applyTransformation(itemStack, modelType, matrices);
             return matrices;
         });
     }

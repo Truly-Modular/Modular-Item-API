@@ -41,7 +41,7 @@ public class OverlayModelProperty extends CodecProperty<List<OverlayModelPropert
     public OverlayModelProperty() {
         super(CODEC);
         property = this;
-        MiapiItemModel.modelSuppliers.add((key, module, stack) -> {
+        MiapiItemModel.modelSuppliers.add((key, mode, module, stack) -> {
             List<MiapiModel> models = new ArrayList<>();
             ModuleInstance moduleInstance = module;
 

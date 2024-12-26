@@ -4,6 +4,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import com.mojang.datafixers.util.Pair;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import smartin.miapi.Miapi;
@@ -18,6 +19,7 @@ import smartin.miapi.registries.RegistryInventory;
 import java.lang.reflect.Type;
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.UnaryOperator;
 
 import static smartin.miapi.Miapi.LOGGER;
 import static smartin.miapi.Miapi.gson;
@@ -136,6 +138,12 @@ public record ItemModule(ResourceLocation id, Map<ModuleProperty<?>, Object> pro
 
     /**
      * Gets the root module instance associated with the given ItemStack.
+     * TREAT THIS AS IMMUTABLE!
+     * if you wish to adjust the modules, {@link ModuleInstance#copy()} them first before changing.
+     * otherwise unintended behaviour may occur
+     * then call {@link ModuleInstance#writeToItem(ItemStack)} to rewrite the changes.
+     * alternatively, {@link ItemStack#update(DataComponentType, Object, UnaryOperator)} may be used, but not recommended,
+     * as this is prone to change with minecraft updates.
      *
      * @param stack the ItemStack to getRaw the module instance from
      * @return the module instance associated with the given ItemStack

@@ -1,6 +1,7 @@
 package smartin.miapi.client;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.redpxnda.nucleus.config.ConfigManager;
 import dev.architectury.event.events.client.ClientLifecycleEvent;
 import dev.architectury.event.events.client.ClientPlayerEvent;
 import dev.architectury.event.events.client.ClientReloadShadersEvent;
@@ -23,6 +24,7 @@ import smartin.miapi.blocks.ModularWorkBenchRenderer;
 import smartin.miapi.client.atlas.MaterialAtlasManager;
 import smartin.miapi.client.atlas.MaterialSpriteManager;
 import smartin.miapi.client.gui.crafting.CraftingScreen;
+import smartin.miapi.client.gui.crafting.MiapiConfigScreen;
 import smartin.miapi.client.gui.crafting.crafter.replace.CraftOption;
 import smartin.miapi.client.gui.crafting.crafter.replace.ReplaceView;
 import smartin.miapi.client.gui.crafting.statdisplay.StatListWidget;
@@ -82,7 +84,7 @@ public class MiapiClient {
         Networking.registerS2CPacket(MaterialCommand.SEND_MATERIAL_CLIENT, (buf -> {
             String materialId = buf.readUtf();
             Minecraft.getInstance().execute(() -> {
-                Material material = MaterialProperty.materials.get(materialId);
+                Material material = MaterialProperty.materials.get(Miapi.id(materialId));
                 if (material != null) {
                     String raw = Miapi.gson.toJson(material.getDebugJson());
                     Component text = Component.literal(raw);
@@ -110,6 +112,11 @@ public class MiapiClient {
                     ModularItemCache.discardCache();
                 });
             }
+        });
+
+
+        ConfigManager.CONFIG_SCREENS_REGISTRY.register(registerer -> {
+            registerer.add(Miapi.MOD_ID, MiapiConfigScreen::new);
         });
 
         //GlintShader.registerShaders();

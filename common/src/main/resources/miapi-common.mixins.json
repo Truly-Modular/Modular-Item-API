@@ -43,6 +43,7 @@
         "client.BuiltinModelItemRendererMixin",
         "client.ClientAdvancementManagerAccessor",
         "client.ClientPlayerEntityMixin",
+        "client.ConfigScreenMixin",
         "client.ElytraEntityModelAccessor",
         "client.ElytraFeatureRendererAccessor",
         "client.FeatureRendererAccessor",
