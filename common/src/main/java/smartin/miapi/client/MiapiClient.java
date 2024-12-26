@@ -72,6 +72,10 @@ public class MiapiClient {
     }
 
     public static void init() {
+        var config = ConfigManager.getConfigObject(Miapi.id("server"));
+        if(config.getInstance()==null){
+            config.load();
+        }
         RegistryInventory.modularItems.addCallback((MiapiClient::registerAnimations));
         //BoomerangClientRendering.setup();
         ClientTickEvent.CLIENT_PRE.register((instance -> {

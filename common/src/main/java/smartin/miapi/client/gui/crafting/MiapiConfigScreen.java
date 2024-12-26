@@ -28,6 +28,9 @@ public class MiapiConfigScreen extends Screen {
         // Button to open the Server Config screen
         addRenderableWidget(Button.builder(Component.translatable("miapi.config_screen.server"), button -> {
             var config = ConfigManager.getConfigObject(Miapi.id("server"));
+            if(config.getInstance()==null){
+                config.load();
+            }
             if (config instanceof ConfigObject.Automatic<Object> automatic && minecraft != null) {
                 minecraft.setScreen(automatic.getScreen(this));
             }
