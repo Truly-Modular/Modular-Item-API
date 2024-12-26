@@ -51,7 +51,7 @@ import smartin.miapi.registries.RegistryInventory;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import static smartin.miapi.registries.RegistryInventory.Client.glintShader;
+import static smartin.miapi.client.ShaderRegistry.glintShader;
 
 public class MiapiClient {
     public static MaterialAtlasManager materialAtlasManager;
@@ -150,6 +150,7 @@ public class MiapiClient {
         if (sodiumLoaded) {
             ClientEvents.HUD_RENDER.register((drawContext, deltaTick) -> MaterialSpriteManager.onHudRender(drawContext));
         }
+        smartin.miapi.client.ShaderRegistry.setup();
     }
 
     @Environment(EnvType.CLIENT)
@@ -250,7 +251,7 @@ public class MiapiClient {
         runOnClientEnsured(() -> {
             ShaderRegistry.register(
                     new Identifier(Miapi.MOD_ID, "rendertype_entity_translucent_material"),
-                    VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL, s -> RegistryInventory.Client.entityTranslucentMaterialShader = s);
+                    VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL, s -> smartin.miapi.client.ShaderRegistry.entityTranslucentMaterialShader = s);
             ShaderRegistry.register(
                     new Identifier(Miapi.MOD_ID, "rendertype_item_glint"),
                     VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL, s -> glintShader = s);

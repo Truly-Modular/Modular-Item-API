@@ -50,7 +50,7 @@ dependencies {
     modApi "dev.architectury:architectury-forge:${rootProject.architectury_version}"
 
     forgeRuntimeLibrary("com.ezylang:EvalEx:${rootProject.eval_ex_version}")
-    forgeRuntimeLibrary(apu(include("com.ezylang:EvalEx:${rootProject.eval_ex_version}")))
+    forgeRuntimeLibrary((include("com.ezylang:EvalEx:${rootProject.eval_ex_version}")))
     modApi("top.theillusivec4.caelus:caelus-forge:${rootProject.forge_caelus_version}")
 
     modApi(include("com.redpxnda.nucleus:nucleus-core-forge:${rootProject.minecraft_version}+${rootProject.nucleus_core_version}"))

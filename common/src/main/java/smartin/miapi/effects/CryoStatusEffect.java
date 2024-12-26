@@ -32,6 +32,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Box;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.registries.RegistryInventory;
+import smartin.miapi.client.ShaderRegistry;
 
 public class CryoStatusEffect extends RenderingMobEffect {
     protected static final Identifier ICE_LOCATION = new Identifier("block/ice");
@@ -101,7 +102,7 @@ public class CryoStatusEffect extends RenderingMobEffect {
     public void renderPost(StatusEffectInstance instance, LivingEntity entity, float entityYaw, float partialTick, MatrixStack matrixStack, VertexConsumerProvider multiBufferSource, int packedLight) {
         if (entity.equals(MinecraftClient.getInstance().player) && MinecraftClient.getInstance().options.getPerspective().isFirstPerson()) return;
         Sprite sprite = MinecraftClient.getInstance().getSpriteAtlas(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE).apply(ICE_LOCATION);
-        VertexConsumer vc = multiBufferSource.getBuffer(RegistryInventory.Client.TRANSLUCENT_NO_CULL);
+        VertexConsumer vc = multiBufferSource.getBuffer(ShaderRegistry.TRANSLUCENT_NO_CULL);
         matrixStack.push();
 
         Box bb = entity.getBoundingBox().offset(entity.getPos().negate());

@@ -24,7 +24,7 @@ import smartin.miapi.item.modular.Transform;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.EmissiveProperty;
 import smartin.miapi.modules.properties.GlintProperty;
-import smartin.miapi.registries.RegistryInventory;
+import smartin.miapi.client.ShaderRegistry;
 
 public class BakedMiapiModel implements MiapiModel {
     ItemModule.ModuleInstance instance;
@@ -86,8 +86,8 @@ public class BakedMiapiModel implements MiapiModel {
                 VertexConsumer vertexConsumer = modelHolder.colorProvider().getConsumer(vertexConsumers, quad.getSprite(), stack, instance, transformationMode);
                 vertexConsumer.quad(matrices.peek(), quad, colors[0], colors[1], colors[2], light, overlay);
                 if (stack.hasGlint()) {
-                    VertexConsumer altConsumer = vertexConsumers.getBuffer(RegistryInventory.Client.modularItemGlint);
                     if (MiapiConfig.INSTANCE.client.other.enchantingGlint) {
+                        VertexConsumer altConsumer = vertexConsumers.getBuffer(ShaderRegistry.modularItemGlint);
                         Color glintColor = settings.getColor();
                         altConsumer.quad(matrices.peek(), quad, glintColor.redAsFloat(), glintColor.greenAsFloat(), glintColor.blueAsFloat(), light, overlay);
                     }
@@ -116,8 +116,8 @@ public class BakedMiapiModel implements MiapiModel {
                 VertexConsumer vertexConsumer = modelHolder.colorProvider().getConsumer(vertexConsumers, quad.getSprite(), stack, instance, transformationMode);
                 vertexConsumer.quad(matrices.peek(), quad, colors[0], colors[1], colors[2], light, overlay);
                 if (stack.hasGlint()) {
-                    VertexConsumer altConsumer = vertexConsumers.getBuffer(RegistryInventory.Client.modularItemGlint);
                     if (MiapiConfig.INSTANCE.client.other.enchantingGlint) {
+                        VertexConsumer altConsumer = vertexConsumers.getBuffer(ShaderRegistry.modularItemGlint);
                         Color glintColor = settings.getColor();
                         altConsumer.quad(matrices.peek(), quad, glintColor.redAsFloat(), glintColor.greenAsFloat(), glintColor.blueAsFloat(), light, overlay);
                     }

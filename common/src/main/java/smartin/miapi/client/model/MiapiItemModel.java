@@ -12,7 +12,7 @@ import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.item.modular.VisualModularItem;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.cache.ModularItemCache;
-import smartin.miapi.registries.RegistryInventory;
+import smartin.miapi.client.ShaderRegistry;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -76,7 +76,7 @@ public class MiapiItemModel implements MiapiModel {
             //needed because otherwise overwrites dont work
             entity = MinecraftClient.getInstance().player;
         }
-        RegistryInventory.Client.glintShader.getUniformOrDefault("ModelMat").set(new Matrix4f(matrices.peek().getPositionMatrix()));
+        ShaderRegistry.glintShader.getUniformOrDefault("ModelMat").set(new Matrix4f(matrices.peek().getPositionMatrix()));
         rootModel.render(modelType, stack, matrices, mode, tickDelta, vertexConsumers, entity, light, overlay);
         matrices.pop();
         MinecraftClient.getInstance().world.getProfiler().pop();

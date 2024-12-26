@@ -14,7 +14,7 @@ import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.util.ModuleProperty;
-import smartin.miapi.registries.RegistryInventory;
+import smartin.miapi.client.ShaderRegistry;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -261,11 +261,11 @@ public class GlintProperty implements ModuleProperty {
         float getSpeed();
 
         default void applySpeed() {
-            RegistryInventory.Client.glintShader.getUniformOrDefault("GlintSpeed").set(getSpeed());
+            ShaderRegistry.glintShader.getUniformOrDefault("GlintSpeed").set(getSpeed());
         }
 
         default void applyAlpha() {
-            RegistryInventory.Client.glintShader.getUniformOrDefault("GlintStrength").set(getA());
+            ShaderRegistry.glintShader.getUniformOrDefault("GlintStrength").set(getA());
         }
 
         boolean shouldRender();
