@@ -381,9 +381,12 @@ public class CodecMaterial implements Material {
     }
 
     @Environment(EnvType.CLIENT)
+    public FallbackColorer fallbackColorer = new FallbackColorer(this);
+
+    @Environment(EnvType.CLIENT)
     @Override
     public MaterialRenderController getRenderController() {
-        return palette == null ? new FallbackColorer(this) : palette;
+        return palette == null ? fallbackColorer : palette;
     }
 
     @Override

@@ -73,6 +73,10 @@ public class MiapiClientConfig {
         @Comment("The Ratio of default color to Material Color. 1.0 = only material, 0.0 is no material color")
         @AutoCodec.Name("enchanting_material_ratio")
         public float materialRatioColor = 0.9f;
+
+        @Comment("The Ratio of default color to Material Color. 1.0 = only material, 0.0 is no material color")
+        @AutoCodec.Name("enabled")
+        public boolean enabled = true;
     }
 
     @ConfigAutoCodec.ConfigClassMarker

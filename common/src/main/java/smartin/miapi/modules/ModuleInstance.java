@@ -157,6 +157,7 @@ public class ModuleInstance {
 
     public Map<String, Object> cachedData = new ConcurrentHashMap<>();
     public Map<String, Object> itemStackCache = new ConcurrentHashMap<>();
+    public String slotName = null;
 
     /**
      * Constructs a new module instance with the given item module.
@@ -200,6 +201,7 @@ public class ModuleInstance {
     public void setSubModule(String id, ModuleInstance submodule) {
         removeSubModule(id);
         subModules.put(id, submodule);
+        submodule.slotName = id;
         submodule.parent = this;
         sortSubModule();
         getRoot().clearCaches();
@@ -357,6 +359,7 @@ public class ModuleInstance {
             ModuleInstance moduleInstance = subModules.get(slot.id);
             if (moduleInstance != null) {
                 moduleInstance.parent = this;
+                moduleInstance.slotName = slot.id;
                 sortedMap.put(slot.id, moduleInstance);
             }
         });
@@ -378,6 +381,7 @@ public class ModuleInstance {
             copy.setSubModule(id, subModuleCopy);
             subModule.registryAccess = this.registryAccess;
         }));
+        copy.slotName = this.slotName;
         return copy;
     }
 
@@ -605,8 +609,10 @@ public class ModuleInstance {
                 return false; // Check if key exists and deeply compare values
             }
         }
-
-        return true; // All checks passed, the objects are deeply equal
+        if (this.slotName != null && other.slotName != null) {
+            return this.slotName.equals(other.slotName);
+        }
+        return this.slotName == null && other.slotName == null;// All checks passed, the objects are deeply equal
     }
 
     @Override

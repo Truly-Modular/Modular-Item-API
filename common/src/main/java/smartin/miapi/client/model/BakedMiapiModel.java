@@ -20,6 +20,7 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.renderer.TrimRenderer;
+import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.item.modular.Transform;
 import smartin.miapi.material.MaterialProperty;
 import smartin.miapi.modules.ModuleInstance;
@@ -67,8 +68,8 @@ public class BakedMiapiModel implements MiapiModel {
         int sky = LightTexture.sky(packedLight);
         int block = LightTexture.block(packedLight);
 
-        if (skyLight > sky ) sky = skyLight;
-        if (blockLight > block ) block = blockLight;
+        if (skyLight > sky) sky = skyLight;
+        if (blockLight > block) block = blockLight;
 
         int light = LightTexture.pack(block, sky);
 
@@ -81,16 +82,31 @@ public class BakedMiapiModel implements MiapiModel {
             for (Direction dir : Direction.values()) {
                 currentModel.getQuads(null, dir, RandomSource.create()).forEach(quad -> {
                     VertexConsumer vertexConsumer = modelHolder.colorProvider().getConsumer(vertexConsumers, quad.getSprite(), stack, instance, transformationMode);
+
                     vertexConsumer.putBulkData(matrices.last(), quad, colors[0], colors[1], colors[2], 1.0f, light, overlay);
-                    if (stack.hasFoil()) {
-                        VertexConsumer altConsumer = vertexConsumers.getBuffer(GlintShader.modularItemGlint);
-                        Color glintColor = settings.getColor();
-                        altConsumer.putBulkData(matrices.last(), quad, glintColor.redAsFloat(), glintColor.greenAsFloat(), glintColor.blueAsFloat(), 1.0f, light, overlay);
-                    }
                 });
             }
         } catch (RuntimeException e) {
             Miapi.LOGGER.error("rendering error in module " + instance.moduleID + " " + MaterialProperty.getMaterial(instance), e);
+        }
+        Minecraft.getInstance().level.getProfiler().pop();
+
+        Minecraft.getInstance().level.getProfiler().push("BakedModel Glint");
+
+        //render normally
+        if (stack.hasFoil() && MiapiConfig.INSTANCE.client.enchantingGlint.enabled) {
+            try {
+                VertexConsumer altConsumer = vertexConsumers.getBuffer(GlintShader.modularItemGlint);
+                for (Direction dir : Direction.values()) {
+                    currentModel.getQuads(null, dir, RandomSource.create()).forEach(quad -> {
+                        Color glintColor = settings.getColor();
+                        altConsumer.putBulkData(matrices.last(), quad, glintColor.redAsFloat(), glintColor.greenAsFloat(), glintColor.blueAsFloat(), 1.0f, light, overlay);
+
+                    });
+                }
+            } catch (RuntimeException e) {
+                Miapi.LOGGER.error("rendering glint error in module " + instance.moduleID + " " + MaterialProperty.getMaterial(instance), e);
+            }
         }
         Minecraft.getInstance().level.getProfiler().pop();
 
