@@ -10,8 +10,9 @@ import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 import smartin.miapi.Miapi;
-import smartin.miapi.client.model.item.BakedSingleModel;
 import smartin.miapi.client.model.MiapiItemModel;
+import smartin.miapi.client.model.item.BakedSingleModel;
+import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.item.modular.Transform;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.cache.ModularItemCache;
@@ -33,7 +34,7 @@ public class GuiOffsetProperty implements RenderProperty {
         property = this;
         ModularItemCache.setSupplier(KEY + "_pure_gui", (stack -> new HashMap<>()));
         MiapiItemModel.modelTransformers.add((matrices, itemStack, mode, modelType, tickDelta) -> {
-            if (mode.equals(ModelTransformationMode.GUI)) {
+            if (mode.equals(ModelTransformationMode.GUI) && MiapiConfig.INSTANCE.client.other.uiScale) {
                 Map<String, float[]> cache = ModularItemCache.getVisualOnlyCache(itemStack, KEY + "_pure_gui", new HashMap<>());
                 float[] data = cache.computeIfAbsent(modelType, s -> getGuiOffsets(itemStack, modelType));
                 matrices.translate(data[0], data[1], 0);
@@ -45,37 +46,39 @@ public class GuiOffsetProperty implements RenderProperty {
         ModelProperty.modelTransformers.add(new ModelProperty.ModelTransformer() {
             @Override
             public Map<String, BakedSingleModel> bakedTransform(Map<String, BakedSingleModel> dynamicBakedModelmap, ItemStack stack) {
-                dynamicBakedModelmap.forEach((id, dynamicBakedModel) -> {
-                    GuiOffsetJson guiOffsetJson = new GuiOffsetJson();
-                    for (ItemModule.ModuleInstance instance : ItemModule.createFlatList(ItemModule.getModules(stack))) {
-                        JsonElement element = instance.getProperties().get(property);
-                        if (element != null) {
-                            GuiOffsetJson add = Miapi.gson.fromJson(element, GuiOffsetJson.class);
-                            guiOffsetJson.x += add.x;
-                            guiOffsetJson.y += add.y;
-                            guiOffsetJson.sizeX += add.sizeX;
-                            guiOffsetJson.sizeY += add.sizeY;
+                if(MiapiConfig.INSTANCE.client.other.uiScale){
+                    dynamicBakedModelmap.forEach((id, dynamicBakedModel) -> {
+                        GuiOffsetJson guiOffsetJson = new GuiOffsetJson();
+                        for (ItemModule.ModuleInstance instance : ItemModule.createFlatList(ItemModule.getModules(stack))) {
+                            JsonElement element = instance.getProperties().get(property);
+                            if (element != null) {
+                                GuiOffsetJson add = Miapi.gson.fromJson(element, GuiOffsetJson.class);
+                                guiOffsetJson.x += add.x;
+                                guiOffsetJson.y += add.y;
+                                guiOffsetJson.sizeX += add.sizeX;
+                                guiOffsetJson.sizeY += add.sizeY;
+                            }
                         }
-                    }
-                    Transform guiTransform = new Transform(dynamicBakedModel.getTransformation().getTransformation(ModelTransformationMode.GUI));
-                    guiOffsetJson.x -= (guiOffsetJson.sizeX / 2) / 16;
-                    guiOffsetJson.y -= (guiOffsetJson.sizeY / 2) / 16;
-                    guiOffsetJson.sizeX = guiOffsetJson.sizeX / 16.0f;
-                    guiOffsetJson.sizeY = guiOffsetJson.sizeY / 16.0f;
-                    float guiZ = (guiOffsetJson.sizeX + guiOffsetJson.sizeY) / 2;
-                    guiTransform = new Transform(guiTransform.rotation, new Vector3f(guiOffsetJson.x / 16.0f, guiOffsetJson.y / 16.0f, 0), new Vector3f(guiOffsetJson.sizeX, guiOffsetJson.sizeY, guiZ));
-                    dynamicBakedModel.modelTransformation = new ModelTransformation(
-                            dynamicBakedModel.getTransformation().getTransformation(ModelTransformationMode.THIRD_PERSON_LEFT_HAND),
-                            dynamicBakedModel.getTransformation().getTransformation(ModelTransformationMode.THIRD_PERSON_RIGHT_HAND),
-                            dynamicBakedModel.getTransformation().getTransformation(ModelTransformationMode.FIRST_PERSON_LEFT_HAND),
-                            dynamicBakedModel.getTransformation().getTransformation(ModelTransformationMode.FIRST_PERSON_RIGHT_HAND),
-                            dynamicBakedModel.getTransformation().getTransformation(ModelTransformationMode.HEAD),
-                            guiTransform.toTransformation(),
-                            dynamicBakedModel.getTransformation().getTransformation(ModelTransformationMode.GROUND),
-                            dynamicBakedModel.getTransformation().getTransformation(ModelTransformationMode.FIXED)
-                    );
-                    dynamicBakedModelmap.put(id, dynamicBakedModel);
-                });
+                        Transform guiTransform = new Transform(dynamicBakedModel.getTransformation().getTransformation(ModelTransformationMode.GUI));
+                        guiOffsetJson.x -= (guiOffsetJson.sizeX / 2) / 16;
+                        guiOffsetJson.y -= (guiOffsetJson.sizeY / 2) / 16;
+                        guiOffsetJson.sizeX = guiOffsetJson.sizeX / 16.0f;
+                        guiOffsetJson.sizeY = guiOffsetJson.sizeY / 16.0f;
+                        float guiZ = (guiOffsetJson.sizeX + guiOffsetJson.sizeY) / 2;
+                        guiTransform = new Transform(guiTransform.rotation, new Vector3f(guiOffsetJson.x / 16.0f, guiOffsetJson.y / 16.0f, 0), new Vector3f(guiOffsetJson.sizeX, guiOffsetJson.sizeY, guiZ));
+                        dynamicBakedModel.modelTransformation = new ModelTransformation(
+                                dynamicBakedModel.getTransformation().getTransformation(ModelTransformationMode.THIRD_PERSON_LEFT_HAND),
+                                dynamicBakedModel.getTransformation().getTransformation(ModelTransformationMode.THIRD_PERSON_RIGHT_HAND),
+                                dynamicBakedModel.getTransformation().getTransformation(ModelTransformationMode.FIRST_PERSON_LEFT_HAND),
+                                dynamicBakedModel.getTransformation().getTransformation(ModelTransformationMode.FIRST_PERSON_RIGHT_HAND),
+                                dynamicBakedModel.getTransformation().getTransformation(ModelTransformationMode.HEAD),
+                                guiTransform.toTransformation(),
+                                dynamicBakedModel.getTransformation().getTransformation(ModelTransformationMode.GROUND),
+                                dynamicBakedModel.getTransformation().getTransformation(ModelTransformationMode.FIXED)
+                        );
+                        dynamicBakedModelmap.put(id, dynamicBakedModel);
+                    });
+                }
                 return dynamicBakedModelmap;
             }
         });

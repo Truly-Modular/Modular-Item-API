@@ -31,6 +31,9 @@ public class MiapiClientConfig {
 
     @ConfigAutoCodec.ConfigClassMarker
     public static class OtherCategory {
+        @Comment("If items are rescaled in the UI, if disabled makes item overflow into other slots")
+        @AutoCodec.Name("ui_scale")
+        public boolean uiScale = true;
         @Comment("If Glint should render on Modular Items at all")
         @AutoCodec.Name("enchanting_glint")
         public boolean enchantingGlint = true;
