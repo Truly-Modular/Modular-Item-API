@@ -161,6 +161,9 @@ public class MiningLevelProperty implements ModuleProperty {
     }
 
     public static boolean isSuitable(ItemStack stack, BlockState state) {
+        if (state.isOf(Blocks.COBWEB) && stack.getItem() instanceof SwordItem) {
+            return true;
+        }
         Map<String, Float> mergedMap = ModularItemCache.get(stack, KEY, new HashMap<>());
         for (Map.Entry<String, TagKey<Block>> entry : miningCapabilities.entrySet()) {
             if (state.isIn(entry.getValue())) {
