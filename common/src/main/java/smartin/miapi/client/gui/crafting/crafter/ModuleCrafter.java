@@ -92,18 +92,23 @@ public class ModuleCrafter extends InteractAbleWidget {
     }
 
     public void setMode(Mode mode) {
-        currentMode = mode;
-        if (mode != Mode.EDIT && editView != null) {
-            editView.clearSlots();
+        if (stack != null) {
+            currentMode = mode;
+            if (mode != Mode.EDIT && editView != null) {
+                editView.clearSlots();
+            }
+            if (mode == Mode.DETAIL && !(stack.getItem() instanceof VisualModularItem)) {
+                Material material = MaterialProperty.getMaterialFromIngredient(stack);
+                if (material != null) {
+                    mode = Mode.MATERIAL;
+                }
+                if (stack.isEmpty()) {
+                    mode = Mode.HELP;
+                }
+            }
         }
-        if (mode == Mode.DETAIL && !(stack.getItem() instanceof VisualModularItem)) {
-            Material material = MaterialProperty.getMaterialFromIngredient(stack);
-            if (material != null) {
-                mode = Mode.MATERIAL;
-            }
-            if (stack.isEmpty()) {
-                mode = Mode.HELP;
-            }
+        if (stack == null) {
+            mode = Mode.HELP;
         }
         switch (mode) {
             case DETAIL -> {
