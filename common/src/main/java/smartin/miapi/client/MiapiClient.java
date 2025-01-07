@@ -17,10 +17,12 @@ import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.resource.ReloadableResourceManagerImpl;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
+import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import smartin.miapi.Miapi;
 import smartin.miapi.blocks.ModularWorkBenchRenderer;
@@ -163,6 +165,16 @@ public class MiapiClient {
                 return stack.isDamaged() ? 0.0f : 1.0f;
             });
         }
+        ModularModelPredicateProvider.registerModelOverride(item, new Identifier(Miapi.MOD_ID, "is_using"), (stack, world, entity, seed) -> {
+            Hand hand = entity.getActiveHand();
+            if (hand != null) {
+                ItemStack itemStack = entity.getStackInHand(hand);
+                if (itemStack == stack) {
+                    return entity.getItemUseTime() > 0 ? 0.0f : 1.0f;
+                }
+            }
+            return 0.0f;
+        });
     }
 
     public static boolean isSodiumLoaded() {

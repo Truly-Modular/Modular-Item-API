@@ -2,3 +2,4 @@
 - added bypass material restrictions config
 - fixed UI flickering
 - added "block_pose" property to set the pose used for blocking
+- backported glint-material settings

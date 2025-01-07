@@ -9,14 +9,17 @@ import dev.architectury.event.EventResult;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Util;
 import smartin.miapi.Miapi;
+import smartin.miapi.client.ShaderRegistry;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.cache.ModularItemCache;
+import smartin.miapi.modules.material.MaterialProperty;
 import smartin.miapi.modules.properties.util.ModuleProperty;
-import smartin.miapi.client.ShaderRegistry;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -57,6 +60,15 @@ public class GlintProperty implements ModuleProperty {
             }
         }
         AtomicReference<GlintSettings> reference = new AtomicReference<>(defaultSettings);
+        if (MiapiConfig.INSTANCE.client.other.materialStrength > 0 && reference.get() instanceof RainbowGlintSettings rainbowGlintSettings) {
+            if (MaterialProperty.getMaterial(instance) != null) {
+                Color adjusted = new Color(MaterialProperty.getMaterial(instance).getColor());
+                return rainbowGlintSettings.copyWithColor(adjustWith(
+                        adjusted,
+                        MiapiConfig.INSTANCE.client.other.materialStrength,
+                        rainbowGlintSettings.colors));
+            }
+        }
         GLINT_RESOLVE.invoker().get(stack, instance, reference);
         return reference.get();
     }
@@ -160,6 +172,16 @@ public class GlintProperty implements ModuleProperty {
         }
     }
 
+    public static List<Color> adjustWith(Color adjust, float percent, Color[] previous) {
+        List<Color> adjusted = new ArrayList<>();
+        for (int i = 0; i < previous.length; i++) {
+            Color c = previous[i].copy();
+            c.lerp(percent, adjust);
+            adjusted.add(i, c);
+        }
+        return adjusted;
+    }
+
     public static abstract class RainbowGlintSettings implements GlintSettings {
 
         public float speed = 1;
@@ -247,6 +269,21 @@ public class GlintProperty implements ModuleProperty {
         @Override
         public boolean shouldRender() {
             return shouldRenderGlint;
+        }
+
+        public RainbowGlintSettings copyWithColor(List<Color> newColors) {
+            RainbowGlintSettings copy = new RainbowGlintSettings() {
+                @Override
+                public GlintSettings get(ItemModule.ModuleInstance instance, ItemStack stack) {
+                    return this;
+                }
+            };
+            copy.speed = this.speed;
+            copy.rainbowSpeed = this.rainbowSpeed;
+            copy.strength = this.strength;
+            copy.shouldRenderGlint = this.shouldRenderGlint;
+            copy.colors = newColors.toArray(new Color[0]);
+            return copy;
         }
     }
 

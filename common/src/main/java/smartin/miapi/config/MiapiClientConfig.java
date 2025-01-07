@@ -37,6 +37,9 @@ public class MiapiClientConfig {
         @Comment("If Glint should render on Modular Items at all")
         @AutoCodec.Name("enchanting_glint")
         public boolean enchantingGlint = true;
+        @Comment("If Glint should render on Modular Items at all")
+        @AutoCodec.Name("material_glint_strength")
+        public float materialStrength = 0.0f;
         @Comment("Whether Miapi materials can be animated")
         @AutoCodec.Name("animated_materials")
         public boolean animatedMaterials = true;
