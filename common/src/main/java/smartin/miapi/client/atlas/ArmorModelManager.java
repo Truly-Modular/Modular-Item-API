@@ -39,7 +39,7 @@ public class ArmorModelManager {
         private static final String[] modelParts = {"head", "hat", "left_arm", "right_arm", "left_leg", "right_leg", "body"};
 
         @Override
-        public List<ArmorPart> getParts(EquipmentSlot equipmentSlot, LivingEntity livingEntity, BipedEntityModel<?> model, EntityModel entityModel) {
+        public List<ArmorPart> getParts(EquipmentSlot equipmentSlot, LivingEntity livingEntity) {
             List<ArmorPart> parts = new ArrayList<>();
             for (String key : modelParts) {
                 parts.add((matrixStack, equipmentSlot1, livingEntity1, model1, entityModel1) -> {
@@ -95,6 +95,11 @@ public class ArmorModelManager {
             }
             return parts;
         }
+
+        @Override
+        public List<ArmorPart> getParts(EquipmentSlot equipmentSlot, LivingEntity livingEntity) {
+            return List.of();
+        }
     }
 
     public static void renderArmorPiece(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, EquipmentSlot armorSlot, ItemStack itemStack, LivingEntity entity, BipedEntityModel outerModel, EntityModel entityModel) {
@@ -113,7 +118,11 @@ public class ArmorModelManager {
     }
 
     public interface ArmorPartProvider {
-        List<ArmorPart> getParts(EquipmentSlot equipmentSlot, LivingEntity livingEntity, BipedEntityModel<?> model, EntityModel entityModel);
+        default List<ArmorPart> getParts(EquipmentSlot equipmentSlot, LivingEntity livingEntity, BipedEntityModel<?> model, EntityModel entityModel) {
+            return getParts(equipmentSlot, livingEntity);
+        }
+
+        List<ArmorPart> getParts(EquipmentSlot equipmentSlot, LivingEntity livingEntity);
     }
 
     public interface ArmorPart {

@@ -37,17 +37,21 @@ public class CustomArmorRenderer extends ModelRenderLayer<
             MatrixStack matrixStack,
             VertexConsumerProvider vertexConsumerProvider,
             int i, OpenMatrix4f[] openMatrix4fs, float v, float v1, float v2, float v3) {
-        Miapi.LOGGER.info("render layer " + EquipmentSlot.CHEST);
-        ArmorModelManager.renderArmorPiece(
-                matrixStack,
-                vertexConsumerProvider,
-                i,
-                EquipmentSlot.CHEST,
-                abstractClientPlayerEntity.getEquippedStack(EquipmentSlot.MAINHAND),
-                abstractClientPlayerEntity,
-                modularItemFeatureLayer.model.getModel(),
-                modularItemFeatureLayer.model.getModel());
+        //Miapi.LOGGER.info("render layer " + EquipmentSlot.CHEST);
+        abstractClientPlayerEntityAbstractClientPlayerPatch.getArmature();
+        if (modularItemFeatureLayer != null) {
+            ArmorModelManager.renderArmorPiece(
+                    matrixStack,
+                    vertexConsumerProvider,
+                    i,
+                    EquipmentSlot.CHEST,
+                    abstractClientPlayerEntity.getEquippedStack(EquipmentSlot.MAINHAND),
+                    abstractClientPlayerEntity,
+                    modularItemFeatureLayer.model.getModel(),
+                    modularItemFeatureLayer.model.getModel());
+        }
     }
+
 
     public class ModularItemFeatureLayer extends FeatureRenderer<AbstractClientPlayerEntity, PlayerEntityModel<AbstractClientPlayerEntity>> {
         public FeatureRendererContext<AbstractClientPlayerEntity, PlayerEntityModel<AbstractClientPlayerEntity>> model;

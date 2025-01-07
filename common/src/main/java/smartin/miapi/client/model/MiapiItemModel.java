@@ -56,6 +56,10 @@ public class MiapiItemModel implements MiapiModel {
         render(modelType, stack, matrices, mode, tickDelta, vertexConsumers, null, light, overlay);
     }
 
+    public void render(String modelType, MatrixStack matrices, ModelTransformationMode mode, float tickDelta, VertexConsumerProvider vertexConsumers, LivingEntity entity, int light, int overlay) {
+        render(modelType, stack, matrices, mode, tickDelta, vertexConsumers, entity, light, overlay);
+    }
+
     public void render(
             String modelType,
             ItemStack stack,

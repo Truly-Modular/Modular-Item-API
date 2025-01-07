@@ -20,6 +20,7 @@ public class EpicFightCompat {
             PatchedEntityRenderer patt3553$temp = event.get(EntityType.PLAYER);
             if (patt3553$temp instanceof PPlayerRenderer playerrenderer) {
                 playerrenderer.addCustomLayer(new CustomArmorRenderer(null));
+                playerrenderer.addCustomLayer(new CustomLivingArmorRenderer<>(null));
                 //playerrenderer.addPatchedLayerAlways(ArmorFeatureRenderer.class, new CustomArmorRenderer(null));
             }
         });

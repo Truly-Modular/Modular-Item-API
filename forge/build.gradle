@@ -51,6 +51,7 @@ dependencies {
 
     forgeRuntimeLibrary("com.ezylang:EvalEx:${rootProject.eval_ex_version}")
     forgeRuntimeLibrary((include("com.ezylang:EvalEx:${rootProject.eval_ex_version}")))
+    forgeRuntimeLibrary(api(include("com.ezylang:EvalEx:${rootProject.eval_ex_version}")))
     modApi("top.theillusivec4.caelus:caelus-forge:${rootProject.forge_caelus_version}")
 
     modApi(include("com.redpxnda.nucleus:nucleus-core-forge:${rootProject.minecraft_version}+${rootProject.nucleus_core_version}"))
@@ -106,9 +107,6 @@ modApi "com.github.EdwinMindcraft:origins-architectury:1.13.0"
 modApi "com.github.EdwinMindcraft:origins-architectury:${project.fabric_apoli_version}"
 include "com.github.EdwinMindcraft:origins-architectury:${project.fabric_apoli_version}"
  */
-
-    forgeRuntimeLibrary('com.github.ezylang:EvalEx:3.0.4')
-    localRuntime('com.github.ezylang:EvalEx:3.0.4')
 
     compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:${rootProject.mixin_extras_version}"))
     implementation(include("io.github.llamalad7:mixinextras-forge:${rootProject.mixin_extras_version}"))
