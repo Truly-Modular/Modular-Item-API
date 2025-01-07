@@ -92,8 +92,7 @@ public class AllowedMaterial implements CraftingProperty, ModuleProperty {
             Material material = MaterialProperty.getMaterialFromIngredient(input);
             materialRequirementClient = json.cost * crafting.getCount();
             if (material != null) {
-                boolean isAllowed = (json.allowedMaterials.stream().anyMatch(allowedMaterial ->
-                        material.getGroups().contains(allowedMaterial)));
+                boolean isAllowed = json.isAllowed(material);
                 wrongMaterial = !isAllowed;
                 if (isAllowed) {
                     materialCostClient = input.getCount() * material.getValueOfItem(input);
@@ -123,8 +122,7 @@ public class AllowedMaterial implements CraftingProperty, ModuleProperty {
             Material material = MaterialProperty.getMaterialFromIngredient(input);
             if (material != null) {
                 AllowedMaterialJson json = Miapi.gson.fromJson(element, AllowedMaterialJson.class);
-                boolean isAllowed = (json.allowedMaterials.stream().anyMatch(allowedMaterial ->
-                        material.getGroups().contains(allowedMaterial)));
+                boolean isAllowed = json.isAllowed(material);
                 if (isAllowed) {
                     //MaterialProperty.setMaterial(newModule, material.getKey());
                 }
@@ -199,5 +197,11 @@ public class AllowedMaterial implements CraftingProperty, ModuleProperty {
     static class AllowedMaterialJson {
         public List<String> allowedMaterials;
         public float cost;
+
+
+        public boolean isAllowed(Material material) {
+            return MiapiConfig.INSTANCE.server.other.bypassMaterialRestrictions || allowedMaterials.stream().anyMatch(allowedMaterial ->
+                    material.getGroups().contains(allowedMaterial));
+        }
     }
 }

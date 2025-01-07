@@ -35,6 +35,7 @@ import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.entity.ShieldingArmorFacet;
 import smartin.miapi.events.MiapiEvents;
+import smartin.miapi.forge.compat.epic_fight.EpicFightCompat;
 import smartin.miapi.modules.properties.AttributeProperty;
 import smartin.miapi.registries.RegistryInventory;
 
@@ -45,15 +46,17 @@ import static smartin.miapi.attributes.AttributeRegistry.SWIM_SPEED;
 
 @Mod(MOD_ID)
 public class TrulyModularForge {
+    public static IEventBus trulyModularEventBus;
+
     public TrulyModularForge() {
         // Submit our event bus to let architectury register our content on the right time
-        IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
-        EventBuses.registerModEventBus(MOD_ID, bus);
+        trulyModularEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+        EventBuses.registerModEventBus(MOD_ID, trulyModularEventBus);
         if (Environment.isClient()) {
-            bus.register(new ClientModEvents());
+            trulyModularEventBus.register(new ClientModEvents());
             MinecraftForge.EVENT_BUS.register(new ClientEvents());
         }
-        bus.register(new ModEvents());
+        trulyModularEventBus.register(new ModEvents());
         MinecraftForge.EVENT_BUS.register(new ServerEvents());
         Miapi.init();
 
@@ -61,6 +64,7 @@ public class TrulyModularForge {
             RegistryInventory.moduleProperties.register(
                     smartin.miapi.forge.compat.epic_fight.EpicFightCompatProperty.KEY,
                     new smartin.miapi.forge.compat.epic_fight.EpicFightCompatProperty());
+            EpicFightCompat.setup();
         });
 
         loadCompat("quark", smartin.miapi.forge.compat.QuarkCompat::setup);

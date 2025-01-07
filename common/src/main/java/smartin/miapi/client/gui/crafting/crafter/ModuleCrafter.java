@@ -108,7 +108,7 @@ public class ModuleCrafter extends InteractAbleWidget {
             }
         }
         if (stack == null) {
-            mode = Mode.HELP;
+            return;
         }
         switch (mode) {
             case DETAIL -> {

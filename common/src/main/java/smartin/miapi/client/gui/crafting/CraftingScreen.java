@@ -104,7 +104,6 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
         this.editOption = editOption;
         moduleCrafter.setSelectedSlot(slot);
         moduleCrafter.setEditMode(editOption, get(editOption));
-        PreviewManager.resetCursorStack();
     }
 
     public void init() {
@@ -236,6 +235,9 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
 
     public void updatePreviewItemStack(ItemStack stack) {
         stack = stack.copy();
+        if(stack.isEmpty()){
+            Miapi.LOGGER.info("warn");
+        }
         slotDisplay.setItem(stack);
         ItemStack converted = ModularItemStackConverter.getModularVersion(stack).copy();
         baseSlot.inSlot = ItemModule.getModules(converted);
@@ -302,7 +304,6 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
         if (!editHolder.children().contains(editOption)) {
             editOption = null;
         }
-        PreviewManager.resetCursorStack();
         selectEditOption(editOption);
     }
 

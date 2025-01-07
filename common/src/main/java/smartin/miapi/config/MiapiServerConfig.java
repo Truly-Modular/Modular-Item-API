@@ -28,6 +28,10 @@ public class MiapiServerConfig {
         @AutoCodec.Name("inject_lore_server")
         public boolean injectLoreServer = true;
         @Comment("""
+                Bypasses material restrictions entirely NOT RECOMMEND""")
+        @AutoCodec.Name("bypass_material_restriction")
+        public boolean bypassMaterialRestrictions = false;
+        @Comment("""
                 Whether the development mode of Miapi is enabled
                 DO NOT ENABLE IF U DONT KNOW WHAT IT DOES""")
         @AutoCodec.Name("development_mode")

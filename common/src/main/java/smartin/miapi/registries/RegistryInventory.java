@@ -546,6 +546,7 @@ public class RegistryInventory {
             registerMiapi(moduleProperties, SlashingProperty.KEY, new SlashingProperty());
             registerMiapi(moduleProperties, NBTWriteProperty.KEY, new NBTWriteProperty());
             registerMiapi(moduleProperties, StringNBTWriteProperty.KEY, new StringNBTWriteProperty());
+            registerMiapi(moduleProperties, BlockPoseProperty.KEY, new BlockPoseProperty());
             //compat
             registerMiapi(moduleProperties, BetterCombatProperty.KEY, new BetterCombatProperty());
             registerMiapi(moduleProperties, ApoliPowersProperty.KEY, new ApoliPowersProperty());

@@ -18,6 +18,7 @@ import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.modules.abilities.util.EntityAttributeAbility;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;
 import smartin.miapi.modules.properties.AbilityMangerProperty;
+import smartin.miapi.modules.properties.BlockPoseProperty;
 import smartin.miapi.modules.properties.BlockProperty;
 import smartin.miapi.modules.properties.LoreProperty;
 
@@ -95,8 +96,9 @@ public class BlockAbility extends EntityAttributeAbility {
     public void setAnimation(PlayerEntity p, Hand hand) {
         if (p instanceof ServerPlayerEntity player) {
             ServerPoseFacet facet = ServerPoseFacet.KEY.get(player);
+            ItemStack itemStack = p.getStackInHand(hand);
             if (facet != null) {
-                facet.set("miapi:block", player, hand);
+                facet.set(BlockPoseProperty.poseProperty.getPoseId(itemStack), player, hand);
             }
         }
     }

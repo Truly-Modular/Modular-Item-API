@@ -34,7 +34,7 @@ public class AdvancementCondition implements ModuleCondition {
             List<Text> reasons = moduleConditionContext.reasons;
             if (player != null && advancement != null) {
                 Advancement advancement1 = getAdvancement(advancement);
-                if(advancement1!=null){
+                if (advancement1 != null) {
                     return hasAdvancement(advancement1, player);
                 }
             }
@@ -57,7 +57,8 @@ public class AdvancementCondition implements ModuleCondition {
     public static boolean hasAdvancementClient(Advancement advancement, PlayerEntity player) {
         if (MinecraftClient.getInstance() != null && MinecraftClient.getInstance().getNetworkHandler() != null) {
             ClientAdvancementManager manager = MinecraftClient.getInstance().getNetworkHandler().getAdvancementHandler();
-            return ((ClientAdvancementManagerAccessor) manager).getAdvancementProgresses().get(advancement).isDone();
+            var map = ((ClientAdvancementManagerAccessor) manager).getAdvancementProgresses();
+            return map.containsKey(advancement) && map.get(advancement).isDone();
         }
         return false;
     }
@@ -83,7 +84,7 @@ public class AdvancementCondition implements ModuleCondition {
     }
 
     public Advancement getAdvancementClient(Identifier identifier) {
-        if(MinecraftClient.getInstance().getNetworkHandler()!=null){
+        if (MinecraftClient.getInstance().getNetworkHandler() != null) {
             return MinecraftClient.getInstance().getNetworkHandler().getAdvancementHandler().getManager().get(identifier);
         }
         return null;

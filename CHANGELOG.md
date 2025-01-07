@@ -1,6 +1,4 @@
-## v1.1.38 (1.20.1)
-- added faster mining modifier
-- adjusted default enchanting glint color
-- minor changes to disable glint shader registration as well if glint is disabled in the config
-- added handheld Epic Fight Compat
-- added config option to toggle UI scaling
+## v1.1.39 (1.20.1)
+- added bypass material restrictions config
+- fixed UI flickering
+- added "block_pose" property to set the pose used for blocking
