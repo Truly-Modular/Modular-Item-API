@@ -1,9 +1,14 @@
 package smartin.miapi.forge.compat.epic_fight;
 
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.render.entity.feature.ArmorFeatureRenderer;
+import net.minecraft.client.render.entity.feature.ElytraFeatureRenderer;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
+import net.minecraft.client.render.entity.model.ElytraEntityModel;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.EquipmentSlot;
@@ -17,6 +22,9 @@ import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import smartin.miapi.client.model.MiapiItemModel;
 import smartin.miapi.item.modular.Transform;
+import smartin.miapi.mixin.client.ElytraEntityModelAccessor;
+import smartin.miapi.mixin.client.ElytraFeatureRendererAccessor;
+import smartin.miapi.mixin.client.LivingEntityRendererAccessor;
 import yesman.epicfight.api.animation.Joint;
 import yesman.epicfight.api.client.model.MeshProvider;
 import yesman.epicfight.api.model.Armature;
@@ -27,6 +35,7 @@ import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @OnlyIn(Dist.CLIENT)
 public class CustomLivingArmorRenderer<E extends LivingEntity, T extends LivingEntityPatch<E>, M extends BipedEntityModel<E>, AM extends HumanoidMesh> extends ModelRenderLayer<E, T, M, ArmorFeatureRenderer<E, M, M>, AM> {
@@ -65,6 +74,11 @@ public class CustomLivingArmorRenderer<E extends LivingEntity, T extends LivingE
                         new Vector3f(0f, 0.7f, 0f),
                         new Vector3f(1f, -1f, 1f)).toMatrix());
     }
+
+    public static final Matrix4f wingMatrix = new Transform(
+            new Vector3f(0f, 0f, 0f),
+            new Vector3f(0f, 0.4f, 0f),
+            new Vector3f(1f, -1f, 1f)).toMatrix();
 
     private void addEFModelProvider(String[] joint, String miapiJoint) {
         epicFightModelProviders.add(new ModelProvider(joint, miapiJoint, null));
@@ -130,6 +144,34 @@ public class CustomLivingArmorRenderer<E extends LivingEntity, T extends LivingE
             }
             matrices.pop();
         });
+        matrices.pop();
+        matrices.push();
+
+        Joint joint = patch.getArmature().searchJointByName("Chest");
+        matrices.multiplyPositionMatrix(toJomlMatrix(patch.getArmature().getBindedTransformFor(patch.getClientAnimator().getPose(partial), joint)));
+        matrices.multiplyPositionMatrix(wingMatrix);
+
+        if (MinecraftClient.getInstance().getEntityRenderDispatcher().getRenderer(entity) instanceof LivingEntityRenderer livingEntityRenderer) {
+            Optional<ElytraFeatureRenderer<?, ?>> elytraFeatureRenderer =
+                    ((LivingEntityRendererAccessor) livingEntityRenderer).getFeatures().stream().filter(a -> a instanceof ElytraFeatureRenderer<?, ?>).findAny();
+            MiapiItemModel miapiItemModel = MiapiItemModel.getItemModel(itemStack);
+            if (elytraFeatureRenderer.isPresent() && miapiItemModel != null) {
+                ElytraEntityModel elytraEntityModel = ((ElytraFeatureRendererAccessor) elytraFeatureRenderer.get()).getElytra();
+                livingEntityRenderer.getModel().copyStateTo(elytraEntityModel);
+                matrices.push();
+                ModelPart part = ((ElytraEntityModelAccessor) elytraEntityModel).getLeftWing();
+                part.rotate(matrices);
+                miapiItemModel.render("left_wing", matrices, ModelTransformationMode.HEAD, 0, vertexConsumers, entity, light, OverlayTexture.DEFAULT_UV);
+                matrices.pop();
+                matrices.push();
+                ModelPart rightWing = ((ElytraEntityModelAccessor) elytraEntityModel).getRightWing();
+                rightWing.rotate(matrices);
+                miapiItemModel.render("right_wing", matrices, ModelTransformationMode.HEAD, 0, vertexConsumers, entity, light, OverlayTexture.DEFAULT_UV);
+
+                matrices.pop();
+
+            }
+        }
         matrices.pop();
     }
 
