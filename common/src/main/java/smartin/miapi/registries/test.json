@@ -1,13 +1,12 @@
 {
-    "epic_fight": {
-        "attributes": {
-            "common": {
-                "impact": 0.5,
-                "max_strikes": 2
-            }
-        },
-        "hit_particle": "blunt",
-        "hit_sound": "entity.hit.blunt",
-        "type": "epicfight:tachi"
+    "ability_context": {
+        "parry_block": {
+            "pose_id": "miapi:block",
+            "max_hold_time": "20",
+            "damage_return_percent": "10000",
+            "cooldown_attacker_weapon": "15",
+            "cooldown": "40",
+            "cooldown_miss_time": "40"
+        }
     }
 }

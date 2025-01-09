@@ -62,12 +62,12 @@ public class ItemAbilityManager {
         return emptyAbility;
     }
 
-    private static ItemUseAbility getAbility(ItemStack itemStack) {
+    public static ItemUseAbility getAbility(ItemStack itemStack) {
         ItemUseAbility useAbility = abilityMap.get(itemStack);
         return useAbility == null ? emptyAbility : useAbility;
     }
 
-    private static ItemUseAbility getAbility(ItemStack itemStack, World world, PlayerEntity player, Hand hand, AbilityHitContext abilityHitContext) {
+    public static ItemUseAbility getAbility(ItemStack itemStack, World world, PlayerEntity player, Hand hand, AbilityHitContext abilityHitContext) {
         for (ItemUseAbility ability : AbilityMangerProperty.get(itemStack)) {
             if (ability.allowedOnItem(itemStack, world, player, hand, abilityHitContext)) {
                 return ability;

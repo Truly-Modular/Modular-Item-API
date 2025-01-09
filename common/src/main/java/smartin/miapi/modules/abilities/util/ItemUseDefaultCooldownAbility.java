@@ -5,7 +5,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 
-public interface ItemUseDefaultCooldownAbility extends ItemUseAbility {
+public interface ItemUseDefaultCooldownAbility<T> extends ItemUseAbility<T> {
 
 
     default int getCooldown(ItemStack itemstack) {

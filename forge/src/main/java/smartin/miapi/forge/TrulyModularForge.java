@@ -138,7 +138,9 @@ public class TrulyModularForge {
         @SubscribeEvent
         public void damageEvent(LivingHurtEvent hurtEvent) {
             MiapiEvents.LivingHurtEvent event = new MiapiEvents.LivingHurtEvent(hurtEvent.getEntity(), hurtEvent.getSource(), hurtEvent.getAmount());
-            MiapiEvents.LIVING_HURT.invoker().hurt(event);
+            if (MiapiEvents.LIVING_HURT.invoker().hurt(event).interruptsFurtherEvaluation()) {
+                hurtEvent.setCanceled(true);
+            }
             hurtEvent.setAmount(event.amount);
         }
 

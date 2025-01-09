@@ -32,16 +32,16 @@ public class ArmorPenProperty extends DoubleProperty {
                     double value = property.getValueSafe(itemStack) / 100;
                     Multimap<EntityAttribute, EntityAttributeModifier> multimap = ArrayListMultimap.create();
                     multimap.put(EntityAttributes.GENERIC_ARMOR, new EntityAttributeModifier("tempArmorPen", (- 1 + value), EntityAttributeModifier.Operation.MULTIPLY_TOTAL));
-                    cache.put(event.livingEntity, multimap);
-                    event.livingEntity.getAttributes().addTemporaryModifiers(multimap);
+                    cache.put(event.defender, multimap);
+                    event.defender.getAttributes().addTemporaryModifiers(multimap);
                 }
             }
             return EventResult.pass();
         }));
 
         MiapiEvents.LIVING_HURT_AFTER.register((event -> {
-            if (cache.containsKey(event.livingEntity)) {
-                event.livingEntity.getAttributes().removeModifiers(cache.get(event.livingEntity));
+            if (cache.containsKey(event.defender)) {
+                event.defender.getAttributes().removeModifiers(cache.get(event.defender));
             }
             return EventResult.pass();
         }));

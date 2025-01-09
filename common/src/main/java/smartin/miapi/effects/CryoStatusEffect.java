@@ -48,11 +48,11 @@ public class CryoStatusEffect extends RenderingMobEffect {
             return CompoundEventResult.pass();
         });
         MiapiEvents.LIVING_HURT_AFTER.register(event -> {
-            if (event.livingEntity.hasStatusEffect(this)) {
-                StatusEffectInstance instance = event.livingEntity.getStatusEffect(this);
+            if (event.defender.hasStatusEffect(this)) {
+                StatusEffectInstance instance = event.defender.getStatusEffect(this);
                 if (instance != null) {
-                    event.livingEntity.removeStatusEffect(this);
-                    event.livingEntity.addStatusEffect(
+                    event.defender.removeStatusEffect(this);
+                    event.defender.addStatusEffect(
                             new StatusEffectInstance(
                                     this, instance.getDuration()-30, instance.getAmplifier(),
                                     instance.isAmbient(), instance.shouldShowParticles(), instance.shouldShowIcon()));

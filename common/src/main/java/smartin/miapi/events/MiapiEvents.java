@@ -82,13 +82,13 @@ public class MiapiEvents {
     }
 
     public static class LivingHurtEvent {
-        public final LivingEntity livingEntity;
+        public final LivingEntity defender;
         public DamageSource damageSource;
         public float amount;
         public boolean isCritical = false;
 
         public LivingHurtEvent(LivingEntity livingEntity, DamageSource damageSource, float amount) {
-            this.livingEntity = livingEntity;
+            this.defender = livingEntity;
             this.damageSource = damageSource;
             this.amount = amount;
 

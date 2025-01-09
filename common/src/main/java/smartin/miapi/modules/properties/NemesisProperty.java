@@ -85,7 +85,7 @@ public class NemesisProperty extends DoubleProperty implements CraftingProperty 
                     String entityType = compound.getString("miapi_nemesis_target");
                     int value = compound.getInt("miapi_nemesis");
 
-                    EntityType attackedType = listener.livingEntity.getType();
+                    EntityType attackedType = listener.defender.getType();
 
                     Optional<EntityType<?>> entityType1 = EntityType.get(entityType);
 

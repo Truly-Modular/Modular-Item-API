@@ -27,7 +27,7 @@ public class OnHitTargetEffects extends PotionEffectProperty {
 
         MiapiEvents.LIVING_HURT.register((listener) -> {
             if (listener.damageSource.getAttacker() instanceof LivingEntity livingEntity && !livingEntity.getWorld().isClient()) {
-                applyEffects(listener.livingEntity, livingEntity, listener.getCausingItemStack(), livingEntity, this::isTargetOther);
+                applyEffects(listener.defender, livingEntity, listener.getCausingItemStack(), livingEntity, this::isTargetOther);
                 applyEffects(livingEntity, livingEntity, listener.getCausingItemStack(), livingEntity, this::isTargetSelf);
             }
             return EventResult.pass();

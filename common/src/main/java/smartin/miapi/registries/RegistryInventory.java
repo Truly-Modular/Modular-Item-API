@@ -53,6 +53,7 @@ import smartin.miapi.item.modular.PropertyResolver;
 import smartin.miapi.item.modular.items.*;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.abilities.*;
+import smartin.miapi.modules.abilities.block.ParryBlock;
 import smartin.miapi.modules.abilities.toolabilities.AxeAbility;
 import smartin.miapi.modules.abilities.toolabilities.HoeAbility;
 import smartin.miapi.modules.abilities.toolabilities.ShovelAbility;
@@ -570,6 +571,7 @@ public class RegistryInventory {
             registerMiapi(useAbilityRegistry, ShovelAbility.KEY, new ShovelAbility());
             registerMiapi(useAbilityRegistry, EatAbility.KEY, new EatAbility());
             registerMiapi(useAbilityRegistry, AreaHarvestReplant.KEY, new AreaHarvestReplant());
+            registerMiapi(useAbilityRegistry, ParryBlock.KEY, new ParryBlock());
 
             Miapi.LOGGER.info("Registered Truly Modulars Property resolvers:");
             PropertyResolver.registry.forEach((pair) -> {

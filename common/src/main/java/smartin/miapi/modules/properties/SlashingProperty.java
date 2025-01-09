@@ -15,8 +15,8 @@ public class SlashingProperty extends DoubleProperty {
         property = this;
         MiapiEvents.LIVING_HURT.register((livingHurtEvent) -> {
             double slashing = getValueSafe(livingHurtEvent.getCausingItemStack());
-            slashing -= livingHurtEvent.livingEntity.getAttributeValue(EntityAttributes.GENERIC_ARMOR_TOUGHNESS);
-            slashing -= livingHurtEvent.livingEntity.getAttributeValue(EntityAttributes.GENERIC_ARMOR);
+            slashing -= livingHurtEvent.defender.getAttributeValue(EntityAttributes.GENERIC_ARMOR_TOUGHNESS);
+            slashing -= livingHurtEvent.defender.getAttributeValue(EntityAttributes.GENERIC_ARMOR);
             if (slashing > 0) {
                 livingHurtEvent.amount += (float) slashing;
             }

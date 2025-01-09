@@ -25,10 +25,10 @@ public class OnDamagedEffects extends PotionEffectProperty {
         super(KEY);
         property = this;
         MiapiEvents.LIVING_HURT.register((listener) -> {
-            if (!listener.livingEntity.getWorld().isClient()) {
-                applyEffects(listener.livingEntity, listener.livingEntity, listener.getCausingItemStack(), listener.livingEntity, this::isTargetSelf);
+            if (!listener.defender.getWorld().isClient()) {
+                applyEffects(listener.defender, listener.defender, listener.getCausingItemStack(), listener.defender, this::isTargetSelf);
                 if (listener.damageSource.getAttacker() instanceof LivingEntity attacker) {
-                    applyEffects(attacker, listener.livingEntity, listener.getCausingItemStack(), attacker, this::isTargetOther);
+                    applyEffects(attacker, listener.defender, listener.getCausingItemStack(), attacker, this::isTargetOther);
                 }
             }
             return EventResult.pass();

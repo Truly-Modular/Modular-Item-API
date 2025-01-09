@@ -18,14 +18,14 @@ public class LightningOnHit extends DoubleProperty {
         super(KEY);
         property = this;
         MiapiEvents.LIVING_HURT.register((listener) -> {
-            if (!listener.livingEntity.getWorld().isClient() && listener.damageSource.getAttacker() instanceof LivingEntity attacker) {
+            if (!listener.defender.getWorld().isClient() && listener.damageSource.getAttacker() instanceof LivingEntity attacker) {
                 double lightningStrength = getForItems(attacker.getItemsEquipped());
                 for (int i = 0; i < lightningStrength; i++) {
-                    LightningEntity lightningEntity = EntityType.LIGHTNING_BOLT.create(listener.livingEntity.getWorld());
+                    LightningEntity lightningEntity = EntityType.LIGHTNING_BOLT.create(listener.defender.getWorld());
                     assert lightningEntity != null;
-                    lightningEntity.refreshPositionAfterTeleport(Vec3d.ofBottomCenter(listener.livingEntity.getBlockPos()));
+                    lightningEntity.refreshPositionAfterTeleport(Vec3d.ofBottomCenter(listener.defender.getBlockPos()));
                     lightningEntity.setChanneler(attacker instanceof ServerPlayerEntity ? (ServerPlayerEntity) attacker : null);
-                    listener.livingEntity.getWorld().spawnEntity(lightningEntity);
+                    listener.defender.getWorld().spawnEntity(lightningEntity);
                 }
             }
             return EventResult.pass();

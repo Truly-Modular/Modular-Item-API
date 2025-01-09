@@ -11,10 +11,10 @@ public abstract class EntityDamageBoostProperty extends DoubleProperty {
     public EntityDamageBoostProperty(String key, isOfEntity entityPredicate) {
         super(key);
         MiapiEvents.LIVING_HURT.register((livingHurtEvent) -> {
-            if (!livingHurtEvent.livingEntity.getWorld().isClient() && livingHurtEvent.livingEntity.getWorld() instanceof ServerWorld serverWorld) {
+            if (!livingHurtEvent.defender.getWorld().isClient() && livingHurtEvent.defender.getWorld() instanceof ServerWorld serverWorld) {
                 ItemStack itemStack = livingHurtEvent.getCausingItemStack();
                 Double value = getValue(itemStack);
-                if (value != null && entityPredicate.test(livingHurtEvent.livingEntity)) {
+                if (value != null && entityPredicate.test(livingHurtEvent.defender)) {
                     livingHurtEvent.amount += value;
                 }
             }

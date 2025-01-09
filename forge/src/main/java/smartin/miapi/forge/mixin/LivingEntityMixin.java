@@ -22,7 +22,7 @@ public class LivingEntityMixin {
     private DamageSource storedDamageSource;
     private MiapiEvents.LivingHurtEvent lastEvent;
 
-    @Inject(method = "damage", at = @At(value = "HEAD"))
+    @Inject(method = "damage", at = @At(value = "HEAD"), cancellable = true)
     private void miapi$damageEvent(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
         MiapiEvents.LivingHurtEvent livingHurtEvent = new MiapiEvents.LivingHurtEvent((LivingEntity) (Object) this, source, amount);
         if (source.getAttacker() instanceof PlayerEntity entity) {

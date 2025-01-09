@@ -236,7 +236,7 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
     public void updatePreviewItemStack(ItemStack stack) {
         stack = stack.copy();
         if(stack.isEmpty()){
-            Miapi.LOGGER.info("warn");
+            //Miapi.LOGGER.info("warn");
         }
         slotDisplay.setItem(stack);
         ItemStack converted = ModularItemStackConverter.getModularVersion(stack).copy();
