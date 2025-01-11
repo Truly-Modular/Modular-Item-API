@@ -12,6 +12,7 @@ import net.minecraft.item.Item;
 import net.minecraft.registry.Registries;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.util.math.MathHelper;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 import net.minecraftforge.client.event.RenderGuiEvent;
@@ -64,7 +65,9 @@ public class TrulyModularForge {
             RegistryInventory.moduleProperties.register(
                     smartin.miapi.forge.compat.epic_fight.EpicFightCompatProperty.KEY,
                     new smartin.miapi.forge.compat.epic_fight.EpicFightCompatProperty());
-            EpicFightCompat.setup();
+            if (Platform.getEnv() == Dist.CLIENT) {
+                EpicFightCompat.setup();
+            }
         });
 
         loadCompat("quark", smartin.miapi.forge.compat.QuarkCompat::setup);

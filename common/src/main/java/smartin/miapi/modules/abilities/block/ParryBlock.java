@@ -12,9 +12,16 @@ import dev.architectury.event.EventResult;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
+import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.packet.s2c.play.PlaySoundS2CPacket;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.server.command.PlaySoundCommand;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvent;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
@@ -30,6 +37,7 @@ import smartin.miapi.modules.abilities.util.ItemAbilityManager;
 import smartin.miapi.modules.properties.AbilityMangerProperty;
 import smartin.miapi.modules.properties.BlockProperty;
 import smartin.miapi.modules.properties.LoreProperty;
+import smartin.miapi.registries.RegistryInventory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,15 +65,48 @@ public class ParryBlock extends EntityAttributeAbility<ParryBlock.ParryContext> 
                         ParryContext parryContext = getContext(activeItem);
                         if (parryContext != null) {
                             defender.getItemCooldownManager().set(activeItem.getItem(), parryContext.cooldown.evaluate(parryContext.moduleInstance));
-                            if (event.damageSource.getAttacker() instanceof PlayerEntity attacker && attacker.getMainHandStack() != null && !attacker.getMainHandStack().isEmpty()) {
-                                attacker.getItemCooldownManager().set(
-                                        attacker.getMainHandStack().getItem(),
-                                        parryContext.cooldownAttackerWeapon.evaluate(parryContext.moduleInstance));
-                            }
                             if (event.damageSource.getAttacker() instanceof LivingEntity attacker) {
+                                int cd = parryContext.cooldownAttackerWeapon.evaluate(parryContext.moduleInstance);
+                                if (event.damageSource.getAttacker() instanceof PlayerEntity playerEntity && attacker.getMainHandStack() != null && !attacker.getMainHandStack().isEmpty()) {
+                                    playerEntity.getItemCooldownManager().set(
+                                            attacker.getMainHandStack().getItem(),
+                                            cd);
+                                } else {
+                                    StatusEffectInstance instance = new StatusEffectInstance(RegistryInventory.stunEffect, cd);
+                                    attacker.addStatusEffect(instance);
+                                }
                                 attacker.damage(
                                         defender.getDamageSources().playerAttack(defender),
                                         event.amount * parryContext.damageReturnPercent.evaluate(parryContext.moduleInstance).floatValue() / 100.0f);
+                            }
+                            RegistryEntry<SoundEvent> registryEntry = RegistryEntry.of(SoundEvent.of(parryContext.sound));
+                            SoundEvent event1 = registryEntry.value();
+                            defender.playSound(SoundEvents.BLOCK_ANVIL_FALL, SoundCategory.PLAYERS, 10000.0f, 1.0f);
+                            PlaySoundCommand playSoundCommand;
+                            //defender.playSound();
+                            if (event1 != null) {
+                                if(defender instanceof ServerPlayerEntity serverPlayerEntity){
+                                    serverPlayerEntity.networkHandler.sendPacket(new PlaySoundS2CPacket(registryEntry, SoundCategory.PLAYERS,
+                                            defender.getX(),
+                                            defender.getY(),
+                                            defender.getZ(),
+                                            parryContext.volume.evaluate(parryContext.moduleInstance).floatValue(),
+                                            parryContext.pitch.evaluate(parryContext.moduleInstance).floatValue(),
+                                            serverPlayerEntity.getServerWorld().getSeed()));
+                                }
+                                //defender.getWorld().play
+                                defender.getWorld().playSound(
+                                        defender.getX(),
+                                        defender.getY(),
+                                        defender.getZ(),
+                                        event1,
+                                        SoundCategory.PLAYERS,
+                                        parryContext.volume.evaluate(parryContext.moduleInstance).floatValue(),
+                                        parryContext.pitch.evaluate(parryContext.moduleInstance).floatValue(), true
+                                );
+                                defender.playSound(event1,
+                                        parryContext.volume.evaluate(parryContext.moduleInstance).floatValue(),
+                                        parryContext.pitch.evaluate(parryContext.moduleInstance).floatValue());
                             }
                             return EventResult.interruptDefault();
                         }
@@ -173,6 +214,15 @@ public class ParryBlock extends EntityAttributeAbility<ParryBlock.ParryContext> 
         @AutoCodec.Name("pose_id")
         @CodecBehavior.Optional
         public Identifier poseId = new Identifier(Miapi.MOD_ID, "block");
+        @AutoCodec.Name("sound")
+        @CodecBehavior.Optional
+        public Identifier sound = new Identifier("minecraft:block.iron_trapdoor.close");
+        @AutoCodec.Name("sound_pitch")
+        @CodecBehavior.Optional
+        public StatResolver.DoubleFromStat pitch = new StatResolver.DoubleFromStat(1.0);
+        @AutoCodec.Name("sound_volume")
+        @CodecBehavior.Optional
+        public StatResolver.DoubleFromStat volume = new StatResolver.DoubleFromStat(1.0);
         @AutoCodec.Name("max_hold_time")
         @CodecBehavior.Optional
         public StatResolver.IntegerFromStat maxHoldTime = new StatResolver.IntegerFromStat(20);
