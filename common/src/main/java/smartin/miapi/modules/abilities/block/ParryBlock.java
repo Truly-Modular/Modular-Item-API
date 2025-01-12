@@ -15,13 +15,8 @@ import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.packet.s2c.play.PlaySoundS2CPacket;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.server.command.PlaySoundCommand;
+import net.minecraft.registry.Registries;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvent;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
@@ -51,7 +46,7 @@ public class ParryBlock extends EntityAttributeAbility<ParryBlock.ParryContext> 
         LoreProperty.bottomLoreSuppliers.add(itemStack -> {
             List<Text> texts = new ArrayList<>();
             if (AbilityMangerProperty.isPrimaryAbility(this, itemStack)) {
-                Text raw = Text.translatable("miapi.ability.pary_block.lore");
+                Text raw = Text.translatable("miapi.ability.parry_block.lore");
                 texts.add(raw);
             }
             return texts;
@@ -66,7 +61,7 @@ public class ParryBlock extends EntityAttributeAbility<ParryBlock.ParryContext> 
                         if (parryContext != null) {
                             defender.getItemCooldownManager().set(activeItem.getItem(), parryContext.cooldown.evaluate(parryContext.moduleInstance));
                             if (event.damageSource.getAttacker() instanceof LivingEntity attacker) {
-                                int cd = parryContext.cooldownAttackerWeapon.evaluate(parryContext.moduleInstance);
+                                int cd = (int) (parryContext.cooldownAttackerWeapon.evaluate(parryContext.moduleInstance) + InflictCooldownBlockingProperty.property.getValueSafe(activeItem));
                                 if (event.damageSource.getAttacker() instanceof PlayerEntity playerEntity && attacker.getMainHandStack() != null && !attacker.getMainHandStack().isEmpty()) {
                                     playerEntity.getItemCooldownManager().set(
                                             attacker.getMainHandStack().getItem(),
@@ -75,39 +70,17 @@ public class ParryBlock extends EntityAttributeAbility<ParryBlock.ParryContext> 
                                     StatusEffectInstance instance = new StatusEffectInstance(RegistryInventory.stunEffect, cd);
                                     attacker.addStatusEffect(instance);
                                 }
+                                double returnPercent = (ReflectDamageBlockingProperty.property.getValueSafe(activeItem) + parryContext.damageReturnPercent.evaluate(parryContext.moduleInstance).floatValue()) / 100.0;
                                 attacker.damage(
                                         defender.getDamageSources().playerAttack(defender),
-                                        event.amount * parryContext.damageReturnPercent.evaluate(parryContext.moduleInstance).floatValue() / 100.0f);
+                                        (float) (event.amount * returnPercent));
                             }
-                            RegistryEntry<SoundEvent> registryEntry = RegistryEntry.of(SoundEvent.of(parryContext.sound));
-                            SoundEvent event1 = registryEntry.value();
-                            defender.playSound(SoundEvents.BLOCK_ANVIL_FALL, SoundCategory.PLAYERS, 10000.0f, 1.0f);
-                            PlaySoundCommand playSoundCommand;
-                            //defender.playSound();
-                            if (event1 != null) {
-                                if(defender instanceof ServerPlayerEntity serverPlayerEntity){
-                                    serverPlayerEntity.networkHandler.sendPacket(new PlaySoundS2CPacket(registryEntry, SoundCategory.PLAYERS,
-                                            defender.getX(),
-                                            defender.getY(),
-                                            defender.getZ(),
-                                            parryContext.volume.evaluate(parryContext.moduleInstance).floatValue(),
-                                            parryContext.pitch.evaluate(parryContext.moduleInstance).floatValue(),
-                                            serverPlayerEntity.getServerWorld().getSeed()));
-                                }
-                                //defender.getWorld().play
-                                defender.getWorld().playSound(
-                                        defender.getX(),
-                                        defender.getY(),
-                                        defender.getZ(),
-                                        event1,
-                                        SoundCategory.PLAYERS,
-                                        parryContext.volume.evaluate(parryContext.moduleInstance).floatValue(),
-                                        parryContext.pitch.evaluate(parryContext.moduleInstance).floatValue(), true
-                                );
-                                defender.playSound(event1,
+                            Registries.SOUND_EVENT.getOrEmpty(parryContext.sound).ifPresent((sound -> {
+                                defender.playSound(sound,
                                         parryContext.volume.evaluate(parryContext.moduleInstance).floatValue(),
                                         parryContext.pitch.evaluate(parryContext.moduleInstance).floatValue());
-                            }
+                                //defender.playSound(sound, 1.0f, 1.0f);
+                            }));
                             return EventResult.interruptDefault();
                         }
                     }
@@ -140,7 +113,7 @@ public class ParryBlock extends EntityAttributeAbility<ParryBlock.ParryContext> 
     public int getMaxUseTime(ItemStack itemStack) {
         ParryContext context = getContext(itemStack);
         if (context != null) {
-            return context.maxHoldTime.evaluate(context.moduleInstance);
+            return context.maxHoldTime.evaluate(context.moduleInstance) + (int) MaxHoldBlockingProperty.property.getValueSafe(itemStack);
         }
         return 0;
     }
@@ -205,10 +178,9 @@ public class ParryBlock extends EntityAttributeAbility<ParryBlock.ParryContext> 
     }
 
     public ParryContext fromJson(JsonObject jsonObject) {
+        Codec<ParryContext> PARRY_CONTEXT_CODEC = AutoCodec.of(ParryContext.class).codec();
         return PARRY_CONTEXT_CODEC.decode(JsonOps.INSTANCE, jsonObject).result().get().getFirst();
     }
-
-    public static final Codec<ParryContext> PARRY_CONTEXT_CODEC = AutoCodec.of(ParryContext.class).codec();
 
     public static class ParryContext {
         @AutoCodec.Name("pose_id")

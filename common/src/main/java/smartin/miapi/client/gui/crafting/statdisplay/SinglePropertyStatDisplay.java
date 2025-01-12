@@ -11,10 +11,12 @@ import smartin.miapi.modules.properties.util.DoubleProperty;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
+import java.util.function.Function;
 
 @Environment(EnvType.CLIENT)
 public class SinglePropertyStatDisplay extends SingleStatDisplayDouble {
     protected DoubleProperty property;
+
 
     protected SinglePropertyStatDisplay(StatListWidget.TextGetter title, StatListWidget.TextGetter hover, DoubleProperty property) {
         super(0, 0, 51, 19, title, hover);
@@ -45,6 +47,7 @@ public class SinglePropertyStatDisplay extends SingleStatDisplayDouble {
         public DecimalFormat modifierFormat;
         public double min = 0;
         public double max = 100;
+        public Function<Double, Double> convert = (a) -> a;
 
         private Builder(DoubleProperty property) {
             this.property = property;
@@ -60,6 +63,11 @@ public class SinglePropertyStatDisplay extends SingleStatDisplayDouble {
 
         public Builder setMin(double minValue) {
             min = minValue;
+            return this;
+        }
+
+        public Builder setFunction(Function<Double, Double> function) {
+            this.convert = function;
             return this;
         }
 
@@ -111,6 +119,7 @@ public class SinglePropertyStatDisplay extends SingleStatDisplayDouble {
             display.maxValue = max;
             display.minValue = min;
             display.modifierFormat = modifierFormat;
+            display.convert = convert;
             return display;
         }
     }

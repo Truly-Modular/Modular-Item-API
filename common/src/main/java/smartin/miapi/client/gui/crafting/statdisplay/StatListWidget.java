@@ -25,6 +25,10 @@ import smartin.miapi.client.gui.ScrollList;
 import smartin.miapi.client.gui.TransformableWidget;
 import smartin.miapi.item.modular.CustomDrawTimeItem;
 import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.abilities.block.BlockSelfCooldownProperty;
+import smartin.miapi.modules.abilities.block.InflictCooldownBlockingProperty;
+import smartin.miapi.modules.abilities.block.MaxHoldBlockingProperty;
+import smartin.miapi.modules.abilities.block.ReflectDamageBlockingProperty;
 import smartin.miapi.modules.properties.*;
 import smartin.miapi.modules.properties.damage_boosts.AquaticDamage;
 import smartin.miapi.modules.properties.damage_boosts.IllagerBane;
@@ -317,6 +321,30 @@ public class StatListWidget extends InteractAbleWidget {
                 .setMax(100)
                 .setFormat("##.#")
                 .setTranslationKey(WaterGravityProperty.KEY).build());
+
+        addStatDisplay(SinglePropertyStatDisplay
+                .builder(BlockSelfCooldownProperty.property)
+                .setMax(100)
+                .setFormat("##.##")
+                .setFunction((a)->a/20)
+                .setTranslationKey(BlockSelfCooldownProperty.KEY).build());
+        addStatDisplay(SinglePropertyStatDisplay
+                .builder(InflictCooldownBlockingProperty.property)
+                .setMax(100)
+                .setFormat("##.##")
+                .setFunction((a)->a/20)
+                .setTranslationKey(InflictCooldownBlockingProperty.KEY).build());
+        addStatDisplay(SinglePropertyStatDisplay
+                .builder(MaxHoldBlockingProperty.property)
+                .setMax(100)
+                .setFormat("##.##")
+                .setFunction((a)->a/20)
+                .setTranslationKey(MaxHoldBlockingProperty.KEY).build());
+        addStatDisplay(SinglePropertyStatDisplay
+                .builder(ReflectDamageBlockingProperty.property)
+                .setMax(100)
+                .setFormat("#.##")
+                .setTranslationKey(ReflectDamageBlockingProperty.KEY).build());
 
         addStatDisplay(SinglePropertyStatDisplay
                 .builder(AquaticDamage.property)

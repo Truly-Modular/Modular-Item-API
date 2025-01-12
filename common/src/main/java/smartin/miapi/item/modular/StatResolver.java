@@ -57,14 +57,14 @@ public class StatResolver {
         }
     }
 
-    @CodecBehavior.Override("fullCodec")
+    @CodecBehavior.Override("codec")
     public static class DoubleFromStat extends IntermediateCodec.Median<String, ItemModule.ModuleInstance, Double> {
         public static BiFunction<String, ItemModule.ModuleInstance, Double> func = StatResolver::resolveDouble;
-        public static Codec<DoubleFromStat> codec = new CustomIntermediateCodec<>(Codec.STRING, func, (s, b) -> new DoubleFromStat(s));
-        public static Codec<DoubleFromStat> fullCodec =
+        private static final Codec<DoubleFromStat> partialCodec = new CustomIntermediateCodec<>(Codec.STRING, func, (s, b) -> new DoubleFromStat(s));
+        public static Codec<DoubleFromStat> codec =
                 Codec.either(
                         Codec.DOUBLE,
-                        codec
+                        partialCodec
                 ).xmap(either -> {
                     if (either.right().isPresent())
                         return either.right().get();

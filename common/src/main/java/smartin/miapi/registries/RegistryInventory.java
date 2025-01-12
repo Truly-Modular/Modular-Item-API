@@ -53,7 +53,7 @@ import smartin.miapi.item.modular.PropertyResolver;
 import smartin.miapi.item.modular.items.*;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.abilities.*;
-import smartin.miapi.modules.abilities.block.ParryBlock;
+import smartin.miapi.modules.abilities.block.*;
 import smartin.miapi.modules.abilities.toolabilities.AxeAbility;
 import smartin.miapi.modules.abilities.toolabilities.HoeAbility;
 import smartin.miapi.modules.abilities.toolabilities.ShovelAbility;
@@ -260,6 +260,10 @@ public class RegistryInventory {
         register(modularItems, "modular_gauntlets", ModularWeapon::new);
         register(modularItems, "modular_knuckles", ModularWeapon::new);
         register(modularItems, "modular_tonfa", ModularWeapon::new);
+
+        register(modularItems, "modular_light_shield", ModularWeapon::new);
+        register(modularItems, "modular_medium_shield", ModularWeapon::new);
+        register(modularItems, "modular_heavy_shield", ModularWeapon::new);
 
         register(modularItems, "modular_handle", ModularWeapon::new);
         register(modularItems, "modular_sword", ModularSword::new);
@@ -572,6 +576,10 @@ public class RegistryInventory {
             registerMiapi(useAbilityRegistry, EatAbility.KEY, new EatAbility());
             registerMiapi(useAbilityRegistry, AreaHarvestReplant.KEY, new AreaHarvestReplant());
             registerMiapi(useAbilityRegistry, ParryBlock.KEY, new ParryBlock());
+            registerMiapi(moduleProperties, BlockSelfCooldownProperty.KEY, new BlockSelfCooldownProperty());
+            registerMiapi(moduleProperties, InflictCooldownBlockingProperty.KEY, new InflictCooldownBlockingProperty());
+            registerMiapi(moduleProperties, ReflectDamageBlockingProperty.KEY, new ReflectDamageBlockingProperty());
+            registerMiapi(moduleProperties, MaxHoldBlockingProperty.KEY, new MaxHoldBlockingProperty());
 
             Miapi.LOGGER.info("Registered Truly Modulars Property resolvers:");
             PropertyResolver.registry.forEach((pair) -> {

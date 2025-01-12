@@ -23,6 +23,7 @@ import java.text.DecimalFormatSymbols;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Environment(EnvType.CLIENT)
@@ -43,6 +44,7 @@ public abstract class SingleStatDisplayDouble extends InteractAbleWidget impleme
     public HoverDescription hoverDescription;
     public Text postfix = Text.of("");
     public boolean inverse = false;
+    public Function<Double, Double> convert = (a) -> a;
     double oldValue = 0;
     double compareToValue = 0;
 
@@ -67,20 +69,18 @@ public abstract class SingleStatDisplayDouble extends InteractAbleWidget impleme
         this.inverse = inverse;
     }
 
-    public int getRed(){
-        if(inverse){
+    public int getRed() {
+        if (inverse) {
             return MiapiConfig.INSTANCE.client.guiColors.green.argb();
-        }
-        else{
+        } else {
             return MiapiConfig.INSTANCE.client.guiColors.red.argb();
         }
     }
 
-    public int getGreen(){
-        if(inverse){
+    public int getGreen() {
+        if (inverse) {
             return MiapiConfig.INSTANCE.client.guiColors.red.argb();
-        }
-        else{
+        } else {
             return MiapiConfig.INSTANCE.client.guiColors.green.argb();
         }
     }
@@ -150,7 +150,7 @@ public abstract class SingleStatDisplayDouble extends InteractAbleWidget impleme
             currentValue.setX(this.getX() - 3);
             currentValue.setY(this.getY() + 5);
             currentValue.setWidth(this.getWidth());
-            currentValue.setText(Text.literal(modifierFormat.format(oldValue) + postfix.getString()));
+            currentValue.setText(Text.literal(modifierFormat.format(convert.apply(oldValue)) + postfix.getString()));
             currentValue.setOrientation(ScrollingTextWidget.Orientation.RIGHT);
             currentValue.render(drawContext, mouseX, mouseY, delta);
         } else {
@@ -158,7 +158,7 @@ public abstract class SingleStatDisplayDouble extends InteractAbleWidget impleme
             compareValue.setY(this.getY() + 5);
             compareValue.setWidth(this.getWidth());
             compareValue.setOrientation(ScrollingTextWidget.Orientation.RIGHT);
-            compareValue.setText(Text.literal(Text.of(modifierFormat.format(compareToValue)).getString() + postfix.getString()));
+            compareValue.setText(Text.literal(Text.of(modifierFormat.format(convert.apply(compareToValue))).getString() + postfix.getString()));
             compareValue.render(drawContext, mouseX, mouseY, delta);
         }
         statBar.render(drawContext, mouseX, mouseY, delta);
