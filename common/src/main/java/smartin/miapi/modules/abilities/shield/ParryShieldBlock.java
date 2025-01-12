@@ -3,6 +3,7 @@ package smartin.miapi.modules.abilities.shield;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DynamicOps;
 import com.redpxnda.nucleus.codec.auto.AutoCodec;
+import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
 import com.redpxnda.nucleus.pose.server.ServerPoseFacet;
 import dev.architectury.event.EventResult;
 import net.minecraft.resources.ResourceLocation;
@@ -20,6 +21,8 @@ import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;
 import smartin.miapi.modules.abilities.util.ItemUseDefaultCooldownAbility;
 import smartin.miapi.modules.properties.util.DoubleOperationResolvable;
+import smartin.miapi.modules.properties.util.MergeAble;
+import smartin.miapi.modules.properties.util.MergeType;
 
 public class ParryShieldBlock implements ItemUseDefaultCooldownAbility<ParryShieldBlock.BlockData> {
 
@@ -75,8 +78,7 @@ public class ParryShieldBlock implements ItemUseDefaultCooldownAbility<ParryShie
 
     @Override
     public <K> BlockData decode(DynamicOps<K> ops, K prefix) {
-        Codec<BlockData> codec = AutoCodec.of(BlockData.class).codec();
-        return codec.decode(ops, prefix).getOrThrow().getFirst();
+        return BlockData.codec.decode(ops, prefix).getOrThrow().getFirst();
     }
 
     @Override
@@ -86,6 +88,11 @@ public class ParryShieldBlock implements ItemUseDefaultCooldownAbility<ParryShie
         init.minUseTime = data.minUseTime.initialize(moduleInstance);
         init.animation = data.animation;
         return init;
+    }
+
+    @Override
+    public BlockData merge(BlockData right, BlockData left, MergeType type) {
+        return right.merge(right, left, type);
     }
 
     @Override
@@ -121,10 +128,26 @@ public class ParryShieldBlock implements ItemUseDefaultCooldownAbility<ParryShie
         }
     }
 
-    public static class BlockData {
+    public static class BlockData implements MergeAble<BlockData> {
+        public static final Codec<BlockData> codec = AutoCodec.of(BlockData.class).codec();
+        @CodecBehavior.Optional
         public DoubleOperationResolvable cooldown = new DoubleOperationResolvable(100);
         @AutoCodec.Name("min_hold")
+        @CodecBehavior.Optional
         public DoubleOperationResolvable minUseTime = new DoubleOperationResolvable(40);
+        @CodecBehavior.Optional
         public ResourceLocation animation = ResourceLocation.parse("miapi:block");
+
+        public BlockData merge(BlockData left, BlockData right, MergeType mergeType) {
+            BlockData merged = new BlockData();
+            merged.cooldown = left.cooldown.merge(right.cooldown, mergeType);
+            merged.minUseTime = left.minUseTime.merge(right.minUseTime, mergeType);
+            if (left.animation.equals(merged.animation)) {
+                merged.animation = right.animation;
+            } else {
+                merged.animation = MergeAble.decideLeftRight(left.animation, right.animation, mergeType);
+            }
+            return merged;
+        }
     }
 }

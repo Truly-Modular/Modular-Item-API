@@ -45,6 +45,7 @@ public class GlintProperty extends CodecProperty<GlintProperty.RainbowGlintSetti
         settings.isItem = item;
         return settings;
     }));
+    public static RainbowGlintSettings vanillaLike = new RainbowGlintSettings();
 
     public GlintProperty() {
         super(CODEC);
@@ -61,6 +62,9 @@ public class GlintProperty extends CodecProperty<GlintProperty.RainbowGlintSetti
             }
             return Optional.empty();
         }).orElseGet(() -> {
+            if (MiapiConfig.INSTANCE.client.enchantingGlint.vanillaLike) {
+                return vanillaLike;
+            }
             if (MaterialProperty.getMaterial(instance) != null) {
                 Color adjusted = new Color(MaterialProperty.getMaterial(instance).getColor());
                 return defaultSettings.copyWithColor(adjustWith(
@@ -121,7 +125,7 @@ public class GlintProperty extends CodecProperty<GlintProperty.RainbowGlintSetti
         public float strength = 1;
         public boolean shouldRenderGlint = false;
         public boolean isItem = false;
-        public Color[] colors = new Color[]{Color.RED};
+        public Color[] colors = new Color[]{new Color("A755FF80")};
 
         @Override
         public float getA() {

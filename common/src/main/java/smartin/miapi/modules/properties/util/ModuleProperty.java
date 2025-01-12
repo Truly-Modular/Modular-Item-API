@@ -4,14 +4,13 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import org.apache.commons.lang3.tuple.Triple;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
 
-import java.util.*;
-import java.util.function.Function;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * @header Properties
@@ -28,7 +27,7 @@ import java.util.function.Function;
  * @path /data_types/properties
  * @keywords Properties, module Properties
  */
-public interface ModuleProperty<T> {
+public interface ModuleProperty<T> extends MergeAble<T>, InitializeAble<T> {
 
     T decode(JsonElement element);
 
@@ -37,7 +36,10 @@ public interface ModuleProperty<T> {
      */
     JsonElement encode(T property);
 
-    T merge(T left, T right, MergeType mergeType);
+    @Override
+    default T initialize(ModuleInstance context, T data) {
+        return data;
+    }
 
     default T merge(T left, ModuleInstance leftModule, T right, ModuleInstance rightModule, MergeType mergeType) {
         return merge(left, right, mergeType);
@@ -91,61 +93,8 @@ public interface ModuleProperty<T> {
         return Optional.ofNullable((T) properties.get(this));
     }
 
-    /**
-     * this should return a copy if {@link T} is a mutable object!
-     *
-     * @param property
-     * @param context
-     * @return
-     */
     default T initialize(T property, ModuleInstance context) {
         return property;
-    }
-
-    static <K> List<K> mergeList(List<K> left, List<K> right, MergeType mergeType) {
-        if (MergeType.OVERWRITE.equals(mergeType)) {
-            return new ArrayList<>(right);
-        }
-        List<K> merged = new ArrayList<>(left);
-        merged.addAll(right);
-        return merged;
-    }
-
-    static <K, L> Map<L, K> mergeMap(Map<L, K> left, Map<L, K> right, MergeType mergeType) {
-        if (MergeType.OVERWRITE.equals(mergeType)) {
-            return new LinkedHashMap<>(right);
-        }
-        Map<L, K> merged = new LinkedHashMap<>(left);
-        if (MergeType.EXTEND.equals(mergeType)) {
-            right.forEach((key, entry) -> {
-                if (!merged.containsKey(key)) {
-                    merged.put(key, entry);
-                }
-            });
-            return merged;
-        }
-        merged.putAll(right);
-        return merged;
-    }
-
-    static <K, L> Map<L, K> mergeMap(Map<L, K> left, Map<L, K> right, MergeType mergeType, Function<Triple<K, K, MergeType>, K> collisionHandle) {
-        Map<L, K> merged = new LinkedHashMap<>(left);
-        right.forEach((key, entry) -> {
-            if (!merged.containsKey(key)) {
-                merged.put(key, entry);
-            } else {
-                merged.put(key, collisionHandle.apply(Triple.of(merged.get(key), entry, mergeType)));
-            }
-        });
-        return merged;
-    }
-
-    static <K> K decideLeftRight(K right, K left, MergeType mergeType) {
-        if (MergeType.EXTEND.equals(mergeType)) {
-            return right;
-        } else {
-            return left;
-        }
     }
 
     static JsonObject mergedJsonObjects(JsonObject left, JsonObject right, MergeType mergeType) {

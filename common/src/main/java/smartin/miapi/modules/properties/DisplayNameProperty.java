@@ -11,8 +11,8 @@ import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.material.Material;
 import smartin.miapi.material.MaterialProperty;
 import smartin.miapi.modules.properties.util.CodecProperty;
+import smartin.miapi.modules.properties.util.MergeAble;
 import smartin.miapi.modules.properties.util.MergeType;
-import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.Optional;
 
@@ -67,6 +67,6 @@ public class DisplayNameProperty extends CodecProperty<Component> {
 
     @Override
     public Component merge(Component left, Component right, MergeType mergeType) {
-        return ModuleProperty.decideLeftRight(left, right, mergeType);
+        return MergeAble.decideLeftRight(left, right, mergeType);
     }
 }

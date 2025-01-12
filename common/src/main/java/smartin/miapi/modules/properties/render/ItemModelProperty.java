@@ -14,8 +14,8 @@ import smartin.miapi.client.model.MiapiItemModel;
 import smartin.miapi.client.model.MiapiModel;
 import smartin.miapi.material.MaterialInscribeDataProperty;
 import smartin.miapi.modules.properties.util.CodecProperty;
+import smartin.miapi.modules.properties.util.MergeAble;
 import smartin.miapi.modules.properties.util.MergeType;
-import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -81,7 +81,7 @@ public class ItemModelProperty extends CodecProperty<List<ModelJson>> {
 
     @Override
     public List<ModelJson> merge(List<ModelJson> left, List<ModelJson> right, MergeType mergeType) {
-        return ModuleProperty.mergeList(left, right, mergeType);
+        return MergeAble.mergeList(left, right, mergeType);
     }
 
 }

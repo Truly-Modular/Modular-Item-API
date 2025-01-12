@@ -16,8 +16,8 @@ import smartin.miapi.client.model.MiapiModel;
 import smartin.miapi.item.modular.Transform;
 import smartin.miapi.material.MaterialIcons;
 import smartin.miapi.modules.properties.util.CodecProperty;
+import smartin.miapi.modules.properties.util.MergeAble;
 import smartin.miapi.modules.properties.util.MergeType;
-import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,7 +52,7 @@ public class BlockModelProperty extends CodecProperty<List<BlockModelProperty.Bl
 
     @Override
     public List<BlockModelData> merge(List<BlockModelData> left, List<BlockModelData> right, MergeType mergeType) {
-        return ModuleProperty.mergeList(left, right, mergeType);
+        return MergeAble.mergeList(left, right, mergeType);
     }
 
     public class BlockModelData {

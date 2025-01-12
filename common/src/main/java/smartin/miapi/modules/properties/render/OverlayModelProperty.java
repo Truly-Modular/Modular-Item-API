@@ -26,8 +26,8 @@ import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.material.MaterialProperty;
 import smartin.miapi.modules.properties.render.colorproviders.ColorProvider;
 import smartin.miapi.modules.properties.util.CodecProperty;
+import smartin.miapi.modules.properties.util.MergeAble;
 import smartin.miapi.modules.properties.util.MergeType;
-import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -107,7 +107,7 @@ public class OverlayModelProperty extends CodecProperty<List<OverlayModelPropert
 
     @Override
     public List<OverlayModelData> merge(List<OverlayModelData> left, List<OverlayModelData> right, MergeType mergeType) {
-        return ModuleProperty.mergeList(left, right, mergeType);
+        return MergeAble.mergeList(left, right, mergeType);
     }
 
     public static class OverlayModelData {

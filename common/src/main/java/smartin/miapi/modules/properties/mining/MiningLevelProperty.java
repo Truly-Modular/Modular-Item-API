@@ -67,7 +67,7 @@ public class MiningLevelProperty extends CodecProperty<Map<String, MiningLevelPr
 
     @Override
     public Map<String, MiningRule> merge(Map<String, MiningRule> left, Map<String, MiningRule> right, MergeType mergeType) {
-        return ModuleProperty.mergeMap(left, right, mergeType, (triple) -> MiningRule.merge(triple.getLeft(), triple.getMiddle(), triple.getRight()));
+        return MergeAble.mergeMap(left, right, mergeType, (k,l,r) -> MiningRule.merge(l, r, mergeType));
     }
 
     @Override

@@ -10,8 +10,8 @@ import smartin.miapi.Miapi;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.util.CodecProperty;
+import smartin.miapi.modules.properties.util.MergeAble;
 import smartin.miapi.modules.properties.util.MergeType;
-import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.Optional;
 
@@ -61,6 +61,6 @@ public class MaterialInscribeDataProperty extends CodecProperty<String> {
 
     @Override
     public String merge(String left, String right, MergeType mergeType) {
-        return ModuleProperty.decideLeftRight(left, right, mergeType);
+        return MergeAble.decideLeftRight(left, right, mergeType);
     }
 }

@@ -16,10 +16,7 @@ import smartin.miapi.client.gui.crafting.statdisplay.SingleStatDisplayDouble;
 import smartin.miapi.client.gui.crafting.statdisplay.StatListWidget;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.cache.ModularItemCache;
-import smartin.miapi.modules.properties.util.CodecProperty;
-import smartin.miapi.modules.properties.util.DoubleOperationResolvable;
-import smartin.miapi.modules.properties.util.MergeType;
-import smartin.miapi.modules.properties.util.ModuleProperty;
+import smartin.miapi.modules.properties.util.*;
 
 import java.util.*;
 
@@ -100,7 +97,7 @@ public class GuiStatProperty extends CodecProperty<Map<String, GuiStatProperty.G
 
     @Override
     public Map<String, GuiInfo> merge(Map<String, GuiInfo> left, Map<String, GuiInfo> right, MergeType mergeType) {
-        return ModuleProperty.mergeMap(left, right, mergeType);
+        return MergeAble.mergeMap(left, right, mergeType);
     }
 
     @Override

@@ -60,6 +60,6 @@ public class CraftingEnchantProperty extends CodecProperty<Map<Holder<Enchantmen
 
     @Override
     public Map<Holder<Enchantment>, DoubleOperationResolvable> merge(Map<Holder<Enchantment>, DoubleOperationResolvable> left, Map<Holder<Enchantment>, DoubleOperationResolvable> right, MergeType mergeType) {
-        return ModuleProperty.mergeMap(left, right, mergeType);
+        return MergeAble.mergeMap(left, right, mergeType);
     }
 }

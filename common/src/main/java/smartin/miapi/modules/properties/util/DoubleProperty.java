@@ -18,6 +18,7 @@ public abstract class DoubleProperty extends CodecProperty<DoubleOperationResolv
     public DoubleProperty property;
     public double baseValue = 0;
     public boolean allowVisualOnly = false;
+    public final ResourceLocation id;
     static Codec<List<DoubleOperationResolvable.Operation>> listCodec = Codec.list(AutoCodec.of(DoubleOperationResolvable.Operation.class).codec());
     public static Codec<List<DoubleOperationResolvable.Operation>> CODEC = Codec.withAlternative(
             new Codec<>() {
@@ -38,6 +39,7 @@ public abstract class DoubleProperty extends CodecProperty<DoubleOperationResolv
     protected DoubleProperty(ResourceLocation cacheKey) {
         super(DoubleOperationResolvable.CODEC);
         property = this;
+        this.id = cacheKey;
     }
 
     public DoubleOperationResolvable initialize(DoubleOperationResolvable property, ModuleInstance context) {

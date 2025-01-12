@@ -69,7 +69,7 @@ public class ComponentProperty extends CodecProperty<Map<ResourceLocation, JsonE
 
     @Override
     public Map<ResourceLocation, JsonElement> merge(Map<ResourceLocation, JsonElement> left, Map<ResourceLocation, JsonElement> right, MergeType mergeType) {
-        return ModuleProperty.mergeMap(left, right, mergeType);
+        return MergeAble.mergeMap(left, right, mergeType);
     }
 
     @Override

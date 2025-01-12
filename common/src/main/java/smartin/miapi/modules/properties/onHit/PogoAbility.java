@@ -14,10 +14,7 @@ import net.minecraft.world.item.MaceItem;
 import smartin.miapi.Miapi;
 import smartin.miapi.events.ModularAttackEvents;
 import smartin.miapi.modules.ModuleInstance;
-import smartin.miapi.modules.properties.util.CodecProperty;
-import smartin.miapi.modules.properties.util.DoubleOperationResolvable;
-import smartin.miapi.modules.properties.util.MergeType;
-import smartin.miapi.modules.properties.util.ModuleProperty;
+import smartin.miapi.modules.properties.util.*;
 
 public class PogoAbility extends CodecProperty<PogoAbility.PogoData> {
     public static ResourceLocation KEY = Miapi.id("pogo_ability");
@@ -64,7 +61,7 @@ public class PogoAbility extends CodecProperty<PogoAbility.PogoData> {
                 left.resolvable().merge(
                         right.resolvable(),
                         mergeType),
-                ModuleProperty.decideLeftRight(
+                MergeAble.decideLeftRight(
                         left.soundEvent(),
                         right.soundEvent(),
                         mergeType));

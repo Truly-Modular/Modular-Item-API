@@ -17,8 +17,8 @@ import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.mixin.NamedAccessor;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.util.CodecProperty;
+import smartin.miapi.modules.properties.util.MergeAble;
 import smartin.miapi.modules.properties.util.MergeType;
-import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.*;
 
@@ -102,8 +102,8 @@ public class AllowedEnchantments extends CodecProperty<AllowedEnchantments.Allow
     @Override
     public AllowedEnchantsData merge(AllowedEnchantsData left, AllowedEnchantsData right, MergeType mergeType) {
         return new AllowedEnchantsData(
-                ModuleProperty.mergeList(left.allowed(), right.allowed(), mergeType),
-                ModuleProperty.mergeList(left.forbidden(), right.forbidden(), mergeType)
+                MergeAble.mergeList(left.allowed(), right.allowed(), mergeType),
+                MergeAble.mergeList(left.forbidden(), right.forbidden(), mergeType)
         );
     }
 

@@ -14,8 +14,8 @@ import smartin.miapi.item.modular.Transform;
 import smartin.miapi.material.MaterialInscribeDataProperty;
 import smartin.miapi.modules.properties.slot.SlotProperty;
 import smartin.miapi.modules.properties.util.CodecProperty;
+import smartin.miapi.modules.properties.util.MergeAble;
 import smartin.miapi.modules.properties.util.MergeType;
-import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -67,7 +67,7 @@ public class BannerModelProperty extends CodecProperty<List<BannerModelProperty.
 
     @Override
     public List<BannerModelData> merge(List<BannerModelData> left, List<BannerModelData> right, MergeType mergeType) {
-        return ModuleProperty.mergeList(left, right, mergeType);
+        return MergeAble.mergeList(left, right, mergeType);
     }
 
     public static class BannerModelData {

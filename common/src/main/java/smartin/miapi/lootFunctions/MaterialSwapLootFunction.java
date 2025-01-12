@@ -45,12 +45,12 @@ import java.util.Optional;
  * * Its full ID is ```"miapi:material_swap"```
  * @description_end
  * @data material: An optional material ID to substitute, if not set the highest found material will be used instead
- * @data lowerBounds: An optional (default = -3) double that sets the lower bound of acceptable material differences for substitution.
- * @data upperBounds: An optional (default = +0.5) double that sets the upper bound of acceptable material differences for substitution.
- * @data miningLevelFactor: An optional (default = 1.0) double that adjusts the impact of the mining level on material substitution.
- * @data tierFactor: An optional (default = 1.0) double that influences the selection of materials based on their tier level.
- * @data hardnessFactor: An optional double (default = 1.0) that influences the selection of materials based on their hardness.
- * @data flexibilityFactor: An optional (default = 1.0) double that adjusts material substitution based on flexibility values.
+ * @data lower_bounds: An optional (default = -3) double that sets the lower bound of acceptable material differences for substitution.
+ * @data upper_bounds: An optional (default = +0.5) double that sets the upper bound of acceptable material differences for substitution.
+ * @data mining_level_factor: An optional (default = 1.0) double that adjusts the impact of the mining level on material substitution.
+ * @data tier_factor: An optional (default = 1.0) double that influences the selection of materials based on their tier level.
+ * @data hardness_factor: An optional double (default = 1.0) that influences the selection of materials based on their hardness.
+ * @data flexibility_factor: An optional (default = 1.0) double that adjusts material substitution based on flexibility values.
  * @data chance: An optional (default = 1.0) that sets the chance for a swap to occur in the first place.
  * @data blacklist: An optional list of Material IDs representing materials that cannot be substituted.
  * @data whitelist: An optional list of Material IDs, if set blocks all entries not on this list.

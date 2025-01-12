@@ -5,10 +5,8 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.item.TieredItem;
+import net.minecraft.world.item.*;
+import net.minecraft.world.item.crafting.Ingredient;
 import smartin.miapi.Miapi;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.datapack.ReloadEvents;
@@ -17,9 +15,7 @@ import smartin.miapi.material.Material;
 import smartin.miapi.material.MaterialProperty;
 import smartin.miapi.registries.RegistryInventory;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -97,7 +93,7 @@ public class GeneratedMaterialManager {
             if (!MiapiConfig.INSTANCE.server.generatedMaterials.generateMaterials) {
                 return;
             }
-            List<TieredItem> toolItems = BuiltInRegistries.ITEM.stream()
+            List<TieredItem> toolItems = new ArrayList<>(BuiltInRegistries.ITEM.stream()
                     .filter(TieredItem.class::isInstance)
                     .map(TieredItem.class::cast)
                     .filter(toolMaterial ->
@@ -107,7 +103,21 @@ public class GeneratedMaterialManager {
                     .filter(toolMaterial -> !toolMaterial.getTier().getRepairIngredient().getItems()[0].is(RegistryInventory.MIAPI_FORBIDDEN_TAG))
                     .filter(toolMaterial -> Arrays.stream(toolMaterial.getTier().getRepairIngredient().getItems())
                             .allMatch(itemStack -> MaterialProperty.getMaterialFromIngredient(itemStack) == null && !itemStack.getItem().equals(Items.BARRIER)))
-                    .toList();
+                    .toList());
+            Map<Tier, List<TieredItem>> tieredItem = new HashMap<>();
+            toolItems.forEach(item -> {
+                tieredItem.computeIfAbsent(item.getTier(), (i) -> new ArrayList<>()).add(item);
+            });
+            Map<Tier, List<TieredItem>> insufficientItems = new HashMap<>();
+            tieredItem.forEach((t, items) -> {
+                boolean hasSword = items.stream().anyMatch(SwordItem.class::isInstance);
+                boolean hasAxe = items.stream().anyMatch(AxeItem.class::isInstance);
+                if (!(hasSword && hasAxe)) {
+                    insufficientItems.put(t, items);
+                }
+            });
+            insufficientItems.forEach((t,items)-> tieredItem.remove(t));
+
             if (MiapiConfig.INSTANCE.server.generatedMaterials.generateOtherMaterials) {
                 toolItems.stream()
                         .filter(GeneratedMaterialManager::isValidItem)
@@ -206,6 +216,46 @@ public class GeneratedMaterialManager {
         } catch (Exception e) {
             Miapi.LOGGER.error("MAJOR ISSUE DURING MATERIAL CREATION", e);
         }
+    }
+
+    public static boolean isSameTier(Tier first, Tier second) {
+        if (first.equals(second)) {
+            return true;
+        }
+        try {
+            if (!first.getIncorrectBlocksForDrops().equals(second.getIncorrectBlocksForDrops())) {
+                return false;
+            }
+        } catch (RuntimeException runtimeException) {
+            return false;
+        }
+        try {
+            if (!isSameIngredient(first.getRepairIngredient(), second.getRepairIngredient())) {
+                return false;
+            }
+        } catch (RuntimeException runtimeException) {
+            return false;
+        }
+        return true;
+    }
+
+    public static Tier selectBetterTier(Tier first, Tier second) {
+        if (first.getAttackDamageBonus() == second.getAttackDamageBonus()) {
+            return first.getSpeed() > second.getSpeed() ? first : second;
+        }
+        if (first.getAttackDamageBonus() > second.getAttackDamageBonus()) {
+            return first;
+        }
+        return second;
+    }
+
+    public static boolean isSameIngredient(Ingredient first, Ingredient second) {
+        var secondItems = Arrays.stream(second.getItems()).collect(Collectors.toSet());
+        var firstItems = Arrays.stream(first.getItems()).collect(Collectors.toSet());
+        if (secondItems.size() == firstItems.size()) {
+            return firstItems.containsAll(secondItems);
+        }
+        return false;
     }
 
     public static boolean isValidItem(Item item) {

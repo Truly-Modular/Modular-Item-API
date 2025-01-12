@@ -13,6 +13,7 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.cache.ModularItemCache;
+import smartin.miapi.modules.properties.util.MergeAble;
 import smartin.miapi.modules.properties.util.MergeType;
 
 /**
@@ -20,7 +21,7 @@ import smartin.miapi.modules.properties.util.MergeType;
  * This class allows Modular Items to swap their Actions on RightClick (UseKey).
  * Register implementations in the {@link ItemAbilityManager#useAbilityRegistry} to be used.
  */
-public interface ItemUseAbility<T> {
+public interface ItemUseAbility<T> extends MergeAble<T> {
     /**
      * Checks if this {@link ItemUseAbility} is allowed on the specified item stack, world, player, and hand.
      *
@@ -83,7 +84,7 @@ public interface ItemUseAbility<T> {
 
     }
 
-    default boolean useOnRelease(ItemStack itemStack){
+    default boolean useOnRelease(ItemStack itemStack) {
         return false;
     }
 
@@ -136,7 +137,7 @@ public interface ItemUseAbility<T> {
     }
 
     default T merge(T left, T right, MergeType mergeType) {
-        return right;
+        return MergeAble.decideLeftRight(left, right, mergeType);
     }
 
     T getDefaultContext();

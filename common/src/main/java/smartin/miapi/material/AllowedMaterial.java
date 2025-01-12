@@ -22,10 +22,7 @@ import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.DurabilityProperty;
-import smartin.miapi.modules.properties.util.CodecProperty;
-import smartin.miapi.modules.properties.util.CraftingProperty;
-import smartin.miapi.modules.properties.util.MergeType;
-import smartin.miapi.modules.properties.util.ModuleProperty;
+import smartin.miapi.modules.properties.util.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -212,7 +209,7 @@ public class AllowedMaterial extends CodecProperty<AllowedMaterial.AllowedMateri
 
     @Override
     public AllowedMaterialData merge(AllowedMaterialData left, AllowedMaterialData right, MergeType mergeType) {
-        return ModuleProperty.decideLeftRight(left, right, mergeType);
+        return MergeAble.decideLeftRight(left, right, mergeType);
     }
 
     @Override

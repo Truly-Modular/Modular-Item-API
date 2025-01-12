@@ -8,8 +8,8 @@ import net.minecraft.world.item.Item;
 import smartin.miapi.Miapi;
 import smartin.miapi.events.ModularAttackEvents;
 import smartin.miapi.modules.properties.util.CodecProperty;
+import smartin.miapi.modules.properties.util.MergeAble;
 import smartin.miapi.modules.properties.util.MergeType;
-import smartin.miapi.modules.properties.util.ModuleProperty;
 
 /**
  * @header Copy On Hit
@@ -56,6 +56,6 @@ public class CopyItemOnHit extends CodecProperty<Holder<Item>> {
 
     @Override
     public Holder<Item> merge(Holder<Item> left, Holder<Item> right, MergeType mergeType) {
-        return ModuleProperty.decideLeftRight(left, right, mergeType);
+        return MergeAble.decideLeftRight(left, right, mergeType);
     }
 }

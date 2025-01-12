@@ -6,6 +6,7 @@ import net.minecraft.resources.ResourceLocation;
 import smartin.miapi.Environment;
 import smartin.miapi.Miapi;
 import smartin.miapi.modules.ModuleInstance;
+import smartin.miapi.modules.properties.util.MergeAble;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
@@ -41,6 +42,6 @@ public class MaterialOverwriteProperty implements ModuleProperty<JsonElement> {
         if (left instanceof JsonObject objectLeft && right instanceof JsonObject objectRight) {
             return (JsonElement) ModuleProperty.mergedJsonObjects(objectLeft, objectRight, mergeType);
         }
-        return ModuleProperty.decideLeftRight(left, right, mergeType);
+        return MergeAble.decideLeftRight(left, right, mergeType);
     }
 }

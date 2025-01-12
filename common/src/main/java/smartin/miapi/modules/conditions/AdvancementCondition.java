@@ -4,9 +4,9 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.advancements.AdvancementNode;
+import net.minecraft.advancements.AdvancementProgress;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientAdvancements;
 import net.minecraft.network.chat.Component;
@@ -18,19 +18,19 @@ import smartin.miapi.Miapi;
 import smartin.miapi.mixin.client.ClientAdvancementManagerAccessor;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
  * @header Advancement Condition
- * @description_start
- * this condition checks if the associated player has a specific advancement. This is set to false if there is no associated Player
+ * @description_start this condition checks if the associated player has a specific advancement. This is set to false if there is no associated Player
  * @desciption_end
  * @path /data_types/condition/advancement_condition
  * @data type:advancement
  * @data advancement: the id of the advancement, you can use the /advancement command to get a list of these
  */
 public class AdvancementCondition implements ModuleCondition {
-    public static Codec< AdvancementCondition> CODEC = RecordCodecBuilder.create((instance) ->
+    public static Codec<AdvancementCondition> CODEC = RecordCodecBuilder.create((instance) ->
             instance.group(
                     ResourceLocation.CODEC.fieldOf("advancement")
                             .forGetter((condition) -> condition.advancement),
@@ -42,7 +42,7 @@ public class AdvancementCondition implements ModuleCondition {
     public ResourceLocation advancement;
     public Component error;
 
-    public AdvancementCondition(ResourceLocation perms,Component error) {
+    public AdvancementCondition(ResourceLocation perms, Component error) {
         this.advancement = perms;
         this.error = error;
     }
@@ -66,7 +66,7 @@ public class AdvancementCondition implements ModuleCondition {
 
     public static boolean hasAdvancement(AdvancementHolder advancement, Player player) {
         if (smartin.miapi.Environment.isClient()) {
-            return hasAdvancementClient(advancement.value(), player);
+            return hasAdvancementClient(advancement, player);
         }
         if (player instanceof ServerPlayer serverPlayerEntity) {
             return serverPlayerEntity.getAdvancements().getOrStartProgress(advancement).isDone();
@@ -75,10 +75,12 @@ public class AdvancementCondition implements ModuleCondition {
     }
 
     @Environment(EnvType.CLIENT)
-    public static boolean hasAdvancementClient(Advancement advancement, Player player) {
+    public static boolean hasAdvancementClient(AdvancementHolder advancement, Player player) {
         if (Minecraft.getInstance() != null && Minecraft.getInstance().getConnection() != null) {
             ClientAdvancements manager = Minecraft.getInstance().getConnection().getAdvancements();
-            return ((ClientAdvancementManagerAccessor) manager).getProgress().get(advancement).isDone();
+            Map<AdvancementHolder, AdvancementProgress> map = ((ClientAdvancementManagerAccessor) manager).getProgress();
+            var optional = map.keySet().stream().filter(advancement1 -> advancement.id().equals(advancement1.id())).findFirst();
+            return optional.isPresent() && map.get(optional.get()).isDone();
         }
         return false;
     }
@@ -96,8 +98,12 @@ public class AdvancementCondition implements ModuleCondition {
     @Environment(EnvType.CLIENT)
     public AdvancementHolder getAdvancementClient(ResourceLocation identifier) {
         if (Minecraft.getInstance().getConnection() != null) {
-            AdvancementNode node = Minecraft.getInstance().getConnection().getAdvancements().getTree().get(identifier);
-            if(node!=null){
+            AdvancementNode node = Minecraft.getInstance()
+                    .getConnection()
+                    .getAdvancements()
+                    .getTree()
+                    .get(identifier);
+            if (node != null) {
                 return node.holder();
             }
         }

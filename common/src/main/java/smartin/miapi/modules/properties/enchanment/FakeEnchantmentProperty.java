@@ -17,10 +17,7 @@ import smartin.miapi.client.gui.crafting.statdisplay.SingleStatDisplay;
 import smartin.miapi.client.gui.crafting.statdisplay.SingleStatDisplayDouble;
 import smartin.miapi.client.gui.crafting.statdisplay.StatListWidget;
 import smartin.miapi.modules.ModuleInstance;
-import smartin.miapi.modules.properties.util.CodecProperty;
-import smartin.miapi.modules.properties.util.DoubleOperationResolvable;
-import smartin.miapi.modules.properties.util.MergeType;
-import smartin.miapi.modules.properties.util.ModuleProperty;
+import smartin.miapi.modules.properties.util.*;
 
 import java.util.*;
 
@@ -119,6 +116,6 @@ public class FakeEnchantmentProperty extends CodecProperty<Map<Holder<Enchantmen
 
     @Override
     public Map<Holder<Enchantment>, DoubleOperationResolvable> merge(Map<Holder<Enchantment>, DoubleOperationResolvable> left, Map<Holder<Enchantment>, DoubleOperationResolvable> right, MergeType mergeType) {
-        return ModuleProperty.mergeMap(left, right, mergeType);
+        return MergeAble.mergeMap(left, right, mergeType);
     }
 }

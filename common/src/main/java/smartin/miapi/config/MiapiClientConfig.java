@@ -62,21 +62,42 @@ public class MiapiClientConfig {
 
     @ConfigAutoCodec.ConfigClassMarker
     public static class EnchantingGlint {
-        @Comment("The color Miapi uses for its enchanting glint")
+        @Comment("""
+                If glint is rendered at all.
+                Disable this if your having issues with glint""")
+        @AutoCodec.Name("enabled")
+        public boolean enabled = true;
+
+        @Comment("""
+                Overwrites other glint settings, forces glint to be rendered like vanilla.
+                WE RECOMMEND TO TURN THIS OFF
+                """)
+        @AutoCodec.Name("force_vanilla_like")
+        public boolean vanillaLike = true;
+
+        @Comment("""
+                The colors Miapi uses for its default enchanting glint
+                - DISABLE VANILLA LIKE!
+                """)
         @AutoCodec.Name("enchanting_glint_colors")
         public List<Color> enchantColors = List.of(new Color("A755FF80"));
 
-        @Comment("Speed of Color Change on enchanting Glint")
+        @Comment("""
+                Default speed of Color Change on enchanting Glint
+                - DISABLE VANILLA LIKE!
+                """)
         @AutoCodec.Name("enchanting_glint_speed")
         public float enchantingGlintSpeed = 1.0f;
 
-        @Comment("The Ratio of default color to Material Color. 1.0 = only material, 0.0 is no material color")
+        @Comment("""
+                The Ratio of default color to Material Color.
+                1.0 = only material, 0.0 is no material color.
+                We recommend experiment with this setting, as it allows material colors
+                to shine through much more when enchanted.
+                - DISABLE VANILLA LIKE!
+                """)
         @AutoCodec.Name("enchanting_material_ratio")
-        public float materialRatioColor = 0.9f;
-
-        @Comment("The Ratio of default color to Material Color. 1.0 = only material, 0.0 is no material color")
-        @AutoCodec.Name("enabled")
-        public boolean enabled = true;
+        public float materialRatioColor = 0.4f;
     }
 
     @ConfigAutoCodec.ConfigClassMarker
@@ -88,8 +109,8 @@ public class MiapiClientConfig {
         @AutoCodec.Name("respect_armor")
         public boolean respectArmor = true;
         @Comment("the amount of other bars to be offset by")
-        @AutoCodec.Name("other_offest")
-        public int otherOffests = 0;
+        @AutoCodec.Name("other_offset")
+        public int otherOffsets = 0;
         @Comment("other attributes that if the player has more than 0 will offset the Armor shielding for every 20")
         @AutoCodec.Name("other_attributes")
         public List<ResourceLocation> attributesSingleLine = new ArrayList<>();

@@ -38,8 +38,8 @@ import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.render.colorproviders.ColorProvider;
 import smartin.miapi.modules.properties.util.CodecProperty;
+import smartin.miapi.modules.properties.util.MergeAble;
 import smartin.miapi.modules.properties.util.MergeType;
-import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -270,7 +270,7 @@ public class ModelProperty extends CodecProperty<List<ModelProperty.ModelData>> 
 
     @Override
     public List<ModelData> merge(List<ModelData> left, List<ModelData> right, MergeType mergeType) {
-        return ModuleProperty.mergeList(left, right, mergeType);
+        return MergeAble.mergeList(left, right, mergeType);
     }
 
     public record TransformedUnbakedModel(TransformMap transform, BlockModel unbakedModel,

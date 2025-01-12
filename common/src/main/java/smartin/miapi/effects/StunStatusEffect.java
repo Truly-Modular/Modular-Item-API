@@ -1,10 +1,10 @@
 package smartin.miapi.effects;
 
 import com.redpxnda.nucleus.util.Color;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -44,8 +44,13 @@ public class StunStatusEffect extends MobEffect {
     public void onEffectStarted(LivingEntity livingEntity, int amplifier) {
         if (livingEntity instanceof Player player) {
             int timer = player.getEffect(RegistryInventory.stunEffect).getDuration();
-            player.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, timer), player);
-            player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, timer), player);
+            MiapiConfig.INSTANCE.server.stunEffectCategory.playerEffects.forEach(id -> {
+                var attribute = player.registryAccess().registry(Registries.MOB_EFFECT).get().get(id);
+                if (attribute != null) {
+                    var holder = player.registryAccess().registry(Registries.MOB_EFFECT).get().wrapAsHolder(attribute);
+                    player.addEffect(new MobEffectInstance(holder, timer), player);
+                }
+            });
         }
         super.onEffectStarted(livingEntity, amplifier);
     }

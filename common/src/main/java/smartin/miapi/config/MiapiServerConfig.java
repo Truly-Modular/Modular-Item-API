@@ -33,13 +33,15 @@ public class MiapiServerConfig {
         public boolean developmentMode = Platform.isDevelopmentEnvironment();
 
         @Comment("""
-                Truly Modular Logs more aggressivly""")
+                Truly Modular Logs more aggressively
+                Helps with debugging
+                """)
         @AutoCodec.Name("verbose_logging")
         public boolean verboseLogging = false;
 
         @Comment("""
                 If the same Lore Injections should happen on server as on the client
-                Disabling this improves performance, but might let certain mods nolonger find Modular Material or Items via search""")
+                Disabling this improves performance, but might let certain mods no longer find Modular Material or Items via search""")
         @AutoCodec.Name("server_lore")
         public boolean serverLoreInjection = false;
 
@@ -51,15 +53,17 @@ public class MiapiServerConfig {
 
         @Comment("""
                 If this is on the Block Teleports effect of Truly Modular will block most teleports,
-                if false it will only block default Enderman,Chorus fruit and Ender Pearls""")
+                if false it will only block default Ender man, Chorus fruit and Ender Pearls
+                """)
 
         @AutoCodec.Name("block_all_teleports_effects")
         public boolean blockAllTeleportsEffect = true;
 
         @Comment("""
-                This allows Truly Modular to dynamicly reset its Toolmaterial
-                Some mods might not like dynamic Toolmaterials and cause issues with it,
-                but overall it should increase compatibility and help with Tooldetection""")
+                This allows Truly Modular to dynamically reset its Tool-material
+                Some mods might not like dynamic Tool-materials and cause issues with it,
+                but overall it should increase compatibility and help with Tool detection
+                """)
 
         @AutoCodec.Name("loose_tool_material")
         public boolean looseToolMaterial = true;
@@ -74,7 +78,7 @@ public class MiapiServerConfig {
         public boolean fullBreakModularItems = true;
 
         @Comment("""
-                Whether a miapi reload should be automatically forced on serverstart
+                Whether a miapi reload should be automatically forced on server start
                 This is enabled for compat reasons, sometimes scanning recipes and other stuff during a reload isnt stable
                 """)
         @AutoCodec.Name("reload_on_server_start")
@@ -94,7 +98,7 @@ public class MiapiServerConfig {
         public List<ResourceLocation> playerEffects = List.of(BuiltInRegistries.MOB_EFFECT.getKey(MobEffects.BLINDNESS.value()), BuiltInRegistries.MOB_EFFECT.getKey(MobEffects.MOVEMENT_SLOWDOWN.value()));
 
         @Comment("""
-                The Stunhealth of a default entity, the StunHealth determins how much stun damage is needed to stun.
+                The Stun health of a default entity, the StunHealth determines how much stun damage is needed to stun.
                 requires restart to apply - may not correctly affect older worlds""")
         @AutoCodec.Name("stun_health")
         public double stunHealth = 20;
@@ -103,12 +107,12 @@ public class MiapiServerConfig {
         @AutoCodec.Name("stun_length")
         public int stunLength = 20 * 5;
 
-        @Comment("The Time a Entity is immune to stuns after beeing stunned")
+        @Comment("The Time a Entity is immune to stuns after being stunned")
         @AutoCodec.Name("stun_resistance_length")
         public int stunResistanceLength = 20 * 30;
 
         @Comment("""
-                Attackspeed reduction for players while beeing stunned as a Player
+                Attack speed reduction for players while being stunned as a Player
                 requires restart to apply""")
         @AutoCodec.Name("attack_speed_factor")
         public double attackSpeedFactor = 0.5;

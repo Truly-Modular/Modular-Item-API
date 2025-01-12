@@ -23,6 +23,7 @@ import smartin.miapi.mixin.NamedAccessor;
 import smartin.miapi.modules.ModuleDataPropertiesManager;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.util.CodecProperty;
+import smartin.miapi.modules.properties.util.MergeAble;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.registries.RegistryInventory;
@@ -126,7 +127,7 @@ public class MaterialProperty extends CodecProperty<ResourceLocation> {
 
     @Override
     public ResourceLocation merge(ResourceLocation left, ResourceLocation right, MergeType mergeType) {
-        return ModuleProperty.decideLeftRight(left, right, mergeType);
+        return MergeAble.decideLeftRight(left, right, mergeType);
     }
 
     public static List<String> getTextureKeys() {

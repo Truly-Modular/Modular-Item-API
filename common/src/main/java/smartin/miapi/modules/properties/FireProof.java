@@ -29,13 +29,9 @@ public class FireProof extends ComplexBooleanProperty implements ComponentApplyP
         property = this;
     }
 
-    public static boolean fireProof(ItemStack stack) {
-        return property.isTrue(stack);
-    }
-
     @Override
     public void updateComponent(ItemStack itemStack, RegistryAccess registryAccess) {
-        if (fireProof(itemStack)) {
+        if (isTrue(itemStack)) {
             itemStack.set(DataComponents.FIRE_RESISTANT, Unit.INSTANCE);
         } else {
             itemStack.remove(DataComponents.FIRE_RESISTANT);

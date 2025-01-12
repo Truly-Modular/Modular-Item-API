@@ -17,6 +17,7 @@ import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.slot.SlotProperty;
 import smartin.miapi.modules.properties.util.CodecProperty;
+import smartin.miapi.modules.properties.util.MergeAble;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
@@ -77,7 +78,7 @@ public class GuiOffsetProperty extends CodecProperty<GuiOffsetProperty.GuiOffset
 
     @Override
     public GuiOffsetData merge(GuiOffsetData left, GuiOffsetData right, MergeType mergeType) {
-        return ModuleProperty.decideLeftRight(left, right, mergeType);
+        return MergeAble.decideLeftRight(left, right, mergeType);
     }
 
     public static class GuiOffsetData {
