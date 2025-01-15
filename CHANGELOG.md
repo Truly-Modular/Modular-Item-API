@@ -4,3 +4,4 @@
 - added pose debug commands `/miapi pose`
 - fixed serverside Epic Fight crash
 - fixed HT-TreeChop not working on fabric
+- fixed mipmap issues
