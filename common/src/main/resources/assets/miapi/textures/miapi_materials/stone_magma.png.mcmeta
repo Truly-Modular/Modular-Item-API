@@ -3,7 +3,7 @@
         "frametime": 15,
         "interpolate": true,
         "width": 256,
-        "height": 1,
+        "height": 4,
         "frames": [
             0,
             1,
