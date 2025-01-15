@@ -44,7 +44,7 @@ public class OverlayModelProperty extends CodecBasedProperty<OverlayModelPropert
         property = this;
         MiapiItemModel.modelSuppliers.add((key, module, stack) -> {
             List<MiapiModel> models = new ArrayList<>();
-            if(false){
+            if (false) {
                 for (OverlayModelData modelData : getData(module)) {
                     for (ItemModule.ModuleInstance moduleInstance : ItemModule.getModules(stack).allSubModules()) {
                         if (!modelData.onlyOnSameModule() || moduleInstance.equals(module)) {
@@ -130,7 +130,8 @@ public class OverlayModelProperty extends CodecBasedProperty<OverlayModelPropert
                         },
                         new int[]{-1, -1},
                         holder.trimMode(),
-                        holder.entityRendering()
+                        holder.entityRendering(),
+                        null
                 ), modelData.useThisModule() ? module : moduleInstance, stack);
     }
 

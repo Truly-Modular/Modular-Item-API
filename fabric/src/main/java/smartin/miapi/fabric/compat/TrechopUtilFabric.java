@@ -9,7 +9,7 @@ public class TrechopUtilFabric {
     public static void loadTreechopCompat(){
         FabricLoader.getInstance().getObjectShare().whenAvailable("treechop:api_provider", (key, value) -> {
             if (value instanceof ITreeChopAPIProvider provider) {
-                TreechopUtil.api = provider.get(Miapi.MOD_ID);
+                TreechopUtil.setTreechopApi(provider.get(Miapi.MOD_ID));
             }
         });
     }

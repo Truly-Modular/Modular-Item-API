@@ -92,6 +92,8 @@ dependencies {
     }
 
     modCompileOnly "maven.modrinth:treechop:${rootProject.fabric_treechop_version}"
+    modLocalRuntime "maven.modrinth:treechop:${rootProject.fabric_treechop_version}"
+    modLocalRuntime "maven.modrinth:forge-config-api-port:v8.0.1-1.20.1-Fabric"
 
     include api("com.ezylang:EvalEx:${rootProject.eval_ex_version}")
     include modApi("com.jamieswhiteshirt:reach-entity-attributes:$rootProject.fabric_reach_range_version")

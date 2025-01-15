@@ -3,10 +3,13 @@ package smartin.miapi.modules.properties.render;
 import com.google.gson.JsonElement;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.util.Colors;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.model.BannerMiapiModel;
+import smartin.miapi.client.model.DynamicBakery;
 import smartin.miapi.client.model.MiapiItemModel;
 import smartin.miapi.client.model.MiapiModel;
 import smartin.miapi.item.modular.Transform;
@@ -55,7 +58,16 @@ public class BannerModelProperty implements RenderProperty {
                     };
                     BannerMiapiModel.BannerMode mode = BannerMiapiModel.getMode(modelJson.model);
                     modelJson.transform = Transform.repair(modelJson.transform);
-                    BannerMiapiModel bannerMiapiModel = BannerMiapiModel.getFromStack(stackSupplier.get(), mode, modelJson.transform.toMatrix());
+                    BakedModel model = null;
+                    if (modelJson.overWritePath != null) {
+                        ModelProperty.UnbakedModelHolder unbaked = ModelProperty.modelCache.get(modelJson.overWritePath);
+                        model = DynamicBakery.bakeModel(unbaked.model(), ModelProperty.textureGetter, Colors.BLACK, Transform.IDENTITY);
+                    }
+                    BannerMiapiModel bannerMiapiModel = BannerMiapiModel.getFromStack(
+                            stackSupplier.get(),
+                            mode,
+                            modelJson.transform.toMatrix(),
+                            null);
                     if (bannerMiapiModel != null) {
                         models.add(bannerMiapiModel);
                     }
@@ -67,6 +79,16 @@ public class BannerModelProperty implements RenderProperty {
 
     @Override
     public boolean load(String moduleKey, JsonElement data) throws Exception {
+        data.getAsJsonArray().forEach(element1 -> {
+            ModelJson modelJson = Miapi.gson.fromJson(element1, ModelJson.class);
+            if (modelJson.overWritePath != null) {
+                try {
+                    ModelProperty.loadModelsByPath(modelJson.overWritePath);
+                } catch (RuntimeException e) {
+                    Miapi.LOGGER.info("Exception using custom banner model");
+                }
+            }
+        });
         return true;
     }
 
@@ -74,6 +96,7 @@ public class BannerModelProperty implements RenderProperty {
         public String type;
         public String model;
         public String modelType;
+        public String overWritePath;
         public Transform transform = Transform.IDENTITY;
     }
 }

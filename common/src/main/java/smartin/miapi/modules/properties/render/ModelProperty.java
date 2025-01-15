@@ -102,8 +102,8 @@ public class ModelProperty implements RenderProperty {
         List<ModelJson> modelJsonList = getJson(instance);
         List<ModelHolder> models = new ArrayList<>();
         for (ModelJson json : modelJsonList) {
-            ModelHolder holder = bakedModel(instance,json,itemStack,key);
-            if(holder!=null){
+            ModelHolder holder = bakedModel(instance, json, itemStack, key);
+            if (holder != null) {
                 models.add(holder);
             }
         }
@@ -113,11 +113,11 @@ public class ModelProperty implements RenderProperty {
     @Nullable
     public static ModelHolder bakedModel(ItemModule.ModuleInstance instance, ModelJson json, ItemStack itemStack, String key) {
         int condition = Material.getColor(StatResolver.resolveString(json.condition, instance));
-        if(condition!=0){
+        if (condition != 0) {
             if (
                     json.transform.origin == null && key == null ||
-                            json.transform.origin != null && json.transform.origin.equals(key) ||
-                            ("item".equals(json.transform.origin) && key == null)) {
+                    json.transform.origin != null && json.transform.origin.equals(key) ||
+                    ("item".equals(json.transform.origin) && key == null)) {
                 return bakedModel(instance, json, itemStack);
             }
         }
@@ -151,15 +151,15 @@ public class ModelProperty implements RenderProperty {
             if (colorProvider == null) {
                 throw new RuntimeException("colorProvider is null");
             }
-            return new ModelHolder(model.optimize(), matrix4f, colorProvider, unbakedModel.modelData.lightValues, json.getTrimMode(), json.entity_render);
+            return new ModelHolder(model.optimize(), matrix4f, colorProvider, unbakedModel.modelData.lightValues, json.getTrimMode(), json.entity_render, null);
         }
         return null;
     }
 
     public static boolean isAllowedKey(@Nullable String jsonKey, @Nullable String modelTypeKey) {
         return jsonKey == null && modelTypeKey == null ||
-                jsonKey != null && jsonKey.equals(modelTypeKey) ||
-                ("item".equals(jsonKey) && modelTypeKey == null);
+               jsonKey != null && jsonKey.equals(modelTypeKey) ||
+               ("item".equals(jsonKey) && modelTypeKey == null);
     }
 
     public static Map<String, BakedModel> getModelMap(ItemStack stack) {
