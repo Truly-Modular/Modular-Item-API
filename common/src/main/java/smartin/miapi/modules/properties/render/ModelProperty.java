@@ -151,7 +151,11 @@ public class ModelProperty implements RenderProperty {
             if (colorProvider == null) {
                 throw new RuntimeException("colorProvider is null");
             }
-            return new ModelHolder(model.optimize(), matrix4f, colorProvider, unbakedModel.modelData.lightValues, json.getTrimMode(), json.entity_render, null);
+            BannerMiapiModel.BannerOnModel model1 = null;
+            if (json.banner_mode != null) {
+                model1 = new BannerMiapiModel.BannerOnModel(json.banner_mode, true);
+            }
+            return new ModelHolder(model.optimize(), matrix4f, colorProvider, unbakedModel.modelData.lightValues, json.getTrimMode(), json.entity_render, model1);
         }
         return null;
     }
@@ -412,6 +416,7 @@ public class ModelProperty implements RenderProperty {
         public String trim_mode;
         public Boolean entity_render;
         public String id = null;
+        public String banner_mode = null;
 
         public void repair() {
             //this shouldn't be necessary as the values should be loaded from the class but anyways

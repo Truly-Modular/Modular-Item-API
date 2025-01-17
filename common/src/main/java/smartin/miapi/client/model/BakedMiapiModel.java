@@ -1,11 +1,15 @@
 package smartin.miapi.client.model;
 
+import com.mojang.datafixers.util.Pair;
 import com.redpxnda.nucleus.util.Color;
+import net.minecraft.block.entity.BannerPattern;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.LightmapTextureManager;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.model.BakedModel;
+import net.minecraft.client.render.model.BakedQuad;
 import net.minecraft.client.render.model.json.ModelOverrideList;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
@@ -14,17 +18,23 @@ import net.minecraft.item.ArmorItem;
 import net.minecraft.item.ArmorMaterial;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.trim.ArmorTrim;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.util.DyeColor;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
+import smartin.miapi.client.ShaderRegistry;
 import smartin.miapi.client.renderer.TrimRenderer;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.item.modular.Transform;
 import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.material.MaterialInscribeDataProperty;
 import smartin.miapi.modules.properties.EmissiveProperty;
 import smartin.miapi.modules.properties.GlintProperty;
-import smartin.miapi.client.ShaderRegistry;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class BakedMiapiModel implements MiapiModel {
     ItemModule.ModuleInstance instance;
@@ -36,7 +46,10 @@ public class BakedMiapiModel implements MiapiModel {
     GlintProperty.GlintSettings settings;
     int skyLight;
     int blockLight;
-
+    boolean hasBanner = false;
+    List<Pair<RegistryEntry<BannerPattern>, DyeColor>> bannerColors = null;
+    List<BakedQuad> quads = new ArrayList<>();
+    ItemStack bannerItem = null;
 
     public BakedMiapiModel(ModelHolder holder, ItemModule.ModuleInstance moduleInstance, ItemStack stack) {
         this.modelHolder = holder;
@@ -61,6 +74,18 @@ public class BakedMiapiModel implements MiapiModel {
 
         if (propertySky > skyLight) skyLight = propertySky;
         if (propertyBlock > blockLight) blockLight = propertyBlock;
+
+        if (holder.banner() != null) {
+            bannerItem = MaterialInscribeDataProperty.readStackFromModuleInstance(moduleInstance, "banner");
+            List<Pair<RegistryEntry<BannerPattern>, DyeColor>> patterns = BannerMiapiModel.getPatterns(bannerItem);
+            if (patterns != null) {
+                hasBanner = true;
+                bannerColors = patterns;
+            }
+        }
+        for (Direction dir : Direction.values()) {
+            quads.addAll(model.getQuads(null, dir, Random.create()));
+        }
     }
 
     @Override
@@ -91,10 +116,23 @@ public class BakedMiapiModel implements MiapiModel {
                         Color glintColor = settings.getColor();
                         altConsumer.quad(matrices.peek(), quad, glintColor.redAsFloat(), glintColor.greenAsFloat(), glintColor.blueAsFloat(), light, overlay);
                     }
+                    if (MiapiConfig.INSTANCE.client.other.enableVanillaGlint) {
+                        VertexConsumer altConsumer = vertexConsumers.getBuffer(RenderLayer.getDirectGlint());
+                        altConsumer.quad(matrices.peek(), quad, 1.0f, 1.0f, 1.0f, light, overlay);
+
+                    }
                 }
             });
         }
         MinecraftClient.getInstance().world.getProfiler().pop();
+        if (hasBanner) {
+            MinecraftClient.getInstance().world.getProfiler().push("Banner");
+            BannerMiapiModel.render(
+                    matrices, bannerItem, transformationMode,
+                    tickDelta, vertexConsumers, entity,
+                    light, overlay, quads, bannerColors);
+            MinecraftClient.getInstance().world.getProfiler().pop();
+        }
 
         MinecraftClient.getInstance().world.getProfiler().push("TrimModel");
         //render Trims

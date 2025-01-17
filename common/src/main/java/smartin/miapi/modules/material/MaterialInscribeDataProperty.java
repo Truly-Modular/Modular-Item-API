@@ -43,6 +43,21 @@ public class MaterialInscribeDataProperty implements ModuleProperty {
     }
 
     public static ItemStack readStackFromModuleInstance(ItemModule.ModuleInstance moduleInstance, String key) {
+        if (key.contains(".")) {
+            String start = key.split(".")[0];
+            if (start.equals("parent")) {
+                return readStackFromModuleInstance(moduleInstance, start.replace("parent.", ""));
+            }
+            try {
+                int value = Integer.parseInt(start);
+                if (moduleInstance.subModules.get(value) != null) {
+                    return readStackFromModuleInstance(moduleInstance.subModules.get(value), start.replace(value + ".", ""));
+                }
+            } catch (NumberFormatException ignored) {
+
+            }
+
+        }
         String itemStackString = moduleInstance.moduleData.get(key);
         if (itemStackString != null) {
             try {

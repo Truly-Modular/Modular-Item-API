@@ -53,6 +53,12 @@ public class BannerModelProperty implements RenderProperty {
                             }
                             yield () -> ItemStack.EMPTY;
                         }
+                        case "module_data_parent": {
+                            if (ModelProperty.isAllowedKey(modelJson.modelType, key) && moduleInstance.parent != null) {
+                                yield () -> MaterialInscribeDataProperty.readStackFromModuleInstance(moduleInstance.parent, "banner");
+                            }
+                            yield () -> ItemStack.EMPTY;
+                        }
                         default:
                             throw new IllegalStateException("Unexpected value: " + modelJson.type);
                     };

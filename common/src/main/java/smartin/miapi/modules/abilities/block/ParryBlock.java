@@ -185,7 +185,7 @@ public class ParryBlock extends EntityAttributeAbility<ParryBlock.ParryContext> 
     public static class ParryContext {
         @AutoCodec.Name("pose_id")
         @CodecBehavior.Optional
-        public Identifier poseId = new Identifier(Miapi.MOD_ID, "block");
+        public Identifier poseId = new Identifier(Miapi.MOD_ID, "medium_shield_block");
         @AutoCodec.Name("sound")
         @CodecBehavior.Optional
         public Identifier sound = new Identifier("minecraft:block.iron_trapdoor.close");

@@ -37,6 +37,9 @@ public class MiapiClientConfig {
         @Comment("If Glint should render on Modular Items at all")
         @AutoCodec.Name("enchanting_glint")
         public boolean enchantingGlint = true;
+        @Comment("NOT RECOMMENDED - Heavy Z-Fighting")
+        @AutoCodec.Name("enable_vanilla_glint")
+        public boolean enableVanillaGlint = false;
         @Comment("If Glint should render on Modular Items at all")
         @AutoCodec.Name("material_glint_strength")
         public float materialStrength = 0.0f;
