@@ -87,11 +87,11 @@ dependencies {
     modImplementation "software.bernie.geckolib:geckolib-fabric-1.20.1:${geckolib_version}"
 
     if ("${rootProject.run_with_bettercombat}" == "true") {
-        modImplementation 'dev.kosmx.player-anim:player-animation-lib:1.0.2-rc1+1.20'
-        modImplementation "curse.maven:bettercombat-639842:4597949"
+        modImplementation 'dev.kosmx.player-anim:player-animation-lib-fabric:2.0.0-alpha1+1.21'
+        modImplementation "curse.maven:bettercombat-639842:6092862"
     } else {
-        modCompileOnly 'dev.kosmx.player-anim:player-animation-lib:1.0.2-rc1+1.20'
-        modCompileOnly "curse.maven:bettercombat-639842:4597949"
+        modCompileOnly 'dev.kosmx.player-anim:player-animation-lib-fabric:2.0.0-alpha1+1.21'
+        modCompileOnly "curse.maven:bettercombat-639842:6092862"
     }
     modCompileOnly "maven.modrinth:archers:1.0.6+1.20.1"
 

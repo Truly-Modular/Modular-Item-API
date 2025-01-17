@@ -63,7 +63,7 @@ public class MiapiClientConfig {
     @ConfigAutoCodec.ConfigClassMarker
     public static class EnchantingGlint {
         @Comment("""
-                If glint is rendered at all.
+                If Miapi glint is rendered at all.
                 Disable this if your having issues with glint""")
         @AutoCodec.Name("enabled")
         public boolean enabled = true;

@@ -84,6 +84,7 @@ import smartin.miapi.modules.properties.*;
 import smartin.miapi.modules.properties.armor.*;
 import smartin.miapi.modules.properties.attributes.AttributeProperty;
 import smartin.miapi.modules.properties.attributes.AttributeSplitProperty;
+import smartin.miapi.modules.properties.compat.better_combat.BetterCombatHelper;
 import smartin.miapi.modules.properties.enchanment.AllowedEnchantments;
 import smartin.miapi.modules.properties.enchanment.CraftingEnchantProperty;
 import smartin.miapi.modules.properties.enchanment.EnchantAbilityProperty;
@@ -545,8 +546,7 @@ public class RegistryInventory {
             registerMiapi(moduleProperties, CopyItemLoreProperty.KEY, new CopyItemLoreProperty());
             //compat
             //registerMiapi(moduleProperties, BetterCombatProperty.KEY, new BetterCombatProperty());
-            //TODO: added this to cleanup logs. this needs to be revisited later
-            registerMiapi(moduleProperties, Miapi.id("better_combat_config"), new ServerReplaceProperty());
+            BetterCombatHelper.setup();
             //registerMiapi(moduleProperties, ApoliPowersProperty.KEY, new ApoliPowersProperty());
             //registerMiapi(moduleProperties, TreechopProperty.KEY, new TreechopProperty());
 

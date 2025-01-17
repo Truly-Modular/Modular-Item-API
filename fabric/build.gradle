@@ -121,9 +121,9 @@ dependencies {
     //modLocalRuntime"maven.modrinth:iris:1.6.10+1.20.1"
 
     if ("${rootProject.run_with_bettercombat}" == "true") {
-        modImplementation 'dev.kosmx.player-anim:player-animation-lib-fabric:1.0.2-rc1+1.20'
-        modImplementation "curse.maven:bettercombat-639842:4597949"
-        modImplementation "curse.maven:cloth-config-348521:4973440"
+        modImplementation 'dev.kosmx.player-anim:player-animation-lib-fabric:2.0.0-alpha1+1.21'
+        modImplementation "curse.maven:bettercombat-639842:6092862"
+        modImplementation "curse.maven:cloth-config-348521:5729125"
     }
     //modLocalRuntime "curse.maven:cloth-348521:4554906"
     //modLocalRuntime "curse.maven:bettercombat-639842:4597949"

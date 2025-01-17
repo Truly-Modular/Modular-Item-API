@@ -1,56 +1,31 @@
 package smartin.miapi.modules.properties.compat.better_combat;
 
-/*
-public class BetterCombatProperty implements ModuleProperty {
-    public static String KEY = "better_combat_config";
+import net.bettercombat.api.component.BetterCombatDataComponents;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.Nullable;
+import smartin.miapi.modules.properties.util.CodecProperty;
+import smartin.miapi.modules.properties.util.ComponentApplyProperty;
+import smartin.miapi.modules.properties.util.MergeAble;
+import smartin.miapi.modules.properties.util.MergeType;
+
+public class BetterCombatProperty extends CodecProperty<ResourceLocation> implements ComponentApplyProperty {
     public static BetterCombatProperty property;
 
     public BetterCombatProperty() {
+        super(ResourceLocation.CODEC);
         property = this;
-        if (Platform.isModLoaded("bettercombat")) {
-            BetterCombatHelper.setup();
-            AttributeProperty.attributeTransformers.add((map, itemstack) -> {
-                JsonElement element = ItemModule.getMergedProperty(itemstack, property);
-                if (element != null) {
-                    map.removeAll(AttributeRegistry.ATTACK_RANGE);
-                }
-                return map;
-            });
-            CraftAction.events.add(new CraftAction.CraftingEvent() {
-                @Override
-                public ItemStack onCraft(ItemStack old, ItemStack crafted, @Nullable ModuleInstance crafting) {
-                    BetterCombatHelper.applyNBT(crafted);
-                    return crafted;
-                }
-
-                @Override
-                public ItemStack onPreview(ItemStack old, ItemStack crafted, @Nullable ModuleInstance crafting) {
-                    BetterCombatHelper.applyNBT(crafted);
-                    return crafted;
-                }
-            });
-            ModularItemStackConverter.converters.add(stack -> {
-                BetterCombatHelper.applyNBT(stack);
-                return stack;
-            });
-        }
     }
 
     @Override
-    public boolean load(String moduleKey, JsonElement data) throws Exception {
-        return Platform.isModLoaded("bettercombat");
+    public ResourceLocation merge(ResourceLocation left, ResourceLocation right, MergeType mergeType) {
+        return MergeAble.decideLeftRight(left, right, mergeType);
     }
 
     @Override
-    public JsonElement merge(JsonElement old, JsonElement toMerge, MergeType type) {
-        if (type == MergeType.SMART || type == MergeType.EXTEND) {
-            return toMerge;
-        } else if (type == MergeType.OVERWRITE) {
-            return old;
-        }
-        return ModuleProperty.super.merge(old, toMerge, type);
+    public void updateComponent(ItemStack itemStack, @Nullable RegistryAccess registryAccess) {
+        var optional = getData(itemStack);
+        optional.ifPresent(resourceLocation -> itemStack.set(BetterCombatDataComponents.WEAPON_PRESET_ID, resourceLocation));
     }
 }
-
-
- */
