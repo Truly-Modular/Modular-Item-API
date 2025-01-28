@@ -7,13 +7,13 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.resources.ResourceLocation;
 import smartin.miapi.Miapi;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.material.MaterialProperty;
-import smartin.miapi.network.Networking;
+import smartin.miapi.network.modern.ModernNetworking;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -25,6 +25,7 @@ import java.util.Map;
  */
 public class CacheCommands {
     public static String SEND_MATERIAL_CLIENT = "miapi_drop_cache";
+    public static ResourceLocation CLEAR_CACHE_PACKET_ID = Miapi.id("clear_cache");
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         LiteralArgumentBuilder<CommandSourceStack> literal = Commands.literal("miapi")
@@ -37,15 +38,26 @@ public class CacheCommands {
 
         dispatcher.register(literal);
         dispatcher.register(reloadCommand);
+        ModernNetworking.registerC2SReceiver(CLEAR_CACHE_PACKET_ID, ByteBufCodecs.fromCodecWithRegistries(Miapi.FIXED_BOOL_CODEC), (data, player, registryAccess) -> {
+            ModularItemCache.discardCache();
+        });
+        ModernNetworking.registerS2CReceiver(CLEAR_CACHE_PACKET_ID, ByteBufCodecs.fromCodecWithRegistries(Miapi.FIXED_BOOL_CODEC), (data, player, registryAccess) -> {
+            ModularItemCache.discardCache();
+        });
     }
 
     private static int executeCacheClear(CommandContext<CommandSourceStack> context) {
         context.getSource().sendSuccess(() -> Component.literal("Clearing all miapi Caches"), false);
-        if (context.getSource().isPlayer()) {
-            FriendlyByteBuf buf = Networking.createBuffer();
-            buf.writeBoolean(true);
-            Networking.sendS2C(SEND_MATERIAL_CLIENT, context.getSource().getPlayer(), buf);
-        }
+        context
+                .getSource()
+                .getServer()
+                .getPlayerList()
+                .getPlayers().forEach(p ->
+                        ModernNetworking.sendToPlayer(
+                                CLEAR_CACHE_PACKET_ID,
+                                p,
+                                ByteBufCodecs.fromCodecWithRegistries(Miapi.FIXED_BOOL_CODEC),
+                                true));
         ModularItemCache.discardCache();
         return 1; // Return success
     }

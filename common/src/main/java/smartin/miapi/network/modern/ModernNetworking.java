@@ -25,7 +25,6 @@ public class ModernNetworking {
 
     public static void setup() {
         try {
-            //TODO:re-add this
             if (Environment.isClient()) {
                 NetworkManager.registerReceiver(NetworkManager.Side.S2C, S2CMiapiPayload.TYPE, S2CMiapiPayload.STREAM_CODEC, (packet, context) -> {
                     ModernNetworking.s2cReceivers.computeIfPresent(packet.payload().parseId(), ((location, receiver) -> {
@@ -38,7 +37,6 @@ public class ModernNetworking {
             } else {
                 NetworkManager.registerS2CPayloadType(S2CMiapiPayload.TYPE, S2CMiapiPayload.STREAM_CODEC);
             }
-            //NetworkManager.registerS2CPayloadType(C2SMiapiPayload.TYPE, C2SMiapiPayload.STREAM_CODEC);
             NetworkManager.registerReceiver(NetworkManager.Side.C2S, C2SMiapiPayload.PACKET_TYPE, C2SMiapiPayload.STREAM_CODEC, (packet, context) -> {
                 ModernNetworking.c2sReceivers.computeIfPresent(packet.payload().parseId(), ((location, receiver) -> {
                     RegistryFriendlyByteBuf buf = new RegistryFriendlyByteBuf(Networking.createBuffer(), context.registryAccess());

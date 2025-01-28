@@ -1,4 +1,4 @@
-package smartin.miapi.network.modern.payload;
+package smartin.miapi.network.payload;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
@@ -9,26 +9,28 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.network.Networking;
+import smartin.miapi.network.modern.payload.CustomPayload;
 
 import java.util.UUID;
 
-public record C2SMiapiPayload(CustomPayload payload) implements CustomPacketPayload {
+public record C2SMiapiOLDPayload(CustomPayload payload) implements CustomPacketPayload {
     public static UUID noPlayerUUID = UUID.fromString("ddfe3f2c-2d4e-4242-8a65-f4641ba9f5f6");
 
-    public static final StreamCodec<FriendlyByteBuf, C2SMiapiPayload> STREAM_CODEC = CustomPacketPayload.codec(C2SMiapiPayload::encode, C2SMiapiPayload::decode);
+    public static final StreamCodec<FriendlyByteBuf, C2SMiapiOLDPayload> STREAM_CODEC = CustomPacketPayload.codec(C2SMiapiOLDPayload::encode, C2SMiapiOLDPayload::decode);
 
-    public static final Type<C2SMiapiPayload> PACKET_TYPE = new Type<>(Miapi.id("default-c2s-networking"));
+    public static final Type<C2SMiapiOLDPayload> PACKET_TYPE = new Type<>(Miapi.id("default-c2s-networking-old"));
 
     @Override
     public @NotNull Type<? extends CustomPacketPayload> type() {
         return PACKET_TYPE;
     }
 
-    public static C2SMiapiPayload decode(FriendlyByteBuf friendlyByteBuf) {
+    public static C2SMiapiOLDPayload decode(FriendlyByteBuf friendlyByteBuf) {
         CustomPayload payload = CustomPayload.decode(friendlyByteBuf);
         FriendlyByteBuf buf = Networking.createBuffer();
         buf.writeBytes(payload.data());
-        return new C2SMiapiPayload(payload);
+        Networking.C2SPackets.get(payload.id()).accept(buf, getPlayer(payload.serverPlayer()));
+        return new C2SMiapiOLDPayload(payload);
     }
 
     public static @Nullable ServerPlayer getPlayer(@NotNull UUID uuid) {
@@ -43,7 +45,7 @@ public record C2SMiapiPayload(CustomPayload payload) implements CustomPacketPayl
     }
 
     public static UUID getClientUUID() {
-        UUID uuid = C2SMiapiPayload.noPlayerUUID;
+        UUID uuid = C2SMiapiOLDPayload.noPlayerUUID;
         if (Minecraft.getInstance() != null && Minecraft.getInstance().player != null) {
             uuid = Minecraft.getInstance().player.getUUID();
         }

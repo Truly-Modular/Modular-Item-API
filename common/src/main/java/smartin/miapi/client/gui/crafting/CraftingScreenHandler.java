@@ -137,8 +137,6 @@ public class CraftingScreenHandler extends AbstractContainerMenu {
                 String editOptionKey = buffer.readUtf();
                 EditOption option = RegistryInventory.editOptions.get(editOptionKey);
                 String[] array = buffer.readUtf().split("\n");
-                //TODO: do i need execute on server?
-                //Miapi.server.execute(()->{
                 ItemStack stack = ModularItemStackConverter.getModularVersion(inventory.getItem(0));
                 ModuleInstance root = ItemModule.getModules(stack);
                 List<String> position = new ArrayList<>();
@@ -214,7 +212,6 @@ public class CraftingScreenHandler extends AbstractContainerMenu {
                     Miapi.LOGGER.warn(String.valueOf(current));
                     Miapi.LOGGER.warn(position.toString());
                 }
-                //});
             });
         }
         this.context = context;

@@ -40,18 +40,18 @@ public class ReplaceOption implements EditOption {
         action.setItem(itemStack);
         Container inventory = editContext.getLinkedInventory();
         boolean hasPreviewMaterial = false;
+        //TODO:fix previews...
         if (
-                PreviewManager.currentPreviewMaterial != null
+                PreviewManager.currentPreviewMaterial != null && false
         ) {
             hasPreviewMaterial = true;
             inventory = new SimpleContainer(2);
-            PreviewManager.currentPreviewMaterialStack.getDamageValue();
             inventory.setItem(1, PreviewManager.currentPreviewMaterialStack);
         }
         action.linkInventory(inventory, 1);
 
         ItemStack preview = action.getPreview();
-        if (editContext.getInstance() != null && !hasPreviewMaterial) {
+        if (editContext.getInstance() != null && hasPreviewMaterial && false) {
             Material material = MaterialProperty.getMaterial(editContext.getInstance());
             if (material != null) {
                 List<String> position = new ArrayList<>();

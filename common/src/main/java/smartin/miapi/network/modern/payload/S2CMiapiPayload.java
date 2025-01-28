@@ -24,11 +24,6 @@ public record S2CMiapiPayload(CustomPayload payload) implements CustomPacketPayl
         CustomPayload payload = CustomPayload.decode(friendlyByteBuf);
         FriendlyByteBuf buf = Networking.createBuffer();
         buf.writeBytes(payload.data());
-        if (!Networking.S2CPackets.containsKey(payload.id())) {
-            Miapi.LOGGER.error("no reciever for s2c " + payload.id() + " was registered");
-        } else {
-            Networking.S2CPackets.get(payload.id()).accept(buf);
-        }
         return new S2CMiapiPayload(payload);
     }
 
