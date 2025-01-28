@@ -7,9 +7,6 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
-import com.redpxnda.nucleus.config.ConfigBuilder;
-import com.redpxnda.nucleus.config.ConfigManager;
-import com.redpxnda.nucleus.config.ConfigType;
 import com.redpxnda.nucleus.registry.NucleusNamespaces;
 import dev.architectury.event.EventResult;
 import dev.architectury.event.events.common.CommandRegistrationEvent;
@@ -25,9 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.client.MiapiClient;
-import smartin.miapi.config.MiapiClientConfig;
 import smartin.miapi.config.MiapiConfig;
-import smartin.miapi.config.MiapiServerConfig;
 import smartin.miapi.craft.BlueprintManager;
 import smartin.miapi.craft.stat.StatActorType;
 import smartin.miapi.datapack.ReloadEvents;
@@ -37,7 +32,6 @@ import smartin.miapi.item.ModularItemStackConverter;
 import smartin.miapi.item.modular.PropertyResolver;
 import smartin.miapi.item.modular.Transform;
 import smartin.miapi.item.modular.VisualModularItem;
-import smartin.miapi.key.KeyBindManager;
 import smartin.miapi.material.ComponentMaterial;
 import smartin.miapi.material.MaterialCommand;
 import smartin.miapi.material.MaterialIcons;
@@ -48,12 +42,13 @@ import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.MiapiPermissions;
 import smartin.miapi.modules.ModuleDataPropertiesManager;
 import smartin.miapi.modules.ModuleInstance;
+import smartin.miapi.modules.abilities.key.KeyBindManager;
+import smartin.miapi.modules.abilities.key.MiapiBinding;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;
 import smartin.miapi.modules.cache.CacheCommands;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.conditions.ConditionManager;
 import smartin.miapi.modules.conditions.ModuleCondition;
-import smartin.miapi.modules.properties.GlintProperty;
 import smartin.miapi.modules.properties.util.DoubleOperationResolvable;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.network.Networking;
@@ -87,6 +82,10 @@ public class Miapi {
     public static NetworkingImplCommon networkingImplementation;
     public static MinecraftServer server;
     public static RegistryAccess registryAccess;
+    /**
+     * idk, sometimes in networking bools seem to become 0 and 1, default codec cant deal with that,
+     * this one can
+     */
     public static Codec<Boolean> FIXED_BOOL_CODEC = Codec.withAlternative(
             Codec.BOOL,
             Codec.INT.xmap(i -> i == 1, b -> (b ? 0 : 1)));
@@ -116,8 +115,11 @@ public class Miapi {
         CodecBehavior.registerClass(MaterialIcons.SpinSettings.class, MaterialIcons.SpinSettings.CODEC);
         CodecBehavior.registerClass(EquipmentSlotGroup.class, EquipmentSlotGroup.CODEC);
         CodecBehavior.registerClass(EquipmentSlot.class, EquipmentSlot.CODEC);
+        if(Environment.isClient()){
+            CodecBehavior.registerClass(MiapiBinding.class, MiapiBinding.CODEC);
+        }
 
-        setupConfigs();
+        MiapiConfig.setupConfigs();
         setupNetworking();
         RegistryInventory.setup();
         ReloadEvents.setup();
@@ -254,32 +256,6 @@ public class Miapi {
         networkingImplementation = new NetworkingImplCommon();
         Networking.setImplementation(networkingImplementation);
         networkingImplementation.setupServer();
-    }
-
-    protected static void setupConfigs() {
-        ConfigManager.register(ConfigBuilder.automatic(MiapiClientConfig.class)
-                .id(MOD_ID + ":client")
-                .fileLocation(Miapi.MOD_ID + "_client")
-                .type(ConfigType.COMMON)
-                .creator(MiapiClientConfig::new)
-                .updateListener(c -> {
-                    MiapiClientConfig.INSTANCE = c;
-                    MiapiConfig.INSTANCE.client = c;
-                    if (Environment.isClient()) {
-                        GlintProperty.updateConfig();
-                    }
-                    ModularItemCache.discardCache();
-                }));
-        ConfigManager.register(ConfigBuilder.automatic(MiapiServerConfig.class)
-                .id(MOD_ID + ":server")
-                .fileLocation(Miapi.MOD_ID + "_server")
-                .type(ConfigType.SERVER_CLIENT_SYNCED)
-                .creator(MiapiServerConfig::new)
-                .updateListener(c -> {
-                    MiapiServerConfig.INSTANCE = c;
-                    MiapiConfig.INSTANCE.server = c;
-                    ModularItemCache.discardCache();
-                }));
     }
 
     public static void registerReloadHandler(

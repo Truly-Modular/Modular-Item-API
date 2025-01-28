@@ -1,10 +1,14 @@
 package smartin.miapi.network.modern;
 
+import com.mojang.authlib.minecraft.client.MinecraftClient;
 import dev.architectury.networking.NetworkManager;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import org.apache.commons.lang3.function.TriConsumer;
 import smartin.miapi.Environment;
@@ -18,6 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static smartin.miapi.network.modern.payload.C2SMiapiPayload.getClientUUID;
+import static smartin.miapi.network.modern.payload.C2SMiapiPayload.noPlayerUUID;
 
 public class ModernNetworking {
     public static final Map<ResourceLocation, Receiver<?>> s2cReceivers = new HashMap<>();
@@ -67,29 +72,31 @@ public class ModernNetworking {
     }
 
     public static <T> void sendToServer(ResourceLocation location, StreamCodec<RegistryFriendlyByteBuf, T> codec, T data, RegistryAccess access) {
-        Receiver<?> receiver = c2sReceivers.get(location);
-        if (receiver != null) {
-            RegistryFriendlyByteBuf buf = new RegistryFriendlyByteBuf(Networking.createBuffer(), access);
-            codec.encode(buf, data);
-            CustomPayload data1 = new CustomPayload(
-                    location.toString(),
-                    getClientUUID(),
-                    buf.array());
-            NetworkManager.sendToServer(new C2SMiapiPayload(data1));
+        if (Environment.isClient()) {
+            if (Minecraft.getInstance().getConnection() == null) {
+                return;
+            }
         }
+        RegistryFriendlyByteBuf buf = new RegistryFriendlyByteBuf(Networking.createBuffer(), access);
+        codec.encode(buf, data);
+        CustomPayload data1 = new CustomPayload(
+                location.toString(),
+                getClientUUID(),
+                buf.array());
+        NetworkManager.sendToServer(new C2SMiapiPayload(data1));
     }
 
     public static <T> void sendToPlayer(ResourceLocation location, Player player, StreamCodec<RegistryFriendlyByteBuf, T> codec, T data) {
-        Receiver<?> receiver = s2cReceivers.get(location);
-        if (receiver != null) {
-            RegistryFriendlyByteBuf buf = new RegistryFriendlyByteBuf(Networking.createBuffer(), player.registryAccess());
-            codec.encode(buf, data);
-            CustomPayload data1 = new CustomPayload(
-                    location.toString(),
-                    player.getUUID(),
-                    buf.array());
-            NetworkManager.sendToServer(new S2CMiapiPayload(data1));
+        if (player instanceof ServerPlayer player1 && player1.connection == null) {
+            return;
         }
+        RegistryFriendlyByteBuf buf = new RegistryFriendlyByteBuf(Networking.createBuffer(), player.registryAccess());
+        codec.encode(buf, data);
+        CustomPayload data1 = new CustomPayload(
+                location.toString(),
+                player.getUUID(),
+                buf.array());
+        NetworkManager.sendToServer(new S2CMiapiPayload(data1));
     }
 
     public record Receiver<T>(StreamCodec<RegistryFriendlyByteBuf, T> codec,

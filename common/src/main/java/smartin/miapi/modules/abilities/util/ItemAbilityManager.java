@@ -17,14 +17,12 @@ import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.entity.ShieldingArmorFacet;
-import smartin.miapi.key.KeyBindFacet;
+import smartin.miapi.modules.abilities.key.KeyBindAbilityManagerProperty;
+import smartin.miapi.modules.abilities.key.KeyBindFacet;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.registries.MiapiRegistry;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.WeakHashMap;
+import java.util.*;
 import java.util.function.Supplier;
 
 /**
@@ -37,7 +35,7 @@ public class ItemAbilityManager {
     private static final Map<Player, ItemStack> playerActiveItemsClient = new WeakHashMap<>();
     public static final MiapiRegistry<ItemUseAbility> useAbilityRegistry = MiapiRegistry.getInstance(ItemUseAbility.class);
     private static final AbilityHolder<?> emptyAbility = new AbilityHolder(new EmptyAbility(), new Object());
-    private static final Map<ItemStack, AbilityHolder<?>> abilityMap = new WeakHashMap<>();
+    private static final Map<ItemStack, AbilityHolder<?>> abilityMap = Collections.synchronizedMap(new WeakHashMap<>());
     public static final Map<Player, ResourceLocation> clientKeyBindID = new WeakHashMap<>();
     public static final Map<Player, ResourceLocation> serverKeyBindID = new WeakHashMap<>();
 
@@ -102,7 +100,7 @@ public class ItemAbilityManager {
                     if (entry.getKey().allowedOnItem(itemStack, world, player, hand, abilityHitContext)) {
                         //return new Pair<>(entry.getKey(), entry.getValue());
                         if (player instanceof ServerPlayer serverPlayer) {
-                            if(KeyBindFacet.get(serverPlayer)!=null){
+                            if (KeyBindFacet.get(serverPlayer) != null) {
                                 ShieldingArmorFacet facet;
                                 KeyBindFacet.get(serverPlayer).set(keybindID, serverPlayer);
                             }

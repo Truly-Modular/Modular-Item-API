@@ -7,7 +7,7 @@ import net.minecraft.world.entity.player.Player;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
-import smartin.miapi.key.ClientKeybinding;
+import smartin.miapi.modules.abilities.key.ClientKeybinding;
 
 @Mixin(Minecraft.class)
 public class MinecraftMixin {

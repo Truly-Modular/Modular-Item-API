@@ -1,4 +1,4 @@
-package smartin.miapi.key;
+package smartin.miapi.modules.abilities.key;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -13,7 +13,6 @@ import smartin.miapi.Miapi;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.mixin.MinecraftAccessor;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;
-import smartin.miapi.modules.abilities.util.KeyBindAbilityManagerProperty;
 
 import java.util.Collection;
 
@@ -23,12 +22,12 @@ public class ClientKeybinding {
     public static void clientTick(Minecraft client) {
         LocalPlayer player = client.player;
         ItemAbilityManager.clientKeyBindID.remove(player);
-        Collection<KeyBindManager.MiapiBinding> bindings = KeyBindManager.BINDING_REGISTRY.getFlatMap().values();
+        Collection<MiapiBinding> bindings = KeyBindManager.BINDING_REGISTRY.getFlatMap().values();
         if (player != null) {
             //Miapi.LOGGER.info("is using " + player.isUsingItem());
             if (player.isUsingItem()) {
                 //Miapi.LOGGER.info("using item");
-                for (KeyBindManager.MiapiBinding binding : bindings) {
+                for (MiapiBinding binding : bindings) {
                     if (!binding.asKeyMapping().isDown() && binding.lastDown) {
                         client.gameMode.releaseUsingItem(player);
                         isUsing = false;
@@ -36,7 +35,7 @@ public class ClientKeybinding {
                         return;
                     }
                 }
-                for (KeyBindManager.MiapiBinding binding : bindings) {
+                for (MiapiBinding binding : bindings) {
                     if (binding.lastDown) {
                         while (binding.asKeyMapping().consumeClick()) {
                             ItemAbilityManager.clientKeyBindID.put(player, binding.id);
@@ -44,7 +43,7 @@ public class ClientKeybinding {
                     }
                 }
             } else {
-                for (KeyBindManager.MiapiBinding binding : bindings) {
+                for (MiapiBinding binding : bindings) {
                     while (binding.asKeyMapping().consumeClick()) {
                         //stat use item logic
                         ResourceLocation id = ItemAbilityManager.clientKeyBindID.get(player);
@@ -59,7 +58,7 @@ public class ClientKeybinding {
                 }
             }
             if (((MinecraftAccessor) client).getRightClickDelay() == 0 && !player.isUsingItem()) {
-                for (KeyBindManager.MiapiBinding binding : bindings) {
+                for (MiapiBinding binding : bindings) {
                     if (binding.asKeyMapping().isDown()) {
                         //start use item logic here
                         ResourceLocation id = ItemAbilityManager.clientKeyBindID.get(player);
@@ -76,7 +75,7 @@ public class ClientKeybinding {
         }
     }
 
-    private static boolean startUseItem(Minecraft minecraft, KeyBindManager.MiapiBinding binding) {
+    private static boolean startUseItem(Minecraft minecraft, MiapiBinding binding) {
         if (!minecraft.gameMode.isDestroying()) {
             ((MinecraftAccessor) minecraft).setRightClickDelay(4);
             if (!minecraft.player.isHandsBusy()) {

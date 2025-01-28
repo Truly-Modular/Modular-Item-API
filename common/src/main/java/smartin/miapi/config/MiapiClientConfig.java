@@ -5,9 +5,12 @@ import com.redpxnda.nucleus.codec.auto.ConfigAutoCodec;
 import com.redpxnda.nucleus.util.Color;
 import com.redpxnda.nucleus.util.Comment;
 import net.minecraft.resources.ResourceLocation;
+import smartin.miapi.modules.abilities.key.MiapiBinding;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @ConfigAutoCodec.ConfigClassMarker
 public class MiapiClientConfig {
@@ -42,6 +45,14 @@ public class MiapiClientConfig {
         @Comment("Whether Miapi materials can be animated")
         @AutoCodec.Name("animated_materials")
         public boolean animatedMaterials = true;
+
+        //@AutoCodec.Name("keybinds")
+        //@Comment("""
+        //        Keybinds are kept in the config so they are available during gamestart.
+        //        This is required as if keys are registered later the default binding is overwriten.
+        //        """)
+        //@AutoCodec.Ignored
+        public Map<ResourceLocation, MiapiBinding> bindings = new HashMap<>();
     }
 
     @ConfigAutoCodec.ConfigClassMarker

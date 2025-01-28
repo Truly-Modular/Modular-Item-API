@@ -76,7 +76,7 @@ import smartin.miapi.modules.abilities.toolabilities.AxeAbility;
 import smartin.miapi.modules.abilities.toolabilities.HoeAbility;
 import smartin.miapi.modules.abilities.toolabilities.ShovelAbility;
 import smartin.miapi.modules.abilities.util.AbilityMangerProperty;
-import smartin.miapi.modules.abilities.util.KeyBindAbilityManagerProperty;
+import smartin.miapi.modules.abilities.key.KeyBindAbilityManagerProperty;
 import smartin.miapi.modules.conditions.*;
 import smartin.miapi.modules.edit_options.*;
 import smartin.miapi.modules.edit_options.CreateItemOption.CreateItemOption;

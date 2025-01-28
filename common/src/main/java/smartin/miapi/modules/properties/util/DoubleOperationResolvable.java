@@ -98,6 +98,7 @@ public class DoubleOperationResolvable {
     Double cachedResult = null;
     double baseValue = 0.0;
     double fallback = 0.0;
+    ModuleInstance initialized;
 
     /**
      * @param fallback the value this will assume in resolve if no value was set at all, you can use the other resolve methods to not rely on it
@@ -163,6 +164,7 @@ public class DoubleOperationResolvable {
         DoubleOperationResolvable initialized = new DoubleOperationResolvable(operationList, functionTransformer);
         initialized.fallback = this.fallback;
         initialized.getValue();
+        initialized.initialized = moduleInstance;
         return initialized;
     }
 
@@ -176,7 +178,7 @@ public class DoubleOperationResolvable {
     }
 
     public Optional<Double> evaluate(double baseValue) {
-        if (cachedResult == null) {
+        if (cachedResult == null || baseValue != this.baseValue) {
             resolve(operations, baseValue).ifPresent(result -> cachedResult = result);
         }
         return Optional.ofNullable(cachedResult);
@@ -240,6 +242,10 @@ public class DoubleOperationResolvable {
         }
         List<Operation> operationList = new ArrayList<>(left.operations);
         operationList.addAll(right.operations);
+        DoubleOperationResolvable resolvable = new DoubleOperationResolvable(operationList, functionTransformer);
+        if (left.initialized != null) {
+            resolvable.initialize(left.initialized);
+        }
         return new DoubleOperationResolvable(operationList, functionTransformer);
     }
 

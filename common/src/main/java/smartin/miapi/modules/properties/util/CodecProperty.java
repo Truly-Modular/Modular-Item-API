@@ -44,14 +44,6 @@ public abstract class CodecProperty<T> implements ModuleProperty<T> {
             ops = RegistryOps.create(
                     JsonOps.INSTANCE, Miapi.registryAccess
             );
-        } else {
-            if(smartin.miapi.Environment.isClient()){
-                try {
-                    ops = clientCodec();
-                } catch (RuntimeException e) {
-
-                }
-            }
         }
         return codec.parse(
                 ops, element).getOrThrow((s) -> new DecoderException("could not decode CodecProperty " + this.getClass().getName() + " " + s));

@@ -192,6 +192,10 @@ public class MiapiRegistry<T> {
         return get(Miapi.id(name));
     }
 
+    public T remove(ResourceLocation id) {
+        return entries.remove(id);
+    }
+
     /**
      * Adds a new callback to this registry. The callback will be called for every entry in the registry, and for all
      * entries that are registered in the future. The callback will be called immediately for all existing entries in the

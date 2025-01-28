@@ -106,7 +106,8 @@ public class TrulyModularForge {
         }
 
         @SubscribeEvent
-        public static void entityRenderers(RegisterKeyMappingsEvent registerAdditional) {
+        public static void registerKeybinds(RegisterKeyMappingsEvent registerAdditional) {
+            Miapi.LOGGER.info("forge keybind callback");
             MiapiClient.KEY_BINDINGS.addCallback(registerAdditional::register);
         }
 

@@ -10,6 +10,8 @@ import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerPlayer;
 import smartin.miapi.Miapi;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.material.MaterialProperty;
@@ -48,18 +50,23 @@ public class CacheCommands {
 
     private static int executeCacheClear(CommandContext<CommandSourceStack> context) {
         context.getSource().sendSuccess(() -> Component.literal("Clearing all miapi Caches"), false);
-        context
-                .getSource()
-                .getServer()
-                .getPlayerList()
-                .getPlayers().forEach(p ->
-                        ModernNetworking.sendToPlayer(
-                                CLEAR_CACHE_PACKET_ID,
-                                p,
-                                ByteBufCodecs.fromCodecWithRegistries(Miapi.FIXED_BOOL_CODEC),
-                                true));
+        clearCacheAllClients(context.getSource().getServer());
         ModularItemCache.discardCache();
         return 1; // Return success
+    }
+
+    public static void clearCacheAllClients(MinecraftServer server) {
+        server
+                .getPlayerList()
+                .getPlayers().forEach(CacheCommands::reloadPlayerFromServer);
+    }
+
+    public static void reloadPlayerFromServer(ServerPlayer p) {
+        ModernNetworking.sendToPlayer(
+                CLEAR_CACHE_PACKET_ID,
+                p,
+                ByteBufCodecs.fromCodecWithRegistries(Miapi.FIXED_BOOL_CODEC),
+                true);
     }
 
     private static int executeMiapiReload(CommandContext<CommandSourceStack> context) {

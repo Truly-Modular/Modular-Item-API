@@ -1,8 +1,10 @@
-package smartin.miapi.modules.abilities.util;
+package smartin.miapi.modules.abilities.key;
 
 import com.mojang.serialization.Codec;
 import net.minecraft.resources.ResourceLocation;
 import smartin.miapi.modules.ModuleInstance;
+import smartin.miapi.modules.abilities.util.AbilityMangerProperty;
+import smartin.miapi.modules.abilities.util.ItemUseAbility;
 import smartin.miapi.modules.properties.util.CodecProperty;
 import smartin.miapi.modules.properties.util.MergeAble;
 import smartin.miapi.modules.properties.util.MergeType;
@@ -39,13 +41,13 @@ public class KeyBindAbilityManagerProperty extends CodecProperty<Map<ResourceLoc
 
     @Override
     public Map<ResourceLocation, Map<ItemUseAbility<?>, Object>> initialize(Map<ResourceLocation, Map<ItemUseAbility<?>, Object>> map, ModuleInstance context) {
-        Map<ResourceLocation,Map<ItemUseAbility<?>, Object>> init = new LinkedHashMap<>();
-        map.forEach((id,property)->{
+        Map<ResourceLocation, Map<ItemUseAbility<?>, Object>> init = new LinkedHashMap<>();
+        map.forEach((id, property) -> {
             Map<ItemUseAbility<?>, Object> initialized = new LinkedHashMap<>();
             property.forEach((itemUseAbility, o) -> {
                 initialized.put(itemUseAbility, initialize(itemUseAbility, o, context));
             });
-            init.put(id,property);
+            init.put(id, initialized);
         });
         return init;
     }

@@ -1,4 +1,5 @@
 {
     "category": "testing-miapi",
-    "scan_code": 32
+    "scan_code": 32,
+    "entity_interaction": false
 }

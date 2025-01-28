@@ -1,4 +1,4 @@
-package smartin.miapi.key;
+package smartin.miapi.modules.abilities.key;
 
 import com.redpxnda.nucleus.facet.FacetKey;
 import com.redpxnda.nucleus.facet.FacetRegistry;

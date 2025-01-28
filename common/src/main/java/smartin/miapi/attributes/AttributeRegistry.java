@@ -12,7 +12,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.DamageTypeTags;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
@@ -27,7 +26,7 @@ import smartin.miapi.entity.StunHealthFacet;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.events.ModularAttackEvents;
 import smartin.miapi.events.MiapiProjectileEvents;
-import smartin.miapi.key.KeyBindFacet;
+import smartin.miapi.modules.abilities.key.KeyBindFacet;
 import smartin.miapi.mixin.LivingEntityAccessor;
 import smartin.miapi.modules.properties.attributes.AttributeUtil;
 
