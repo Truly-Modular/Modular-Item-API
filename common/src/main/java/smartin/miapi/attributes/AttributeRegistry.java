@@ -27,6 +27,7 @@ import smartin.miapi.entity.StunHealthFacet;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.events.ModularAttackEvents;
 import smartin.miapi.events.MiapiProjectileEvents;
+import smartin.miapi.key.KeyBindFacet;
 import smartin.miapi.mixin.LivingEntityAccessor;
 import smartin.miapi.modules.properties.attributes.AttributeUtil;
 
@@ -96,6 +97,8 @@ public class AttributeRegistry {
                 attacher.add(ShieldingArmorFacet.KEY, facet);
                 StunHealthFacet stunHealthFacet = new StunHealthFacet(livingEntity);
                 attacher.add(StunHealthFacet.KEY, stunHealthFacet);
+                KeyBindFacet keyBindFacet = new KeyBindFacet(livingEntity);
+                attacher.add(KeyBindFacet.KEY, keyBindFacet);
             }
         });
 

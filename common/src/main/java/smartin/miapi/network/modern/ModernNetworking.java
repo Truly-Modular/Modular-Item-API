@@ -6,6 +6,7 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
+import org.apache.commons.lang3.function.TriConsumer;
 import smartin.miapi.Environment;
 import smartin.miapi.Miapi;
 import smartin.miapi.network.Networking;
@@ -15,7 +16,6 @@ import smartin.miapi.network.modern.payload.S2CMiapiPayload;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.BiConsumer;
 
 import static smartin.miapi.network.modern.payload.C2SMiapiPayload.getClientUUID;
 
@@ -31,18 +31,19 @@ public class ModernNetworking {
                     ModernNetworking.s2cReceivers.computeIfPresent(packet.payload().parseId(), ((location, receiver) -> {
                         RegistryFriendlyByteBuf buf = new RegistryFriendlyByteBuf(Networking.createBuffer(), context.registryAccess());
                         buf.writeBytes(packet.payload().data());
-                        receiver.receive(buf);
+                        receiver.receive(buf, context.getPlayer());
                         return receiver;
                     }));
                 });
             } else {
                 NetworkManager.registerS2CPayloadType(S2CMiapiPayload.TYPE, S2CMiapiPayload.STREAM_CODEC);
             }
-            NetworkManager.registerReceiver(NetworkManager.Side.C2S, C2SMiapiPayload.TYPE, C2SMiapiPayload.STREAM_CODEC, (packet, context) -> {
+            //NetworkManager.registerS2CPayloadType(C2SMiapiPayload.TYPE, C2SMiapiPayload.STREAM_CODEC);
+            NetworkManager.registerReceiver(NetworkManager.Side.C2S, C2SMiapiPayload.PACKET_TYPE, C2SMiapiPayload.STREAM_CODEC, (packet, context) -> {
                 ModernNetworking.c2sReceivers.computeIfPresent(packet.payload().parseId(), ((location, receiver) -> {
                     RegistryFriendlyByteBuf buf = new RegistryFriendlyByteBuf(Networking.createBuffer(), context.registryAccess());
                     buf.writeBytes(packet.payload().data());
-                    receiver.receive(buf);
+                    receiver.receive(buf, context.getPlayer());
                     return receiver;
                 }));
             });
@@ -51,11 +52,11 @@ public class ModernNetworking {
         }
     }
 
-    public static <T> void registerS2CReceiver(ResourceLocation location, StreamCodec<RegistryFriendlyByteBuf, T> codec, BiConsumer<T, RegistryAccess> onReceive) {
+    public static <T> void registerS2CReceiver(ResourceLocation location, StreamCodec<RegistryFriendlyByteBuf, T> codec, TriConsumer<T, Player, RegistryAccess> onReceive) {
         s2cReceivers.put(location, new Receiver<>(codec, onReceive));
     }
 
-    public static <T> void registerC2SReceiver(ResourceLocation location, StreamCodec<RegistryFriendlyByteBuf, T> codec, BiConsumer<T, RegistryAccess> onReceive) {
+    public static <T> void registerC2SReceiver(ResourceLocation location, StreamCodec<RegistryFriendlyByteBuf, T> codec, TriConsumer<T, Player, RegistryAccess> onReceive) {
         c2sReceivers.put(location, new Receiver<>(codec, onReceive));
     }
 
@@ -68,7 +69,7 @@ public class ModernNetworking {
     }
 
     public static <T> void sendToServer(ResourceLocation location, StreamCodec<RegistryFriendlyByteBuf, T> codec, T data, RegistryAccess access) {
-        Receiver<?> receiver = s2cReceivers.get(location);
+        Receiver<?> receiver = c2sReceivers.get(location);
         if (receiver != null) {
             RegistryFriendlyByteBuf buf = new RegistryFriendlyByteBuf(Networking.createBuffer(), access);
             codec.encode(buf, data);
@@ -81,7 +82,7 @@ public class ModernNetworking {
     }
 
     public static <T> void sendToPlayer(ResourceLocation location, Player player, StreamCodec<RegistryFriendlyByteBuf, T> codec, T data) {
-        Receiver<?> receiver = c2sReceivers.get(location);
+        Receiver<?> receiver = s2cReceivers.get(location);
         if (receiver != null) {
             RegistryFriendlyByteBuf buf = new RegistryFriendlyByteBuf(Networking.createBuffer(), player.registryAccess());
             codec.encode(buf, data);
@@ -93,9 +94,10 @@ public class ModernNetworking {
         }
     }
 
-    public record Receiver<T>(StreamCodec<RegistryFriendlyByteBuf, T> codec, BiConsumer<T, RegistryAccess> onReceive) {
-        public void receive(RegistryFriendlyByteBuf raw) {
-            onReceive().accept(codec().decode(raw), raw.registryAccess());
+    public record Receiver<T>(StreamCodec<RegistryFriendlyByteBuf, T> codec,
+                              TriConsumer<T, Player, RegistryAccess> onReceive) {
+        public void receive(RegistryFriendlyByteBuf raw, Player player) {
+            onReceive().accept(codec().decode(raw), player, raw.registryAccess());
         }
     }
 

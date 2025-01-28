@@ -9,19 +9,23 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
+import smartin.miapi.client.gui.crafting.crafter.replace.HoverMaterialList;
 import smartin.miapi.material.palette.FallbackColorer;
 import smartin.miapi.material.palette.MaterialRenderController;
 import smartin.miapi.material.palette.MaterialRenderControllers;
 import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.registries.FakeTranslation;
@@ -31,6 +35,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static dev.latvian.mods.kubejs.bindings.TextWrapper.gray;
 
 /**
  * quite frankly, this isnt a good implementation. its still very much based on JSON instead of normal codecs.
@@ -284,17 +290,17 @@ public class JsonMaterial implements Material {
 
     @Environment(EnvType.CLIENT)
     @Override
-    public int getColor() {
+    public int getColor(ModuleInstance context) {
         if (rawJson.getAsJsonObject().get("color") != null) {
             long longValue = Long.parseLong(rawJson.getAsJsonObject().get("color").getAsString(), 16);
             return (int) (longValue & 0xffffffffL);
         }
-        return getRenderController().getAverageColor().argb();
+        return getRenderController(context, ItemDisplayContext.GUI).getAverageColor().argb();
     }
 
     @Environment(EnvType.CLIENT)
     @Override
-    public MaterialRenderController getRenderController() {
+    public MaterialRenderController getRenderController(ModuleInstance context, ItemDisplayContext mode) {
         if (palette == null) {
             return new FallbackColorer(this);
         }
@@ -399,6 +405,7 @@ public class JsonMaterial implements Material {
         }
         return null;
     }
+
 
     @Override
     public JsonObject getDebugJson() {

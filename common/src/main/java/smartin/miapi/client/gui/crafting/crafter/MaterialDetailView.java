@@ -10,6 +10,8 @@ import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.*;
 import smartin.miapi.material.Material;
 import smartin.miapi.material.MaterialProperty;
+import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.ModuleInstance;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -59,7 +61,7 @@ public class MaterialDetailView extends InteractAbleWidget {
         this.addChild(headerScaler);
         int spacer = 13;
         List<InteractAbleWidget> widgets = new ArrayList<>();
-        widgets.add(new ColorWidget(this.getX(), this.getY(), this.getWidth(), spacer, material.getColor()));
+        widgets.add(new ColorWidget(this.getX(), this.getY(), this.getWidth(), spacer, material.getColor(new ModuleInstance(ItemModule.empty))));
         for (Builder builder : infoBarBuilders) {
             widgets.add(builder.build(x, y, width, spacer, material));
         }

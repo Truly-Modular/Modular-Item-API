@@ -298,8 +298,8 @@ public class ModelProperty extends CodecProperty<List<ModelProperty.ModelData>> 
                                 .forGetter((modelData) -> modelData.color_provider),
                         Codec.STRING.optionalFieldOf("trim_mode", "none")
                                 .forGetter((modelData) -> modelData.trim_mode),
-                        Miapi.FIXED_BOOL_CODEC.optionalFieldOf("entity_render", false)
-                                .forGetter((modelData) -> modelData.entity_render),
+                        Miapi.FIXED_BOOL_CODEC.optionalFieldOf("entity_render")
+                                .forGetter((modelData) -> Optional.of(modelData.entity_render)),
                         Codec.STRING.optionalFieldOf("id", "")
                                 .forGetter((modelData) -> modelData.id)
                 ).apply(instance, ModelData::new)
@@ -307,13 +307,15 @@ public class ModelProperty extends CodecProperty<List<ModelProperty.ModelData>> 
 
         // Constructor to work with RecordCodecBuilder
         public ModelData(String path, Transform transform, String condition, String color_provider,
-                         String trim_mode, Boolean entity_render, String id) {
+                         String trim_mode, Optional<Boolean> entity_render, String id) {
             this.path = path;
             this.transform = transform;
             this.condition = condition;
             this.color_provider = color_provider;
             this.trim_mode = trim_mode;
-            this.entity_render = entity_render;
+            this.entity_render = entity_render.orElseGet(() -> !(
+                    this.getTrimMode().equals(TrimRenderer.TrimMode.NONE) &&
+                    this.getTrimMode().equals(TrimRenderer.TrimMode.ITEM)));
             this.id = id;
             repair();
         }
@@ -324,29 +326,18 @@ public class ModelProperty extends CodecProperty<List<ModelProperty.ModelData>> 
                 transform = Transform.IDENTITY;
             }
             transform = Transform.repair(transform);
-            if (entity_render == null) {
-                entity_render = !this.getTrimMode().equals(TrimRenderer.TrimMode.NONE);
-            }
         }
 
         public TrimRenderer.TrimMode getTrimMode() {
             if (trim_mode == null) {
                 return TrimRenderer.TrimMode.NONE;
             } else {
-                switch (trim_mode.toLowerCase()) {
-                    case "armor_layer_one": {
-                        return TrimRenderer.TrimMode.ARMOR_LAYER_ONE;
-                    }
-                    case "armor_layer_two": {
-                        return TrimRenderer.TrimMode.ARMOR_LAYER_TWO;
-                    }
-                    case "item": {
-                        return TrimRenderer.TrimMode.ITEM;
-                    }
-                    default: {
-                        return TrimRenderer.TrimMode.NONE;
-                    }
-                }
+                return switch (trim_mode.toLowerCase()) {
+                    case "armor_layer_one" -> TrimRenderer.TrimMode.ARMOR_LAYER_ONE;
+                    case "armor_layer_two" -> TrimRenderer.TrimMode.ARMOR_LAYER_TWO;
+                    case "item" -> TrimRenderer.TrimMode.ITEM;
+                    default -> TrimRenderer.TrimMode.NONE;
+                };
             }
         }
     }

@@ -19,6 +19,20 @@
         },
         "filler": "interpolate"
     },
+    "dye_color_palette": {
+        "type": "grayscale_map",
+        "colors": {
+            "0": "000000",
+            "36": "181818",
+            "72": "444444",
+            "108": "6d6d62",
+            "144": "9c9e85",
+            "180": "adaf8d",
+            "216": "c5c9a2",
+            "252": "f5e9b8",
+            "255": "f5e9b8"
+        }
+    },
     "textures": [
         "fabric"
     ],

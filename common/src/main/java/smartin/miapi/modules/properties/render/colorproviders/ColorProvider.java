@@ -10,12 +10,13 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
-import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.material.Material;
 import smartin.miapi.material.MaterialProperty;
+import smartin.miapi.modules.ModuleInstance;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * This class deals with recoloring models
@@ -32,11 +33,16 @@ public interface ColorProvider {
     }
 
     static ColorProvider getProvider(String type, ItemStack itemStack, ModuleInstance moduleInstance) {
-        return colorProviders.getOrDefault(type, colorProviders.get("material")).getInstance(itemStack, moduleInstance);
+        ColorProvider base = colorProviders.getOrDefault(type, colorProviders.get("material"));
+        return base.getInstance(itemStack, base.adapt(moduleInstance));
     }
 
-    default Color getVertexColor() {
-        return Color.WHITE;
+    default Optional<Color> getVertexColor() {
+        return Optional.empty();
+    }
+
+    default ModuleInstance adapt(ModuleInstance moduleInstance) {
+        return moduleInstance;
     }
 
     @Environment(EnvType.CLIENT)
@@ -61,7 +67,7 @@ public interface ColorProvider {
                                           ItemStack stack,
                                           ModuleInstance moduleInstance,
                                           ItemDisplayContext mode) {
-            return material.getRenderController().getVertexConsumer(vertexConsumers, sprite, stack, moduleInstance, mode);
+            return material.getRenderController(moduleInstance, mode).getVertexConsumer(vertexConsumers, sprite, stack, moduleInstance, mode);
         }
 
         @Override
@@ -75,12 +81,39 @@ public interface ColorProvider {
     }
 
     class ParentColorProvider extends MaterialColorProvider {
+        public Material material;
+
+        public ParentColorProvider() {
+        }
+
+        public ParentColorProvider(Material material) {
+            this.material = material;
+        }
+
+        @Environment(EnvType.CLIENT)
+        @Override
+        public VertexConsumer getConsumer(MultiBufferSource vertexConsumers,
+                                          TextureAtlasSprite sprite,
+                                          ItemStack stack,
+                                          ModuleInstance moduleInstance,
+                                          ItemDisplayContext mode) {
+            return material.getRenderController(moduleInstance, mode).getVertexConsumer(vertexConsumers, sprite, stack, moduleInstance, mode);
+        }
+
         @Override
         public ColorProvider getInstance(ItemStack stack, ModuleInstance instance) {
-            if (instance.getParent() != null) {
-                return super.getInstance(stack, instance.getParent());
+            Material material1 = MaterialProperty.getMaterial(instance);
+            if (material1 != null) {
+                return new ParentColorProvider(material1);
             }
-            return new ModelColorProvider(stack);
+            return new ModelColorProvider();
+        }
+
+        public ModuleInstance adapt(ModuleInstance moduleInstance) {
+            if (moduleInstance.parent != null) {
+                return moduleInstance.parent;
+            }
+            return moduleInstance;
         }
     }
 
@@ -122,8 +155,8 @@ public interface ColorProvider {
         }
 
         @Override
-        public Color getVertexColor() {
-            return potioncolor;
+        public Optional<Color> getVertexColor() {
+            return Optional.of(potioncolor);
         }
 
         @Environment(EnvType.CLIENT)

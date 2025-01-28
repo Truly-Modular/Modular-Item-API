@@ -76,6 +76,7 @@ import smartin.miapi.modules.abilities.toolabilities.AxeAbility;
 import smartin.miapi.modules.abilities.toolabilities.HoeAbility;
 import smartin.miapi.modules.abilities.toolabilities.ShovelAbility;
 import smartin.miapi.modules.abilities.util.AbilityMangerProperty;
+import smartin.miapi.modules.abilities.util.KeyBindAbilityManagerProperty;
 import smartin.miapi.modules.conditions.*;
 import smartin.miapi.modules.edit_options.*;
 import smartin.miapi.modules.edit_options.CreateItemOption.CreateItemOption;
@@ -544,6 +545,8 @@ public class RegistryInventory {
             registerMiapi(moduleProperties, AllowedInLootProperty.KEY, new AllowedInLootProperty());
             registerMiapi(moduleProperties, PogoAbility.KEY, new PogoAbility());
             registerMiapi(moduleProperties, CopyItemLoreProperty.KEY, new CopyItemLoreProperty());
+            registerMiapi(moduleProperties, ColorProperty.KEY, new ColorProperty());
+            registerMiapi(moduleProperties, KeyBindAbilityManagerProperty.KEY, new KeyBindAbilityManagerProperty());
             //compat
             //registerMiapi(moduleProperties, BetterCombatProperty.KEY, new BetterCombatProperty());
             BetterCombatHelper.setup();

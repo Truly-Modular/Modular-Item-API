@@ -269,7 +269,9 @@ public class CraftAction {
             }
         }
 
-        if ((toAdd == null || toAdd == ItemModule.empty || toAdd.id().equals(Miapi.id("empty"))) && parsingInstance != null) {
+        if (
+                (toAdd == null || toAdd == ItemModule.empty || toAdd.id().equals(Miapi.id("empty"))) &&
+                parsingInstance != null) {
             parsingInstance.removeSubModule(slotLocation.getFirst());
         } else {
             ModuleInstance newModule = new ModuleInstance(toAdd);

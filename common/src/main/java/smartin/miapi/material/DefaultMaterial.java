@@ -9,6 +9,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.FastColor;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.Nullable;
@@ -37,7 +38,7 @@ public class DefaultMaterial implements Material {
 
     @Environment(EnvType.CLIENT)
     @Override
-    public MaterialRenderController getRenderController() {
+    public MaterialRenderController getRenderController(ModuleInstance context, ItemDisplayContext mode) {
         return new FallbackColorer(this);
     }
 
@@ -111,7 +112,7 @@ public class DefaultMaterial implements Material {
 
     @Environment(EnvType.CLIENT)
     @Override
-    public int getColor() {
+    public int getColor(ModuleInstance context) {
         return FastColor.ARGB32.color(255, 255, 255, 255); // Default white color
     }
 

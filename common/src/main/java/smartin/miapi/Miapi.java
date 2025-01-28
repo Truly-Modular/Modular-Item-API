@@ -7,7 +7,9 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
-import com.redpxnda.nucleus.config.*;
+import com.redpxnda.nucleus.config.ConfigBuilder;
+import com.redpxnda.nucleus.config.ConfigManager;
+import com.redpxnda.nucleus.config.ConfigType;
 import com.redpxnda.nucleus.registry.NucleusNamespaces;
 import dev.architectury.event.EventResult;
 import dev.architectury.event.events.common.CommandRegistrationEvent;
@@ -35,6 +37,7 @@ import smartin.miapi.item.ModularItemStackConverter;
 import smartin.miapi.item.modular.PropertyResolver;
 import smartin.miapi.item.modular.Transform;
 import smartin.miapi.item.modular.VisualModularItem;
+import smartin.miapi.key.KeyBindManager;
 import smartin.miapi.material.ComponentMaterial;
 import smartin.miapi.material.MaterialCommand;
 import smartin.miapi.material.MaterialIcons;
@@ -113,7 +116,6 @@ public class Miapi {
         CodecBehavior.registerClass(MaterialIcons.SpinSettings.class, MaterialIcons.SpinSettings.CODEC);
         CodecBehavior.registerClass(EquipmentSlotGroup.class, EquipmentSlotGroup.CODEC);
         CodecBehavior.registerClass(EquipmentSlot.class, EquipmentSlot.CODEC);
-        NucleusConfig config;
 
         setupConfigs();
         setupNetworking();
@@ -125,6 +127,7 @@ public class Miapi {
         StatActorType.setup();
         ComponentMaterial.setup();
         GeneratedMaterialManager.setup();
+        KeyBindManager.setup();
 
         LifecycleEvent.SERVER_BEFORE_START.register(minecraftServer -> {
             server = minecraftServer;

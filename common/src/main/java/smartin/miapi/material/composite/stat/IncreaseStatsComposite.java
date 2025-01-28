@@ -25,7 +25,7 @@ public record IncreaseStatsComposite(Map<String, Double> stats) implements Compo
         return new DelegatingMaterial(parent) {
             public double getDouble(String property) {
                 if (stats.containsKey(property)) {
-                    return stats.get(property) * parent.getDouble(property);
+                    return stats.get(property) + parent.getDouble(property);
                 }
                 return parent.getDouble(property);
             }

@@ -19,6 +19,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.InterModEnqueueEvent;
 import net.neoforged.neoforge.client.event.ModelEvent;
+import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 import net.neoforged.neoforge.common.NeoForge;
@@ -28,6 +29,7 @@ import net.neoforged.neoforge.event.entity.EntityAttributeModificationEvent;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.attributes.AttributeRegistry;
+import smartin.miapi.client.MiapiClient;
 import smartin.miapi.client.atlas.ArmorModelManager;
 import smartin.miapi.client.model.item.ItemBakedModelReplacement;
 import smartin.miapi.datapack.ReloadEvents;
@@ -45,6 +47,7 @@ import static smartin.miapi.Miapi.MOD_ID;
 
 @Mod(MOD_ID)
 public class TrulyModularForge {
+
     public TrulyModularForge() {
         NeoForge.EVENT_BUS.register(new ServerEvents());
         Miapi.init();
@@ -60,7 +63,6 @@ public class TrulyModularForge {
 
         LifecycleEvent.SERVER_STARTING.register((instance -> setupAttributes()));
         ReloadEvents.START.subscribe((isClient, access) -> setupAttributes());
-
         //TODO: why no worky
 
         //KEY_BINDINGS.addCallback((KeyBindingRegistryImpl::registerKeyBinding));
@@ -101,6 +103,11 @@ public class TrulyModularForge {
                 registerAdditional.getModels().put(id, new ItemBakedModelReplacement());
             });
             setupAttributes();
+        }
+
+        @SubscribeEvent
+        public static void entityRenderers(RegisterKeyMappingsEvent registerAdditional) {
+            MiapiClient.KEY_BINDINGS.addCallback(registerAdditional::register);
         }
 
         @SubscribeEvent

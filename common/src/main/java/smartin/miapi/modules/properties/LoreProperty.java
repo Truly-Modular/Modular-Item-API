@@ -91,11 +91,11 @@ public class LoreProperty extends CodecProperty<List<LoreProperty.Holder>> {
         return getData(itemStack).orElse(new ArrayList<>());
     }
 
-    private Component gray(Component text) {
+    public static Component gray(Component text) {
         return format(text, ChatFormatting.GRAY);
     }
 
-    private Component format(Component text, ChatFormatting... formatting) {
+    public static  Component format(Component text, ChatFormatting... formatting) {
         return text.toFlatList(Style.EMPTY.applyFormats(formatting)).get(0);
     }
 
@@ -162,7 +162,7 @@ public class LoreProperty extends CodecProperty<List<LoreProperty.Holder>> {
                 lines.add(gray(Component.literal(" - " + HoverMaterialList.getTranslation(groupId).getString())));
             }
         }
-        lines.addAll(material.getDescription());
+        lines.addAll(material.getDescription(net.minecraft.client.gui.screens.Screen.hasAltDown()));
         return lines;
     }
 
@@ -218,7 +218,7 @@ public class LoreProperty extends CodecProperty<List<LoreProperty.Holder>> {
                 return text;
                 //return Codecs.TEXT.parse(JsonOps.INSTANCE, text).result().orElse(Text.empty());
             }
-            return Component.empty();
+            return net.minecraft.network.chat.Component.empty();
         }
 
         @Override

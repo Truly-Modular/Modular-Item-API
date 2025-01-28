@@ -22,6 +22,7 @@ public class AbilityMangerProperty extends CodecProperty<Map<ItemUseAbility<?>, 
     public static Codec<Map<ItemUseAbility<?>, Object>> CODEC = new Codec<>() {
         @Override
         public <T> DataResult<T> encode(Map<ItemUseAbility<?>, Object> input, DynamicOps<T> ops, T prefix) {
+            //TODO:fixme
             return DataResult.error(() -> "properties are not meant to be decoded");
         }
 

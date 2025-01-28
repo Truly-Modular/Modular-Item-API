@@ -158,6 +158,8 @@ public class ModuleInstance {
     public Map<String, Object> cachedData = new ConcurrentHashMap<>();
     public Map<String, Object> itemStackCache = new ConcurrentHashMap<>();
     public String slotName = null;
+    @Nullable
+    public ItemStack contextStack = null;
 
     /**
      * Constructs a new module instance with the given item module.

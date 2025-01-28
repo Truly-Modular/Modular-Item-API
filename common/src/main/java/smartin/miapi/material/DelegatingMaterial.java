@@ -8,6 +8,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.Nullable;
@@ -43,8 +44,8 @@ public class DelegatingMaterial implements Material {
 
     @Environment(EnvType.CLIENT)
     @Override
-    public MaterialRenderController getRenderController() {
-        return parent.getRenderController();
+    public MaterialRenderController getRenderController(ModuleInstance context,  ItemDisplayContext mode) {
+        return parent.getRenderController(context, mode);
     }
 
     @Environment(EnvType.CLIENT)
@@ -126,8 +127,8 @@ public class DelegatingMaterial implements Material {
 
     @Environment(EnvType.CLIENT)
     @Override
-    public int getColor() {
-        return parent.getColor();
+    public int getColor(ModuleInstance context) {
+        return parent.getColor(context);
     }
 
     @Override
@@ -176,7 +177,8 @@ public class DelegatingMaterial implements Material {
         return parent.getHiddenProperty();
     }
 
-    public List<Component> getDescription(){
-        return List.of();
+    @Override
+    public List<Component> getDescription(boolean extended){
+        return parent.getDescription(extended);
     }
 }

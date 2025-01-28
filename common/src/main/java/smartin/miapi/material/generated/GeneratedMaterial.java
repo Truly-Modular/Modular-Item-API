@@ -30,6 +30,7 @@ import smartin.miapi.material.MaterialProperty;
 import smartin.miapi.material.palette.FallbackColorer;
 import smartin.miapi.material.palette.GrayscalePaletteColorer;
 import smartin.miapi.material.palette.MaterialRenderController;
+import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.attributes.AttributeUtil;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
@@ -255,7 +256,7 @@ public class GeneratedMaterial implements Material {
 
     @Environment(EnvType.CLIENT)
     @Override
-    public MaterialRenderController getRenderController() {
+    public MaterialRenderController getRenderController(ModuleInstance context, ItemDisplayContext mode) {
         if (palette == null) {
             return new FallbackColorer(this);
         }

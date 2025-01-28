@@ -24,6 +24,7 @@ import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.item.modular.Transform;
 import smartin.miapi.material.MaterialProperty;
 import smartin.miapi.modules.ModuleInstance;
+import smartin.miapi.modules.properties.render.ColorProperty;
 import smartin.miapi.modules.properties.render.EmissivityProperty;
 import smartin.miapi.modules.properties.GlintProperty;
 import smartin.miapi.client.GlintShader;
@@ -42,17 +43,17 @@ public class BakedMiapiModel implements MiapiModel {
 
     public BakedMiapiModel(ModelHolder holder, ModuleInstance moduleInstance, ItemStack stack) {
         this.modelHolder = holder;
-        this.instance = moduleInstance;
-        Color color = holder.colorProvider().getVertexColor();
+        this.instance = holder.colorProvider().adapt(moduleInstance);
+        Color color = holder.colorProvider().getVertexColor().orElse(ColorProperty.getColor(stack, instance));
         this.colors = new float[]{color.redAsFloat(), color.greenAsFloat(), color.blueAsFloat()};
         this.modelMatrix = holder.matrix4f();
         this.model = holder.model();
-        settings = GlintProperty.property.getGlintSettings(moduleInstance, stack);
+        settings = GlintProperty.property.getGlintSettings(instance, stack);
 
         skyLight = holder.lightValues()[0];
         blockLight = holder.lightValues()[1];
 
-        int[] propertyLight = EmissivityProperty.getLightValues(moduleInstance);
+        int[] propertyLight = EmissivityProperty.getLightValues(instance);
         int propertySky = propertyLight[0];
         int propertyBlock = propertyLight[1];
 
@@ -121,22 +122,15 @@ public class BakedMiapiModel implements MiapiModel {
         }
         Minecraft.getInstance().level.getProfiler().pop();
 
-
-        Minecraft.getInstance().level.getProfiler().push("EntityModel");
         //render from both sides if requested
         if (modelHolder.entityRendering()) {
+            Minecraft.getInstance().level.getProfiler().push("EntityModel");
             ModelTransformer.getInverse(currentModel, random).forEach(quad -> {
                 VertexConsumer vertexConsumer = modelHolder.colorProvider().getConsumer(vertexConsumers, quad.getSprite(), stack, instance, transformationMode);
                 vertexConsumer.putBulkData(matrices.last(), quad, colors[0], colors[1], colors[2], 1.0f, light, overlay);
-                if (stack.hasFoil()) {
-                    VertexConsumer altConsumer = vertexConsumers.getBuffer(GlintShader.modularItemGlint);
-                    Color glintColor = settings.getColor();
-                    altConsumer.putBulkData(matrices.last(), quad, glintColor.redAsFloat(), glintColor.greenAsFloat(), glintColor.blueAsFloat(), 1.0f, light, overlay);
-                }
             });
+            Minecraft.getInstance().level.getProfiler().pop();
         }
-
-        Minecraft.getInstance().level.getProfiler().pop();
         matrices.popPose();
     }
 

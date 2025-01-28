@@ -1,0 +1,22 @@
+{
+    "keybind_ability_context": {
+        "miapi:miapi/key_binding/test": {
+            "miapi:heavy_attack": {
+                "damage": 2,
+                "sweeping": 3,
+                "range": 5,
+                "minHold": 15,
+                "cooldown": 60,
+                "particle": {
+                    "emit": {
+                        "type": "minecraft:angry_villager"
+                    },
+                    "frequency": 1,
+                    "count": 5,
+                    "speed": 3,
+                    "startAfter": 0
+                }
+            }
+        }
+    }
+}

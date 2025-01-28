@@ -10,9 +10,11 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.FastColor;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.Nullable;
+import smartin.miapi.client.gui.crafting.crafter.replace.HoverMaterialList;
 import smartin.miapi.material.palette.MaterialRenderController;
 import smartin.miapi.modules.ModuleDataPropertiesManager;
 import smartin.miapi.modules.ModuleInstance;
@@ -21,6 +23,7 @@ import smartin.miapi.modules.properties.util.ModuleProperty;
 import java.util.*;
 
 import static smartin.miapi.Miapi.MOD_ID;
+import static smartin.miapi.modules.properties.LoreProperty.gray;
 
 public interface Material {
     ResourceLocation BASE_PALETTE_ID = ResourceLocation.fromNamespaceAndPath(MOD_ID, "miapi_materials/base_palette");
@@ -48,7 +51,7 @@ public interface Material {
     }
 
     @Environment(EnvType.CLIENT)
-    MaterialRenderController getRenderController();
+    MaterialRenderController getRenderController(ModuleInstance context, ItemDisplayContext mode);
 
     /**
      * @param drawContext a DrawContext that can be used to draw shtuff
@@ -89,6 +92,10 @@ public interface Material {
      */
     default Material getMaterialFromIngredient(ItemStack ingredient) {
         return this;
+    }
+
+    default boolean canBeDyed(){
+        return false;
     }
 
     void addSmithingGroup();
@@ -180,8 +187,18 @@ public interface Material {
      * @return
      */
     @Environment(EnvType.CLIENT)
-    default int getColor() {
-        return getRenderController().getAverageColor().argb();
+    default int getColor(ModuleInstance context) {
+        return getColor(context,ItemDisplayContext.GUI);
+    }
+
+    /**
+     * a simplified integer color of the material, used for fallback rendering
+     *
+     * @return
+     */
+    @Environment(EnvType.CLIENT)
+    default int getColor(ModuleInstance context, ItemDisplayContext mode) {
+        return getRenderController(context, mode).getAverageColor().argb();
     }
 
     /**
@@ -275,7 +292,15 @@ public interface Material {
         return encoded;
     }
 
-    default List<Component> getDescription(){
-        return List.of();
+    default List<Component> getDescription(boolean extended) {
+        List<Component> lines = new ArrayList<>();
+        if (extended) {
+            lines.add(gray(Component.translatable("miapi.ui.material_desc_alt_2")));
+            for (int i = 1; i < this.getGuiGroups().size(); i++) {
+                String groupId = this.getGuiGroups().get(i);
+                lines.add(gray(Component.literal(" - " + HoverMaterialList.getTranslation(groupId).getString())));
+            }
+        }
+        return lines;
     }
 }

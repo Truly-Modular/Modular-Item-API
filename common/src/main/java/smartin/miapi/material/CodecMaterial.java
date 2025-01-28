@@ -17,6 +17,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import smartin.miapi.Miapi;
@@ -27,6 +28,8 @@ import smartin.miapi.material.palette.MaterialRenderController;
 import smartin.miapi.material.palette.MaterialRenderControllers;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleDataPropertiesManager;
+import smartin.miapi.modules.ModuleInstance;
+import smartin.miapi.modules.properties.render.ColorProperty;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
@@ -38,6 +41,7 @@ public class CodecMaterial implements Material {
     ResourceLocation id;
     Optional<JsonElement> iconJson;
     Optional<JsonElement> paletteJson;
+    Optional<JsonElement> dyePaletteJson;
     Map<String, Map<ModuleProperty<?>, Object>> propertyMap = new HashMap<>();
     Map<String, Map<ModuleProperty<?>, Object>> displayPropertyMap = new HashMap<>();
     List<String> groups;
@@ -54,6 +58,8 @@ public class CodecMaterial implements Material {
     public MaterialIcons.MaterialIcon icon;
     @Environment(EnvType.CLIENT)
     protected MaterialRenderController palette;
+    @Environment(EnvType.CLIENT)
+    protected Optional<MaterialRenderController> dyeAblePalette = Optional.empty();
 
     public static final Codec<CodecMaterial> CODEC = new Codec<>() {
         @Override
@@ -92,6 +98,7 @@ public class CodecMaterial implements Material {
     public static final Codec<CodecMaterial> INNER_CODEC = RecordCodecBuilder.create(instance -> instance.group(
             StatResolver.Codecs.JSONELEMENT_CODEC.optionalFieldOf("icon").forGetter(material -> material.iconJson),
             StatResolver.Codecs.JSONELEMENT_CODEC.optionalFieldOf("color_palette").forGetter(material -> material.paletteJson),
+            StatResolver.Codecs.JSONELEMENT_CODEC.optionalFieldOf("dye_color_palette").forGetter(material -> material.dyePaletteJson),
             Codec.STRING.listOf().optionalFieldOf("groups", new ArrayList<>()).forGetter(CodecMaterial::getGroups),
             Codec.STRING.listOf().optionalFieldOf("hidden_groups", new ArrayList<>()).forGetter(CodecMaterial::getGuiGroups),
             Codec.STRING.listOf().optionalFieldOf("gui_groups", new ArrayList<>()).forGetter(CodecMaterial::getGuiGroups),
@@ -103,13 +110,14 @@ public class CodecMaterial implements Material {
                     .optionalFieldOf("hidden_properties", new HashMap<>()).forGetter(m -> Material.toJsonMap(m.getHiddenProperty())),
             Codec.STRING.listOf().optionalFieldOf("textures", List.of("default")).forGetter(CodecMaterial::getTextureKeys),
             ResourceLocation.CODEC.optionalFieldOf("mining_level").forGetter(material -> Optional.of(material.getIncorrectBlocksForDrops().location())),
-            Codec.STRING.optionalFieldOf("color").forGetter(m -> Optional.of(Long.toHexString(m.getColor()))),
+            Codec.STRING.optionalFieldOf("color").forGetter(m -> Optional.of(Long.toHexString(m.getColor(new ModuleInstance(ItemModule.empty))))),
             IngredientWithCount.CODEC.listOf().optionalFieldOf("items", new ArrayList<>()).forGetter(material -> material.items),
             Miapi.FIXED_BOOL_CODEC.optionalFieldOf("generate_converters").forGetter(m -> Optional.of(m.generateConverters()))
     ).apply(instance, CodecMaterial::new));
 
     private CodecMaterial(Optional<JsonElement> iconJson,
                           Optional<JsonElement> paletteJson,
+                          Optional<JsonElement> dyePaletteJson,
                           List<String> groups,
                           List<String> hiddenGroups,
                           List<String> guiGroups,
@@ -123,6 +131,7 @@ public class CodecMaterial implements Material {
                           Optional<Boolean> generateConverters) {
         this.iconJson = iconJson;
         this.paletteJson = paletteJson;
+        this.dyePaletteJson = dyePaletteJson;
         this.groups = new ArrayList<>(groups);
         this.guiGroups = new ArrayList<>(guiGroups);
         this.guiGroups.addAll(groups);
@@ -158,6 +167,13 @@ public class CodecMaterial implements Material {
                     this.color = Optional.of(palette.getAverageColor().argb());
                 }
             }
+            dyePaletteJson.ifPresent(element -> dyeAblePalette = Optional.of(
+                    MaterialRenderControllers.creators.get(
+                                    element
+                                            .getAsJsonObject()
+                                            .get("type")
+                                            .getAsString())
+                            .createPalette(element, this)));
         }
     }
 
@@ -165,6 +181,7 @@ public class CodecMaterial implements Material {
         CodecMaterial copy = new CodecMaterial(
                 this.iconJson,
                 this.paletteJson,
+                this.dyePaletteJson,
                 new ArrayList<>(this.groups),
                 List.of(),
                 new ArrayList<>(this.guiGroups),
@@ -189,6 +206,7 @@ public class CodecMaterial implements Material {
 
         copy.iconJson = this.iconJson;
         copy.paletteJson = this.paletteJson;
+        copy.dyePaletteJson = this.dyePaletteJson;
         if (smartin.miapi.Environment.isClient()) {
             if (iconJson.isPresent()) {
                 if (iconJson.get() instanceof JsonPrimitive primitive && primitive.isString())
@@ -199,6 +217,12 @@ public class CodecMaterial implements Material {
                 copy.palette = MaterialRenderControllers.creators.get(copy.paletteJson.get().getAsJsonObject().get("type").getAsString()).createPalette(copy.paletteJson.get(), this);
                 if (copy.color.isEmpty()) {
                     copy.color = Optional.of(palette.getAverageColor().argb());
+                }
+            }
+            if (copy.dyePaletteJson.isPresent()) {
+                copy.dyeAblePalette = Optional.of(MaterialRenderControllers.creators.get(copy.dyePaletteJson.get().getAsJsonObject().get("type").getAsString()).createPalette(copy.dyePaletteJson.get(), this));
+                if (copy.color.isEmpty()) {
+                    copy.color = Optional.of(dyeAblePalette.get().getAverageColor().argb());
                 }
             }
         }
@@ -260,6 +284,7 @@ public class CodecMaterial implements Material {
             if (material.palette != null) {
                 this.palette = material.palette;
             }
+            this.dyeAblePalette = material.dyeAblePalette;
         }
     }
 
@@ -376,7 +401,7 @@ public class CodecMaterial implements Material {
 
     @Environment(EnvType.CLIENT)
     @Override
-    public int getColor() {
+    public int getColor(ModuleInstance context) {
         return color.orElse(Color.BLACK.getRGB());
     }
 
@@ -385,8 +410,18 @@ public class CodecMaterial implements Material {
 
     @Environment(EnvType.CLIENT)
     @Override
-    public MaterialRenderController getRenderController() {
+    public MaterialRenderController getRenderController(ModuleInstance context, ItemDisplayContext mode) {
+        if (context.contextStack != null &&
+            ColorProperty.hasColor(context.contextStack, context) &&
+            dyeAblePalette.isPresent()) {
+            return dyeAblePalette.get();
+        }
         return palette == null ? fallbackColorer : palette;
+    }
+
+    @Override
+    public boolean canBeDyed(){
+        return dyeAblePalette.isPresent();
     }
 
     @Override

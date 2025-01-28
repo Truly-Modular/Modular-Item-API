@@ -52,7 +52,7 @@ public class ColorUtil {
     public static int getModuleColor(ModuleInstance instance) {
         Material material = MaterialProperty.getMaterial(instance);
         if (material != null) {
-            return material.getColor();
+            return material.getColor(instance);
         }
         return FastColor.ARGB32.color(255, 255, 255, 255);
     }

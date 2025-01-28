@@ -2,6 +2,8 @@ package smartin.miapi.modules.abilities.util;
 
 import com.mojang.serialization.DynamicOps;
 import dev.architectury.event.events.common.TickEvent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
@@ -14,6 +16,8 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
+import smartin.miapi.entity.ShieldingArmorFacet;
+import smartin.miapi.key.KeyBindFacet;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.registries.MiapiRegistry;
 
@@ -29,11 +33,13 @@ import java.util.function.Supplier;
  * This class then checks all provided abilites and delegates the calls from the {@link net.minecraft.world.item.Item} to the {@link ItemUseAbility}
  */
 public class ItemAbilityManager {
-    private static final Map<Player, ItemStack> playerActiveItems = new HashMap<>();
-    private static final Map<Player, ItemStack> playerActiveItemsClient = new HashMap<>();
+    private static final Map<Player, ItemStack> playerActiveItems = new WeakHashMap<>();
+    private static final Map<Player, ItemStack> playerActiveItemsClient = new WeakHashMap<>();
     public static final MiapiRegistry<ItemUseAbility> useAbilityRegistry = MiapiRegistry.getInstance(ItemUseAbility.class);
     private static final AbilityHolder<?> emptyAbility = new AbilityHolder(new EmptyAbility(), new Object());
     private static final Map<ItemStack, AbilityHolder<?>> abilityMap = new WeakHashMap<>();
+    public static final Map<Player, ResourceLocation> clientKeyBindID = new WeakHashMap<>();
+    public static final Map<Player, ResourceLocation> serverKeyBindID = new WeakHashMap<>();
 
     public static void setup() {
         TickEvent.PLAYER_PRE.register((playerEntity) -> {
@@ -72,11 +78,38 @@ public class ItemAbilityManager {
     }
 
     private static AbilityHolder<?> getAbility(ItemStack itemStack, Level world, Player player, InteractionHand hand, AbilityHitContext abilityHitContext) {
-        AbilityMangerProperty.property.getData(itemStack);
-        for (Map.Entry<ItemUseAbility<?>, Object> entry : AbilityMangerProperty.property.getData(itemStack).orElse(new HashMap<>()).entrySet()) {
-            if (entry.getKey().allowedOnItem(itemStack, world, player, hand, abilityHitContext)) {
-                //return new Pair<>(entry.getKey(), entry.getValue());
-                return entry.getKey().getAsHolder(entry.getValue());
+        ResourceLocation keybindID = null;
+        if (player.level().isClientSide) {
+            keybindID = clientKeyBindID.get(player);
+        } else {
+            keybindID = serverKeyBindID.get(player);
+        }
+        if (keybindID == null) {
+            for (Map.Entry<ItemUseAbility<?>, Object> entry : AbilityMangerProperty.property.getData(itemStack).orElse(new HashMap<>()).entrySet()) {
+                if (entry.getKey().allowedOnItem(itemStack, world, player, hand, abilityHitContext)) {
+                    //return new Pair<>(entry.getKey(), entry.getValue());
+                    if (player instanceof ServerPlayer serverPlayer) {
+                        KeyBindFacet.get(serverPlayer).reset(serverPlayer);
+                    }
+                    return entry.getKey().getAsHolder(entry.getValue());
+                }
+            }
+        } else {
+            var map = KeyBindAbilityManagerProperty.property.getData(itemStack).orElse(new HashMap<>());
+            Map<ItemUseAbility<?>, Object> abilities = map.get(keybindID);
+            if (abilities != null) {
+                for (Map.Entry<ItemUseAbility<?>, Object> entry : abilities.entrySet()) {
+                    if (entry.getKey().allowedOnItem(itemStack, world, player, hand, abilityHitContext)) {
+                        //return new Pair<>(entry.getKey(), entry.getValue());
+                        if (player instanceof ServerPlayer serverPlayer) {
+                            if(KeyBindFacet.get(serverPlayer)!=null){
+                                ShieldingArmorFacet facet;
+                                KeyBindFacet.get(serverPlayer).set(keybindID, serverPlayer);
+                            }
+                        }
+                        return entry.getKey().getAsHolder(entry.getValue());
+                    }
+                }
             }
         }
         return emptyAbility;

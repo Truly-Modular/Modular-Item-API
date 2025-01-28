@@ -17,11 +17,11 @@ public record C2SMiapiPayload(CustomPayload payload) implements CustomPacketPayl
 
     public static final StreamCodec<FriendlyByteBuf, C2SMiapiPayload> STREAM_CODEC = CustomPacketPayload.codec(C2SMiapiPayload::encode, C2SMiapiPayload::decode);
 
-    public static final Type<C2SMiapiPayload> TYPE = new Type<>(Miapi.id("default-c2s-networking"));
+    public static final Type<C2SMiapiPayload> PACKET_TYPE = new Type<>(Miapi.id("default-c2s-networking"));
 
     @Override
-    public Type<? extends CustomPacketPayload> type() {
-        return TYPE;
+    public @NotNull Type<? extends CustomPacketPayload> type() {
+        return PACKET_TYPE;
     }
 
     public static C2SMiapiPayload decode(FriendlyByteBuf friendlyByteBuf) {
@@ -31,7 +31,7 @@ public record C2SMiapiPayload(CustomPayload payload) implements CustomPacketPayl
         }
         FriendlyByteBuf buf = Networking.createBuffer();
         buf.writeBytes(payload.data());
-        Networking.C2SPackets.get(payload.id()).accept(buf, getPlayer(payload.serverPlayer()));
+        //Networking.C2SPackets.get(payload.id()).accept(buf, getPlayer(payload.serverPlayer()));
         return new C2SMiapiPayload(payload);
     }
 

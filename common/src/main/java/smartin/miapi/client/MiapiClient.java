@@ -12,6 +12,7 @@ import dev.architectury.registry.client.rendering.BlockEntityRendererRegistry;
 import dev.architectury.registry.menu.MenuRegistry;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.network.chat.ClickEvent;
@@ -36,6 +37,7 @@ import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.effects.CryoStatusEffect;
 import smartin.miapi.entity.ItemProjectileRenderer;
 import smartin.miapi.events.ClientEvents;
+import smartin.miapi.key.ClientKeybinding;
 import smartin.miapi.material.Material;
 import smartin.miapi.material.MaterialCommand;
 import smartin.miapi.material.MaterialIcons;
@@ -47,6 +49,7 @@ import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.render.colorproviders.ColorProvider;
 import smartin.miapi.modules.properties.slot.AllowedSlots;
 import smartin.miapi.network.Networking;
+import smartin.miapi.registries.MiapiRegistry;
 import smartin.miapi.registries.RegistryInventory;
 
 import java.util.ArrayList;
@@ -65,7 +68,7 @@ public class MiapiClient {
             Platform.isModLoaded("oculus");
     public static boolean sodiumLoaded = isSodiumLoaded();
     public static boolean jerLoaded = Platform.isModLoaded("jeresources");
-    //public static final MiapiRegistry<KeyMapping> KEY_BINDINGS = MiapiRegistry.getInstance(KeyMapping.class);
+    public static final MiapiRegistry<KeyMapping> KEY_BINDINGS = MiapiRegistry.getInstance(KeyMapping.class);
     //public static final KeyBinding HOVER_DETAIL_BINDING = KEY_BINDINGS.register("miapi:hover_detail", new KeyBinding("miapi.gui.item_detail", 42, "miapi.keybinds"));
 
     private MiapiClient() {
@@ -73,7 +76,7 @@ public class MiapiClient {
 
     public static void init() {
         var config = ConfigManager.getConfigObject(Miapi.id("server"));
-        if(config.getInstance()==null){
+        if (config.getInstance() == null) {
             config.load();
         }
         RegistryInventory.modularItems.addCallback((MiapiClient::registerAnimations));
@@ -84,6 +87,10 @@ public class MiapiClient {
                 MaterialSpriteManager.tick();
                 Minecraft.getInstance().getProfiler().pop();
             }
+            ClientKeybinding.clientTick(instance);
+        }));
+        ClientTickEvent.CLIENT_POST.register((instance -> {
+            //ClientKeybinding.clientTick(instance);
         }));
         Networking.registerS2CPacket(MaterialCommand.SEND_MATERIAL_CLIENT, (buf -> {
             String materialId = buf.readUtf();

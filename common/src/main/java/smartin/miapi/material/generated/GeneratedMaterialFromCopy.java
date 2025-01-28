@@ -14,6 +14,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.FastColor;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Tier;
 import net.minecraft.world.level.block.Block;
@@ -26,6 +27,7 @@ import smartin.miapi.material.MaterialProperty;
 import smartin.miapi.material.palette.FallbackColorer;
 import smartin.miapi.material.palette.GrayscalePaletteColorer;
 import smartin.miapi.material.palette.MaterialRenderController;
+import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.ArrayList;
@@ -136,7 +138,7 @@ public class GeneratedMaterialFromCopy implements Material {
 
     @Environment(EnvType.CLIENT)
     @Override
-    public MaterialRenderController getRenderController() {
+    public MaterialRenderController getRenderController(ModuleInstance context, ItemDisplayContext mode) {
         if (palette == null) {
             return new FallbackColorer(this);
         }

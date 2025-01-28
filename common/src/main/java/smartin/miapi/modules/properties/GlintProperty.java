@@ -7,6 +7,7 @@ import com.redpxnda.nucleus.util.Color;
 import dev.architectury.event.EventResult;
 import net.minecraft.Util;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.GlintShader;
@@ -66,7 +67,7 @@ public class GlintProperty extends CodecProperty<GlintProperty.RainbowGlintSetti
                 return vanillaLike;
             }
             if (MaterialProperty.getMaterial(instance) != null) {
-                Color adjusted = new Color(MaterialProperty.getMaterial(instance).getColor());
+                Color adjusted = new Color(MaterialProperty.getMaterial(instance).getColor(instance, ItemDisplayContext.GUI));
                 return defaultSettings.copyWithColor(adjustWith(
                         adjusted,
                         MiapiConfig.INSTANCE.client.enchantingGlint.materialRatioColor,

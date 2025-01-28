@@ -31,8 +31,7 @@ import static smartin.miapi.Miapi.gson;
  * @param properties The map of properties for the module.
  * @header Modules
  * @path /datapack/module
- * @description_start
- * Modules are the core of Truly Modular
+ * @description_start Modules are the core of Truly Modular
  * They can be found/added in mod-id:/miapi/modules/any-path-and-file-name.json
  * They consist of a Map of Properties
  * @description_end
@@ -156,7 +155,13 @@ public record ItemModule(ResourceLocation id, Map<ModuleProperty<?>, Object> pro
             return new ModuleInstance(ItemModule.empty);
         }
         if (stack.getItem() instanceof VisualModularItem && !ReloadEvents.isInReload()) {
-            return stack.getComponents().get(ModuleInstance.MODULE_INSTANCE_COMPONENT);
+            ModuleInstance root = stack.getComponents().get(ModuleInstance.MODULE_INSTANCE_COMPONENT);
+            if (root != null) {
+                for (ModuleInstance moduleInstance : root.allSubModules()) {
+                    moduleInstance.contextStack = stack;
+                }
+            }
+            return root;
         }
         return new ModuleInstance(ItemModule.empty);
     }

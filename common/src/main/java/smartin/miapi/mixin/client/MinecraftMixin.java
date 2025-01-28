@@ -1,27 +1,27 @@
 package smartin.miapi.mixin.client;
 
-import dev.architectury.registry.ReloadListenerRegistry;
-import net.minecraft.client.gui.GuiSpriteManager;
-import net.minecraft.client.renderer.texture.TextureManager;
-import net.minecraft.server.packs.PackType;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.MultiPlayerGameMode;
+import net.minecraft.world.entity.player.Player;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import smartin.miapi.client.MiapiClient;
-import smartin.miapi.client.atlas.MaterialAtlasManager;
+import org.spongepowered.asm.mixin.injection.Redirect;
+import smartin.miapi.key.ClientKeybinding;
 
-@Mixin(GuiSpriteManager.class)
+@Mixin(Minecraft.class)
 public class MinecraftMixin {
 
-    @Inject(
-            method = "<init>",
-            at = @At("TAIL")
+
+    @Redirect(method = "handleKeybinds",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/client/multiplayer/MultiPlayerGameMode;releaseUsingItem(Lnet/minecraft/world/entity/player/Player;)V"
+            )
     )
-    private void miapi$customItemRenderingEntityGetter(TextureManager textureManager, CallbackInfo ci) {
-        //Minecraft client = (Minecraft) (Object) this;
-        MiapiClient.materialAtlasManager = new MaterialAtlasManager(textureManager);
-        ReloadListenerRegistry.register(PackType.CLIENT_RESOURCES, MiapiClient.materialAtlasManager);
-        //((ReloadableResourceManager) client.getResourceManager()).registerReloadListener(MiapiClient.materialAtlasManager);
+    private void redirectKeyUp(MultiPlayerGameMode instance, Player player) {
+        if (!ClientKeybinding.isUsing) {
+            instance.releaseUsingItem(player);
+        }
     }
 }
