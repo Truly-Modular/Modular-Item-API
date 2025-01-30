@@ -33,10 +33,7 @@ import smartin.miapi.modules.properties.onHit.entity.AquaticDamage;
 import smartin.miapi.modules.properties.onHit.entity.IllagerBane;
 import smartin.miapi.modules.properties.onHit.entity.SmiteDamage;
 import smartin.miapi.modules.properties.onHit.entity.SpiderDamage;
-import smartin.miapi.modules.properties.projectile.DrawTimeProperty;
-import smartin.miapi.modules.properties.projectile.IsCrossbowShootAble;
-import smartin.miapi.modules.properties.projectile.RapidfireCrossbowProperty;
-import smartin.miapi.modules.properties.projectile.WaterDragProperty;
+import smartin.miapi.modules.properties.projectile.*;
 import smartin.miapi.modules.properties.util.GuiWidgetSupplier;
 import smartin.miapi.registries.RegistryInventory;
 
@@ -321,6 +318,9 @@ public class StatListWidget extends InteractAbleWidget {
         addStatDisplay(ComplexBooleanStatDisplay
                 .builder(StepCancelingProperty.property)
                 .setTranslationKey(StepCancelingProperty.KEY).build());
+        addStatDisplay(ComplexBooleanStatDisplay
+                .builder(MakesImpactSoundProperty.property)
+                .setTranslationKey(MakesImpactSoundProperty.KEY).build());
 
         addStatDisplay(SinglePropertyStatDisplay
                 .builder(PillagesGuard.property)

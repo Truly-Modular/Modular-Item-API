@@ -148,33 +148,40 @@ public class MiapiServerConfig {
         @AutoCodec.Name("generate_other_materials")
         public boolean generateOtherMaterials = true;
 
-        @Comment("Whether the Attribute Property should copy the items other attributes for generated Materials")
-        @AutoCodec.Name("attribute_property")
-        public GeneratePropertyOption attributeProperty = new GeneratePropertyOption();
+        @Comment("What Properties are generated")
+        @AutoCodec.Name("generate_properties")
+        public Properties properties = new Properties();
 
-        @Comment("Whether the Crafting Enchantment Property should copy the items other attributes for generated Materials")
-        @AutoCodec.Name("enchant_property")
-        public GeneratePropertyOption enchantProperty = new GeneratePropertyOption();
+        @ConfigAutoCodec.ConfigClassMarker
+        public static class Properties{
+            @Comment("Whether the Attribute Property should copy the items other attributes for generated Materials")
+            @AutoCodec.Name("attribute_property")
+            public GeneratePropertyOption attributeProperty = new GeneratePropertyOption();
 
-        @Comment("Whether the Ability Property should copy the items abilities for generated Materials")
-        @AutoCodec.Name("ability_property")
-        public GeneratePropertyOption abilityProperty = new GeneratePropertyOption();
+            @Comment("Whether the Crafting Enchantment Property should copy the items other attributes for generated Materials")
+            @AutoCodec.Name("enchant_property")
+            public GeneratePropertyOption enchantProperty = new GeneratePropertyOption();
 
-        @Comment("Whether the Tags of the Items should be copied as Material Properties for generated Materials")
-        @AutoCodec.Name("tag_property")
-        public GeneratePropertyOption tagProperty = new GeneratePropertyOption();
+            @Comment("Whether the Ability Property should copy the items abilities for generated Materials")
+            @AutoCodec.Name("ability_property")
+            public GeneratePropertyOption abilityProperty = new GeneratePropertyOption();
 
-        @Comment("Whether the Item Lore of the Items should be copied as Material Properties for generated Materials")
-        @AutoCodec.Name("lore_property")
-        public GeneratePropertyOption loreProperty = new GeneratePropertyOption();
+            @Comment("Whether the Tags of the Items should be copied as Material Properties for generated Materials")
+            @AutoCodec.Name("tag_property")
+            public GeneratePropertyOption tagProperty = new GeneratePropertyOption();
 
-        @Comment("Whether the On Hit Effects of the Items should be attempted to be copied as Material Properties for generated Materials")
-        @AutoCodec.Name("on_hit_property")
-        public GeneratePropertyOption onHitProperty = new GeneratePropertyOption();
+            @Comment("Whether the Item Lore of the Items should be copied as Material Properties for generated Materials")
+            @AutoCodec.Name("lore_property")
+            public GeneratePropertyOption loreProperty = new GeneratePropertyOption();
 
-        @Comment("Whether Custom Components should be added to the generated Materials")
-        @AutoCodec.Name("component_property")
-        public GeneratePropertyOption componentProperty = new GeneratePropertyOption();
+            @Comment("Whether the On Hit Effects of the Items should be attempted to be copied as Material Properties for generated Materials")
+            @AutoCodec.Name("on_hit_property")
+            public GeneratePropertyOption onHitProperty = new GeneratePropertyOption();
+
+            @Comment("Whether Custom Components should be added to the generated Materials")
+            @AutoCodec.Name("component_property")
+            public GeneratePropertyOption componentProperty = new GeneratePropertyOption();
+        }
 
         @ConfigAutoCodec.ConfigClassMarker
         public static class GeneratePropertyOption {
@@ -188,10 +195,6 @@ public class MiapiServerConfig {
 
     @ConfigAutoCodec.ConfigClassMarker
     public static class EnchantmentsCategory {
-        @Comment("Whether Modular Bows should no longer require any arrows to work infinity")
-        @AutoCodec.Name("better_infinity")
-        public boolean betterInfinity = true;
-
         @Comment("Whether loyalty should trigger in the void with Modular Items")
         @AutoCodec.Name("better_loyalty")
         public boolean betterLoyalty = true;

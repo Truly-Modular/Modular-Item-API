@@ -86,10 +86,7 @@ import smartin.miapi.modules.properties.armor.*;
 import smartin.miapi.modules.properties.attributes.AttributeProperty;
 import smartin.miapi.modules.properties.attributes.AttributeSplitProperty;
 import smartin.miapi.modules.properties.compat.better_combat.BetterCombatHelper;
-import smartin.miapi.modules.properties.enchanment.AllowedEnchantments;
-import smartin.miapi.modules.properties.enchanment.CraftingEnchantProperty;
-import smartin.miapi.modules.properties.enchanment.EnchantAbilityProperty;
-import smartin.miapi.modules.properties.enchanment.FakeEnchantmentProperty;
+import smartin.miapi.modules.properties.enchanment.*;
 import smartin.miapi.modules.properties.mining.MiningLevelProperty;
 import smartin.miapi.modules.properties.mining.MiningShapeProperty;
 import smartin.miapi.modules.properties.onHit.*;
@@ -547,6 +544,9 @@ public class RegistryInventory {
             registerMiapi(moduleProperties, CopyItemLoreProperty.KEY, new CopyItemLoreProperty());
             registerMiapi(moduleProperties, ColorProperty.KEY, new ColorProperty());
             registerMiapi(moduleProperties, KeyBindAbilityManagerProperty.KEY, new KeyBindAbilityManagerProperty());
+            registerMiapi(moduleProperties, FakeEitherEnchantmentProperty.KEY, new FakeEitherEnchantmentProperty());
+            registerMiapi(moduleProperties, MakesImpactSoundProperty.KEY, new MakesImpactSoundProperty());
+            registerMiapi(moduleProperties, ProjectileDropItemProperty.KEY, new ProjectileDropItemProperty());
             //compat
             //registerMiapi(moduleProperties, BetterCombatProperty.KEY, new BetterCombatProperty());
             BetterCombatHelper.setup();

@@ -93,14 +93,18 @@ public class SynergyManager {
             } else {
                 ItemModule property = RegistryInventory.modules.get(entry.getKey());
                 JsonObject entryData = entry.getValue().getAsJsonObject();
-                loadSynergy(property, entryData, path);
+                if (property == null) {
+                    Miapi.LOGGER.info("Module doesn't exist for synergy " + path + " " + entry.getKey());
+                } else {
+                    loadSynergy(property, entryData, path);
+                }
             }
         });
     }
 
     public static void loadSynergy(ItemModule itemModule, JsonObject entryData, ResourceLocation id) {
         if (itemModule == null) {
-            Miapi.LOGGER.warn("ItemModule is null?");
+            Miapi.LOGGER.warn("ItemModule is null in synergy load ? " + id);
             return;
         }
         Synergy synergy = new Synergy();
@@ -115,7 +119,7 @@ public class SynergyManager {
 
     public static void loadSynergy(Material material, JsonObject entryData, ResourceLocation id) {
         if (material == null) {
-            Miapi.LOGGER.warn("ItemModule is null?");
+            Miapi.LOGGER.warn("ItemModule is null? Synergy was not loaded" + id);
             return;
         }
         Synergy synergy = new Synergy();

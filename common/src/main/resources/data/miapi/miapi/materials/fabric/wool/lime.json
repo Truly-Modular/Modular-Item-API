@@ -4,7 +4,8 @@
         "item": "minecraft:lime_wool"
     },
     "groups": [
-        "fabric"
+        "fabric",
+        "wool"
     ],
     "hardness": 0.5,
     "density": 2,
@@ -29,6 +30,9 @@
     "properties": {
         "boot": {
             "step_noise_cancel": true
+        },
+        "arrow": {
+            "projectile_impact_sound": false
         }
     },
     "items": [

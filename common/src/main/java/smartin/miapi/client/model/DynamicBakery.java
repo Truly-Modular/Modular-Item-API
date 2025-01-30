@@ -18,6 +18,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
+import smartin.miapi.Miapi;
 import smartin.miapi.client.model.item.BakedSingleModel;
 import smartin.miapi.client.model.item.BakedSingleModelOverrides;
 import smartin.miapi.item.modular.Transform;
@@ -76,11 +77,15 @@ public class DynamicBakery {
 
                 for (Direction direction : modelElement.faces.keySet()) {
                     BlockElementFace modelElementFace = modelElement.faces.get(direction);
-                    TextureAtlasSprite sprite2 = textureGetter.apply(model.getMaterial(modelElementFace.texture()));
-                    if (modelElementFace.cullForDirection() == null) {
-                        builder.addUnculledFace(createQuad(modelElement, modelElementFace, sprite2, direction, BlockModelRotation.X0_Y0, id, color));
-                    } else {
-                        builder.addCulledFace(Direction.rotate(BlockModelRotation.X0_Y0.getRotation().getMatrix(), modelElementFace.cullForDirection()), createQuad(modelElement, modelElementFace, sprite2, direction, BlockModelRotation.X0_Y0, id, color));
+                    try {
+                        TextureAtlasSprite sprite2 = textureGetter.apply(model.getMaterial(modelElementFace.texture()));
+                        if (modelElementFace.cullForDirection() == null) {
+                            builder.addUnculledFace(createQuad(modelElement, modelElementFace, sprite2, direction, BlockModelRotation.X0_Y0, id, color));
+                        } else {
+                            builder.addCulledFace(Direction.rotate(BlockModelRotation.X0_Y0.getRotation().getMatrix(), modelElementFace.cullForDirection()), createQuad(modelElement, modelElementFace, sprite2, direction, BlockModelRotation.X0_Y0, id, color));
+                        }
+                    } catch (RuntimeException e) {
+                        Miapi.LOGGER.info("could not find texture for model " + id);
                     }
                 }
             }

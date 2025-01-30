@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import dev.architectury.event.EventResult;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.PotionItem;
 import net.minecraft.world.item.alchemy.PotionContents;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.modules.StackStorageComponent;
@@ -34,7 +35,7 @@ public class MaterialInscribeProperty extends CodecProperty<String> {
         optional.ifPresent(s -> raw.update(StackStorageComponent.STACK_STORAGE_COMPONENT, Map.of(), old -> {
             Map<String, ItemStack> map = new HashMap<>(old);
             map.put(s, materialStack);
-            if (s.equals("POTION")) {
+            if(materialStack.getItem() instanceof PotionItem){
                 PotionContents contents = materialStack.get(DataComponents.POTION_CONTENTS);
                 if (contents != null) {
                     raw.set(DataComponents.POTION_CONTENTS, contents);

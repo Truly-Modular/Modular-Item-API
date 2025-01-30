@@ -1,0 +1,12 @@
+{
+    "icon": {
+        "type": "item",
+        "item": "minecraft:name_tag"
+    },
+    "items": [
+        {
+            "item": "minecraft:name_tag",
+            "value": 1.0
+        }
+    ]
+}

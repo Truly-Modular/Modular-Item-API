@@ -25,7 +25,7 @@ public class MaterialProperties extends CodecProperty<List<String>> {
         super(Codec.list(Codec.STRING));
         property = this;
         PropertyResolver.register("material_property", (moduleInstance, oldMap) -> {
-            Material material = MaterialProperty.getMaterial(oldMap);
+            Material material = MaterialProperty.getMaterial(moduleInstance);
             Map<ModuleProperty<?>, Object> returnMap = new HashMap<>(oldMap);
             if (material != null) {
                 List<String> keys = getData(moduleInstance).orElse(new ArrayList<>());

@@ -4,7 +4,8 @@
         "item": "minecraft:red_wool"
     },
     "groups": [
-        "fabric"
+        "fabric",
+        "wool"
     ],
     "hardness": 0.5,
     "density": 2,
@@ -24,6 +25,9 @@
     "properties": {
         "boot": {
             "step_noise_cancel": true
+        },
+        "arrow": {
+            "projectile_impact_sound": false
         }
     },
     "mining_speed": 0,

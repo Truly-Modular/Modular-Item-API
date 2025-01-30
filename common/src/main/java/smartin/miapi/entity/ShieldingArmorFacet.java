@@ -78,7 +78,7 @@ public class ShieldingArmorFacet implements EntityFacet<CompoundTag> {
     public void sendToClient(Entity capHolder, ServerPlayer player) {
         if (player != null && player.connection != null && player.level() != null) {
             try {
-                createPacket(capHolder).send(player);
+                //createPacket(capHolder).send(player);
             } catch (RuntimeException e) {
                 Miapi.LOGGER.error("facet sync issue", e);
             }

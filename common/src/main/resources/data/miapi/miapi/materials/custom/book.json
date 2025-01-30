@@ -1,0 +1,12 @@
+{
+    "icon": {
+        "type": "item",
+        "item": "minecraft:writable_book"
+    },
+    "items": [
+        {
+            "item": "minecraft:writable_book",
+            "value": 1.0
+        }
+    ]
+}

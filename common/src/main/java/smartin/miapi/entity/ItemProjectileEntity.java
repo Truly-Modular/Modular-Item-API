@@ -1,6 +1,7 @@
 package smartin.miapi.entity;
 
 import dev.architectury.event.EventResult;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Position;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -10,15 +11,21 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
+import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.entity.projectile.ProjectileDeflection;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.attributes.AttributeRegistry;
@@ -32,6 +39,7 @@ import smartin.miapi.modules.abilities.util.WrappedSoundEvent;
 import smartin.miapi.modules.properties.attributes.AttributeUtil;
 import smartin.miapi.modules.properties.projectile.AirDragProperty;
 import smartin.miapi.modules.properties.projectile.ChannelingProperty;
+import smartin.miapi.modules.properties.projectile.MakesImpactSoundProperty;
 import smartin.miapi.registries.RegistryInventory;
 
 public class ItemProjectileEntity extends AbstractArrow {
@@ -296,7 +304,8 @@ public class ItemProjectileEntity extends AbstractArrow {
         if (stack != null && !stack.isEmpty()) {
             return stack;
         }
-        return super.getPickupItem();
+        return ItemStack.EMPTY;
+        //return super.getPickupItem();
     }
 
     @Override
@@ -312,6 +321,36 @@ public class ItemProjectileEntity extends AbstractArrow {
             projectileHitBehaviour.onBlockHit(this, blockHitResult);
         }
         super.onHitBlock(blockHitResult);
+    }
+
+    @Override
+    protected void onHit(HitResult result) {
+        hitEntitySound = new WrappedSoundEvent(this.getDefaultHitGroundSoundEvent(), 1.0f, 1.0f);
+        ((AbstractArrowAccessor) this).setSoundEvent(hitEntitySound.event());
+        HitResult.Type hitresult$type = result.getType();
+        boolean makeEvent = MakesImpactSoundProperty.property.isTrue(getPickupItem());
+        if (hitresult$type == HitResult.Type.ENTITY) {
+            EntityHitResult entityhitresult = (EntityHitResult) result;
+            Entity entity = entityhitresult.getEntity();
+            if (entity.getType().is(EntityTypeTags.REDIRECTABLE_PROJECTILE) && entity instanceof Projectile) {
+                Projectile projectile = (Projectile) entity;
+                projectile.deflect(ProjectileDeflection.AIM_DEFLECT, this.getOwner(), this.getOwner(), true);
+            }
+
+            this.onHitEntity(entityhitresult);
+            getPickupItem();
+            if (makeEvent) {
+                this.level().gameEvent(GameEvent.PROJECTILE_LAND, result.getLocation(), GameEvent.Context.of(this, (BlockState) null));
+            }
+        } else if (hitresult$type == HitResult.Type.BLOCK) {
+            BlockHitResult blockhitresult = (BlockHitResult) result;
+            this.onHitBlock(blockhitresult);
+            BlockPos blockpos = blockhitresult.getBlockPos();
+            if (makeEvent) {
+                this.level().gameEvent(GameEvent.PROJECTILE_LAND, blockpos, GameEvent.Context.of(this, this.level().getBlockState(blockpos)));
+            }
+        }
+
     }
 
     public float getProjectileDamage() {
@@ -362,6 +401,10 @@ public class ItemProjectileEntity extends AbstractArrow {
 
     @Override
     protected SoundEvent getDefaultHitGroundSoundEvent() {
+        boolean makeEvent = MakesImpactSoundProperty.property.isTrue(getPickupItem());
+        if (!makeEvent) {
+            return SoundEvents.EMPTY;
+        }
         return SoundEvents.TRIDENT_HIT_GROUND;
     }
 
@@ -390,8 +433,7 @@ public class ItemProjectileEntity extends AbstractArrow {
         if (nbt.contains("BowItem", 10)) {
             ItemStack bowItem = ItemStack.parse(registryAccess(), nbt.getCompound("BowItem")).get();
             this.entityData.set(BOW_ITEM_STACK, bowItem);
-        }
-        else {
+        } else {
             this.entityData.set(BOW_ITEM_STACK, ItemStack.EMPTY);
         }
         if (nbt.contains("WaterDrag")) {

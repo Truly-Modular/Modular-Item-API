@@ -7,7 +7,6 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import com.redpxnda.nucleus.util.Color;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.core.RegistryAccess;
@@ -76,26 +75,32 @@ public class ModuleInstance {
                 var basicResult = basicCodec.decode(ops, input);
                 if (ops instanceof RegistryOps<T> registryOps) {
                     if (basicResult.isSuccess()) {
-                        basicResult.getOrThrow().getFirst().lookup = ((RegistryOpsAccessor) registryOps).getLookupProvider();
+                        ModuleInstance root = basicResult.getOrThrow().getFirst();
+                        for (ModuleInstance moduleInstance : root.allSubModules()) {
+                            moduleInstance.lookup = ((RegistryOpsAccessor) registryOps).getLookupProvider();
+                        }
                     }
-                    //TODO:give moduleinstances guaranteeed registry access
                 }
                 var result = basicResult.getOrThrow().getFirst();
-                if (result.subModules.isEmpty() && result.module != ItemModule.empty) {
-                    //Miapi.LOGGER.error("possible problem!");
-                    //Miapi.LOGGER.warn("encoded module " + result);
+                if (result.subModules.isEmpty() && result.module != ItemModule.empty
+                    //&& MiapiConfig.INSTANCE.server.other.verboseLogging
+                ) {
+                    Miapi.LOGGER.error("possible problem!");
+                    Miapi.LOGGER.warn("encoded module " + result);
+                    //Miapi.LOGGER.warn("data" + input.toString());
                 }
                 return basicResult;
             }
 
-            Color color;
-
             @Override
             public <T> DataResult<T> encode(ModuleInstance input, DynamicOps<T> ops, T prefix) {
                 var result = basicCodec.encode(input, ops, prefix);
-                if (input.subModules.isEmpty() && input.module != ItemModule.empty) {
-                    //Miapi.LOGGER.error("possible problem!");
-                    //Miapi.LOGGER.warn("encoded module " + result.getOrThrow());
+                if (input.subModules.isEmpty() && input.module != ItemModule.empty
+                    //&& MiapiConfig.INSTANCE.server.other.verboseLogging
+                ) {
+                    Miapi.LOGGER.error("possible problem!");
+                    //Miapi.LOGGER.warn("decoded module " + input);
+                    Miapi.LOGGER.warn("data" + result.result().get().toString());
                 }
                 return result;
             }

@@ -70,8 +70,9 @@ public class KeyBindManager {
     }
 
     public static boolean clientRegister(boolean isClient, MiapiBinding binding) {
-        if (binding != null && isClient && !binding.isClientRegistered && MiapiClient.KEY_BINDINGS.get(binding.id) != null) {
+        if (binding != null && isClient && !binding.isClientRegistered && MiapiClient.KEY_BINDINGS.get(binding.id) == null) {
             MiapiClient.KEY_BINDINGS.register(binding.id, binding.asKeyMapping());
+            binding.isClientRegistered = true;
             return true;
         }
         return false;

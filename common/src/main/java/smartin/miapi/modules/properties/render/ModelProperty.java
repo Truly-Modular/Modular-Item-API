@@ -12,7 +12,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.BlockModel;
-import net.minecraft.client.renderer.block.model.ItemModelGenerator;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.ModelBakery;
@@ -54,8 +53,6 @@ public class ModelProperty extends CodecProperty<List<ModelProperty.ModelData>> 
     public static final Map<String, UnbakedModelHolder> modelCache = new HashMap<>();
     public static final ResourceLocation KEY = Miapi.id("model");
     public static Function<net.minecraft.client.resources.model.Material, TextureAtlasSprite> textureGetter;
-    private static Function<net.minecraft.client.resources.model.Material, TextureAtlasSprite> mirroredGetter;
-    private static ItemModelGenerator generator;
     public static Codec<ModelData> DATA_CODEC = ModelData.CODEC;
     public static Codec<List<ModelData>> CODEC = Codec.withAlternative(Codec.list(DATA_CODEC), new Codec<>() {
         @Override
@@ -78,8 +75,6 @@ public class ModelProperty extends CodecProperty<List<ModelProperty.ModelData>> 
     public ModelProperty() {
         super(CODEC);
         property = this;
-        mirroredGetter = (identifier) -> textureGetter.apply(identifier);
-        generator = new ItemModelGenerator();
         ModularItemCache.setSupplier(CACHE_KEY_ITEM, (stack) -> getModelMap(stack).get("item"));
         MiapiItemModel.modelSuppliers.add((key, mode, model, stack) -> {
             List<MiapiModel> miapiModels = new ArrayList<>();
@@ -256,7 +251,7 @@ public class ModelProperty extends CodecProperty<List<ModelProperty.ModelData>> 
     }
 
     protected static void loadTextureDependencies(BlockModel model) {
-        DynamicBakery.bakeModel(model, (identifier) -> mirroredGetter.apply(identifier), 0, Transform.IDENTITY);
+        DynamicBakery.bakeModel(model, (identifier) -> textureGetter.apply(identifier), 0, Transform.IDENTITY);
     }
 
     @Override

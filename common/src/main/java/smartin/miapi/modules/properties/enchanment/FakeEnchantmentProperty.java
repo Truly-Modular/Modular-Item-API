@@ -41,7 +41,7 @@ import static smartin.miapi.modules.properties.enchanment.FakeEnchantmentManager
 
 public class FakeEnchantmentProperty extends CodecProperty<Map<Holder<Enchantment>, DoubleOperationResolvable>> {
     public static FakeEnchantmentProperty property;
-    public static final ResourceLocation KEY = Miapi.id("fake_enchants");
+    public static final ResourceLocation KEY = Miapi.id("fake_enchants_old");
     public static Codec<Map<Holder<Enchantment>, DoubleOperationResolvable>> CODEC = Codec.unboundedMap(Enchantment.CODEC, DoubleOperationResolvable.CODEC);
 
     public FakeEnchantmentProperty() {
