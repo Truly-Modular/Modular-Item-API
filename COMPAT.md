@@ -6,7 +6,7 @@ That being said, Better Combat also sadly has a bug with NBT based compatibility
 - **[Epic Fight](https://modrinth.com/mod/epic-fight)** should be fully supported well. If somebody wants to add more depth to the choices for EF, feel free to share with us.
 - **[Apoli](https://github.com/apace100/origins-fabric?tab=readme-ov-file)** is the Origins power API. We have support via a property, allowing developers to use any Apoli powers on modular items.
 - **[Quark](https://modrinth.com/mod/quark)** has special enchantment glint effects, and these are supported.
-- **[Apotheosis](https://www.curseforge.com/minecraft/mc-mods/apotheosis)** and its Fabric port's **(Zenith)[https://modrinth.com/mod/zenith]** Affixes on equipment are supported.
+- **[Apotheosis](https://www.curseforge.com/minecraft/mc-mods/apotheosis)**, and its Fabric port **[Zenith](https://modrinth.com/mod/zenith)** adds Affixes to equipment, and these are supported
 
 ## Other Mod Info
 - **[Better Paragliders](https://modrinth.com/mod/better-paragliders)** stamina system should work with MIAPI tools.
