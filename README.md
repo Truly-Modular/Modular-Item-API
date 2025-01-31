@@ -1,6 +1,10 @@
-# Modular-Item-API [![](https://cf.way2muchnoise.eu/versions/modular-item-api.svg)](https://www.curseforge.com/minecraft/mc-mods/modular-item-api)
+<img src="common/src/main/resources/icon.png" alt="totally modular api icon" width="256">
 
-The Truly Modular: miapi (Modular Item API) includes a comprehensive set of APIs, offering a wide range of features and functionalities to modders. Some of the key APIs provided by miapi include:
+# Modular-Item-API 
+[![](http://cf.way2muchnoise.eu/versions/904056.svg)](https://www.curseforge.com/minecraft/mc-mods/modular-item-api)
+[![Modrinth](https://img.shields.io/modrinth/v/c4Uf1TKc?label=Modrinth&labelColor=%232D2D2D)](https://modrinth.com/mod/modular-item-api)
+
+Truly Modular: miapi (Modular Item API) includes a comprehensive set of APIs, offering a wide range of features and functionalities to modders. Some of the key APIs provided by miapi include:
 
 - Complex Module Properties: A complex Property resolving system producing predictable and easily adjustable results for Addon devs.
 
