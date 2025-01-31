@@ -5,6 +5,7 @@ import dev.architectury.event.EventResult;
 import net.minecraft.item.ItemStack;
 import org.violetmoon.quark.content.tools.base.RuneColor;
 import org.violetmoon.quark.content.tools.module.ColorRunesModule;
+import smartin.miapi.client.model.BakedMiapiModel;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.GlintProperty;
 
@@ -23,14 +24,14 @@ public class QuarkCompat {
                     if (runeColor.equals(RuneColor.RAINBOW)) {
                         currentSettings.set(
                                 new GlintProperty.RainbowGlintSettings(
-                                        0.5f,1.5f,
-                                        0.5f,true,
+                                        0.5f, 1.5f,
+                                        0.5f, true,
                                         Color.RAINBOW) {
-                            @Override
-                            public GlintProperty.GlintSettings get(ItemModule.ModuleInstance instance, ItemStack stack) {
-                                return this;
-                            }
-                        });
+                                    @Override
+                                    public GlintProperty.GlintSettings get(ItemModule.ModuleInstance instance, ItemStack stack) {
+                                        return this;
+                                    }
+                                });
                     } else {
                         GlintProperty.GlintSettings glintSettings = new GlintProperty.GlintSettings() {
                             @Override
@@ -64,5 +65,10 @@ public class QuarkCompat {
                 return EventResult.pass();
             }
         });
+        BakedMiapiModel.fallbackGlintRenderLayer = ColorRunesModule.Client::getGlint;
+        BakedMiapiModel.useGlintColor = (i) -> {
+            RuneColor runeColor = ColorRunesModule.getStackColor(i);
+            return runeColor != null;
+        };
     }
 }

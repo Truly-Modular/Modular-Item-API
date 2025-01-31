@@ -192,7 +192,7 @@
     "miapi.stat.projectile_accuracy": "\uD83D\uDD31 Accuracy",
     "miapi.stat.projectile_accuracy.description": "Projectile Accuracy, higher is better",
     "miapi.stat.projectile_piercing": "\uD83D\uDD31 Piercing",
-    "miapi.stat.projectile_piercing.description": "Armor Piercing of the arrow\n every 5 levels it can pierce a Entity",
+    "miapi.stat.projectile_piercing.description": "Armor Piercing of the arrow\n every level it can pierce one more Entity",
     "miapi.stat.projectile_crit_multiplier": "\uD83D\uDD31 Critical",
     "miapi.stat.projectile_crit_multiplier.description": "Projectile Critical Damage multiplier",
     "miapi.stat.projectile_armor": "\uD83D\uDD31 Armor",

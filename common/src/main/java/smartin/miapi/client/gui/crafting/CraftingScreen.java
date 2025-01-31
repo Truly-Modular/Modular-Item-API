@@ -41,7 +41,6 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
     public static final Identifier BACKGROUND_TEXTURE = new Identifier(Miapi.MOD_ID, "textures/gui/crafter/background.png");
     /*public static final InterpolateMode EASE_IN = new InterpolateMode.EaseIn(5);
     public static final InterpolateMode EASE_OUT = new InterpolateMode.EaseOut(5);*/
-    private ItemStack stack;
     private ModuleCrafter moduleCrafter;
     private StatDisplayWidget statDisplay;
     private MaterialStatWidget materialStatWidget;
@@ -178,8 +177,10 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
         remove(moduleCrafter);
         SlotProperty.ModuleSlot slot1 = moduleCrafter.slot;
         editHolder.children().clear();
+        ItemStack stack = moduleCrafter.stack;
         moduleCrafter = new ModuleCrafter(moduleCrafter.getX(), moduleCrafter.getY(), moduleCrafter.getWidth(), moduleCrafter.getHeight() + 74, moduleCrafter);
         moduleCrafter.handler = handler;
+        moduleCrafter.stack = stack;
         moduleCrafter.setPacketIdentifier(handler.packetID);
         addChild(moduleCrafter);
         updateItem(getItem());
@@ -197,8 +198,10 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
         remove(moduleCrafter);
         SlotProperty.ModuleSlot slot1 = moduleCrafter.slot;
         editHolder.children().clear();
+        ItemStack stack = moduleCrafter.stack;
         moduleCrafter = new ModuleCrafter(moduleCrafter.getX(), moduleCrafter.getY(), moduleCrafter.getWidth(), moduleCrafter.getHeight() - 74, moduleCrafter);
         moduleCrafter.handler = handler;
+        moduleCrafter.stack = stack;
         moduleCrafter.setPacketIdentifier(handler.packetID);
         addChild(moduleCrafter);
         updateItem(getItem());
@@ -235,7 +238,7 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
 
     public void updatePreviewItemStack(ItemStack stack) {
         stack = stack.copy();
-        if(stack.isEmpty()){
+        if (stack.isEmpty()) {
             //Miapi.LOGGER.info("warn");
         }
         slotDisplay.setItem(stack);
@@ -330,7 +333,7 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
 
             @Override
             public ItemStack getItemstack() {
-                return moduleCrafter.stack;
+                return moduleCrafter.stack == null ? ItemStack.EMPTY : moduleCrafter.stack;
             }
 
             @Override

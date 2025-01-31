@@ -142,6 +142,9 @@ public class ModelProperty implements RenderProperty {
                 break;
             }
         }
+        if (unbakedModel == null || unbakedModel.model == null) {
+            return null;
+        }
         BakedSingleModel model = DynamicBakery.bakeModel(unbakedModel.model, textureGetter, ColorHelper.Argb.getArgb(255, 255, 255, 255), Transform.IDENTITY);
         if (model != null) {
             Matrix4f matrix4f = Transform.toModelTransformation(json.transform).toMatrix();

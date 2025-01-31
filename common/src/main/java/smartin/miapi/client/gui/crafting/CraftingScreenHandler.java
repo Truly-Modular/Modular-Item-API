@@ -164,7 +164,7 @@ public class CraftingScreenHandler extends ScreenHandler {
 
                     @Override
                     public ItemStack getItemstack() {
-                        return stack;
+                        return stack == null ? ItemStack.EMPTY : stack;
                     }
 
                     @Override

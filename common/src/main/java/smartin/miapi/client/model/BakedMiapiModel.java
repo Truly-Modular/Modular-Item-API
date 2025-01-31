@@ -35,6 +35,8 @@ import smartin.miapi.modules.properties.GlintProperty;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 public class BakedMiapiModel implements MiapiModel {
     ItemModule.ModuleInstance instance;
@@ -50,6 +52,8 @@ public class BakedMiapiModel implements MiapiModel {
     List<Pair<RegistryEntry<BannerPattern>, DyeColor>> bannerColors = null;
     List<BakedQuad> quads = new ArrayList<>();
     ItemStack bannerItem = null;
+    public static Supplier<RenderLayer> fallbackGlintRenderLayer = RenderLayer::getDirectGlint;
+    public static Function<ItemStack, Boolean> useGlintColor = (s) -> false;
 
     public BakedMiapiModel(ModelHolder holder, ItemModule.ModuleInstance moduleInstance, ItemStack stack) {
         this.modelHolder = holder;
@@ -117,9 +121,12 @@ public class BakedMiapiModel implements MiapiModel {
                         altConsumer.quad(matrices.peek(), quad, glintColor.redAsFloat(), glintColor.greenAsFloat(), glintColor.blueAsFloat(), light, overlay);
                     }
                     if (MiapiConfig.INSTANCE.client.other.enableVanillaGlint) {
-                        VertexConsumer altConsumer = vertexConsumers.getBuffer(RenderLayer.getDirectGlint());
-                        altConsumer.quad(matrices.peek(), quad, 1.0f, 1.0f, 1.0f, light, overlay);
-
+                        VertexConsumer altConsumer = vertexConsumers.getBuffer(fallbackGlintRenderLayer.get());
+                        if (useGlintColor.apply(stack)) {
+                            altConsumer.quad(matrices.peek(), quad, colors[0], colors[1], colors[2], light, overlay);
+                        } else {
+                            altConsumer.quad(matrices.peek(), quad, 0.0f, 0.0f, 0.0f, light, overlay);
+                        }
                     }
                 }
             });
