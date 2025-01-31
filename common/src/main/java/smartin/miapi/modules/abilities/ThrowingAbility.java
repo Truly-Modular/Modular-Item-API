@@ -91,7 +91,11 @@ public class ThrowingAbility implements ItemUseDefaultCooldownAbility, ItemUseMi
                     projectileEntity.setBowItem(ItemStack.EMPTY);
                     projectileEntity.setPierceLevel((byte) (int) AttributeProperty.getActualValue(stack, EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_PIERCING));
                     projectileEntity.setSpeedDamage(true);
-                    projectileEntity.setPreferredSlot(playerEntity.getInventory().selectedSlot);
+                    if (user.getActiveHand() == Hand.OFF_HAND) {
+                        projectileEntity.setPreferredSlot(-2);
+                    } else {
+                        projectileEntity.setPreferredSlot(playerEntity.getInventory().selectedSlot);
+                    }
                     projectileEntity.thrownStack = stack;
                     world.spawnEntity(projectileEntity);
                     world.playSoundFromEntity(null, user, SoundEvents.ITEM_TRIDENT_THROW, SoundCategory.PLAYERS, 1.0f, 1.0f);

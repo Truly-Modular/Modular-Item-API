@@ -320,6 +320,11 @@ public class ItemProjectileEntity extends PersistentProjectileEntity {
                 if (hasLoyalty && getOwner() != null && !isOwner(player)) {
                     return false;
                 }
+                if (slotId == -2 && player.getOffHandStack().isEmpty()) {
+                    player.getInventory().offHand.set(0, this.asItemStack());
+                    player.getInventory().markDirty();
+                    return true;
+                }
                 if (slotId >= 0 && player.getInventory().getStack(slotId).isEmpty()) {
                     return player.getInventory().insertStack(slotId, this.asItemStack());
                 } else {

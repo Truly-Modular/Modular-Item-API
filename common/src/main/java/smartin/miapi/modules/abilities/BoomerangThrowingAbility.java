@@ -79,7 +79,11 @@ public class BoomerangThrowingAbility extends ThrowingAbility {
                     boomerangEntity.setBowItem(ItemStack.EMPTY);
                     boomerangEntity.setPierceLevel((byte) (int) AttributeProperty.getActualValue(stack, EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_PIERCING));
                     boomerangEntity.setSpeedDamage(true);
-                    boomerangEntity.setPreferredSlot(playerEntity.getInventory().selectedSlot);
+                    if (user.getActiveHand() == Hand.OFF_HAND) {
+                        boomerangEntity.setPreferredSlot(-2);
+                    } else {
+                        boomerangEntity.setPreferredSlot(playerEntity.getInventory().selectedSlot);
+                    }
                     boomerangEntity.thrownStack = stack;
                     world.spawnEntity(boomerangEntity);
                     world.playSoundFromEntity(null, user, SoundEvents.ITEM_TRIDENT_THROW, SoundCategory.PLAYERS, 1.0f, 1.0f);

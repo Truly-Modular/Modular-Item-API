@@ -10,6 +10,8 @@ That being said, Better Combat also sadly has a bug with NBT based compatibility
 
 ## Other Mod Info
 - **[Better Paragliders](https://modrinth.com/mod/better-paragliders)** stamina system should work with MIAPI tools.
+- **[MineColonies](https://www.curseforge.com/minecraft/mc-mods/minecolonies)** NPCs should detect tools and armor correctly.
+- most other mods should just work as well. - if issues are found please report them
 
 ## Generated Material Info
 Truly Modular attempts to make any mods' tool materials compatible.
