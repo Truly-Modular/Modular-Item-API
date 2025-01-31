@@ -4,6 +4,7 @@ import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
+import com.mojang.serialization.RecordBuilder;
 import net.minecraft.world.item.ItemStack;
 import smartin.miapi.Miapi;
 import smartin.miapi.modules.ModuleInstance;
@@ -22,9 +23,41 @@ public class AbilityMangerProperty extends CodecProperty<Map<ItemUseAbility<?>, 
     public static Codec<Map<ItemUseAbility<?>, Object>> CODEC = new Codec<>() {
         @Override
         public <T> DataResult<T> encode(Map<ItemUseAbility<?>, Object> input, DynamicOps<T> ops, T prefix) {
-            //TODO:fixme
-            return DataResult.error(() -> "properties are not meant to be decoded");
+            Map<T, T> encodedMap = new LinkedHashMap<>();
+            RecordBuilder<T> map = ops.mapBuilder();
+
+            for (Map.Entry<ItemUseAbility<?>, Object> entry : input.entrySet()) {
+                ItemUseAbility<?> ability = entry.getKey();
+                Object data = entry.getValue();
+
+                // Retrieve the ability's registry key
+                String abilityId = ItemAbilityManager.useAbilityRegistry.findKey(ability).toString();
+                if (abilityId == null) {
+                    Miapi.LOGGER.error("Failed to encode ItemUseAbility: Ability not found in registry.");
+                    continue;
+                }
+
+                // Encode ability ID
+                DataResult<T> keyResult = Codec.STRING.encode(abilityId, ops, ops.empty());
+                if (keyResult.error().isPresent()) {
+                    Miapi.LOGGER.error("Failed to encode ItemUseAbility key: " + keyResult.error().get().message());
+                    continue;
+                }
+
+                // Encode ability data)
+                DataResult<T> valueResult = DataResult.success(ability.encodeObject(ops, data));
+                if (valueResult.error().isPresent()) {
+                    Miapi.LOGGER.error("Failed to encode data for ability: " + abilityId + " - " + valueResult.error().get().message());
+                    continue;
+                }
+
+                encodedMap.put(keyResult.result().get(), valueResult.result().get());
+                map.add(keyResult.result().get(), valueResult.result().get());
+
+            }
+            return map.build(prefix);
         }
+
 
         @Override
         public <T> DataResult<Pair<Map<ItemUseAbility<?>, Object>, T>> decode(DynamicOps<T> ops, T input) {

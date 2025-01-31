@@ -11,6 +11,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.Nullable;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.util.MergeAble;
@@ -132,6 +133,14 @@ public interface ItemUseAbility<T> extends MergeAble<T> {
 
     <K> T decode(DynamicOps<K> ops, K prefix);
 
+    default <K> K encode(DynamicOps<K> ops, T input) {
+        return null;
+    }
+
+    default <K> K encodeObject(DynamicOps<K> ops, Object input) {
+        return encode(ops, castTo(input));
+    }
+
     default T initialize(T data, ModuleInstance moduleInstance) {
         return data;
     }
@@ -140,12 +149,15 @@ public interface ItemUseAbility<T> extends MergeAble<T> {
         return MergeAble.decideLeftRight(left, right, mergeType);
     }
 
+    @Nullable
     T getDefaultContext();
 
+    @Nullable
     default T getSpecialContext(ItemStack itemStack) {
         return getSpecialContext(itemStack, getDefaultContext());
     }
 
+    @Nullable
     default T getSpecialContext(ItemStack itemStack, T defaultValue) {
         return ModularItemCache.get(
                 itemStack,

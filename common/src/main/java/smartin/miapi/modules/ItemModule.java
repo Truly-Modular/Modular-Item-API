@@ -4,6 +4,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.JsonOps;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -155,10 +156,21 @@ public record ItemModule(ResourceLocation id, Map<ModuleProperty<?>, Object> pro
             return new ModuleInstance(ItemModule.empty);
         }
         if (stack.getItem() instanceof VisualModularItem && !ReloadEvents.isInReload()) {
-            ModuleInstance root = stack.getComponents().get(ModuleInstance.MODULE_INSTANCE_COMPONENT);
+            ModuleInstance root = stack.get(ModuleInstance.MODULE_INSTANCE_COMPONENT);
             if (root != null) {
                 for (ModuleInstance moduleInstance : root.allSubModules()) {
                     moduleInstance.contextStack = stack;
+                }
+            }
+            JsonElement compareToJson = stack.get(ModuleInstance.MODULE_BACKUP);
+            if (compareToJson != null) {
+                ModuleInstance compareTo = ModuleInstance.CODEC.decode(JsonOps.INSTANCE, compareToJson).getOrThrow().getFirst();
+                if (root.allSubModules().size() != compareTo.allSubModules().size()) {
+                    LOGGER.error("MODULE DECODE ISSUE!?! " + root);
+                    LOGGER.error("SHOULD HAVE BEEN" + compareTo);
+                    LOGGER.error("ATTEMPTING AUTO FIX");
+                    compareTo.writeToItem(stack);
+                    return getModules(stack);
                 }
             }
             return root;

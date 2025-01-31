@@ -70,6 +70,10 @@ import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.StackStorageComponent;
 import smartin.miapi.modules.abilities.*;
+import smartin.miapi.modules.abilities.gun.GunContextProperty;
+import smartin.miapi.modules.abilities.gun.GunMagazineComponent;
+import smartin.miapi.modules.abilities.gun.ReloadSingleBulletAbility;
+import smartin.miapi.modules.abilities.gun.ShootAbility;
 import smartin.miapi.modules.abilities.shield.ParryShieldBlock;
 import smartin.miapi.modules.abilities.shield.TowerShieldBlock;
 import smartin.miapi.modules.abilities.toolabilities.AxeAbility;
@@ -254,6 +258,10 @@ public class RegistryInventory {
                 Miapi.id("tower_shield"), () -> TowerShieldComponent.TOWER_SHIELD_COMPONENT);
         RegistryInventory.components.register(
                 CompositeMaterial.KEY, () -> CompositeMaterial.COMPOSITE_MATERIAL_COMPONENT);
+        RegistryInventory.components.register(
+                Miapi.id("gun_magazine"), () -> GunMagazineComponent.STACK_STORAGE_COMPONENT);
+        RegistryInventory.components.register(
+                Miapi.id("module_fallback"), () -> ModuleInstance.MODULE_BACKUP);
 
         RegistryInventory.lootItemFunctions.register(
                 Miapi.id("module_swap"), () -> moduleSwapLootFunctionLootItemFunctionType);
@@ -571,6 +579,10 @@ public class RegistryInventory {
             registerMiapi(useAbilityRegistry, AreaHarvestReplant.KEY, new AreaHarvestReplant());
             registerMiapi(useAbilityRegistry, CastLightingAbility.KEY, new CastLightingAbility());
             registerMiapi(useAbilityRegistry, SonicBoomAbility.KEY, new SonicBoomAbility());
+
+            registerMiapi(useAbilityRegistry, ShootAbility.KEY, new ShootAbility());
+            registerMiapi(useAbilityRegistry, ReloadSingleBulletAbility.KEY, new ReloadSingleBulletAbility());
+            registerMiapi(moduleProperties, GunContextProperty.KEY, new GunContextProperty());
 
             registerMiapi(useAbilityRegistry, "full_block", new ShieldBlockAbility());
             registerMiapi(useAbilityRegistry, "parry_block", new ParryShieldBlock());

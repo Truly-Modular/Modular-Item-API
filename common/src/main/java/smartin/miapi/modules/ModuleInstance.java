@@ -18,6 +18,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
+import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.item.modular.PropertyResolver;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.material.Material;
@@ -52,6 +53,9 @@ import java.util.function.Supplier;
 public class ModuleInstance {
     public static Codec<ModuleInstance> CODEC;
     public static DataComponentType<ModuleInstance> MODULE_INSTANCE_COMPONENT;
+    public static DataComponentType<JsonElement> MODULE_BACKUP = DataComponentType.<JsonElement>builder()
+            .persistent(StatResolver.Codecs.JSONELEMENT_CODEC)
+            .networkSynchronized(ByteBufCodecs.fromCodec(StatResolver.Codecs.JSONELEMENT_CODEC)).build();
 
     static {
         Codec<Map<ResourceLocation, JsonElement>> dataJsonCodec = Codec.unboundedMap(Miapi.ID_CODEC, StatResolver.Codecs.JSONELEMENT_CODEC).xmap((i) -> i, Function.identity());
@@ -83,7 +87,7 @@ public class ModuleInstance {
                 }
                 var result = basicResult.getOrThrow().getFirst();
                 if (result.subModules.isEmpty() && result.module != ItemModule.empty
-                    //&& MiapiConfig.INSTANCE.server.other.verboseLogging
+                    && MiapiConfig.INSTANCE.server.other.verboseLogging
                 ) {
                     Miapi.LOGGER.error("possible problem!");
                     Miapi.LOGGER.warn("encoded module " + result);
@@ -96,10 +100,10 @@ public class ModuleInstance {
             public <T> DataResult<T> encode(ModuleInstance input, DynamicOps<T> ops, T prefix) {
                 var result = basicCodec.encode(input, ops, prefix);
                 if (input.subModules.isEmpty() && input.module != ItemModule.empty
-                    //&& MiapiConfig.INSTANCE.server.other.verboseLogging
+                    && MiapiConfig.INSTANCE.server.other.verboseLogging
                 ) {
                     Miapi.LOGGER.error("possible problem!");
-                    //Miapi.LOGGER.warn("decoded module " + input);
+                    Miapi.LOGGER.warn("decoded module " + input);
                     Miapi.LOGGER.warn("data" + result.result().get().toString());
                 }
                 return result;
@@ -414,6 +418,8 @@ public class ModuleInstance {
         }
         //stack.update(ModuleInstance.MODULE_INSTANCE_COMPONENT, this, (component) -> this);
         stack.set(ModuleInstance.MODULE_INSTANCE_COMPONENT, this.copy());
+        JsonElement element = CODEC.encodeStart(JsonOps.INSTANCE, this).getOrThrow();
+        stack.set(MODULE_BACKUP, element);
     }
 
     /**

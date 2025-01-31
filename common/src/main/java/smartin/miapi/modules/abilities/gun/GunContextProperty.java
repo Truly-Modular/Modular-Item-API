@@ -3,6 +3,7 @@ package smartin.miapi.modules.abilities.gun;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
 import smartin.miapi.Miapi;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.util.CodecProperty;
@@ -39,8 +40,8 @@ public class GunContextProperty extends CodecProperty<GunContextProperty.GunCont
         property = this;
     }
 
-    public static GunContext getGunContext(ModuleInstance moduleInstance) {
-        return property.getData(moduleInstance).orElse(new GunContext());
+    public static GunContext getGunContext(ItemStack itemStack) {
+        return property.getData(itemStack).orElse(new GunContext());
     }
 
     @Override

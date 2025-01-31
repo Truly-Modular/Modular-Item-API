@@ -1,7 +1,11 @@
 package smartin.miapi.modules.abilities.gun;
 
-import com.mojang.serialization.DynamicOps;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import com.redpxnda.nucleus.pose.server.ServerPoseFacet;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
@@ -10,14 +14,18 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.level.Level;
+import smartin.miapi.Miapi;
+import smartin.miapi.modules.abilities.util.CodecAbility;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;
-import smartin.miapi.modules.abilities.util.ItemUseAbility;
 
-public class ShootAbility implements ItemUseAbility<ShootAbility.GunAbilityContext> {
+import java.util.Optional;
+
+public class ShootAbility implements CodecAbility<ShootAbility.GunAbilityContext> {
+    public static ResourceLocation KEY = Miapi.id("gun_shot_single");
 
     @Override
     public boolean allowedOnItem(ItemStack itemStack, Level world, Player player, InteractionHand hand, ItemAbilityManager.AbilityHitContext abilityHitContext) {
-        return getBulletCount(itemStack) > 0;
+        return GunMagazineComponent.getBulletCount(itemStack) > 0;
     }
 
     @Override
@@ -32,60 +40,91 @@ public class ShootAbility implements ItemUseAbility<ShootAbility.GunAbilityConte
 
     @Override
     public InteractionResultHolder<ItemStack> use(Level world, Player user, InteractionHand hand) {
-        ItemStack itemStack = user.getItemInHand(hand);
-        GunAbilityContext context = getSpecialContext(itemStack);
+        ItemStack gun = user.getItemInHand(hand);
+        GunAbilityContext context = getSpecialContext(gun);
 
-        if (context == null || getBulletCount(itemStack) <= 0) {
-            return InteractionResultHolder.pass(itemStack);
+        if (context == null || GunMagazineComponent.getBulletCount(gun) <= 0) {
+            return InteractionResultHolder.pass(gun);
         }
 
         if (!world.isClientSide) {
-            performShooting(world, user, itemStack, context);
+            performShooting(world, user, gun, context);
         }
 
-        return InteractionResultHolder.success(itemStack);
+        return InteractionResultHolder.success(gun);
     }
 
     @Override
-    public <K> GunAbilityContext decode(DynamicOps<K> ops, K prefix) {
-        return null;
+    public Codec<GunAbilityContext> getCodec() {
+        return GunAbilityContext.CODEC;
     }
 
-    private void performShooting(Level world, Player user, ItemStack itemStack, GunAbilityContext context) {
-        // Reduce bullet count
-        decreaseBulletCount(itemStack);
+    private void performShooting(Level world, Player user, ItemStack gun, GunAbilityContext context) {
+        // Remove a bullet
+        Optional<ItemStack> bullet = GunMagazineComponent.removeBullet(gun);
+        if (bullet.isEmpty()) return;
 
         // Play shooting sound
         if (context.onShoot != null) {
-            world.playSound(null, user.getX(), user.getY(), user.getZ(), context.onShoot, user.getSoundSource(), 1.0f, 1.0f);
+            SoundEvent event = world.registryAccess().registry(Registries.SOUND_EVENT).get().get(context.onShoot);
+            if (event != null) {
+                world.playSound(null, user.getX(), user.getY(), user.getZ(), event, user.getSoundSource(), 1.0f, 1.0f);
+            }
         }
 
         // Trigger animation
         if (context.shotAnim != null) {
-            triggerAnimation(user, context.shotAnim);
+            setAnimation(user, user.getUsedItemHand(), context.shotAnim);
+        }
+
+        GunMagazineComponent.shoot(world, user, context.hitscan);
+    }
+
+    public void setAnimation(Player p, InteractionHand hand, ResourceLocation animation) {
+        if (p instanceof ServerPlayer player) {
+            ServerPoseFacet facet = ServerPoseFacet.KEY.get(player);
+            if (facet != null) {
+                facet.set(animation.toString(), player, hand);
+            }
         }
     }
 
-    private void triggerAnimation(Player user, ResourceLocation anim) {
-        System.out.printf("Triggered animation: %s for player: %s\n", anim, user.getName().getString());
-    }
-
-    public static int getBulletCount(ItemStack gun) {
-        // Implementation based on the magazine system
-        return 10; // Placeholder value
-    }
-
-    public static void decreaseBulletCount(ItemStack gun) {
-        // Logic to reduce bullet count
+    public void resetAnimation(LivingEntity entity) {
+        if (entity instanceof ServerPlayer player) {
+            ServerPoseFacet facet = ServerPoseFacet.KEY.get(player);
+            if (facet != null)
+                facet.reset(player);
+        }
     }
 
     @Override
     public GunAbilityContext getDefaultContext() {
-        return new GunAbilityContext();
+        return new GunAbilityContext(null, null, true);
     }
 
     public static class GunAbilityContext {
-        public SoundEvent onShoot;
-        public ResourceLocation shotAnim;
+        public static final Codec<GunAbilityContext> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+                ResourceLocation.CODEC.optionalFieldOf("on_shoot").forGetter(context -> Optional.ofNullable(context.onShoot)),
+                ResourceLocation.CODEC.optionalFieldOf("shot_anim").forGetter(context -> Optional.ofNullable(context.shotAnim)),
+                Miapi.FIXED_BOOL_CODEC.optionalFieldOf("hitscan", true).forGetter(context -> context.hitscan)
+        ).apply(instance, (onShootOpt, shotAnimOpt, hitscan) -> new GunAbilityContext(
+                onShootOpt.orElse(null),
+                shotAnimOpt.orElse(null),
+                hitscan
+        )));
+
+        public final ResourceLocation onShoot;
+        public final ResourceLocation shotAnim;
+        public final boolean hitscan;
+
+        public GunAbilityContext(ResourceLocation onShoot, ResourceLocation shotAnim, boolean hitscan) {
+            this.onShoot = onShoot;
+            this.shotAnim = shotAnim;
+            this.hitscan = hitscan;
+        }
+
+        public <T> T encode(com.mojang.serialization.DynamicOps<T> ops) {
+            return CODEC.encodeStart(ops, this).result().orElseThrow(() -> new IllegalStateException("Failed to encode GunAbilityContext"));
+        }
     }
 }
