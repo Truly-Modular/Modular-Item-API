@@ -60,6 +60,7 @@ public class NBTMaterial extends JsonMaterial {
             if (data.material instanceof NBTMaterial nbtMaterial) {
                 nbtMaterial.writeMaterial(data.moduleInstance);
             }
+            data.moduleInstance.getRoot().writeToItem(data.crafted);
             return EventResult.pass();
         });
     }
@@ -96,6 +97,16 @@ public class NBTMaterial extends JsonMaterial {
             }
         }
         return null;
+    }
+
+    public static void setMaterial(Material materialKey, ItemStack itemStack) {
+        setMaterial(materialKey.getKey(),itemStack);
+    }
+
+    public static void setMaterial(String materialKey, ItemStack itemStack) {
+        NbtCompound compound = new NbtCompound();
+        compound.putString("parent", materialKey);
+        itemStack.getOrCreateNbt().put(NBTKEY, compound);
     }
 
     public Optional<Material> decode(JsonObject object) {
