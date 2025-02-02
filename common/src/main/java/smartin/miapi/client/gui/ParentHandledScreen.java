@@ -146,7 +146,7 @@ public abstract class ParentHandledScreen<T extends AbstractContainerMenu> exten
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
         for (GuiEventListener child : this.children().stream().toList()) {
-            if (child.isMouseOver(mouseX, mouseY) && child.mouseScrolled(mouseX, mouseY, scrollX, scrollY)) {
+            if (child.mouseScrolled(mouseX, mouseY, scrollX, scrollY)) {
                 return true;
             }
         }

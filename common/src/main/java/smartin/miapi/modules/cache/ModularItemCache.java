@@ -8,10 +8,7 @@ import smartin.miapi.item.modular.VisualModularItem;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
 
-import java.util.Collections;
-import java.util.Map;
-import java.util.Set;
-import java.util.WeakHashMap;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -50,7 +47,7 @@ public class ModularItemCache {
     }
 
     public static void discardCache() {
-        modules.instances.forEach((m) -> {
+        modules.getInstances().forEach((m) -> {
             if (m != null) {
                 m.clearCaches();
             }
@@ -65,14 +62,19 @@ public class ModularItemCache {
 
 
     public static class WeakInstanceTracker<T> {
+        private Object threadLock = new Object();
         private final Set<T> instances = Collections.newSetFromMap(new WeakHashMap<>());
 
         public void addInstance(T instance) {
-            instances.add(instance);
+            synchronized (threadLock) {
+                instances.add(instance);
+            }
         }
 
         public Set<T> getInstances() {
-            return instances;
+            synchronized (threadLock) {
+                return new HashSet<>(instances);
+            }
         }
     }
 }

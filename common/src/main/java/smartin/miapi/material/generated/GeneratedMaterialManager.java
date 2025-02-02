@@ -11,7 +11,7 @@ import smartin.miapi.Miapi;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.events.MiapiEvents;
-import smartin.miapi.material.Material;
+import smartin.miapi.material.base.Material;
 import smartin.miapi.material.MaterialProperty;
 import smartin.miapi.registries.RegistryInventory;
 

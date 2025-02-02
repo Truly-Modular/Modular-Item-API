@@ -37,7 +37,7 @@ import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.effects.CryoStatusEffect;
 import smartin.miapi.entity.ItemProjectileRenderer;
 import smartin.miapi.events.ClientEvents;
-import smartin.miapi.material.Material;
+import smartin.miapi.material.base.Material;
 import smartin.miapi.material.MaterialCommand;
 import smartin.miapi.material.MaterialIcons;
 import smartin.miapi.material.MaterialProperty;

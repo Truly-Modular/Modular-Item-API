@@ -15,7 +15,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import smartin.miapi.client.MiapiClient;
 import smartin.miapi.datapack.ReloadEvents;
-import smartin.miapi.material.Material;
+import smartin.miapi.material.base.Material;
 import smartin.miapi.material.palette.SpriteColorer;
 
 import java.io.IOException;

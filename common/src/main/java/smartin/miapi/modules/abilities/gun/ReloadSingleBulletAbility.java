@@ -28,8 +28,6 @@ public class ReloadSingleBulletAbility implements CodecAbility<ReloadSingleBulle
     public boolean allowedOnItem(ItemStack itemStack, Level world, Player player, InteractionHand hand, ItemAbilityManager.AbilityHitContext abilityHitContext) {
         boolean hasSpace = GunMagazineComponent.getBulletCount(itemStack) < GunContextProperty.getGunContext(itemStack).magazineSize().getValue();
         boolean hasAbility = getSpecialContext(itemStack) != null;
-        Player player1;
-        player1.hurt()
         return hasAbility && hasSpace;
     }
 

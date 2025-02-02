@@ -16,7 +16,7 @@ import net.minecraft.util.FastColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import smartin.miapi.client.renderer.NativeImageGetter;
-import smartin.miapi.material.Material;
+import smartin.miapi.material.base.Material;
 
 import java.util.*;
 

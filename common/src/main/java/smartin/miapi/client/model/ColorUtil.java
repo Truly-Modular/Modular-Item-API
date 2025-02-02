@@ -10,7 +10,7 @@ import net.minecraft.util.FastColor;
 import net.minecraft.util.RandomSource;
 import smartin.miapi.client.model.item.BakedSingleModel;
 import smartin.miapi.modules.ModuleInstance;
-import smartin.miapi.material.Material;
+import smartin.miapi.material.base.Material;
 import smartin.miapi.material.MaterialProperty;
 
 /**

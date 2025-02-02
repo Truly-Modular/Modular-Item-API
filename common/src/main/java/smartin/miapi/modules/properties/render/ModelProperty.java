@@ -30,7 +30,8 @@ import smartin.miapi.client.renderer.TrimRenderer;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.item.modular.Transform;
 import smartin.miapi.item.modular.TransformMap;
-import smartin.miapi.material.Material;
+import smartin.miapi.material.base.ColorController;
+import smartin.miapi.material.base.Material;
 import smartin.miapi.material.MaterialProperty;
 import smartin.miapi.mixin.client.ModelLoaderInterfaceAccessor;
 import smartin.miapi.modules.ModuleInstance;
@@ -99,7 +100,7 @@ public class ModelProperty extends CodecProperty<List<ModelProperty.ModelData>> 
 
     @Nullable
     public static ModelHolder bakedModel(ModuleInstance instance, ModelData json, ItemStack itemStack, String key) {
-        int condition = Material.getColor(StatResolver.resolveString(json.condition, instance));
+        int condition = ColorController.getColor(StatResolver.resolveString(json.condition, instance));
         if (condition != 0) {
             if (
                     json.transform.origin == null && "item".equals(key) ||

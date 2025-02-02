@@ -7,7 +7,7 @@ import net.minecraft.client.renderer.texture.SpriteContents;
 import net.minecraft.util.FastColor;
 import net.minecraft.util.Mth;
 import smartin.miapi.client.renderer.NativeImageGetter;
-import smartin.miapi.material.Material;
+import smartin.miapi.material.base.Material;
 
 public class SpriteOverlayer extends SpritePixelReplacer {
     public final Color averageColor;

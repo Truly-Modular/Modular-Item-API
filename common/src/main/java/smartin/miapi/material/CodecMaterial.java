@@ -23,6 +23,8 @@ import net.minecraft.world.level.block.Block;
 import smartin.miapi.Miapi;
 import smartin.miapi.craft.IngredientWithCount;
 import smartin.miapi.item.modular.StatResolver;
+import smartin.miapi.material.base.Material;
+import smartin.miapi.material.base.PropertyController;
 import smartin.miapi.material.palette.FallbackColorer;
 import smartin.miapi.material.palette.MaterialRenderController;
 import smartin.miapi.material.palette.MaterialRenderControllers;
@@ -103,11 +105,11 @@ public class CodecMaterial implements Material {
             Codec.STRING.listOf().optionalFieldOf("hidden_groups", new ArrayList<>()).forGetter(CodecMaterial::getGuiGroups),
             Codec.STRING.listOf().optionalFieldOf("gui_groups", new ArrayList<>()).forGetter(CodecMaterial::getGuiGroups),
             Codec.unboundedMap(Codec.STRING, StatResolver.Codecs.JSONELEMENT_CODEC)
-                    .optionalFieldOf("properties", new HashMap<>()).forGetter(m -> Material.toJsonMap(m.getActualProperty())),
+                    .optionalFieldOf("properties", new HashMap<>()).forGetter(m -> PropertyController.toJsonMap(m.getActualProperty())),
             Codec.unboundedMap(Codec.STRING, StatResolver.Codecs.JSONELEMENT_CODEC)
-                    .optionalFieldOf("display_properties", new HashMap<>()).forGetter(m -> Material.toJsonMap(m.getDisplayProperty())),
+                    .optionalFieldOf("display_properties", new HashMap<>()).forGetter(m -> PropertyController.toJsonMap(m.getDisplayProperty())),
             Codec.unboundedMap(Codec.STRING, StatResolver.Codecs.JSONELEMENT_CODEC)
-                    .optionalFieldOf("hidden_properties", new HashMap<>()).forGetter(m -> Material.toJsonMap(m.getHiddenProperty())),
+                    .optionalFieldOf("hidden_properties", new HashMap<>()).forGetter(m -> PropertyController.toJsonMap(m.getHiddenProperty())),
             Codec.STRING.listOf().optionalFieldOf("textures", List.of("default")).forGetter(CodecMaterial::getTextureKeys),
             ResourceLocation.CODEC.optionalFieldOf("mining_level").forGetter(material -> Optional.of(material.getIncorrectBlocksForDrops().location())),
             Codec.STRING.optionalFieldOf("color").forGetter(m -> Optional.of(Long.toHexString(m.getColor(new ModuleInstance(ItemModule.empty))))),
@@ -185,9 +187,9 @@ public class CodecMaterial implements Material {
                 new ArrayList<>(this.groups),
                 List.of(),
                 new ArrayList<>(this.guiGroups),
-                Material.toJsonMap(this.getActualProperty()),
-                Material.toJsonMap(this.getDisplayProperty()),
-                Material.toJsonMap(this.getHiddenProperty()),
+                PropertyController.toJsonMap(this.getActualProperty()),
+                PropertyController.toJsonMap(this.getDisplayProperty()),
+                PropertyController.toJsonMap(this.getHiddenProperty()),
                 new ArrayList<>(this.textureKeys),
                 this.incorrectForTool.map(TagKey::location),
                 this.color.map(Integer::toHexString),

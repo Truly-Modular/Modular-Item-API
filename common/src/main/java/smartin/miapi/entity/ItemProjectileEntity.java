@@ -383,6 +383,11 @@ public class ItemProjectileEntity extends AbstractArrow {
                 if (hasLoyalty && getOwner() != null && !ownedBy(player)) {
                     return false;
                 }
+                if (slotId == -2 && player.getOffhandItem().isEmpty()) {
+                    player.getInventory().offhand.set(0, this.getPickupItem());
+                    player.getInventory().setChanged();
+                    return true;
+                }
                 if (slotId >= 0 && player.getInventory().getItem(slotId).isEmpty()) {
                     return player.getInventory().add(slotId, this.getPickupItem());
                 } else {

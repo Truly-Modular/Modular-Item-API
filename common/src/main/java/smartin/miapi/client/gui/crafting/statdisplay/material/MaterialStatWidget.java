@@ -7,7 +7,7 @@ import smartin.miapi.client.gui.ScrollList;
 import smartin.miapi.client.gui.crafting.statdisplay.StatListWidget;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
-import smartin.miapi.material.Material;
+import smartin.miapi.material.base.Material;
 import smartin.miapi.registries.RegistryInventory;
 
 import java.util.ArrayList;

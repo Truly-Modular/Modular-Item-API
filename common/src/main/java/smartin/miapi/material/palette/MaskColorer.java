@@ -6,7 +6,7 @@ import com.mojang.blaze3d.platform.NativeImage;
 import com.redpxnda.nucleus.util.Color;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.renderer.NativeImageGetter;
-import smartin.miapi.material.Material;
+import smartin.miapi.material.base.Material;
 
 import java.io.Closeable;
 import java.io.IOException;

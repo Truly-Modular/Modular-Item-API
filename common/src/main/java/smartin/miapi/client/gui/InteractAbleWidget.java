@@ -290,7 +290,7 @@ public abstract class InteractAbleWidget extends AbstractWidget implements Rende
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
         for (GuiEventListener child : this.children()) {
-            if (child.isMouseOver(mouseX, mouseY) && child.mouseScrolled(mouseX, mouseY, scrollX, scrollY)) {
+            if (child.mouseScrolled(mouseX, mouseY, scrollX, scrollY)) {
                 return true;
             }
         }

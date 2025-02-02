@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import net.minecraft.resources.ResourceLocation;
 import smartin.miapi.Environment;
 import smartin.miapi.Miapi;
+import smartin.miapi.material.base.Material;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.util.MergeAble;
 import smartin.miapi.modules.properties.util.MergeType;

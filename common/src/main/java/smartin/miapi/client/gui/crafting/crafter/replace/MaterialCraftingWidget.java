@@ -13,6 +13,7 @@ import smartin.miapi.client.gui.ScrollingTextWidget;
 import smartin.miapi.client.gui.TransformableWidget;
 import smartin.miapi.client.gui.crafting.CraftingScreen;
 import smartin.miapi.client.gui.crafting.PreviewManager;
+import smartin.miapi.client.gui.crafting.crafter.replace.hover.HoverInteractableMaterialList;
 import smartin.miapi.craft.CraftAction;
 import smartin.miapi.craft.MaterialCraftInfo;
 import smartin.miapi.modules.ModuleInstance;
@@ -36,6 +37,10 @@ public class MaterialCraftingWidget extends InteractAbleWidget {
         this.action = action;
         this.allowedMaterial = allowedMaterial;
         allowedMaterial.setSlotHeight(height + 12);
+        if (allowedMaterial.renderMaterialWidget()) {
+            //this.addChild(new HoverMaterialList(action.toAdd, x + 71, y + this.height + 10, 31, 19));
+            this.addChild(new HoverInteractableMaterialList(action.toAdd, x + 71, y + this.height + 10, 31, 19));
+        }
 
         ModuleInstance moduleInstance = new ModuleInstance(action.toAdd);
         Component displayText = moduleInstance.getModuleName();
@@ -53,9 +58,6 @@ public class MaterialCraftingWidget extends InteractAbleWidget {
         costDescr = new ScrollingTextWidget(x + 71, y + this.height - 8, 78, Component.empty());
         //costDescr.setOrientation(ScrollingTextWidget.Orientation.RIGHT);
         costDescr.textColor = FastColor.ARGB32.color(255, 225, 225, 225);
-        if (allowedMaterial.renderMaterialWidget()) {
-            this.addChild(new HoverMaterialList(action.toAdd, x + 71, y + this.height + 10, 31, 19));
-        }
         addChild(description);
         addChild(costDescr);
     }

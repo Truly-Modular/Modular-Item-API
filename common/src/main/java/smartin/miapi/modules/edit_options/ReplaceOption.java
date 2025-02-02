@@ -15,7 +15,7 @@ import smartin.miapi.client.gui.crafting.crafter.CraftEditOption;
 import smartin.miapi.craft.CraftAction;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
-import smartin.miapi.material.Material;
+import smartin.miapi.material.base.Material;
 import smartin.miapi.material.MaterialProperty;
 import smartin.miapi.network.Networking;
 
@@ -42,7 +42,7 @@ public class ReplaceOption implements EditOption {
         boolean hasPreviewMaterial = false;
         //TODO:fix previews...
         if (
-                PreviewManager.currentPreviewMaterial != null && false
+                PreviewManager.currentPreviewMaterial != null
         ) {
             hasPreviewMaterial = true;
             inventory = new SimpleContainer(2);

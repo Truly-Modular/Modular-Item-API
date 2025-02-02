@@ -14,7 +14,7 @@ import com.redpxnda.nucleus.codec.misc.IntermediateCodec;
 import net.minecraft.network.chat.Component;
 import smartin.miapi.Miapi;
 import smartin.miapi.modules.ModuleInstance;
-import smartin.miapi.material.Material;
+import smartin.miapi.material.base.Material;
 import smartin.miapi.material.MaterialProperty;
 
 import java.util.*;

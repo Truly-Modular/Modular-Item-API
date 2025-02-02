@@ -3,7 +3,7 @@ package smartin.miapi.material.palette;
 import com.google.gson.JsonElement;
 import com.redpxnda.nucleus.util.Color;
 import smartin.miapi.material.JsonMaterial;
-import smartin.miapi.material.Material;
+import smartin.miapi.material.base.Material;
 
 import java.util.HashMap;
 import java.util.Map;

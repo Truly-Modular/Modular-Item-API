@@ -2,7 +2,7 @@ package smartin.miapi.material.composite;
 
 import net.minecraft.resources.ResourceLocation;
 import smartin.miapi.Miapi;
-import smartin.miapi.material.Material;
+import smartin.miapi.material.base.Material;
 import smartin.miapi.registries.MiapiRegistry;
 
 import java.util.ArrayList;

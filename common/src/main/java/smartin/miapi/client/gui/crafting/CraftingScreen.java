@@ -60,6 +60,8 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
     public InteractAbleWidget hoverElement = null;
     public CompoundTag oldCompound = new CompoundTag();
     static WeakReference<CraftingScreen> craftingScreenWeakReference = new WeakReference<>(null);
+    public int overwriteMouseY = 0;
+    public int overwriteMouseX = 0;
 
     List<InteractAbleWidget> editOptionIcons = new ArrayList<>();
 
@@ -367,23 +369,25 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
     @Override
     public void render(GuiGraphics drawContext, int mouseX, int mouseY, float delta) {
         //renderBackground(drawContext, mouseX, mouseY, delta);
+        this.overwriteMouseY = mouseY;
+        this.overwriteMouseX = mouseX;
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         // long timeSinceMod = Util.getMeasuringTimeMs()-minimizer.getLastChangeTime();
         if (hoverElement == null) {
-            super.render(drawContext, mouseX, mouseY, delta);
+            super.render(drawContext, overwriteMouseX, overwriteMouseY, delta);
         } else {
-            hoverElement.render(drawContext, mouseX, mouseY, delta);
+            hoverElement.render(drawContext, overwriteMouseX, overwriteMouseY, delta);
         }
-        this.renderTooltip(drawContext, mouseX, mouseY);
+        this.renderTooltip(drawContext, overwriteMouseX, overwriteMouseY);
         drawContext.pose().pushPose();
         drawContext.pose().translate(0.0F, 0.0F, 400.0F);
         if (hoverElement == null) {
             drawContext.drawManaged(() -> {
-                this.renderHover(drawContext, mouseX, mouseY, delta);
+                this.renderHover(drawContext, overwriteMouseX, overwriteMouseY, delta);
             });
         } else {
             drawContext.drawManaged(() -> {
-                hoverElement.renderHover(drawContext, mouseX, mouseY, delta);
+                hoverElement.renderHover(drawContext, overwriteMouseX, overwriteMouseY, delta);
             });
         }
         drawContext.pose().popPose();

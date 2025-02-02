@@ -14,7 +14,7 @@ import net.minecraft.world.item.ItemStack;
 import smartin.miapi.client.atlas.MaterialSpriteManager;
 import smartin.miapi.client.renderer.RescaledVertexConsumer;
 import smartin.miapi.modules.ModuleInstance;
-import smartin.miapi.material.Material;
+import smartin.miapi.material.base.Material;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import java.util.Map;

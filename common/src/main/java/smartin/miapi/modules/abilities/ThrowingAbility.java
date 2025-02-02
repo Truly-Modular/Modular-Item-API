@@ -92,7 +92,11 @@ public class ThrowingAbility implements ItemUseDefaultCooldownAbility<ThrowingAb
                     //TODO:figure out a way to control piercing level again
                     //projectileEntity.setPierceLevel((byte) (int) AttributeUtil.getActualValue(stack, EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_PIERCING));
                     projectileEntity.setSpeedDamage(true);
-                    projectileEntity.setPreferredSlot(playerEntity.getInventory().selected);
+                    if (user.getUsedItemHand() == InteractionHand.OFF_HAND) {
+                        projectileEntity.setPreferredSlot(-2);
+                    } else {
+                        projectileEntity.setPreferredSlot(playerEntity.getInventory().selected);
+                    }
                     projectileEntity.thrownStack = stack;
                     world.addFreshEntity(projectileEntity);
                     world.playSound(null, user, SoundEvents.TRIDENT_THROW.value(), SoundSource.PLAYERS, 1.0f, 1.0f);

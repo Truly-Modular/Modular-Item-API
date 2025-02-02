@@ -47,6 +47,7 @@ public class ProjectileDropItemProperty extends CodecProperty<String> {
             Map<String, ItemStack> map = itemStack.getOrDefault(StackStorageComponent.STACK_STORAGE_COMPONENT, Map.of());
             ItemStack storedStack = map.get(path);
             if (storedStack != null) {
+                storedStack = storedStack.copy();
                 if (!projectile.level().isClientSide()) {
                     projectile.level().addFreshEntity(new ItemEntity(
                             projectile.level(),
@@ -54,9 +55,10 @@ public class ProjectileDropItemProperty extends CodecProperty<String> {
                             projectile.position().y(),
                             projectile.position().z(),
                             storedStack.copy()
-                            ));
-                    return true;
+                    ));
                 }
+                //TODO:doesnt always prevent arrow from existing!
+                return true;
             }
         }
         return false;

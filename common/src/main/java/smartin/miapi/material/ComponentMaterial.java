@@ -17,6 +17,7 @@ import smartin.miapi.Miapi;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.item.modular.StatResolver;
+import smartin.miapi.material.base.Material;
 import smartin.miapi.modules.ModuleInstance;
 
 import java.util.Objects;

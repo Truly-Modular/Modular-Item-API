@@ -1,7 +1,7 @@
 package smartin.miapi.material.palette;
 
 import smartin.miapi.client.renderer.NativeImageGetter;
-import smartin.miapi.material.Material;
+import smartin.miapi.material.base.Material;
 import com.mojang.blaze3d.platform.NativeImage;
 import java.io.IOException;
 import net.minecraft.client.renderer.texture.SpriteContents;

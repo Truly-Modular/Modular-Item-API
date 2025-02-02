@@ -21,7 +21,7 @@ import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.events.MiapiEvents;
-import smartin.miapi.material.Material;
+import smartin.miapi.material.base.Material;
 import smartin.miapi.material.MaterialIcons;
 import smartin.miapi.material.MaterialProperty;
 import smartin.miapi.material.palette.FallbackColorer;

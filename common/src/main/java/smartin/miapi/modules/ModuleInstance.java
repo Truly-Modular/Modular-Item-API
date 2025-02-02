@@ -21,7 +21,7 @@ import smartin.miapi.Miapi;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.item.modular.PropertyResolver;
 import smartin.miapi.item.modular.StatResolver;
-import smartin.miapi.material.Material;
+import smartin.miapi.material.base.Material;
 import smartin.miapi.material.MaterialProperty;
 import smartin.miapi.mixin.RegistryOpsAccessor;
 import smartin.miapi.modules.cache.DataCache;
@@ -120,6 +120,7 @@ public class ModuleInstance {
 
     /**
      * this is kept separately in case the module doesn't exist, otherwise the id would be defaulted to empty in case no module is found, permanently breaking the item
+     * This also doubles as a ThreadLock object.
      */
     public ResourceLocation moduleID;
 
@@ -251,6 +252,12 @@ public class ModuleInstance {
 
         if (properties == null) {
             PropertyResolver.resolve(this.getRoot());
+        }
+        if (properties == null) {
+            Miapi.LOGGER.error("property resolve failed! ");
+            Miapi.LOGGER.error("Could not resolve Property " + property.toString() + " ");
+            Miapi.LOGGER.error("for Module " + this.moduleID);
+            return null;
         }
 
         Object propertyDataRaw = properties.get(property);

@@ -9,7 +9,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
@@ -20,7 +19,7 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
-import smartin.miapi.client.gui.crafting.crafter.replace.HoverMaterialList;
+import smartin.miapi.material.base.Material;
 import smartin.miapi.material.palette.FallbackColorer;
 import smartin.miapi.material.palette.MaterialRenderController;
 import smartin.miapi.material.palette.MaterialRenderControllers;
@@ -35,8 +34,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import static dev.latvian.mods.kubejs.bindings.TextWrapper.gray;
 
 /**
  * quite frankly, this isnt a good implementation. its still very much based on JSON instead of normal codecs.
@@ -121,7 +118,7 @@ public class JsonMaterial implements Material {
                 }
                 case "fake_translation": {
                     if (isClient) {
-                        FakeTranslation.translations.put(rawJson.getAsJsonObject().get("translation").getAsString(), propertyElement.getAsString());
+                        FakeTranslation.translations.put(rawJson.getAsJsonObject().get("fake_translation").getAsString(), propertyElement.getAsString());
                     }
                     break;
                 }

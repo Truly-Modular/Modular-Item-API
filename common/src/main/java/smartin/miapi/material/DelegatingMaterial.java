@@ -12,6 +12,7 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.Nullable;
+import smartin.miapi.material.base.Material;
 import smartin.miapi.material.palette.MaterialRenderController;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.util.ModuleProperty;
@@ -21,7 +22,7 @@ import java.util.Map;
 import java.util.Optional;
 
 public class DelegatingMaterial implements Material {
-    private final Material parent;
+    public final Material parent;
 
     public DelegatingMaterial(Material parent) {
         this.parent = parent;
