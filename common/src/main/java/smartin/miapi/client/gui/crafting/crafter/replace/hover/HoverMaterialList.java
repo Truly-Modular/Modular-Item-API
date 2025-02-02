@@ -16,7 +16,7 @@ import smartin.miapi.material.base.Material;
 import smartin.miapi.material.MaterialProperty;
 import smartin.miapi.material.composite.AnyIngredientComposite;
 import smartin.miapi.material.composite.CompositeMaterial;
-import smartin.miapi.material.composite.MaterialOverwriteComposite;
+import smartin.miapi.material.composite.MaterialCopyComposite;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.registries.RegistryInventory;
 
@@ -168,7 +168,7 @@ public class HoverMaterialList extends InteractAbleWidget {
         if (material != null && PreviewManager.currentPreviewMaterial != material) {
             ItemStack materialStack = new ItemStack(RegistryInventory.modularItem);
             materialStack.set(CompositeMaterial.COMPOSITE_MATERIAL_COMPONENT,
-                    CompositeMaterial.getFromComposites(List.of(new MaterialOverwriteComposite(material), new AnyIngredientComposite())));
+                    CompositeMaterial.getFromComposites(List.of(new MaterialCopyComposite(material), new AnyIngredientComposite())));
             PreviewManager.setCursorItemstack(materialStack);
             Material material1 = MaterialProperty.getMaterialFromIngredient(materialStack);
             Miapi.LOGGER.info(" " + material1);

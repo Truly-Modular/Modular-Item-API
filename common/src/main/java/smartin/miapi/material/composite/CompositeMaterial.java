@@ -47,7 +47,7 @@ public class CompositeMaterial extends DelegatingMaterial {
             }
             return EventResult.pass();
         });
-        Composite.COMPOSITE_REGISTRY.put(MaterialOverwriteComposite.ID, MaterialOverwriteComposite.MAP_CODEC);
+        Composite.COMPOSITE_REGISTRY.put(MaterialCopyComposite.ID, MaterialCopyComposite.MAP_CODEC);
         Composite.COMPOSITE_REGISTRY.put(AnyIngredientComposite.ID, AnyIngredientComposite.MAP_CODEC);
     }
 
