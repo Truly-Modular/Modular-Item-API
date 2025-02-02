@@ -62,6 +62,8 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
     //band-aid solution to prevent too many updates from mod compat issues
     int framesSinceLastUpdate = 15;
     ItemStack nextItemStack = ItemStack.EMPTY;
+    public int overwriteMouseX = 0;
+    public int overwriteMouseY = 0;
 
     List<InteractAbleWidget> editOptionIcons = new ArrayList<>();
 
@@ -377,6 +379,8 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
 
     @Override
     public void render(DrawContext drawContext, int mouseX, int mouseY, float delta) {
+        overwriteMouseX = mouseX;
+        overwriteMouseY = mouseY;
         if (framesSinceLastUpdate > 10 && !nextItemStack.isEmpty()) {
             updateItem(nextItemStack);
             nextItemStack = ItemStack.EMPTY;
@@ -395,20 +399,20 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
             }
         }
         if (hoverElement == null) {
-            super.render(drawContext, mouseX, mouseY, delta);
+            super.render(drawContext, overwriteMouseX, overwriteMouseY, delta);
         } else {
-            hoverElement.render(drawContext, mouseX, mouseY, delta);
+            hoverElement.render(drawContext, overwriteMouseX, overwriteMouseY, delta);
         }
-        this.drawMouseoverTooltip(drawContext, mouseX, mouseY);
+        this.drawMouseoverTooltip(drawContext, overwriteMouseX, overwriteMouseY);
         drawContext.getMatrices().push();
         drawContext.getMatrices().translate(0.0F, 0.0F, 400.0F);
         if (hoverElement == null) {
             drawContext.draw(() -> {
-                this.renderHover(drawContext, mouseX, mouseY, delta);
+                this.renderHover(drawContext, overwriteMouseX, overwriteMouseY, delta);
             });
         } else {
             drawContext.draw(() -> {
-                hoverElement.renderHover(drawContext, mouseX, mouseY, delta);
+                hoverElement.renderHover(drawContext, overwriteMouseX, overwriteMouseY, delta);
             });
         }
         drawContext.getMatrices().pop();

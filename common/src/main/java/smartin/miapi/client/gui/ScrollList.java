@@ -164,7 +164,7 @@ public class ScrollList extends InteractAbleWidget {
             return false;
         }
         for (ClickableWidget widget : widgets) {
-            if (widget.isMouseOver(mouseX, mouseY) && widget.mouseScrolled(mouseX, mouseY, amount)) {
+            if (widget.mouseScrolled(mouseX, mouseY, amount)) {
                 return true;
             }
         }

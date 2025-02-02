@@ -8,9 +8,13 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.ColorHelper;
 import smartin.miapi.Miapi;
-import smartin.miapi.client.gui.*;
+import smartin.miapi.client.gui.InteractAbleWidget;
+import smartin.miapi.client.gui.MultiLineTextWidget;
+import smartin.miapi.client.gui.ScrollingTextWidget;
+import smartin.miapi.client.gui.TransformableWidget;
 import smartin.miapi.client.gui.crafting.CraftingScreen;
 import smartin.miapi.client.gui.crafting.PreviewManager;
+import smartin.miapi.client.gui.crafting.crafter.replace.hover.HoverInteractableMaterialList;
 import smartin.miapi.craft.CraftAction;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ItemModule;
@@ -35,6 +39,8 @@ public class MaterialCraftingWidget extends InteractAbleWidget {
         this.action = action;
         this.allowedMaterial = allowedMaterial;
         allowedMaterial.slotHeight = height + 12;
+        //this.addChild(new HoverMaterialList(action.toAdd, x + 71, y + this.height + 10, 31, 19));
+        this.addChild(new HoverInteractableMaterialList(action.toAdd, x + 71, y + this.height + 10, 31, 19));
 
         ItemModule.ModuleInstance moduleInstance = new ItemModule.ModuleInstance(action.toAdd);
         Text displayText = StatResolver.translateAndResolve(Miapi.MOD_ID + ".module." + moduleInstance.module.getName(), moduleInstance);
@@ -52,7 +58,6 @@ public class MaterialCraftingWidget extends InteractAbleWidget {
         costDescr = new ScrollingTextWidget(x + 71, y + this.height - 8, 78, Text.empty());
         //costDescr.setOrientation(ScrollingTextWidget.Orientation.RIGHT);
         costDescr.textColor = ColorHelper.Argb.getArgb(255, 225, 225, 225);
-        this.addChild(new HoverMaterialList(action.toAdd, x + 71, y + this.height + 10, 31, 19));
         addChild(description);
         addChild(costDescr);
     }

@@ -16,7 +16,7 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
-import smartin.miapi.client.gui.crafting.crafter.replace.HoverMaterialList;
+import smartin.miapi.client.gui.crafting.crafter.replace.hover.HoverMaterialList;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.item.ModularItemStackConverter;
 import smartin.miapi.item.modular.ModularItem;

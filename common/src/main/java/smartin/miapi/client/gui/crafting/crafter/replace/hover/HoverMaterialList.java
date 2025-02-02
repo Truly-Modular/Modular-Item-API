@@ -1,4 +1,4 @@
-package smartin.miapi.client.gui.crafting.crafter.replace;
+package smartin.miapi.client.gui.crafting.crafter.replace.hover;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
@@ -28,14 +28,19 @@ public class HoverMaterialList extends InteractAbleWidget {
     public int selected = 0;
     public int scrollPosOne = 0;
     public int scrollPosTwo = 0;
-    final int maxElements = 8;
-    final int selectedColor = ColorHelper.Argb.getArgb(255, 255, 255, 255);
-    final int unselectedColor = ColorHelper.Argb.getArgb(255, 200, 200, 200);
-    final int moreEntryColor = ColorHelper.Argb.getArgb(255, 160, 160, 160);
-    int start = 0;
-    int end = 0;
-    boolean lastRendered = false;
-    Material previewMaterial = null;
+    protected final int maxElements = 8;
+    protected final int selectedColor = ColorHelper.Argb.getArgb(255, 255, 255, 255);
+    protected final int unselectedColor = ColorHelper.Argb.getArgb(255, 200, 200, 200);
+    protected final int moreEntryColor = ColorHelper.Argb.getArgb(255, 160, 160, 160);
+    protected int start = 0;
+    protected int end = 0;
+    protected boolean lastRendered = false;
+    protected Material previewMaterial = null;
+    protected int realMouseX = 0;
+    protected int realMouseY = 0;
+    protected int sizeDetailList, verticalSize, sizeBaseList = 0;
+    protected boolean permaOpen = false;
+
 
     public HoverMaterialList(ItemModule module, int x, int y, int width, int height) {
         super(x, y, width, height, Text.empty());
@@ -56,36 +61,44 @@ public class HoverMaterialList extends InteractAbleWidget {
                 404, 96,
                 20, 11,
                 512, 512);
-        super.render(drawContext, mouseX, mouseY, delta);
-        if (lastRendered) {
+        realMouseX = mouseX;
+        realMouseY = mouseY;
+        if (lastRendered || permaOpen) {
             selectedMaterialUpdate(previewMaterial);
+            if (CraftingScreen.getInstance() != null) {
+                //CraftingScreen.getInstance().overwriteMouseY = -1000;
+                //CraftingScreen.getInstance().overwriteMouseX = -1000;
+            }
         }
+        super.render(drawContext, mouseX, mouseY, delta);
     }
 
     @Override
     public void renderHover(DrawContext drawContext, int mouseX, int mouseY, float delta) {
-        if (isMouseOver(mouseX, mouseY)) {
+        int currentY = this.getY() + 3;
+        String selectedMaterialOrGroup = materialKeys.get(selected + scrollPosOne);
+        List<Material> materialList = materials.get(selectedMaterialOrGroup);
+        sizeBaseList = 30;
+        verticalSize = Math.min(materials.size(), maxElements);
+        verticalSize = Math.max(Math.min(materialList.size(), maxElements), verticalSize);
+        verticalSize *= 14;
+
+        for (int i = scrollPosOne; i < Math.min(materials.size(), maxElements + scrollPosOne); i++) {
+            sizeBaseList = Math.max(MinecraftClient.getInstance().textRenderer.getWidth(getTranslation(materialKeys.get(i))), sizeBaseList);
+        }
+
+        sizeDetailList = 0;
+        for (Material m : materialList) {
+            sizeDetailList = Math.max(MinecraftClient.getInstance().textRenderer.getWidth(getTranslation(m.getKey())), sizeDetailList);
+        }
+        sizeDetailList += 10;
+        if (isMouseOver(realMouseX, realMouseY) || permaOpen) {
             this.lastRendered = true;
             RenderSystem.disableDepthTest();
-            int currentY = this.getY() + 3;
-            String selectedMaterialOrGroup = materialKeys.get(selected + scrollPosOne);
-            List<Material> materialList = materials.get(selectedMaterialOrGroup);
-            int sizeBaseList = 30;
-            int verticalSize = Math.min(materials.size(), maxElements);
-            verticalSize = Math.max(Math.min(materialList.size(), maxElements), verticalSize);
-
-            for (int i = scrollPosOne; i < Math.min(materials.size(), maxElements + scrollPosOne); i++) {
-                sizeBaseList = Math.max(MinecraftClient.getInstance().textRenderer.getWidth(getTranslation(materialKeys.get(i))), sizeBaseList);
-            }
-
-            int sizeDetailList = 0;
-            for (Material m : materialList) {
-                sizeDetailList = Math.max(MinecraftClient.getInstance().textRenderer.getWidth(getTranslation(m.getKey())), sizeDetailList);
-            }
 
             drawContext.fill(
                     getX(), getY(),
-                    getX() + sizeDetailList + sizeBaseList + 10, getY() + verticalSize * 14,
+                    getX() + sizeDetailList + sizeBaseList, getY() + verticalSize,
                     ColorHelper.Argb.getArgb(210, 0, 0, 0));
 
             if (!materials.isEmpty()) {
@@ -173,7 +186,7 @@ public class HoverMaterialList extends InteractAbleWidget {
 
             RenderSystem.enableDepthTest();
         } else {
-            if (lastRendered) {
+            if (lastRendered || permaOpen) {
                 previewMaterial = null;
                 selectedMaterialUpdate(null);
             }
@@ -182,6 +195,10 @@ public class HoverMaterialList extends InteractAbleWidget {
             scrollPosTwo = 0;
             selected = 0;
         }
+    }
+
+    public boolean isMouseOverFull(double mouseX, double mouseY, int otherWidth, int otherHeight) {
+        return this.active && this.visible && mouseX >= (double) this.getX() && mouseY >= (double) this.getY() && mouseX < (double) (this.getX() + otherWidth) && mouseY < (double) (this.getY() + otherHeight);
     }
 
     public static void selectedMaterialUpdate(Material material) {

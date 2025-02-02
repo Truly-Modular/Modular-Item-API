@@ -141,7 +141,7 @@ public abstract class ParentHandledScreen<T extends ScreenHandler> extends Handl
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
         for (Element child : this.children().stream().toList()) {
-            if (child.isMouseOver(mouseX, mouseY) && child.mouseScrolled(mouseX, mouseY, amount)) {
+            if (child.mouseScrolled(mouseX, mouseY, amount)) {
                 return true;
             }
         }
