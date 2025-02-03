@@ -7,13 +7,12 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.FastColor;
 import net.minecraft.world.item.ItemStack;
-import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.crafting.CraftingScreen;
 import smartin.miapi.client.gui.crafting.PreviewManager;
 import smartin.miapi.material.AllowedMaterial;
-import smartin.miapi.material.base.Material;
 import smartin.miapi.material.MaterialProperty;
+import smartin.miapi.material.base.Material;
 import smartin.miapi.material.composite.AnyIngredientComposite;
 import smartin.miapi.material.composite.CompositeMaterial;
 import smartin.miapi.material.composite.MaterialCopyComposite;
@@ -170,8 +169,6 @@ public class HoverMaterialList extends InteractAbleWidget {
             materialStack.set(CompositeMaterial.COMPOSITE_MATERIAL_COMPONENT,
                     CompositeMaterial.getFromComposites(List.of(new MaterialCopyComposite(material), new AnyIngredientComposite())));
             PreviewManager.setCursorItemstack(materialStack);
-            Material material1 = MaterialProperty.getMaterialFromIngredient(materialStack);
-            Miapi.LOGGER.info(" " + material1);
         } else {
             ItemStack materialStack = new ItemStack(RegistryInventory.modularItem);
             PreviewManager.setCursorItemstack(materialStack);

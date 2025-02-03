@@ -235,6 +235,15 @@ public class Miapi {
     public static ResourceLocation id(String string) {
         string = camelToSnake(string);
         String[] parts = string.split(":");
+        if(parts[0].equals("arsenal")){
+            parts[0] = "tm_arsenal";
+        }
+        if(parts[0].equals("archery")){
+            parts[0] = "tm_archery";
+        }
+        if(parts[0].equals("armory")){
+            parts[0] = "tm_armory";
+        }
         if (parts.length > 1) {
             return ResourceLocation.fromNamespaceAndPath(parts[0], parts[1]);
         }

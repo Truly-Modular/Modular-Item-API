@@ -22,8 +22,7 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
 
-import static smartin.miapi.Miapi.LOGGER;
-import static smartin.miapi.Miapi.gson;
+import static smartin.miapi.Miapi.*;
 
 /**
  * An ItemModule represents a Module loaded from a JSON
@@ -169,6 +168,11 @@ public record ItemModule(ResourceLocation id, Map<ModuleProperty<?>, Object> pro
                     LOGGER.error("MODULE DECODE ISSUE!?! " + root);
                     LOGGER.error("SHOULD HAVE BEEN" + compareTo);
                     LOGGER.error("ATTEMPTING AUTO FIX");
+                    compareTo.clearCaches();
+                    compareTo.allSubModules().forEach(moduleInstance -> {
+                        moduleInstance.lookup = root.lookup;
+                        moduleInstance.registryAccess = root.registryAccess;
+                    });
                     compareTo.writeToItem(stack);
                     return getModules(stack);
                 }

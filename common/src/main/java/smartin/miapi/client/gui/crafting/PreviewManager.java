@@ -2,11 +2,10 @@ package smartin.miapi.client.gui.crafting;
 
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
-import smartin.miapi.Miapi;
 import smartin.miapi.item.modular.ModularItem;
-import smartin.miapi.modules.edit_options.ReplaceOption;
-import smartin.miapi.material.base.Material;
 import smartin.miapi.material.MaterialProperty;
+import smartin.miapi.material.base.Material;
+import smartin.miapi.modules.edit_options.ReplaceOption;
 
 public class PreviewManager {
     @Nullable
@@ -57,8 +56,6 @@ public class PreviewManager {
                     }
                 } else {
                     ReplaceOption.tryPreview();
-                    String material = currentPreviewMaterial == null ? "empty" : currentPreviewMaterial.getID().toString();
-                    Miapi.LOGGER.info("updating preview Material " + material + " " + hasValidPreview());
                 }
             }
         }

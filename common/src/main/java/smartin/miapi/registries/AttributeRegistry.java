@@ -1,7 +1,6 @@
 package smartin.miapi.registries;
 
 import net.minecraft.world.entity.ai.attributes.RangedAttribute;
-import smartin.miapi.config.MiapiConfig;
 
 import static smartin.miapi.attributes.AttributeRegistry.*;
 
@@ -68,7 +67,10 @@ public class AttributeRegistry {
                 att -> STUN_DAMAGE = att);
 
         RegistryInventory.registerAtt("generic.stun_max_health", true, () ->
-                        new RangedAttribute("miapi.attribute.name.stun_max_health", MiapiConfig.INSTANCE.server.stunEffectCategory.stunHealth, 0.0, 1024.0).setSyncable(true),
+                        new RangedAttribute("miapi.attribute.name.stun_max_health",
+                                //MiapiConfig.INSTANCE.server.stunEffectCategory.stunHealth
+                                20.0,
+                                0.0, 1024.0).setSyncable(true),
                 att -> STUN_MAX_HEALTH = att);
 
         RegistryInventory.registerAtt("generic.crit_damage", true, () ->

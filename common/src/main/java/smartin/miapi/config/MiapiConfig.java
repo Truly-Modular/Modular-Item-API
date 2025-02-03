@@ -44,9 +44,10 @@ public class MiapiConfig {
                     MiapiServerConfig.INSTANCE = c;
                     INSTANCE.server = c;
                     ModularItemCache.discardCache();
-                    if (Miapi.server != null) {
+                    if (Miapi.server != null && Miapi.server.getConnection() != null) {
                         //CacheCommands.clearCacheAllClients(Miapi.server);
                     }
                 }));
+        serverConfigObject.load();
     }
 }
