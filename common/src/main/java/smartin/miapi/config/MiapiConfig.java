@@ -14,11 +14,11 @@ import smartin.miapi.modules.properties.GlintProperty;
 @ConfigAutoCodec.ConfigClassMarker
 public class MiapiConfig {
     public static MiapiConfig INSTANCE = new MiapiConfig();
+    public MiapiClientConfig client;
+    public MiapiServerConfig server;
     public static ConfigObject<MiapiServerConfig> serverConfigObject;
     public static ConfigObject<MiapiClientConfig> clientConfigObject;
 
-    public MiapiClientConfig client;
-    public MiapiServerConfig server;
 
     public static void setupConfigs() {
         MiapiConfig.clientConfigObject = ConfigManager.register(ConfigBuilder.automatic(MiapiClientConfig.class)
