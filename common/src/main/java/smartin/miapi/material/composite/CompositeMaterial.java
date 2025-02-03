@@ -1,9 +1,7 @@
 package smartin.miapi.material.composite;
 
-import com.google.gson.JsonObject;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import dev.architectury.event.EventResult;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.resources.ResourceLocation;
@@ -11,9 +9,12 @@ import net.minecraft.world.item.ItemStack;
 import smartin.miapi.Environment;
 import smartin.miapi.Miapi;
 import smartin.miapi.datapack.ReloadEvents;
-import smartin.miapi.events.MiapiEvents;
-import smartin.miapi.material.*;
+import smartin.miapi.material.DefaultMaterial;
+import smartin.miapi.material.DelegatingMaterial;
 import smartin.miapi.material.base.Material;
+import smartin.miapi.material.composite.group.GroupComposite;
+import smartin.miapi.material.composite.group.GuiGroupComposite;
+import smartin.miapi.material.composite.group.HiddenGroupComposite;
 
 import java.util.List;
 import java.util.Objects;
@@ -35,20 +36,19 @@ public class CompositeMaterial extends DelegatingMaterial {
 
     static {
         ReloadEvents.MAIN.subscribe((isClient, registryAccess) -> {
-            JsonObject object = new JsonObject();
             materials.put(
                     KEY,
-                    new CompositeMaterial(new JsonMaterial(KEY, object, isClient), List.of()));
+                    new CompositeMaterial(new DefaultMaterial(), List.of()));
         }, -1);
-        MiapiEvents.MATERIAL_CRAFT_EVENT.register(data -> {
-            if (data.material instanceof CompositeMaterial componentMaterial) {
-                //componentMaterial.writeMaterial(data.moduleInstance);
-                //data.moduleInstance.getRoot().writeToItem(data.crafted);
-            }
-            return EventResult.pass();
-        });
         Composite.COMPOSITE_REGISTRY.put(MaterialCopyComposite.ID, MaterialCopyComposite.MAP_CODEC);
         Composite.COMPOSITE_REGISTRY.put(AnyIngredientComposite.ID, AnyIngredientComposite.MAP_CODEC);
+        Composite.COMPOSITE_REGISTRY.put(ColorComposite.ID, ColorComposite.MAP_CODEC);
+        Composite.COMPOSITE_REGISTRY.put(NameComposite.ID, NameComposite.MAP_CODEC);
+        Composite.COMPOSITE_REGISTRY.put(PaletteComposite.ID, PaletteComposite.MAP_CODEC);
+        Composite.COMPOSITE_REGISTRY.put(DyeableComposite.ID, DyeableComposite.MAP_CODEC);
+        Composite.COMPOSITE_REGISTRY.put(GroupComposite.ID, GroupComposite.MAP_CODEC);
+        Composite.COMPOSITE_REGISTRY.put(GuiGroupComposite.ID, GuiGroupComposite.MAP_CODEC);
+        Composite.COMPOSITE_REGISTRY.put(HiddenGroupComposite.ID, HiddenGroupComposite.MAP_CODEC);
     }
 
     public static DataComponentType<CompositeMaterial> COMPOSITE_MATERIAL_COMPONENT = DataComponentType.<CompositeMaterial>builder()
@@ -58,6 +58,13 @@ public class CompositeMaterial extends DelegatingMaterial {
     protected CompositeMaterial(Material buildMaterial, List<Composite> composites) {
         super(buildMaterial);
         this.compositeList = composites;
+    }
+
+    public double getValueOfItem(ItemStack ingredient) {
+        if (ingredient.has(COMPOSITE_MATERIAL_COMPONENT)) {
+            return 1.0;
+        }
+        return 0.0;
     }
 
     public static CompositeMaterial getFromComposites(List<Composite> composites) {
@@ -76,7 +83,8 @@ public class CompositeMaterial extends DelegatingMaterial {
     public Double getPriorityOfIngredientItem(ItemStack ingredient) {
         CompositeMaterial material = ingredient.get(COMPOSITE_MATERIAL_COMPONENT);
         if (material != null) {
-            return material.parent.getPriorityOfIngredientItem(ingredient);
+            //return material.parent.getPriorityOfIngredientItem(ingredient);
+            return 100.0;
         }
         return null;
     }
