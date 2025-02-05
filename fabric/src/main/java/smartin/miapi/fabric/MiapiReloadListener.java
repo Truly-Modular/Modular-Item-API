@@ -53,7 +53,6 @@ public class MiapiReloadListener implements PreparableReloadListener {
     }
 
     public void apply(Object data, ResourceManager manager, ProfilerFiller profiler) {
-        Miapi.LOGGER.warn("execute async");
         //executor.execute(() -> {
         ReloadEvents.reloadCounter++;
         timeStart = System.nanoTime();

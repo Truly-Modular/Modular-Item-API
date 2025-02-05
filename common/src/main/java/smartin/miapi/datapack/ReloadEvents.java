@@ -153,7 +153,7 @@ public class ReloadEvents {
             try {
                 buf.writeByteArray(syncer.createDataServer().array());
                 Networking.sendS2C(RELOAD_PACKET_ID, entity, buf);
-                Miapi.DEBUG_LOGGER.info("sending dataSyncer info to client!" + entity.getUUID() + "!" + Thread.currentThread().getName());
+                //Miapi.DEBUG_LOGGER.info("sending dataSyncer info to client!" + entity.getUUID() + "!" + Thread.currentThread().getName());
             } catch (RuntimeException e) {
                 Miapi.LOGGER.error("Datasyncer " + id + " was not able to create Packet with error ", e);
             }
@@ -171,7 +171,7 @@ public class ReloadEvents {
 
     private static void clientSetup() {
         Networking.registerS2CPacket(RELOAD_PACKET_ID, (buffer) -> {
-            Miapi.DEBUG_LOGGER.info("recieved dataSyncer info on client! " + Thread.currentThread().getName());
+            //Miapi.DEBUG_LOGGER.info("recieved dataSyncer info on client! " + Thread.currentThread().getName());
             if (receivedSyncer.isEmpty()) {
                 clientReloadTimeStart = System.nanoTime();
             }

@@ -10,10 +10,11 @@ import smartin.miapi.modules.properties.ItemIdProperty;
 
 @Mixin(ResultContainer.class)
 public class CraftingResultInventorMixin {
-    @ModifyVariable(method = "setItem", at = @At(value = "RETURN"), ordinal = 0)
+    @ModifyVariable(method = "setItem", at = @At(value = "RETURN"), ordinal = 0, argsOnly = true)
     private ItemStack miapi$adjustItemIdOnAnvilRepair(ItemStack original) {
-        if (original != null && original.getItem() instanceof VisualModularItem) {
-            return ItemIdProperty.changeId(original);
+        if (original != null && VisualModularItem.isModularItem(original)) {
+            ItemStack converted = ItemIdProperty.changeId(original);
+            return converted;
         }
         return original;
     }

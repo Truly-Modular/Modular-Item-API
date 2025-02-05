@@ -51,7 +51,6 @@ public class GlintProperty extends CodecProperty<GlintProperty.RainbowGlintSetti
     public GlintProperty() {
         super(CODEC);
         property = this;
-        updateConfig();
     }
 
     public GlintSettings getGlintSettings(ModuleInstance instance, ItemStack stack) {

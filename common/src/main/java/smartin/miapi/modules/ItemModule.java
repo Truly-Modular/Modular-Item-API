@@ -157,6 +157,7 @@ public record ItemModule(ResourceLocation id, Map<ModuleProperty<?>, Object> pro
         if (stack.getItem() instanceof VisualModularItem && !ReloadEvents.isInReload()) {
             ModuleInstance root = stack.get(ModuleInstance.MODULE_INSTANCE_COMPONENT);
             if (root != null) {
+                root = root.copy();
                 for (ModuleInstance moduleInstance : root.allSubModules()) {
                     moduleInstance.contextStack = stack;
                 }
@@ -169,10 +170,10 @@ public record ItemModule(ResourceLocation id, Map<ModuleProperty<?>, Object> pro
                     LOGGER.error("SHOULD HAVE BEEN" + compareTo);
                     LOGGER.error("ATTEMPTING AUTO FIX");
                     compareTo.clearCaches();
-                    compareTo.allSubModules().forEach(moduleInstance -> {
+                    for(ModuleInstance moduleInstance: compareTo.allSubModules()){
                         moduleInstance.lookup = root.lookup;
                         moduleInstance.registryAccess = root.registryAccess;
-                    });
+                    }
                     compareTo.writeToItem(stack);
                     return getModules(stack);
                 }

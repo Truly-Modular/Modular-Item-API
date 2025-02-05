@@ -1,6 +1,7 @@
 package smartin.miapi.registries;
 
 import com.google.common.base.Suppliers;
+import dev.architectury.event.EventResult;
 import dev.architectury.event.events.common.LifecycleEvent;
 import dev.architectury.platform.Platform;
 import dev.architectury.registry.CreativeTabRegistry;
@@ -19,9 +20,11 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.flag.FeatureFlagSet;
+import net.minecraft.world.inventory.AnvilMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -48,6 +51,7 @@ import smartin.miapi.effects.StunResistanceStatusEffect;
 import smartin.miapi.effects.StunStatusEffect;
 import smartin.miapi.effects.TeleportBlockEffect;
 import smartin.miapi.entity.ItemProjectileEntity;
+import smartin.miapi.events.ModularAttackEvents;
 import smartin.miapi.item.MaterialSmithingRecipe;
 import smartin.miapi.item.modular.ModularItemPart;
 import smartin.miapi.item.modular.PropertyResolver;
@@ -74,13 +78,13 @@ import smartin.miapi.modules.abilities.gun.GunContextProperty;
 import smartin.miapi.modules.abilities.gun.GunMagazineComponent;
 import smartin.miapi.modules.abilities.gun.ReloadSingleBulletAbility;
 import smartin.miapi.modules.abilities.gun.ShootAbility;
+import smartin.miapi.modules.abilities.key.KeyBindAbilityManagerProperty;
 import smartin.miapi.modules.abilities.shield.ParryShieldBlock;
 import smartin.miapi.modules.abilities.shield.TowerShieldBlock;
 import smartin.miapi.modules.abilities.toolabilities.AxeAbility;
 import smartin.miapi.modules.abilities.toolabilities.HoeAbility;
 import smartin.miapi.modules.abilities.toolabilities.ShovelAbility;
 import smartin.miapi.modules.abilities.util.AbilityMangerProperty;
-import smartin.miapi.modules.abilities.key.KeyBindAbilityManagerProperty;
 import smartin.miapi.modules.conditions.*;
 import smartin.miapi.modules.edit_options.*;
 import smartin.miapi.modules.edit_options.CreateItemOption.CreateItemOption;
@@ -406,6 +410,14 @@ public class RegistryInventory {
         });
 
         smartin.miapi.registries.AttributeRegistry.registerAttributes();
+
+        ModularAttackEvents.HURT_ENEMY_POST.register((stack, target, attacker) -> {
+            if (stack.getItem() instanceof SwordItem || stack.getItem() instanceof TieredItem) {
+                stack.hurtAndBreak(1, attacker, EquipmentSlot.MAINHAND);
+            }
+            return EventResult.pass();
+        });
+        AnvilMenu m ;
 
 
         // GAME EVENTS
