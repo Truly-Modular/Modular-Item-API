@@ -16,7 +16,6 @@ import org.joml.Vector3f;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.model.MiapiItemModel;
 import smartin.miapi.item.modular.Transform;
-import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.util.CodecProperty;
 import smartin.miapi.modules.properties.util.MergeType;
 
@@ -32,17 +31,19 @@ public class ModelTransformationProperty extends CodecProperty<ModelTransformati
     public ModelTransformationProperty() {
         super(AutoCodec.of(ModelTransformationData.class).codec());
         property = this;
-        ModularItemCache.setSupplier(KEY.toString(), ModelTransformationProperty::getTransformation);
-        MiapiItemModel.modelTransformers.add((matrices, itemStack, type, modelType, tickDelta) -> {
-            applyTransformation(itemStack, modelType, matrices);
-            return matrices;
+        MiapiItemModel.modelTransformersSuppler.add((itemStack, modelType, itemDisplayContext) -> {
+            ItemTransform transforms = getTransformation(itemStack).getTransform(itemDisplayContext);
+            if (transforms != null) {
+                return (matrices, tickDelta) -> {
+                    applyTransformation(transforms, matrices);
+                    return matrices;
+                };
+            }
+            return null;
         });
     }
 
-    public static void applyTransformation(ItemStack stack, ItemDisplayContext mode, PoseStack matrices) {
-        var data = ModularItemCache.getVisualOnlyCache(stack, KEY.toString(), ItemTransforms.NO_TRANSFORMS);
-        ItemTransform transformation = data.getTransform(mode);
-        boolean leftHanded = isLeftHanded(mode);
+    public static void applyTransformation(ItemTransform transformation, PoseStack matrices) {
         matrices.translate(0.5f, 0.5f, 0.5f);
         if (transformation != null) {
             transformation.apply(false, matrices);
@@ -51,8 +52,7 @@ public class ModelTransformationProperty extends CodecProperty<ModelTransformati
     }
 
     public static ItemTransforms getTransformation(ItemStack stack) {
-        ItemTransforms transforms = property.getData(stack).orElseGet(ModelTransformationData::new).asItemTransforms();
-        return transforms;
+        return property.getData(stack).orElseGet(ModelTransformationData::new).asItemTransforms();
     }
 
     public static boolean isLeftHanded(ItemDisplayContext mode) {

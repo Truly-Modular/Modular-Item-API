@@ -567,6 +567,7 @@ public class RegistryInventory {
             registerMiapi(moduleProperties, FakeEitherEnchantmentProperty.KEY, new FakeEitherEnchantmentProperty());
             registerMiapi(moduleProperties, MakesImpactSoundProperty.KEY, new MakesImpactSoundProperty());
             registerMiapi(moduleProperties, ProjectileDropItemProperty.KEY, new ProjectileDropItemProperty());
+            registerMiapi(moduleProperties, MaterialStatIndicatorProperty.KEY, new MaterialStatIndicatorProperty());
             //compat
             //registerMiapi(moduleProperties, BetterCombatProperty.KEY, new BetterCombatProperty());
             BetterCombatHelper.setup();

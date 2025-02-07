@@ -64,6 +64,8 @@ public class BakedMiapiModel implements MiapiModel {
     @Override
     public void render(PoseStack matrices, ItemStack stack, ItemDisplayContext transformationMode, float tickDelta, MultiBufferSource vertexConsumers, LivingEntity entity, int packedLight, int overlay) {
         assert Minecraft.getInstance().level != null;
+        Minecraft.getInstance().level.getProfiler().push("BakedModel");
+        Minecraft.getInstance().level.getProfiler().push("BakedModel-logic");
         matrices.pushPose();
 
         int sky = LightTexture.sky(packedLight);
@@ -76,7 +78,8 @@ public class BakedMiapiModel implements MiapiModel {
 
         Transform.applyPosition(matrices, modelMatrix);
         BakedModel currentModel = resolve(model, stack, entity, light);
-        Minecraft.getInstance().level.getProfiler().push("BakedModel");
+        Minecraft.getInstance().level.getProfiler().pop();
+        Minecraft.getInstance().level.getProfiler().push("BakedModel - quads");
 
         //render normally
         try {
@@ -132,6 +135,7 @@ public class BakedMiapiModel implements MiapiModel {
             Minecraft.getInstance().level.getProfiler().pop();
         }
         matrices.popPose();
+        Minecraft.getInstance().level.getProfiler().pop();
     }
 
     public BakedModel resolve(BakedModel model, ItemStack stack, @Nullable LivingEntity entity, int light) {

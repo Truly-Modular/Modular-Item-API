@@ -7,9 +7,11 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import smartin.miapi.client.GlintShader;
+import smartin.miapi.client.model.item.DualKeyCache;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.item.modular.VisualModularItem;
 import smartin.miapi.modules.ItemModule;
@@ -21,10 +23,11 @@ import java.util.List;
 
 public class MiapiItemModel implements MiapiModel {
     public static List<ModelSupplier> modelSuppliers = new ArrayList<>();
-    public static List<ModelTransformer> modelTransformers = new ArrayList<>();
+    public static List<ModelTransformerSupplier> modelTransformersSuppler = new ArrayList<>();
     public final ItemStack stack;
-    public final ModuleModel rootModel;
     private static final String CACHE_KEY = "miapi_model_rework";
+    public final DualKeyCache<String, ItemDisplayContext, List<ModelTransformer>> transformerCache = new DualKeyCache<>();
+    public final DualKeyCache<String, ItemDisplayContext, ModuleModel> modelCache = new DualKeyCache<>();
 
     static {
         ModularItemCache.setSupplier(CACHE_KEY, (MiapiItemModel::new));
@@ -38,9 +41,7 @@ public class MiapiItemModel implements MiapiModel {
     private MiapiItemModel(ItemStack stack) {
         this.stack = stack;
         if (stack.getItem() instanceof VisualModularItem) {
-            rootModel = new ModuleModel(ItemModule.getModules(stack), stack);
         } else {
-            rootModel = null;
             throw new RuntimeException("Can only make MiapiModel for Modular Items");
         }
     }
@@ -69,21 +70,40 @@ public class MiapiItemModel implements MiapiModel {
             int light,
             int overlay) {
         if (ReloadEvents.isInReload()) return;
-
-        String modelType = modelTypeRaw == null ? "item" : modelTypeRaw;
+        assert Minecraft.getInstance().level != null;
         Minecraft.getInstance().level.getProfiler().push("modular_item");
+        Minecraft.getInstance().level.getProfiler().push("root-logic");
+        String modelType = modelTypeRaw == null ? "item" : modelTypeRaw;
+        ModuleModel rootModel = modelCache.getNullSave(modelType, mode, (s, k) -> new ModuleModel(ItemModule.getModules(stack), stack, s, k));
         matrices.pushPose();
-        for (ModelTransformer transformer : modelTransformers) {
-            matrices = transformer.transform(matrices, stack, modelType, mode, tickDelta);
+        Minecraft.getInstance().level.getProfiler().push("model-transformers");
+        List<ModelTransformer> transformers = transformerCache.getNullSave(modelType, mode, (s, t) -> getTransfomers(stack, mode, modelType));
+        for (ModelTransformer transformer : transformers) {
+            matrices = transformer.transform(matrices, tickDelta);
         }
+        Minecraft.getInstance().level.getProfiler().pop();
         if (entity == null) {
             //needed because otherwise overwrites dont work
             entity = Minecraft.getInstance().player;
         }
+        Minecraft.getInstance().level.getProfiler().push("glint-setup");
         GlintShader.setupItem(matrices.last().pose());
+        Minecraft.getInstance().level.getProfiler().pop();
+        Minecraft.getInstance().level.getProfiler().pop();
         rootModel.render(modelType, stack, matrices, mode, tickDelta, vertexConsumers, entity, light, overlay);
         matrices.popPose();
         Minecraft.getInstance().level.getProfiler().pop();
+    }
+
+    private static @NotNull List<ModelTransformer> getTransfomers(ItemStack stack, ItemDisplayContext mode, String modelType) {
+        List<ModelTransformer> transformersList = new ArrayList<>();
+        modelTransformersSuppler.forEach(modelSupplier -> {
+            var transformer = modelSupplier.get(stack, modelType, mode);
+            if (transformer != null) {
+                transformersList.add(transformer);
+            }
+        });
+        return transformersList;
     }
 
     @Override
@@ -99,7 +119,11 @@ public class MiapiItemModel implements MiapiModel {
         }
     }
 
+    public interface ModelTransformerSupplier {
+        ModelTransformer get(ItemStack itemStack, String modelType, @Nullable ItemDisplayContext itemDisplayContext);
+    }
+
     public interface ModelTransformer {
-        PoseStack transform(PoseStack matrices, ItemStack itemStack, String modelType, @Nullable ItemDisplayContext model, float tickDelta);
+        PoseStack transform(PoseStack matrices, float tickDelta);
     }
 }

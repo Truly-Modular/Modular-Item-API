@@ -14,15 +14,12 @@ import smartin.miapi.client.model.MiapiItemModel;
 import smartin.miapi.item.modular.Transform;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
-import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.slot.SlotProperty;
 import smartin.miapi.modules.properties.util.CodecProperty;
 import smartin.miapi.modules.properties.util.MergeAble;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -36,16 +33,16 @@ public class GuiOffsetProperty extends CodecProperty<GuiOffsetProperty.GuiOffset
     public GuiOffsetProperty() {
         super(AutoCodec.of(GuiOffsetData.class).codec());
         property = this;
-        ModularItemCache.setSupplier(KEY + "_pure_gui", (stack -> new HashMap<>()));
-        MiapiItemModel.modelTransformers.add((matrices, itemStack, modelType, mode, tickDelta) -> {
-            if (mode.equals(ItemDisplayContext.GUI)) {
-                Map<String, float[]> cache = ModularItemCache.getVisualOnlyCache(itemStack, KEY + "_pure_gui", new HashMap<>());
-                float[] data = cache.computeIfAbsent(modelType, s -> getGuiOffsets(itemStack, modelType));
-                matrices.translate(data[0], data[1], 0);
-                matrices.scale(data[2], data[3], data[4]);
-
+        MiapiItemModel.modelTransformersSuppler.add((itemStack, modelType, mode) -> {
+            if(ItemDisplayContext.GUI.equals(mode)){
+                float[] data = getGuiOffsets(itemStack,modelType);
+                return (matrices, tickDelta) -> {
+                    matrices.translate(data[0], data[1], 0);
+                    matrices.scale(data[2], data[3], data[4]);
+                    return matrices;
+                };
             }
-            return matrices;
+            return null;
         });
     }
 

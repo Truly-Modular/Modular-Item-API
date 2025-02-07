@@ -14,6 +14,7 @@ import smartin.miapi.client.gui.TransformableWidget;
 import smartin.miapi.client.gui.crafting.CraftingScreen;
 import smartin.miapi.client.gui.crafting.PreviewManager;
 import smartin.miapi.client.gui.crafting.crafter.replace.hover.HoverInteractableMaterialList;
+import smartin.miapi.client.gui.crafting.crafter.replace.hover.MaterialStatPreview;
 import smartin.miapi.craft.CraftAction;
 import smartin.miapi.craft.MaterialCraftInfo;
 import smartin.miapi.modules.ModuleInstance;
@@ -40,6 +41,7 @@ public class MaterialCraftingWidget extends InteractAbleWidget {
         if (allowedMaterial.renderMaterialWidget()) {
             //this.addChild(new HoverMaterialList(action.toAdd, x + 71, y + this.height + 10, 31, 19));
             this.addChild(new HoverInteractableMaterialList(action.toAdd, x + 71, y + this.height + 10, 31, 19));
+            this.addChild(new MaterialStatPreview(x + getWidth() - 12, y + 12, 10, 10, action.toAdd));
         }
 
         ModuleInstance moduleInstance = new ModuleInstance(action.toAdd);

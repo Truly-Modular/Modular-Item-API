@@ -157,7 +157,6 @@ public record ItemModule(ResourceLocation id, Map<ModuleProperty<?>, Object> pro
         if (stack.getItem() instanceof VisualModularItem && !ReloadEvents.isInReload()) {
             ModuleInstance root = stack.get(ModuleInstance.MODULE_INSTANCE_COMPONENT);
             if (root != null) {
-                root = root.copy();
                 for (ModuleInstance moduleInstance : root.allSubModules()) {
                     moduleInstance.contextStack = stack;
                 }
