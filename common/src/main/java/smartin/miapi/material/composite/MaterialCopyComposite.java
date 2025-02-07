@@ -7,6 +7,18 @@ import smartin.miapi.Miapi;
 import smartin.miapi.material.base.Material;
 import smartin.miapi.material.MaterialProperty;
 
+/**
+ * This Composite allows a material to be replaced with another material.
+ *
+ * @header Material Copy Composite
+ * @description_start
+ * The Material Copy Composite replaces the current material with a specified base material.
+ * This allows for direct substitution of one material with another, maintaining all properties
+ * and behaviors of the target material.
+ * @description_end
+ * @path /data_types/composites/material_copy
+ * @data base: The material that replaces the current material.
+ */
 public record MaterialCopyComposite(Material material) implements Composite {
     public static ResourceLocation ID = Miapi.id("material_replace");
     public static MapCodec<Composite> MAP_CODEC = RecordCodecBuilder.mapCodec((instance) ->

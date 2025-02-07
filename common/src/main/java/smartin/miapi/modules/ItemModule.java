@@ -12,6 +12,7 @@ import smartin.miapi.Miapi;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.item.modular.VisualModularItem;
+import smartin.miapi.modules.properties.TagProperty;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.modules.synergies.SynergyManager;
@@ -87,19 +88,22 @@ public record ItemModule(ResourceLocation id, Map<ModuleProperty<?>, Object> pro
         try {
             JsonObject moduleJson = gson.fromJson(moduleJsonString, JsonObject.class);
             SynergyManager.PropertyHolder holder = SynergyManager.getFrom(moduleJson, isClient, path);
-            String name = moduleJson.get("id").getAsString();
-            ItemModule module = RegistryInventory.modules.get(name);
-            if (module == null) {
-                LOGGER.warn("module not found to be extended! " + name);
-                return;
+            if (moduleJson.has("tag")) {
+                String tag = moduleJson.get("tag").getAsString();
+                List<ItemModule> toChange = TagProperty.getModulesWithTag(tag);
+                for (ItemModule module : toChange) {
+                    RegistryInventory.modules.remove(module.id);
+                    RegistryInventory.modules.register(module.id, new ItemModule(module.id, holder.applyHolder(module.properties())));
+                }
+            } else if (moduleJson.has("id")) {
+                ResourceLocation id = Miapi.id(moduleJson.get("id").getAsString());
+                ItemModule module = RegistryInventory.modules.get(id);
+                if (module != null) {
+                    LOGGER.error("module not found for id " + id + " by module extention " + path);
+                }
+                RegistryInventory.modules.remove(module.id);
+                RegistryInventory.modules.register(module.id, new ItemModule(module.id, holder.applyHolder(module.properties())));
             }
-            RegistryInventory.modules.getFlatMap().remove(name);
-            Map<ModuleProperty<?>, Object> map = holder.applyHolder(module.properties());
-            if (map == null) {
-                map = new HashMap<>();
-                LOGGER.warn("is NULL wtf holder.applyHolder is false");
-            }
-            RegistryInventory.modules.register(Miapi.id(name), new ItemModule(Miapi.id(name), map));
         } catch (Exception e) {
             LOGGER.warn("Could not load Module to extend " + path, e);
         }
@@ -169,7 +173,7 @@ public record ItemModule(ResourceLocation id, Map<ModuleProperty<?>, Object> pro
                     LOGGER.error("SHOULD HAVE BEEN" + compareTo);
                     LOGGER.error("ATTEMPTING AUTO FIX");
                     compareTo.clearCaches();
-                    for(ModuleInstance moduleInstance: compareTo.allSubModules()){
+                    for (ModuleInstance moduleInstance : compareTo.allSubModules()) {
                         moduleInstance.lookup = root.lookup;
                         moduleInstance.registryAccess = root.registryAccess;
                     }

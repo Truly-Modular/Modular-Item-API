@@ -17,6 +17,18 @@ import smartin.miapi.material.palette.MaterialRenderController;
 import smartin.miapi.material.palette.MaterialRenderControllers;
 import smartin.miapi.modules.ModuleInstance;
 
+/**
+ * This Composite controls the material's normal visuals using a palette system.
+ *
+ * @header Palette Composite
+ * @description_start
+ * The Palette Composite modifies the visual appearance of a material by applying a color palette.
+ * It allows dynamic texture and color adjustments based on the provided palette data, influencing
+ * how the material is rendered in the game.
+ * @description_end
+ * @path /data_types/composites/palette
+ * @data palette: A JSON element defining the color palette and rendering rules.
+ */
 public record PaletteComposite(JsonElement json) implements Composite {
     public static ResourceLocation ID = Miapi.id("material_palette");
     public static MapCodec<Composite> MAP_CODEC = RecordCodecBuilder.mapCodec((instance) ->

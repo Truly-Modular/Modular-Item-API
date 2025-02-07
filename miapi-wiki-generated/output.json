@@ -44,7 +44,7 @@
         },
         "module": {
           "header": "Modules",
-          "description": "  \nModules are the core of Truly Modular\rThey can be found/added in mod-id:/miapi/modules/any-path-and-file-name.json\rThey consist of a Map of Properties\r",
+          "description": " Modules are the core of Truly Modular  \nThey can be found/added in mod-id:/miapi/modules/any-path-and-file-name.json\rThey consist of a Map of Properties\r",
           "java": "common/src/main/java/smartin/miapi/modules/ItemModule.java",
           "data": {},
           "key_words": []
@@ -129,12 +129,12 @@
               "java": "common/src/main/java/smartin/miapi/lootFunctions/MaterialSwapLootFunction.java",
               "data": {
                 "material": " An optional material ID to substitute, if not set the highest found material will be used instead",
-                "lowerBounds": " An optional (default = -3) double that sets the lower bound of acceptable material differences for substitution.",
-                "upperBounds": " An optional (default = +0.5) double that sets the upper bound of acceptable material differences for substitution.",
-                "miningLevelFactor": " An optional (default = 1.0) double that adjusts the impact of the mining level on material substitution.",
-                "tierFactor": " An optional (default = 1.0) double that influences the selection of materials based on their tier level.",
-                "hardnessFactor": " An optional double (default = 1.0) that influences the selection of materials based on their hardness.",
-                "flexibilityFactor": " An optional (default = 1.0) double that adjusts material substitution based on flexibility values.",
+                "lower_bounds": " An optional (default = -3) double that sets the lower bound of acceptable material differences for substitution.",
+                "upper_bounds": " An optional (default = +0.5) double that sets the upper bound of acceptable material differences for substitution.",
+                "mining_level_factor": " An optional (default = 1.0) double that adjusts the impact of the mining level on material substitution.",
+                "tier_factor": " An optional (default = 1.0) double that influences the selection of materials based on their tier level.",
+                "hardness_factor": " An optional double (default = 1.0) that influences the selection of materials based on their hardness.",
+                "flexibility_factor": " An optional (default = 1.0) double that adjusts material substitution based on flexibility values.",
                 "chance": " An optional (default = 1.0) that sets the chance for a swap to occur in the first place.",
                 "blacklist": " An optional list of Material IDs representing materials that cannot be substituted.",
                 "whitelist": " An optional list of Material IDs, if set blocks all entries not on this list."
@@ -155,190 +155,123 @@
             }
           }
         },
-        "abilities": {
+        "composites": {
           "sub_pages": {
-            "copy_item": {
-              "header": "Copy Item Ability",
-              "description": " This ability aims to be able to copy any other items right click ability.  \nThis might not work with some items/mods, as if they check for the executing item this will fail\r",
-              "java": "common/src/main/java/smartin/miapi/modules/abilities/CopyItemAbility.java",
+            "any_ingredient": {
+              "header": "Any Ingredient Composite",
+              "description": "  \nThe Any Ingredient Composite ensures that any item can contribute to material composition.\rIt assigns a default value and priority to all ingredients, making them universally valid\rin crafting or material processing.\r",
+              "java": "common/src/main/java/smartin/miapi/material/composite/AnyIngredientComposite.java",
               "data": {
-                "id": "the id of the item to copy from"
+                "base": " An optional base material reference (not used in this implementation)."
+              },
+              "key_words": []
+            },
+            "color": {
+              "header": "Color Composite",
+              "description": "  \nThe Color Composite modifies the visual appearance of a material by applying a fixed color value.\rThis allows customization of material colors for better distinction and aesthetics.\r",
+              "java": "common/src/main/java/smartin/miapi/material/composite/ColorComposite.java",
+              "data": {
+                "color": " A string representing the color value, which is converted into an ARGB integer."
+              },
+              "key_words": []
+            },
+            "dyeable": {
+              "header": "Dyeable Composite",
+              "description": "  \nThe Dyeable Composite enables a material to be dyed by players. When applied, the material gains the ability\rto change its color based on dyes used in crafting or customization interfaces.\r",
+              "java": "common/src/main/java/smartin/miapi/material/composite/DyeableComposite.java",
+              "data": {
+                "is_dye_able": " A boolean value indicating whether the material can be dyed."
+              },
+              "key_words": []
+            },
+            "group_modification": {
+              "header": "Group Modification Composite",
+              "description": "  \nThe GroupComposite allows you to modify the groups of a material by either clearing the existing groups or adjusting them by removing and adding specific groups.\rYou can choose to clear the groups, then remove certain groups and add others. If no groups are specified, the existing groups will be used.\r",
+              "java": "common/src/main/java/smartin/miapi/material/composite/group/GroupComposite.java",
+              "data": {
+                "clear": " A boolean value that determines if the existing groups should be cleared before applying the modifications.",
+                "remove": " A list of group names (String) to be removed from the existing groups.",
+                "toAdd": " A list of group names (String) to be added to the existing groups."
+              },
+              "key_words": []
+            },
+            "gui_group_modification": {
+              "header": "GUI Group Modification Composite",
+              "description": "  \nThe GuiGroupComposite allows you to modify the GUI groups of a material by either clearing the existing groups or adjusting them by removing and adding specific groups.\rYou can choose to clear the GUI groups, then remove certain groups and add others. If no groups are specified, the existing groups will be used.\r",
+              "java": "common/src/main/java/smartin/miapi/material/composite/group/GuiGroupComposite.java",
+              "data": {
+                "clear": " A boolean value that determines if the existing GUI groups should be cleared before applying the modifications.",
+                "remove": " A list of GUI group names (String) to be removed from the existing GUI groups.",
+                "toAdd": " A list of GUI group names (String) to be added to the existing GUI groups."
+              },
+              "key_words": []
+            },
+            "hidden_group_modification": {
+              "header": "Hidden Group Modification Composite",
+              "description": "  \nThe HiddenGroupComposite allows you to modify the hidden groups of a material by either clearing the existing groups or adjusting them by removing and adding specific groups.\rYou can choose to clear the hidden groups, then remove certain groups and add others. If no groups are specified, the existing hidden groups will be used.\r",
+              "java": "common/src/main/java/smartin/miapi/material/composite/group/HiddenGroupComposite.java",
+              "data": {
+                "clear": " A boolean value that determines if the existing hidden groups should be cleared before applying the modifications.",
+                "remove": " A list of hidden group names (String) to be removed from the existing hidden groups.",
+                "toAdd": " A list of hidden group names (String) to be added to the existing hidden groups."
+              },
+              "key_words": []
+            },
+            "material_copy": {
+              "header": "Material Copy Composite",
+              "description": "  \nThe Material Copy Composite replaces the current material with a specified base material.\rThis allows for direct substitution of one material with another, maintaining all properties\rand behaviors of the target material.\r",
+              "java": "common/src/main/java/smartin/miapi/material/composite/MaterialCopyComposite.java",
+              "data": {
+                "base": " The material that replaces the current material."
+              },
+              "key_words": []
+            },
+            "name": {
+              "header": "Name Composite",
+              "description": "  \nThe Name Composite overrides the default name of a material with a specified custom name.\rThis enables materials to have unique or dynamic names, which can be displayed in UI elements.\r",
+              "java": "common/src/main/java/smartin/miapi/material/composite/NameComposite.java",
+              "data": {
+                "name": " The custom name assigned to the material."
+              },
+              "key_words": []
+            },
+            "palette": {
+              "header": "Palette Composite",
+              "description": "  \nThe Palette Composite modifies the visual appearance of a material by applying a color palette.\rIt allows dynamic texture and color adjustments based on the provided palette data, influencing\rhow the material is rendered in the game.\r",
+              "java": "common/src/main/java/smartin/miapi/material/composite/PaletteComposite.java",
+              "data": {
+                "palette": " A JSON element defining the color palette and rendering rules."
+              },
+              "key_words": []
+            },
+            "increase_stats": {
+              "header": "Add Stats Composite",
+              "description": "  \nThe IncreaseStatsComposite allows you to increase specific stats by providing a map of stat names and their respective values.\rThe values are added to the existing stats of the parent material. If the stat is not found in the map, the parent's stat value is used.\r",
+              "java": "common/src/main/java/smartin/miapi/material/composite/stat/IncreaseStatsComposite.java",
+              "data": {
+                "stats": " A map of stat names (String) and their increase values (Double) to apply to the parent material."
+              },
+              "key_words": []
+            },
+            "percent_stats": {
+              "header": "Percent Stats Composite",
+              "description": "  \nThe PercentStatComposite allows you to modify specific stats by providing a map of stat names and their respective percentage values.\rThe values are multiplied with the existing stats of the parent material. If the stat is not found in the map, the parent's stat value is used.\r",
+              "java": "common/src/main/java/smartin/miapi/material/composite/stat/PercentStatComposite.java",
+              "data": {
+                "stats": " A map of stat names (String) and their percentage increase values (Double) to apply to the parent material."
               },
               "key_words": []
             }
           }
         },
-        "condition": {
-          "header": "Conditions",
-          "description": "  \nConditions! what is there to describe\r",
-          "java": "common/src/main/java/smartin/miapi/modules/conditions/ConditionManager.java",
-          "data": {},
-          "key_words": [
-            "Condition"
-          ],
-          "sub_pages": {
-            "advancement_condition": {
-              "header": "Advancement Condition",
-              "description": "  \nthis condition checks if the associated player has a specific advancement. This is set to false if there is no associated Player\r",
-              "java": "common/src/main/java/smartin/miapi/modules/conditions/AdvancementCondition.java",
-              "data": {
-                "type": "advancement",
-                "advancement": " the id of the advancement, you can use the /advancement command to get a list of these"
-              },
-              "key_words": []
-            },
-            "and_condition": {
-              "header": "And Condition",
-              "description": "  \nthis condition requires all sub conditions to be true\r",
-              "java": "common/src/main/java/smartin/miapi/modules/conditions/AndCondition.java",
-              "data": {
-                "type": "and",
-                "conditions": "sub Conditions to be checked"
-              },
-              "key_words": []
-            },
-            "child_condition": {
-              "header": "Child Condition",
-              "description": "  \nthis condition moves the context to any direct child module\r",
-              "java": "common/src/main/java/smartin/miapi/modules/conditions/ChildCondition.java",
-              "data": {
-                "type": "child",
-                "condition": "sub Condition to be tested on the child modules"
-              },
-              "key_words": []
-            },
-            "is_mod_loaded": {
-              "header": "Mod Loaded Condition",
-              "description": "  \nthis condition checks if a mod is loaded, you should consider using this as a Load Condition\r",
-              "java": "common/src/main/java/smartin/miapi/modules/conditions/IsModLoadedCondition.java",
-              "data": {
-                "type": "mod_loaded",
-                "mod": "the mod ID to be checked"
-              },
-              "key_words": []
-            },
-            "item_in_inventory": {
-              "header": "Item in inventory Condition",
-              "description": "  \nthis condition checks if a certain amount of a certain item is in a players inventory\r",
-              "java": "common/src/main/java/smartin/miapi/modules/conditions/ItemInInventoryCondition.java",
-              "data": {
-                "type": "item_in_inventory",
-                "item": "Item in the form of an Ingredient",
-                "count": "the amount of items needed to be present"
-              },
-              "key_words": []
-            },
-            "material": {
-              "header": "Material Condition",
-              "description": "  \nthis condition checks if this Module has a certain material\r",
-              "java": "common/src/main/java/smartin/miapi/modules/conditions/MaterialCondition.java",
-              "data": {
-                "type": "material",
-                "material": "the material to be checked"
-              },
-              "key_words": []
-            },
-            "material_count": {
-              "header": "Material Count Condition",
-              "description": "  \nthis condition checks if the item has a certain material a certain amount of times\r",
-              "java": "common/src/main/java/smartin/miapi/modules/conditions/MaterialCountCondition.java",
-              "data": {
-                "type": "material_count",
-                "material": "the material to be checked",
-                "count": "how often the material is used"
-              },
-              "key_words": []
-            },
-            "miapi_perm": {
-              "header": "Miapi Perm Condition",
-              "description": "  \nthis condition is to check patreon or other types of outside conditions like time of year.\rThis is mostly used to give patreon subscribers their skins/enable free skins depending on the season\r",
-              "java": "common/src/main/java/smartin/miapi/modules/conditions/MiapiPerm.java",
-              "data": {
-                "type": "miapi_perm",
-                "perm": "a list of perms or UUIDS"
-              },
-              "key_words": []
-            },
-            "module": {
-              "header": "Module Type Condition",
-              "description": "  \nthis condition if the associated module instance uses this module\r",
-              "java": "common/src/main/java/smartin/miapi/modules/conditions/ModuleTypeCondition.java",
-              "data": {
-                "type": "module",
-                "module": "the id of the module"
-              },
-              "key_words": []
-            },
-            "not": {
-              "header": "Not Condition",
-              "description": " this condition inverses another condition  \n",
-              "java": "common/src/main/java/smartin/miapi/modules/conditions/NotCondition.java",
-              "data": {
-                "type": "not",
-                "condition": "the sub condition to be inversed"
-              },
-              "key_words": []
-            },
-            "number": {
-              "header": "Number Condition",
-              "description": "  \nthis condition inverses another condition\r",
-              "java": "common/src/main/java/smartin/miapi/modules/conditions/NumberCondition.java",
-              "data": {
-                "type": "number",
-                "condition": "a Double Resolvable, if the result is higher than 0 is considered true"
-              },
-              "key_words": []
-            },
-            "or_condition": {
-              "header": "Or Condition",
-              "description": "  \nthis condition requires one sub conditions to be true\r",
-              "java": "common/src/main/java/smartin/miapi/modules/conditions/OrCondition.java",
-              "data": {
-                "type": "or",
-                "conditions": "sub Conditions to be checked"
-              },
-              "key_words": []
-            },
-            "other_module": {
-              "header": "Other Module Condition",
-              "description": "  \nthis condition moves the context to any other module of the item\r",
-              "java": "common/src/main/java/smartin/miapi/modules/conditions/OtherModuleModuleCondition.java",
-              "data": {
-                "type": "other_module",
-                "condition": "sub Condition to be tested on all other modules of the item"
-              },
-              "key_words": []
-            },
-            "parent": {
-              "header": "Parent Condition",
-              "description": " this condition moves the context to the parent module  \n",
-              "java": "common/src/main/java/smartin/miapi/modules/conditions/ParentCondition.java",
-              "data": {
-                "type": "parent",
-                "condition": "sub Condition to be tested on the parent module"
-              },
-              "key_words": []
-            },
-            "tag": {
-              "header": "Tag Condition",
-              "description": " this condition checks if the associated module has a specific module tag. Not to be confused with Item Tags  \n",
-              "java": "common/src/main/java/smartin/miapi/modules/conditions/TagCondition.java",
-              "data": {
-                "type": "tag",
-                "tag": "the tag to be checked"
-              },
-              "key_words": []
-            },
-            "true": {
-              "header": "True Condition",
-              "description": " this condition is always true  \n",
-              "java": "common/src/main/java/smartin/miapi/modules/conditions/TrueCondition.java",
-              "data": {
-                "type": "true"
-              },
-              "key_words": []
-            }
-          }
+        "composite_material": {
+          "header": "Composite Material",
+          "description": "  \nThe Composite Material allows defining a material as a combination of multiple composites. Each composite modifies the base material in a specific way,\rsuch as changing its color, name, or attributes. This enables dynamic material creation by layering different modifications.\r *\rA composite material consists of a base material and a list of composite modifications that transform the base into a fully functional material.\rThese composites can adjust properties like durability, visual appearance or any other Material based system.\r *\r *\rThe final material is computed by applying the list of composites in sequence to an initial default material.\r",
+          "java": "common/src/main/java/smartin/miapi/material/composite/CompositeMaterial.java",
+          "data": {
+            "composite_material": " A list of composite modifications that define how the material is built from its base."
+          },
+          "key_words": []
         },
         "properties": {
           "header": "Properties",
@@ -350,6 +283,35 @@
             "moduleProperties"
           ],
           "sub_pages": {
+            "material": {
+              "sub_pages": {
+                "material_stat_indicator": {
+                  "header": "Material Stat Indicator Property",
+                  "description": "  \nThe Material Stat Indicator Property is used to define and store various material-related attributes for items.\rIt allows assigning specific stats such as durability, hardness, and mining speed, which can be represented with\ra strength value and an optional description. If no description is provided, a default localized description is used.\r",
+                  "java": "common/src/main/java/smartin/miapi/material/MaterialStatIndicatorProperty.java",
+                  "data": {
+                    "material_stat_indicator": " A map of material statistics, where each entry consists of a stat name and a context object containing its strength and optional description."
+                  },
+                  "key_words": []
+                }
+              }
+            },
+            "gun": {
+              "sub_pages": {
+                "gun_context": {
+                  "header": "Gun Context Property",
+                  "description": "  \nThe Gun Context Property is used to define fundamental shooting mechanics in modular weapons.\rIt controls attributes such as:\r- **Fire Rate**: Determines how quickly the gun fires.\r- **Base Damage**: The default damage output per shot.\r- **Magazine Size**: The total number of bullets before needing a reload.\r- **Range**: Maximum effective shooting distance.\r",
+                  "java": "common/src/main/java/smartin/miapi/modules/abilities/gun/GunContextProperty.java",
+                  "data": {
+                    "fire_rate": " Fire rate of the weapon (Default",
+                    "base_damage": " Base damage per shot (Default",
+                    "magazine_size": " Number of shots before reloading (Default",
+                    "range": " Maximum hit detection range (Default"
+                  },
+                  "key_words": []
+                }
+              }
+            },
             "allowed_loot": {
               "header": "Allowed in Loot Property",
               "description": "  \nif this module can be found in randomized loot. should be turned off for rare/special modules.\r",
@@ -511,7 +473,7 @@
             },
             "durability": {
               "header": "Durability Property",
-              "description": "  \nThe DurabilityProperty controls the maximum durability of an item. The durability is specified as a Double Resolvable value,\rwhich determines the item's maximum damage capacity. This value is applied to the item stack, influencing how much wear and\rtear the item can withstand before breaking.\r",
+              "description": " The DurabilityProperty controls the maximum durability of an item. The durability is specified as a Double Resolvable value,  \nwhich determines the item's maximum damage capacity. This value is applied to the item stack, influencing how much wear and\rtear the item can withstand before breaking.\r",
               "java": "common/src/main/java/smartin/miapi/modules/properties/DurabilityProperty.java",
               "data": {
                 "durability": " A Double value representing the maximum durability of the item."
@@ -571,7 +533,7 @@
             },
             "fake_item_tag": {
               "header": "Fake Item Tag Property",
-              "description": "  \nThe FakeItemTagProperty allows you to manage custom item tags for items. This property can be used to assign fake or\rplaceholder tags to items, which can be useful for various in-game functionalities or for modding purposes. These tags\rare stored as a list of strings, and the property provides methods to retrieve and check these tags.\r *\rFor example, you can use this property to simulate item tags that do not exist in the default Minecraft item tag system.\r",
+              "description": " The FakeItemTagProperty allows you to manage custom item tags for items. This property can be used to assign fake or  \nplaceholder tags to items, which can be useful for various in-game functionalities or for modding purposes. These tags\rare stored as a list of strings, and the property provides methods to retrieve and check these tags.\r<p>\rFor example, you can use this property to simulate item tags that do not exist in the default Minecraft item tag system.\r",
               "java": "common/src/main/java/smartin/miapi/modules/properties/FakeItemTagProperty.java",
               "data": {
                 "tags": " A list of strings representing the fake tags assigned to the item."
@@ -965,6 +927,15 @@
                   },
                   "key_words": []
                 },
+                "draw_time": {
+                  "header": "DrawTimeProperty",
+                  "description": " This Property manages the Draw time of Modular Bows and Crossbows in seconds.  \nThis is a Double Resolvable, so different operations are possible\r",
+                  "java": "common/src/main/java/smartin/miapi/modules/properties/projectile/DrawTimeProperty.java",
+                  "data": {
+                    "value": "the drawtime in seconds."
+                  },
+                  "key_words": []
+                },
                 "enderpearl": {
                   "header": "Enderpearl Property",
                   "description": "  \nThe Enderpearl Property allows modular projectiles to mimic the teleportation behavior of ender pearls. When a\rprojectile with this property hits an entity or block, it teleports the owner (if possible) to the point of impact,\rsimilar to the effect of throwing an ender pearl.\r",
@@ -1003,6 +974,15 @@
                   "java": "common/src/main/java/smartin/miapi/modules/properties/projectile/MagazineCrossbowShotDelay.java",
                   "data": {
                     "rapid_fire_crossbow_delay": " A double value representing the time (in ticks) between consecutive shots."
+                  },
+                  "key_words": []
+                },
+                "projectile_impact_sound": {
+                  "header": "Crossbow Shootable Property",
+                  "description": "  \n *\r",
+                  "java": "common/src/main/java/smartin/miapi/modules/properties/projectile/MakesImpactSoundProperty.java",
+                  "data": {
+                    "crossbow_ammunition": " A boolean value indicating whether the projectile makes an impact sound"
                   },
                   "key_words": []
                 },
@@ -1105,7 +1085,7 @@
                 },
                 "slots": {
                   "header": "Slot Property",
-                  "description": "  \nThe SlotProperty defines how modules handle submodule slots. Each slot can have attributes such as transformation,\rtranslation key, and priority. Slots can also define allowed submodules and whether they can merge with others.\rThe property provides methods to retrieve and manage slots within modules, including their transformation stacks and\rallowed submodules.\r",
+                  "description": " The SlotProperty defines how modules handle submodule slots. Each slot can have attributes such as transformation,  \ntranslation key, and priority. Slots can also define allowed submodules and whether they can merge with others.\rThe property provides methods to retrieve and manage slots within modules, including their transformation stacks and\rallowed submodules.\r",
                   "java": "common/src/main/java/smartin/miapi/modules/properties/slot/SlotProperty.java",
                   "data": {
                     "slots": " A map where keys are slot identifiers and values are {@link ModuleSlot} instances defining the slot's properties."
@@ -1129,6 +1109,191 @@
               "java": "common/src/main/java/smartin/miapi/modules/properties/ToolOrWeaponProperty.java",
               "data": {
                 "is_weapon": " A boolean value indicating if the item is considered a weapon."
+              },
+              "key_words": []
+            }
+          }
+        },
+        "abilities": {
+          "sub_pages": {
+            "copy_item": {
+              "header": "Copy Item Ability",
+              "description": " This ability aims to be able to copy any other items right click ability.  \nThis might not work with some items/mods, as if they check for the executing item this will fail\r",
+              "java": "common/src/main/java/smartin/miapi/modules/abilities/CopyItemAbility.java",
+              "data": {
+                "id": "the id of the item to copy from"
+              },
+              "key_words": []
+            }
+          }
+        },
+        "condition": {
+          "header": "Conditions",
+          "description": "  \nConditions! what is there to describe\r",
+          "java": "common/src/main/java/smartin/miapi/modules/conditions/ConditionManager.java",
+          "data": {},
+          "key_words": [
+            "Condition"
+          ],
+          "sub_pages": {
+            "advancement_condition": {
+              "header": "Advancement Condition",
+              "description": " this condition checks if the associated player has a specific advancement. This is set to false if there is no associated Player  \n",
+              "java": "common/src/main/java/smartin/miapi/modules/conditions/AdvancementCondition.java",
+              "data": {
+                "type": "advancement",
+                "advancement": " the id of the advancement, you can use the /advancement command to get a list of these"
+              },
+              "key_words": []
+            },
+            "and_condition": {
+              "header": "And Condition",
+              "description": "  \nthis condition requires all sub conditions to be true\r",
+              "java": "common/src/main/java/smartin/miapi/modules/conditions/AndCondition.java",
+              "data": {
+                "type": "and",
+                "conditions": "sub Conditions to be checked"
+              },
+              "key_words": []
+            },
+            "child_condition": {
+              "header": "Child Condition",
+              "description": "  \nthis condition moves the context to any direct child module\r",
+              "java": "common/src/main/java/smartin/miapi/modules/conditions/ChildCondition.java",
+              "data": {
+                "type": "child",
+                "condition": "sub Condition to be tested on the child modules"
+              },
+              "key_words": []
+            },
+            "is_mod_loaded": {
+              "header": "Mod Loaded Condition",
+              "description": "  \nthis condition checks if a mod is loaded, you should consider using this as a Load Condition\r",
+              "java": "common/src/main/java/smartin/miapi/modules/conditions/IsModLoadedCondition.java",
+              "data": {
+                "type": "mod_loaded",
+                "mod": "the mod ID to be checked"
+              },
+              "key_words": []
+            },
+            "item_in_inventory": {
+              "header": "Item in inventory Condition",
+              "description": "  \nthis condition checks if a certain amount of a certain item is in a players inventory\r",
+              "java": "common/src/main/java/smartin/miapi/modules/conditions/ItemInInventoryCondition.java",
+              "data": {
+                "type": "item_in_inventory",
+                "item": "Item in the form of an Ingredient",
+                "count": "the amount of items needed to be present"
+              },
+              "key_words": []
+            },
+            "material": {
+              "header": "Material Condition",
+              "description": "  \nthis condition checks if this Module has a certain material\r",
+              "java": "common/src/main/java/smartin/miapi/modules/conditions/MaterialCondition.java",
+              "data": {
+                "type": "material",
+                "material": "the material to be checked"
+              },
+              "key_words": []
+            },
+            "material_count": {
+              "header": "Material Count Condition",
+              "description": "  \nthis condition checks if the item has a certain material a certain amount of times\r",
+              "java": "common/src/main/java/smartin/miapi/modules/conditions/MaterialCountCondition.java",
+              "data": {
+                "type": "material_count",
+                "material": "the material to be checked",
+                "count": "how often the material is used"
+              },
+              "key_words": []
+            },
+            "miapi_perm": {
+              "header": "Miapi Perm Condition",
+              "description": "  \nthis condition is to check patreon or other types of outside conditions like time of year.\rThis is mostly used to give patreon subscribers their skins/enable free skins depending on the season\r",
+              "java": "common/src/main/java/smartin/miapi/modules/conditions/MiapiPerm.java",
+              "data": {
+                "type": "miapi_perm",
+                "perm": "a list of perms or UUIDS"
+              },
+              "key_words": []
+            },
+            "module": {
+              "header": "Module Type Condition",
+              "description": "  \nthis condition if the associated module instance uses this module\r",
+              "java": "common/src/main/java/smartin/miapi/modules/conditions/ModuleTypeCondition.java",
+              "data": {
+                "type": "module",
+                "module": "the id of the module"
+              },
+              "key_words": []
+            },
+            "not": {
+              "header": "Not Condition",
+              "description": " this condition inverses another condition  \n",
+              "java": "common/src/main/java/smartin/miapi/modules/conditions/NotCondition.java",
+              "data": {
+                "type": "not",
+                "condition": "the sub condition to be inversed"
+              },
+              "key_words": []
+            },
+            "number": {
+              "header": "Number Condition",
+              "description": "  \nthis condition inverses another condition\r",
+              "java": "common/src/main/java/smartin/miapi/modules/conditions/NumberCondition.java",
+              "data": {
+                "type": "number",
+                "condition": "a Double Resolvable, if the result is higher than 0 is considered true"
+              },
+              "key_words": []
+            },
+            "or_condition": {
+              "header": "Or Condition",
+              "description": "  \nthis condition requires one sub conditions to be true\r",
+              "java": "common/src/main/java/smartin/miapi/modules/conditions/OrCondition.java",
+              "data": {
+                "type": "or",
+                "conditions": "sub Conditions to be checked"
+              },
+              "key_words": []
+            },
+            "other_module": {
+              "header": "Other Module Condition",
+              "description": "  \nthis condition moves the context to any other module of the item\r",
+              "java": "common/src/main/java/smartin/miapi/modules/conditions/OtherModuleModuleCondition.java",
+              "data": {
+                "type": "other_module",
+                "condition": "sub Condition to be tested on all other modules of the item"
+              },
+              "key_words": []
+            },
+            "parent": {
+              "header": "Parent Condition",
+              "description": " this condition moves the context to the parent module  \n",
+              "java": "common/src/main/java/smartin/miapi/modules/conditions/ParentCondition.java",
+              "data": {
+                "type": "parent",
+                "condition": "sub Condition to be tested on the parent module"
+              },
+              "key_words": []
+            },
+            "tag": {
+              "header": "Tag Condition",
+              "description": " this condition checks if the associated module has a specific module tag. Not to be confused with Item Tags  \n",
+              "java": "common/src/main/java/smartin/miapi/modules/conditions/TagCondition.java",
+              "data": {
+                "type": "tag",
+                "tag": "the tag to be checked"
+              },
+              "key_words": []
+            },
+            "true": {
+              "header": "True Condition",
+              "description": " this condition is always true  \n",
+              "java": "common/src/main/java/smartin/miapi/modules/conditions/TrueCondition.java",
+              "data": {
+                "type": "true"
               },
               "key_words": []
             }

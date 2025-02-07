@@ -13,7 +13,7 @@ import java.util.Map;
 
 public record SetStatComposite(Map<String, Double> stats) implements Composite {
     public static final ResourceLocation ID = Miapi.id("set_stat");
-    public static final MapCodec<SetStatComposite> codec = RecordCodecBuilder.mapCodec((instance) ->
+    public static final MapCodec<SetStatComposite> MAP_CODEC = RecordCodecBuilder.mapCodec((instance) ->
             instance.group(
                     Codec.unboundedMap(Codec.STRING, Codec.DOUBLE)
                             .optionalFieldOf("stats", Map.of())

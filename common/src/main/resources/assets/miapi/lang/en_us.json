@@ -395,9 +395,12 @@
     "miapi.material.miapi.stone.purpur_block": "Purpur Block Material",
     "miapi.material.miapi.custom.banners.material": "Banner Material",
     "miapi.material.miapi.component_runtime_material": "Component Runtime Material",
+
     "miapi.material_indication.header": "Used material stats :",
     "miapi.material_indication.default.durability": "Increases modules durability",
     "miapi.material_indication.default.hardness": "Increases modules main stat",
+    "miapi.material_indication.default.mining_speed": "The tools mining speed and level is set by this material",
+
     "block.miapi.modular_work_bench": "Modular Workbench",
     "miapi.module.miapi.empty": "Empty Slot",
     "miapi.module.miapi.empty.name": "Empty Slot",

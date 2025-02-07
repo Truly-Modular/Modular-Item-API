@@ -15,12 +15,33 @@ import smartin.miapi.material.base.Material;
 import smartin.miapi.material.composite.group.GroupComposite;
 import smartin.miapi.material.composite.group.GuiGroupComposite;
 import smartin.miapi.material.composite.group.HiddenGroupComposite;
+import smartin.miapi.material.composite.stat.IncreaseStatsComposite;
+import smartin.miapi.material.composite.stat.PercentStatComposite;
+import smartin.miapi.material.composite.stat.SetStatComposite;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
 import static smartin.miapi.material.MaterialProperty.materials;
+
+/**
+ * This Property defines composite materials, which are a list of composites that augment the base material to return a full material.
+ *
+ * @header Composite Material
+ * @description_start
+ * The Composite Material allows defining a material as a combination of multiple composites. Each composite modifies the base material in a specific way,
+ * such as changing its color, name, or attributes. This enables dynamic material creation by layering different modifications.
+ *
+ * A composite material consists of a base material and a list of composite modifications that transform the base into a fully functional material.
+ * These composites can adjust properties like durability, visual appearance or any other Material based system.
+ *
+ *
+ * The final material is computed by applying the list of composites in sequence to an initial default material.
+ * @description_end
+ * @path /data_types/composite_material
+ * @data composite_material: A list of composite modifications that define how the material is built from its base.
+ */
 
 public class CompositeMaterial extends DelegatingMaterial {
     public static ResourceLocation KEY = Miapi.id("composite_material");
@@ -49,6 +70,9 @@ public class CompositeMaterial extends DelegatingMaterial {
         Composite.COMPOSITE_REGISTRY.put(GroupComposite.ID, GroupComposite.MAP_CODEC);
         Composite.COMPOSITE_REGISTRY.put(GuiGroupComposite.ID, GuiGroupComposite.MAP_CODEC);
         Composite.COMPOSITE_REGISTRY.put(HiddenGroupComposite.ID, HiddenGroupComposite.MAP_CODEC);
+        Composite.COMPOSITE_REGISTRY.put(IncreaseStatsComposite.ID, IncreaseStatsComposite.MAP_CODEC);
+        Composite.COMPOSITE_REGISTRY.put(PercentStatComposite.ID, PercentStatComposite.MAP_CODEC);
+        Composite.COMPOSITE_REGISTRY.put(SetStatComposite.ID, SetStatComposite.MAP_CODEC);
     }
 
     public static DataComponentType<CompositeMaterial> COMPOSITE_MATERIAL_COMPONENT = DataComponentType.<CompositeMaterial>builder()

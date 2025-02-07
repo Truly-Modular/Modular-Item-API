@@ -11,8 +11,8 @@ import java.math.RoundingMode;
 import java.text.DecimalFormat;
 
 /**
- * @header Air Drag Property
- * @path /data_types/properties/projectile/air_drag
+ * @header DrawTimeProperty
+ * @path /data_types/properties/projectile/draw_time
  * @description_start This Property manages the Draw time of Modular Bows and Crossbows in seconds.
  * This is a Double Resolvable, so different operations are possible
  * @description_end

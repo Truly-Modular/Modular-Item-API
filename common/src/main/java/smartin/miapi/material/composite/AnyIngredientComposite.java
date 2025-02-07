@@ -10,6 +10,18 @@ import smartin.miapi.material.base.Material;
 
 import java.util.Optional;
 
+/**
+ * This Composite allows any ingredient to be treated as a valid material component.
+ *
+ * @header Any Ingredient Composite
+ * @description_start
+ * The Any Ingredient Composite ensures that any item can contribute to material composition.
+ * It assigns a default value and priority to all ingredients, making them universally valid
+ * in crafting or material processing.
+ * @description_end
+ * @path /data_types/composites/any_ingredient
+ * @data base: An optional base material reference (not used in this implementation).
+ */
 public record AnyIngredientComposite() implements Composite {
     public static ResourceLocation ID = Miapi.id("any_ingredient");
     public static MapCodec<Composite> MAP_CODEC = RecordCodecBuilder.mapCodec((instance) ->

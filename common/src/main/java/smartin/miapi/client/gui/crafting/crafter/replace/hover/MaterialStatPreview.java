@@ -19,8 +19,8 @@ import java.util.Optional;
 public class MaterialStatPreview extends InteractAbleWidget {
     boolean isVisiible;
     Map<String, MaterialStatIndicatorProperty.Context> map;
-    List<Component> list = new ArrayList<>(List.of(Component.literal("miapi.material_indication.header")));
-    List<Component> fullList = new ArrayList<>(List.of(Component.literal("miapi.material_indication.header")));
+    List<Component> list = new ArrayList<>(List.of(Component.translatable("miapi.material_indication.header")));
+    List<Component> fullList = new ArrayList<>(List.of(Component.translatable("miapi.material_indication.header")));
 
     public MaterialStatPreview(int x, int y, int width, int height, ItemModule context) {
         super(x, y, width, height, Component.empty());
@@ -40,7 +40,7 @@ public class MaterialStatPreview extends InteractAbleWidget {
                 list.add(Component.translatable("miapi.material_stat." + stat).append(component));
                 fullList.add(Component.translatable("miapi.material_stat." + stat).append(component));
                 if (context1.info != null) {
-                    fullList.add(LoreProperty.format(context1.info, ChatFormatting.GRAY));
+                    fullList.add(context1.info);
                 }
             });
         }

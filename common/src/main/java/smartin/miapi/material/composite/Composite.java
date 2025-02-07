@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.Optional;
 
 public interface Composite {
-    Map<ResourceLocation, MapCodec<Composite>> COMPOSITE_REGISTRY = new HashMap<>();
+    Map<ResourceLocation, MapCodec< ? extends Composite>> COMPOSITE_REGISTRY = new HashMap<>();
     Codec<Composite> CODEC = Miapi.ID_CODEC.dispatch(Composite::getID, COMPOSITE_REGISTRY::get);
 
     Material composite(Material parent, boolean isClient);

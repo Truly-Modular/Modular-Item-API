@@ -11,6 +11,17 @@ import smartin.miapi.material.DelegatingMaterial;
 import smartin.miapi.material.base.Material;
 import smartin.miapi.modules.ModuleInstance;
 
+/**
+ * This Composite assigns a specific color to a material.
+ *
+ * @header Color Composite
+ * @description_start
+ * The Color Composite modifies the visual appearance of a material by applying a fixed color value.
+ * This allows customization of material colors for better distinction and aesthetics.
+ * @description_end
+ * @path /data_types/composites/color
+ * @data color: A string representing the color value, which is converted into an ARGB integer.
+ */
 public record ColorComposite(String color) implements Composite {
     public static ResourceLocation ID = Miapi.id("material_color");
     public static MapCodec<Composite> MAP_CODEC = RecordCodecBuilder.mapCodec((instance) ->
