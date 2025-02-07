@@ -156,6 +156,13 @@
           }
         },
         "composites": {
+          "header": "Composite Material",
+          "description": "  \nThe Composite Material allows defining a material as a combination of multiple composites. Each composite modifies the base material in a specific way,\rsuch as changing its color, name, or attributes. This enables dynamic material creation by layering different modifications.\r *\rA composite material consists of a base material and a list of composite modifications that transform the base into a fully functional material.\rThese composites can adjust properties like durability, visual appearance or any other Material based system.\r *\r *\rThe final material is computed by applying the list of composites in sequence to an initial default material.\r",
+          "java": "common/src/main/java/smartin/miapi/material/composite/CompositeMaterial.java",
+          "data": {
+            "composite_material": " A list of composite modifications that define how the material is built from its base."
+          },
+          "key_words": [],
           "sub_pages": {
             "any_ingredient": {
               "header": "Any Ingredient Composite",
@@ -263,15 +270,6 @@
               "key_words": []
             }
           }
-        },
-        "composite_material": {
-          "header": "Composite Material",
-          "description": "  \nThe Composite Material allows defining a material as a combination of multiple composites. Each composite modifies the base material in a specific way,\rsuch as changing its color, name, or attributes. This enables dynamic material creation by layering different modifications.\r *\rA composite material consists of a base material and a list of composite modifications that transform the base into a fully functional material.\rThese composites can adjust properties like durability, visual appearance or any other Material based system.\r *\r *\rThe final material is computed by applying the list of composites in sequence to an initial default material.\r",
-          "java": "common/src/main/java/smartin/miapi/material/composite/CompositeMaterial.java",
-          "data": {
-            "composite_material": " A list of composite modifications that define how the material is built from its base."
-          },
-          "key_words": []
         },
         "properties": {
           "header": "Properties",
