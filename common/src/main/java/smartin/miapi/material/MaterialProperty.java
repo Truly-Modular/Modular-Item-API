@@ -5,9 +5,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.JsonOps;
-import com.mojang.serialization.MapCodec;
+import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -39,6 +38,26 @@ public class MaterialProperty extends CodecProperty<ResourceLocation> {
     public static final ResourceLocation KEY = Miapi.id("material");
     public static ModuleProperty property;
     public static Map<ResourceLocation, Material> materials = new ConcurrentHashMap<>();
+    public static Codec<Material> MATERIAL_CODEC = new Codec<>() {
+        @Override
+        public <T> DataResult<Pair<Material, T>> decode(DynamicOps<T> ops, T input) {
+            JsonElement element = ops.convertTo(JsonOps.INSTANCE, input);
+            Material material = getMaterial(element);
+            return new DataResult.Success<>(Pair.of(material, input), Lifecycle.stable());
+        }
+
+        @Override
+        public <T> DataResult<T> encode(Material input, DynamicOps<T> ops, T prefix) {
+            JsonElement element;
+            if (input.codec().isPresent()) {
+                element = encodeMaterial(input);
+            } else {
+                element = new JsonPrimitive(input.getID().toString());
+            }
+            T data = JsonOps.INSTANCE.convertTo(ops, element);
+            return DataResult.success(data);
+        }
+    };
 
     public MaterialProperty() {
         super(ResourceLocation.CODEC);
@@ -173,8 +192,28 @@ public class MaterialProperty extends CodecProperty<ResourceLocation> {
      */
     @Nullable
     public static Material getMaterial(JsonElement element) {
-        if (element != null) {
-            return materials.get(Miapi.id(element.getAsString()));
+        if (element.isJsonPrimitive()) {
+            ResourceLocation materialID = Miapi.id(element.getAsString());
+            Material material = MaterialProperty.materials.get(materialID);
+            if (material != null) {
+                return material;
+            }
+        } else {
+            try {
+                JsonObject materialSaveData = element.getAsJsonObject();
+                ResourceLocation materialID = Miapi.id(materialSaveData.get("type").getAsString());
+                Material material = MaterialProperty.materials.get(materialID);
+                if (material != null) {
+                    if (material.codec().isEmpty()) {
+                        return material;
+                    } else {
+                        material = material.codec().get().codec().decode(RegistryOps.create(JsonOps.INSTANCE, Miapi.registryAccess), materialSaveData).getOrThrow().getFirst();
+                        return material;
+                    }
+                }
+            } catch (RuntimeException exception) {
+                Miapi.LOGGER.error("Failed complex material decoding with error", exception);
+            }
         }
         return null;
     }
@@ -187,43 +226,26 @@ public class MaterialProperty extends CodecProperty<ResourceLocation> {
      */
     @Nullable
     public static Material getMaterial(ModuleInstance instance) {
-        if (instance.moduleData.containsKey(KEY)) {
-            JsonElement element = instance.moduleData.get(KEY);
-            if (element.isJsonPrimitive()) {
-                ResourceLocation materialID = Miapi.id(element.getAsString());
-                Material material = MaterialProperty.materials.get(materialID);
+        return instance.getFromCache("miapi:material", () -> {
+            if (instance.moduleData.containsKey(KEY)) {
+                JsonElement element = instance.moduleData.get(KEY);
+                Material jsonMaterial = getMaterial(element);
+                if (jsonMaterial != null) {
+                    return MaterialOverwriteProperty.property.adjustMaterial(instance, jsonMaterial.getMaterial(instance));
+                }
+            }
+            if (property.getData(instance).isPresent()) {
+                Material material = MaterialProperty.materials.get((ResourceLocation) property.getData(instance).get());
                 if (material != null) {
-                    return MaterialOverwriteProperty.property.adjustMaterial(instance, material.getMaterial(instance));
-                }
-            } else {
-                try {
-                    JsonObject materialSaveData = element.getAsJsonObject();
-                    ResourceLocation materialID = Miapi.id(materialSaveData.get("type").getAsString());
-                    Material material = MaterialProperty.materials.get(materialID);
-                    if (material != null) {
-                        if (material.codec().isEmpty()) {
-                            return MaterialOverwriteProperty.property.adjustMaterial(instance, material.getMaterial(instance));
-                        } else {
-                            material = material.codec().get().codec().decode(RegistryOps.create(JsonOps.INSTANCE, Miapi.registryAccess), materialSaveData).getOrThrow().getFirst();
-                            return MaterialOverwriteProperty.property.adjustMaterial(instance, material.getMaterial(instance));
-                        }
-                    }
-                } catch (RuntimeException exception) {
-                    Miapi.LOGGER.error("Failed complex material decoding with error", exception);
+                    material = material.getMaterial(instance);
+                    return MaterialOverwriteProperty.property.adjustMaterial(instance, material);
                 }
             }
-        }
-        if (property.getData(instance).isPresent()) {
-            Material material = MaterialProperty.materials.get((ResourceLocation) property.getData(instance).get());
-            if (material != null) {
-                material = material.getMaterial(instance);
-                return MaterialOverwriteProperty.property.adjustMaterial(instance, material);
+            if (CopyParentMaterialProperty.property.isTrue(instance) && instance.getParent() != null) {
+                return MaterialOverwriteProperty.property.adjustMaterial(instance, getMaterial(instance.getParent()));
             }
-        }
-        if (CopyParentMaterialProperty.property.isTrue(instance) && instance.getParent() != null) {
-            return MaterialOverwriteProperty.property.adjustMaterial(instance, getMaterial(instance.getParent()));
-        }
-        return null;
+            return null;
+        });
     }
 
     /**
@@ -269,5 +291,4 @@ public class MaterialProperty extends CodecProperty<ResourceLocation> {
         object.addProperty("type", material.getID().toString());
         return object;
     }
-
 }

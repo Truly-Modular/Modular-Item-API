@@ -160,8 +160,14 @@ public class ModularWorkBenchEntity extends BlockEntity implements MenuProvider,
         stats.clear();
 
         if (tag.contains("item")) {
-            stack = ItemStack.parse(wrapperLookup, tag.getCompound("item")).get();
-            setItem(stack);
+            try {
+                stack = ItemStack.parse(wrapperLookup, tag.getCompound("item")).get();
+                setItem(stack);
+            } catch (RuntimeException e) {
+                Miapi.LOGGER.error("sever encoding issue", e);
+                stack = ItemStack.EMPTY;
+                setItem(stack);
+            }
         } else {
             stack = ItemStack.EMPTY;
             setItem(stack);

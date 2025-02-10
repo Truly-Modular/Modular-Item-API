@@ -15,7 +15,7 @@ import smartin.miapi.material.MaterialProperty;
 import smartin.miapi.material.base.Material;
 import smartin.miapi.material.composite.AnyIngredientComposite;
 import smartin.miapi.material.composite.CompositeMaterial;
-import smartin.miapi.material.composite.MaterialCopyComposite;
+import smartin.miapi.material.composite.material.MaterialCopyComposite;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.registries.RegistryInventory;
 

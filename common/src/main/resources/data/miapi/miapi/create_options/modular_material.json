@@ -1,0 +1,5 @@
+{
+    "module": "miapi:modular_material/base",
+    "translation": "miapi.create_item.material",
+    "priority":-50
+}

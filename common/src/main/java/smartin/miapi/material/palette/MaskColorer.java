@@ -3,7 +3,10 @@ package smartin.miapi.material.palette;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.blaze3d.platform.NativeImage;
+import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.*;
 import com.redpxnda.nucleus.util.Color;
+import net.minecraft.client.renderer.texture.SpriteContents;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.renderer.NativeImageGetter;
 import smartin.miapi.material.base.Material;
@@ -12,7 +15,6 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import net.minecraft.client.renderer.texture.SpriteContents;
 
 /**
  * Colors module sprites with a base colorer, a masker, and a layered colorer.
@@ -30,6 +32,7 @@ public class MaskColorer extends SpriteColorer {
     public Masker masker;
     public SpriteColorer base;
     public SpriteColorer layer;
+    public JsonElement originalJson;
 
     public MaskColorer(Material material, SpriteColorer base, SpriteColorer layer, Masker masker) {
         super(material);
@@ -83,7 +86,9 @@ public class MaskColorer extends SpriteColorer {
 
             if (baseColorer instanceof SpriteColorer baseSpriteColor && layerColorer instanceof SpriteColorer layerSpriteColor) {
                 Masker masker = getMaskerFromJson(object.get("mask"));
-                return new MaskColorer(material, baseSpriteColor, layerSpriteColor, masker);
+                MaskColorer controller = new MaskColorer(material, baseSpriteColor, layerSpriteColor, masker);
+                controller.originalJson = element;
+                return controller;
             } else {
                 return baseColorer;
             }

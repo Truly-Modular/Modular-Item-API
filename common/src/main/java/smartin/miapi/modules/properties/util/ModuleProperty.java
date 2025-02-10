@@ -36,11 +36,6 @@ public interface ModuleProperty<T> extends MergeAble<T>, InitializeAble<T> {
      */
     JsonElement encode(T property);
 
-    @Override
-    default T initialize(ModuleInstance context, T data) {
-        return data;
-    }
-
     default T merge(T left, ModuleInstance leftModule, T right, ModuleInstance rightModule, MergeType mergeType) {
         return merge(left, right, mergeType);
     }
@@ -93,6 +88,7 @@ public interface ModuleProperty<T> extends MergeAble<T>, InitializeAble<T> {
         return Optional.ofNullable((T) properties.get(this));
     }
 
+    @Override
     default T initialize(T property, ModuleInstance context) {
         return property;
     }

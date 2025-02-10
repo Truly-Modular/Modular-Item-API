@@ -15,9 +15,11 @@ import smartin.miapi.material.base.Material;
 import smartin.miapi.material.composite.group.GroupComposite;
 import smartin.miapi.material.composite.group.GuiGroupComposite;
 import smartin.miapi.material.composite.group.HiddenGroupComposite;
+import smartin.miapi.material.composite.material.*;
 import smartin.miapi.material.composite.stat.IncreaseStatsComposite;
 import smartin.miapi.material.composite.stat.PercentStatComposite;
 import smartin.miapi.material.composite.stat.SetStatComposite;
+import smartin.miapi.modules.ModuleInstance;
 
 import java.util.List;
 import java.util.Objects;
@@ -61,7 +63,12 @@ public class CompositeMaterial extends DelegatingMaterial {
                     KEY,
                     new CompositeMaterial(new DefaultMaterial(), List.of()));
         }, -1);
-        Composite.COMPOSITE_REGISTRY.put(MaterialCopyComposite.ID, MaterialCopyComposite.MAP_CODEC);
+        CompositeFromOtherMaterial.register(MaterialCopyComposite.ID, MaterialCopyComposite.MAP_CODEC);
+        CompositeFromOtherMaterial.register(MaterialCopyPaletteComposite.ID, MaterialCopyComposite.MAP_CODEC);
+        CompositeFromOtherMaterial.register(MaterialLayerPaletteComposite.ID, MaterialLayerPaletteComposite.MAP_CODEC);
+        CompositeFromOtherMaterial.register(MaterialMergeStatComposite.ID, MaterialMergeStatComposite.MAP_CODEC);
+        CompositeFromOtherMaterial.register(MaterialPropertyMergeComposite.ID, MaterialPropertyMergeComposite.MAP_CODEC);
+
         Composite.COMPOSITE_REGISTRY.put(AnyIngredientComposite.ID, AnyIngredientComposite.MAP_CODEC);
         Composite.COMPOSITE_REGISTRY.put(ColorComposite.ID, ColorComposite.MAP_CODEC);
         Composite.COMPOSITE_REGISTRY.put(NameComposite.ID, NameComposite.MAP_CODEC);
@@ -102,6 +109,10 @@ public class CompositeMaterial extends DelegatingMaterial {
     @Override
     public Material getMaterialFromIngredient(ItemStack ingredient) {
         return ingredient.getOrDefault(COMPOSITE_MATERIAL_COMPONENT, null);
+    }
+
+    public Material getMaterial(ModuleInstance moduleInstance) {
+        return this;
     }
 
     public Double getPriorityOfIngredientItem(ItemStack ingredient) {

@@ -14,9 +14,9 @@ public interface InitializeAble<T> {
      * this should return a copy of {@link T}!
      * DO NOT CHANGE THE GIVEN {@link T}!
      *
-     * @param data    the un-initialized data
+     * @param property   the un-initialized data
      * @param context the ModuleInstance context for this InitializeAble
      * @return
      */
-    T initialize(ModuleInstance context, T data);
+    T initialize(T property, ModuleInstance context);
 }

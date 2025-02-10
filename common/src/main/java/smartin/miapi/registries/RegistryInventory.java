@@ -342,6 +342,7 @@ public class RegistryInventory {
         register(modularItems, "modular_part_visual", ModularVisualOnlyItem::new, i -> visualOnlymodularItem = i);
 
         register(modularItems, "modular_item", ExampleModularItem::new, i -> modularItem = i);
+        register(modularItems, "modular_stackable_item", ExampleModularStrackableItem::new);
         register(modularItems, "modular_part", ModularItemPart::new);
 
         register(modularItems, "modular_handheld", ModularWeapon::new);
@@ -568,6 +569,7 @@ public class RegistryInventory {
             registerMiapi(moduleProperties, MakesImpactSoundProperty.KEY, new MakesImpactSoundProperty());
             registerMiapi(moduleProperties, ProjectileDropItemProperty.KEY, new ProjectileDropItemProperty());
             registerMiapi(moduleProperties, MaterialStatIndicatorProperty.KEY, new MaterialStatIndicatorProperty());
+            registerMiapi(moduleProperties, ComponentMaterialProperty.KEY, new ComponentMaterialProperty());
             //compat
             //registerMiapi(moduleProperties, BetterCombatProperty.KEY, new BetterCombatProperty());
             BetterCombatHelper.setup();

@@ -12,12 +12,15 @@ import java.util.Map;
 import java.util.Optional;
 
 public interface Composite {
-    Map<ResourceLocation, MapCodec< ? extends Composite>> COMPOSITE_REGISTRY = new HashMap<>();
-    Codec<Composite> CODEC = Miapi.ID_CODEC.dispatch(Composite::getID, COMPOSITE_REGISTRY::get);
+    Map<ResourceLocation, MapCodec<? extends Composite>> COMPOSITE_REGISTRY = new HashMap<>();
+    Codec<Composite> CODEC = Miapi.ID_CODEC.dispatch(c -> {
+        //Miapi.LOGGER.info("encoding composite " + c.getID());
+        return c.getID();
+    }, (id) -> COMPOSITE_REGISTRY.getOrDefault(id, null));
 
     Material composite(Material parent, boolean isClient);
 
-    default Optional<Component> getDescription(){
+    default Optional<Component> getDescription() {
         return Optional.empty();
     }
 

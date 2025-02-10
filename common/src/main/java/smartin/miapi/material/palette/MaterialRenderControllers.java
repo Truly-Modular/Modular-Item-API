@@ -2,15 +2,17 @@ package smartin.miapi.material.palette;
 
 import com.google.gson.JsonElement;
 import com.redpxnda.nucleus.util.Color;
+import net.minecraft.world.item.ItemDisplayContext;
 import smartin.miapi.material.JsonMaterial;
 import smartin.miapi.material.base.Material;
+import smartin.miapi.modules.ModuleInstance;
 
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * A manager/registry for json-representable {@link MaterialRenderController}s <br>
- * Used namely for {@link JsonMaterial#getRenderController()} <br>
+ * Used namely for {@link JsonMaterial#getRenderController(ModuleInstance, ItemDisplayContext)} <br>
  * Add to {@link MaterialRenderControllers#creators} to allow your {@link MaterialRenderController} to be created in json.
  */
 public class MaterialRenderControllers {

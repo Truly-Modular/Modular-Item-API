@@ -7,6 +7,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.FastColor;
 import net.minecraft.world.item.ItemDisplayContext;
@@ -26,10 +27,11 @@ import java.util.Map;
 import java.util.Optional;
 
 public class DefaultMaterial implements Material {
+    public static ResourceLocation DEFAULT_ID = Miapi.id("default_runtime_material");
 
     @Override
     public ResourceLocation getID() {
-        return Miapi.id("default_runtime_material");
+        return DEFAULT_ID;
     }
 
     @Override
@@ -141,8 +143,16 @@ public class DefaultMaterial implements Material {
     }
 
     @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof DefaultMaterial d) {
+            return d.getID().equals(getID());
+        }
+        return super.equals(obj);
+    }
+
+    @Override
     public TagKey<Block> getIncorrectBlocksForDrops() {
-        return null; // No specific blocks
+        return BlockTags.INCORRECT_FOR_WOODEN_TOOL; // No specific blocks
     }
 
     @Override
