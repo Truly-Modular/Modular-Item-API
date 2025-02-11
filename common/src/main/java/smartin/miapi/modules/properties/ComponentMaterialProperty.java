@@ -34,7 +34,6 @@ public class ComponentMaterialProperty extends CodecProperty<List<Composite>> im
             if (
                     material != null &&
                     c instanceof CompositeFromOtherMaterial otherMaterialComposite
-                    //&& otherMaterialComposite.getMaterial() instanceof DefaultMaterial
             ) {
                 otherMaterialComposite.setMaterial(material);
             }

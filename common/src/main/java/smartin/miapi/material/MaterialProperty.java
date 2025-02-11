@@ -22,6 +22,7 @@ import smartin.miapi.material.base.Material;
 import smartin.miapi.mixin.NamedAccessor;
 import smartin.miapi.modules.ModuleDataPropertiesManager;
 import smartin.miapi.modules.ModuleInstance;
+import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.util.CodecProperty;
 import smartin.miapi.modules.properties.util.MergeAble;
 import smartin.miapi.modules.properties.util.MergeType;
@@ -143,6 +144,7 @@ public class MaterialProperty extends CodecProperty<ResourceLocation> {
             }
             Miapi.LOGGER.info("Loaded " + materials.size() + " Materials");
         }));
+        ModularItemCache.MODULE_CACHE_SUPPLIER.put(KEY.toString(), MaterialProperty::getMaterialRaw);
     }
 
     @Override
@@ -225,27 +227,35 @@ public class MaterialProperty extends CodecProperty<ResourceLocation> {
      * @return
      */
     @Nullable
+    /**
+     * Gets the used Material of a ModuleInstance
+     *
+     * @param instance
+     * @return
+     */
     public static Material getMaterial(ModuleInstance instance) {
-        return instance.getFromCache("miapi:material", () -> {
-            if (instance.moduleData.containsKey(KEY)) {
-                JsonElement element = instance.moduleData.get(KEY);
-                Material jsonMaterial = getMaterial(element);
-                if (jsonMaterial != null) {
-                    return MaterialOverwriteProperty.property.adjustMaterial(instance, jsonMaterial.getMaterial(instance));
-                }
+        return instance.getFromCache(KEY.toString(), () -> null);
+    }
+
+    private static Material getMaterialRaw(ModuleInstance instance) {
+        if (instance.moduleData.containsKey(KEY)) {
+            JsonElement element = instance.moduleData.get(KEY);
+            Material jsonMaterial = getMaterial(element);
+            if (jsonMaterial != null) {
+                return MaterialOverwriteProperty.property.adjustMaterial(instance, jsonMaterial.getMaterial(instance));
             }
-            if (property.getData(instance).isPresent()) {
-                Material material = MaterialProperty.materials.get((ResourceLocation) property.getData(instance).get());
-                if (material != null) {
-                    material = material.getMaterial(instance);
-                    return MaterialOverwriteProperty.property.adjustMaterial(instance, material);
-                }
+        }
+        if (property.getData(instance).isPresent()) {
+            Material material = MaterialProperty.materials.get((ResourceLocation) property.getData(instance).get());
+            if (material != null) {
+                material = material.getMaterial(instance);
+                return MaterialOverwriteProperty.property.adjustMaterial(instance, material);
             }
-            if (CopyParentMaterialProperty.property.isTrue(instance) && instance.getParent() != null) {
-                return MaterialOverwriteProperty.property.adjustMaterial(instance, getMaterial(instance.getParent()));
-            }
-            return null;
-        });
+        }
+        if (CopyParentMaterialProperty.property.isTrue(instance) && instance.getParent() != null) {
+            return MaterialOverwriteProperty.property.adjustMaterial(instance, getMaterial(instance.getParent()));
+        }
+        return null;
     }
 
     /**

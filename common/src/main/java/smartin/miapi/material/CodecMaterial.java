@@ -457,4 +457,9 @@ public class CodecMaterial implements Material {
     public TagKey<Block> getIncorrectBlocksForDrops() {
         return incorrectForTool.orElse(BlockTags.INCORRECT_FOR_WOODEN_TOOL);
     }
+
+    @Override
+    public int hashCode(){
+        return getID().hashCode();
+    }
 }

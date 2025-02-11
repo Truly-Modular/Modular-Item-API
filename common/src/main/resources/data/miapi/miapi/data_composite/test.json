@@ -1,0 +1,23 @@
+[
+    {
+        "type": "material_palette_layer",
+        "palette": {
+            "type": "texture",
+            "sprite": {
+                "atlas": "block",
+                "texture": "minecraft:item/beetroot_seeds"
+            },
+            "offset": true
+        }
+    },
+    {
+        "type": "material_merge_property"
+    },
+    {
+        "type": "percent_stat",
+        "stats": {
+            "hardness": 0.95,
+            "durability": 0.8
+        }
+    }
+]

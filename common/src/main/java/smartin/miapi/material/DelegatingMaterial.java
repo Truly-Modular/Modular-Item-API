@@ -182,4 +182,9 @@ public class DelegatingMaterial implements Material {
     public List<Component> getDescription(boolean extended){
         return parent.getDescription(extended);
     }
+
+    @Override
+    public int hashCode(){
+        return getID().hashCode();
+    }
 }

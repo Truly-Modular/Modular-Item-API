@@ -31,14 +31,13 @@ import static smartin.miapi.material.MaterialProperty.materials;
  * This Property defines composite materials, which are a list of composites that augment the base material to return a full material.
  *
  * @header Composite Material
- * @description_start
- * The Composite Material allows defining a material as a combination of multiple composites. Each composite modifies the base material in a specific way,
+ * @description_start The Composite Material allows defining a material as a combination of multiple composites. Each composite modifies the base material in a specific way,
  * such as changing its color, name, or attributes. This enables dynamic material creation by layering different modifications.
- *
+ * <p>
  * A composite material consists of a base material and a list of composite modifications that transform the base into a fully functional material.
  * These composites can adjust properties like durability, visual appearance or any other Material based system.
- *
- *
+ * <p>
+ * <p>
  * The final material is computed by applying the list of composites in sequence to an initial default material.
  * @description_end
  * @path /data_types/composites
@@ -68,6 +67,7 @@ public class CompositeMaterial extends DelegatingMaterial {
         CompositeFromOtherMaterial.register(MaterialLayerPaletteComposite.ID, MaterialLayerPaletteComposite.MAP_CODEC);
         CompositeFromOtherMaterial.register(MaterialMergeStatComposite.ID, MaterialMergeStatComposite.MAP_CODEC);
         CompositeFromOtherMaterial.register(MaterialPropertyMergeComposite.ID, MaterialPropertyMergeComposite.MAP_CODEC);
+        CompositeFromOtherMaterial.register(DatapackComposite.ID, DatapackComposite.MAP_CODEC);
 
         Composite.COMPOSITE_REGISTRY.put(AnyIngredientComposite.ID, AnyIngredientComposite.MAP_CODEC);
         Composite.COMPOSITE_REGISTRY.put(ColorComposite.ID, ColorComposite.MAP_CODEC);
@@ -140,13 +140,17 @@ public class CompositeMaterial extends DelegatingMaterial {
         if (o == null || getClass() != o.getClass()) return false; // Check for null or class mismatch
         CompositeMaterial that = (CompositeMaterial) o; // Cast to CompositeMaterial
         return Double.compare(that.cost, cost) == 0 && // Compare cost (double) using Double.compare
-               Objects.equals(compositeList, that.compositeList) && // Compare composites list
+               Objects.equals(compositeList.size(), that.compositeList.size()) && // Compare composites list
                Objects.equals(KEY, that.KEY); // Compare KEY (ResourceLocation)
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(KEY, compositeList, cost); // Compute hash using KEY, composites, and cost
+        int hash = 0;
+        for (Composite c : compositeList) {
+            hash += c.getID().hashCode();
+        }
+        return Objects.hash(KEY, hash, cost); // Compute hash using KEY, composites, and cost
     }
 
 }

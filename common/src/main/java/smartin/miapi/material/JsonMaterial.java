@@ -413,4 +413,9 @@ public class JsonMaterial implements Material {
     public TagKey<Block> getIncorrectBlocksForDrops() {
         return incorrectForTool;
     }
+
+    @Override
+    public int hashCode(){
+        return getID().hashCode();
+    }
 }

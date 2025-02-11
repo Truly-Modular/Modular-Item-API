@@ -3,6 +3,7 @@ package smartin.miapi.material.composite.material;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.resources.ResourceLocation;
+import smartin.miapi.Miapi;
 import smartin.miapi.material.DefaultMaterial;
 import smartin.miapi.material.MaterialProperty;
 import smartin.miapi.material.base.Material;
@@ -27,10 +28,14 @@ public interface CompositeFromOtherMaterial extends Composite {
                 instance.group(
                         base.forGetter(t -> t), // Retain existing fields
                         MaterialProperty.MATERIAL_CODEC.optionalFieldOf("material", new DefaultMaterial())
-                                .forGetter(CompositeFromOtherMaterial::getMaterial) // Getter for material
-                ).apply(instance, (a, m) -> {
-                    a.setMaterial(m);
-                    return a;
+                                .forGetter(CompositeFromOtherMaterial::getMaterial), // Getter for material
+                        Miapi.FIXED_BOOL_CODEC
+                                .optionalFieldOf("dynamic", true)
+                                .forGetter(CompositeFromOtherMaterial::getOverWriteAble)
+                ).apply(instance, (mat, m, b) -> {
+                    mat.setMaterial(m);
+                    mat.setOverWriteAble(b);
+                    return mat;
                 })
         );
     }
@@ -38,11 +43,16 @@ public interface CompositeFromOtherMaterial extends Composite {
     static <T extends CompositeFromOtherMaterial> MapCodec<T> getEmptyCodec(Supplier<T> getter) {
         return RecordCodecBuilder.mapCodec(instance ->
                 instance.group(
-                        MaterialProperty.MATERIAL_CODEC.optionalFieldOf("material", new DefaultMaterial())
-                                .forGetter(CompositeFromOtherMaterial::getMaterial) // Getter for material
-                ).apply(instance, (m) -> {
+                        MaterialProperty.MATERIAL_CODEC
+                                .optionalFieldOf("material", new DefaultMaterial())
+                                .forGetter(CompositeFromOtherMaterial::getMaterial), // Getter for material
+                        Miapi.FIXED_BOOL_CODEC
+                                .optionalFieldOf("dynamic", true)
+                                .forGetter(CompositeFromOtherMaterial::getOverWriteAble)
+                ).apply(instance, (m, o) -> {
                     T mat = getter.get();
                     mat.setMaterial(m);
+                    mat.setOverWriteAble(o);
                     return mat;
                 })
         );
@@ -60,6 +70,10 @@ public interface CompositeFromOtherMaterial extends Composite {
                 })
         );
     }
+
+    void setOverWriteAble(boolean overWriteAble);
+
+    boolean getOverWriteAble();
 
     void setMaterial(Material material);
 

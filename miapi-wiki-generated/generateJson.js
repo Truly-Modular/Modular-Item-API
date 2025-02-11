@@ -143,9 +143,8 @@ function processMarkdownFile(filePath, jsonData) {
 			keyWords = keywordsString.split(',').map((kw) => kw.trim()) // Split by commas and trim each keyword
 		}
 		// Description starts after @path and continues until the end
-		else if (inDescription || trimmed.length > 0) {
-			description += line + '  \n' // Add each line to description, preserving line breaks
-			inDescription = true // Start description after @path
+		else {
+			description += line
 		}
 	})
 

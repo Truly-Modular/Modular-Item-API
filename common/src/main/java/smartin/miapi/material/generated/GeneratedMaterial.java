@@ -382,6 +382,11 @@ public class GeneratedMaterial implements Material {
         return object;
     }
 
+    @Override
+    public int hashCode(){
+        return getID().hashCode();
+    }
+
     enum SmithingMode {
         NONE,
         TEMPLATE,

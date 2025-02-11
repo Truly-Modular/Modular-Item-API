@@ -26,7 +26,7 @@ public record DyeableComposite(boolean dyeAble) implements Composite {
                         if (composite instanceof DyeableComposite materialCopyComposite) {
                             return materialCopyComposite.dyeAble();
                         }
-                        return null;
+                        return false;
                     }))
             ).apply(instance, DyeableComposite::new));
 

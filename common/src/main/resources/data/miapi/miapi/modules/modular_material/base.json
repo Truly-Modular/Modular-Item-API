@@ -50,7 +50,7 @@
             "allowed": [
                 "material-mod"
             ],
-            "translationKey": "miapi.slot.material.1",
+            "translationKey": "miapi.slot.material.2",
             "transform": {
                 "rotation": {
                     "x": 0.0,
@@ -90,7 +90,8 @@
     },
     "material_component_property": [
         {
-            "type": "material_replace"
+            "type": "data_composite",
+            "data_composite": "miapi:base"
         }
     ],
 

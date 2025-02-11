@@ -1,11 +1,20 @@
 package smartin.miapi.material.palette;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
 import com.mojang.blaze3d.platform.NativeImage;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.JsonOps;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.redpxnda.nucleus.util.Color;
 import com.redpxnda.nucleus.util.MiscUtil;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.texture.SpriteContents;
+import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.resources.Resource;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.util.FastColor;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.client.atlas.MaterialAtlasManager;
 import smartin.miapi.client.atlas.MaterialSpriteManager;
@@ -15,14 +24,6 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.texture.SpriteContents;
-import net.minecraft.client.renderer.texture.TextureAtlas;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.packs.resources.Resource;
-import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraft.util.FastColor;
 
 public class SpriteFromJson {
     public static final Map<String, ResourceLocation> atlasIdShortcuts = MiscUtil.initialize(new HashMap<>(), m -> {
@@ -36,6 +37,20 @@ public class SpriteFromJson {
     @Nullable
     public TextureAtlasSprite rawSprite = null;
 
+    public static final Codec<SpriteFromJson> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+            Codec.STRING.fieldOf("atlas").forGetter(sprite -> {
+                for (Map.Entry<String, ResourceLocation> entry : atlasIdShortcuts.entrySet()) {
+                    if (entry.getValue().equals(sprite.rawSprite.atlasLocation())) {
+                        return entry.getKey();
+                    }
+                }
+                return sprite.rawSprite.atlasLocation().toString();
+            }),
+            Codec.STRING.fieldOf("texture").forGetter(sprite -> sprite.rawSprite.contents().name().toString()),
+            Codec.BOOL.optionalFieldOf("forceTick", false).forGetter(sprite -> sprite.isAnimated)
+    ).apply(instance, SpriteFromJson::new));
+
+    /*
     public SpriteFromJson(JsonElement json) {
         if (!(json instanceof JsonObject obj))
             throw new IllegalArgumentException("json used for json sprite must be a json object!");
@@ -66,6 +81,20 @@ public class SpriteFromJson {
             holder.height = rawImage.getHeight();
             imageSupplier = () -> holder;
         }
+    }
+     */
+
+    public static SpriteFromJson getFromJson(JsonElement element) {
+        return CODEC.decode(JsonOps.INSTANCE, element).getOrThrow().getFirst();
+    }
+
+    public SpriteFromJson(String atlasKey, String texturePath, boolean forceTick) {
+        ResourceLocation atlasId = atlasIdShortcuts.getOrDefault(atlasKey, ResourceLocation.parse(atlasKey));
+        ResourceLocation textureId = ResourceLocation.parse(texturePath);
+        rawSprite = Minecraft.getInstance().getTextureAtlas(atlasId).apply(textureId);
+        SpriteContents contents = rawSprite.contents();
+        imageSupplier = () -> NativeImageGetter.get(contents);
+        isAnimated = forceTick || SpriteColorer.isAnimatedSpriteStatic(contents);
     }
 
     public static NativeImage loadTexture(ResourceManager resourceManager, ResourceLocation id) {

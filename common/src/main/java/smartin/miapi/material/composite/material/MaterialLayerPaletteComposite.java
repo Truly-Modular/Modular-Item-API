@@ -13,7 +13,7 @@ import smartin.miapi.material.DelegatingMaterial;
 import smartin.miapi.material.base.Material;
 import smartin.miapi.material.palette.MaskColorer;
 import smartin.miapi.material.palette.MaterialRenderController;
-import smartin.miapi.material.palette.SpritePixelReplacer;
+import smartin.miapi.material.palette.SpriteColorer;
 import smartin.miapi.modules.ModuleInstance;
 
 /**
@@ -54,21 +54,34 @@ public class MaterialLayerPaletteComposite extends BasicOtherMaterialComposite {
                     MaterialRenderController materialController = material.getRenderController(context, mode);
                     cachedRenderController = materialController;
 
-                    if (parentController instanceof SpritePixelReplacer basePalette &&
-                        materialController instanceof SpritePixelReplacer addPalette) {
+                    if (parentController instanceof SpriteColorer basePalette &&
+                        materialController instanceof SpriteColorer addPalette) {
                         try {
                             MaskColorer.Masker masker = MaskColorer.getMaskerFromJson(mask);
+                            if (masker instanceof MaskColorer.SpriteMasker masker1) {
+                                masker1.offsetAble = parent.hashCode() * 11 + material.hashCode()  * 47;
+                            }
                             cachedRenderController = new MaskColorer(parent, basePalette, addPalette, masker);
                         } catch (RuntimeException e) {
-                            Miapi.LOGGER.error("raw json was "+mask);
+                            Miapi.LOGGER.error("raw json was " + mask);
                             Miapi.LOGGER.error("Cannot read mask for material_palette_layer ", e);
                         }
+                    } else {
+                        Miapi.LOGGER.error("layer was not applied due to material controllers not supporting this");
                     }
                 }
                 return cachedRenderController;
             }
         };
 
+    }
+
+    private static int stableHash(String input) {
+        int hash = 7;
+        for (char c : input.toCharArray()) {
+            hash = hash * 31 + c; // 31 is a prime commonly used for stable hash functions
+        }
+        return hash;
     }
 
     @Override

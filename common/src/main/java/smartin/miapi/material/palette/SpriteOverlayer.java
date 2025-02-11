@@ -16,7 +16,7 @@ public class SpriteOverlayer extends SpritePixelReplacer {
 
     public SpriteOverlayer(Material material, JsonElement json) {
         super(material);
-        delegate = new SpriteFromJson(json);
+        delegate =SpriteFromJson.getFromJson(json);
         averageColor = delegate.getAverageColor();
     }
 

@@ -22,22 +22,8 @@
     ],
     "material_component_property": [
         {
-            "type": "material_palette_layer",
-            "palette": {
-                "type": "texture",
-                "atlas": "block",
-                "texture": "minecraft:item/beetroot_seeds"
-            }
-        },
-        {
-            "type": "material_merge_property"
-        },
-        {
-            "type": "percent_stat",
-            "stats": {
-                "hardness": 0.95,
-                "durability": 0.8
-            }
+            "type": "data_composite",
+            "data_composite": "miapi:property_merge"
         }
     ]
 }

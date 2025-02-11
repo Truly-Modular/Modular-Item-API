@@ -3,18 +3,23 @@ package smartin.miapi.material.palette;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.blaze3d.platform.NativeImage;
-import com.mojang.datafixers.util.Pair;
-import com.mojang.serialization.*;
+import com.mojang.serialization.JsonOps;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.redpxnda.nucleus.util.Color;
 import net.minecraft.client.renderer.texture.SpriteContents;
+import net.minecraft.resources.ResourceLocation;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.renderer.NativeImageGetter;
+import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.material.base.Material;
+import smartin.miapi.material.composite.AnyIngredientComposite;
 
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Colors module sprites with a base colorer, a masker, and a layered colorer.
@@ -25,8 +30,11 @@ import java.util.Map;
  */
 public class MaskColorer extends SpriteColorer {
     public static Map<String, Masker> maskerRegistry = new HashMap<>();
+    public static Map<ResourceLocation, MapCodec<? extends Masker>> MASKER_REGISTRY = new HashMap<>();
+
     static {
-        maskerRegistry.put("texture", new SpriteMasker(null));
+        maskerRegistry.put("texture", new SpriteMasker(null, false));
+        MASKER_REGISTRY.put(Miapi.id("texture"), SpriteMasker.MAP_CODEC);
     }
 
     public Masker masker;
@@ -80,9 +88,9 @@ public class MaskColorer extends SpriteColorer {
         try {
             JsonObject object = element.getAsJsonObject();
             JsonElement baseElement = object.get("base");
-            MaterialRenderController baseColorer = MaterialRenderControllers.creators.get(baseElement.getAsJsonObject().get("type").getAsString()).createPalette(baseElement,material);
+            MaterialRenderController baseColorer = MaterialRenderControllers.creators.get(baseElement.getAsJsonObject().get("type").getAsString()).createPalette(baseElement, material);
             JsonElement layerElement = object.get("layer");
-            MaterialRenderController layerColorer = MaterialRenderControllers.creators.get(layerElement.getAsJsonObject().get("type").getAsString()).createPalette(layerElement,material);
+            MaterialRenderController layerColorer = MaterialRenderControllers.creators.get(layerElement.getAsJsonObject().get("type").getAsString()).createPalette(layerElement, material);
 
             if (baseColorer instanceof SpriteColorer baseSpriteColor && layerColorer instanceof SpriteColorer layerSpriteColor) {
                 Masker masker = getMaskerFromJson(object.get("mask"));
@@ -104,7 +112,9 @@ public class MaskColorer extends SpriteColorer {
     public static Masker getMaskerFromJson(JsonElement element) {
         JsonObject object = element.getAsJsonObject();
         String type = object.get("type").getAsString();
-        return maskerRegistry.get(type).fromJson(element);
+        ResourceLocation id = Miapi.id(type);
+        return MASKER_REGISTRY.get(id).codec().decode(JsonOps.INSTANCE, element).result().get().getFirst();
+        //return maskerRegistry.get(type).fromJson(element);
     }
 
     @Override
@@ -129,16 +139,16 @@ public class MaskColorer extends SpriteColorer {
         layer.close();
     }
 
-    public interface Masker extends  Closeable{
+    public interface Masker extends Closeable {
         /**
-         * @param base the image created from the base colorer
+         * @param base  the image created from the base colorer
          * @param other the image created from the layer colorer
          * @return the result of this masker
          */
         NativeImage mask(NativeImage base, NativeImage other);
 
         /**
-         * @param base the average color of the base colorer
+         * @param base  the average color of the base colorer
          * @param other the average color of the layer colorer
          * @return the new average color that this mask colorer should use
          */
@@ -156,10 +166,20 @@ public class MaskColorer extends SpriteColorer {
     }
 
     public static class SpriteMasker implements Masker, Closeable {
+        public static MapCodec<SpriteMasker> MAP_CODEC = RecordCodecBuilder.mapCodec((instance) ->
+                instance.group(
+                        SpriteFromJson.CODEC
+                                .fieldOf("sprite")
+                                .forGetter(c -> null),
+                        Miapi.FIXED_BOOL_CODEC.optionalFieldOf("offset", false).forGetter(c -> c.offsetRandom)
+                ).apply(instance, SpriteMasker::new));
         SpriteFromJson maskingSprite;
+        boolean offsetRandom;
+        public int offsetAble = 12;
 
-        public SpriteMasker(SpriteFromJson contents) {
+        public SpriteMasker(SpriteFromJson contents, boolean offsetRandom) {
             maskingSprite = contents;
+            this.offsetRandom = offsetRandom;
         }
 
         public NativeImage lastImage = null;
@@ -171,20 +191,24 @@ public class MaskColorer extends SpriteColorer {
                 lastImage = new NativeImage(base.getWidth(), base.getHeight(), true);
                 lastImage.untrack();
             }
-            if(lastImage!=null && (lastImage.getHeight()!= base.getHeight() || lastImage.getWidth()!= base.getWidth())){
+            if (lastImage != null && (lastImage.getHeight() != base.getHeight() || lastImage.getWidth() != base.getWidth())) {
                 lastImage.close();
                 lastImage = new NativeImage(base.getWidth(), base.getHeight(), true);
                 lastImage.untrack();
             }
+            int xOffset = Math.abs(offsetAble * 13 + offsetAble * 17);
+            int yOffset = Math.abs(offsetAble * 7 + offsetAble * 31);
             for (int width = 0; width < base.getWidth(); width++) {
                 for (int height = 0; height < base.getHeight(); height++) {
                     int baseColor = base.getPixelRGBA(width, height);
                     int otherColor = other.getPixelRGBA(width, height);
-                    int blendColor = nativeImage.getColor(width % nativeImage.getWidth(), height % nativeImage.getHeight());
+                    int blendColor = offsetRandom ?
+                            nativeImage.getColor((width + xOffset) % nativeImage.getWidth(), (height + yOffset) % nativeImage.getHeight()) :
+                            nativeImage.getColor(width % nativeImage.getWidth(), height % nativeImage.getHeight());
                     lastImage.setPixelRGBA(width, height, blend(baseColor, otherColor, blendColor));
                 }
             }
-            if(maskingSprite!=null){
+            if (maskingSprite != null) {
                 maskingSprite.markUse();
             }
             return lastImage;
@@ -225,8 +249,10 @@ public class MaskColorer extends SpriteColorer {
 
         @Override
         public Masker fromJson(JsonElement element) {
-            SpriteFromJson sprite = new SpriteFromJson(element);
-            return new SpriteMasker(sprite);
+            SpriteFromJson sprite = SpriteFromJson.getFromJson(element);
+            boolean offset = element.getAsJsonObject().has("offset")
+                             && element.getAsJsonObject().get("offset").getAsBoolean();
+            return new SpriteMasker(sprite, offset);
         }
 
         @Override
@@ -236,7 +262,7 @@ public class MaskColorer extends SpriteColorer {
 
         @Override
         public void close() throws IOException {
-            if(lastImage!=null){
+            if (lastImage != null) {
                 lastImage.close();
                 lastImage = null;
             }

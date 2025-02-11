@@ -2,18 +2,22 @@ package smartin.miapi;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
+import com.mojang.serialization.JsonOps;
 import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
 import com.redpxnda.nucleus.registry.NucleusNamespaces;
 import dev.architectury.event.EventResult;
 import dev.architectury.event.events.common.CommandRegistrationEvent;
 import dev.architectury.event.events.common.LifecycleEvent;
 import dev.architectury.event.events.common.PlayerEvent;
+import io.netty.handler.codec.DecoderException;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -115,7 +119,7 @@ public class Miapi {
         CodecBehavior.registerClass(MaterialIcons.SpinSettings.class, MaterialIcons.SpinSettings.CODEC);
         CodecBehavior.registerClass(EquipmentSlotGroup.class, EquipmentSlotGroup.CODEC);
         CodecBehavior.registerClass(EquipmentSlot.class, EquipmentSlot.CODEC);
-        if(Environment.isClient()){
+        if (Environment.isClient()) {
             CodecBehavior.registerClass(MiapiBinding.class, MiapiBinding.CODEC);
         }
 
@@ -235,13 +239,13 @@ public class Miapi {
     public static ResourceLocation id(String string) {
         string = camelToSnake(string);
         String[] parts = string.split(":");
-        if(parts[0].equals("arsenal")){
+        if (parts[0].equals("arsenal")) {
             parts[0] = "tm_arsenal";
         }
-        if(parts[0].equals("archery")){
+        if (parts[0].equals("archery")) {
             parts[0] = "tm_archery";
         }
-        if(parts[0].equals("armory")){
+        if (parts[0].equals("armory")) {
             parts[0] = "tm_armory";
         }
         if (parts.length > 1) {
@@ -330,8 +334,44 @@ public class Miapi {
         registerReloadHandler(event, location, true, bl -> toClear.clear(), handler, prio);
     }
 
+    public static <T> void registerReloadHandler(
+            String location,
+            Map<ResourceLocation, T> registry,
+            Codec<T> codec,
+            float prio) {
+        SingleFileHandler handler = new CodecOptimisedFileHandler<>(codec, (isClient, path, data, registryAccess) -> {
+            ResourceLocation shortened = Miapi.id(path.toString().replace(":" + location+"/", ":").replace(".json", ""));
+            registry.put(shortened, data);
+        }, location, (a) -> {
+        });
+        registerReloadHandler(ReloadEvents.MAIN, location, true, (a) -> registry.clear(), handler, prio);
+    }
+
     @FunctionalInterface
     public interface SingleFileHandler {
         void reloadFile(boolean isClient, ResourceLocation path, String data, RegistryAccess registryAccess);
+    }
+
+    public record CodecOptimisedFileHandler<T>(
+            Codec<T> codec,
+            SingleDecodedFileHandler<T> handler,
+            String path,
+            Consumer<Void> toClear) implements SingleFileHandler {
+        @Override
+        public void reloadFile(boolean isClient, ResourceLocation path, String data, RegistryAccess registryAccess) {
+            try {
+                var result = codec().decode(
+                        RegistryOps.create(JsonOps.INSTANCE, registryAccess),
+                        Miapi.gson.fromJson(data, JsonElement.class));
+                handler().reloadFile(isClient, path, result.getOrThrow((s) -> new DecoderException("Could not decode " + path + " " + s)).getFirst(), registryAccess);
+            } catch (RuntimeException e) {
+                Miapi.LOGGER.error("could not decode " + path() + " for path " + path(), e);
+            }
+        }
+
+        @FunctionalInterface
+        public interface SingleDecodedFileHandler<T> {
+            void reloadFile(boolean isClient, ResourceLocation path, T data, RegistryAccess registryAccess);
+        }
     }
 }

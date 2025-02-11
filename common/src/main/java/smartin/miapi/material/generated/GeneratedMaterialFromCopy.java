@@ -242,4 +242,9 @@ public class GeneratedMaterialFromCopy implements Material {
         object.add("items", ingredients);
         return object;
     }
+
+    @Override
+    public int hashCode(){
+        return getID().hashCode();
+    }
 }

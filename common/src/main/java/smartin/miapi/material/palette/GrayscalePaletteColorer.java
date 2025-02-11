@@ -40,7 +40,7 @@ public class GrayscalePaletteColorer extends SpritePixelReplacer {
             Item item = BuiltInRegistries.ITEM.get(ResourceLocation.parse(json.getAsJsonObject().get("item").getAsString()));
             return createForGeneratedMaterial(material, item.getDefaultInstance());
         }
-        return new GrayscalePaletteColorer(material, createImagePalette(new SpriteFromJson(json).imageSupplier.get()));
+        return new GrayscalePaletteColorer(material, createImagePalette(SpriteFromJson.getFromJson(json).imageSupplier.get()));
     }
 
     /**

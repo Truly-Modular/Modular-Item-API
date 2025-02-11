@@ -159,4 +159,9 @@ public class DefaultMaterial implements Material {
     public Optional<MapCodec<? extends Material>> codec() {
         return Optional.empty(); // No codec provided
     }
+
+    @Override
+    public int hashCode(){
+        return getID().hashCode();
+    }
 }

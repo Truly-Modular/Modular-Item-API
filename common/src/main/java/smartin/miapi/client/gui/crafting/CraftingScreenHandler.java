@@ -280,8 +280,13 @@ public class CraftingScreenHandler extends AbstractContainerMenu {
     public void broadcastChanges() {
         super.broadcastChanges();
         if (notClient()) {
-            blockEntity.setItem(inventory.getItem(0));
-            blockEntity.saveAndSync();
+            ItemStack block = blockEntity.getItem();
+            ItemStack inv = inventory.getItem(0);
+            if(!ItemStack.isSameItem(block,inv)){
+                blockEntity.setItem(inventory.getItem(0));
+                blockEntity.saveAndSync();
+                updateBE();
+            }
         }
         if (blockEntity == null && delegate.get(0) == 1) {
             short xsh = (short) delegate.get(1);
@@ -299,7 +304,6 @@ public class CraftingScreenHandler extends AbstractContainerMenu {
             BlockEntity be = playerInventory.player.level().getBlockEntity(new BlockPos(x, y, z));
             if (be instanceof ModularWorkBenchEntity casted) blockEntity = casted;
         }
-        updateBE();
     }
 
     /**
