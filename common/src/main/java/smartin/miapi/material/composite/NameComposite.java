@@ -9,6 +9,8 @@ import smartin.miapi.Miapi;
 import smartin.miapi.material.DelegatingMaterial;
 import smartin.miapi.material.base.Material;
 
+import java.util.Objects;
+
 /**
  * This Composite allows a material to have a custom name.
  *
@@ -45,5 +47,18 @@ public record NameComposite(Component name) implements Composite {
     @Override
     public ResourceLocation getID() {
         return ID;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        NameComposite that = (NameComposite) obj;
+        return Objects.equals(name, that.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name);
     }
 }

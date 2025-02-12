@@ -8,6 +8,7 @@ import smartin.miapi.Miapi;
 import smartin.miapi.material.DelegatingMaterial;
 import smartin.miapi.material.base.Material;
 
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -49,4 +50,15 @@ public record AnyIngredientComposite() implements Composite {
     public ResourceLocation getID() {
         return ID;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof AnyIngredientComposite;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(AnyIngredientComposite.class);
+    }
+
 }

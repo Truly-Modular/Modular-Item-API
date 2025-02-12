@@ -10,6 +10,7 @@ import smartin.miapi.material.base.Material;
 import smartin.miapi.material.composite.Composite;
 import smartin.miapi.material.composite.CompositeMaterial;
 import smartin.miapi.material.composite.material.CompositeFromOtherMaterial;
+import smartin.miapi.material.composite.material.DatapackComposite;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.util.CodecProperty;
 import smartin.miapi.modules.properties.util.ComponentApplyProperty;
@@ -30,6 +31,7 @@ public class ComponentMaterialProperty extends CodecProperty<List<Composite>> im
     public List<Composite> initialize(List<Composite> data, ModuleInstance context) {
         List<Composite> init = new ArrayList<>();
         Material material = MaterialProperty.getMaterial(context);
+        data = DatapackComposite.copy(data);
         data.forEach(c -> {
             if (
                     material != null &&
@@ -39,6 +41,15 @@ public class ComponentMaterialProperty extends CodecProperty<List<Composite>> im
             }
             init.add(c);
         });
+        Miapi.LOGGER.info("module " + context.moduleID);
+        if (context.parent != null) {
+            Miapi.LOGGER.info("parent" + context.parent.getId());
+        } else {
+            Miapi.LOGGER.info("no parent");
+        }
+        if (material != null) {
+            Miapi.LOGGER.info("material" + material.getID());
+        }
         return init;
     }
 
@@ -52,7 +63,8 @@ public class ComponentMaterialProperty extends CodecProperty<List<Composite>> im
 
         if (getData(itemStack).isPresent()) {
             try {
-                itemStack.set(CompositeMaterial.COMPOSITE_MATERIAL_COMPONENT, CompositeMaterial.getFromComposites(getData(itemStack).get()));
+                var data = getData(itemStack).get();
+                itemStack.set(CompositeMaterial.COMPOSITE_MATERIAL_COMPONENT, CompositeMaterial.getFromComposites(data));
             } catch (RuntimeException e) {
                 Miapi.LOGGER.error("failure", e);
             }

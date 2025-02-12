@@ -17,6 +17,8 @@ import smartin.miapi.material.palette.MaterialRenderController;
 import smartin.miapi.material.palette.MaterialRenderControllers;
 import smartin.miapi.modules.ModuleInstance;
 
+import java.util.Objects;
+
 /**
  * This Composite controls the material's normal visuals using a palette system.
  *
@@ -89,4 +91,18 @@ public record PaletteComposite(JsonElement json) implements Composite {
     public ResourceLocation getID() {
         return ID;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        PaletteComposite that = (PaletteComposite) obj;
+        return Objects.equals(json, that.json);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(json);
+    }
+
 }

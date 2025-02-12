@@ -8,6 +8,8 @@ import smartin.miapi.craft.stat.StatProvidersMap;
 import smartin.miapi.material.DelegatingMaterial;
 import smartin.miapi.material.base.Material;
 
+import java.util.Objects;
+
 /**
  * This Composite allows a material to be replaced with another material.
  *
@@ -47,5 +49,20 @@ public class MaterialMergeStatComposite extends BasicOtherMaterialComposite {
     @Override
     public ResourceLocation getID() {
         return ID;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        MaterialMergeStatComposite that = (MaterialMergeStatComposite) obj;
+        return overWriteAble == that.overWriteAble &&
+               Objects.equals(material, that.material) &&
+               Objects.equals(ratio, ratio);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(material, overWriteAble, ratio);
     }
 }

@@ -44,4 +44,17 @@ public record DyeableComposite(boolean dyeAble) implements Composite {
     public ResourceLocation getID() {
         return ID;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        DyeableComposite that = (DyeableComposite) obj;
+        return dyeAble == that.dyeAble;
+    }
+
+    @Override
+    public int hashCode() {
+        return Boolean.hashCode(dyeAble);
+    }
 }

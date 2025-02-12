@@ -17,7 +17,7 @@ code {
 
 /* Optionally, you can add hover effects for links */
 .markdown-body a:hover {
-	color: #ff4500; /* Color on hover */
+	color: aqua; /* Color on hover */
 	text-decoration: underline; /* Optional: add underline on hover */
 }
 
@@ -73,5 +73,10 @@ pre {
 
 .hljs-meta-string {
 	color: #032f62; /* Lighter blue for meta strings */
+}
+
+code {
+	background-color: black;
+	padding: 4px;
 }
 

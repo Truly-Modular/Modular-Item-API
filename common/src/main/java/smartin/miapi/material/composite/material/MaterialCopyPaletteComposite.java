@@ -11,6 +11,8 @@ import smartin.miapi.material.base.Material;
 import smartin.miapi.material.palette.MaterialRenderController;
 import smartin.miapi.modules.ModuleInstance;
 
+import java.util.Objects;
+
 /**
  * This Composite allows a material to be replaced with another material.
  *
@@ -44,5 +46,19 @@ public class MaterialCopyPaletteComposite extends BasicOtherMaterialComposite {
     @Override
     public ResourceLocation getID() {
         return ID;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        MaterialCopyPaletteComposite that = (MaterialCopyPaletteComposite) obj;
+        return overWriteAble == that.overWriteAble &&
+               Objects.equals(material, that.material);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(material, overWriteAble);
     }
 }

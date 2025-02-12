@@ -5,7 +5,7 @@
             "type": "texture",
             "sprite": {
                 "atlas": "block",
-                "texture": "minecraft:item/beetroot_seeds"
+                "texture": "miapi:item/layer"
             },
             "offset": true
         }

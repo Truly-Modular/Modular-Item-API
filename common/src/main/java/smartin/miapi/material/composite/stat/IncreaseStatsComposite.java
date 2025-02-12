@@ -10,6 +10,7 @@ import smartin.miapi.material.base.Material;
 import smartin.miapi.material.composite.Composite;
 
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * This Composite increases specific stats by adding the given values to the existing ones.
@@ -47,4 +48,18 @@ public record IncreaseStatsComposite(Map<String, Double> stats) implements Compo
     public ResourceLocation getID() {
         return ID;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        IncreaseStatsComposite that = (IncreaseStatsComposite) obj;
+        return Objects.equals(stats, that.stats);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(stats);
+    }
+
 }

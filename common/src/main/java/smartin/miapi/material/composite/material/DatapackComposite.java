@@ -11,6 +11,7 @@ import smartin.miapi.material.composite.Composite;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  *
@@ -41,7 +42,7 @@ public class DatapackComposite extends BasicOtherMaterialComposite {
         }
     }
 
-    public List<Composite> copy(List<Composite> copies) {
+    public static List<Composite> copy(List<Composite> copies) {
         return Composite.CODEC.listOf().decode(JsonOps.INSTANCE, Composite.CODEC.listOf().encodeStart(JsonOps.INSTANCE, copies).getOrThrow()).getOrThrow().getFirst();
     }
 
@@ -60,8 +61,33 @@ public class DatapackComposite extends BasicOtherMaterialComposite {
         return build;
     }
 
+    public void setMaterial(Material material) {
+        super.setMaterial(material);
+        for (Composite composite : composites) {
+            if (composite instanceof CompositeFromOtherMaterial otherMaterial) {
+                otherMaterial.setMaterial(material);
+            }
+        }
+    }
+
     @Override
     public ResourceLocation getID() {
         return ID;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        DatapackComposite that = (DatapackComposite) obj;
+        return overWriteAble == that.overWriteAble &&
+               Objects.equals(material, that.material) &&
+               Objects.equals(dataComposite, that.dataComposite) &&
+               Objects.equals(composites, that.composites);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(material, overWriteAble, dataComposite, composites);
     }
 }

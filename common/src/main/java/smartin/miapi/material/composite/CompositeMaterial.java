@@ -140,17 +140,13 @@ public class CompositeMaterial extends DelegatingMaterial {
         if (o == null || getClass() != o.getClass()) return false; // Check for null or class mismatch
         CompositeMaterial that = (CompositeMaterial) o; // Cast to CompositeMaterial
         return Double.compare(that.cost, cost) == 0 && // Compare cost (double) using Double.compare
-               Objects.equals(compositeList.size(), that.compositeList.size()) && // Compare composites list
+               Objects.equals(compositeList, that.compositeList) && // Compare composites list
                Objects.equals(KEY, that.KEY); // Compare KEY (ResourceLocation)
     }
 
     @Override
     public int hashCode() {
-        int hash = 0;
-        for (Composite c : compositeList) {
-            hash += c.getID().hashCode();
-        }
-        return Objects.hash(KEY, hash, cost); // Compute hash using KEY, composites, and cost
+        return Objects.hash(KEY, compositeList, cost); // Compute hash using KEY, composites, and cost
     }
 
 }

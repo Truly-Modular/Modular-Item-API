@@ -16,6 +16,8 @@ import smartin.miapi.material.palette.MaterialRenderController;
 import smartin.miapi.material.palette.SpriteColorer;
 import smartin.miapi.modules.ModuleInstance;
 
+import java.util.Objects;
+
 /**
  * This Composite allows a material to be replaced with another material.
  *
@@ -59,7 +61,7 @@ public class MaterialLayerPaletteComposite extends BasicOtherMaterialComposite {
                         try {
                             MaskColorer.Masker masker = MaskColorer.getMaskerFromJson(mask);
                             if (masker instanceof MaskColorer.SpriteMasker masker1) {
-                                masker1.offsetAble = parent.hashCode() * 11 + material.hashCode()  * 47;
+                                masker1.offsetAble = parent.hashCode() * 11 + material.hashCode() * 47;
                             }
                             cachedRenderController = new MaskColorer(parent, basePalette, addPalette, masker);
                         } catch (RuntimeException e) {
@@ -87,5 +89,20 @@ public class MaterialLayerPaletteComposite extends BasicOtherMaterialComposite {
     @Override
     public ResourceLocation getID() {
         return ID;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        MaterialLayerPaletteComposite that = (MaterialLayerPaletteComposite) obj;
+        return overWriteAble == that.overWriteAble &&
+               Objects.equals(material, that.material) &&
+               Objects.equals(mask.toString(), that.mask.toString());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(material, overWriteAble, mask);
     }
 }

@@ -10,6 +10,7 @@ import smartin.miapi.material.base.Material;
 import smartin.miapi.material.composite.Composite;
 
 import java.util.Map;
+import java.util.Objects;
 
 public record SetStatComposite(Map<String, Double> stats) implements Composite {
     public static final ResourceLocation ID = Miapi.id("set_stat");
@@ -36,4 +37,18 @@ public record SetStatComposite(Map<String, Double> stats) implements Composite {
     public ResourceLocation getID() {
         return ID;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        SetStatComposite that = (SetStatComposite) obj;
+        return Objects.equals(stats, that.stats);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(stats);
+    }
+
 }

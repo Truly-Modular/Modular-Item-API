@@ -10,6 +10,7 @@ import smartin.miapi.material.base.Material;
 import smartin.miapi.material.composite.Composite;
 
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * This Composite modifies specific stats by applying a percentage increase to the existing values.
@@ -47,4 +48,18 @@ public record PercentStatComposite(Map<String, Double> stats) implements Composi
     public ResourceLocation getID() {
         return ID;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        PercentStatComposite that = (PercentStatComposite) obj;
+        return Objects.equals(stats, that.stats);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(stats);
+    }
+
 }

@@ -10,6 +10,7 @@ import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * This Composite allows a material to be replaced with another material.
@@ -45,5 +46,19 @@ public class MaterialPropertyMergeComposite extends BasicOtherMaterialComposite 
     @Override
     public ResourceLocation getID() {
         return ID;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        MaterialPropertyMergeComposite that = (MaterialPropertyMergeComposite) obj;
+        return overWriteAble == that.overWriteAble &&
+               Objects.equals(material, that.material);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(material, overWriteAble);
     }
 }

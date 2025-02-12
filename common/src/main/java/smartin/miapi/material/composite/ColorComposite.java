@@ -11,6 +11,8 @@ import smartin.miapi.material.DelegatingMaterial;
 import smartin.miapi.material.base.Material;
 import smartin.miapi.modules.ModuleInstance;
 
+import java.util.Objects;
+
 /**
  * This Composite assigns a specific color to a material.
  *
@@ -51,4 +53,18 @@ public record ColorComposite(String color) implements Composite {
     public ResourceLocation getID() {
         return ID;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        ColorComposite that = (ColorComposite) obj;
+        return Objects.equals(color, that.color);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(color);
+    }
+
 }

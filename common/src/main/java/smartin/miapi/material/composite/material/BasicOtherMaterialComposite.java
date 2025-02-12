@@ -1,5 +1,6 @@
 package smartin.miapi.material.composite.material;
 
+import smartin.miapi.Miapi;
 import smartin.miapi.material.DefaultMaterial;
 import smartin.miapi.material.base.Material;
 
@@ -19,6 +20,7 @@ public abstract class BasicOtherMaterialComposite implements CompositeFromOtherM
     public void setMaterial(Material material) {
         if (getMaterial() instanceof DefaultMaterial || overWriteAble) {
             this.material = material;
+            Miapi.LOGGER.info("setting material to " + material.getID());
         }
     }
 
