@@ -10,6 +10,7 @@ import smartin.miapi.Miapi;
 import smartin.miapi.client.MiapiClient;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.datapack.ReloadEvents;
+import smartin.miapi.datapack.ReloadHelpers;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;
 import smartin.miapi.network.modern.ModernNetworking;
 import smartin.miapi.registries.MiapiRegistry;
@@ -24,7 +25,7 @@ public class KeyBindManager {
 
     public static void setup() {
         KeyBindFacet.KEY.cls();
-        Miapi.registerReloadHandler(ReloadEvents.MAIN, "miapi/key_binding", true, (isClient) -> {
+        ReloadHelpers.registerReloadHandler(ReloadEvents.MAIN, "miapi/key_binding", true, (isClient) -> {
             //we cant remove keybindings
         }, (isClient, id, data, registryAccess) -> {
             id = minimizeID(id);

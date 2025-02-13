@@ -2,22 +2,17 @@ package smartin.miapi;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
+import com.mojang.datafixers.util.Either;
 import com.mojang.datafixers.util.Pair;
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.DataResult;
-import com.mojang.serialization.DynamicOps;
-import com.mojang.serialization.JsonOps;
+import com.mojang.serialization.*;
 import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
 import com.redpxnda.nucleus.registry.NucleusNamespaces;
 import dev.architectury.event.EventResult;
 import dev.architectury.event.events.common.CommandRegistrationEvent;
 import dev.architectury.event.events.common.LifecycleEvent;
 import dev.architectury.event.events.common.PlayerEvent;
-import io.netty.handler.codec.DecoderException;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -30,6 +25,7 @@ import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.craft.BlueprintManager;
 import smartin.miapi.craft.stat.StatActorType;
 import smartin.miapi.datapack.ReloadEvents;
+import smartin.miapi.datapack.ReloadHelpers;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.item.ItemToModularConverter;
 import smartin.miapi.item.ModularItemStackConverter;
@@ -57,7 +53,6 @@ import smartin.miapi.modules.properties.util.DoubleOperationResolvable;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.network.Networking;
 import smartin.miapi.network.NetworkingImplCommon;
-import smartin.miapi.registries.MiapiRegistry;
 import smartin.miapi.registries.RegistryInventory;
 
 import java.util.Collections;
@@ -65,7 +60,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Consumer;
 
 /**
  * The following docs are used for automatic wiki generation
@@ -141,9 +135,9 @@ public class Miapi {
         });
         PlayerEvent.PLAYER_JOIN.register((player -> new Thread(() -> MiapiPermissions.getPerms(player)).start()));
 
-        registerReloadHandler(ReloadEvents.MAIN, "miapi/modules", RegistryInventory.modules,
+        ReloadHelpers.registerReloadHandler(ReloadEvents.MAIN, "miapi/modules", RegistryInventory.modules,
                 (isClient, path, data, access) -> ItemModule.loadFromData(path, data, isClient), -0.5f);
-        registerReloadHandler(ReloadEvents.MAIN, "miapi/module_extensions", Collections.synchronizedMap(new LinkedHashMap<>()),
+        ReloadHelpers.registerReloadHandler(ReloadEvents.MAIN, "miapi/module_extensions", Collections.synchronizedMap(new LinkedHashMap<>()),
                 (isClient, path, data, access) -> ItemModule.loadModuleExtension(path, data, isClient), -0.4f);
         ReloadEvents.END.subscribe((isClient, registryAccess) -> {
             RegistryInventory.modules.register(ItemModule.empty.id(), ItemModule.empty);
@@ -271,107 +265,14 @@ public class Miapi {
         networkingImplementation.setupServer();
     }
 
-    public static void registerReloadHandler(
-            ReloadEvents.ReloadEvent event,
-            String location,
-            boolean syncToClient,
-            Consumer<Boolean> beforeLoop,
-            SingleFileHandler handler,
-            float priority) {
-        if (syncToClient)
-            ReloadEvents.registerDataPackPathToSync(MOD_ID, location);
-        event.subscribe((isClient, registryAccess) -> {
-            beforeLoop.accept(isClient);
-            ReloadEvents.DATA_PACKS.forEach((path, data) -> {
-                if (path.getPath().startsWith(location + "/")) {
-                    try {
-                        handler.reloadFile(isClient, path, data, registryAccess);
-                    } catch (RuntimeException e) {
-                        Miapi.LOGGER.warn("could not load " + path, e);
-                    }
-                }
-            });
-        }, priority);
+    public static <T> MapCodec<T> withAlternative(final MapCodec<T> primary, final MapCodec<? extends T> alternative) {
+        return Codec.mapEither(
+                primary,
+                alternative
+        ).xmap(
+                Either::unwrap,
+                Either::left
+        );
     }
 
-    public static void registerReloadHandler(
-            ReloadEvents.ReloadEvent event,
-            String location,
-            Consumer<Boolean> beforeLoop,
-            SingleFileHandler handler,
-            float priority) {
-        registerReloadHandler(event, location, true, beforeLoop, handler, priority);
-    }
-
-    public static void registerReloadHandler(
-            ReloadEvents.ReloadEvent event,
-            String location, MiapiRegistry<?> toClear,
-            SingleFileHandler handler) {
-        registerReloadHandler(event, location, true, bl -> toClear.clear(), handler, 0f);
-    }
-
-    public static void registerReloadHandler(
-            ReloadEvents.ReloadEvent event,
-            String location, MiapiRegistry<?> toClear,
-            SingleFileHandler handler,
-            float prio) {
-        registerReloadHandler(event, location, true, bl -> toClear.clear(), handler, prio);
-    }
-
-    public static void registerReloadHandler(
-            ReloadEvents.ReloadEvent event,
-            String location,
-            Map<?, ?> toClear,
-            SingleFileHandler handler) {
-        registerReloadHandler(event, location, true, bl -> toClear.clear(), handler, 0f);
-    }
-
-    public static void registerReloadHandler(
-            ReloadEvents.ReloadEvent event,
-            String location, Map<?, ?> toClear,
-            SingleFileHandler handler,
-            float prio) {
-        registerReloadHandler(event, location, true, bl -> toClear.clear(), handler, prio);
-    }
-
-    public static <T> void registerReloadHandler(
-            String location,
-            Map<ResourceLocation, T> registry,
-            Codec<T> codec,
-            float prio) {
-        SingleFileHandler handler = new CodecOptimisedFileHandler<>(codec, (isClient, path, data, registryAccess) -> {
-            ResourceLocation shortened = Miapi.id(path.toString().replace(":" + location+"/", ":").replace(".json", ""));
-            registry.put(shortened, data);
-        }, location, (a) -> {
-        });
-        registerReloadHandler(ReloadEvents.MAIN, location, true, (a) -> registry.clear(), handler, prio);
-    }
-
-    @FunctionalInterface
-    public interface SingleFileHandler {
-        void reloadFile(boolean isClient, ResourceLocation path, String data, RegistryAccess registryAccess);
-    }
-
-    public record CodecOptimisedFileHandler<T>(
-            Codec<T> codec,
-            SingleDecodedFileHandler<T> handler,
-            String path,
-            Consumer<Void> toClear) implements SingleFileHandler {
-        @Override
-        public void reloadFile(boolean isClient, ResourceLocation path, String data, RegistryAccess registryAccess) {
-            try {
-                var result = codec().decode(
-                        RegistryOps.create(JsonOps.INSTANCE, registryAccess),
-                        Miapi.gson.fromJson(data, JsonElement.class));
-                handler().reloadFile(isClient, path, result.getOrThrow((s) -> new DecoderException("Could not decode " + path + " " + s)).getFirst(), registryAccess);
-            } catch (RuntimeException e) {
-                Miapi.LOGGER.error("could not decode " + path() + " for path " + path(), e);
-            }
-        }
-
-        @FunctionalInterface
-        public interface SingleDecodedFileHandler<T> {
-            void reloadFile(boolean isClient, ResourceLocation path, T data, RegistryAccess registryAccess);
-        }
-    }
 }

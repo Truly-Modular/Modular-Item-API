@@ -1,10 +1,12 @@
 package smartin.miapi.material.composite.material;
 
+import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.resources.ResourceLocation;
 import smartin.miapi.Miapi;
+import smartin.miapi.datapack.ReloadHelpers;
 import smartin.miapi.material.base.Material;
 import smartin.miapi.material.composite.Composite;
 
@@ -26,9 +28,13 @@ public class DatapackComposite extends BasicOtherMaterialComposite {
     public static final Map<ResourceLocation, List<Composite>> DATA_COMPOSITE_REGISTRY = new HashMap<>();
     public ResourceLocation dataComposite;
     public List<Composite> composites = List.of();
+    public static Codec<List<Composite>> DATA_PACK_CODEC = RecordCodecBuilder.create(instance ->
+            instance.group(
+                    Composite.CODEC.listOf().fieldOf("composites").forGetter(c -> c)
+            ).apply(instance, c -> c));
 
     static {
-        Miapi.registerReloadHandler("miapi/data_composite", DATA_COMPOSITE_REGISTRY, Composite.CODEC.listOf(), 0.0f);
+        ReloadHelpers.registerReloadHandler("miapi/data_composite", DATA_COMPOSITE_REGISTRY,DATA_PACK_CODEC , 0.0f);
     }
 
 

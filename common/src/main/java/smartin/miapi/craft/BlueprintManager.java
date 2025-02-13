@@ -8,6 +8,7 @@ import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
 import smartin.miapi.client.gui.crafting.crafter.replace.CraftOption;
 import smartin.miapi.datapack.ReloadEvents;
+import smartin.miapi.datapack.ReloadHelpers;
 import smartin.miapi.material.AllowedMaterial;
 
 import java.util.HashMap;
@@ -18,7 +19,7 @@ public class BlueprintManager {
     public static ResourceLocation ID = Miapi.id("reloaded_blueprint");
 
     public static void setup() {
-        Miapi.registerReloadHandler(ReloadEvents.MAIN, "miapi/blueprint", reloadedBlueprints, (isClient, id, data, registryAccess) -> {
+        ReloadHelpers.registerReloadHandler(ReloadEvents.MAIN, "miapi/blueprint", reloadedBlueprints, (isClient, id, data, registryAccess) -> {
             Miapi.LOGGER.info("loaded Blueprint " + id);
             JsonElement element = Miapi.gson.fromJson(data, JsonElement.class);
             BlueprintComponent component = BlueprintComponent.CODEC.decode(JsonOps.INSTANCE, element).getOrThrow().getFirst();

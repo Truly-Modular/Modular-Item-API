@@ -12,10 +12,12 @@ import smartin.miapi.modules.properties.util.DoubleProperty;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
+import java.util.function.BiFunction;
 
 @Environment(EnvType.CLIENT)
 public class SinglePropertyStatDisplay extends SingleStatDisplayDouble {
     protected DoubleProperty property;
+    public BiFunction<ItemStack, ItemStack, Boolean> condition = (old, compare) -> true;
 
     protected SinglePropertyStatDisplay(StatListWidget.TextGetter title, StatListWidget.TextGetter hover, DoubleProperty property) {
         super(0, 0, 51, 19, title, hover);
@@ -25,6 +27,9 @@ public class SinglePropertyStatDisplay extends SingleStatDisplayDouble {
     @Override
     public boolean shouldRender(ItemStack original, ItemStack compareTo) {
         super.shouldRender(original, compareTo);
+        if (!condition.apply(original, compareTo)) {
+            return false;
+        }
         return property.getValue(original).isPresent() || property.getValue(compareTo).isPresent();
     }
 
@@ -47,6 +52,7 @@ public class SinglePropertyStatDisplay extends SingleStatDisplayDouble {
         public double min = 0;
         public double max = 100;
         public boolean inverse = false;
+        public BiFunction<ItemStack, ItemStack, Boolean> condition = (old, compare) -> true;
 
         private Builder(DoubleProperty property) {
             this.property = property;
@@ -57,6 +63,11 @@ public class SinglePropertyStatDisplay extends SingleStatDisplayDouble {
 
         public Builder setInverse(boolean inverse) {
             this.inverse = inverse;
+            return this;
+        }
+
+        public Builder setCondition(BiFunction<ItemStack, ItemStack, Boolean> condition){
+            this.condition = condition;
             return this;
         }
 
@@ -119,6 +130,7 @@ public class SinglePropertyStatDisplay extends SingleStatDisplayDouble {
             display.minValue = min;
             display.modifierFormat = modifierFormat;
             display.inverse = inverse;
+            display.condition = condition;
             return display;
         }
     }

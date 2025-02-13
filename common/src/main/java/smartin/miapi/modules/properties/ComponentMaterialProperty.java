@@ -41,15 +41,6 @@ public class ComponentMaterialProperty extends CodecProperty<List<Composite>> im
             }
             init.add(c);
         });
-        Miapi.LOGGER.info("module " + context.moduleID);
-        if (context.parent != null) {
-            Miapi.LOGGER.info("parent" + context.parent.getId());
-        } else {
-            Miapi.LOGGER.info("no parent");
-        }
-        if (material != null) {
-            Miapi.LOGGER.info("material" + material.getID());
-        }
         return init;
     }
 

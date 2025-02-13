@@ -193,6 +193,15 @@ public class StatListWidget extends InteractAbleWidget {
                 .builder(DurabilityProperty.property)
                 .setMax(2000)
                 .setFormat("##")
+                .setCondition((old, current) -> {
+                    if (
+                            old.isDamageableItem() &&
+                            current.isDamageableItem()
+                    ) {
+                        return true;
+                    }
+                    return false;
+                })
                 .setTranslationKey(DurabilityProperty.KEY).build());
         addStatDisplay(SinglePropertyStatDisplay
                 .builder(FracturingProperty.property)

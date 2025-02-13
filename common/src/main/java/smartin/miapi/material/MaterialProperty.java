@@ -17,6 +17,7 @@ import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.datapack.ReloadEvents;
+import smartin.miapi.datapack.ReloadHelpers;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.material.base.Material;
 import smartin.miapi.mixin.NamedAccessor;
@@ -90,24 +91,19 @@ public class MaterialProperty extends CodecProperty<ResourceLocation> {
                 return "";
             }
         });
-        Miapi.registerReloadHandler(ReloadEvents.MAIN, "miapi/materials", materials, (isClient, path, data, registryAccess) -> {
-            try {
-                JsonParser parser = new JsonParser();
-                String id = path.toString();
-                id = id.replace("miapi/materials/", "");
-                id = id.replace(".json", "");
-                ResourceLocation revisedID = ResourceLocation.parse(id);
-                JsonObject obj = parser.parse(data).getAsJsonObject();
-                CodecMaterial codecMaterial = CodecMaterial.CODEC.decode(RegistryOps.create(JsonOps.INSTANCE, registryAccess), obj).getOrThrow().getFirst();
-                codecMaterial.setID(revisedID);
-                materials.put(revisedID, codecMaterial);
-            } catch (RuntimeException e) {
-                Miapi.LOGGER.error("FAILED MATERIAL DECODE " + data, e);
-            }
-        }, -2f);
+
+        ReloadHelpers.registerReloadHandler(
+                "miapi/materials",
+                () -> materials.clear(),
+                (id, mat) -> {
+                    mat.setID(id);
+                    materials.put(id, mat);
+                },
+                CodecMaterial.CODEC,
+                -2.0f);
 
 
-        Miapi.registerReloadHandler(ReloadEvents.MAIN, "miapi/material_extensions", (isClient) -> {
+        ReloadHelpers.registerReloadHandler(ReloadEvents.MAIN, "miapi/material_extensions", (isClient) -> {
 
         }, (isClient, path, data, registryAccess) -> {
             JsonParser parser = new JsonParser();

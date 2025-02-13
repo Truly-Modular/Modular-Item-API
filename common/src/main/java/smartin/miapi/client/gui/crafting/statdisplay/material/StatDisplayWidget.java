@@ -4,9 +4,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.crafting.statdisplay.StatListWidget;
-import smartin.miapi.item.modular.ModularItem;
-import smartin.miapi.material.base.Material;
 import smartin.miapi.material.MaterialProperty;
+import smartin.miapi.material.base.Material;
 
 public class StatDisplayWidget extends InteractAbleWidget {
     StatListWidget statListWidget;
@@ -24,7 +23,7 @@ public class StatDisplayWidget extends InteractAbleWidget {
 
     public void setOriginal(ItemStack itemStack) {
         Material material = MaterialProperty.getMaterialFromIngredient(itemStack);
-        if (material != null && !(ModularItem.isModularItem(itemStack))) {
+        if (material != null) {
             removeChild(materialStatWidget);
             materialStatWidget = new MaterialStatWidget(material, getX(), getY(), getWidth(), getHeight(), Component.literal("miapi.material.stat.widget"));
             removeChild(statListWidget);
@@ -39,7 +38,7 @@ public class StatDisplayWidget extends InteractAbleWidget {
 
     public void setItemsOriginal(ItemStack itemStack, ItemStack compareTo) {
         Material material = MaterialProperty.getMaterialFromIngredient(itemStack);
-        if (material != null && !(ModularItem.isModularItem(itemStack))) {
+        if (material != null) {
             removeChild(materialStatWidget);
             materialStatWidget = new MaterialStatWidget(material, getX(), getY(), getWidth(), getHeight(), Component.literal("miapi.material.stat.widget"));
             removeChild(statListWidget);

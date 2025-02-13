@@ -206,6 +206,7 @@ public class RegistryInventory {
     //public static Block exampleStatProviderBlock;
     public static BlockEntityType<ModularWorkBenchEntity> modularWorkBenchEntityType;
     public static Item modularItem;
+    public static Item modularStackableItem;
     public static Item visualOnlymodularItem;
     public static Item modularAxe;
     public static Item modularMattock;
@@ -342,7 +343,7 @@ public class RegistryInventory {
         register(modularItems, "modular_part_visual", ModularVisualOnlyItem::new, i -> visualOnlymodularItem = i);
 
         register(modularItems, "modular_item", ExampleModularItem::new, i -> modularItem = i);
-        register(modularItems, "modular_stackable_item", ExampleModularStrackableItem::new);
+        register(modularItems, "modular_stackable_item", ExampleModularStrackableItem::new, (i) -> modularStackableItem = i);
         register(modularItems, "modular_part", ModularItemPart::new);
 
         register(modularItems, "modular_handheld", ModularWeapon::new);
@@ -418,7 +419,7 @@ public class RegistryInventory {
             }
             return EventResult.pass();
         });
-        AnvilMenu m ;
+        AnvilMenu m;
 
 
         // GAME EVENTS

@@ -162,17 +162,19 @@ public class ScrollList extends InteractAbleWidget {
         if (this.widgets == null) {
             return false;
         }
-        for (AbstractWidget widget : widgets) {
-            if (widget.mouseScrolled(mouseX, mouseY, scrollX, scrollY)) {
-                return true;
+        if(isMouseOver(mouseX,mouseY)){
+            for (AbstractWidget widget : widgets) {
+                if (widget.mouseScrolled(mouseX, mouseY, scrollX, scrollY)) {
+                    return true;
+                }
             }
+
+            int scrollSpeed = 10;
+
+            this.scrollAmount -= scrollY * scrollSpeed;
+            return true;
         }
-
-        int scrollSpeed = 10;
-
-        this.scrollAmount -= scrollY * scrollSpeed;
-
-        return true;
+        return false;
     }
 
     @Override

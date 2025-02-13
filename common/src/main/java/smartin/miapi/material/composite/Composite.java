@@ -13,10 +13,8 @@ import java.util.Optional;
 
 public interface Composite {
     Map<ResourceLocation, MapCodec<? extends Composite>> COMPOSITE_REGISTRY = new HashMap<>();
-    Codec<Composite> CODEC = Miapi.ID_CODEC.dispatch(c -> {
-        //Miapi.LOGGER.info("encoding composite " + c.getID());
-        return c.getID();
-    }, (id) -> COMPOSITE_REGISTRY.getOrDefault(id, null));
+    //Miapi.LOGGER.info("encoding composite " + c.getID());
+    Codec<Composite> CODEC = Miapi.ID_CODEC.dispatch(Composite::getID, (id) -> COMPOSITE_REGISTRY.getOrDefault(id, AnyIngredientComposite.MAP_CODEC));
 
     Material composite(Material parent, boolean isClient);
 

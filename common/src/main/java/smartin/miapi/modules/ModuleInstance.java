@@ -85,13 +85,15 @@ public class ModuleInstance {
                         }
                     }
                 }
-                var result = basicResult.getOrThrow().getFirst();
-                if (result.subModules.isEmpty() && result.module != ItemModule.empty
-                    && MiapiConfig.INSTANCE.server.other.verboseLogging
-                ) {
-                    Miapi.LOGGER.error("possible problem!");
-                    Miapi.LOGGER.warn("encoded module " + result);
-                    //Miapi.LOGGER.warn("data" + input.toString());
+                if (basicResult.isSuccess()) {
+                    var result = basicResult.getOrThrow().getFirst();
+                    if (result.subModules.isEmpty() && result.module != ItemModule.empty
+                        && MiapiConfig.INSTANCE.server.other.verboseLogging
+                    ) {
+                        Miapi.LOGGER.error("possible problem!");
+                        Miapi.LOGGER.warn("encoded module " + result);
+                        //Miapi.LOGGER.warn("data" + input.toString());
+                    }
                 }
                 return basicResult;
             }

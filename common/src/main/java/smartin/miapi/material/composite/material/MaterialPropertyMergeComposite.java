@@ -9,8 +9,7 @@ import smartin.miapi.material.base.Material;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * This Composite allows a material to be replaced with another material.
@@ -34,10 +33,60 @@ public class MaterialPropertyMergeComposite extends BasicOtherMaterialComposite 
     @Override
     public Material composite(Material parent, boolean isClient) {
         return new DelegatingMaterial(parent) {
-
             @Override
             public Map<ModuleProperty<?>, Object> materialProperties(String key) {
                 return PropertyResolver.merge(parent.materialProperties(key), material.materialProperties(key), MergeType.SMART);
+            }
+
+            @Override
+            public List<String> getAllPropertyKeys() {
+                Set<String> keys = new HashSet<>(parent.getAllPropertyKeys());
+                keys.addAll(material.getAllPropertyKeys());
+                return new ArrayList<>(keys);
+            }
+
+            @Override
+            public List<String> getAllDisplayPropertyKeys() {
+                Set<String> keys = new HashSet<>(parent.getAllDisplayPropertyKeys());
+                keys.addAll(material.getAllDisplayPropertyKeys());
+                return new ArrayList<>(keys);
+            }
+
+            @Override
+            public Map<String, Map<ModuleProperty<?>, Object>> getHiddenProperty() {
+                Map<String, Map<ModuleProperty<?>, Object>> parentHidden = parent.getHiddenProperty();
+                Map<String, Map<ModuleProperty<?>, Object>> materialHidden = material.getHiddenProperty();
+                return mergeProperties(parentHidden, materialHidden);
+            }
+
+            @Override
+            public Map<String, Map<ModuleProperty<?>, Object>> getDisplayProperty() {
+                Map<String, Map<ModuleProperty<?>, Object>> parentDisplay = parent.getDisplayProperty();
+                Map<String, Map<ModuleProperty<?>, Object>> materialDisplay = material.getDisplayProperty();
+                return mergeProperties(parentDisplay, materialDisplay);
+            }
+
+            @Override
+            public Map<String, Map<ModuleProperty<?>, Object>> getActualProperty() {
+                Map<String, Map<ModuleProperty<?>, Object>> parentActual = parent.getActualProperty();
+                Map<String, Map<ModuleProperty<?>, Object>> materialActual = material.getActualProperty();
+                return mergeProperties(parentActual, materialActual);
+            }
+
+            private Map<String, Map<ModuleProperty<?>, Object>> mergeProperties(
+                    Map<String, Map<ModuleProperty<?>, Object>> parentProps,
+                    Map<String, Map<ModuleProperty<?>, Object>> materialProps) {
+                Map<String, Map<ModuleProperty<?>, Object>> merged = new HashMap<>();
+
+                Set<String> keys = new HashSet<>(parentProps.keySet());
+                keys.addAll(materialProps.keySet());
+
+                for (String key : keys) {
+                    Map<ModuleProperty<?>, Object> parentMap = parentProps.getOrDefault(key, Collections.emptyMap());
+                    Map<ModuleProperty<?>, Object> materialMap = materialProps.getOrDefault(key, Collections.emptyMap());
+                    merged.put(key, PropertyResolver.merge(parentMap, materialMap, MergeType.SMART));
+                }
+                return merged;
             }
         };
 

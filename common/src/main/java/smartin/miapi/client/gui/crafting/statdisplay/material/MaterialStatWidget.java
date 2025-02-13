@@ -5,9 +5,10 @@ import net.minecraft.world.item.ItemStack;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.ScrollList;
 import smartin.miapi.client.gui.crafting.statdisplay.StatListWidget;
-import smartin.miapi.modules.ItemModule;
-import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.material.base.Material;
+import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.ModuleDataPropertiesManager;
+import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.registries.RegistryInventory;
 
 import java.util.ArrayList;
@@ -22,7 +23,8 @@ public class MaterialStatWidget extends InteractAbleWidget {
         List<InteractAbleWidget> widgets = new ArrayList<>();
         for (String propertyKey : strings) {
             ModuleInstance moduleInstance = new ModuleInstance(ItemModule.internal);
-            ItemStack compareMaterial = RegistryInventory.modularItem.getDefaultInstance();
+            //MaterialProperty.setMaterial(moduleInstance, material);
+            ItemStack compareMaterial = RegistryInventory.modularStackableItem.getDefaultInstance();
             /*
             MaterialProperty.setMaterial(moduleInstance, material.getKey());
             JsonArray jsonElements = new JsonArray();
@@ -35,7 +37,8 @@ public class MaterialStatWidget extends InteractAbleWidget {
              */
             //TODO:FUCK. I CANT ENCODE PROPERTIES ATM. should i add a custom resolver for this? should i implement encoding?
 
-            //ModuleDataPropertiesManager.setProperties(moduleInstance, material.getDisplayMaterialProperties(propertyKey));
+            ModuleDataPropertiesManager.setProperties(moduleInstance, material.getDisplayMaterialProperties(propertyKey));
+            moduleInstance.clearCaches();
             moduleInstance.writeToItem(compareMaterial);
             StatListWidget.setAttributeCaches(compareMaterial, compareMaterial);
             List<InteractAbleWidget> stats = StatListWidget.collectWidgets(compareMaterial, compareMaterial);

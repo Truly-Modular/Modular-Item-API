@@ -8,6 +8,7 @@ import net.minecraft.world.item.ItemStack;
 import org.apache.commons.lang3.mutable.MutableObject;
 import smartin.miapi.Miapi;
 import smartin.miapi.datapack.ReloadEvents;
+import smartin.miapi.datapack.ReloadHelpers;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.ItemIdProperty;
@@ -22,7 +23,7 @@ public class ItemToModularConverter implements ModularItemStackConverter.Modular
 
 
     public ItemToModularConverter() {
-        Miapi.registerReloadHandler(ReloadEvents.MAIN, "miapi/modular_converter", regexes, (isClient, path, data, registryAccess) -> {
+        ReloadHelpers.registerReloadHandler(ReloadEvents.MAIN, "miapi/modular_converter", regexes, (isClient, path, data, registryAccess) -> {
             try {
                 JsonElement element = Miapi.gson.fromJson(data, JsonElement.class);
                 var decoded = CODEC.decode(JsonOps.INSTANCE, element);

@@ -7,6 +7,7 @@ import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Environment;
 import smartin.miapi.Miapi;
 import smartin.miapi.datapack.ReloadEvents;
+import smartin.miapi.datapack.ReloadHelpers;
 import smartin.miapi.item.modular.PropertyResolver;
 import smartin.miapi.material.base.Material;
 import smartin.miapi.material.MaterialProperty;
@@ -53,7 +54,7 @@ public class SynergyManager {
             }
             return oldMap;
         });
-        Miapi.registerReloadHandler(ReloadEvents.MAIN, "miapi/synergies", moduleSynergies, (isClient, path, data, registryAccess) -> {
+        ReloadHelpers.registerReloadHandler(ReloadEvents.MAIN, "miapi/synergies", moduleSynergies, (isClient, path, data, registryAccess) -> {
             load(data, path);
         }, 2);
         ReloadEvents.END.subscribe(((isClient, registryAccess) -> {

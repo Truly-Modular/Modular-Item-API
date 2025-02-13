@@ -21,6 +21,7 @@ import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
 import smartin.miapi.client.gui.crafting.crafter.create_module.CreateListView;
 import smartin.miapi.craft.CraftAction;
 import smartin.miapi.datapack.ReloadEvents;
+import smartin.miapi.datapack.ReloadHelpers;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.edit_options.EditOption;
@@ -41,7 +42,7 @@ public class CreateItemOption implements EditOption {
 
 
     public CreateItemOption() {
-        Miapi.registerReloadHandler(ReloadEvents.END, "miapi/create_options", (isClient -> {
+        ReloadHelpers.registerReloadHandler(ReloadEvents.END, "miapi/create_options", (isClient -> {
             createAbleItems.clear();
         }), ((isClient, path, data, registryAccess) -> {
             if (isClient) {

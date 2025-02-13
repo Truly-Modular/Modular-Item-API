@@ -10,6 +10,7 @@ import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.crafting.CraftingScreen;
 import smartin.miapi.datapack.ReloadEvents;
+import smartin.miapi.datapack.ReloadHelpers;
 import smartin.miapi.item.modular.PropertyResolver;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.edit_options.EditOption;
@@ -40,10 +41,10 @@ public class SkinOptions implements EditOption {
             }
             return oldMap;
         }, List.of(Miapi.id("synergy")));
-        Miapi.registerReloadHandler(ReloadEvents.MAIN, "miapi/skins/module", skins, (isClient, path, data, registryAccess) -> {
+        ReloadHelpers.registerReloadHandler(ReloadEvents.MAIN, "miapi/skins/module", skins, (isClient, path, data, registryAccess) -> {
             load(data);
         }, 1);
-        Miapi.registerReloadHandler(ReloadEvents.MAIN, "miapi/skins/tab", tabMap, (isClient, path, data, registryAccess) -> {
+        ReloadHelpers.registerReloadHandler(ReloadEvents.MAIN, "miapi/skins/tab", tabMap, (isClient, path, data, registryAccess) -> {
             loadTabData(data);
         }, 1);
         ReloadEvents.END.subscribe(((isClient, registryAccess) -> {

@@ -23,13 +23,16 @@ public class DpsStatDisplay extends SingleStatDisplayDouble {
     public boolean shouldRender(ItemStack original, ItemStack compareTo) {
         if (hasAttackDamage(original) || hasAttackDamage(compareTo)) {
             super.shouldRender(original, compareTo);
+            if (getValue(original) == 4.0 && getValue(compareTo) == 4.0) {
+                return false;
+            }
             return true;
         }
         return false;
     }
 
     private boolean hasAttackDamage(ItemStack itemStack) {
-        return AttributeUtil.getActualValue(itemStack, EquipmentSlot.MAINHAND, Attributes.ATTACK_DAMAGE.value()) != 1;
+        return AttributeUtil.getActualValue(itemStack, EquipmentSlot.MAINHAND, Attributes.ATTACK_DAMAGE.value()) != 0;
     }
 
     @Override

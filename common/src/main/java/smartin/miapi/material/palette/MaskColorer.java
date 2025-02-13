@@ -7,19 +7,17 @@ import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.redpxnda.nucleus.util.Color;
+import io.netty.handler.codec.DecoderException;
 import net.minecraft.client.renderer.texture.SpriteContents;
 import net.minecraft.resources.ResourceLocation;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.renderer.NativeImageGetter;
-import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.material.base.Material;
-import smartin.miapi.material.composite.AnyIngredientComposite;
 
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * Colors module sprites with a base colorer, a masker, and a layered colorer.
@@ -113,7 +111,7 @@ public class MaskColorer extends SpriteColorer {
         JsonObject object = element.getAsJsonObject();
         String type = object.get("type").getAsString();
         ResourceLocation id = Miapi.id(type);
-        return MASKER_REGISTRY.get(id).codec().decode(JsonOps.INSTANCE, element).result().get().getFirst();
+        return MASKER_REGISTRY.get(id).codec().decode(JsonOps.INSTANCE, element).getOrThrow(s -> new DecoderException("could not decode mask " + s)).getFirst();
         //return maskerRegistry.get(type).fromJson(element);
     }
 
@@ -166,13 +164,19 @@ public class MaskColorer extends SpriteColorer {
     }
 
     public static class SpriteMasker implements Masker, Closeable {
-        public static MapCodec<SpriteMasker> MAP_CODEC = RecordCodecBuilder.mapCodec((instance) ->
+        public static MapCodec<SpriteMasker> DIRECT_MAP_CODEC = RecordCodecBuilder.mapCodec((instance) ->
+                instance.group(
+                        SpriteFromJson.MAP_CODEC.forGetter(c -> c.maskingSprite),
+                        Miapi.FIXED_BOOL_CODEC.optionalFieldOf("offset", false).forGetter(c -> c.offsetRandom)
+                ).apply(instance, SpriteMasker::new));
+        public static MapCodec<SpriteMasker> DEEP_MAP_CODEC = RecordCodecBuilder.mapCodec((instance) ->
                 instance.group(
                         SpriteFromJson.CODEC
                                 .fieldOf("sprite")
-                                .forGetter(c -> null),
+                                .forGetter(c -> c.maskingSprite),
                         Miapi.FIXED_BOOL_CODEC.optionalFieldOf("offset", false).forGetter(c -> c.offsetRandom)
                 ).apply(instance, SpriteMasker::new));
+        public static MapCodec<SpriteMasker> MAP_CODEC = Miapi.withAlternative(DIRECT_MAP_CODEC, DEEP_MAP_CODEC);
         SpriteFromJson maskingSprite;
         boolean offsetRandom;
         public int offsetAble = 12;

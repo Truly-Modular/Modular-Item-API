@@ -4,6 +4,7 @@ import com.google.gson.JsonElement;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.redpxnda.nucleus.util.Color;
 import com.redpxnda.nucleus.util.MiscUtil;
@@ -38,6 +39,19 @@ public class SpriteFromJson {
     public TextureAtlasSprite rawSprite = null;
 
     public static final Codec<SpriteFromJson> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+            Codec.STRING.fieldOf("atlas").forGetter(sprite -> {
+                for (Map.Entry<String, ResourceLocation> entry : atlasIdShortcuts.entrySet()) {
+                    if (entry.getValue().equals(sprite.rawSprite.atlasLocation())) {
+                        return entry.getKey();
+                    }
+                }
+                return sprite.rawSprite.atlasLocation().toString();
+            }),
+            Codec.STRING.fieldOf("texture").forGetter(sprite -> sprite.rawSprite.contents().name().toString()),
+            Codec.BOOL.optionalFieldOf("forceTick", false).forGetter(sprite -> sprite.isAnimated)
+    ).apply(instance, SpriteFromJson::new));
+
+    public static final MapCodec<SpriteFromJson> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             Codec.STRING.fieldOf("atlas").forGetter(sprite -> {
                 for (Map.Entry<String, ResourceLocation> entry : atlasIdShortcuts.entrySet()) {
                     if (entry.getValue().equals(sprite.rawSprite.atlasLocation())) {
@@ -85,8 +99,9 @@ public class SpriteFromJson {
      */
 
     public static SpriteFromJson getFromJson(JsonElement element) {
-        return CODEC.decode(JsonOps.INSTANCE, element).getOrThrow().getFirst();
+        return MAP_CODEC.codec().decode(JsonOps.INSTANCE, element).getOrThrow().getFirst();
     }
+
 
     public SpriteFromJson(String atlasKey, String texturePath, boolean forceTick) {
         ResourceLocation atlasId = atlasIdShortcuts.getOrDefault(atlasKey, ResourceLocation.parse(atlasKey));
