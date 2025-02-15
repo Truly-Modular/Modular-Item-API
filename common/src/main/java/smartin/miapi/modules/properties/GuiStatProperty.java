@@ -1,12 +1,11 @@
 package smartin.miapi.modules.properties;
 
 import com.mojang.serialization.Codec;
-import com.redpxnda.nucleus.codec.auto.AutoCodec;
-import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Environment;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.InteractAbleWidget;
@@ -16,15 +15,17 @@ import smartin.miapi.client.gui.crafting.statdisplay.SingleStatDisplayDouble;
 import smartin.miapi.client.gui.crafting.statdisplay.StatListWidget;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.cache.ModularItemCache;
-import smartin.miapi.modules.properties.util.*;
+import smartin.miapi.modules.properties.util.CodecProperty;
+import smartin.miapi.modules.properties.util.DoubleOperationResolvable;
+import smartin.miapi.modules.properties.util.MergeAble;
+import smartin.miapi.modules.properties.util.MergeType;
 
 import java.util.*;
 
 /**
  * @header GUI Stat Property
  * @path /data_types/properties/gui_stat
- * @description_start
- * The GuiStatProperty manages statistics displayed in the GUI for items. It allows the attachment of custom statistics
+ * @description_start The GuiStatProperty manages statistics displayed in the GUI for items. It allows the attachment of custom statistics
  * to items, which can be displayed in the GUI with a header, description, and a range of values. Each statistic is defined
  * with a minimum and maximum value, and the current value is dynamically resolved based on the item instance.
  * This property is used to enhance the user interface by providing detailed item statistics.
@@ -39,7 +40,7 @@ import java.util.*;
 public class GuiStatProperty extends CodecProperty<Map<String, GuiStatProperty.GuiInfo>> {
     public static final ResourceLocation KEY = Miapi.id("gui_stat");
     public static GuiStatProperty property;
-    public static Codec<Map<String, GuiInfo>> CODEC = Codec.dispatchedMap(Codec.STRING, (key) -> AutoCodec.of(GuiInfo.class).codec());
+    public static Codec<Map<String, GuiInfo>> CODEC = Codec.dispatchedMap(Codec.STRING, (key) -> GuiInfo.CODEC);
 
     public GuiStatProperty() {
         super(CODEC);
@@ -108,15 +109,30 @@ public class GuiStatProperty extends CodecProperty<Map<String, GuiStatProperty.G
     }
 
     public static class GuiInfo {
-        @CodecBehavior.Optional
         public DoubleOperationResolvable min = new DoubleOperationResolvable(0.0);
-        @CodecBehavior.Optional
         public DoubleOperationResolvable max = new DoubleOperationResolvable(10.0);
         public DoubleOperationResolvable value;
         public Component header;
-        @CodecBehavior.Optional
-        @Nullable
         public Component description;
+
+        public static final Codec<GuiInfo> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+                DoubleOperationResolvable.CODEC.optionalFieldOf("min", new DoubleOperationResolvable(0.0)).forGetter(gui -> gui.min),
+                DoubleOperationResolvable.CODEC.optionalFieldOf("max", new DoubleOperationResolvable(10.0)).forGetter(gui -> gui.max),
+                DoubleOperationResolvable.CODEC.fieldOf("value").forGetter(gui -> gui.value),
+                ComponentSerialization.CODEC.fieldOf("header").forGetter(gui -> gui.header),
+                ComponentSerialization.CODEC.optionalFieldOf("description", Component.empty()).forGetter(gui -> gui.description)
+        ).apply(instance, GuiInfo::new));
+
+        public GuiInfo(DoubleOperationResolvable min, DoubleOperationResolvable max, DoubleOperationResolvable value, Component header, Component description) {
+            this.min = min;
+            this.max = max;
+            this.value = value;
+            this.header = header;
+            this.description = description;
+        }
+
+        public GuiInfo() {
+        }
 
         public GuiInfo initialize(ModuleInstance moduleInstance) {
             GuiInfo init = new GuiInfo();

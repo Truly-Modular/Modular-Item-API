@@ -53,6 +53,9 @@ public class StatResolver {
         public static Codec<JsonElement> JSONELEMENT_CODEC = new Codec<>() {
             @Override
             public <T> DataResult<T> encode(JsonElement input, DynamicOps<T> ops, T prefix) {
+                if (input == null) {
+                    return DataResult.success(prefix);
+                }
                 return DataResult.success(JsonOps.INSTANCE.convertTo(ops, input));
             }
 

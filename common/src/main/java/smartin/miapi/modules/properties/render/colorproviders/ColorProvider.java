@@ -30,6 +30,7 @@ public interface ColorProvider {
         colorProviders.put("model", new ModelColorProvider());
         colorProviders.put("potion", new PotionColorProvider());
         colorProviders.put("parent", new ParentColorProvider());
+        colorProviders.put("item.material", new ItemMaterialColorProvider());
     }
 
     static ColorProvider getProvider(String type, ItemStack itemStack, ModuleInstance moduleInstance) {
@@ -104,7 +105,7 @@ public interface ColorProvider {
         public ColorProvider getInstance(ItemStack stack, ModuleInstance instance) {
             Material material1 = MaterialProperty.getMaterial(instance);
             if (material1 != null) {
-                return new ParentColorProvider(material1);
+                return new ItemMaterialColorProvider(material1);
             }
             return new ModelColorProvider();
         }
@@ -114,6 +115,43 @@ public interface ColorProvider {
                 return moduleInstance.parent;
             }
             return moduleInstance;
+        }
+    }
+
+    class ItemMaterialColorProvider extends MaterialColorProvider {
+        public Material material;
+        public Material actualMaterial;
+
+        public ItemMaterialColorProvider() {
+        }
+
+        public ItemMaterialColorProvider(Material material) {
+            this.material = material;
+        }
+
+        @Environment(EnvType.CLIENT)
+        @Override
+        public VertexConsumer getConsumer(MultiBufferSource vertexConsumers,
+                                          TextureAtlasSprite sprite,
+                                          ItemStack stack,
+                                          ModuleInstance moduleInstance,
+                                          ItemDisplayContext mode) {
+            if (actualMaterial == null) {
+                actualMaterial = MaterialProperty.getMaterialFromIngredient(stack);
+            }
+            if (actualMaterial != null) {
+                return actualMaterial.getRenderController(moduleInstance, mode).getVertexConsumer(vertexConsumers, sprite, stack, moduleInstance, mode);
+            }
+            return material.getRenderController(moduleInstance, mode).getVertexConsumer(vertexConsumers, sprite, stack, moduleInstance, mode);
+        }
+
+        @Override
+        public ColorProvider getInstance(ItemStack stack, ModuleInstance instance) {
+            Material material1 = MaterialProperty.getMaterialFromIngredient(stack);
+            if (material1 != null) {
+                return new ItemMaterialColorProvider(material1);
+            }
+            return new ModelColorProvider();
         }
     }
 

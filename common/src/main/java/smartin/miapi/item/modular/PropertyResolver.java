@@ -79,14 +79,15 @@ public class PropertyResolver {
     }
 
     public static Map<ModuleProperty<?>, Object> merge(Map<ModuleProperty<?>, Object> old, Map<ModuleProperty<?>, Object> toMerge, MergeType mergeType) {
+        Map<ModuleProperty<?>, Object> merged = new LinkedHashMap<>(old);
         toMerge.forEach(((property, element) -> {
-            if (old.containsKey(property)) {
-                old.put(property, ItemModule.merge(property, old.get(property), element, mergeType));
+            if (merged.containsKey(property)) {
+                merged.put(property, ItemModule.merge(property, merged.get(property), element, mergeType));
             } else {
-                old.put(property, element);
+                merged.put(property, element);
             }
         }));
-        return old;
+        return merged;
     }
 
     /**

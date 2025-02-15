@@ -39,6 +39,12 @@ public class MaterialPropertyMergeComposite extends BasicOtherMaterialComposite 
             }
 
             @Override
+            public Map<ModuleProperty<?>, Object> getDisplayMaterialProperties(String key) {
+                return PropertyResolver.merge(parent.getDisplayMaterialProperties(key), material.getDisplayMaterialProperties(key), MergeType.SMART);
+            }
+
+
+            @Override
             public List<String> getAllPropertyKeys() {
                 Set<String> keys = new HashSet<>(parent.getAllPropertyKeys());
                 keys.addAll(material.getAllPropertyKeys());

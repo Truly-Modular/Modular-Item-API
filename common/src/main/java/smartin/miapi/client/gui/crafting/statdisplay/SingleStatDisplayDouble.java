@@ -11,7 +11,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FastColor;
 import net.minecraft.world.item.ItemStack;
-import smartin.miapi.client.gui.HoverDescription;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.ScrollingTextWidget;
 import smartin.miapi.client.gui.StatBar;
@@ -40,7 +39,6 @@ public abstract class SingleStatDisplayDouble extends InteractAbleWidget impleme
     public DecimalFormat modifierFormat;
     public StatListWidget.TextGetter text;
     public StatListWidget.TextGetter hover;
-    public HoverDescription hoverDescription;
     public Component postfix = Component.nullToEmpty("");
     public boolean inverse = false;
     double oldValue = 0;
@@ -60,7 +58,6 @@ public abstract class SingleStatDisplayDouble extends InteractAbleWidget impleme
         modifierFormat = Util.make(new DecimalFormat("##.##"), (decimalFormat) -> {
             decimalFormat.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ROOT));
         });
-        hoverDescription = new HoverDescription(x, y, List.of());
     }
 
     public void setInverse(boolean inverse) {
@@ -92,7 +89,6 @@ public abstract class SingleStatDisplayDouble extends InteractAbleWidget impleme
         compareToValue = getValue(compareTo);
         oldValue = getValue(original);
         textWidget.setText(text.resolve(mainStack));
-        hoverDescription.setText(hover.resolve(mainStack));
         compareValue.setText(Component.nullToEmpty(modifierFormat.format(compareToValue)));
         int textWidth = Minecraft.getInstance().font.width(this.text.resolve(original));
         int numberWidth = Minecraft.getInstance().font.width(compareValue.getText());

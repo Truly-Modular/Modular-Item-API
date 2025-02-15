@@ -92,7 +92,7 @@ public class HoverMaterialList extends InteractAbleWidget {
             RenderSystem.disableDepthTest();
             drawContext.fill(getX(), getY(), getX() + sizeDetailList + sizeBaseList, getY() + verticalSize, FastColor.ARGB32.color(210, 0, 0, 0));
             if (!materials.isEmpty()) {
-                scrollPosOne = Math.max(0, Math.min(materials.size() - maxElements - 1, scrollPosOne));
+                scrollPosOne = Math.max(0, Math.min(materials.size() - maxElements, scrollPosOne));
                 int start = scrollPosOne;
                 int end = Math.min(scrollPosOne + maxElements, materials.size());
                 if (end < materials.size() - 1) {

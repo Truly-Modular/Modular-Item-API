@@ -27,12 +27,10 @@ public class JsonStatDisplay extends SingleStatDisplayDouble {
         super.shouldRender(original, compareTo);
         if (statReader.hasValue(original)) {
             textWidget.setText(text.resolve(original));
-            hoverDescription.setText(hover.resolve(original));
             return true;
         }
         if (statReader.hasValue(compareTo)) {
             textWidget.setText(text.resolve(compareTo));
-            hoverDescription.setText(hover.resolve(compareTo));
             return true;
         }
         return false;
