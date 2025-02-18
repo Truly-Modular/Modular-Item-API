@@ -1,0 +1,18 @@
+{
+	"miapi.module.modular_material": "Modular %s",
+	"miapi.slot.material.1": "First Mixture",
+	"miapi.slot.material.2": "Second Mixture",
+	"modular-material.create_item.material": "Modular Material",
+	"miapi.module.modular-material.modular_material.base": "Base",
+	"miapi.module.modular-material.modular_material.base.name": "%s Material",
+	"miapi.module.modular-material.modular_material.base.description": "The Basis of a Modular Material.",
+
+	"miapi.module.modular-material.modular_material.property_merge": "Mix",
+	"miapi.module.modular-material.modular_material.property_merge.description": "Mixing splatters of another material in.",
+
+	"miapi.module.modular-material.modular_material.property_merge_line": "Stripped",
+	"miapi.module.modular-material.modular_material.property_merge_line.description": "Stripped Splatters into the Material.",
+
+	"miapi.module.modular-material.modular_material.property_merge_small": "Small Splatters",
+	"miapi.module.modular-material.modular_material.property_merge_small.description": "Small Splatters of the Material."
+}

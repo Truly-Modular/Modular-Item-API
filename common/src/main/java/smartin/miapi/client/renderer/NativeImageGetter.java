@@ -1,10 +1,11 @@
 package smartin.miapi.client.renderer;
 
-import smartin.miapi.mixin.client.SpriteContentsAccessor;
 import com.mojang.blaze3d.platform.NativeImage;
+import net.minecraft.client.renderer.texture.SpriteContents;
+import smartin.miapi.mixin.client.SpriteContentsAccessor;
+
 import java.util.Map;
 import java.util.WeakHashMap;
-import net.minecraft.client.renderer.texture.SpriteContents;
 
 public class NativeImageGetter {
     public static Map<SpriteContents, ImageHolder> nativeImageMap = new WeakHashMap<>();
@@ -15,10 +16,14 @@ public class NativeImageGetter {
 
     public static ImageHolder getFromContents(SpriteContents contents) {
         ImageHolder imageHolder = new ImageHolder();
-        imageHolder.nativeImage = ((SpriteContentsAccessor) contents).getImage();
+        imageHolder.nativeImage = getImage(contents);
         imageHolder.height = contents.height();
         imageHolder.width = contents.width();
         return imageHolder;
+    }
+
+    public static NativeImage getImage(SpriteContents contents) {
+        return ((SpriteContentsAccessor) contents).getImage();
     }
 
     public static ImageHolder getFromContents(NativeImage contents) {

@@ -15,4 +15,7 @@ public interface SpriteContentsAccessor {
 
     @Accessor
     int getHeight();
+
+    @Accessor
+    NativeImage[] getByMipLevel();
 }

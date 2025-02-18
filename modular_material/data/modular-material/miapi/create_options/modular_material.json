@@ -1,0 +1,5 @@
+{
+    "module": "modular-material:modular_material/base",
+    "translation": "modular-material.create_item.material",
+    "priority":-50
+}

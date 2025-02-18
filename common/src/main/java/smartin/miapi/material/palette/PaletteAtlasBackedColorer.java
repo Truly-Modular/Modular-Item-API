@@ -15,10 +15,11 @@ import smartin.miapi.client.atlas.MaterialAtlasManager;
 import smartin.miapi.client.atlas.MaterialSpriteManager;
 import smartin.miapi.client.renderer.NativeImageGetter;
 import smartin.miapi.material.base.Material;
-import smartin.miapi.mixin.client.SpriteContentsAccessor;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static smartin.miapi.client.renderer.NativeImageGetter.getImage;
 
 /**
  * Uses textures in {@link MaterialAtlasManager} and treats them as the colors of a {@link GrayscalePaletteColorer} to recolor module sprites. <br>
@@ -115,7 +116,7 @@ public class PaletteAtlasBackedColorer extends SpritePixelReplacer {
             if (sprite == null) {
                 return Color.WHITE;
             }
-            NativeImage img = ((SpriteContentsAccessor) sprite.contents()).getImage();
+            NativeImage img = getImage(sprite.contents());
 
             List<Color> colors = new ArrayList<>();
             int height = img.getHeight();

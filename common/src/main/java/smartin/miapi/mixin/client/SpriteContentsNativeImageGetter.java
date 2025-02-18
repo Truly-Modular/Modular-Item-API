@@ -18,14 +18,14 @@ public abstract class SpriteContentsNativeImageGetter {
     private void miapi$customItemRenderingEntityGetter(int x, int y, int unpackSkipPixels, int unpackSkipRows, NativeImage[] images, CallbackInfo ci) {
         SpriteContents spriteContents = (SpriteContents) (Object) (this);
         //Miapi.LOGGER.info("x " + x + " y " + y + " a " + unpackSkipPixels + " b " + unpackSkipRows + " i " + spriteContents.getID());
-        if (((SpriteContentsAccessor) spriteContents).getImage() != images[0]) {
+        if (NativeImageGetter.getImage(spriteContents) != images[0]) {
             NativeImageGetter.ImageHolder holder = NativeImageGetter.nativeImageMap.getOrDefault(spriteContents, new NativeImageGetter.ImageHolder());
             holder.nativeImage = images[0];
             holder.width = spriteContents.width();
             holder.height = spriteContents.height();
             holder.x = unpackSkipPixels;
             holder.y = unpackSkipRows;
-            NativeImageGetter.nativeImageMap.put((SpriteContents) (Object) (this), holder);
+            NativeImageGetter.nativeImageMap.put(spriteContents, holder);
         } else {
             NativeImageGetter.ImageHolder holder = NativeImageGetter.nativeImageMap.getOrDefault(spriteContents, new NativeImageGetter.ImageHolder());
             holder.nativeImage = images[0];
@@ -33,7 +33,7 @@ public abstract class SpriteContentsNativeImageGetter {
             holder.height = spriteContents.height();
             holder.x = unpackSkipPixels;
             holder.y = unpackSkipRows;
-            NativeImageGetter.nativeImageMap.put((SpriteContents) (Object) (this), holder);
+            NativeImageGetter.nativeImageMap.put(spriteContents, holder);
         }
     }
 }
