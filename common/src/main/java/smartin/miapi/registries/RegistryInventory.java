@@ -80,7 +80,6 @@ import smartin.miapi.modules.properties.potion.OnHitTargetEffects;
 import smartin.miapi.modules.properties.potion.OnKillEffects;
 import smartin.miapi.modules.properties.render.*;
 import smartin.miapi.modules.properties.util.ModuleProperty;
-import smartin.miapi.modules.synergies.SynergyManager;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -414,7 +413,6 @@ public class RegistryInventory {
             registerMiapi(editOptions, "skin", new SkinOptions());
             registerMiapi(editOptions, "create", new CreateItemOption());
             registerMiapi(editOptions, "cosmetic", new CosmeticEditOption());
-            SynergyManager.setup();
 
             //CONDITIONS
             registerMiapi(moduleConditionRegistry, "true", new TrueCondition());

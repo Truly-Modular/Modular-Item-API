@@ -34,10 +34,14 @@ import smartin.miapi.modules.abilities.util.PoseCommands;
 import smartin.miapi.modules.cache.CacheCommands;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.conditions.ConditionManager;
+import smartin.miapi.modules.edit_options.CreateItemOption.CreateItemOption;
+import smartin.miapi.modules.edit_options.skins.SkinOptions;
 import smartin.miapi.modules.material.MaterialCommand;
+import smartin.miapi.modules.material.MaterialProperty;
 import smartin.miapi.modules.material.NBTMaterial;
 import smartin.miapi.modules.properties.GlintProperty;
 import smartin.miapi.modules.properties.util.ModuleProperty;
+import smartin.miapi.modules.synergies.SynergyManager;
 import smartin.miapi.network.Networking;
 import smartin.miapi.network.NetworkingImplCommon;
 import smartin.miapi.registries.MiapiRegistry;
@@ -87,6 +91,10 @@ public class Miapi {
                 (isClient, path, data) -> ItemModule.loadFromData(path, data, isClient), -0.5f);
         registerReloadHandler(ReloadEvents.MAIN, "module_extensions", Collections.synchronizedMap(new LinkedHashMap<>()),
                 (isClient, path, data) -> ItemModule.loadModuleExtension(path, data, isClient), -0.4f);
+        MaterialProperty.register();
+        CreateItemOption.setup();
+        SkinOptions.setup();
+        SynergyManager.setup();
 
         registerReloadHandler(ReloadEvents.MAIN, "injectors", bl -> PropertySubstitution.injectorsCount = 0,
                 (isClient, path, data) -> {
@@ -218,7 +226,7 @@ public class Miapi {
             ReloadEvents.registerDataPackPathToSync(MOD_ID, location);
         event.subscribe(isClient -> {
             beforeLoop.accept(isClient);
-            ReloadEvents.DATA_PACKS.forEach((path, data) -> {
+            ReloadEvents.getDataPacks(isClient).forEach((path, data) -> {
                 if (path.startsWith(location + "/")) {
                     try {
                         handler.accept(isClient, path, data);

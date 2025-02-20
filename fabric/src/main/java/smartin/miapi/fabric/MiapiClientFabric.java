@@ -5,6 +5,8 @@ import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.model.loading.v1.ModelLoadingPlugin;
 import net.fabricmc.fabric.api.client.rendering.v1.ArmorRenderer;
+import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
+import net.minecraft.resource.ResourceType;
 import net.minecraft.util.Identifier;
 import smartin.miapi.client.model.item.ItemBakedModelReplacement;
 import smartin.miapi.registries.RegistryInventory;
@@ -18,6 +20,7 @@ public class MiapiClientFabric {
         smartin.miapi.client.MiapiClient.KEY_BINDINGS.addCallback((keyBinding -> {
             KeyBindingHelper.registerKeyBinding(keyBinding);
         }));
+        ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(new MiapiClientReloadListenerFabric());
         RegistryInventory.modularItems.addCallback((modularItem) -> {
             ArmorRenderer.register(new ModularArmorRenderer(), modularItem);
         });

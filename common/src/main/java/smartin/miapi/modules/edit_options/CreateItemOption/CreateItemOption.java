@@ -15,9 +15,9 @@ import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
 import smartin.miapi.client.gui.InteractAbleWidget;
-import smartin.miapi.client.gui.crafting.PreviewManager;
 import smartin.miapi.client.gui.crafting.CraftingScreen;
 import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
+import smartin.miapi.client.gui.crafting.PreviewManager;
 import smartin.miapi.client.gui.crafting.crafter.create_module.CreateListView;
 import smartin.miapi.craft.CraftAction;
 import smartin.miapi.datapack.ReloadEvents;
@@ -40,10 +40,13 @@ public class CreateItemOption implements EditOption {
 
 
     public CreateItemOption() {
+    }
+
+    public static void setup() {
         Miapi.registerReloadHandler(ReloadEvents.END, "create_options", (isClient -> {
             createAbleItems.clear();
         }), ((isClient, path, data) -> {
-            if(isClient){
+            if (isClient) {
                 CreateItem createItem = Miapi.gson.fromJson(data, JsonCreateItem.class);
                 createAbleItems.add(createItem);
                 assert createItem.getItem() != null;
@@ -112,7 +115,7 @@ public class CreateItemOption implements EditOption {
     @Environment(EnvType.CLIENT)
     @Override
     public InteractAbleWidget getIconGui(int x, int y, int width, int height, Consumer<EditOption> select, Supplier<EditOption> getSelected) {
-        return new EditOptionIcon(x, y, width, height, select, getSelected, CraftingScreen.BACKGROUND_TEXTURE, 339 + 32, 25+140, 512, 512,"miapi.ui.edit_option.hover.create", this);
+        return new EditOptionIcon(x, y, width, height, select, getSelected, CraftingScreen.BACKGROUND_TEXTURE, 339 + 32, 25 + 140, 512, 512, "miapi.ui.edit_option.hover.create", this);
     }
 
     @Environment(EnvType.CLIENT)
@@ -226,7 +229,7 @@ public class CreateItemOption implements EditOption {
             return Text.translatable(translation);
         }
 
-        public double getPriority(){
+        public double getPriority() {
             return priority;
         }
     }

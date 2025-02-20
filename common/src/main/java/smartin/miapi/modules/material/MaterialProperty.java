@@ -58,31 +58,6 @@ public class MaterialProperty implements ModuleProperty {
                 return "";
             }
         });
-        Miapi.registerReloadHandler(ReloadEvents.MAIN, "materials", materials, (isClient, path, data) -> {
-            JsonParser parser = new JsonParser();
-            JsonObject obj = parser.parse(data).getAsJsonObject();
-            JsonMaterial material = new JsonMaterial(obj, isClient);
-            if (materials.containsKey(material.getKey())) {
-                Miapi.LOGGER.warn("Overwriting Materials isnt 100% safe. The ordering might be wrong, please set the overwrite material in the same path as the origin Material" + path + " is overwriting " + material.getKey());
-            }
-            materials.put(material.getKey(), material);
-        }, -2f);
-
-
-        Miapi.registerReloadHandler(ReloadEvents.MAIN, "material_extensions", (isClient) -> {
-
-        }, (isClient, path, data) -> {
-            JsonParser parser = new JsonParser();
-            JsonObject obj = parser.parse(data).getAsJsonObject();
-            Material material = materials.get(obj.get("key").getAsString());
-            if (material != null) {
-                if (material instanceof JsonMaterial jsonMaterial) {
-                    jsonMaterial.mergeJson(obj, isClient);
-                }
-            } else {
-                Miapi.LOGGER.error("Miapi could not find Material for Material extension " + path);
-            }
-        }, -1.5f);
 
         GeneratedMaterial.setup();
 
@@ -103,6 +78,33 @@ public class MaterialProperty implements ModuleProperty {
         ReloadEvents.END.subscribe((isClient -> {
             Miapi.LOGGER.info("Loaded " + materials.size() + " Materials");
         }));
+    }
+
+    public static void register(){
+        Miapi.registerReloadHandler(ReloadEvents.MAIN, "materials", materials, (isClient, path, data) -> {
+            JsonParser parser = new JsonParser();
+            JsonObject obj = parser.parse(data).getAsJsonObject();
+            JsonMaterial material = new JsonMaterial(obj, isClient);
+            if (materials.containsKey(material.getKey())) {
+                Miapi.LOGGER.warn("Overwriting Materials isnt 100% safe. The ordering might be wrong, please set the overwrite material in the same path as the origin Material" + path + " is overwriting " + material.getKey());
+            }
+            materials.put(material.getKey(), material);
+        }, -2f);
+
+
+        Miapi.registerReloadHandler(ReloadEvents.MAIN, "material_extensions", (isClient) -> {
+        }, (isClient, path, data) -> {
+            JsonParser parser = new JsonParser();
+            JsonObject obj = parser.parse(data).getAsJsonObject();
+            Material material = materials.get(obj.get("key").getAsString());
+            if (material != null) {
+                if (material instanceof JsonMaterial jsonMaterial) {
+                    jsonMaterial.mergeJson(obj, isClient);
+                }
+            } else {
+                Miapi.LOGGER.error("Miapi could not find Material for Material extension " + path);
+            }
+        }, -1.5f);
     }
 
     public static class CurrentThreadExecutor implements Executor {

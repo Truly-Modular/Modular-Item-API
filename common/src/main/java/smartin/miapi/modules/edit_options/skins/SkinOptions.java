@@ -41,12 +41,6 @@ public class SkinOptions implements EditOption {
             }
             return oldMap;
         }, List.of(new Identifier("miapi", "synergy")));
-        Miapi.registerReloadHandler(ReloadEvents.MAIN, "skins/module", skins, (isClient, path, data) -> {
-            load(data);
-        }, 1);
-        Miapi.registerReloadHandler(ReloadEvents.MAIN, "skins/tab", tabMap, (isClient, path, data) -> {
-            loadTabData(data);
-        }, 1);
         ReloadEvents.END.subscribe((isClient -> {
             int size = 0;
             for (Map<String, Skin> skinMap : skins.values()) {
@@ -54,6 +48,15 @@ public class SkinOptions implements EditOption {
             }
             Miapi.LOGGER.info("Loaded " + size + " Skins");
         }));
+    }
+
+    public static void setup() {
+        Miapi.registerReloadHandler(ReloadEvents.MAIN, "skins/module", skins, (isClient, path, data) -> {
+            load(data);
+        }, 1);
+        Miapi.registerReloadHandler(ReloadEvents.MAIN, "skins/tab", tabMap, (isClient, path, data) -> {
+            loadTabData(data);
+        }, 1);
     }
 
     public static SkinTab getTag(String path) {

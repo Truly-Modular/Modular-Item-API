@@ -1,6 +1,7 @@
 package smartin.miapi.datapack;
 
 import dev.architectury.event.events.common.PlayerEvent;
+import net.fabricmc.api.EnvType;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -31,8 +32,24 @@ public class ReloadEvents {
 
     /**
      * A map that stores the paths of data packs to be synced.
+     * This is Serverside Data
      */
     public static final Map<String, String> DATA_PACKS = Collections.synchronizedMap(new LinkedHashMap<>());
+
+    /**
+     * A map that stores the paths of data packs for the client exclusively.
+     */
+    public static final Map<String, String> CLIENT_DATA_PACKS = Collections.synchronizedMap(new LinkedHashMap<>());
+
+    public static Map<String, String> getDataPacks(boolean isClient) {
+        if (isClient) {
+            Map<String, String> clientData = Collections.synchronizedMap(new LinkedHashMap<>());
+            clientData.putAll(DATA_PACKS);
+            clientData.putAll(CLIENT_DATA_PACKS);
+            return clientData;
+        }
+        return DATA_PACKS;
+    }
 
     /**
      * A map that stores the paths of data packs that have been synced.
@@ -178,18 +195,41 @@ public class ReloadEvents {
             dataSyncerRegistry.get(receivedID).interpretDataClient(buffer);
             if (receivedSyncer.size() == dataSyncerRegistry.getFlatMap().keySet().size()) {
                 receivedSyncer.clear();
-                MinecraftClient.getInstance().execute(() -> {
-                    reloadCounter++;
-                    ReloadEvents.START.fireEvent(true);
-                    ReloadEvents.MAIN.fireEvent(true);
-                    ReloadEvents.END.fireEvent(true);
-                    reloadCounter--;
-                    Miapi.LOGGER.info("Client load took " + (double) (System.nanoTime() - clientReloadTimeStart) / 1000 / 1000 + " ms");
-                    if (reloadCounter != 0) {
-                        Miapi.LOGGER.error("client believes there is another ongoing reload. This is bad! Reseting Counter" + reloadCounter);
-                        reloadCounter = 0;
-                    }
-                });
+                executeClientReload(MinecraftClient.getInstance());
+            }
+        });
+    }
+
+    @net.fabricmc.api.Environment(EnvType.CLIENT)
+    public static void executeClientReload(MinecraftClient client) {
+        client.execute(() -> {
+            reloadCounter++;
+            ReloadEvents.START.fireEvent(true);
+            ReloadEvents.MAIN.fireEvent(true);
+            ReloadEvents.END.fireEvent(true);
+            reloadCounter--;
+            Miapi.LOGGER.info("Client load took " + (double) (System.nanoTime() - clientReloadTimeStart) / 1000 / 1000 + " ms");
+            if (reloadCounter != 0) {
+                Miapi.LOGGER.error("client believes there is another ongoing reload. This is bad! Reseting Counter" + reloadCounter);
+                reloadCounter = 0;
+            }
+        });
+    }
+
+    @net.fabricmc.api.Environment(EnvType.CLIENT)
+    public static void executeClientReload(MinecraftClient client, Map<String, String> clientSideData) {
+        client.execute(() -> {
+            reloadCounter++;
+            CLIENT_DATA_PACKS.clear();
+            ReloadEvents.START.fireEvent(true);
+            CLIENT_DATA_PACKS.putAll(clientSideData);
+            ReloadEvents.MAIN.fireEvent(true);
+            ReloadEvents.END.fireEvent(true);
+            reloadCounter--;
+            Miapi.LOGGER.info("Client load took " + (double) (System.nanoTime() - clientReloadTimeStart) / 1000 / 1000 + " ms");
+            if (reloadCounter != 0) {
+                Miapi.LOGGER.error("client believes there is another ongoing reload. This is bad! Reseting Counter" + reloadCounter);
+                reloadCounter = 0;
             }
         });
     }
