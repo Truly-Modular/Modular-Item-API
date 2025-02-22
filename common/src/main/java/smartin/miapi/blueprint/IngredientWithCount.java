@@ -1,4 +1,4 @@
-package smartin.miapi.craft;
+package smartin.miapi.blueprint;
 
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;

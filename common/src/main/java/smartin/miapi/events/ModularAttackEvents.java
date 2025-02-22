@@ -18,7 +18,9 @@ public class ModularAttackEvents {
      */
     public static final PrioritizedEvent<HurtEnemy> HURT_ENEMY = PrioritizedEvent.createEventResult();
     /**
-     * This Event should be used whenever you want to have conditional damage on modular items
+     * This Event should be used whenever you want to have conditional effects on modular items
+     * or need to refresh things post attack.
+     * Similar to the {@link net.minecraft.world.item.MaceItem#postHurtEnemy(ItemStack, LivingEntity, LivingEntity)}
      * This is called via {@link net.minecraft.world.item.Item#postHurtEnemy(ItemStack, LivingEntity, LivingEntity)}
      */
     public static final PrioritizedEvent<HurtEnemy> HURT_ENEMY_POST = PrioritizedEvent.createEventResult();

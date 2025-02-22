@@ -11,7 +11,6 @@ import io.netty.handler.codec.DecoderException;
 import net.minecraft.client.renderer.texture.SpriteContents;
 import net.minecraft.resources.ResourceLocation;
 import smartin.miapi.Miapi;
-import smartin.miapi.client.MiapiClient;
 import smartin.miapi.client.renderer.NativeImageGetter;
 import smartin.miapi.material.base.Material;
 
@@ -201,19 +200,10 @@ public class MaskColorer extends SpriteColorer {
                 lastImage = new NativeImage(base.getWidth(), base.getHeight(), true);
                 lastImage.untrack();
             }
-            int xOffset = Math.abs(offsetAble * 13 + offsetAble * 17);
-            int yOffset = Math.abs(offsetAble * 7 + offsetAble * 31);
+            int xOffset = offsetRandom ? Math.abs(offsetAble * 13 + offsetAble * 17) : 0;
+            int yOffset = offsetRandom ? Math.abs(offsetAble * 7 + offsetAble * 31) : 0;
             for (int width = 0; width < base.getWidth(); width++) {
                 for (int height = 0; height < base.getHeight(); height++) {
-                    /*
-                    int baseColor = base.getPixelRGBA(width, height);
-                    int otherColor = other.getPixelRGBA(width, height);
-                    int blendColor = offsetRandom && false ?
-                            nativeImage.getColor((width + xOffset) % nativeImage.getWidth(), (height + yOffset) % nativeImage.getHeight()) :
-                            nativeImage.getColor(width % nativeImage.getWidth(), height % nativeImage.getHeight());
-                    lastImage.setPixelRGBA(width, height, blend(baseColor, otherColor, blendColor));
-
-                     */
                     blend(base, other, width, height, nativeImage.nativeImage,
                             (width + xOffset) % nativeImage.getWidth(), (height + yOffset) % nativeImage.getHeight(), lastImage);
                 }
@@ -258,74 +248,7 @@ public class MaskColorer extends SpriteColorer {
                                (blendedGreen << output.format().greenOffset()) |
                                (blendedBlue << output.format().blueOffset()) |
                                (blendedAlpha << output.format().alphaOffset());
-            int blended =
-                    blend(base.getPixelRGBA(nativeX, nativeY), other.getPixelRGBA(nativeX, nativeY), blend.getPixelRGBA(blendX, blendY));
             output.setPixelRGBA(nativeX, nativeY, blendedColor);
-        }
-
-        public int blend(int base, int other, int blend) {
-            // Extracting the individual components from the packed integers
-            int baseRed = (base >> 24) & 0xFF;
-            int baseGreen = (base >> 16) & 0xFF;
-            int baseBlue = (base >> 8) & 0xFF;
-            int baseAlpha = base & 0xFF;
-
-            int otherRed = (other >> 24) & 0xFF;
-            int otherGreen = (other >> 16) & 0xFF;
-            int otherBlue = (other >> 8) & 0xFF;
-            int otherAlpha = other & 0xFF;
-
-            // Extracting the individual components from the blend integer
-            int blendRed = (blend >> 24) & 0xFF;
-            int blendGreen = (blend >> 16) & 0xFF;
-            int blendBlue = (blend >> 8) & 0xFF;
-            int blendAlpha = blend & 0xFF;
-
-            if (blendAlpha == 0) return base;
-
-            // Calculate blended components
-            int blendedRed = (blendRed * otherRed + (255 - blendRed) * baseRed) / 255;
-            int blendedGreen = (blendGreen * otherGreen + (255 - blendGreen) * baseGreen) / 255;
-            int blendedBlue = (blendBlue * otherBlue + (255 - blendBlue) * baseBlue) / 255;
-            int blendedAlpha = (blendAlpha * otherAlpha + (255 - blendAlpha) * baseAlpha) / 255;
-
-            // Pack the blended components into a single integer
-            return (blendedRed << 24) | (blendedGreen << 16) | (blendedBlue << 8) | blendedAlpha;
-        }
-
-        public int blend_ALT(int base, int other, int blend) {
-            // Extract base color components
-            int baseRed = (base >> 24) & 0xFF;
-            int baseGreen = (base >> 16) & 0xFF;
-            int baseBlue = (base >> 8) & 0xFF;
-            int baseAlpha = base & 0xFF;
-
-            // Extract other color components
-            int otherRed = (other >> 24) & 0xFF;
-            int otherGreen = (other >> 16) & 0xFF;
-            int otherBlue = (other >> 8) & 0xFF;
-            int otherAlpha = other & 0xFF;
-
-            // Extract blend alpha
-            int blendAlpha = blend & 0xFF;
-
-            // If fully transparent, return base color
-            if (blendAlpha == 0) return base;
-
-            // If fully opaque, return other color
-            if (blendAlpha == 255) return other;
-
-            // Blend factor (normalized to 0-1 range)
-            float alphaFactor = blendAlpha / 255.0f;
-
-            // Interpolate color channels
-            int blendedRed = (int) (baseRed * (1 - alphaFactor) + otherRed * alphaFactor);
-            int blendedGreen = (int) (baseGreen * (1 - alphaFactor) + otherGreen * alphaFactor);
-            int blendedBlue = (int) (baseBlue * (1 - alphaFactor) + otherBlue * alphaFactor);
-            int blendedAlpha = (int) (baseAlpha * (1 - alphaFactor) + otherAlpha * alphaFactor);
-
-            // Pack the blended components into a single integer
-            return (blendedRed << 24) | (blendedGreen << 16) | (blendedBlue << 8) | blendedAlpha;
         }
 
 

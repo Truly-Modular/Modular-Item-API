@@ -1,4 +1,4 @@
-package smartin.miapi.craft;
+package smartin.miapi.blueprint;
 
 import com.google.gson.JsonElement;
 import com.mojang.serialization.JsonOps;

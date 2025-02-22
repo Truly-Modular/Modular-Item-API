@@ -35,7 +35,7 @@ public class SmithingRecipeUtil {
             RegistryAccess registryAccess = findRegistryManager(isClient);
             if (registryAccess == null) {
                 Miapi.LOGGER.warn("Could not setup Smithing Materials, could not find Recipes");
-                materials.forEach(register::accept);
+                materials.forEach(register);
                 return;
             }
             List<GeneratedMaterial> todo = new ArrayList<>(materials);

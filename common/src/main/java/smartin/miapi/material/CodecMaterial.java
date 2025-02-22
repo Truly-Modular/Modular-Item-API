@@ -21,7 +21,7 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import smartin.miapi.Miapi;
-import smartin.miapi.craft.IngredientWithCount;
+import smartin.miapi.blueprint.IngredientWithCount;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.material.base.Material;
 import smartin.miapi.material.base.PropertyController;

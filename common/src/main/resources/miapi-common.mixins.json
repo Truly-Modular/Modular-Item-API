@@ -37,6 +37,7 @@
         "SmithingMenuMixin",
         "SmithingScreenHandlerAccessor",
         "SmithingTransformRecipeAccessor",
+        "TagManagerMixin",
         "TextureAtlasAccessor",
         "TextureAtlasHolderAccessor",
         "ThrowablePotionItemAccessor"

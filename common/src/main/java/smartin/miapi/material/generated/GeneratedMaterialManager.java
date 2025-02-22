@@ -1,18 +1,21 @@
 package smartin.miapi.material.generated;
 
 import com.mojang.serialization.Codec;
+import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
+import net.minecraft.tags.TagManager;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.crafting.Ingredient;
 import smartin.miapi.Miapi;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.events.MiapiEvents;
-import smartin.miapi.material.base.Material;
 import smartin.miapi.material.MaterialProperty;
+import smartin.miapi.material.base.Material;
 import smartin.miapi.registries.RegistryInventory;
 
 import java.util.*;
@@ -83,6 +86,14 @@ public class GeneratedMaterialManager {
                 });
     }
 
+    public static Registry<Item> getRegistry() {
+        if (Miapi.registryAccess == null) {
+            TagManager m    ;
+            return BuiltInRegistries.ITEM;
+        }
+        return Miapi.registryAccess.registry(Registries.ITEM).get();
+    }
+
     public static void onReloadServer() {
         try {
             if (verboseLogging()) {
@@ -93,7 +104,8 @@ public class GeneratedMaterialManager {
             if (!MiapiConfig.INSTANCE.server.generatedMaterials.generateMaterials) {
                 return;
             }
-            List<TieredItem> toolItems = new ArrayList<>(BuiltInRegistries.ITEM.stream()
+            var registiry = getRegistry();
+            List<TieredItem> toolItems = new ArrayList<>(registiry.stream()
                     .filter(TieredItem.class::isInstance)
                     .map(TieredItem.class::cast)
                     .filter(toolMaterial ->
@@ -116,7 +128,7 @@ public class GeneratedMaterialManager {
                     insufficientItems.put(t, items);
                 }
             });
-            insufficientItems.forEach((t,items)-> tieredItem.remove(t));
+            insufficientItems.forEach((t, items) -> tieredItem.remove(t));
 
             if (MiapiConfig.INSTANCE.server.generatedMaterials.generateOtherMaterials) {
                 toolItems.stream()

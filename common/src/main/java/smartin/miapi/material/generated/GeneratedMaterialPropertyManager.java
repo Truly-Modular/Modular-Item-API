@@ -98,13 +98,13 @@ public class GeneratedMaterialPropertyManager {
         if (shouldApplyProperty(MiapiConfig.INSTANCE.server.generatedMaterials.properties.loreProperty, id.toString())) {
             propertyMap.put(
                     CopyItemLoreProperty.property,
-                    BuiltInRegistries.ITEM.wrapAsHolder(item));
+                    List.of(BuiltInRegistries.ITEM.wrapAsHolder(item)));
         }
 
         if (shouldApplyProperty(MiapiConfig.INSTANCE.server.generatedMaterials.properties.onHitProperty, id.toString())) {
             propertyMap.put(
                     CopyItemOnHit.property,
-                    BuiltInRegistries.ITEM.wrapAsHolder(item)
+                    List.of(BuiltInRegistries.ITEM.wrapAsHolder(item))
             );
         }
 

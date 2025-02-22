@@ -2,19 +2,76 @@
 @path /examples/module
 @keywords module , modules
 
-## Modules
-
-**Path:** `/datapack/module`  
-**Header:** Modules
-
-### Overview
 
 Modules are the core of the *Truly Modular* system. They allow for the creation and customization of various in-game elements by defining specific properties and models in a structured way. A module is essentially a collection of properties that dictate the behavior, appearance, and other attributes of an item or element within the game.
 
 Modules can be added or found in the following directory:
 
+mod-id:miapi/modules/any-name-or-path.json
 
 Each module consists of a map of properties.
+Here is an example of a module.json
+```json
+{
+    "inscribe_data_on_craft": "banner",
+    "allowed_in_slots": [
+        "banner_item",
+        "cosmetic_item"
+    ],
+    "banner": [{
+        "type": "module_data",
+        "model": "item",
+        "modelType": "item",
+        "transform": {
+            "rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "translation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+            }
+        }
+    }],
+    "model": [
+        {
+            "path": "miapi:models/item/model.json",
+            "color": "[material.color]",
+            "transform": {
+                "rotation": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "translation": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                }
+            }
+        }
+    ],
+    "allowed_material": {
+        "allowedMaterials": [
+            "banner"
+        ],
+        "cost": 1
+    }
+}
+```
+This sets the `inscribe_data_on_craft`,`allowed_in_slots`,`banner` ,`model` and `allowed_material` properties.
 
 ### Creating Your Own Module
 
@@ -36,7 +93,7 @@ To create a custom module:
 
 4. **Texture Pack**
    
-   If you want to use a custom model the model Property should be used (there are alternatives, but those are most advanced, see Render Properties for more info)
+   If you want to use a custom model the model Property should be used (there are alternatives, but those are more advanced, see Render Properties for more info)
 ```json
 "model": [
     {
@@ -79,10 +136,6 @@ To create a custom module:
 
    Save the file, add a .mcmeta and load it into the game to see your custom module in action. Adjust the properties as necessary to fine-tune the look and behavior.
    [Minecraft Wiki on Datapacks / mcmeta](https://minecraft.wiki/w/Data_pack)
-
-## Conclusion
-
-Creating a Module Resource + Texture Pack allows for deep customization in *Truly Modular*. The ability to manipulate models, colors, and transforms via a simple JSON structure makes it accessible for both beginners and advanced users. Dive into the files, experiment with the properties, and create a unique game experience tailored to your vision!
 
 
 # Examples

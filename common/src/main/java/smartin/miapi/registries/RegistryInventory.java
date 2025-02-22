@@ -44,7 +44,7 @@ import smartin.miapi.blocks.ModularWorkBench;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
 import smartin.miapi.client.MiapiClient;
 import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
-import smartin.miapi.craft.BlueprintComponent;
+import smartin.miapi.blueprint.BlueprintComponent;
 import smartin.miapi.craft.stat.CraftingStat;
 import smartin.miapi.effects.CryoStatusEffect;
 import smartin.miapi.effects.StunResistanceStatusEffect;

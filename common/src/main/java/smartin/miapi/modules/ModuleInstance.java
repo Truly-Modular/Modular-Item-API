@@ -90,9 +90,7 @@ public class ModuleInstance {
                     if (result.subModules.isEmpty() && result.module != ItemModule.empty
                         && MiapiConfig.INSTANCE.server.other.verboseLogging
                     ) {
-                        Miapi.LOGGER.error("possible problem!");
-                        Miapi.LOGGER.warn("encoded module " + result);
-                        //Miapi.LOGGER.warn("data" + input.toString());
+                        //Miapi.LOGGER.error("possible problem!");
                     }
                 }
                 return basicResult;
@@ -104,9 +102,9 @@ public class ModuleInstance {
                 if (input.subModules.isEmpty() && input.module != ItemModule.empty
                     && MiapiConfig.INSTANCE.server.other.verboseLogging
                 ) {
-                    Miapi.LOGGER.error("possible problem!");
-                    Miapi.LOGGER.warn("decoded module " + input);
-                    Miapi.LOGGER.warn("data" + result.result().get().toString());
+                    //Miapi.LOGGER.error("possible problem!");
+                    //Miapi.LOGGER.warn("decoded module " + input);
+                    //Miapi.LOGGER.warn("data" + result.result().get().toString());
                 }
                 return result;
             }

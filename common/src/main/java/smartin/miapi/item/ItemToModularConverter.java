@@ -4,11 +4,11 @@ import com.google.gson.JsonElement;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import org.apache.commons.lang3.mutable.MutableObject;
 import smartin.miapi.Miapi;
 import smartin.miapi.datapack.ReloadEvents;
-import smartin.miapi.datapack.ReloadHelpers;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.ItemIdProperty;
@@ -18,32 +18,32 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ItemToModularConverter implements ModularItemStackConverter.ModularConverter {
-    public Map<String, ItemStack> regexes = new ConcurrentHashMap<>();
+    public static Map<String, ItemStack> regexes = new ConcurrentHashMap<>();
     public static Codec<Map<String, ModuleInstance>> CODEC = Codec.unboundedMap(Codec.STRING, ModuleInstance.CODEC);
 
 
     public ItemToModularConverter() {
-        ReloadHelpers.registerReloadHandler(ReloadEvents.MAIN, "miapi/modular_converter", regexes, (isClient, path, data, registryAccess) -> {
-            try {
-                JsonElement element = Miapi.gson.fromJson(data, JsonElement.class);
-                var decoded = CODEC.decode(JsonOps.INSTANCE, element);
-                if (decoded.isSuccess()) {
-                    decoded.getOrThrow().getFirst().forEach((key, modules) -> {
-                        ItemStack stack = new ItemStack(RegistryInventory.modularItem);
-                        modules.writeToItem(stack);
-                        regexes.put(key, stack);
-                    });
-                } else {
-                    Miapi.LOGGER.error("could not read modular converter in " + path + " " + decoded.error().toString());
-                }
-            } catch (RuntimeException e) {
-                Miapi.LOGGER.error("Error during Modular Converter setup for " + path, e);
-            }
-        }, 1);
-
         ReloadEvents.END.subscribe(((isClient, registryAccess) -> {
             Miapi.LOGGER.info("Loaded " + regexes.size() + " Modular Converters");
         }));
+    }
+
+    public static void setupModularConverter(ResourceLocation path, String data) {
+        try {
+            JsonElement element = Miapi.gson.fromJson(data, JsonElement.class);
+            var decoded = CODEC.decode(JsonOps.INSTANCE, element);
+            if (decoded.isSuccess()) {
+                decoded.getOrThrow().getFirst().forEach((key, modules) -> {
+                    ItemStack stack = new ItemStack(RegistryInventory.modularItem);
+                    modules.writeToItem(stack);
+                    regexes.put(key, stack);
+                });
+            } else {
+                Miapi.LOGGER.error("could not read modular converter in " + path + " " + decoded.error().toString());
+            }
+        } catch (RuntimeException e) {
+            Miapi.LOGGER.error("Error during Modular Converter setup for " + path, e);
+        }
     }
 
     public boolean preventConvert(ItemStack itemStack) {

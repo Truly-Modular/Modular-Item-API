@@ -1,4 +1,4 @@
-package smartin.miapi.craft;
+package smartin.miapi.blueprint;
 
 import com.google.gson.JsonElement;
 import com.mojang.datafixers.util.Either;
@@ -30,10 +30,11 @@ import java.util.Optional;
  * @description_start This Component allows the attachment of additional Craft Options for the crafting UI.
  * The Cost can be configured via the Ingredient in the data. Setting it to false will use the default module cost of the root module to be added.
  * Setting it to true will require whatever item this component is attached to.
+ * This is based on Module Instances instead of Item Modules, allowing for any kind of custom data like skins, submodules, color, custom glint or else.
  * It can also be set to an ingredient with count, in this case the inner data is a number, the amount of the ingredient needed and
  * the ingredient itself, following minecrafts default ingredient logic, like for recipes.
  * @description_end
- * @data module:a Module Instance, not a module, see the Module Component for more details
+ * @data module:a Module Instance, not a item-module, see the Module Component for more details
  * @data ingredient: This can either be a boolean or an ingredient with Count.
  * @data name: (Optional) This allows for a custom name in the Crafting UI.
  */

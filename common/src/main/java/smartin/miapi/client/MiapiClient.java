@@ -32,7 +32,7 @@ import smartin.miapi.client.gui.crafting.statdisplay.StatListWidget;
 import smartin.miapi.client.model.ModularModelPredicateProvider;
 import smartin.miapi.client.renderer.SpriteLoader;
 import smartin.miapi.config.MiapiConfig;
-import smartin.miapi.craft.BlueprintManager;
+import smartin.miapi.blueprint.BlueprintManager;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.effects.CryoStatusEffect;
 import smartin.miapi.entity.ItemProjectileRenderer;
@@ -57,7 +57,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import static smartin.miapi.craft.BlueprintComponent.BLUEPRINT_COMPONENT;
+import static smartin.miapi.blueprint.BlueprintComponent.BLUEPRINT_COMPONENT;
 
 public class MiapiClient {
     public static MaterialAtlasManager materialAtlasManager;

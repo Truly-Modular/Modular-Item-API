@@ -10,7 +10,6 @@ import smartin.miapi.Miapi;
 import smartin.miapi.client.MiapiClient;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.datapack.ReloadEvents;
-import smartin.miapi.datapack.ReloadHelpers;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;
 import smartin.miapi.network.modern.ModernNetworking;
 import smartin.miapi.registries.MiapiRegistry;
@@ -25,25 +24,6 @@ public class KeyBindManager {
 
     public static void setup() {
         KeyBindFacet.KEY.cls();
-        ReloadHelpers.registerReloadHandler(ReloadEvents.MAIN, "miapi/key_binding", true, (isClient) -> {
-            //we cant remove keybindings
-        }, (isClient, id, data, registryAccess) -> {
-            id = minimizeID(id);
-            if (BINDING_REGISTRY.get(id) == null) {
-                BINDING_REGISTRY.register(id, MiapiBinding.decode(id, data));
-            } else {
-                MiapiBinding old = BINDING_REGISTRY.get(id);
-                MiapiBinding newBinding = MiapiBinding.decode(id, data);
-                old.itemInteraction = newBinding.itemInteraction;
-                old.entityInteraction = newBinding.entityInteraction;
-                old.blockInteraction = newBinding.blockInteraction;
-                old.category = newBinding.category;
-            }
-            MiapiBinding binding = BINDING_REGISTRY.get(id);
-            if (clientRegister(isClient, binding)) {
-                MiapiConfig.INSTANCE.client.other.bindings.put(binding.id, binding);
-            }
-        }, 0.0f);
         ModernNetworking.registerC2SReceiver(PACKET_ID, PACKET_CODEC, (id, player, access) -> {
             if (id.toString().equals("miapi:none")) {
                 ItemAbilityManager.serverKeyBindID.remove(player, id);
@@ -56,6 +36,24 @@ public class KeyBindManager {
                 MiapiConfig.clientConfigObject.save();
             }
         });
+    }
+
+    public static void processKeybind(boolean isClient, ResourceLocation id, String data) {
+        id = minimizeID(id);
+        if (BINDING_REGISTRY.get(id) == null) {
+            BINDING_REGISTRY.register(id, MiapiBinding.decode(id, data));
+        } else {
+            MiapiBinding old = BINDING_REGISTRY.get(id);
+            MiapiBinding newBinding = MiapiBinding.decode(id, data);
+            old.itemInteraction = newBinding.itemInteraction;
+            old.entityInteraction = newBinding.entityInteraction;
+            old.blockInteraction = newBinding.blockInteraction;
+            old.category = newBinding.category;
+        }
+        MiapiBinding binding = BINDING_REGISTRY.get(id);
+        if (clientRegister(isClient, binding)) {
+            MiapiConfig.INSTANCE.client.other.bindings.put(binding.id, binding);
+        }
     }
 
     public static void configLoad(Map<ResourceLocation, MiapiBinding> bindings) {

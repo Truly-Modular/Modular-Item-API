@@ -67,28 +67,6 @@ public class NamingUtil {
     }
 
 
-    static String findCommonSubstringOld(List<String> itemNames, String materialName) {
-        Map<String, Integer> map = new HashMap<>();
-        map.put(materialName, 1);
-        int highest = 0;
-        String longestCommonSubstring = materialName;
-        for (String itemName : itemNames) {
-            String commonString = longestSubsString(itemName, materialName);
-            if (commonString.length() > 3) {
-                if (map.containsKey(commonString)) {
-                    map.put(commonString, map.get(commonString) + 1);
-                    if (map.get(commonString) > highest) {
-                        highest = map.get(commonString);
-                        longestCommonSubstring = commonString;
-                    }
-                } else {
-                    map.put(commonString, 1);
-                }
-            }
-        }
-        return longestCommonSubstring;
-    }
-
     static String longestSubsString(String stringA, String stringB) {
         // Find length of both the Strings.
         if (stringB == null || stringA == null) {

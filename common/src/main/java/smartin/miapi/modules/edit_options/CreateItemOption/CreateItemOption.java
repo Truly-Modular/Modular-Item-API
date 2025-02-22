@@ -15,13 +15,11 @@ import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
 import smartin.miapi.client.gui.InteractAbleWidget;
-import smartin.miapi.client.gui.crafting.PreviewManager;
 import smartin.miapi.client.gui.crafting.CraftingScreen;
 import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
+import smartin.miapi.client.gui.crafting.PreviewManager;
 import smartin.miapi.client.gui.crafting.crafter.create_module.CreateListView;
 import smartin.miapi.craft.CraftAction;
-import smartin.miapi.datapack.ReloadEvents;
-import smartin.miapi.datapack.ReloadHelpers;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.edit_options.EditOption;
@@ -42,19 +40,6 @@ public class CreateItemOption implements EditOption {
 
 
     public CreateItemOption() {
-        ReloadHelpers.registerReloadHandler(ReloadEvents.END, "miapi/create_options", (isClient -> {
-            createAbleItems.clear();
-        }), ((isClient, path, data, registryAccess) -> {
-            if (isClient) {
-                CreateItem createItem = Miapi.gson.fromJson(data, JsonCreateItem.class);
-                if (createItem.getBaseModule() != null && createItem.getItem() != null) {
-                    createAbleItems.add(createItem);
-                } else {
-                    Miapi.LOGGER.error("could not find module or item for create option " + path);
-                    Miapi.LOGGER.error(data);
-                }
-            }
-        }), 0);
     }
 
     @Override

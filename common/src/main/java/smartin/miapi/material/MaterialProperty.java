@@ -7,8 +7,10 @@ import com.google.gson.JsonPrimitive;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.*;
+import io.netty.handler.codec.DecoderException;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.HolderSet;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceLocation;
@@ -17,7 +19,6 @@ import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.datapack.ReloadEvents;
-import smartin.miapi.datapack.ReloadHelpers;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.material.base.Material;
 import smartin.miapi.mixin.NamedAccessor;
@@ -91,37 +92,6 @@ public class MaterialProperty extends CodecProperty<ResourceLocation> {
                 return "";
             }
         });
-
-        ReloadHelpers.registerReloadHandler(
-                "miapi/materials",
-                () -> materials.clear(),
-                (id, mat) -> {
-                    mat.setID(id);
-                    materials.put(id, mat);
-                },
-                CodecMaterial.CODEC,
-                -2.0f);
-
-
-        ReloadHelpers.registerReloadHandler(ReloadEvents.MAIN, "miapi/material_extensions", (isClient) -> {
-
-        }, (isClient, path, data, registryAccess) -> {
-            JsonParser parser = new JsonParser();
-            JsonObject obj = parser.parse(data).getAsJsonObject();
-            String idString = obj.get("key").getAsString();
-            Material material = materials.get(Miapi.id(idString));
-            if (material != null) {
-                if (material instanceof JsonMaterial jsonMaterial) {
-                    jsonMaterial.mergeJson(obj, isClient);
-                }
-                if (material instanceof CodecMaterial codecMaterial) {
-                    CodecMaterial toMerge = CodecMaterial.CODEC.decode(RegistryOps.create(JsonOps.INSTANCE, registryAccess), obj).getOrThrow().getFirst();
-                    codecMaterial.merge(toMerge);
-                }
-            } else {
-                Miapi.LOGGER.error("Miapi could not find Material for Material extension " + idString + " " + path);
-            }
-        }, -1.5f);
         ReloadEvents.END.subscribe((isClient, registryAccess) -> {
             if (isClient) {
                 Minecraft.getInstance().execute(() -> {
@@ -141,6 +111,23 @@ public class MaterialProperty extends CodecProperty<ResourceLocation> {
             Miapi.LOGGER.info("Loaded " + materials.size() + " Materials");
         }));
         ModularItemCache.MODULE_CACHE_SUPPLIER.put(KEY.toString(), MaterialProperty::getMaterialRaw);
+    }
+
+    public static void loadMaterialExtention(ResourceLocation path, String data, RegistryAccess registryAccess) {
+        try {
+            JsonParser parser = new JsonParser();
+            JsonObject obj = parser.parse(data).getAsJsonObject();
+            String idString = obj.get("key").getAsString();
+            Material material = materials.get(Miapi.id(idString));
+            if (material != null && material instanceof CodecMaterial codecMaterial) {
+                CodecMaterial toMerge = CodecMaterial.CODEC.decode(RegistryOps.create(JsonOps.INSTANCE, registryAccess), obj).getOrThrow(s -> new DecoderException("Could not decode Material Extention " + s)).getFirst();
+                codecMaterial.merge(toMerge);
+            } else {
+                Miapi.LOGGER.error("Miapi could not find Material for Material extension " + idString + " " + path);
+            }
+        } catch (RuntimeException e) {
+            Miapi.LOGGER.error("Miapi could not find Material for Material extension " + path, e);
+        }
     }
 
     @Override

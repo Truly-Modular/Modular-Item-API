@@ -4,7 +4,10 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.mojang.datafixers.util.Either;
 import com.mojang.datafixers.util.Pair;
-import com.mojang.serialization.*;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.DynamicOps;
+import com.mojang.serialization.MapCodec;
 import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
 import com.redpxnda.nucleus.registry.NucleusNamespaces;
 import dev.architectury.event.EventResult;
@@ -20,9 +23,9 @@ import net.minecraft.world.entity.EquipmentSlotGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import smartin.miapi.attributes.AttributeRegistry;
+import smartin.miapi.blueprint.BlueprintManager;
 import smartin.miapi.client.MiapiClient;
 import smartin.miapi.config.MiapiConfig;
-import smartin.miapi.craft.BlueprintManager;
 import smartin.miapi.craft.stat.StatActorType;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.datapack.ReloadHelpers;
@@ -55,9 +58,8 @@ import smartin.miapi.network.Networking;
 import smartin.miapi.network.NetworkingImplCommon;
 import smartin.miapi.registries.RegistryInventory;
 
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -87,6 +89,10 @@ public class Miapi {
     public static Codec<Boolean> FIXED_BOOL_CODEC = Codec.withAlternative(
             Codec.BOOL,
             Codec.INT.xmap(i -> i == 1, b -> (b ? 0 : 1)));
+
+    public static <T> Codec<List<T>> ToListOrSimple(Codec<T> base) {
+        return Codec.withAlternative(Codec.list(base), base, List::of);
+    }
 
     public static Gson gson = new GsonBuilder()
             .create();
@@ -128,17 +134,13 @@ public class Miapi {
         ComponentMaterial.setup();
         GeneratedMaterialManager.setup();
         KeyBindManager.setup();
+        ReloadHelpers.registerReloadHandlers();
 
         LifecycleEvent.SERVER_BEFORE_START.register(minecraftServer -> {
             server = minecraftServer;
             registryAccess = minecraftServer.reloadableRegistries().get();
         });
         PlayerEvent.PLAYER_JOIN.register((player -> new Thread(() -> MiapiPermissions.getPerms(player)).start()));
-
-        ReloadHelpers.registerReloadHandler(ReloadEvents.MAIN, "miapi/modules", RegistryInventory.modules,
-                (isClient, path, data, access) -> ItemModule.loadFromData(path, data, isClient), -0.5f);
-        ReloadHelpers.registerReloadHandler(ReloadEvents.MAIN, "miapi/module_extensions", Collections.synchronizedMap(new LinkedHashMap<>()),
-                (isClient, path, data, access) -> ItemModule.loadModuleExtension(path, data, isClient), -0.4f);
         ReloadEvents.END.subscribe((isClient, registryAccess) -> {
             RegistryInventory.modules.register(ItemModule.empty.id(), ItemModule.empty);
             RegistryInventory.modules.register(ItemModule.internal.id(), ItemModule.internal);

@@ -12,7 +12,7 @@ import smartin.miapi.Miapi;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.crafting.crafter.replace.MaterialCraftingWidget;
-import smartin.miapi.craft.BlueprintComponent;
+import smartin.miapi.blueprint.BlueprintComponent;
 import smartin.miapi.craft.CraftAction;
 import smartin.miapi.craft.MaterialCraftInfo;
 import smartin.miapi.modules.ItemModule;

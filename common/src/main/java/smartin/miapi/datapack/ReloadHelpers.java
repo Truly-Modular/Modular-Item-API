@@ -8,13 +8,89 @@ import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceLocation;
 import smartin.miapi.Miapi;
+import smartin.miapi.blueprint.BlueprintComponent;
+import smartin.miapi.blueprint.BlueprintManager;
+import smartin.miapi.item.ItemToModularConverter;
+import smartin.miapi.material.CodecMaterial;
+import smartin.miapi.material.MaterialProperty;
+import smartin.miapi.material.composite.material.DatapackComposite;
+import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.abilities.key.KeyBindManager;
+import smartin.miapi.modules.edit_options.CreateItemOption.CreateItemOption;
+import smartin.miapi.modules.edit_options.skins.SkinOptions;
+import smartin.miapi.modules.synergies.SynergyManager;
 import smartin.miapi.registries.MiapiRegistry;
+import smartin.miapi.registries.RegistryInventory;
 
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public class ReloadHelpers {
+    /**
+     * these need to be registered before most other things
+     */
+    public static void registerReloadHandlers(){
+        ReloadHelpers.registerReloadHandler(ReloadEvents.MAIN, "miapi/modules", RegistryInventory.modules,
+                (isClient, path, data, access) -> ItemModule.loadFromData(path, data, isClient), -0.5f);
+        ReloadHelpers.registerReloadHandler(ReloadEvents.MAIN, "miapi/module_extensions", Collections.synchronizedMap(new LinkedHashMap<>()),
+                (isClient, path, data, access) -> ItemModule.loadModuleExtension(path, data, isClient), -0.4f);
+        ReloadHelpers.registerReloadHandler(ReloadEvents.MAIN, "miapi/synergies",
+                SynergyManager.moduleSynergies,
+                (isClient, path, data, registryAccess) -> SynergyManager.load(data, path), 2);
+        ReloadHelpers.registerReloadHandler(ReloadEvents.MAIN, "miapi/skins/module", SkinOptions.skins, (isClient, path, data, registryAccess) -> {
+            SkinOptions.load(data);
+        }, 1);
+        ReloadHelpers.registerReloadHandler(ReloadEvents.MAIN, "miapi/skins/tab", SkinOptions.tabMap, (isClient, path, data, registryAccess) -> {
+            SkinOptions.loadTabData(data);
+        }, 1);
+        ReloadHelpers.registerReloadHandler(ReloadEvents.END, "miapi/create_options", (isClient -> {
+            CreateItemOption.createAbleItems.clear();
+        }), ((isClient, path, data, registryAccess) -> {
+            if (isClient) {
+                CreateItemOption.CreateItem createItem = Miapi.gson.fromJson(data, CreateItemOption.JsonCreateItem.class);
+                if (createItem.getBaseModule() != null && createItem.getItem() != null) {
+                    CreateItemOption.createAbleItems.add(createItem);
+                } else {
+                    Miapi.LOGGER.error("could not find module or item for create option " + path);
+                    Miapi.LOGGER.error(data);
+                }
+            }
+        }), 0);
+        ReloadHelpers.registerReloadHandler(ReloadEvents.MAIN, "miapi/key_binding", true, (isClient) -> {
+        }, (isClient, id, data, registryAccess) -> KeyBindManager.processKeybind(isClient, id, data), 0.0f);
+        ReloadHelpers.registerReloadHandler("miapi/data_composite", DatapackComposite.DATA_COMPOSITE_REGISTRY, DatapackComposite.DATA_PACK_CODEC, 0.0f);
+        ReloadHelpers.registerReloadHandler(ReloadEvents.MAIN, "miapi/material_extensions", (isClient) -> {
+                },
+                (isClient, path, data, registryAccess) -> {
+                    MaterialProperty.loadMaterialExtention(path, data, registryAccess);
+                }, -1.5f);
+        ReloadHelpers.registerReloadHandler(
+                "miapi/materials",
+                () -> MaterialProperty.materials.clear(),
+                (id, mat) -> {
+                    mat.setID(id);
+                    MaterialProperty.materials.put(id, mat);
+                },
+                CodecMaterial.CODEC,
+                -2.0f);
+        ReloadHelpers.registerReloadHandler(ReloadEvents.MAIN, "miapi/modular_converter", ItemToModularConverter.regexes, (isClient, path, data, registryAccess) -> {
+            ItemToModularConverter.setupModularConverter(path, data);
+        }, 1);
+        ReloadHelpers.registerReloadHandler(ReloadEvents.MAIN, "miapi/blueprint", BlueprintManager.reloadedBlueprints, (isClient, id, data, registryAccess) -> {
+            Miapi.LOGGER.info("loaded Blueprint " + id);
+            JsonElement element = Miapi.gson.fromJson(data, JsonElement.class);
+            BlueprintComponent component = BlueprintComponent.CODEC.decode(JsonOps.INSTANCE, element).getOrThrow().getFirst();
+            if (component.ingredient.left().isPresent() && component.ingredient.left().get()) {
+                Miapi.LOGGER.warn("Datapack Blueprints cannot set the Ingredient to True!, either use false ur a Ingredient with count");
+            } else {
+                BlueprintManager.reloadedBlueprints.put(id, BlueprintComponent.CODEC.decode(JsonOps.INSTANCE, element).getOrThrow().getFirst());
+            }
+        });
+    }
+
     public static void registerReloadHandler(
             ReloadEvents.ReloadEvent event,
             String location,
