@@ -14,7 +14,7 @@ jobs:
         uses: actions/setup-java@v2
         with:
           distribution: 'adopt'
-          java-version: '17'
+          java-version: '21'
 
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2.4.2
@@ -31,7 +31,7 @@ jobs:
 
       - name: Build with Gradle
         run: ./gradlew githubPublish
-        
+
       - name: Create Github Release
         uses: ncipollo/release-action@v1
         with:

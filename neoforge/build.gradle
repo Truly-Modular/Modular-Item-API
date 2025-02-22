@@ -119,7 +119,7 @@ repositories {
     }
 
     tasks.register('githubPublish') {
-        finalizedBy ':forge:publish'
+        finalizedBy ':neoforge:publish'
         group = 'publishing'
 
         doLast {
