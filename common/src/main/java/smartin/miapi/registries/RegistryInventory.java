@@ -80,7 +80,10 @@ import smartin.miapi.modules.properties.potion.OnHitTargetEffects;
 import smartin.miapi.modules.properties.potion.OnKillEffects;
 import smartin.miapi.modules.properties.render.*;
 import smartin.miapi.modules.properties.util.ModuleProperty;
+import smartin.miapi.modules.synergies.SynergyManager;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -413,6 +416,20 @@ public class RegistryInventory {
             registerMiapi(editOptions, "skin", new SkinOptions());
             registerMiapi(editOptions, "create", new CreateItemOption());
             registerMiapi(editOptions, "cosmetic", new CosmeticEditOption());
+            PropertyResolver.register("synergies", (moduleInstance, oldMap) -> {
+                if (moduleInstance != null) {
+                    List<SynergyManager.Synergy> synergies = SynergyManager.maps.get(moduleInstance.module);
+                    if (synergies != null) {
+                        synergies.forEach(synergy -> {
+                            List<Text> error = new ArrayList<>();
+                            if (synergy.condition.isAllowed(new ConditionManager.ModuleConditionContext(moduleInstance, null, null, oldMap, error))) {
+                                synergy.holder.applyHolder(oldMap);
+                            }
+                        });
+                    }
+                }
+                return oldMap;
+            });
 
             //CONDITIONS
             registerMiapi(moduleConditionRegistry, "true", new TrueCondition());

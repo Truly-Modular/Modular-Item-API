@@ -36,7 +36,7 @@ public class HoverInteractableMaterialList extends HoverMaterialList {
 
     @Override
     public boolean isMouseOver(double mouseX, double mouseY) {
-        if (lastRendered || permaOpen) {
+        if (permaOpen) {
             return isMouseOver(mouseX, mouseY, getX(), getY(), sizeBaseList + sizeDetailList, verticalSize);
         } else {
             return super.isMouseOver(mouseX, mouseY);
@@ -46,7 +46,7 @@ public class HoverInteractableMaterialList extends HoverMaterialList {
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
         if (isMouseOver(mouseX, mouseY, getX(), getY(), sizeBaseList + sizeDetailList, verticalSize)) {
-            if (mouseX > getX() + sizeBaseList) {
+            if (mouseX > getX() + sizeBaseList || CraftingScreen.hasAltDown() || CraftingScreen.hasShiftDown()) {
                 if (amount < 0) {
                     scrollPosTwo++;
                 } else {

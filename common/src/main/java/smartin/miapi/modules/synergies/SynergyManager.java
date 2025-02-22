@@ -6,11 +6,9 @@ import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import net.minecraft.text.Text;
 import smartin.miapi.Environment;
 import smartin.miapi.Miapi;
 import smartin.miapi.datapack.ReloadEvents;
-import smartin.miapi.item.modular.PropertyResolver;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.conditions.ConditionManager;
 import smartin.miapi.modules.conditions.ModuleCondition;
@@ -33,22 +31,12 @@ public class SynergyManager {
     public static Map<Material, List<Synergy>> materialSynergies = new ConcurrentHashMap<>();
 
     public static void setup() {
-        PropertyResolver.register("synergies", (moduleInstance, oldMap) -> {
-            if (moduleInstance != null) {
-                List<Synergy> synergies = maps.get(moduleInstance.module);
-                if (synergies != null) {
-                    synergies.forEach(synergy -> {
-                        List<Text> error = new ArrayList<>();
-                        if (synergy.condition.isAllowed(new ConditionManager.ModuleConditionContext(moduleInstance, null, null, oldMap, error))) {
-                            synergy.holder.applyHolder(oldMap);
-                        }
-                    });
-                }
-            }
-            return oldMap;
-        });
         Miapi.registerReloadHandler(ReloadEvents.MAIN, "synergies", maps, (isClient, path, data) -> {
-            load(data);
+            try {
+                load(data);
+            } catch (RuntimeException e) {
+                Miapi.LOGGER.error("Could not load Synergy " + path, e);
+            }
         }, 2);
         ReloadEvents.END.subscribe((isClient -> {
             int size = 0;
@@ -58,6 +46,7 @@ public class SynergyManager {
             Miapi.LOGGER.info("Loaded " + size + " Synergies");
         }));
     }
+
 
     public static void load(String data) {
         JsonObject element = Miapi.gson.fromJson(data, JsonObject.class);
@@ -80,7 +69,7 @@ public class SynergyManager {
                     if (material != null) {
                         loadSynergy(material, entry.getValue().getAsJsonObject());
                     } else {
-                        Miapi.LOGGER.warn("could not find material " + entry.getKey()+" synergy will not be loaded");
+                        Miapi.LOGGER.warn("could not find material " + entry.getKey() + " synergy will not be loaded");
                     }
                 }
                 if (type.equals("all")) {
@@ -91,6 +80,9 @@ public class SynergyManager {
                     }
                 }
             } else {
+                if(entry.getKey().contains("great")){
+                    Miapi.LOGGER.error("greatsword");
+                }
                 ItemModule module = RegistryInventory.modules.get(entry.getKey());
                 JsonObject entryData = entry.getValue().getAsJsonObject();
                 if (module == null) {
