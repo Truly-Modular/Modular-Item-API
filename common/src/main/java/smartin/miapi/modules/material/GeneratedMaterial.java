@@ -303,7 +303,7 @@ public class GeneratedMaterial implements Material {
                                     .filter(toolMat -> toolMaterial.equals(toolMat.getMaterial()))
                                     .filter(tool -> {
                                         ItemStack toolItem = tool.getDefaultStack();
-                                        return ModularItemStackConverter.getModularVersion(toolItem)==toolItem;
+                                        return ModularItemStackConverter.getModularVersion(toolItem) == toolItem;
                                     })
                                     .collect(Collectors.toList());
                             if (material.generateConverters()) {
@@ -329,7 +329,7 @@ public class GeneratedMaterial implements Material {
 
     public static boolean isValidItem(Item item) {
         Identifier identifier = Registries.ITEM.getId(item);
-        if(item.getDefaultStack().isIn(RegistryInventory.MIAPI_FORBIDDEN_TAG)){
+        if (item.getDefaultStack().isIn(RegistryInventory.MIAPI_FORBIDDEN_TAG)) {
             return false;
         }
         Pattern pattern = Pattern.compile(MiapiConfig.INSTANCE.server.generatedMaterials.blockRegex);
@@ -535,105 +535,13 @@ public class GeneratedMaterial implements Material {
 
     @Environment(EnvType.CLIENT)
     public void generateTranslation(List<Item> items) {
-        List<String> names = new ArrayList<>();
-        items.forEach(item -> names.add(Text.translatable(item.getTranslationKey()).getString()));
-        String materialName = Text.translatable(mainIngredient.getTranslationKey()).getString();
         langKey = "miapi.material.generated." + mainIngredient.getItem().getTranslationKey();
-        fakeTranslation = findCommonSubstring(names, materialName);
+        fakeTranslation = NamingUtil.generateTranslation(items, mainIngredient);
         if (!fakeTranslation.endsWith(" ")) {
             fakeTranslation += " ";
         }
         FakeTranslation.translations.put(langKey, fakeTranslation);
-        materialStatsString.put("translation", langKey);
-    }
-
-    static String findCommonSubstring(List<String> itemNames, String materialName) {
-        Map<String, Integer> map = new HashMap<>();
-        map.put(materialName, 1);
-        int highest = 0;
-        String longestCommonSubstring = materialName;
-        for (String itemName : itemNames) {
-            String commonString = longestSubsString(itemName, materialName);
-            if (commonString.length() > 3) {
-                if (map.containsKey(commonString)) {
-                    map.put(commonString, map.get(commonString) + 1);
-                    if (map.get(commonString) > highest) {
-                        highest = map.get(commonString);
-                        longestCommonSubstring = commonString;
-                    }
-                } else {
-                    map.put(commonString, 1);
-                }
-            }
-        }
-        return longestCommonSubstring;
-    }
-
-    static String longestSubsString(String stringA, String stringB) {
-        // Find length of both the Strings.
-        if (stringB == null || stringA == null) {
-            return "";
-        }
-        try {
-            if (stringB.length() > stringA.length()) {
-                String buffer = stringA;
-                stringA = stringB;
-                stringB = buffer;
-            }
-            int m = stringA.length();
-            int n = stringB.length();
-
-            // Variable to store length of longest
-            // common subString.
-            int result = 0;
-
-            // Variable to store ending point of
-            // longest common subString in X.
-            int end = 0;
-
-            // Matrix to store result of two
-            // consecutive rows at a time.
-            int len[][] = new int[2][m];
-
-            // Variable to represent which row of
-            // matrix is current row.
-            int currRow = 0;
-
-            // For a particular value of i and j,
-            // len[currRow][j] stores length of longest
-            // common subString in String X[0..i] and Y[0..j].
-            for (int i = 0; i < m; i++) {
-                for (int j = 0; j < n; j++) {
-                    if (i == 0 || j == 0) {
-                        len[currRow][j] = 0;
-                    } else if (stringA.charAt(i - 1) == stringB.charAt(j - 1)) {
-                        len[currRow][j] = len[1 - currRow][j - 1] + 1;
-                        if (len[currRow][j] > result) {
-                            result = len[currRow][j];
-                            end = i - 1;
-                        }
-                    } else {
-                        len[currRow][j] = 0;
-                    }
-                }
-
-                // Make current row as previous row and
-                // previous row as new current row.
-                currRow = 1 - currRow;
-            }
-
-            // If there is no common subString, print -1.
-            if (result == 0) {
-                return "";
-            }
-
-            // Longest common subString is from index
-            // end - result + 1 to index end in X.
-            return stringA.substring(end - result + 1, end + 1);
-        } catch (Exception e) {
-            Miapi.LOGGER.warn("Exception during string comparison" + e);
-            return "";
-        }
+        materialStatsString.put("translation",  langKey);
     }
 
     public void copyStatsFrom(Material other) {

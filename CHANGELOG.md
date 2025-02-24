@@ -1,3 +1,3 @@
-## v1.1.41 (1.20.1)
-- added client side data
-- changed material preview to be clickable and preview selected materials
+## v1.1.42 (1.20.1)
+- backported 1.21 generated material naming algorithm
+- fixed server crash if quark is loaded

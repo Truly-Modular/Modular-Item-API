@@ -38,6 +38,7 @@ import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.entity.ShieldingArmorFacet;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.forge.compat.epic_fight.EpicFightCompat;
+import smartin.miapi.forge.compat.quark.QuarkCompat;
 import smartin.miapi.modules.properties.AttributeProperty;
 import smartin.miapi.registries.RegistryInventory;
 
@@ -71,7 +72,7 @@ public class TrulyModularForge {
             }
         });
 
-        loadCompat("quark", smartin.miapi.forge.compat.QuarkCompat::setup);
+        loadCompat("quark", QuarkCompat::setup);
         loadCompat("pmmo", smartin.miapi.forge.compat.pmmo.ToolStats::setup);
         loadCompat("apotheosis", smartin.miapi.forge.compat.ApotheosisCompat::setup);
 
