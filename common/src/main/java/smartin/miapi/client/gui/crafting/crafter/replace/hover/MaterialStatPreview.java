@@ -1,5 +1,7 @@
 package smartin.miapi.client.gui.crafting.crafter.replace.hover;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -16,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+@Environment(EnvType.CLIENT)
 public class MaterialStatPreview extends InteractAbleWidget {
     boolean isVisiible;
     Map<String, MaterialStatIndicatorProperty.Context> map;

@@ -270,6 +270,7 @@
     "miapi.stat.miapi.dps.description": "Damage per Second",
     "miapi.material_stat.color": "Color",
     "miapi.material_stat.flexibility": "Flexibility",
+    "miapi.material_stat.tier": "Tier",
     "miapi.material_stat.density": "Density",
     "miapi.material_stat.hardness": "Hardness",
     "miapi.material_stat.durability": "Durability",

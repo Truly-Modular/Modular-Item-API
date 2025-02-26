@@ -7,6 +7,8 @@ import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.serialization.Codec;
 import com.redpxnda.nucleus.codec.misc.MiscCodecs;
 import com.redpxnda.nucleus.util.Color;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.SpriteContents;
 import net.minecraft.client.resources.model.BakedModel;
@@ -26,6 +28,7 @@ import java.util.*;
  * The red channel is used, meaning that even non-grayscale pixels will be treated as such.
  * There are several helper methods for things like generated materials.
  */
+@Environment(EnvType.CLIENT)
 public class GrayscalePaletteColorer extends SpritePixelReplacer {
     public static final Codec<Integer> stringToIntCodec = Codec.STRING.xmap(Integer::parseInt, String::valueOf);
 

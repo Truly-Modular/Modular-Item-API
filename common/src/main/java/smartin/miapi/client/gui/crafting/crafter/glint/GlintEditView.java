@@ -2,6 +2,8 @@ package smartin.miapi.client.gui.crafting.crafter.glint;
 
 import com.redpxnda.nucleus.math.MathUtil;
 import com.redpxnda.nucleus.util.Color;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.events.GuiEventListener;
@@ -22,6 +24,7 @@ import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
+@Environment(EnvType.CLIENT)
 public class GlintEditView extends InteractAbleWidget {
     public static final ResourceLocation TEXTURE = CraftingScreen.BACKGROUND_TEXTURE;
 

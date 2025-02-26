@@ -1,6 +1,8 @@
 package smartin.miapi.client.gui.crafting.statdisplay.material;
 
 import com.mojang.serialization.JsonOps;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.world.item.ItemStack;
@@ -22,6 +24,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+@Environment(EnvType.CLIENT)
 public class MaterialStatWidget extends InteractAbleWidget {
     ScrollList list;
     Material original;

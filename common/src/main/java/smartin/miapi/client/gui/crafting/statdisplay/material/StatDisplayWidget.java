@@ -1,5 +1,7 @@
 package smartin.miapi.client.gui.crafting.statdisplay.material;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import smartin.miapi.client.gui.InteractAbleWidget;
@@ -7,6 +9,7 @@ import smartin.miapi.client.gui.crafting.statdisplay.StatListWidget;
 import smartin.miapi.material.MaterialProperty;
 import smartin.miapi.material.base.Material;
 
+@Environment(EnvType.CLIENT)
 public class StatDisplayWidget extends InteractAbleWidget {
     StatListWidget statListWidget;
     MaterialStatWidget materialStatWidget;

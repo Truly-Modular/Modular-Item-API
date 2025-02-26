@@ -25,6 +25,7 @@ import java.util.function.Consumer;
  * This class implements {@link MaterialRenderController} by recoloring the base Sprite
  * it works hand-in-hand with {@link MaterialSpriteManager} to accomplish that
  */
+@Environment(EnvType.CLIENT)
 public abstract class SpriteColorer implements MaterialRenderController {
     public static Map<TextureAtlasSprite, RescaledVertexConsumer> lookupMap = new WeakHashMap<>();
     public Material material;

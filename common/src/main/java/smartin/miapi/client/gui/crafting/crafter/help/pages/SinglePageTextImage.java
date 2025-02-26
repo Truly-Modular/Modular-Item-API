@@ -1,5 +1,7 @@
 package smartin.miapi.client.gui.crafting.crafter.help.pages;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import smartin.miapi.Miapi;
@@ -7,6 +9,7 @@ import smartin.miapi.client.gui.ImageWidget;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.MultiLineTextWidget;
 
+@Environment(EnvType.CLIENT)
 public class SinglePageTextImage extends InteractAbleWidget {
     MultiLineTextWidget textWidget;
     ImageWidget imageWidget;

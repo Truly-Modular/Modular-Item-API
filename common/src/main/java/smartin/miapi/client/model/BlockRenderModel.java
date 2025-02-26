@@ -1,6 +1,8 @@
 package smartin.miapi.client.model;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.world.entity.LivingEntity;
@@ -10,6 +12,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import smartin.miapi.item.modular.Transform;
 import smartin.miapi.material.MaterialIcons;
 
+@Environment(EnvType.CLIENT)
 public class BlockRenderModel implements MiapiModel {
     BlockState blockState;
     public MaterialIcons.SpinSettings spinSettings = null;

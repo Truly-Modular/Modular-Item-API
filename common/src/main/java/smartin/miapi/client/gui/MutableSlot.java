@@ -1,5 +1,7 @@
 package smartin.miapi.client.gui;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.world.Container;
 import net.minecraft.world.inventory.Slot;
 
@@ -7,6 +9,7 @@ import net.minecraft.world.inventory.Slot;
  * This is a mutable implementation of the vanilla Slot class that allows enabling or disabling the slot.
  * When a slot is disabled, it cannot be interacted with by the player.
  */
+@Environment(EnvType.CLIENT)
 public class MutableSlot extends Slot {
     private boolean isEnabled = true;
 

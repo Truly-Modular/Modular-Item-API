@@ -1,6 +1,8 @@
 package smartin.miapi.client.model;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemDisplayContext;
@@ -11,6 +13,7 @@ import org.joml.Matrix4f;
  * default model to implement Module level Models.
  * Should be registered at {@link MiapiItemModel#modelSuppliers}
  */
+@Environment(EnvType.CLIENT)
 public interface MiapiModel {
 
     void render(PoseStack matrices,

@@ -1,6 +1,8 @@
 package smartin.miapi.client.gui.crafting;
 
 import com.mojang.datafixers.util.Pair;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
@@ -44,6 +46,7 @@ import static net.minecraft.world.inventory.InventoryMenu.EMPTY_ARMOR_SLOT_SHIEL
 /**
  * This is the screen handler class for miapis default Crafting Screen.
  */
+@Environment(EnvType.CLIENT)
 public class CraftingScreenHandler extends AbstractContainerMenu {
     private final ContainerLevelAccess context;
     private static final String PACKET_ID = ":crafting_packet_";

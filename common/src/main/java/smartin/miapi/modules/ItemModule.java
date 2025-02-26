@@ -98,11 +98,14 @@ public record ItemModule(ResourceLocation id, Map<ModuleProperty<?>, Object> pro
             } else if (moduleJson.has("id")) {
                 ResourceLocation id = Miapi.id(moduleJson.get("id").getAsString());
                 ItemModule module = RegistryInventory.modules.get(id);
-                if (module != null) {
+                if (module == null) {
                     LOGGER.error("module not found for id " + id + " by module extention " + path);
+                }else{
+                    RegistryInventory.modules.remove(module.id);
+                    RegistryInventory.modules.register(module.id, new ItemModule(module.id, holder.applyHolder(module.properties())));
                 }
-                RegistryInventory.modules.remove(module.id);
-                RegistryInventory.modules.register(module.id, new ItemModule(module.id, holder.applyHolder(module.properties())));
+            } else{
+                LOGGER.error("module extension "+path+" did not include a id or tag.");
             }
         } catch (Exception e) {
             LOGGER.warn("Could not load Module to extend " + path, e);

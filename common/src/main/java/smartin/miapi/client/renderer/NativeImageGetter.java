@@ -1,12 +1,15 @@
 package smartin.miapi.client.renderer;
 
 import com.mojang.blaze3d.platform.NativeImage;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.renderer.texture.SpriteContents;
 import smartin.miapi.mixin.client.SpriteContentsAccessor;
 
 import java.util.Map;
 import java.util.WeakHashMap;
 
+@Environment(EnvType.CLIENT)
 public class NativeImageGetter {
     public static Map<SpriteContents, ImageHolder> nativeImageMap = new WeakHashMap<>();
 

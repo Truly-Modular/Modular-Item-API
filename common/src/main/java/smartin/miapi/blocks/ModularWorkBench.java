@@ -1,7 +1,7 @@
 package smartin.miapi.blocks;
 
 import com.mojang.serialization.MapCodec;
-import com.redpxnda.nucleus.codec.auto.AutoCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -13,12 +13,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.BaseEntityBlock;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.HorizontalDirectionalBlock;
-import net.minecraft.world.level.block.Mirror;
-import net.minecraft.world.level.block.RenderShape;
-import net.minecraft.world.level.block.Rotation;
+import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
@@ -50,6 +45,15 @@ public class ModularWorkBench extends BaseEntityBlock {
 
     public ItemStack itemStack;
 
+    public MapCodec<ModularWorkBench> CODEC = RecordCodecBuilder.mapCodec((instance) ->
+            instance.group(
+                    ItemStack.CODEC.fieldOf("item").forGetter(i -> i.itemStack),
+                    propertiesCodec()).apply(instance, (i, a) -> {
+                ModularWorkBench bench = new ModularWorkBench(a);
+                bench.itemStack = i;
+                return bench;
+            }));
+
     public ModularWorkBench(Properties settings) {
         super(settings);
         this.registerDefaultState(((this.stateDefinition.any()).setValue(FACING, Direction.NORTH)));
@@ -58,7 +62,7 @@ public class ModularWorkBench extends BaseEntityBlock {
     @Override
     protected MapCodec<? extends BaseEntityBlock> codec() {
         //TODO:this probably doesnt work lol
-        return AutoCodec.of(ModularWorkBench.class).deprecated(1);
+        return CODEC;
     }
 
     @Override
@@ -139,6 +143,8 @@ public class ModularWorkBench extends BaseEntityBlock {
 
     @Nullable
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        return new ModularWorkBenchEntity(pos, state);
+        ModularWorkBenchEntity bench = new ModularWorkBenchEntity(pos, state);
+        bench.setItem(itemStack);
+        return bench;
     }
 }

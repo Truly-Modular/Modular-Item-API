@@ -1,6 +1,8 @@
 package smartin.miapi.client.gui.crafting.crafter.glint;
 
 import com.redpxnda.nucleus.util.Color;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
@@ -15,6 +17,7 @@ import java.util.function.Consumer;
 
 import static smartin.miapi.client.gui.InteractAbleWidget.drawSquareBorder;
 
+@Environment(EnvType.CLIENT)
 public class FloatWidgetField extends EditBox implements GuiEventListener {
     public @Nullable String prefix;
     public float value;

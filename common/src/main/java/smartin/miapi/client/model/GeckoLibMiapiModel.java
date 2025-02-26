@@ -1,16 +1,20 @@
 package smartin.miapi.client.model;
 
-import org.joml.Matrix4f;
-import software.bernie.geckolib.cache.object.GeoBone;
-import software.bernie.geckolib.model.GeoModel;
-import software.bernie.geckolib.renderer.GeoRenderer;
 import com.mojang.blaze3d.vertex.PoseStack;
-import java.util.Optional;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
+import org.joml.Matrix4f;
+import software.bernie.geckolib.cache.object.GeoBone;
+import software.bernie.geckolib.model.GeoModel;
+import software.bernie.geckolib.renderer.GeoRenderer;
 
+import java.util.Optional;
+
+@Environment(EnvType.CLIENT)
 public class GeckoLibMiapiModel implements MiapiModel {
     public GeoModel geoModel;
     public String attachedBone = "bone";

@@ -2,11 +2,14 @@ package smartin.miapi.client.gui.crafting;
 
 import com.redpxnda.nucleus.config.ConfigManager;
 import com.redpxnda.nucleus.config.ConfigObject;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import smartin.miapi.Miapi;
 
+@Environment(EnvType.CLIENT)
 public class MiapiConfigScreen extends Screen {
     private final Screen parent;
 

@@ -1,9 +1,12 @@
 package smartin.miapi.client.gui.crafting.crafter.replace.hover;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.GuiGraphics;
 import smartin.miapi.client.gui.crafting.CraftingScreen;
 import smartin.miapi.modules.ItemModule;
 
+@Environment(EnvType.CLIENT)
 public class HoverInteractableMaterialList extends HoverMaterialList {
 
     public HoverInteractableMaterialList(ItemModule module, int x, int y, int width, int height) {

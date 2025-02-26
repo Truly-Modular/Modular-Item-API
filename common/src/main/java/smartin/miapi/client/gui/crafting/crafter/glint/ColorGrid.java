@@ -2,6 +2,8 @@ package smartin.miapi.client.gui.crafting.crafter.glint;
 
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.redpxnda.nucleus.util.Color;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
@@ -12,6 +14,7 @@ import org.joml.Matrix4f;
 
 import java.util.function.Consumer;
 
+@Environment(EnvType.CLIENT)
 public class ColorGrid extends AbstractWidget {
     public float saturation = 1;
     public float lightness = 1;

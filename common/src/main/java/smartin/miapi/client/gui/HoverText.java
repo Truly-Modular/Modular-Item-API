@@ -1,9 +1,12 @@
 package smartin.miapi.client.gui;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 
+@Environment(EnvType.CLIENT)
 public class HoverText extends InteractAbleWidget{
 
     Component hoverDescription;

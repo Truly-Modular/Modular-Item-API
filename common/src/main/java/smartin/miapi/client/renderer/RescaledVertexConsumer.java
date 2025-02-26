@@ -1,8 +1,11 @@
 package smartin.miapi.client.renderer;
 
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 
+@Environment(EnvType.CLIENT)
 public class RescaledVertexConsumer implements VertexConsumer {
     public VertexConsumer delegate;
     float uStart;

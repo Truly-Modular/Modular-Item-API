@@ -19,8 +19,7 @@ import java.util.*;
  *
  * @header Allowed Slots Property
  * @path /data_types/properties/slot/allowed_in_slots
- * @description_start
- * The Allowed Slots Property controls where a module can be placed by defining which slot types it is compatible with.
+ * @description_start The Allowed Slots Property controls where a module can be placed by defining which slot types it is compatible with.
  * A module can specify multiple slots by their IDs, ensuring that only certain modules can fit into designated slots
  * when assembling items. This helps define logical compatibility between modules and item slots.
  * @description_end
@@ -81,13 +80,13 @@ public class AllowedSlots extends CodecProperty<List<String>> {
      */
     public static List<ItemModule> allowedIn(SlotProperty.ModuleSlot slot) {
         if (slot == null) return new ArrayList<>();
-        List<ItemModule> allowedModules = new ArrayList<>();
+        Set<ItemModule> allowedModules = new HashSet<>();
         slot.allowed.forEach(allowedKey -> {
             if (allowedInMap.containsKey(allowedKey)) {
                 allowedModules.addAll(allowedInMap.get(allowedKey));
             }
         });
-        return allowedModules;
+        return new ArrayList<>(allowedModules);
     }
 
     @Override

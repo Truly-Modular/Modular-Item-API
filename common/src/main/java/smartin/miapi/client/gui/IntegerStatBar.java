@@ -1,10 +1,13 @@
 package smartin.miapi.client.gui;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.FastColor;
 import smartin.miapi.client.gui.crafting.CraftingScreen;
 
+@Environment(EnvType.CLIENT)
 public class IntegerStatBar extends InteractAbleWidget {
     int primaryValue = 0;
     int secondaryValue = 0;

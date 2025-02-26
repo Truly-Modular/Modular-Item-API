@@ -3,6 +3,8 @@ package smartin.miapi.material.palette;
 import com.google.gson.JsonElement;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.redpxnda.nucleus.util.Color;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.renderer.texture.SpriteContents;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
@@ -28,6 +30,7 @@ import static smartin.miapi.client.renderer.NativeImageGetter.getImage;
  * be replaced with #F038AD.
  * This is to be used when you need a simple animated color palette.
  */
+@Environment(EnvType.CLIENT)
 public class PaletteAtlasBackedColorer extends SpritePixelReplacer {
     protected ResourceLocation spriteId = Material.BASE_PALETTE_ID;
     protected Color averageColor;

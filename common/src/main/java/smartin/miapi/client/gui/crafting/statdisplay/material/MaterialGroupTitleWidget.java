@@ -1,5 +1,7 @@
 package smartin.miapi.client.gui.crafting.statdisplay.material;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
@@ -10,6 +12,7 @@ import smartin.miapi.client.gui.crafting.statdisplay.SingleStatDisplay;
 
 import java.util.List;
 
+@Environment(EnvType.CLIENT)
 public class MaterialGroupTitleWidget extends InteractAbleWidget {
     ScrollingTextWidget scrollingTextWidget;
     Component hoverDescription;

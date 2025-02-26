@@ -2,6 +2,8 @@ package smartin.miapi.client.gui.crafting;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.bettercombat.logic.WeaponAttributesFallback;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.MenuAccess;
@@ -39,6 +41,7 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
+@Environment(EnvType.CLIENT)
 public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> implements MenuAccess<CraftingScreenHandler> {
     public static final ResourceLocation BACKGROUND_TEXTURE = Miapi.id("textures/gui/crafter/background.png");
     /*public static final InterpolateMode EASE_IN = new InterpolateMode.EaseIn(5);

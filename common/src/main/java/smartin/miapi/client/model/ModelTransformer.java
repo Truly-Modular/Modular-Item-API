@@ -1,17 +1,18 @@
 package smartin.miapi.client.model;
 
-import smartin.miapi.item.modular.ModularItem;
-import smartin.miapi.modules.cache.ModularItemCache;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.WeakHashMap;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.WeakHashMap;
+
+@Environment(EnvType.CLIENT)
 public class ModelTransformer {
     /*
 0: X position

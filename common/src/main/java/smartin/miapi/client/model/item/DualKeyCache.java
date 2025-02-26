@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiFunction;
 
+
 public class DualKeyCache<K1, K2, V> {
     private final Map<K1, Map<K2, V>> cache = new HashMap<>();
     private final Map<K1, V> singleKeyCache = new HashMap<>();

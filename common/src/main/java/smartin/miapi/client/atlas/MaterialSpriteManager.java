@@ -4,6 +4,8 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.RenderType;
@@ -23,6 +25,7 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.function.IntUnaryOperator;
 
+@Environment(EnvType.CLIENT)
 public class MaterialSpriteManager {
     static Map<Holder, DynamicTexture> animated_Textures = new HashMap<>();
 

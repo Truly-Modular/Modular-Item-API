@@ -2,18 +2,21 @@ package smartin.miapi.material.palette;
 
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.redpxnda.nucleus.util.Color;
-import smartin.miapi.modules.ModuleInstance;
-
-import java.io.Closeable;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
+import smartin.miapi.modules.ModuleInstance;
+
+import java.io.Closeable;
 
 /**
  * This takes control of the rendering with a Material
  * You probably want to extend the {@link SpritePixelReplacer} instead
  */
+@Environment(EnvType.CLIENT)
 public interface MaterialRenderController extends Closeable {
 
     /**

@@ -210,6 +210,11 @@ public class ModularWorkBenchEntity extends BlockEntity implements MenuProvider,
     }
 
     @Override
+    public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
+        return new CompoundTag();
+    }
+
+    @Override
     public Component getDisplayName() {
         return Component.literal("test");
     }

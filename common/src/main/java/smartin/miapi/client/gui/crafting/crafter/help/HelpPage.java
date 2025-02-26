@@ -1,6 +1,8 @@
 package smartin.miapi.client.gui.crafting.crafter.help;
 
 import com.redpxnda.nucleus.util.Color;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -15,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
+@Environment(EnvType.CLIENT)
 public class HelpPage extends InteractAbleWidget {
     int color = Color.GREEN.argb();
     List<SinglePageTextImage> pages;

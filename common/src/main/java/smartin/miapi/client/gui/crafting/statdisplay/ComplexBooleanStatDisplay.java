@@ -1,11 +1,14 @@
 package smartin.miapi.client.gui.crafting.statdisplay;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import smartin.miapi.Miapi;
 import smartin.miapi.modules.properties.util.ComplexBooleanProperty;
 
+@Environment(EnvType.CLIENT)
 public class ComplexBooleanStatDisplay extends SingleStatDisplayBoolean {
     public ComplexBooleanProperty property;
 

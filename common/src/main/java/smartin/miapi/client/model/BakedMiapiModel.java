@@ -3,6 +3,8 @@ package smartin.miapi.client.model;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.redpxnda.nucleus.util.Color;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -29,6 +31,7 @@ import smartin.miapi.modules.properties.render.EmissivityProperty;
 import smartin.miapi.modules.properties.GlintProperty;
 import smartin.miapi.client.GlintShader;
 
+@Environment(EnvType.CLIENT)
 public class BakedMiapiModel implements MiapiModel {
     ModuleInstance instance;
     BakedModel model;

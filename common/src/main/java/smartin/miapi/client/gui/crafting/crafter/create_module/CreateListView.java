@@ -1,6 +1,8 @@
 package smartin.miapi.client.gui.crafting.crafter.create_module;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import smartin.miapi.client.gui.InteractAbleWidget;
@@ -18,6 +20,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
+@Environment(EnvType.CLIENT)
 public class CreateListView extends InteractAbleWidget {
     final EditOption.EditContext editContext;
     public ScrollList scrollList;

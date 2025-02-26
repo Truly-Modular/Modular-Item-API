@@ -2,6 +2,8 @@ package smartin.miapi.material.palette;
 
 import com.google.gson.JsonElement;
 import com.redpxnda.nucleus.util.Color;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.world.item.ItemDisplayContext;
 import smartin.miapi.material.JsonMaterial;
 import smartin.miapi.material.base.Material;
@@ -15,6 +17,7 @@ import java.util.Map;
  * Used namely for {@link JsonMaterial#getRenderController(ModuleInstance, ItemDisplayContext)} <br>
  * Add to {@link MaterialRenderControllers#creators} to allow your {@link MaterialRenderController} to be created in json.
  */
+@Environment(EnvType.CLIENT)
 public class MaterialRenderControllers {
     public static final Map<String, RenderControllerCreator> creators = new HashMap<>();
     public static final Map<String, FillerFunction> fillers = new HashMap<>();

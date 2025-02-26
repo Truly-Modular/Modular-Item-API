@@ -3,6 +3,8 @@ package smartin.miapi.client.model;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.CubeListBuilder;
@@ -19,6 +21,7 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import org.joml.Quaternionf;
 
+@Environment(EnvType.CLIENT)
 public class CrystalModel implements MiapiModel {
     LayerDefinition modelData;
     ResourceLocation TEXTURE = ResourceLocation.parse("textures/entity/end_crystal/end_crystal.png");

@@ -4,6 +4,8 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.redpxnda.nucleus.Nucleus;
 import com.redpxnda.nucleus.math.MathUtil;
 import com.redpxnda.nucleus.util.Color;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
@@ -14,6 +16,7 @@ import org.joml.Matrix4f;
 
 import java.util.function.Consumer;
 
+@Environment(EnvType.CLIENT)
 public class HueSlider extends AbstractWidget {
     public static final ResourceLocation SCROLLBAR_TEXTURE = ResourceLocation.fromNamespaceAndPath(Nucleus.MOD_ID, "textures/gui/small_scrollbars.png");
 

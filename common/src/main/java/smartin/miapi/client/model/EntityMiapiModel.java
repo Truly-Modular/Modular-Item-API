@@ -1,6 +1,8 @@
 package smartin.miapi.client.model;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -11,6 +13,7 @@ import net.minecraft.world.item.ItemStack;
 import smartin.miapi.item.modular.Transform;
 import smartin.miapi.material.MaterialIcons;
 
+@Environment(EnvType.CLIENT)
 public class EntityMiapiModel implements MiapiModel {
     Entity toRenderEntity;
     float lastTick = 0;

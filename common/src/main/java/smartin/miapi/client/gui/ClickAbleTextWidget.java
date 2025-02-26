@@ -1,5 +1,7 @@
 package smartin.miapi.client.gui;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.EditBox;
@@ -10,6 +12,7 @@ import net.minecraft.network.chat.Component;
  * This Widget is an Extention of the {@link EditBox}
  * It auto-disables the e-close mechanic and is selectable by clicking
  */
+@Environment(EnvType.CLIENT)
 public class ClickAbleTextWidget extends EditBox {
     public ClickAbleTextWidget(Font textRenderer, int x, int y, int width, int height, Component text) {
         super(textRenderer, x, y, width, height, text);

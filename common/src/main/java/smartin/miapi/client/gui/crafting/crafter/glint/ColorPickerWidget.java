@@ -3,6 +3,8 @@ package smartin.miapi.client.gui.crafting.crafter.glint;
 import com.redpxnda.nucleus.config.screen.widget.IntegerFieldWidget;
 import com.redpxnda.nucleus.math.MathUtil;
 import com.redpxnda.nucleus.util.Color;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -14,6 +16,7 @@ import smartin.miapi.client.gui.crafting.CraftingScreen;
 
 import java.util.function.Consumer;
 
+@Environment(EnvType.CLIENT)
 public class ColorPickerWidget extends InteractAbleWidget {
     public static final ResourceLocation TEXTURE = CraftingScreen.BACKGROUND_TEXTURE;//ResourceLocation.fromNamespaceAndPath(Nucleus.MOD_ID, "textures/gui/color_picker.png");
 

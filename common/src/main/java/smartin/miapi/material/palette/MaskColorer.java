@@ -8,6 +8,8 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.redpxnda.nucleus.util.Color;
 import io.netty.handler.codec.DecoderException;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.renderer.texture.SpriteContents;
 import net.minecraft.resources.ResourceLocation;
 import smartin.miapi.Miapi;
@@ -26,6 +28,7 @@ import java.util.Map;
  * <br>
  * The most common masker uses an image to blend the base and layered pixels by each respective pixel in the image.
  */
+@Environment(EnvType.CLIENT)
 public class MaskColorer extends SpriteColorer {
     public static Map<String, Masker> maskerRegistry = new HashMap<>();
     public static Map<ResourceLocation, MapCodec<? extends Masker>> MASKER_REGISTRY = new HashMap<>();

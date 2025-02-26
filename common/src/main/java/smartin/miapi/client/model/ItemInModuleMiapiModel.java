@@ -1,16 +1,20 @@
 package smartin.miapi.client.model;
 
-import org.joml.Matrix4f;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
-import java.util.function.Supplier;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.FireworkRocketItem;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
+import org.joml.Matrix4f;
 
+import java.util.function.Supplier;
+
+@Environment(EnvType.CLIENT)
 public class ItemInModuleMiapiModel implements MiapiModel {
 
     final Supplier<ItemStack> stackSupplier;

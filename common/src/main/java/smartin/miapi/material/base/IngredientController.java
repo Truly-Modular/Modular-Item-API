@@ -44,4 +44,21 @@ public interface IngredientController {
      */
     default void setMaterial(ModuleInstance moduleInstance) {
     }
+
+    /**
+     * resolving a material from a module.
+     * used to load additional data on a module instance, should be in the data part of the {@link ModuleInstance}
+     *
+     * @param moduleInstance
+     * @return
+     */
+    Material getMaterial(ModuleInstance moduleInstance);
+
+    /**
+     * allowing the material to change based on the ingredient, to return a variant of itself
+     *
+     * @param ingredient
+     * @return
+     */
+    Material getMaterialFromIngredient(ItemStack ingredient);
 }
