@@ -25,6 +25,8 @@
         "LivingEntityAccessor",
         "LivingEntityMixin",
         "LootContextTypesAccessor",
+        "LootPoolMixin",
+        "LootTableMixin",
         "MinecraftAccessor",
         "MobMixin",
         "NamedAccessor",

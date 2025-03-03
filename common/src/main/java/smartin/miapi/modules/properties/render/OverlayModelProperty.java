@@ -151,7 +151,7 @@ public class OverlayModelProperty extends CodecProperty<List<OverlayModelPropert
                         ResourceLocation materialId = ResourceLocation.parse(colorProvider.split(":", 2)[1]);
                         smartin.miapi.material.base.Material material = MaterialProperty.materials.get(materialId);
                         if (material != null) {
-                            return new ColorProvider.MaterialColorProvider(MaterialProperty.materials.get(materialId));
+                            return new ColorProvider.MaterialColorProvider(material);
                         }
                         Miapi.LOGGER.error("Could not find Material " + materialId + " for Color Provider ");
                     }

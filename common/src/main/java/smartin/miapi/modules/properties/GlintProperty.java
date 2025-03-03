@@ -13,6 +13,7 @@ import smartin.miapi.Miapi;
 import smartin.miapi.client.GlintShader;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.material.MaterialProperty;
+import smartin.miapi.material.base.Material;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.util.CodecProperty;
@@ -65,8 +66,9 @@ public class GlintProperty extends CodecProperty<GlintProperty.RainbowGlintSetti
             if (MiapiConfig.INSTANCE.client.enchantingGlint.vanillaLike) {
                 return vanillaLike;
             }
-            if (MaterialProperty.getMaterial(instance) != null) {
-                Color adjusted = new Color(MaterialProperty.getMaterial(instance).getColor(instance, ItemDisplayContext.GUI));
+            Material material = MaterialProperty.getMaterial(instance);
+            if (material != null) {
+                Color adjusted = new Color(material.getColor(instance, ItemDisplayContext.GUI));
                 return defaultSettings.copyWithColor(adjustWith(
                         adjusted,
                         MiapiConfig.INSTANCE.client.enchantingGlint.materialRatioColor,

@@ -10,8 +10,8 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
-import smartin.miapi.material.base.Material;
 import smartin.miapi.material.MaterialProperty;
+import smartin.miapi.material.base.Material;
 import smartin.miapi.modules.ModuleInstance;
 
 import java.util.HashMap;
@@ -68,6 +68,9 @@ public interface ColorProvider {
                                           ItemStack stack,
                                           ModuleInstance moduleInstance,
                                           ItemDisplayContext mode) {
+            if (material == null) {
+                return vertexConsumers.getBuffer(ItemBlockRenderTypes.getRenderType(stack, true));
+            }
             return material.getRenderController(moduleInstance, mode).getVertexConsumer(vertexConsumers, sprite, stack, moduleInstance, mode);
         }
 

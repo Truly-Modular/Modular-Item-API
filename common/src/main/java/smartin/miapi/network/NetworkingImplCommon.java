@@ -27,6 +27,7 @@ public class NetworkingImplCommon extends NetworkingImpl {
                 });
             } else {
                 NetworkManager.registerS2CPayloadType(S2CMiapiPayload.TYPE, S2CMiapiPayload.STREAM_CODEC);
+                NetworkManager.registerS2CPayloadType(S2CMiapiOLDPayload.TYPE,  S2CMiapiOLDPayload.STREAM_CODEC);
             }
             NetworkManager.registerReceiver(NetworkManager.Side.C2S, C2SMiapiOLDPayload.PACKET_TYPE, C2SMiapiOLDPayload.STREAM_CODEC, (packet, context) -> {
 

@@ -309,9 +309,9 @@ public class ModelProperty extends CodecProperty<List<ModelProperty.ModelData>> 
             this.condition = condition;
             this.color_provider = color_provider;
             this.trim_mode = trim_mode;
-            this.entity_render = entity_render.orElseGet(() -> !(
-                    this.getTrimMode().equals(TrimRenderer.TrimMode.NONE) &&
-                    this.getTrimMode().equals(TrimRenderer.TrimMode.ITEM)));
+            this.entity_render = entity_render.orElseGet(() -> (
+                    this.getTrimMode().equals(TrimRenderer.TrimMode.ARMOR_LAYER_ONE) ||
+                    this.getTrimMode().equals(TrimRenderer.TrimMode.ARMOR_LAYER_TWO)));
             this.id = id;
             repair();
         }

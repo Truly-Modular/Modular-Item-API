@@ -9,6 +9,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.FastColor;
 import net.minecraft.world.item.ItemStack;
+import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.crafting.CraftingScreen;
 import smartin.miapi.client.gui.crafting.PreviewManager;
@@ -154,7 +155,9 @@ public class HoverMaterialList extends InteractAbleWidget {
                 previewMaterial = materialList.get(scrollPosTwo);
 
             } else {
-                previewMaterial = materialList.getFirst();
+                if (!materialList.isEmpty()) {
+                    previewMaterial = materialList.getFirst();
+                }
                 //selectedMaterialUpdate(materialList.get(0));
             }
             RenderSystem.enableDepthTest();
@@ -186,6 +189,7 @@ public class HoverMaterialList extends InteractAbleWidget {
         }
         Component testTranslation = Component.translatable("miapi.material_group." + materialOrGroupKey);
         if (testTranslation.getString().equals("miapi.material_group." + materialOrGroupKey)) {
+            Miapi.LOGGER.warn("missing translation for " + "miapi.material_group." + materialOrGroupKey);
             return Component.literal(materialOrGroupKey);
         }
         return testTranslation;

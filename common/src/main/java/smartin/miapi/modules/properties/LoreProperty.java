@@ -15,14 +15,13 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.crafting.RecipeType;
 import org.jetbrains.annotations.NotNull;
 import smartin.miapi.Miapi;
-import smartin.miapi.client.gui.crafting.crafter.replace.hover.HoverMaterialList;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.item.MaterialSmithingRecipe;
 import smartin.miapi.item.ModularItemStackConverter;
 import smartin.miapi.item.modular.ModularItem;
-import smartin.miapi.material.base.Material;
 import smartin.miapi.material.MaterialProperty;
+import smartin.miapi.material.base.Material;
 import smartin.miapi.material.generated.SmithingRecipeUtil;
 import smartin.miapi.modules.properties.util.CodecProperty;
 import smartin.miapi.modules.properties.util.MergeAble;
@@ -154,16 +153,7 @@ public class LoreProperty extends CodecProperty<List<LoreProperty.Holder>> {
 
     @Environment(EnvType.CLIENT)
     List<Component> getAltClient(Material material) {
-        List<Component> lines = new ArrayList<>();
-        if (net.minecraft.client.gui.screens.Screen.hasAltDown()) {
-            lines.add(gray(Component.translatable("miapi.ui.material_desc_alt_2")));
-            for (int i = 1; i < material.getGuiGroups().size(); i++) {
-                String groupId = material.getGuiGroups().get(i);
-                lines.add(gray(Component.literal(" - " + HoverMaterialList.getTranslation(groupId).getString())));
-            }
-        }
-        lines.addAll(material.getDescription(net.minecraft.client.gui.screens.Screen.hasAltDown()));
-        return lines;
+        return new ArrayList<>(material.getDescription(net.minecraft.client.gui.screens.Screen.hasAltDown()));
     }
 
     List<Component> addToolTipsServer(ItemStack itemStack) {

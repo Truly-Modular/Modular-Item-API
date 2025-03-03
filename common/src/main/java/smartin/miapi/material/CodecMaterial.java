@@ -20,6 +20,7 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
+import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.blueprint.IngredientWithCount;
 import smartin.miapi.item.modular.StatResolver;
@@ -61,7 +62,8 @@ public class CodecMaterial implements Material {
     @Environment(EnvType.CLIENT)
     protected MaterialRenderController palette;
     @Environment(EnvType.CLIENT)
-    protected Optional<MaterialRenderController> dyeAblePalette = Optional.empty();
+    @Nullable
+    protected MaterialRenderController dyeAblePalette;
 
     public static final Codec<CodecMaterial> CODEC = new Codec<>() {
         @Override
@@ -158,25 +160,30 @@ public class CodecMaterial implements Material {
             displayPropertyMap.put(type, ModuleDataPropertiesManager.resolvePropertiesFromJson(json));
         });
         if (smartin.miapi.Environment.isClient()) {
-            if (iconJson.isPresent()) {
-                if (iconJson.get() instanceof JsonPrimitive primitive && primitive.isString())
-                    icon = new MaterialIcons.TextureMaterialIcon(ResourceLocation.parse(primitive.getAsString()));
-                else icon = MaterialIcons.getMaterialIcon(this.id, iconJson.get());
-            }
-            if (paletteJson.isPresent()) {
-                palette = MaterialRenderControllers.creators.get(paletteJson.get().getAsJsonObject().get("type").getAsString()).createPalette(paletteJson.get(), this);
-                if (this.color.isEmpty()) {
-                    this.color = Optional.of(palette.getAverageColor().argb());
-                }
-            }
-            dyePaletteJson.ifPresent(element -> dyeAblePalette = Optional.of(
-                    MaterialRenderControllers.creators.get(
-                                    element
-                                            .getAsJsonObject()
-                                            .get("type")
-                                            .getAsString())
-                            .createPalette(element, this)));
+            clientSetup(iconJson, paletteJson, dyePaletteJson);
         }
+    }
+
+    @Environment(EnvType.CLIENT)
+    private void clientSetup(Optional<JsonElement> iconJson, Optional<JsonElement> paletteJson, Optional<JsonElement> dyePaletteJson) {
+        if (iconJson.isPresent()) {
+            if (iconJson.get() instanceof JsonPrimitive primitive && primitive.isString())
+                icon = new MaterialIcons.TextureMaterialIcon(ResourceLocation.parse(primitive.getAsString()));
+            else icon = MaterialIcons.getMaterialIcon(this.id, iconJson.get());
+        }
+        if (paletteJson.isPresent()) {
+            palette = MaterialRenderControllers.creators.get(paletteJson.get().getAsJsonObject().get("type").getAsString()).createPalette(paletteJson.get(), this);
+            if (this.color.isEmpty()) {
+                this.color = Optional.of(palette.getAverageColor().argb());
+            }
+        }
+        dyePaletteJson.ifPresent(element -> dyeAblePalette =
+                MaterialRenderControllers.creators.get(
+                                element
+                                        .getAsJsonObject()
+                                        .get("type")
+                                        .getAsString())
+                        .createPalette(element, this));
     }
 
     public CodecMaterial copy() {
@@ -210,26 +217,31 @@ public class CodecMaterial implements Material {
         copy.paletteJson = this.paletteJson;
         copy.dyePaletteJson = this.dyePaletteJson;
         if (smartin.miapi.Environment.isClient()) {
-            if (iconJson.isPresent()) {
-                if (iconJson.get() instanceof JsonPrimitive primitive && primitive.isString())
-                    copy.icon = new MaterialIcons.TextureMaterialIcon(ResourceLocation.parse(primitive.getAsString()));
-                else copy.icon = MaterialIcons.getMaterialIcon(this.id, iconJson.get());
-            }
-            if (copy.paletteJson.isPresent()) {
-                copy.palette = MaterialRenderControllers.creators.get(copy.paletteJson.get().getAsJsonObject().get("type").getAsString()).createPalette(copy.paletteJson.get(), this);
-                if (copy.color.isEmpty()) {
-                    copy.color = Optional.of(palette.getAverageColor().argb());
-                }
-            }
-            if (copy.dyePaletteJson.isPresent()) {
-                copy.dyeAblePalette = Optional.of(MaterialRenderControllers.creators.get(copy.dyePaletteJson.get().getAsJsonObject().get("type").getAsString()).createPalette(copy.dyePaletteJson.get(), this));
-                if (copy.color.isEmpty()) {
-                    copy.color = Optional.of(dyeAblePalette.get().getAverageColor().argb());
-                }
-            }
+            copyClient(copy);
         }
 
         return copy;
+    }
+
+    @Environment(EnvType.CLIENT)
+    private void copyClient(CodecMaterial copy) {
+        if (iconJson.isPresent()) {
+            if (iconJson.get() instanceof JsonPrimitive primitive && primitive.isString())
+                copy.icon = new MaterialIcons.TextureMaterialIcon(ResourceLocation.parse(primitive.getAsString()));
+            else copy.icon = MaterialIcons.getMaterialIcon(this.id, iconJson.get());
+        }
+        if (copy.paletteJson.isPresent()) {
+            copy.palette = MaterialRenderControllers.creators.get(copy.paletteJson.get().getAsJsonObject().get("type").getAsString()).createPalette(copy.paletteJson.get(), this);
+            if (copy.color.isEmpty()) {
+                copy.color = Optional.of(palette.getAverageColor().argb());
+            }
+        }
+        if (copy.dyePaletteJson.isPresent()) {
+            copy.dyeAblePalette = MaterialRenderControllers.creators.get(copy.dyePaletteJson.get().getAsJsonObject().get("type").getAsString()).createPalette(copy.dyePaletteJson.get(), this);
+            if (copy.color.isEmpty()) {
+                copy.color = Optional.of(dyeAblePalette.getAverageColor().argb());
+            }
+        }
     }
 
     public void merge(CodecMaterial material) {
@@ -280,14 +292,19 @@ public class CodecMaterial implements Material {
 
         // Merge icon and palette for client
         if (smartin.miapi.Environment.isClient()) {
-            if (material.icon != null) {
-                this.icon = material.icon;
-            }
-            if (material.palette != null) {
-                this.palette = material.palette;
-            }
-            this.dyeAblePalette = material.dyeAblePalette;
+            mergeClient(material);
         }
+    }
+
+    @Environment(EnvType.CLIENT)
+    private void mergeClient(CodecMaterial material) {
+        if (material.icon != null) {
+            this.icon = material.icon;
+        }
+        if (material.palette != null) {
+            this.palette = material.palette;
+        }
+        this.dyeAblePalette = material.dyeAblePalette;
     }
 
     private static void mergeProperties(Map<String, Map<ModuleProperty<?>, Object>> source,
@@ -408,22 +425,28 @@ public class CodecMaterial implements Material {
     }
 
     @Environment(EnvType.CLIENT)
-    public FallbackColorer fallbackColorer = new FallbackColorer(this);
+    public FallbackColorer fallbackColorer;
 
     @Environment(EnvType.CLIENT)
     @Override
     public MaterialRenderController getRenderController(ModuleInstance context, ItemDisplayContext mode) {
         if (context.contextStack != null &&
             ColorProperty.hasColor(context.contextStack, context) &&
-            dyeAblePalette.isPresent()) {
-            return dyeAblePalette.get();
+            dyeAblePalette != null) {
+            return dyeAblePalette;
         }
-        return palette == null ? fallbackColorer : palette;
+        if (palette == null) {
+            if (fallbackColorer == null) {
+                fallbackColorer = new FallbackColorer(this);
+            }
+            return fallbackColorer;
+        }
+        return palette;
     }
 
     @Override
-    public boolean canBeDyed(){
-        return dyeAblePalette.isPresent();
+    public boolean canBeDyed() {
+        return dyePaletteJson.isPresent();
     }
 
     @Override
@@ -459,7 +482,7 @@ public class CodecMaterial implements Material {
     }
 
     @Override
-    public int hashCode(){
+    public int hashCode() {
         return getID().hashCode();
     }
 }

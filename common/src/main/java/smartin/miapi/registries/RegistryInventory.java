@@ -42,9 +42,9 @@ import smartin.miapi.Miapi;
 import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.blocks.ModularWorkBench;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
+import smartin.miapi.blueprint.BlueprintComponent;
 import smartin.miapi.client.MiapiClient;
 import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
-import smartin.miapi.blueprint.BlueprintComponent;
 import smartin.miapi.craft.stat.CraftingStat;
 import smartin.miapi.effects.CryoStatusEffect;
 import smartin.miapi.effects.StunResistanceStatusEffect;
@@ -237,11 +237,12 @@ public class RegistryInventory {
     public static MenuType<CraftingScreenHandler> craftingScreenHandler;
 
     public static void setup() {
+
         //SCREEN
         register(screenHandlers, "default_crafting", () ->
                         new MenuType<>(CraftingScreenHandler::new, FeatureFlagSet.of()),
                 scr -> {
-                    craftingScreenHandler = scr;
+                    RegistryInventory.craftingScreenHandler = scr;
                     if (Platform.getEnvironment() == Env.CLIENT) MiapiClient.registerScreenHandler();
                 });
 
@@ -571,6 +572,8 @@ public class RegistryInventory {
             registerMiapi(moduleProperties, ProjectileDropItemProperty.KEY, new ProjectileDropItemProperty());
             registerMiapi(moduleProperties, MaterialStatIndicatorProperty.KEY, new MaterialStatIndicatorProperty());
             registerMiapi(moduleProperties, ComponentMaterialProperty.KEY, new ComponentMaterialProperty());
+            registerMiapi(moduleProperties, AlphaOverwriteProperty.KEY, new AlphaOverwriteProperty());
+            registerMiapi(moduleProperties, IconRenderProperty.KEY, new IconRenderProperty());
             //compat
             //registerMiapi(moduleProperties, BetterCombatProperty.KEY, new BetterCombatProperty());
             BetterCombatHelper.setup();

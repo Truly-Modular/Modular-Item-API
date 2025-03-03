@@ -1,15 +1,3 @@
 {
-    "gun_context": {
-        "magazine_size": 10,
-        "base_damage": 10
-
-    },
-    "ability_context": {
-        "gun_shot_single": {
-
-        },
-        "gun_reload_single": {
-            "reloadDelaySeconds": 1
-        }
-    }
+    "alpha_overwrite": "0.55"
 }

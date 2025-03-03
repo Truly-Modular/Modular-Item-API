@@ -29,12 +29,14 @@ public class ProjectileDropItemProperty extends CodecProperty<String> {
         property = this;
         MiapiProjectileEvents.MODULAR_PROJECTILE_ENTITY_HIT.register(event -> {
             if (isTriggered(event.projectile, event.entityHitResult)) {
+                event.projectile.discard();
                 return EventResult.interruptTrue();
             }
             return EventResult.pass();
         });
         MiapiProjectileEvents.MODULAR_PROJECTILE_BLOCK_HIT.register(event -> {
             if (isTriggered(event.projectile, event.blockHitResult)) {
+                event.projectile.discard();
                 return EventResult.interruptTrue();
             }
             return EventResult.pass();

@@ -51,7 +51,7 @@ public class MaterialStatPreview extends InteractAbleWidget {
 
     public void renderWidget(GuiGraphics drawContext, int mouseX, int mouseY, float delta) {
         if (isVisiible) {
-            drawContext.drawString(Minecraft.getInstance().font, "i", getX() + 1, getY() + 1, Color.BLACK.getRGB(), false);
+            drawContext.drawString(Minecraft.getInstance().font, "i", getX() + 3, getY() + 8, Color.BLACK.getRGB(), false);
             if (isMouseOver(mouseX, mouseY)) {
                 if (CraftingScreen.hasShiftDown() || CraftingScreen.hasAltDown()) {
                     drawContext.renderTooltip(Minecraft.getInstance().font, fullList, Optional.empty(), mouseX, mouseY);

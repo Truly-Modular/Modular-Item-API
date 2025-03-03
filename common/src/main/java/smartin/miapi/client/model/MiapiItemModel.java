@@ -19,6 +19,7 @@ import smartin.miapi.item.modular.VisualModularItem;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.cache.ModularItemCache;
+import smartin.miapi.modules.properties.render.IconRenderProperty;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,8 +44,7 @@ public class MiapiItemModel implements MiapiModel {
 
     private MiapiItemModel(ItemStack stack) {
         this.stack = stack;
-        if (stack.getItem() instanceof VisualModularItem) {
-        } else {
+        if (!(stack.getItem() instanceof VisualModularItem || VisualModularItem.isModularItem(stack))) {
             throw new RuntimeException("Can only make MiapiModel for Modular Items");
         }
     }
@@ -93,7 +93,8 @@ public class MiapiItemModel implements MiapiModel {
         GlintShader.setupItem(matrices.last().pose());
         Minecraft.getInstance().level.getProfiler().pop();
         Minecraft.getInstance().level.getProfiler().pop();
-        rootModel.render(modelType, stack, matrices, mode, tickDelta, vertexConsumers, entity, light, overlay);
+        IconRenderProperty.property.renderIcon(ItemModule.getModules(stack), matrices, tickDelta, vertexConsumers, entity, light, overlay);
+        //rootModel.render(modelType, stack, matrices, mode, tickDelta, vertexConsumers, entity, light, overlay);
         matrices.popPose();
         Minecraft.getInstance().level.getProfiler().pop();
     }

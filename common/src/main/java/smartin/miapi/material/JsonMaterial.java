@@ -56,26 +56,31 @@ public class JsonMaterial implements Material {
         this.id = id;
 
         if (isClient) {
-            if (element.has("icon")) {
-                JsonElement emnt = element.get("icon");
-                if (emnt instanceof JsonPrimitive primitive && primitive.isString())
-                    icon = new MaterialIcons.TextureMaterialIcon(ResourceLocation.parse(primitive.getAsString()));
-                else icon = MaterialIcons.getMaterialIcon(this.id, emnt);
-            }
-            if (element.has("color_palette")) {
-                JsonElement innerElement = element.get("color_palette");
-                palette = MaterialRenderControllers.creators.get(innerElement.getAsJsonObject().get("type").getAsString()).createPalette(innerElement, this);
-            } else {
-                palette = new FallbackColorer(this);
-            }
-            if (element.has("fake_translation") && element.has("translation")) {
-                FakeTranslation.translations.put(element.get("translation").getAsString(), element.get("fake_translation").getAsString());
-            }
-            if (getTranslation().getString().contains(".")) {
-                Miapi.LOGGER.warn("Material " + getID().toString() + " likely has a broken Translation!+ The correct key would be miapi.material." + getStringID());
-            }
+            setupClient(element);
         }
         mergeJson(rawJson, isClient);
+    }
+
+    @Environment(EnvType.CLIENT)
+    private void setupClient(JsonObject element) {
+        if (element.has("icon")) {
+            JsonElement emnt = element.get("icon");
+            if (emnt instanceof JsonPrimitive primitive && primitive.isString())
+                icon = new MaterialIcons.TextureMaterialIcon(ResourceLocation.parse(primitive.getAsString()));
+            else icon = MaterialIcons.getMaterialIcon(this.id, emnt);
+        }
+        if (element.has("color_palette")) {
+            JsonElement innerElement = element.get("color_palette");
+            palette = MaterialRenderControllers.creators.get(innerElement.getAsJsonObject().get("type").getAsString()).createPalette(innerElement, this);
+        } else {
+            palette = new FallbackColorer(this);
+        }
+        if (element.has("fake_translation") && element.has("translation")) {
+            FakeTranslation.translations.put(element.get("translation").getAsString(), element.get("fake_translation").getAsString());
+        }
+        if (getTranslation().getString().contains(".")) {
+            Miapi.LOGGER.warn("Material " + getID().toString() + " likely has a broken Translation!+ The correct key would be miapi.material." + getStringID());
+        }
     }
 
     public void mergeJson(JsonElement rootElement, boolean isClient) {
@@ -101,25 +106,15 @@ public class JsonMaterial implements Material {
                     break;
                 }
                 case "color_palette": {
-                    if (isClient) {
-                        palette = MaterialRenderControllers.creators.get(
-                                propertyElement.getAsJsonObject().get("type").getAsString()).createPalette(propertyElement, this);
-                    }
+                    mergePalette(isClient, propertyElement);
                     break;
                 }
                 case "icon": {
-                    if (isClient) {
-                        JsonElement emnt = propertyElement;
-                        if (emnt instanceof JsonPrimitive primitive && primitive.isString())
-                            icon = new MaterialIcons.TextureMaterialIcon(ResourceLocation.parse(primitive.getAsString()));
-                        else icon = MaterialIcons.getMaterialIcon(id, emnt);
-                    }
+                    mergeIcon(isClient, propertyElement);
                     break;
                 }
                 case "fake_translation": {
-                    if (isClient) {
-                        FakeTranslation.translations.put(rawJson.getAsJsonObject().get("fake_translation").getAsString(), propertyElement.getAsString());
-                    }
+                    mergeTranslation(isClient, propertyElement);
                     break;
                 }
                 default: {
@@ -127,6 +122,31 @@ public class JsonMaterial implements Material {
                 }
             }
         });
+    }
+
+    @Environment(EnvType.CLIENT)
+    private void mergeTranslation(boolean isClient, JsonElement propertyElement) {
+        if (isClient) {
+            FakeTranslation.translations.put(rawJson.getAsJsonObject().get("fake_translation").getAsString(), propertyElement.getAsString());
+        }
+    }
+
+    @Environment(EnvType.CLIENT)
+    private void mergeIcon(boolean isClient, JsonElement propertyElement) {
+        if (isClient) {
+            JsonElement emnt = propertyElement;
+            if (emnt instanceof JsonPrimitive primitive && primitive.isString())
+                icon = new MaterialIcons.TextureMaterialIcon(ResourceLocation.parse(primitive.getAsString()));
+            else icon = MaterialIcons.getMaterialIcon(id, emnt);
+        }
+    }
+
+    @Environment(EnvType.CLIENT)
+    private void mergePalette(boolean isClient, JsonElement propertyElement) {
+        if (isClient) {
+            palette = MaterialRenderControllers.creators.get(
+                    propertyElement.getAsJsonObject().get("type").getAsString()).createPalette(propertyElement, this);
+        }
     }
 
     private static void mergeProperties(JsonElement propertyElement, Map<String, Map<ModuleProperty<?>, Object>> properties) {

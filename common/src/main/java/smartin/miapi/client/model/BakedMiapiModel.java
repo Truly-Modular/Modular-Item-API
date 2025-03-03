@@ -21,15 +21,17 @@ import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import smartin.miapi.Miapi;
+import smartin.miapi.client.GlintShader;
 import smartin.miapi.client.renderer.TrimRenderer;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.item.modular.Transform;
 import smartin.miapi.material.MaterialProperty;
 import smartin.miapi.modules.ModuleInstance;
+import smartin.miapi.modules.properties.GlintProperty;
+import smartin.miapi.modules.properties.render.AlphaOverwriteProperty;
 import smartin.miapi.modules.properties.render.ColorProperty;
 import smartin.miapi.modules.properties.render.EmissivityProperty;
-import smartin.miapi.modules.properties.GlintProperty;
-import smartin.miapi.client.GlintShader;
+import smartin.miapi.modules.properties.util.DoubleOperationResolvable;
 
 @Environment(EnvType.CLIENT)
 public class BakedMiapiModel implements MiapiModel {
@@ -42,6 +44,7 @@ public class BakedMiapiModel implements MiapiModel {
     GlintProperty.GlintSettings settings;
     int skyLight;
     int blockLight;
+    float alpha;
 
 
     public BakedMiapiModel(ModelHolder holder, ModuleInstance moduleInstance, ItemStack stack) {
@@ -59,6 +62,12 @@ public class BakedMiapiModel implements MiapiModel {
         int[] propertyLight = EmissivityProperty.getLightValues(instance);
         int propertySky = propertyLight[0];
         int propertyBlock = propertyLight[1];
+
+        alpha = AlphaOverwriteProperty.property
+                .getData(moduleInstance)
+                .map(DoubleOperationResolvable::getValue)
+                .orElse(1.0d)
+                .floatValue();
 
         if (propertySky > skyLight) skyLight = propertySky;
         if (propertyBlock > blockLight) blockLight = propertyBlock;
@@ -90,7 +99,7 @@ public class BakedMiapiModel implements MiapiModel {
                 currentModel.getQuads(null, dir, RandomSource.create()).forEach(quad -> {
                     VertexConsumer vertexConsumer = modelHolder.colorProvider().getConsumer(vertexConsumers, quad.getSprite(), stack, instance, transformationMode);
 
-                    vertexConsumer.putBulkData(matrices.last(), quad, colors[0], colors[1], colors[2], 1.0f, light, overlay);
+                    vertexConsumer.putBulkData(matrices.last(), quad, colors[0], colors[1], colors[2], alpha, light, overlay);
                 });
             }
         } catch (RuntimeException e) {
@@ -107,7 +116,7 @@ public class BakedMiapiModel implements MiapiModel {
                 for (Direction dir : Direction.values()) {
                     currentModel.getQuads(null, dir, RandomSource.create()).forEach(quad -> {
                         Color glintColor = settings.getColor();
-                        altConsumer.putBulkData(matrices.last(), quad, glintColor.redAsFloat(), glintColor.greenAsFloat(), glintColor.blueAsFloat(), 1.0f, light, overlay);
+                        altConsumer.putBulkData(matrices.last(), quad, glintColor.redAsFloat(), glintColor.greenAsFloat(), glintColor.blueAsFloat(), alpha, light, overlay);
 
                     });
                 }
@@ -133,7 +142,7 @@ public class BakedMiapiModel implements MiapiModel {
             Minecraft.getInstance().level.getProfiler().push("EntityModel");
             ModelTransformer.getInverse(currentModel, random).forEach(quad -> {
                 VertexConsumer vertexConsumer = modelHolder.colorProvider().getConsumer(vertexConsumers, quad.getSprite(), stack, instance, transformationMode);
-                vertexConsumer.putBulkData(matrices.last(), quad, colors[0], colors[1], colors[2], 1.0f, light, overlay);
+                vertexConsumer.putBulkData(matrices.last(), quad, colors[0], colors[1], colors[2], alpha, light, overlay);
             });
             Minecraft.getInstance().level.getProfiler().pop();
         }

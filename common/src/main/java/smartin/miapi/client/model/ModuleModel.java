@@ -29,6 +29,7 @@ public class ModuleModel {
     public final String key;
     @Nullable
     public final ItemDisplayContext context;
+    public boolean renderSubmodules = true;
 
     public ModuleModel(ModuleInstance instance, ItemStack stack, String key, @Nullable ItemDisplayContext displayContext) {
         this.instance = instance;
@@ -73,18 +74,20 @@ public class ModuleModel {
             Minecraft.getInstance().level.getProfiler().pop();
         });
         //render submodules
-        instance.getSubModuleMap().forEach((id, instance1) -> {
-            Minecraft.getInstance().level.getProfiler().push("submodule-logic");
-            matrices.pushPose();
-            Transform.applyPosition(matrices, submoduleMatrix);
-            ModuleModel subModuleModel = subModuleModels.get(id);
-            if (subModuleModel == null) {
-                subModuleModel = new ModuleModel(instance1, stack, key, context);
-                subModuleModels.put(id, subModuleModel);
-            }
-            Minecraft.getInstance().level.getProfiler().pop();
-            subModuleModel.render(modelType, stack, matrices, mode, tickDelta, vertexConsumers, entity, light, overlay);
-            matrices.popPose();
-        });
+        if(renderSubmodules){
+            instance.getSubModuleMap().forEach((id, instance1) -> {
+                Minecraft.getInstance().level.getProfiler().push("submodule-logic");
+                matrices.pushPose();
+                Transform.applyPosition(matrices, submoduleMatrix);
+                ModuleModel subModuleModel = subModuleModels.get(id);
+                if (subModuleModel == null) {
+                    subModuleModel = new ModuleModel(instance1, stack, key, context);
+                    subModuleModels.put(id, subModuleModel);
+                }
+                Minecraft.getInstance().level.getProfiler().pop();
+                subModuleModel.render(modelType, stack, matrices, mode, tickDelta, vertexConsumers, entity, light, overlay);
+                matrices.popPose();
+            });
+        }
     }
 }
