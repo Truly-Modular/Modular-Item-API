@@ -7,8 +7,12 @@ import dev.architectury.platform.Platform;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffects;
+import smartin.miapi.Miapi;
+import smartin.miapi.lootFunctions.MaterialSwapLootFunction;
+import smartin.miapi.lootFunctions.ModuleSwapLootFunction;
 
 import java.util.List;
+import java.util.Optional;
 
 @ConfigAutoCodec.ConfigClassMarker
 public class MiapiServerConfig {
@@ -23,6 +27,41 @@ public class MiapiServerConfig {
     public StunEffectCategory stunEffectCategory = new StunEffectCategory();
 
     public OtherCategory other = new OtherCategory();
+
+    @AutoCodec.Name("loot_category")
+    public LootModularisation lootCategory = new LootModularisation();
+
+    @ConfigAutoCodec.ConfigClassMarker
+    public static class LootModularisation {
+        @AutoCodec.Name("is_enabled")
+        public boolean isEnabled = true;
+
+        @AutoCodec.Name("is_swapping_modules_enabled")
+        public boolean isSwappingModules = true;
+
+        @AutoCodec.Name("is_swapping_materials_enabled")
+        public boolean isSwappingMaterials = true;
+
+        @AutoCodec.Name("material_swap_loot_functions")
+        public MaterialSwapLootFunction materialSwapLootFunction = new MaterialSwapLootFunction(
+                Miapi.id("empty"),
+                -1.5,
+                0.5,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                0.8,
+                Optional.empty(),
+                Optional.empty());
+
+        @AutoCodec.Name("module_swap_loot_functions")
+        public ModuleSwapLootFunction moduleSwapLootFunction = new ModuleSwapLootFunction(
+                Miapi.id("empty"),
+                1.0,
+                Optional.empty(),
+                Optional.empty());
+    }
 
     @ConfigAutoCodec.ConfigClassMarker
     public static class OtherCategory {
@@ -153,7 +192,7 @@ public class MiapiServerConfig {
         public Properties properties = new Properties();
 
         @ConfigAutoCodec.ConfigClassMarker
-        public static class Properties{
+        public static class Properties {
             @Comment("Whether the Attribute Property should copy the items other attributes for generated Materials")
             @AutoCodec.Name("attribute_property")
             public GeneratePropertyOption attributeProperty = new GeneratePropertyOption();

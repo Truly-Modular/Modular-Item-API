@@ -8,9 +8,12 @@ import com.redpxnda.nucleus.config.ConfigType;
 import net.fabricmc.api.EnvType;
 import smartin.miapi.Environment;
 import smartin.miapi.Miapi;
+import smartin.miapi.lootFunctions.LootFunctionsInjection;
 import smartin.miapi.modules.abilities.key.KeyBindManager;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.GlintProperty;
+
+import java.util.ArrayList;
 
 @ConfigAutoCodec.ConfigClassMarker
 public class MiapiConfig {
@@ -24,7 +27,7 @@ public class MiapiConfig {
 
 
     public static void setupConfigs() {
-        if(Environment.isClient()){
+        if (Environment.isClient()) {
             setupClientConfig();
         }
         MiapiConfig.serverConfigObject = ConfigManager.register(ConfigBuilder.automatic(MiapiServerConfig.class)
@@ -39,11 +42,21 @@ public class MiapiConfig {
                     if (Miapi.server != null && Miapi.server.getConnection() != null) {
                         //CacheCommands.clearCacheAllClients(Miapi.server);
                     }
+                    LootFunctionsInjection.adjusted = new ArrayList<>();
+                    if (MiapiConfig.INSTANCE.server.lootCategory.isEnabled) {
+                        if (MiapiConfig.INSTANCE.server.lootCategory.isSwappingMaterials) {
+                            LootFunctionsInjection.adjusted.add(MiapiConfig.INSTANCE.server.lootCategory.materialSwapLootFunction);
+                        }
+                        if (MiapiConfig.INSTANCE.server.lootCategory.isSwappingModules) {
+                            LootFunctionsInjection.adjusted.add(MiapiConfig.INSTANCE.server.lootCategory.moduleSwapLootFunction);
+                        }
+                    }
                 }));
         serverConfigObject.load();
     }
+
     @net.fabricmc.api.Environment(EnvType.CLIENT)
-    public static void setupClientConfig(){
+    public static void setupClientConfig() {
         MiapiConfig.clientConfigObject = ConfigManager.register(ConfigBuilder.automatic(MiapiClientConfig.class)
                 .id(Miapi.MOD_ID + ":client")
                 .fileLocation(Miapi.MOD_ID + "_client")

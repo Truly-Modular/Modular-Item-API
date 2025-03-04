@@ -4,6 +4,7 @@ import dev.architectury.platform.Platform;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.item.v1.EnchantmentEvents;
+import net.fabricmc.fabric.api.loot.v3.LootTableEvents;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.util.TriState;
 import net.minecraft.server.packs.PackType;
@@ -11,6 +12,7 @@ import net.minecraft.world.entity.ai.attributes.RangedAttribute;
 import smartin.miapi.Environment;
 import smartin.miapi.Miapi;
 import smartin.miapi.item.modular.ModularItem;
+import smartin.miapi.lootFunctions.LootFunctionsInjection;
 import smartin.miapi.modules.properties.attributes.AttributeProperty;
 import smartin.miapi.modules.properties.enchanment.AllowedEnchantments;
 import smartin.miapi.registries.RegistryInventory;
@@ -22,6 +24,7 @@ public class MiapiFabric implements ModInitializer {
     @Override
     public void onInitialize() {
         Miapi.init();
+        LootTableEvents.MODIFY.register((key, tableBuilder, source, registries) -> LootFunctionsInjection.adjusted.forEach(tableBuilder::apply));
 
         //DATA
         if (Environment.isClient()) {

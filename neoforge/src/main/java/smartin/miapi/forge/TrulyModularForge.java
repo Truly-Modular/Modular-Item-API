@@ -26,6 +26,8 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeModificationEvent;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
+import net.neoforged.neoforge.registries.RegisterEvent;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.attributes.AttributeRegistry;
@@ -51,6 +53,7 @@ public class TrulyModularForge {
     public TrulyModularForge() {
         NeoForge.EVENT_BUS.register(new ServerEvents());
         Miapi.init();
+
 
         loadCompat("epicfight", () -> {
             //RegistryInventory.moduleProperties.register(EpicFightCompatProperty.KEY, new EpicFightCompatProperty())
@@ -80,6 +83,11 @@ public class TrulyModularForge {
             if (Platform.isModLoaded("treechop")) {
                 InterModComms.sendTo("treechop", "getTreeChopAPI", () -> (Consumer<Object>) smartin.miapi.modules.properties.compat.ht_treechop.TreechopUtil::setTreechopApi);
             }
+        }
+
+        @SubscribeEvent
+        public static void register(RegisterEvent event) {
+            event.register(NeoForgeRegistries.GLOBAL_LOOT_MODIFIER_SERIALIZERS.key(), Miapi.id("global_loot_mod"), () -> MiapiGlobalLootModifier.CODEC);
         }
 
         @SubscribeEvent

@@ -35,6 +35,8 @@ import smartin.miapi.item.ModularItemStackConverter;
 import smartin.miapi.item.modular.PropertyResolver;
 import smartin.miapi.item.modular.Transform;
 import smartin.miapi.item.modular.VisualModularItem;
+import smartin.miapi.lootFunctions.MaterialSwapLootFunction;
+import smartin.miapi.lootFunctions.ModuleSwapLootFunction;
 import smartin.miapi.material.ComponentMaterial;
 import smartin.miapi.material.MaterialCommand;
 import smartin.miapi.material.MaterialIcons;
@@ -119,6 +121,8 @@ public class Miapi {
         CodecBehavior.registerClass(MaterialIcons.SpinSettings.class, MaterialIcons.SpinSettings.CODEC);
         CodecBehavior.registerClass(EquipmentSlotGroup.class, EquipmentSlotGroup.CODEC);
         CodecBehavior.registerClass(EquipmentSlot.class, EquipmentSlot.CODEC);
+        CodecBehavior.registerClass(MaterialSwapLootFunction.class, MaterialSwapLootFunction.CODEC.codec());
+        CodecBehavior.registerClass(ModuleSwapLootFunction.class, ModuleSwapLootFunction.CODEC.codec());
         if (Environment.isClient()) {
             CodecBehavior.registerClass(MiapiBinding.class, MiapiBinding.CODEC);
         }
