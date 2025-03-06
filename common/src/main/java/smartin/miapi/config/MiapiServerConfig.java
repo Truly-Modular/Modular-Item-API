@@ -58,7 +58,7 @@ public class MiapiServerConfig {
         @AutoCodec.Name("module_swap_loot_functions")
         public ModuleSwapLootFunction moduleSwapLootFunction = new ModuleSwapLootFunction(
                 Miapi.id("empty"),
-                1.0,
+                0.5,
                 Optional.empty(),
                 Optional.empty());
     }

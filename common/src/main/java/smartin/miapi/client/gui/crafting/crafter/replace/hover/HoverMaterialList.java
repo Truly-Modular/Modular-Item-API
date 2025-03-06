@@ -7,6 +7,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FastColor;
 import net.minecraft.world.item.ItemStack;
 import smartin.miapi.Miapi;
@@ -183,8 +184,9 @@ public class HoverMaterialList extends InteractAbleWidget {
     }
 
     public static Component getTranslation(String materialOrGroupKey) {
-        if (MaterialProperty.materials.containsKey(materialOrGroupKey)) {
-            Material material = MaterialProperty.materials.get(materialOrGroupKey);
+        ResourceLocation id = Miapi.id(materialOrGroupKey);
+        if (MaterialProperty.materials.containsKey(id)) {
+            Material material = MaterialProperty.materials.get(id);
             return material.getTranslation();
         }
         Component testTranslation = Component.translatable("miapi.material_group." + materialOrGroupKey);

@@ -28,10 +28,15 @@ public class MobMixin {
                 if (!playerEntity.hasEffect(MobEffects.BLINDNESS)) {
                 }
             } else {
-                if(livingEntity instanceof Mob mob){
+                if (livingEntity instanceof Mob mob) {
                     mob.setSpeed(0);
                 }
                 ci.cancel();
+            }
+        }
+        if (livingEntity.hasEffect(RegistryInventory.cryoStatusEffect)) {
+            if (livingEntity instanceof Mob mob) {
+                mob.setSpeed(0);
             }
         }
     }

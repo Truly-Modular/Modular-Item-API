@@ -2,6 +2,9 @@ package smartin.miapi.client;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.redpxnda.nucleus.config.ConfigManager;
+import com.redpxnda.nucleus.event.RenderEvents;
+import com.redpxnda.nucleus.registry.effect.RenderingMobEffect;
+import dev.architectury.event.EventResult;
 import dev.architectury.event.events.client.ClientLifecycleEvent;
 import dev.architectury.event.events.client.ClientPlayerEvent;
 import dev.architectury.event.events.client.ClientReloadShadersEvent;
@@ -15,10 +18,13 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.core.Holder;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.item.Item;
 import smartin.miapi.Miapi;
 import smartin.miapi.blocks.ModularWorkBenchRenderer;
@@ -78,6 +84,30 @@ public class MiapiClient {
         var config = ConfigManager.getConfigObject(Miapi.id("server"));
         if (config.getInstance() == null) {
             config.load();
+        }
+        if ( Platform.getMod("nucleus").getVersion().equals("1.1.4")) {
+            RenderEvents.LIVING_ENTITY_RENDER.register((stage, model, entity, entityYaw, partialTick, matrixStack, multiBufferSource, packedLight) -> {
+                if (stage != RenderEvents.EntityRenderStage.PRE) return EventResult.pass();
+                for (Map.Entry<Holder<MobEffect>, MobEffectInstance> entry : entity.getActiveEffectsMap().entrySet()) {
+                    MobEffectInstance instance = entry.getValue();
+                    Holder<MobEffect> effect = entry.getKey();
+                    if (effect.value() instanceof RenderingMobEffect rendering && (instance.getDuration() > 0 || instance.isInfiniteDuration())) {
+                        boolean result = rendering.renderPre(instance, entity, entityYaw, partialTick, matrixStack, multiBufferSource, packedLight);
+                        if (result)
+                            return EventResult.interruptFalse();
+                    }
+                }
+                return EventResult.pass();
+            });
+            RenderEvents.LIVING_ENTITY_RENDER.register((stage, model, entity, entityYaw, partialTick, matrixStack, multiBufferSource, packedLight) -> {
+                if (stage != RenderEvents.EntityRenderStage.POST) return EventResult.pass();
+                entity.getActiveEffectsMap().forEach((effect, instance) -> {
+                    if (effect.value() instanceof RenderingMobEffect rendering && (instance.getDuration() > 0 || instance.isInfiniteDuration())) {
+                        rendering.renderPost(instance, entity, entityYaw, partialTick, matrixStack, multiBufferSource, packedLight);
+                    }
+                });
+                return EventResult.pass();
+            });
         }
         RegistryInventory.modularItems.addCallback((MiapiClient::registerAnimations));
         //BoomerangClientRendering.setup();

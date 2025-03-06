@@ -35,7 +35,7 @@ import java.util.function.Function;
  */
 public class DoubleOperationResolvable {
     static Codec<Operation> autoCodec = AutoCodec.of(Operation.class).codec();
-    static Codec<Operation> operationCodec = Codec.withAlternative(new Codec<Operation>() {
+    static Codec<Operation> operationCodec = Codec.withAlternative(new Codec<>() {
         @Override
         public <T> DataResult<T> encode(Operation input, DynamicOps<T> ops, T prefix) {
             return autoCodec.encode(input, ops, prefix);
@@ -43,12 +43,7 @@ public class DoubleOperationResolvable {
 
         @Override
         public <T> DataResult<Pair<Operation, T>> decode(DynamicOps<T> ops, T input) {
-            DataResult<Pair<Boolean, T>> decodeBoolean = Miapi.FIXED_BOOL_CODEC.decode(ops, input);
-            if (decodeBoolean.isSuccess()) {
-                Operation operation = new Operation(decodeBoolean.getOrThrow().getFirst() ? "1" : "-1");
-                return DataResult.success(new Pair<>(operation, input));
-            }
-            DataResult<Pair<String, T>> result = Codec.STRING.decode(ops, input);
+            DataResult<Pair<String, T>> result = Operation.NUMBERSTRINGCODEC.decode(ops, input);
             if (result.isError()) {
                 DataResult<Pair<Double, T>> doubleResult = Codec.DOUBLE.decode(ops, input);
                 if (doubleResult.isSuccess()) {
@@ -250,6 +245,8 @@ public class DoubleOperationResolvable {
     }
 
     public static class Operation {
+
+
         public static Codec<AttributeModifier.Operation> operationCodec = new Codec<>() {
             @Override
             public <T> DataResult<Pair<AttributeModifier.Operation, T>> decode(DynamicOps<T> ops, T input) {
@@ -266,9 +263,22 @@ public class DoubleOperationResolvable {
         public static Codec<String> NUMBERSTRINGCODEC = new Codec<String>() {
             @Override
             public <T> DataResult<Pair<String, T>> decode(DynamicOps<T> ops, T input) {
-                DataResult<Pair<Boolean, T>> decodeBoolean = Miapi.FIXED_BOOL_CODEC.decode(ops, input);
-                if (decodeBoolean.isSuccess()) {
-                    return DataResult.success(new Pair<>(decodeBoolean.getOrThrow().getFirst() ? "1" : "-1", input));
+                var numberResult = ops.getNumberValue(input);
+                if (numberResult.isSuccess()) {
+                    return DataResult.success(new Pair<>(numberResult.getOrThrow().toString(), input));
+                }
+                var boolResult = ops.getBooleanValue(input);
+                if (boolResult.isSuccess()) {
+                    return DataResult.success(new Pair<>(boolResult.getOrThrow() ? "1" : "-1", input));
+                }
+                var stringResult = ops.getStringValue(input);
+                if (stringResult.isSuccess()) {
+                    if (stringResult.getOrThrow().equals("true")) {
+                        return DataResult.success(new Pair<>("1", input));
+                    } else if (stringResult.getOrThrow().equals("false")) {
+                        return DataResult.success(new Pair<>("-1", input));
+                    }
+                    return DataResult.success(new Pair<>(stringResult.getOrThrow(), input));
                 }
                 DataResult<Pair<Double, T>> decodeDouble = Codec.DOUBLE.decode(ops, input);
                 if (decodeDouble.isSuccess()) {
@@ -279,6 +289,10 @@ public class DoubleOperationResolvable {
                 if (decodeString.isSuccess()) {
                     Pair<String, T> pair = decodeString.getOrThrow();
                     return DataResult.success(new Pair<>(pair.getFirst(), input));
+                }
+                DataResult<Pair<Boolean, T>> decodeBoolean = Miapi.FIXED_BOOL_CODEC.decode(ops, input);
+                if (decodeBoolean.isSuccess()) {
+                    return DataResult.success(new Pair<>(decodeBoolean.getOrThrow().getFirst() ? "1" : "-1", input));
                 }
                 return DataResult.error(() -> "is neither a string nor a boolean or a number");
             }

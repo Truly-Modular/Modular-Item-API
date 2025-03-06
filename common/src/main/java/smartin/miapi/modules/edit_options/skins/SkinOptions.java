@@ -53,9 +53,10 @@ public class SkinOptions implements EditOption {
         return tabMap.getOrDefault(path, defaultTab);
     }
 
-    public static void load(String data) {
+    public static void load(ResourceLocation path, String data) {
         JsonObject element = Miapi.gson.fromJson(data, JsonObject.class);
         Skin.fromJson(element).forEach(skin -> {
+            skin.modID = path.getNamespace();
             Map<String, Skin> skinMap = skins.computeIfAbsent(skin.module.id(), (module) -> new HashMap<>());
             skinMap.put(skin.path, skin);
         });

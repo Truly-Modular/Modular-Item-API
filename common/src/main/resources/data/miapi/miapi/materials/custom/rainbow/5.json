@@ -16,7 +16,7 @@
         "layer": {
             "type": "overlay_texture",
             "atlas": "block",
-            "texture": "miapi:item/rainbow_animation_5"
+            "texture": "minecraft:block/white_concrete"
         },
         "mask": {
             "type": "texture",

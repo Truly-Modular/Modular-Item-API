@@ -41,7 +41,7 @@ public class ReloadHelpers {
                 SynergyManager.moduleSynergies,
                 (isClient, path, data, registryAccess) -> SynergyManager.load(data, path), 2);
         ReloadHelpers.registerReloadHandler(ReloadEvents.MAIN, "miapi/skins/module", SkinOptions.skins, (isClient, path, data, registryAccess) -> {
-            SkinOptions.load(data);
+            SkinOptions.load(path,data);
         }, 1);
         ReloadHelpers.registerReloadHandler(ReloadEvents.MAIN, "miapi/skins/tab", SkinOptions.tabMap, (isClient, path, data, registryAccess) -> {
             SkinOptions.loadTabData(data);

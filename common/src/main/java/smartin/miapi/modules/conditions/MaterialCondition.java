@@ -8,6 +8,7 @@ import net.minecraft.resources.ResourceLocation;
 import smartin.miapi.Miapi;
 import smartin.miapi.material.base.Material;
 import smartin.miapi.material.MaterialProperty;
+import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.List;
@@ -42,11 +43,11 @@ public class MaterialCondition implements ModuleCondition {
 
     @Override
     public boolean isAllowed(ConditionManager.ConditionContext conditionContext) {
-        Optional<Map<ModuleProperty<?>, Object>> propertyMapOptional = conditionContext.getContext(ConditionManager.MODULE_PROPERTIES);
-        if (propertyMapOptional.isPresent()) {
-            Map<ModuleProperty<?>, Object> propertyMap = propertyMapOptional.get();
+        Optional<ModuleInstance> moduleOptional = conditionContext.getContext(ConditionManager.MODULE_CONDITION_CONTEXT);
+        if (moduleOptional.isPresent()) {
+            ModuleInstance moduleInstance = moduleOptional.get();
             List<Component> reasons = conditionContext.failReasons;
-            if (MaterialProperty.getMaterial(propertyMap) instanceof Material material && material.getID().equals(materialKey)) {
+            if (MaterialProperty.getMaterial(moduleInstance) instanceof Material material && material.getID().equals(materialKey)) {
                 return true;
             }
             reasons.add(error);

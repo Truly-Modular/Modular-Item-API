@@ -15,7 +15,7 @@ Here's an example of what your `skin.json` file should look like:
 ```json
 {
     "path": "bident",
-    "module": "arsenal:blade/trident",
+    "module": "tm_arsenal:blade/trident",
     "replace": {
         "model": [
             {

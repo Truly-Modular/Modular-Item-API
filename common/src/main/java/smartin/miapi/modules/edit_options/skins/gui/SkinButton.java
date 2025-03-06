@@ -34,10 +34,15 @@ class SkinButton extends InteractAbleWidget implements SkinGui.SortAble {
         this.skinPath = skinPath;
         this.skin = skin;
         if (skin.condition != null) {
-            isAllowed = skin.condition.isAllowed(ConditionManager.playerContext(skinGui.instance,Minecraft.getInstance().player,skinGui.instance.properties));
+            isAllowed = skin.condition.isAllowed(ConditionManager.playerContext(skinGui.instance, Minecraft.getInstance().player, skinGui.instance.properties));
         }
         String[] parts = skinPath.split("/");
-        Component skinName = StatResolver.translateAndResolve(Miapi.MOD_ID + ".skin.name." + parts[parts.length - 1], skinGui.instance);
+        Component skinName;
+        if (skin.modID != null) {
+            skinName = StatResolver.translateAndResolve(Miapi.MOD_ID + ".skin." + skin.modID + ".name." + parts[parts.length - 1], skinGui.instance);
+        } else {
+            skinName = StatResolver.translateAndResolve(Miapi.MOD_ID + ".skin.name." + parts[parts.length - 1], skinGui.instance);
+        }
         sortAble = skinName.getString();
         textWidget = new ScrollingTextWidget(x + 3, y + 2, width - 6, skinName, skin.textureOptions.color());
     }

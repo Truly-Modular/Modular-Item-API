@@ -13,6 +13,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.renderer.texture.SpriteContents;
 import net.minecraft.resources.ResourceLocation;
 import smartin.miapi.Miapi;
+import smartin.miapi.client.MiapiClient;
 import smartin.miapi.client.renderer.NativeImageGetter;
 import smartin.miapi.material.base.Material;
 
@@ -181,7 +182,7 @@ public class MaskColorer extends SpriteColorer {
                 ).apply(instance, SpriteMasker::new));
         public static MapCodec<SpriteMasker> MAP_CODEC = Miapi.withAlternative(DIRECT_MAP_CODEC, DEEP_MAP_CODEC);
         SpriteFromJson maskingSprite;
-        boolean offsetRandom;
+        boolean offsetRandom = false;
         public int offsetAble = 12;
 
         public SpriteMasker(SpriteFromJson contents, boolean offsetRandom) {
@@ -207,8 +208,17 @@ public class MaskColorer extends SpriteColorer {
             int yOffset = offsetRandom ? Math.abs(offsetAble * 7 + offsetAble * 31) : 0;
             for (int width = 0; width < base.getWidth(); width++) {
                 for (int height = 0; height < base.getHeight(); height++) {
-                    blend(base, other, width, height, nativeImage.nativeImage,
-                            (width + xOffset) % nativeImage.getWidth(), (height + yOffset) % nativeImage.getHeight(), lastImage);
+                    if (this.isAnimated()) {
+                        int baseColor = base.getPixelRGBA(width, height);
+                        int otherColor = other.getPixelRGBA(width, height);
+                        int blendColor = offsetRandom ?
+                                nativeImage.getColor((width + xOffset) % nativeImage.getWidth(), (height + yOffset) % nativeImage.getHeight()) :
+                                nativeImage.getColor(width % nativeImage.getWidth(), height % nativeImage.getHeight());
+                        lastImage.setPixelRGBA(width, height, blendAlt(baseColor, otherColor, blendColor));
+                    } else {
+                        blend(base, other, width, height, nativeImage.nativeImage,
+                                (width + xOffset) % nativeImage.getWidth(), (height + yOffset) % nativeImage.getHeight(), lastImage);
+                    }
                 }
             }
             if (maskingSprite != null) {
@@ -252,6 +262,34 @@ public class MaskColorer extends SpriteColorer {
                                (blendedBlue << output.format().blueOffset()) |
                                (blendedAlpha << output.format().alphaOffset());
             output.setPixelRGBA(nativeX, nativeY, blendedColor);
+        }
+
+        public int blendAlt(int base, int other, int blend) {
+            // Extracting the individual components from the packed integers
+            int baseRed = (base >> 24) & 0xFF;
+            int baseGreen = (base >> 16) & 0xFF;
+            int baseBlue = (base >> 8) & 0xFF;
+            int baseAlpha = base & 0xFF;
+
+            int otherRed = (other >> 24) & 0xFF;
+            int otherGreen = (other >> 16) & 0xFF;
+            int otherBlue = (other >> 8) & 0xFF;
+            int otherAlpha = other & 0xFF;
+
+            // Extracting the individual components from the blend integer
+            int blendRed = (blend >> 24) & 0xFF;
+            int blendGreen = (blend >> 16) & 0xFF;
+            int blendBlue = (blend >> 8) & 0xFF;
+            int blendAlpha = blend & 0xFF;
+
+            // Calculate blended components
+            int blendedRed = (blendRed * otherRed + (255 - blendRed) * baseRed) / 255;
+            int blendedGreen = (blendGreen * otherGreen + (255 - blendGreen) * baseGreen) / 255;
+            int blendedBlue = (blendBlue * otherBlue + (255 - blendBlue) * baseBlue) / 255;
+            int blendedAlpha = (blendAlpha * otherAlpha + (255 - blendAlpha) * baseAlpha) / 255;
+
+            // Pack the blended components into a single integer
+            return (blendedRed << 24) | (blendedGreen << 16) | (blendedBlue << 8) | blendedAlpha;
         }
 
 

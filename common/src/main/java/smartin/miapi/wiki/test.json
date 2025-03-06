@@ -3,13 +3,13 @@
         "data": {
             "miapi:material": "miapi:rod/blaze_rod"
         },
-        "key": "arsenal:handle/sword",
+        "key": "tm_arsenal:handle/sword",
         "child": {
             "guard": {
                 "data": {
                     "miapi:material": "miapi:crystal/emerald"
                 },
-                "key": "arsenal:guard/normal",
+                "key": "tm_arsenal:guard/normal",
                 "child": {
                     "blade": {
                         "data": {
@@ -21,7 +21,7 @@
                                 }
                             }
                         },
-                        "key": "arsenal:blade/normal"
+                        "key": "tm_arsenal:blade/normal"
                     }
                 }
             },
@@ -29,7 +29,7 @@
                 "data": {
                     "miapi:material": "miapi:crystal/emerald"
                 },
-                "key": "arsenal:pommel/round"
+                "key": "tm_arsenal:pommel/round"
             }
         }
     }

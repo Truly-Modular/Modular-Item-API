@@ -117,7 +117,7 @@ public class MiapiItemModel implements MiapiModel {
     public interface ModelSupplier {
         List<MiapiModel> getModels(String key, @Nullable ItemDisplayContext model, ModuleInstance module, ItemStack stack);
 
-        default List<Pair<Matrix4f, MiapiModel>> filter(List<Pair<Matrix4f, MiapiModel>> models, ModuleInstance module, String key, ItemDisplayContext context) {
+        default List<Pair<Matrix4f, MiapiModel>> filter(List<Pair<Matrix4f, MiapiModel>> models, ItemStack stack, ModuleInstance module, String key, ItemDisplayContext context) {
             return models;
         }
     }

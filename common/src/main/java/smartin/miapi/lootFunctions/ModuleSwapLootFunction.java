@@ -160,7 +160,7 @@ public record ModuleSwapLootFunction(
         int randomIndex = randomSource.nextInt(possibleSubstitutes.size());
         ModuleInstance moduleInstance = new ModuleInstance(possibleSubstitutes.get(randomIndex));
         moduleInstance.moduleData = new HashMap<>(module.moduleData);
-        moduleInstance.subModules = module.subModules;
+        module.subModules.forEach(moduleInstance::setSubModule);
         moduleInstance.clearCaches();
         return moduleInstance;
     }

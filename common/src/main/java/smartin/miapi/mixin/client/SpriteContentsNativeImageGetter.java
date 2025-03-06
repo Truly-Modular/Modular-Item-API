@@ -19,7 +19,7 @@ public abstract class SpriteContentsNativeImageGetter {
         SpriteContents spriteContents = (SpriteContents) (Object) (this);
         //Miapi.LOGGER.info("x " + x + " y " + y + " a " + unpackSkipPixels + " b " + unpackSkipRows + " i " + spriteContents.getID());
         if (NativeImageGetter.getImage(spriteContents) != images[0]) {
-            NativeImageGetter.ImageHolder holder = NativeImageGetter.nativeImageMap.getOrDefault(spriteContents, new NativeImageGetter.ImageHolder());
+            NativeImageGetter.ImageHolder holder = NativeImageGetter.getFromContents(spriteContents);
             holder.nativeImage = images[0];
             holder.width = spriteContents.width();
             holder.height = spriteContents.height();
@@ -27,7 +27,7 @@ public abstract class SpriteContentsNativeImageGetter {
             holder.y = unpackSkipRows;
             NativeImageGetter.nativeImageMap.put(spriteContents, holder);
         } else {
-            NativeImageGetter.ImageHolder holder = NativeImageGetter.nativeImageMap.getOrDefault(spriteContents, new NativeImageGetter.ImageHolder());
+            NativeImageGetter.ImageHolder holder = NativeImageGetter.getFromContents(spriteContents);
             holder.nativeImage = images[0];
             holder.width = spriteContents.width();
             holder.height = spriteContents.height();

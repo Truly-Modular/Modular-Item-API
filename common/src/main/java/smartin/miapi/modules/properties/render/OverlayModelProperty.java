@@ -2,6 +2,7 @@ package smartin.miapi.modules.properties.render;
 
 import com.google.gson.JsonElement;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.redpxnda.nucleus.codec.auto.AutoCodec;
 import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
@@ -21,9 +22,9 @@ import smartin.miapi.client.model.MiapiItemModel;
 import smartin.miapi.client.model.MiapiModel;
 import smartin.miapi.client.model.ModelHolder;
 import smartin.miapi.client.renderer.RescaledVertexConsumer;
+import smartin.miapi.material.MaterialProperty;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
-import smartin.miapi.material.MaterialProperty;
 import smartin.miapi.modules.properties.render.colorproviders.ColorProvider;
 import smartin.miapi.modules.properties.util.CodecProperty;
 import smartin.miapi.modules.properties.util.MergeAble;
@@ -31,6 +32,7 @@ import smartin.miapi.modules.properties.util.MergeType;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Pattern;
 
 public class OverlayModelProperty extends CodecProperty<List<OverlayModelProperty.OverlayModelData>> {
@@ -41,37 +43,85 @@ public class OverlayModelProperty extends CodecProperty<List<OverlayModelPropert
     public OverlayModelProperty() {
         super(CODEC);
         property = this;
-        MiapiItemModel.modelSuppliers.add((key, mode, module, stack) -> {
-            List<MiapiModel> models = new ArrayList<>();
-            ModuleInstance moduleInstance = module;
+        MiapiItemModel.modelSuppliers.add(new MiapiItemModel.ModelSupplier() {
+            @Override
+            public List<MiapiModel> getModels(String key, @Nullable ItemDisplayContext model, ModuleInstance module, ItemStack stack) {
+                List<MiapiModel> models = new ArrayList<>();
+                ModuleInstance moduleInstance = module;
 
-            for (ModuleInstance module2 : ItemModule.getModules(stack).allSubModules()) {
-                for (OverlayModelData modelData : getData(module2).orElse(new ArrayList<>())) {
-                    if (!modelData.onlyOnSameModule() || moduleInstance.equals(module2)) {
-                        List<ModelProperty.ModelData> list = ModelProperty.property.getData(moduleInstance).orElse(new ArrayList<>());
+                for (ModuleInstance module2 : ItemModule.getModules(stack).allSubModules()) {
+                    for (OverlayModelData modelData : getData(module2).orElse(new ArrayList<>())) {
+                        if (!modelData.onlyOnSameModule() || moduleInstance.equals(module2)) {
+                            List<ModelProperty.ModelData> list = ModelProperty.property.getData(moduleInstance).orElse(new ArrayList<>());
 
-                        list.forEach(modelJson -> {
-                            if (modelData.isValid(modelJson)) {
-                                ModelHolder holder = ModelProperty.bakedModel(moduleInstance, modelJson, stack, key);
-                                if (holder != null) {
-                                    ColorProvider colorProvider = modelData.getColorProvider(stack, module2, moduleInstance, holder.colorProvider());
-                                    TextureAtlasSprite overWriteSprite = modelData.resolveSprite();
-                                    models.add(getBakedMiapiModel(
-                                            module,
-                                            stack,
-                                            modelData,
-                                            moduleInstance,
-                                            holder,
-                                            colorProvider,
-                                            overWriteSprite));
+                            list.forEach(modelJson -> {
+                                if (modelData.isValid(modelJson)) {
+                                    ModelHolder holder = ModelProperty.bakedModel(moduleInstance, modelJson, stack, key);
+                                    if (holder != null) {
+                                        ColorProvider colorProvider = modelData.getColorProvider(stack, module2, moduleInstance, holder.colorProvider());
+                                        TextureAtlasSprite overWriteSprite = modelData.resolveSprite();
+                                        models.add(getBakedMiapiModel(
+                                                module,
+                                                stack,
+                                                modelData,
+                                                moduleInstance,
+                                                holder,
+                                                colorProvider,
+                                                overWriteSprite));
+                                    }
                                 }
-                            }
-                        });
+                            });
+                        }
                     }
                 }
+
+                return models;
             }
 
-            return models;
+            public List<Pair<Matrix4f, MiapiModel>> filter(List<Pair<Matrix4f, MiapiModel>> oldModels, ItemStack stack, ModuleInstance module, String key, ItemDisplayContext context) {
+                List<MiapiModel> models = new ArrayList<>();
+                if (true) {
+                    return oldModels;
+                }
+                ModuleInstance moduleInstance = module;
+                AtomicReference<Matrix4f> matrix4f = new AtomicReference<>(new Matrix4f());
+
+                for (ModuleInstance module2 : ItemModule.getModules(stack).allSubModules()) {
+                    if (getData(moduleInstance).isPresent()) {
+                        oldModels = new ArrayList<>(oldModels.stream().filter(a -> {
+                            if (a.getSecond() instanceof BakedMiapiModel) {
+                                matrix4f.set(a.getFirst());
+                            }
+                            return !(a.getSecond() instanceof BakedMiapiModel);
+                        }).toList());
+
+                    }
+                    for (OverlayModelData modelData : getData(module2).orElse(new ArrayList<>())) {
+                        if (!modelData.onlyOnSameModule() || moduleInstance.equals(module2)) {
+                            List<ModelProperty.ModelData> list = ModelProperty.property.getData(moduleInstance).orElse(new ArrayList<>());
+                            for (ModelProperty.ModelData modelJson : list) {
+                                if (modelData.isValid(modelJson)) {
+                                    ModelHolder holder = ModelProperty.bakedModel(moduleInstance, modelJson, stack, key);
+                                    if (holder != null) {
+                                        ColorProvider colorProvider = modelData.getColorProvider(stack, module2, moduleInstance, holder.colorProvider());
+                                        TextureAtlasSprite overWriteSprite = modelData.resolveSprite();
+                                        BakedMiapiModel model = getBakedMiapiModel(
+                                                module,
+                                                stack,
+                                                modelData,
+                                                moduleInstance,
+                                                holder,
+                                                colorProvider,
+                                                overWriteSprite);
+                                        oldModels.add(new Pair<>(matrix4f.get(), model));
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                return new ArrayList<>(oldModels);
+            }
         });
 
     }

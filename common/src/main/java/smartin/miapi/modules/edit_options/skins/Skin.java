@@ -25,6 +25,7 @@ import java.util.Optional;
 
 public class Skin {
     public String path;
+    public String modID;
     public ItemModule module;
     public ModuleCondition condition;
     public SynergyManager.PropertyHolder propertyHolder;

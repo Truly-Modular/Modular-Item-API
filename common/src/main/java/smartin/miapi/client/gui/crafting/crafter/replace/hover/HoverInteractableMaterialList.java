@@ -3,6 +3,7 @@ package smartin.miapi.client.gui.crafting.crafter.replace.hover;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.Screen;
 import smartin.miapi.client.gui.crafting.CraftingScreen;
 import smartin.miapi.modules.ItemModule;
 
@@ -33,7 +34,7 @@ public class HoverInteractableMaterialList extends HoverMaterialList {
 
     @Override
     public boolean isMouseOver(double mouseX, double mouseY) {
-        if (lastRendered || permaOpen) {
+        if (permaOpen) {
             return isMouseOver(mouseX, mouseY, getX(), getY(), sizeBaseList + sizeDetailList, verticalSize);
         } else {
             return super.isMouseOver(mouseX, mouseY);
@@ -42,8 +43,8 @@ public class HoverInteractableMaterialList extends HoverMaterialList {
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double amountX, double amount) {
-        if (isMouseOver(mouseX, mouseY, getX(), getY(), sizeBaseList + sizeDetailList, verticalSize)) {
-            if (mouseX > getX() + sizeBaseList) {
+        if (isMouseOver(mouseX, mouseY)) {
+            if (mouseX > getX() + sizeBaseList || Screen.hasShiftDown() || Screen.hasAltDown()) {
                 if (amount < 0) {
                     scrollPosTwo++;
                 } else {

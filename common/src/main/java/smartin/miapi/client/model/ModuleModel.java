@@ -51,7 +51,7 @@ public class ModuleModel {
         }
         List<Pair<Matrix4f, MiapiModel>> model = modelList;
         for (MiapiItemModel.ModelSupplier supplier : MiapiItemModel.modelSuppliers) {
-            model = supplier.filter(model, instance, key, context);
+            model = supplier.filter(model, stack, instance, key, context);
         }
         Minecraft.getInstance().level.getProfiler().pop();
         return model;
@@ -74,7 +74,7 @@ public class ModuleModel {
             Minecraft.getInstance().level.getProfiler().pop();
         });
         //render submodules
-        if(renderSubmodules){
+        if (renderSubmodules) {
             instance.getSubModuleMap().forEach((id, instance1) -> {
                 Minecraft.getInstance().level.getProfiler().push("submodule-logic");
                 matrices.pushPose();
