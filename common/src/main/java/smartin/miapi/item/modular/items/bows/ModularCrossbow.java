@@ -2,6 +2,7 @@ package smartin.miapi.item.modular.items.bows;
 
 
 import com.google.common.collect.Lists;
+import com.redpxnda.nucleus.client.Rendering;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.ChatFormatting;
@@ -49,6 +50,7 @@ public class ModularCrossbow extends CrossbowItem implements PlatformModularItem
         if (smartin.miapi.Environment.isClient()) {
             registerAnimations();
         }
+        Rendering rendering;
     }
 
     public ModularCrossbow() {

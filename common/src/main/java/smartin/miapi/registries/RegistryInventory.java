@@ -574,6 +574,7 @@ public class RegistryInventory {
             registerMiapi(moduleProperties, ComponentMaterialProperty.KEY, new ComponentMaterialProperty());
             registerMiapi(moduleProperties, AlphaOverwriteProperty.KEY, new AlphaOverwriteProperty());
             registerMiapi(moduleProperties, IconRenderProperty.KEY, new IconRenderProperty());
+            registerMiapi(moduleProperties, AssumeItemIdentityProperty.KEY, new AssumeItemIdentityProperty());
             //compat
             //registerMiapi(moduleProperties, BetterCombatProperty.KEY, new BetterCombatProperty());
             BetterCombatHelper.setup();

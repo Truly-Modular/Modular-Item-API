@@ -12,8 +12,10 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.ItemLike;
+import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -25,7 +27,9 @@ import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.item.FakeItemstackReferenceProvider;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.VisualModularItem;
+import smartin.miapi.item.modular.items.bows.ModularCrossbow;
 import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.properties.AssumeItemIdentityProperty;
 import smartin.miapi.modules.properties.FakeItemTagProperty;
 import smartin.miapi.modules.properties.LoreProperty;
 import smartin.miapi.modules.properties.enchanment.FakeEnchantmentManager;
@@ -40,6 +44,15 @@ abstract class ItemStackMixin {
 
     @Shadow
     public abstract ItemStack copy();
+
+    @Shadow
+    public abstract void releaseUsing(Level level, LivingEntity livingEntity, int timeLeft);
+
+    @Shadow
+    public abstract ItemStack transmuteCopy(ItemLike item);
+
+    @Shadow
+    public abstract boolean is(Item item);
 
     @ModifyReturnValue(method = "is(Lnet/minecraft/tags/TagKey;)Z", at = @At("RETURN"))
     public boolean miapi$injectItemTag(boolean original, TagKey<Item> tag) {
@@ -58,6 +71,21 @@ abstract class ItemStackMixin {
         if (ModularItem.isModularItem(stack)) {
             FakeItemstackReferenceProvider.setReference(cir.getReturnValue(), stack);
         }
+    }
+
+    @ModifyReturnValue(method = "is(Lnet/minecraft/world/item/Item;)Z", at = @At("RETURN"))
+    public boolean miapi$adjustIsItem(boolean original, Item item) {
+        ItemStack stack = (ItemStack) (Object) this;
+        if (!original && ModularItem.isModularItem(stack)) {
+            if (stack.getItem() instanceof ModularCrossbow && item.equals(Items.CROSSBOW)) {
+                //return true;
+                AssumeItemIdentityProperty.property.getData(stack);
+            }
+            var property = AssumeItemIdentityProperty.property.getData(stack);
+            var match = property.map(a -> a.stream().anyMatch(h -> h.value().equals(item)));
+            return match.orElse(original);
+        }
+        return original;
     }
 
     @Inject(method = "<init>(Lnet/minecraft/world/level/ItemLike;ILnet/minecraft/core/component/PatchedDataComponentMap;)V", at = @At("TAIL"))
