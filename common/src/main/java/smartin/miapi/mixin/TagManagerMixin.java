@@ -11,7 +11,7 @@ import smartin.miapi.Miapi;
 @Mixin(TagManager.class)
 abstract class TagManagerMixin {
     @Inject(
-            method = "Lnet/minecraft/tags/TagManager;<init>(Lnet/minecraft/core/RegistryAccess;)V",
+            method = "<init>(Lnet/minecraft/core/RegistryAccess;)V",
             at = @At("RETURN"))
     private void miapi$captureRegistryAccess(RegistryAccess registryAccess, CallbackInfo ci) {
         Miapi.registryAccess = registryAccess;

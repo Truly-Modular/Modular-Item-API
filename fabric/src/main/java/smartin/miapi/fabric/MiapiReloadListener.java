@@ -3,10 +3,12 @@ package smartin.miapi.fabric;
 import com.google.gson.JsonObject;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.WorldLoader;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.profiling.ProfilerFiller;
+import net.minecraft.world.item.crafting.RecipeManager;
 import smartin.miapi.Miapi;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.modules.conditions.ConditionManager;
@@ -25,6 +27,7 @@ import java.util.stream.Collectors;
 public class MiapiReloadListener implements PreparableReloadListener {
     Supplier<RegistryAccess> registryAccess;
     static long timeStart;
+    public static Map<ResourceLocation, String> reloadData = new HashMap<>();
 
     public MiapiReloadListener(Supplier<RegistryAccess> registryAccess) {
         this.registryAccess = registryAccess;
@@ -54,10 +57,7 @@ public class MiapiReloadListener implements PreparableReloadListener {
 
     public void apply(Object data, ResourceManager manager, ProfilerFiller profiler) {
         //executor.execute(() -> {
-        ReloadEvents.reloadCounter++;
-        timeStart = System.nanoTime();
         Miapi.registryAccess = registryAccess.get();
-        ReloadEvents.START.fireEvent(false, registryAccess.get());
         Map<ResourceLocation, String> dataMap = new HashMap<>((Map) data);
         Map<ResourceLocation, String> filteredMap = new HashMap<>();
         dataMap.forEach((key, value) -> {
@@ -86,17 +86,26 @@ public class MiapiReloadListener implements PreparableReloadListener {
                 filteredMap.put(key, value);
             }
         });
+        reloadData = filteredMap;
 
 
         //TODO:this is not working on servers at the moment for no known reason
-        ReloadEvents.DataPackLoader.trigger(filteredMap);
-        ReloadEvents.MAIN.fireEvent(false, registryAccess.get());
-        ReloadEvents.END.fireEvent(false, registryAccess.get());
-        Miapi.LOGGER.info("Server load took " + (double) (System.nanoTime() - timeStart) / 1000 / 1000 + " ms");
-        ReloadEvents.reloadCounter--;
         if (Miapi.server != null) {
             Miapi.server.getPlayerList().getPlayers().forEach(ReloadEvents::triggerReloadOnClient);
         }
+    }
+
+    public static void actualReload(RegistryAccess access) {
+        ReloadEvents.reloadCounter++;
+        timeStart = System.nanoTime();
+        ReloadEvents.START.fireEvent(false, access);
+        ReloadEvents.DataPackLoader.trigger(reloadData);
+        ReloadEvents.MAIN.fireEvent(false, access);
+        ReloadEvents.END.fireEvent(false, access);
+        Miapi.LOGGER.info("Server load took " + (double) (System.nanoTime() - timeStart) / 1000 / 1000 + " ms");
+        ReloadEvents.reloadCounter--;
+        WorldLoader loader;
+        RecipeManager manager;
     }
 
     @Override

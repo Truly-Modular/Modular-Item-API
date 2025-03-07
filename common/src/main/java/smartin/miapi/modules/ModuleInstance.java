@@ -18,11 +18,10 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
-import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.item.modular.PropertyResolver;
 import smartin.miapi.item.modular.StatResolver;
-import smartin.miapi.material.base.Material;
 import smartin.miapi.material.MaterialProperty;
+import smartin.miapi.material.base.Material;
 import smartin.miapi.mixin.RegistryOpsAccessor;
 import smartin.miapi.modules.cache.DataCache;
 import smartin.miapi.modules.cache.ModularItemCache;
@@ -33,6 +32,7 @@ import smartin.miapi.registries.RegistryInventory;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -73,43 +73,28 @@ public class ModuleInstance {
                                         .forGetter((moduleInstance) -> moduleInstance.moduleData)
                         ).apply(instance, ModuleInstance::new))
         );
-        CODEC = new Codec<ModuleInstance>() {
+        CODEC = registrySavingCodec(basicCodec, (m, l) -> m.allSubModules().forEach(moduleInstance -> moduleInstance.lookup = l));
+        MODULE_INSTANCE_COMPONENT = DataComponentType.<ModuleInstance>builder().persistent(CODEC).networkSynchronized(ByteBufCodecs.fromCodec(CODEC)).build();
+    }
+
+    public static <T> Codec<T> registrySavingCodec(Codec<T> baseCodec, BiConsumer<T, RegistryOps.RegistryInfoLookup> applyLookup) {
+        return new Codec<T>() {
             @Override
-            public <T> DataResult<Pair<ModuleInstance, T>> decode(DynamicOps<T> ops, T input) {
-                var basicResult = basicCodec.decode(ops, input);
-                if (ops instanceof RegistryOps<T> registryOps) {
+            public <T1> DataResult<Pair<T, T1>> decode(DynamicOps<T1> ops, T1 input) {
+                var basicResult = baseCodec.decode(ops, input);
+                if (ops instanceof RegistryOps<T1> registryOps) {
                     if (basicResult.isSuccess()) {
-                        ModuleInstance root = basicResult.getOrThrow().getFirst();
-                        for (ModuleInstance moduleInstance : root.allSubModules()) {
-                            moduleInstance.lookup = ((RegistryOpsAccessor) registryOps).getLookupProvider();
-                        }
-                    }
-                }
-                if (basicResult.isSuccess()) {
-                    var result = basicResult.getOrThrow().getFirst();
-                    if (result.subModules.isEmpty() && result.module != ItemModule.empty
-                        && MiapiConfig.INSTANCE.server.other.verboseLogging
-                    ) {
-                        //Miapi.LOGGER.error("possible problem!");
+                        applyLookup.accept(basicResult.getOrThrow().getFirst(), ((RegistryOpsAccessor) registryOps).getLookupProvider());
                     }
                 }
                 return basicResult;
             }
 
             @Override
-            public <T> DataResult<T> encode(ModuleInstance input, DynamicOps<T> ops, T prefix) {
-                var result = basicCodec.encode(input, ops, prefix);
-                if (input.subModules.isEmpty() && input.module != ItemModule.empty
-                    && MiapiConfig.INSTANCE.server.other.verboseLogging
-                ) {
-                    //Miapi.LOGGER.error("possible problem!");
-                    //Miapi.LOGGER.warn("decoded module " + input);
-                    //Miapi.LOGGER.warn("data" + result.result().get().toString());
-                }
-                return result;
+            public <T1> DataResult<T1> encode(T input, DynamicOps<T1> ops, T1 prefix) {
+                return baseCodec.encode(input, ops, prefix);
             }
         };
-        MODULE_INSTANCE_COMPONENT = DataComponentType.<ModuleInstance>builder().persistent(CODEC).networkSynchronized(ByteBufCodecs.fromCodec(CODEC)).build();
     }
 
     @Nullable
@@ -320,6 +305,11 @@ public class ModuleInstance {
 
         ModuleInstance root = this.getRoot().deepCopy();
         root.registryAccess = this.registryAccess;
+        root.lookup = this.lookup;
+        root.allSubModules().forEach(m -> {
+            m.registryAccess = this.registryAccess;
+            m.lookup = this.lookup;
+        });
 
         return root.getPosition(position);
     }

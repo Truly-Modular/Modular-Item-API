@@ -3,6 +3,7 @@ package smartin.miapi.modules.properties.util;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
+import smartin.miapi.Miapi;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
@@ -29,6 +30,10 @@ public interface ComponentApplyProperty {
         ModuleInstance module = ItemModule.getModules(toUpdate);
         if (module == null) {
             return;
+        }
+        toUpdate.getItemHolder();
+        if (registryAccess == null) {
+            registryAccess = Miapi.registryAccess;
         }
         if (module.registryAccess == null) {
             module.registryAccess = registryAccess;

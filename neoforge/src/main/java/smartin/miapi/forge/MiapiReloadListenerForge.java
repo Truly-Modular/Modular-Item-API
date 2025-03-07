@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 public class MiapiReloadListenerForge implements PreparableReloadListener {
     Supplier<RegistryAccess> registryAccess;
     static long timeStart;
+    public static Map<ResourceLocation, String> reloadData = new HashMap<>();
 
     public MiapiReloadListenerForge(Supplier<RegistryAccess> registryAccess) {
         this.registryAccess = registryAccess;
@@ -56,9 +57,6 @@ public class MiapiReloadListenerForge implements PreparableReloadListener {
 
     public CompletableFuture<Void> apply(Object data, ResourceManager manager, ProfilerFiller profiler, Executor executor) {
         return CompletableFuture.runAsync(() -> {
-            ReloadEvents.reloadCounter++;
-            timeStart = System.nanoTime();
-            ReloadEvents.START.fireEvent(false, registryAccess.get());
             Map<ResourceLocation, String> dataMap = new HashMap<>((Map) data);
             Map<ResourceLocation, String> filteredMap = new HashMap<>();
             dataMap.forEach((key, value) -> {
@@ -87,17 +85,23 @@ public class MiapiReloadListenerForge implements PreparableReloadListener {
                     filteredMap.put(key, value);
                 }
             });
-
-
-            ReloadEvents.DataPackLoader.trigger(filteredMap);
-            ReloadEvents.MAIN.fireEvent(false, registryAccess.get());
-            ReloadEvents.END.fireEvent(false, registryAccess.get());
-            Miapi.LOGGER.info("Server load took " + (double) (System.nanoTime() - timeStart) / 1000 / 1000 + " ms");
+            reloadData = filteredMap;
             if (Miapi.server != null) {
                 Miapi.server.getPlayerList().getPlayers().forEach(ReloadEvents::triggerReloadOnClient);
             }
             ReloadEvents.reloadCounter--;
         });
+    }
+
+    public static void actualReload(RegistryAccess access) {
+        ReloadEvents.reloadCounter++;
+        timeStart = System.nanoTime();
+        ReloadEvents.START.fireEvent(false, access);
+        ReloadEvents.DataPackLoader.trigger(reloadData);
+        ReloadEvents.MAIN.fireEvent(false, access);
+        ReloadEvents.END.fireEvent(false, access);
+        Miapi.LOGGER.info("Server load took " + (double) (System.nanoTime() - timeStart) / 1000 / 1000 + " ms");
+        ReloadEvents.reloadCounter--;
     }
 
     @Override

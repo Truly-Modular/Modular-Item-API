@@ -2,7 +2,6 @@ package smartin.miapi.material.generated;
 
 import com.google.gson.JsonElement;
 import com.mojang.serialization.JsonOps;
-import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
@@ -14,7 +13,6 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
-import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunctions;
 import smartin.miapi.Miapi;
@@ -145,11 +143,14 @@ public class GeneratedMaterialPropertyManager {
         }
 
         if (shouldApplyProperty(MiapiConfig.INSTANCE.server.generatedMaterials.properties.enchantProperty, id.toString())) {
-            Map<Holder<Enchantment>, DoubleOperationResolvable> enchantments = new HashMap<>();
+            Map<ResourceLocation, DoubleOperationResolvable> enchantments = new HashMap<>();
             ItemEnchantments itemEnchantments = getDefaultStack(item).getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY);
             itemEnchantments.keySet().forEach(enchantment -> {
                 DoubleOperationResolvable resolvable = new DoubleOperationResolvable(List.of(new DoubleOperationResolvable.Operation(itemEnchantments.getLevel(enchantment), AttributeModifier.Operation.ADD_VALUE)));
-                enchantments.put(enchantment, resolvable);
+                enchantments.put(enchantment.unwrapKey().get().location(), resolvable);
+                if (GeneratedMaterialManager.verboseLogging()) {
+                    Miapi.LOGGER.info("detected enchantemnt " + enchantment.getRegisteredName() + " on " + id);
+                }
             });
             propertyMap.put(CraftingEnchantProperty.property, enchantments);
         }

@@ -1,22 +1,28 @@
 package smartin.miapi.item;
 
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.resources.RegistryOps;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 import smartin.miapi.Miapi;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.item.modular.ModularItem;
+import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.util.ComponentApplyProperty;
 import smartin.miapi.registries.RegistryInventory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.WeakHashMap;
 
 /**
  * The ModularItemStackConverter class provides a mechanism to convert an ItemStack into its modular version.
  * It utilizes a list of ModularConverter instances to perform the conversion.
  */
 public class ModularItemStackConverter {
+    public static Map<ItemStack, RegistryOps.RegistryInfoLookup> lookupMap = new WeakHashMap<>();
 
     /**
      * A list of ModularConverter instances that will be used to convert the ItemStack.
@@ -52,8 +58,13 @@ public class ModularItemStackConverter {
             }
         }
         if (ModularItem.isModularItem(converted)) {
-            if(Miapi.registryAccess!=null){
-
+            ModuleInstance moduleInstance = ItemModule.getModules(converted);
+            if (moduleInstance.lookup == null) {
+                if (lookupMap.containsKey(original)) {
+                    moduleInstance.allSubModules().forEach(m -> m.lookup = lookupMap.get(original));
+                }
+            }
+            if (Miapi.registryAccess != null) {
                 ComponentApplyProperty.updateItemStack(converted, Miapi.registryAccess);
             }
         }

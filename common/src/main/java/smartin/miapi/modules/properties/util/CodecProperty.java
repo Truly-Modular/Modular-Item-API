@@ -32,6 +32,16 @@ public abstract class CodecProperty<T> implements ModuleProperty<T> {
     public static DynamicOps<JsonElement> jsonOPs = JsonOps.INSTANCE;
 
 
+    public static RegistryOps<JsonElement> getOps() {
+        if (Miapi.registryAccess != null) {
+            return RegistryOps.create(
+                    JsonOps.INSTANCE,
+                    Miapi.registryAccess);
+        }
+        return ops;
+    }
+
+
     protected CodecProperty(Codec<T> codec) {
         this.codec = codec;
     }
@@ -58,9 +68,8 @@ public abstract class CodecProperty<T> implements ModuleProperty<T> {
 
 
     public JsonElement encode(T property) {
-        BuiltInRegistries.REGISTRY.asLookup();
         var result = codec.encodeStart(
-                ops, property);
+                getOps(), property);
         if (result.isError()) {
             throw new EncoderException("Could not Encode " + this.getClass().getName() + " with Error " + result.error().toString());
         }

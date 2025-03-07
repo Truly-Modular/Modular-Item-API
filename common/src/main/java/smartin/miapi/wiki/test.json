@@ -1,36 +1,5 @@
 {
-    "miapi:item_module": {
-        "data": {
-            "miapi:material": "miapi:rod/blaze_rod"
-        },
-        "key": "tm_arsenal:handle/sword",
-        "child": {
-            "guard": {
-                "data": {
-                    "miapi:material": "miapi:crystal/emerald"
-                },
-                "key": "tm_arsenal:guard/normal",
-                "child": {
-                    "blade": {
-                        "data": {
-                            "miapi:material": {
-                                "parent": "miapi:metal/gold",
-                                "type": "miapi:component_runtime_material",
-                                "overwrite": {
-                                    "hardness": 10
-                                }
-                            }
-                        },
-                        "key": "tm_arsenal:blade/normal"
-                    }
-                }
-            },
-            "pommel": {
-                "data": {
-                    "miapi:material": "miapi:crystal/emerald"
-                },
-                "key": "tm_arsenal:pommel/round"
-            }
-        }
+    "crafting_enchants": {
+        "minecraft:sharpness": 5
     }
 }

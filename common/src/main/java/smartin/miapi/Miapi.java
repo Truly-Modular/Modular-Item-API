@@ -43,6 +43,7 @@ import smartin.miapi.material.MaterialIcons;
 import smartin.miapi.material.generated.GenerateConvertersHelper;
 import smartin.miapi.material.generated.GenerateConvertersHelperArmor;
 import smartin.miapi.material.generated.GeneratedMaterialManager;
+import smartin.miapi.mixin.ItemStackAccessor;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.MiapiPermissions;
 import smartin.miapi.modules.ModuleDataPropertiesManager;
@@ -126,6 +127,9 @@ public class Miapi {
         if (Environment.isClient()) {
             CodecBehavior.registerClass(MiapiBinding.class, MiapiBinding.CODEC);
         }
+
+        ItemStackAccessor.setCODEC(ModuleInstance.registrySavingCodec(ItemStackAccessor.getCODEC(), (i, registryAccess) ->
+                ModularItemStackConverter.lookupMap.put(i,registryAccess)));
 
         MiapiConfig.setupConfigs();
         setupNetworking();

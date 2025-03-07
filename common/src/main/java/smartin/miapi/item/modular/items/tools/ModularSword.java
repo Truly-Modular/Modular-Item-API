@@ -16,7 +16,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import org.apache.commons.lang3.mutable.MutableFloat;
 import org.lwjgl.system.NonnullDefault;
-import smartin.miapi.Miapi;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.events.ModularAttackEvents;
 import smartin.miapi.item.FakeItemstackReferenceProvider;
@@ -48,7 +47,7 @@ public class ModularSword extends SwordItem implements PlatformModularItemMethod
 
     @Override
     public void verifyComponentsAfterLoad(ItemStack stack) {
-        ComponentApplyProperty.updateItemStack(stack, Miapi.registryAccess);
+        ComponentApplyProperty.updateItemStack(stack, null);
     }
 
     @Override

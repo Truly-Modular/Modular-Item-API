@@ -12,7 +12,6 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.Level;
@@ -25,9 +24,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import smartin.miapi.client.gui.crafting.PreviewManager;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.item.FakeItemstackReferenceProvider;
+import smartin.miapi.item.ModularItemStackConverter;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.VisualModularItem;
-import smartin.miapi.item.modular.items.bows.ModularCrossbow;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.AssumeItemIdentityProperty;
 import smartin.miapi.modules.properties.FakeItemTagProperty;
@@ -40,16 +39,10 @@ import java.util.List;
 import java.util.function.Consumer;
 
 @Mixin(value = ItemStack.class, priority = 2000)
-abstract class ItemStackMixin {
-
-    @Shadow
-    public abstract ItemStack copy();
+public abstract class MiapiItemStackMixin {
 
     @Shadow
     public abstract void releaseUsing(Level level, LivingEntity livingEntity, int timeLeft);
-
-    @Shadow
-    public abstract ItemStack transmuteCopy(ItemLike item);
 
     @Shadow
     public abstract boolean is(Item item);
@@ -73,14 +66,18 @@ abstract class ItemStackMixin {
         }
     }
 
+    @Inject(method = "copy", at = @At("RETURN"))
+    public void miapi$keepLookupOnCopy(CallbackInfoReturnable<ItemStack> cir) {
+        ItemStack stack = (ItemStack) (Object) this;
+        if (ModularItemStackConverter.lookupMap.containsKey(stack)) {
+            ModularItemStackConverter.lookupMap.put(cir.getReturnValue(), ModularItemStackConverter.lookupMap.get(stack));
+        }
+    }
+
     @ModifyReturnValue(method = "is(Lnet/minecraft/world/item/Item;)Z", at = @At("RETURN"))
     public boolean miapi$adjustIsItem(boolean original, Item item) {
         ItemStack stack = (ItemStack) (Object) this;
         if (!original && ModularItem.isModularItem(stack)) {
-            if (stack.getItem() instanceof ModularCrossbow && item.equals(Items.CROSSBOW)) {
-                //return true;
-                AssumeItemIdentityProperty.property.getData(stack);
-            }
             var property = AssumeItemIdentityProperty.property.getData(stack);
             var match = property.map(a -> a.stream().anyMatch(h -> h.value().equals(item)));
             return match.orElse(original);

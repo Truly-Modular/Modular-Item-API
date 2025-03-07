@@ -39,16 +39,16 @@ import static smartin.miapi.modules.properties.enchanment.FakeEnchantmentManager
  * @data value: DoubleOperationResolvable, which defines how the level of the fake enchantment is calculated.
  */
 
-public class FakeEnchantmentProperty extends CodecProperty<Map<Holder<Enchantment>, DoubleOperationResolvable>> {
+public class FakeEnchantmentProperty extends CodecProperty<Map<ResourceLocation, DoubleOperationResolvable>> {
     public static FakeEnchantmentProperty property;
     public static final ResourceLocation KEY = Miapi.id("fake_enchants_old");
-    public static Codec<Map<Holder<Enchantment>, DoubleOperationResolvable>> CODEC = Codec.unboundedMap(Enchantment.CODEC, DoubleOperationResolvable.CODEC);
+    public static Codec<Map<ResourceLocation, DoubleOperationResolvable>> CODEC = Codec.unboundedMap(ResourceLocation.CODEC, DoubleOperationResolvable.CODEC);
 
     public FakeEnchantmentProperty() {
         super(CODEC);
         property = this;
         FakeEnchantmentManager.transformerList.add((enchantmentHolder, itemStack, oldLevel) -> {
-            for (Map.Entry<Holder<Enchantment>, DoubleOperationResolvable> location : getData(itemStack).orElse(new HashMap<>()).entrySet()) {
+            for (Map.Entry<ResourceLocation, DoubleOperationResolvable> location : getData(itemStack).orElse(new HashMap<>()).entrySet()) {
                 if (enchantmentHolder.is(location.getKey())) {
                     DoubleOperationResolvable resolvable = location.getValue();
                     resolvable.setFunctionTransformer((s) -> s.getFirst().replace("[old_level]", String.valueOf(oldLevel)));
@@ -58,10 +58,12 @@ public class FakeEnchantmentProperty extends CodecProperty<Map<Holder<Enchantmen
             return oldLevel;
         });
         ADD_ENCHANTMENT.register(enchantmentMap -> {
-            for (Map.Entry<Holder<Enchantment>, DoubleOperationResolvable> location : getData(enchantmentMap.referenceStack).orElse(new HashMap<>()).entrySet()) {
-                if (!enchantmentMap.enchantments.contains(location.getKey())) {
-                    enchantmentMap.enchantments.add(location.getKey());
-                }
+            for (Map.Entry<ResourceLocation, DoubleOperationResolvable> location : getData(enchantmentMap.referenceStack).orElse(new HashMap<>()).entrySet()) {
+                CraftingEnchantProperty.tryAndLookUp(location.getKey(), enchantmentMap.referenceStack).ifPresent(enchantment -> {
+                    if (!enchantmentMap.enchantments.contains(enchantment)) {
+                        enchantmentMap.enchantments.add(enchantment);
+                    }
+                });
             }
             return EventResult.pass();
         });
@@ -86,8 +88,8 @@ public class FakeEnchantmentProperty extends CodecProperty<Map<Holder<Enchantmen
             public <T extends InteractAbleWidget & SingleStatDisplay> List<T> currentList(ItemStack original, ItemStack compareTo) {
                 List<T> displays = new ArrayList<>();
                 Set<Holder<Enchantment>> enchantments = new HashSet<>();
-                enchantments.addAll(getData(original).orElse(new HashMap<>()).keySet());
-                enchantments.addAll(getData(compareTo).orElse(new HashMap<>()).keySet());
+                enchantments.addAll(CraftingEnchantProperty.tryConvert(getData(original).orElse(new HashMap<>()), original).keySet());
+                enchantments.addAll(CraftingEnchantProperty.tryConvert(getData(compareTo).orElse(new HashMap<>()), compareTo).keySet());
                 enchantments.forEach(enchantment -> {
                     JsonStatDisplay display = new JsonStatDisplay((stack) -> enchantment.value().description(),
                             (stack) -> enchantment.value().description(),
@@ -115,7 +117,7 @@ public class FakeEnchantmentProperty extends CodecProperty<Map<Holder<Enchantmen
     }
 
     @Override
-    public Map<Holder<Enchantment>, DoubleOperationResolvable> merge(Map<Holder<Enchantment>, DoubleOperationResolvable> left, Map<Holder<Enchantment>, DoubleOperationResolvable> right, MergeType mergeType) {
+    public Map<ResourceLocation, DoubleOperationResolvable> merge(Map<ResourceLocation, DoubleOperationResolvable> left, Map<ResourceLocation, DoubleOperationResolvable> right, MergeType mergeType) {
         return MergeAble.mergeMap(left, right, mergeType);
     }
 }

@@ -46,7 +46,10 @@ public class MiapiFabric implements ModInitializer {
         ResourceManagerHelper.get(PackType.SERVER_DATA).registerReloadListener(new IdentifiableMiapiReloadListenerFixed());
         ServerLifecycleEvents.START_DATA_PACK_RELOAD.register((minecraftServer, manager) -> {
             IdentifiableMiapiReloadListenerFixed.access = minecraftServer.reloadableRegistries().get();
+            Miapi.registryAccess = minecraftServer.reloadableRegistries().get();
         });
+
+
 
         AttributeProperty.replaceMap.put("forge:generic.swim_speed", () -> SWIM_SPEED.value());
 

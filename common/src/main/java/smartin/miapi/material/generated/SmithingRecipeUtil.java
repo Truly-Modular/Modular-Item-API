@@ -11,14 +11,16 @@ import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.crafting.SmithingTransformRecipe;
-import smartin.miapi.Environment;
 import smartin.miapi.Miapi;
 import smartin.miapi.item.MaterialSmithingRecipe;
-import smartin.miapi.material.base.Material;
 import smartin.miapi.material.MaterialProperty;
+import smartin.miapi.material.base.Material;
 import smartin.miapi.mixin.SmithingTransformRecipeAccessor;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
@@ -29,11 +31,20 @@ import static smartin.miapi.material.generated.GeneratedMaterialManager.verboseL
  * also checking if the source material is a valid modular material in the process.
  */
 public class SmithingRecipeUtil {
-    public static void setupSmithingRecipe(List<GeneratedMaterial> materials, boolean isClient, Consumer<GeneratedMaterial> register) {
+    public static RecipeManager manager = null;
+
+    public static void setupSmithingRecipes(boolean isClient, RegistryAccess registryAccess, RecipeManager manager) {
+        List<GeneratedMaterial> materials = MaterialProperty.materials.values().stream().filter(GeneratedMaterial.class::isInstance).map(m -> (GeneratedMaterial) m).toList();
+        materials.forEach(m -> MaterialProperty.materials.remove(m.key));
+        setupSmithingRecipe(materials, isClient, m -> MaterialProperty.materials.put(m.key, m), registryAccess, null);
+    }
+
+    public static void setupSmithingRecipe(List<GeneratedMaterial> materials, boolean isClient, Consumer<GeneratedMaterial> register, RegistryAccess registryAccess, RecipeManager recipeManager) {
         try {
-            RecipeManager recipeManager = findManager(Environment.isClient());
-            RegistryAccess registryAccess = findRegistryManager(isClient);
-            if (registryAccess == null) {
+            if (recipeManager == null) {
+                recipeManager = findManager(isClient);
+            }
+            if (registryAccess == null || recipeManager == null) {
                 Miapi.LOGGER.warn("Could not setup Smithing Materials, could not find Recipes");
                 materials.forEach(register);
                 return;
@@ -144,27 +155,14 @@ public class SmithingRecipeUtil {
                 return Miapi.server.getRecipeManager();
             }
         } else {
+            if (manager != null) {
+                return manager;
+            }
             if (Miapi.server != null) {
                 return Miapi.server.getRecipeManager();
             }
         }
-        return null;
-    }
-
-    static RegistryAccess findRegistryManager(boolean isClient) {
-        if (Miapi.registryAccess != null) {
-            return Miapi.registryAccess;
-        }
-        if (isClient) {
-            if (Minecraft.getInstance() != null && Minecraft.getInstance().level != null) {
-                return Minecraft.getInstance().level.registryAccess();
-            }
-        } else {
-            if (Miapi.server != null) {
-                return Miapi.server.registryAccess();
-            }
-        }
-        return null;
+        return manager;
     }
 
     public static void addSmithingRecipe

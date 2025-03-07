@@ -2,6 +2,7 @@ package smartin.miapi.material.generated;
 
 import com.mojang.serialization.Codec;
 import net.minecraft.core.Registry;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -31,12 +32,12 @@ public class GeneratedMaterialManager {
     public static void setup() {
         ReloadEvents.MAIN.subscribe((isClient, registryAccess) -> {
             if (!isClient) {
-                onReloadServer();
+                onReloadServer(registryAccess);
             } else {
                 basicGeneratedMaterials.forEach(generatedMaterial -> materials.put(generatedMaterial.getID(), generatedMaterial));
                 SmithingRecipeUtil.setupSmithingRecipe(generatedMaterials, true, (material) -> {
                     materials.put(material.getID(), material);
-                });
+                }, registryAccess, null);
             }
         }, -1);
         ReloadEvents.dataSyncerRegistry.register(Miapi.id("generated_materials"),
@@ -88,13 +89,13 @@ public class GeneratedMaterialManager {
 
     public static Registry<Item> getRegistry() {
         if (Miapi.registryAccess == null) {
-            TagManager m    ;
+            TagManager m;
             return BuiltInRegistries.ITEM;
         }
         return Miapi.registryAccess.registry(Registries.ITEM).get();
     }
 
-    public static void onReloadServer() {
+    public static void onReloadServer(RegistryAccess access) {
         try {
             if (verboseLogging()) {
                 Miapi.LOGGER.info("MIAPI STARTED MATERIAL GENERATION");
@@ -221,7 +222,7 @@ public class GeneratedMaterialManager {
             SmithingRecipeUtil.setupSmithingRecipe(generatedMaterials, false, (material -> {
                 materials.put(material.getID(), material);
                 MiapiEvents.GENERATE_MATERIAL_CONVERTERS.invoker().generated(material, material.toolItems, material.armorItems, smartin.miapi.Environment.isClient());
-            }));
+            }), access, null);
             if (verboseLogging()) {
                 Miapi.LOGGER.info("MIAPI FINISHED MATERIAL GENERATION");
             }
