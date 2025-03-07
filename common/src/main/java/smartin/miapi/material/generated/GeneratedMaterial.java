@@ -24,6 +24,7 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
+import smartin.miapi.material.DelegatingMaterial;
 import smartin.miapi.material.base.Material;
 import smartin.miapi.material.MaterialIcons;
 import smartin.miapi.material.MaterialProperty;
@@ -31,6 +32,7 @@ import smartin.miapi.material.palette.FallbackColorer;
 import smartin.miapi.material.palette.GrayscalePaletteColorer;
 import smartin.miapi.material.palette.MaterialRenderController;
 import smartin.miapi.modules.ModuleInstance;
+import smartin.miapi.modules.properties.TagProperty;
 import smartin.miapi.modules.properties.attributes.AttributeUtil;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
@@ -163,6 +165,15 @@ public class GeneratedMaterial implements Material {
             }
             stats.put("tier", (double) getEstimatedTier(toolMaterial.getIncorrectBlocksForDrops()));
             armorItems = findRelatedArmorItems();
+            if (armorItems.size() == 4) {
+                double totalArmor = (int) armorItems.stream().collect(Collectors.summarizingInt(ArmorItem::getDefense)).getSum();
+                double desiredHardness = (totalArmor + (stats.get("flexibility") / 4) + (stats.get("density") / 4) - 1) / 4.05;
+                double max = Math.max(totalArmor, desiredHardness);
+                if (Math.abs(totalArmor - desiredHardness) <= (15 / 100.0) * max) {
+                    Miapi.LOGGER.info("replacement hardness "+desiredHardness+" original "+stats.get("hardness"));
+                    stats.put("armor_hardness", desiredHardness);
+                }
+            }
             properties = GeneratedMaterialPropertyManager.setup(getID(), swordItem, axeItem, toolMaterials, armorItems, Map.of());
             return true;
         }
@@ -304,6 +315,27 @@ public class GeneratedMaterial implements Material {
         return 0.0;
     }
 
+    public Material getMaterial(ModuleInstance moduleInstance) {
+        if (TagProperty.getTags(moduleInstance).contains("armor")) {
+            if (stats.containsKey("armor_hardness")) {
+                return new DelegatingMaterial(this) {
+                    @Override
+                    public double getDouble(String property) {
+                        if (property.equals("hardness")) {
+                            Miapi.LOGGER.info("returning hardness " + stats.get("armor_hardness"));
+                            return stats.get("armor_hardness");
+                        }
+                        if (stats.containsKey(property)) {
+                            return stats.get(property);
+                        }
+                        return 0;
+                    }
+                };
+            }
+        }
+        return this;
+    }
+
     @Override
     public double getRepairValueOfItem(ItemStack itemStack) {
         if (mainIngredient.getItem().equals(itemStack.getItem())) {
@@ -383,7 +415,7 @@ public class GeneratedMaterial implements Material {
     }
 
     @Override
-    public int hashCode(){
+    public int hashCode() {
         return getID().hashCode();
     }
 

@@ -1,11 +1,11 @@
 package smartin.miapi.compat.kubejs;
 
-import dev.latvian.mods.kubejs.KubeJSPlugin;
-import dev.latvian.mods.kubejs.registry.RegistryInfo;
+import dev.latvian.mods.kubejs.plugin.KubeJSPlugin;
 
-public class KubeJSMiapiPlugin extends KubeJSPlugin {
+public class KubeJSMiapiPlugin implements KubeJSPlugin {
     @Override
     public void init() {
+        /*
         RegistryInfo.ITEM.addType("miapi_modular_weapon", ModularWeaponBuilder.class, ModularWeaponBuilder::new);
         RegistryInfo.ITEM.addType("miapi_modular_arrow", ModularWeaponBuilder.Arrow.class, ModularWeaponBuilder.Arrow::new);
         RegistryInfo.ITEM.addType("miapi_modular_axe", ModularWeaponBuilder.Axe.class, ModularWeaponBuilder.Axe::new);
@@ -18,5 +18,7 @@ public class KubeJSMiapiPlugin extends KubeJSPlugin {
         RegistryInfo.ITEM.addType("miapi_modular_pickaxe", ModularWeaponBuilder.Pickaxe.class, ModularWeaponBuilder.Pickaxe::new);
         RegistryInfo.ITEM.addType("miapi_modular_shovel", ModularWeaponBuilder.Shovel.class, ModularWeaponBuilder.Shovel::new);
         RegistryInfo.ITEM.addType("miapi_modular_sword", ModularWeaponBuilder.Sword.class, ModularWeaponBuilder.Sword::new);
+
+         */
     }
 }

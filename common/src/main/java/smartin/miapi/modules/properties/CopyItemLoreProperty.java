@@ -29,7 +29,7 @@ public class CopyItemLoreProperty extends CodecProperty<List<Holder<Item>>> {
         property = this;
         LoreProperty.loreSuppliers.add((itemStack, tooltip, context, tooltipType) -> {
             getData(itemStack).ifPresent(list -> {
-                list.forEach(itemHolder -> {
+                list.stream().distinct().toList().forEach(itemHolder -> {
                     itemHolder.value().appendHoverText(itemStack, context, tooltip, tooltipType);
                 });
             });
