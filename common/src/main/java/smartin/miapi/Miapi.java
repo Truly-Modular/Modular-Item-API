@@ -10,7 +10,6 @@ import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.MapCodec;
 import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
 import com.redpxnda.nucleus.registry.NucleusNamespaces;
-import dev.architectury.event.EventResult;
 import dev.architectury.event.events.common.CommandRegistrationEvent;
 import dev.architectury.event.events.common.LifecycleEvent;
 import dev.architectury.event.events.common.PlayerEvent;
@@ -29,7 +28,6 @@ import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.craft.stat.StatActorType;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.datapack.ReloadHelpers;
-import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.item.ItemToModularConverter;
 import smartin.miapi.item.ModularItemStackConverter;
 import smartin.miapi.item.modular.PropertyResolver;
@@ -40,8 +38,6 @@ import smartin.miapi.lootFunctions.ModuleSwapLootFunction;
 import smartin.miapi.material.ComponentMaterial;
 import smartin.miapi.material.MaterialCommand;
 import smartin.miapi.material.MaterialIcons;
-import smartin.miapi.material.generated.GenerateConvertersHelper;
-import smartin.miapi.material.generated.GenerateConvertersHelperArmor;
 import smartin.miapi.material.generated.GeneratedMaterialManager;
 import smartin.miapi.mixin.ItemStackAccessor;
 import smartin.miapi.modules.ItemModule;
@@ -200,16 +196,6 @@ public class Miapi {
             }
         }));
         BlueprintManager.setup();
-
-        MiapiEvents.GENERATE_MATERIAL_CONVERTERS.register((material, tools, armorItems, isClient) -> {
-            try {
-                GenerateConvertersHelperArmor.setup(armorItems, material);
-                GenerateConvertersHelper.setupTools(tools, material);
-            } catch (Exception e) {
-                Miapi.LOGGER.warn("failed to setup converters for " + material.getID(), e);
-            }
-            return EventResult.pass();
-        });
     }
 
 

@@ -169,8 +169,8 @@ public class GeneratedMaterial implements Material {
                 double totalArmor = (int) armorItems.stream().collect(Collectors.summarizingInt(ArmorItem::getDefense)).getSum();
                 double desiredHardness = (totalArmor + (stats.get("flexibility") / 4) + (stats.get("density") / 4) - 1) / 4.05;
                 double max = Math.max(totalArmor, desiredHardness);
-                if (Math.abs(totalArmor - desiredHardness) <= (15 / 100.0) * max) {
-                    Miapi.LOGGER.info("replacement hardness "+desiredHardness+" original "+stats.get("hardness"));
+                if (!(Math.abs(totalArmor - desiredHardness) <= (15 / 100.0) * max)) {
+                    Miapi.LOGGER.info("replacement hardness " + desiredHardness + " original " + stats.get("hardness"));
                     stats.put("armor_hardness", desiredHardness);
                 }
             }
@@ -178,6 +178,27 @@ public class GeneratedMaterial implements Material {
             return true;
         }
         return false;
+    }
+
+    public Material getMaterial(ModuleInstance moduleInstance) {
+        if (TagProperty.getTags(moduleInstance).contains("armor")) {
+            if (stats.containsKey("armor_hardness")) {
+                return new DelegatingMaterial(this) {
+                    @Override
+                    public double getDouble(String property) {
+                        if (property.equals("hardness")) {
+                            Miapi.LOGGER.info("returning hardness " + stats.get("armor_hardness"));
+                            return stats.get("armor_hardness");
+                        }
+                        if (stats.containsKey(property)) {
+                            return stats.get(property);
+                        }
+                        return 0;
+                    }
+                };
+            }
+        }
+        return this;
     }
 
     public List<ArmorItem> findRelatedArmorItems() {
@@ -313,27 +334,6 @@ public class GeneratedMaterial implements Material {
             }
         }
         return 0.0;
-    }
-
-    public Material getMaterial(ModuleInstance moduleInstance) {
-        if (TagProperty.getTags(moduleInstance).contains("armor")) {
-            if (stats.containsKey("armor_hardness")) {
-                return new DelegatingMaterial(this) {
-                    @Override
-                    public double getDouble(String property) {
-                        if (property.equals("hardness")) {
-                            Miapi.LOGGER.info("returning hardness " + stats.get("armor_hardness"));
-                            return stats.get("armor_hardness");
-                        }
-                        if (stats.containsKey(property)) {
-                            return stats.get(property);
-                        }
-                        return 0;
-                    }
-                };
-            }
-        }
-        return this;
     }
 
     @Override

@@ -89,7 +89,6 @@ public class MiapiReloadListenerForge implements PreparableReloadListener {
             if (Miapi.server != null) {
                 Miapi.server.getPlayerList().getPlayers().forEach(ReloadEvents::triggerReloadOnClient);
             }
-            ReloadEvents.reloadCounter--;
         });
     }
 
