@@ -1,0 +1,52 @@
+{
+    "pools": [
+        {
+            "rolls": 1,
+            "entries": [
+                {
+                    "type": "minecraft:item",
+                    "name": "miapi:modular_part_visual",
+                    "weight": 1,
+                    "functions": [
+                        {
+                            "function": "minecraft:set_components",
+                            "components": {
+                                "miapi:item_module": {
+                                    "key": "tm_arsenal:blade/greatsword",
+                                    "data": {
+                                        "skin": "autumn/greatsword-worldtrees_wrath",
+                                        "material": "miapi:metal/netherite",
+                                        "properties": {
+                                            "miapi:is_weapon": true,
+                                            "miapi:leeching": 10.0,
+                                            "miapi:rarity": "epic",
+                                            "miapi:display_name": "World Tree's Wrath (Blade)"
+                                        }
+                                    }
+                                },
+                                "minecraft:rarity": "epic",
+                                "miapi:module_blueprint": {
+                                    "module": {
+                                        "key": "tm_arsenal:blade/greatsword",
+                                        "data": {
+                                            "skin": "autumn/greatsword-worldtrees_wrath",
+                                            "material": "miapi:metal/netherite",
+                                            "properties": {
+                                                "miapi:is_weapon": true,
+                                                "miapi:rarity": "epic",
+                                                "miapi:leeching": 10.0,
+                                                "miapi:display_name": "World Tree's Wrath"
+                                            }
+                                        }
+                                    },
+                                    "ingredient": true,
+                                    "name": "World Tree's Wrath"
+                                }
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

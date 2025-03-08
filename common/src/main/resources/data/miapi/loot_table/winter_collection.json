@@ -1,0 +1,309 @@
+{
+    "pools": [
+        {
+            "rolls": 1,
+            "entries": [
+                {
+                    "type": "minecraft:item",
+                    "name": "miapi:modular_part_visual",
+                    "weight": 1,
+                    "functions": [
+                        {
+                            "function": "minecraft:set_components",
+                            "components": {
+                                "miapi:item_module": {
+                                    "key": "tm_arsenal:blade/dagger",
+                                    "data": {
+                                        "skin": "winter/dagger-cold_embrace",
+                                        "material": "miapi:metal/netherite",
+                                        "properties": {
+                                            "miapi:is_weapon": true,
+                                            "miapi:leeching": 3.0,
+                                            "miapi:rarity": "epic",
+                                            "miapi:display_name": "Cold Embrace (Blade)",
+                                            "miapi:item_lore": {
+                                                "text": "A chilling touch",
+                                                "position": "bottom",
+                                                "color": "dark_gray",
+                                                "italic": true
+                                            }
+                                        }
+                                    }
+                                },
+                                "minecraft:rarity": "epic",
+                                "miapi:module_blueprint": {
+                                    "module": {
+                                        "key": "tm_arsenal:blade/dagger",
+                                        "data": {
+                                            "skin": "winter/dagger-cold_embrace",
+                                            "material": "miapi:metal/netherite",
+                                            "properties": {
+                                                "miapi:is_weapon": true,
+                                                "miapi:leeching": 3.0,
+                                                "miapi:rarity": "epic",
+                                                "miapi:display_name": "Cold Embrace"
+                                            }
+                                        }
+                                    },
+                                    "ingredient": true,
+                                    "name": "Cold Embrace"
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "type": "minecraft:item",
+                    "name": "miapi:modular_part_visual",
+                    "weight": 1,
+                    "functions": [
+                        {
+                            "function": "minecraft:set_components",
+                            "components": {
+                                "miapi:item_module": {
+                                    "key": "tm_arsenal:blade/greatsword",
+                                    "data": {
+                                        "skin": "winter/greatsword-snowflake_blade",
+                                        "material": "miapi:metal/netherite",
+                                        "properties": {
+                                            "miapi:is_weapon": true,
+                                            "miapi:slashing": 5.0,
+                                            "miapi:rarity": "epic",
+                                            "miapi:display_name": "Snowflake Blade (Blade)",
+                                            "miapi:item_lore": {
+                                                "text": "Each cut unique as a snowflake",
+                                                "position": "bottom",
+                                                "color": "dark_gray",
+                                                "italic": true
+                                            }
+                                        }
+                                    }
+                                },
+                                "minecraft:rarity": "epic",
+                                "miapi:module_blueprint": {
+                                    "module": {
+                                        "key": "tm_arsenal:blade/greatsword",
+                                        "data": {
+                                            "skin": "winter/greatsword-snowflake_blade",
+                                            "material": "miapi:metal/netherite",
+                                            "properties": {
+                                                "miapi:is_weapon": true,
+                                                "miapi:slashing": 5.0,
+                                                "miapi:rarity": "epic",
+                                                "miapi:display_name": "Snowflake Blade"
+                                            }
+                                        }
+                                    },
+                                    "ingredient": true,
+                                    "name": "Snowflake Blade"
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "type": "minecraft:item",
+                    "name": "miapi:modular_part_visual",
+                    "weight": 1,
+                    "functions": [
+                        {
+                            "function": "minecraft:set_components",
+                            "components": {
+                                "miapi:item_module": {
+                                    "key": "tm_arsenal:blade/longsword",
+                                    "data": {
+                                        "skin": "winter/longsword-iceslicer",
+                                        "material": "miapi:metal/netherite",
+                                        "properties": {
+                                            "miapi:is_weapon": true,
+                                            "miapi:fracturing": 15.0,
+                                            "miapi:rarity": "rare",
+                                            "miapi:display_name": "Ice Slicer (Blade)",
+                                            "miapi:item_lore": {
+                                                "text": "Cuts through ice like butter",
+                                                "position": "bottom",
+                                                "color": "dark_gray",
+                                                "italic": true
+                                            }
+                                        }
+                                    }
+                                },
+                                "minecraft:rarity": "rare",
+                                "miapi:module_blueprint": {
+                                    "module": {
+                                        "key": "tm_arsenal:blade/longsword",
+                                        "data": {
+                                            "skin": "winter/longsword-iceslicer",
+                                            "material": "miapi:metal/netherite",
+                                            "properties": {
+                                                "miapi:is_weapon": true,
+                                                "miapi:fracturing": 15.0,
+                                                "miapi:rarity": "rare",
+                                                "miapi:display_name": "Ice Slicer"
+                                            }
+                                        }
+                                    },
+                                    "ingredient": true,
+                                    "name": "Ice Slicer"
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "type": "minecraft:item",
+                    "name": "miapi:modular_part_visual",
+                    "weight": 1,
+                    "functions": [
+                        {
+                            "function": "minecraft:set_components",
+                            "components": {
+                                "miapi:item_module": {
+                                    "key": "tm_arsenal:blade/rapier",
+                                    "data": {
+                                        "skin": "winter/rapier-flaming_ice",
+                                        "material": "miapi:metal/netherite",
+                                        "properties": {
+                                            "miapi:is_weapon": true,
+                                            "miapi:on_kill_explosion": {
+                                                "strength": 1,
+                                                "fire": true
+                                            },
+                                            "miapi:rarity": "epic",
+                                            "miapi:display_name": "Flaming Ice (Blade)",
+                                            "miapi:item_lore": {
+                                                "text": "Fire and ice in perfect balance",
+                                                "position": "bottom",
+                                                "color": "dark_gray",
+                                                "italic": true
+                                            }
+                                        }
+                                    }
+                                },
+                                "minecraft:rarity": "epic",
+                                "miapi:module_blueprint": {
+                                    "module": {
+                                        "key": "tm_arsenal:blade/rapier",
+                                        "data": {
+                                            "skin": "winter/rapier-flaming_ice",
+                                            "material": "miapi:metal/netherite",
+                                            "properties": {
+                                                "miapi:is_weapon": true,
+                                                "miapi:on_kill_explosion": {
+                                                    "strength": 1,
+                                                    "fire": true
+                                                },
+                                                "miapi:rarity": "epic",
+                                                "miapi:display_name": "Flaming Ice"
+                                            }
+                                        }
+                                    },
+                                    "ingredient": true,
+                                    "name": "Flaming Ice"
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "type": "minecraft:item",
+                    "name": "miapi:modular_part_visual",
+                    "weight": 1,
+                    "functions": [
+                        {
+                            "function": "minecraft:set_components",
+                            "components": {
+                                "miapi:item_module": {
+                                    "key": "tm_arsenal:blade/normal",
+                                    "data": {
+                                        "skin": "winter/sword-frostblade",
+                                        "material": "miapi:metal/netherite",
+                                        "properties": {
+                                            "miapi:is_weapon": true,
+                                            "miapi:health_percent": 4.0,
+                                            "miapi:rarity": "rare",
+                                            "miapi:display_name": "Frostblade (Blade)",
+                                            "miapi:item_lore": {
+                                                "text": "Cold as winter's heart",
+                                                "position": "bottom",
+                                                "color": "dark_gray",
+                                                "italic": true
+                                            }
+                                        }
+                                    }
+                                },
+                                "minecraft:rarity": "rare",
+                                "miapi:module_blueprint": {
+                                    "module": {
+                                        "key": "tm_arsenal:blade/normal",
+                                        "data": {
+                                            "skin": "winter/sword-frostblade",
+                                            "material": "miapi:metal/netherite",
+                                            "properties": {
+                                                "miapi:is_weapon": true,
+                                                "miapi:health_percent": 4.0,
+                                                "miapi:rarity": "rare",
+                                                "miapi:display_name": "Frostblade"
+                                            }
+                                        }
+                                    },
+                                    "ingredient": true,
+                                    "name": "Frostblade"
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "type": "minecraft:item",
+                    "name": "miapi:modular_part_visual",
+                    "weight": 1,
+                    "functions": [
+                        {
+                            "function": "minecraft:set_components",
+                            "components": {
+                                "miapi:item_module": {
+                                    "key": "tm_arsenal:blade/zweihaender",
+                                    "data": {
+                                        "skin": "winter/zweihaender-cold_death",
+                                        "material": "miapi:metal/netherite",
+                                        "properties": {
+                                            "miapi:is_weapon": true,
+                                            "miapi:smite_damage": 5.0,
+                                            "miapi:rarity": "epic",
+                                            "miapi:display_name": "Cold Death (Blade)",
+                                            "miapi:item_lore": {
+                                                "text": "Brings winter's eternal sleep",
+                                                "position": "bottom",
+                                                "color": "dark_gray",
+                                                "italic": true
+                                            }
+                                        }
+                                    }
+                                },
+                                "minecraft:rarity": "epic",
+                                "miapi:module_blueprint": {
+                                    "module": {
+                                        "key": "tm_arsenal:blade/zweihaender",
+                                        "data": {
+                                            "skin": "winter/zweihaender-cold_death",
+                                            "material": "miapi:metal/netherite",
+                                            "properties": {
+                                                "miapi:is_weapon": true,
+                                                "miapi:smite_damage": 5.0,
+                                                "miapi:rarity": "epic",
+                                                "miapi:display_name": "Cold Death"
+                                            }
+                                        }
+                                    },
+                                    "ingredient": true,
+                                    "name": "Cold Death"
+                                }
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

@@ -15,8 +15,8 @@ import smartin.miapi.modules.properties.RepairPriority;
 import java.util.List;
 
 @NonnullDefault
-public class ModularVisualOnlyItem extends Item implements PlatformModularItemMethods, VisualModularItem {
-    public ModularVisualOnlyItem() {
+public class BrokenModularVisualOnlyItem extends Item implements PlatformModularItemMethods, VisualModularItem {
+    public BrokenModularVisualOnlyItem() {
         super(new Properties().stacksTo(1).durability(1000));
     }
 
@@ -37,14 +37,11 @@ public class ModularVisualOnlyItem extends Item implements PlatformModularItemMe
 
     @Override
     public Component getName(ItemStack stack) {
-        return Component.translatable("miapi.part.name", DisplayNameProperty.getDisplayText(stack));
+        return Component.translatable("miapi.broken_item.name", DisplayNameProperty.getDisplayText(stack));
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, net.minecraft.world.item.Item.TooltipContext tooltipContext, List<Component> list, TooltipFlag tooltipType) {
+    public void appendHoverText(ItemStack stack, TooltipContext tooltipContext, List<Component> list, TooltipFlag tooltipType) {
         LoreProperty.appendLoreTop(stack, list, tooltipContext, tooltipType);
-        list.add(Component.translatable("miapi.part.name.desc_1"));
-        list.add(Component.translatable("miapi.part.name.desc_2"));
-        list.add(Component.translatable("miapi.part.name.desc_3"));
     }
 }

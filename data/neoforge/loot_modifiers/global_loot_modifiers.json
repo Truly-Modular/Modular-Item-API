@@ -1,0 +1,13 @@
+{
+    "replace": false,
+    "entries": [
+        "tm_arsenal:seasonal_end_city",
+        "tm_arsenal:seasonal_ancient_city",
+        "tm_arsenal:seasonal_bastion_treasure",
+        "tm_arsenal:seasonal_stronghold_library",
+        "tm_arsenal:seasonal_woodland_mansion",
+        "tm_arsenal:seasonal_desert_pyramid",
+        "tm_arsenal:seasonal_jungle_temple",
+        "tm_arsenal:seasonal_nether_fortress"
+    ]
+} 

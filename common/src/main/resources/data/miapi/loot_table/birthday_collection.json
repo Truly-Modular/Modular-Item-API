@@ -1,0 +1,162 @@
+{
+    "pools": [
+        {
+            "rolls": 1,
+            "entries": [
+                {
+                    "type": "minecraft:item",
+                    "name": "miapi:modular_part_visual",
+                    "weight": 1,
+                    "functions": [
+                        {
+                            "function": "minecraft:set_components",
+                            "components": {
+                                "miapi:item_module": {
+                                    "key": "tm_arsenal:blade/greatsword",
+                                    "data": {
+                                        "skin": "bday/greatsword-cake_knife",
+                                        "material": "miapi:metal/netherite",
+                                        "properties": {
+                                            "miapi:is_weapon": true,
+                                            "miapi:slashing": 4.0,
+                                            "miapi:rarity": "epic",
+                                            "miapi:display_name": "Cake Knife (Blade)",
+                                            "miapi:item_lore": {
+                                                "text": "Let them eat cake!",
+                                                "position": "bottom",
+                                                "color": "dark_gray",
+                                                "italic": true
+                                            }
+                                        }
+                                    }
+                                },
+                                "minecraft:rarity": "epic",
+                                "miapi:module_blueprint": {
+                                    "module": {
+                                        "key": "tm_arsenal:blade/greatsword",
+                                        "data": {
+                                            "skin": "bday/greatsword-cake_knife",
+                                            "material": "miapi:metal/netherite",
+                                            "properties": {
+                                                "miapi:is_weapon": true,
+                                                "miapi:slashing": 4.0,
+                                                "miapi:rarity": "epic",
+                                                "miapi:display_name": "Cake Knife"
+                                            }
+                                        }
+                                    },
+                                    "ingredient": true,
+                                    "name": "Cake Knife"
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "type": "minecraft:item",
+                    "name": "miapi:modular_part_visual",
+                    "weight": 1,
+                    "functions": [
+                        {
+                            "function": "minecraft:set_components",
+                            "components": {
+                                "miapi:item_module": {
+                                    "key": "tm_arsenal:blade/longsword",
+                                    "data": {
+                                        "skin": "bday/longsword-trumpeting",
+                                        "material": "miapi:metal/netherite",
+                                        "properties": {
+                                            "miapi:is_weapon": true,
+                                            "miapi:on_kill_explosion": {
+                                                "strength": 1,
+                                                "fire": false
+                                            },
+                                            "miapi:rarity": "epic",
+                                            "miapi:display_name": "Trumpeting (Blade)",
+                                            "miapi:item_lore": {
+                                                "text": "Sound the celebration!",
+                                                "position": "bottom",
+                                                "color": "dark_gray",
+                                                "italic": true
+                                            }
+                                        }
+                                    }
+                                },
+                                "minecraft:rarity": "epic",
+                                "miapi:module_blueprint": {
+                                    "module": {
+                                        "key": "tm_arsenal:blade/longsword",
+                                        "data": {
+                                            "skin": "bday/longsword-trumpeting",
+                                            "material": "miapi:metal/netherite",
+                                            "properties": {
+                                                "miapi:is_weapon": true,
+                                                "miapi:on_kill_explosion": {
+                                                    "strength": 1,
+                                                    "fire": false
+                                                },
+                                                "miapi:rarity": "epic",
+                                                "miapi:display_name": "Trumpeting"
+                                            }
+                                        }
+                                    },
+                                    "ingredient": true,
+                                    "name": "Trumpeting"
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "type": "minecraft:item",
+                    "name": "miapi:modular_part_visual",
+                    "weight": 1,
+                    "functions": [
+                        {
+                            "function": "minecraft:set_components",
+                            "components": {
+                                "miapi:item_module": {
+                                    "key": "tm_arsenal:blade/normal",
+                                    "data": {
+                                        "skin": "bday/sword-ying_yang",
+                                        "material": "miapi:metal/netherite",
+                                        "properties": {
+                                            "miapi:is_weapon": true,
+                                            "miapi:leeching": 3.0,
+                                            "miapi:rarity": "epic",
+                                            "miapi:display_name": "Ying Yang (Blade)",
+                                            "miapi:item_lore": {
+                                                "text": "Balance in all things",
+                                                "position": "bottom",
+                                                "color": "dark_gray",
+                                                "italic": true
+                                            }
+                                        }
+                                    }
+                                },
+                                "minecraft:rarity": "epic",
+                                "miapi:module_blueprint": {
+                                    "module": {
+                                        "key": "tm_arsenal:blade/normal",
+                                        "data": {
+                                            "skin": "bday/sword-ying_yang",
+                                            "material": "miapi:metal/netherite",
+                                            "properties": {
+                                                "miapi:is_weapon": true,
+                                                "miapi:leeching": 3.0,
+                                                "miapi:rarity": "epic",
+                                                "miapi:display_name": "Ying Yang"
+                                            }
+                                        }
+                                    },
+                                    "ingredient": true,
+                                    "name": "Ying Yang"
+                                }
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

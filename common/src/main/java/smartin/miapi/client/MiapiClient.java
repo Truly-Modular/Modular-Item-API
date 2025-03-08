@@ -209,7 +209,7 @@ public class MiapiClient {
                         .filter(a -> a.getItem().has(BLUEPRINT_COMPONENT))
                         .map(a -> a.getItem().get(BLUEPRINT_COMPONENT))
                         .filter(b -> {
-                            for (String id : AllowedSlots.getAllowedSlots(option.getInstance())) {
+                            for (String id : AllowedSlots.getAllowedSlots(b.toMerge)) {
                                 if (option.getSlot().allowed.contains(id)) {
                                     return true;
                                 }

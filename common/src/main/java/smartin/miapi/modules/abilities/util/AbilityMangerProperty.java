@@ -7,6 +7,8 @@ import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.RecordBuilder;
 import net.minecraft.world.item.ItemStack;
 import smartin.miapi.Miapi;
+import smartin.miapi.item.modular.ModularItem;
+import smartin.miapi.item.modular.VisualModularItem;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.util.CodecProperty;
 import smartin.miapi.modules.properties.util.MergeType;
@@ -83,6 +85,9 @@ public class AbilityMangerProperty extends CodecProperty<Map<ItemUseAbility<?>, 
     }
 
     public static boolean isPrimaryAbility(ItemUseAbility<?> itemUseAbility, ItemStack itemStack) {
+        if (VisualModularItem.isModularItem(itemStack) && !ModularItem.isModularItem(itemStack)) {
+            return false;
+        }
         LinkedHashMap<ItemUseAbility<?>, Object> map = (LinkedHashMap<ItemUseAbility<?>, Object>) property.getData(itemStack).orElse(new LinkedHashMap<>());
         if (!map.sequencedEntrySet().isEmpty()) {
             return itemUseAbility == map.sequencedEntrySet().getFirst().getKey();

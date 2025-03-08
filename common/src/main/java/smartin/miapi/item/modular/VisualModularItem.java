@@ -5,7 +5,7 @@ import smartin.miapi.modules.ModuleInstance;
 
 public interface VisualModularItem {
 
-    static boolean isModularItem(ItemStack itemStack){
-        return itemStack.has(ModuleInstance.MODULE_INSTANCE_COMPONENT);
+    static boolean isModularItem(ItemStack itemStack) {
+        return itemStack.has(ModuleInstance.MODULE_INSTANCE_COMPONENT) && itemStack.getItem() instanceof ModularItem;
     }
 }

@@ -1,0 +1,13 @@
+{
+    "replace": false,
+    "entries": [
+        "miapi:seasonal_ancient_city",
+        "miapi:seasonal_bastion_treasure",
+        "miapi:seasonal_desert_pyramid",
+        "miapi:seasonal_end_city",
+        "miapi:seasonal_jungle_temple",
+        "miapi:seasonal_nether_fortress",
+        "miapi:seasonal_stronghold_library",
+        "miapi:seasonal_woodland_mansion"
+    ]
+}

@@ -55,6 +55,7 @@ import smartin.miapi.events.ModularAttackEvents;
 import smartin.miapi.item.MaterialSmithingRecipe;
 import smartin.miapi.item.modular.ModularItemPart;
 import smartin.miapi.item.modular.PropertyResolver;
+import smartin.miapi.item.modular.items.BrokenModularVisualOnlyItem;
 import smartin.miapi.item.modular.items.ExampleModularItem;
 import smartin.miapi.item.modular.items.ExampleModularStrackableItem;
 import smartin.miapi.item.modular.items.ModularVisualOnlyItem;
@@ -340,7 +341,7 @@ public class RegistryInventory {
                 }));
 
         //ITEM
-        register(modularItems, "modular_broken_item", ModularVisualOnlyItem::new, i -> visualOnlymodularItem = i);
+        register(modularItems, "modular_broken_item", BrokenModularVisualOnlyItem::new, i -> visualOnlymodularItem = i);
         register(modularItems, "modular_part_visual", ModularVisualOnlyItem::new, i -> visualOnlymodularItem = i);
 
         register(modularItems, "modular_item", ExampleModularItem::new, i -> modularItem = i);

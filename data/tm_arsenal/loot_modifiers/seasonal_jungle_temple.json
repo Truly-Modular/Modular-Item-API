@@ -1,0 +1,14 @@
+{
+    "type": "neoforge:add_table",
+    "conditions": [
+        {
+            "condition": "neoforge:loot_table_id",
+            "loot_table_id": "minecraft:chests/jungle_temple"
+        },
+        {
+            "condition": "minecraft:random_chance",
+            "chance": 0.10
+        }
+    ],
+    "table": "tm_arsenal:seasonal/all_seasonal_weapons"
+} 

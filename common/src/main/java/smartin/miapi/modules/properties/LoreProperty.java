@@ -1,12 +1,13 @@
 package smartin.miapi.modules.properties;
 
 import com.mojang.serialization.Codec;
-import com.redpxnda.nucleus.codec.auto.AutoCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
@@ -19,7 +20,8 @@ import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.item.MaterialSmithingRecipe;
 import smartin.miapi.item.ModularItemStackConverter;
-import smartin.miapi.item.modular.ModularItem;
+import smartin.miapi.item.modular.ModularItemPart;
+import smartin.miapi.item.modular.VisualModularItem;
 import smartin.miapi.material.MaterialProperty;
 import smartin.miapi.material.base.Material;
 import smartin.miapi.material.generated.SmithingRecipeUtil;
@@ -47,21 +49,27 @@ import java.util.*;
 
 public class LoreProperty extends CodecProperty<List<LoreProperty.Holder>> {
     public static final ResourceLocation KEY = Miapi.id("item_lore");
-    public static final Codec<Holder> codec = AutoCodec.of(Holder.class).codec();
     public static LoreProperty property;
     public static List<LoreSupplier> bottomLoreSuppliers = Collections.synchronizedList(new ArrayList<>());
     public static List<ToolTipSupplierSupplier> loreSuppliers = Collections.synchronizedList(new ArrayList<>());
     public static Map<ItemStack, Material> materialLookupTable = Collections.synchronizedMap(new WeakHashMap<>());
     public static Map<Item, List<Component>> smithingTemplate = Collections.synchronizedMap(new WeakHashMap<>());
+    public static final Codec<Holder> CODEC_BASE = RecordCodecBuilder.create(instance -> instance.group(
+            ComponentSerialization.CODEC.fieldOf("text").forGetter(holder -> holder.text),
+            Codec.STRING.fieldOf("position").forGetter(holder -> holder.position),
+            Codec.FLOAT.optionalFieldOf("priority", 0.0f).forGetter(holder -> holder.priority)
+    ).apply(instance, Holder::new));
+    public static final Codec<Holder> CODEC = Codec.withAlternative(CODEC_BASE, ComponentSerialization.CODEC.xmap(Holder::new, h -> h.text));
+
 
     public LoreProperty() {
-        super(Codec.list(codec));
+        super(Miapi.ToListOrSimple(CODEC));
         property = this;
         loreSuppliers.add((ItemStack itemStack, List<Component> tooltip, Item.TooltipContext context, TooltipFlag tooltipType) -> {
-            if (ModularItem.isModularItem(itemStack)) {
+            if (hasModularItemDescription(itemStack)) {
                 tooltip.add(format(Component.translatable("miapi.ui.modular_item"), ChatFormatting.GRAY));
-                getHolders(itemStack).stream().filter(h -> h.position.equals("top")).forEach(holder -> tooltip.add(holder.getText()));
             }
+            getHolders(itemStack).stream().filter(h -> h.position.equals("top")).forEach(holder -> tooltip.add(holder.getText()));
         });
         ReloadEvents.END.subscribe((isClient, registryAccess) -> {
             try {
@@ -94,12 +102,12 @@ public class LoreProperty extends CodecProperty<List<LoreProperty.Holder>> {
         return format(text, ChatFormatting.GRAY);
     }
 
-    public static  Component format(Component text, ChatFormatting... formatting) {
+    public static Component format(Component text, ChatFormatting... formatting) {
         return text.toFlatList(Style.EMPTY.applyFormats(formatting)).get(0);
     }
 
     public void injectTooltipOnNonModularItems(List<Component> tooltip, ItemStack itemStack) {
-        if(!smartin.miapi.Environment.isClient() && MiapiConfig.INSTANCE.server.other.serverLoreInjection){
+        if (!smartin.miapi.Environment.isClient() && MiapiConfig.INSTANCE.server.other.serverLoreInjection) {
             return;
         }
         synchronized (property) {
@@ -132,12 +140,12 @@ public class LoreProperty extends CodecProperty<List<LoreProperty.Holder>> {
             }
         }
         if (MiapiConfig.INSTANCE.client.loreConfig.injectLoreModularItem) {
-            if (ModularItem.isModularItem(itemStack)) {
+            if (hasModularItemDescription(itemStack)) {
                 lines.add(format(Component.translatable("miapi.ui.modular_item"), ChatFormatting.GRAY));
                 return lines;
             }
             ItemStack converted = ModularItemStackConverter.getModularVersion(itemStack);
-            if (!ItemStack.matches(converted, itemStack) && ModularItem.isModularItem(converted)) {
+            if (ItemStack.matches(converted, itemStack) && hasModularItemDescription(converted)) {
                 lines.add(format(Component.translatable("miapi.ui.modular_item"), ChatFormatting.GRAY));
             }
         }
@@ -149,6 +157,10 @@ public class LoreProperty extends CodecProperty<List<LoreProperty.Holder>> {
             }
         }
         return lines;
+    }
+
+    public static boolean hasModularItemDescription(ItemStack itemstack) {
+        return VisualModularItem.isModularItem(itemstack) && !(itemstack.getItem() instanceof ModularItemPart);
     }
 
     @Environment(EnvType.CLIENT)
@@ -174,7 +186,7 @@ public class LoreProperty extends CodecProperty<List<LoreProperty.Holder>> {
         }
         if (MiapiConfig.INSTANCE.client.loreConfig.injectLoreModularItem) {
             ItemStack converted = ModularItemStackConverter.getModularVersion(itemStack);
-            if (!ItemStack.matches(converted, itemStack) || ModularItem.isModularItem(itemStack)) {
+            if (!ItemStack.matches(converted, itemStack) && hasModularItemDescription(converted)) {
                 lines.add(format(Component.translatable("miapi.ui.modular_item"), ChatFormatting.GRAY));
             }
         }
@@ -202,6 +214,21 @@ public class LoreProperty extends CodecProperty<List<LoreProperty.Holder>> {
         public String position;
         @CodecBehavior.Optional
         public float priority = 0;
+
+        public Holder() {
+
+        }
+
+        public Holder(Component component, String position, float priority) {
+            this.text = component;
+            this.position = position;
+            this.priority = priority;
+        }
+
+        public Holder(Component component) {
+            this.text = component;
+            this.position = "top";
+        }
 
         public Component getText() {
             if (text != null) {

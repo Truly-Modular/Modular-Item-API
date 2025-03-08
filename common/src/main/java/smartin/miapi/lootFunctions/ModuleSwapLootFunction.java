@@ -16,6 +16,7 @@ import org.jetbrains.annotations.NotNull;
 import smartin.miapi.Miapi;
 import smartin.miapi.item.ModularItemStackConverter;
 import smartin.miapi.item.modular.ModularItem;
+import smartin.miapi.item.modular.ModularItemPart;
 import smartin.miapi.material.base.Material;
 import smartin.miapi.material.MaterialProperty;
 import smartin.miapi.modules.ItemModule;
@@ -72,6 +73,9 @@ public record ModuleSwapLootFunction(
         ItemStack modular = ModularItemStackConverter.getModularVersion(stack);
         if (ModularItem.isModularItem(modular)) {
             ModuleInstance root = ItemModule.getModules(modular);
+            if (stack.getItem() instanceof ModularItemPart) {
+                return stack;
+            }
             Material highestMaterial = MaterialProperty.getMaterial(root);
             for (ModuleInstance module : root.allSubModules()) {
                 Material otherMaterial = MaterialProperty.getMaterial(module);

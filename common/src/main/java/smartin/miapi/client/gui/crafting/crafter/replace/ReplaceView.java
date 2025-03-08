@@ -63,7 +63,7 @@ public class ReplaceView extends InteractAbleWidget {
                 });
         optionSuppliers.forEach(craftOptionSupplier -> craftOptions.addAll(craftOptionSupplier.getOption(editContext)));
         List<CraftOption> sortedCraftOptions = craftOptions.stream().sorted(Comparator.comparingDouble(CraftOption::priority)).toList();
-        sortedCraftOptions.stream().sorted(Comparator.comparingDouble(a -> PriorityProperty.getFor(a.module()))).forEach(craftOption -> {
+        sortedCraftOptions.forEach(craftOption -> {
             toList.add(new SlotButton(0, 0, this.width, 15, craftOption));
         });
         list.setList(toList);

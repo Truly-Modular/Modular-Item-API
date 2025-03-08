@@ -7,10 +7,12 @@ import net.fabricmc.fabric.api.item.v1.EnchantmentEvents;
 import net.fabricmc.fabric.api.loot.v3.LootTableEvents;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.util.TriState;
+import net.fabricmc.fabric.impl.client.keybinding.KeyBindingRegistryImpl;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.world.entity.ai.attributes.RangedAttribute;
 import smartin.miapi.Environment;
 import smartin.miapi.Miapi;
+import smartin.miapi.client.MiapiClient;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.lootFunctions.LootFunctionsInjection;
 import smartin.miapi.modules.properties.attributes.AttributeProperty;
@@ -30,6 +32,7 @@ public class MiapiFabric implements ModInitializer {
         if (Environment.isClient()) {
             MiapiClientFabric.setupClient();
         }
+        MiapiClient.KEY_BINDINGS.addCallback(KeyBindingRegistryImpl::registerKeyBinding);
         EnchantmentEvents.ALLOW_ENCHANTING.register((enchantment, target, enchantingContext) -> {
             if (
                     ModularItem.isModularItem(target) &&
@@ -48,7 +51,6 @@ public class MiapiFabric implements ModInitializer {
             IdentifiableMiapiReloadListenerFixed.access = minecraftServer.reloadableRegistries().get();
             Miapi.registryAccess = minecraftServer.reloadableRegistries().get();
         });
-
 
 
         AttributeProperty.replaceMap.put("forge:generic.swim_speed", () -> SWIM_SPEED.value());

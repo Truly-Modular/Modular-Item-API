@@ -1,0 +1,14 @@
+{
+    "type": "neoforge:add_table",
+    "conditions": [
+        {
+            "condition": "neoforge:loot_table_id",
+            "loot_table_id": "minecraft:chests/ancient_city"
+        },
+        {
+            "condition": "minecraft:random_chance",
+            "chance": 0.20
+        }
+    ],
+    "table": "tm_arsenal:seasonal/all_seasonal_weapons"
+} 

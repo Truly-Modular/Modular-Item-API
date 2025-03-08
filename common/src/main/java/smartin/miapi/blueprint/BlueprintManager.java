@@ -28,7 +28,7 @@ public class BlueprintManager {
             } else {
                 reloadedBlueprints.put(id, BlueprintComponent.CODEC.decode(JsonOps.INSTANCE, element).getOrThrow().getFirst());
             }
-        });
+        }, 5.0f);
         ReloadEvents.END.subscribe((isClient, registryAccess) -> Miapi.LOGGER.info("Loaded " + reloadedBlueprints.size() + " Blueprints"));
     }
 
