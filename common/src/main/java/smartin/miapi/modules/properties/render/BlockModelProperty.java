@@ -37,7 +37,7 @@ public class BlockModelProperty extends CodecProperty<List<BlockModelProperty.Bl
                     Block block = BuiltInRegistries.BLOCK.get(blockModelData.id);
                     BlockState blockState = block.defaultBlockState();
                     if (blockModelData.nbt != null) {
-                        blockState = BlockState.CODEC.parse(NbtOps.INSTANCE, blockModelData.nbt).result().orElse(blockState);
+                        blockState = BlockState.CODEC.parse(Miapi.BOOL_CORRECTED_OPS, blockModelData.nbt).result().orElse(blockState);
                     }
                     BlockRenderModel blockRenderModel = new BlockRenderModel(blockState, blockModelData.transform);
                     if (blockModelData.spin != null) {

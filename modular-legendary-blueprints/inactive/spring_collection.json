@@ -1,0 +1,394 @@
+{
+    "pools": [
+        {
+            "rolls": 1,
+            "entries": [
+                {
+                    "type": "minecraft:item",
+                    "name": "minecraft:paper",
+                    "weight": 1,
+                    "functions": [
+                        {
+                            "function": "minecraft:set_components",
+                            "components": {
+                                "minecraft:rarity": "epic",
+                                "miapi:module_blueprint": {
+                                    "module": {
+                                        "key": "tm_arsenal:blade/greatsword",
+                                        "data": {
+                                            "skin": "spring/greatsword-featherlight",
+                                            "material": "miapi:metal/netherite",
+                                            "properties": {
+                                                "miapi:is_weapon": true,
+                                                "miapi:slashing": 4.0,
+                                                "miapi:rarity": "epic",
+                                                "miapi:display_name": "Featherlight",
+                                                "miapi:item_lore": {
+                                                    "position": "top",
+                                                    "text": {
+                                                        "text": "Light as spring breeze",
+                                                        "position": "bottom",
+                                                        "color": "dark_gray",
+                                                        "italic": true
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "ingredient": false,
+                                    "name": "Featherlight Blueprint"
+                                },
+                                "minecraft:custom_name": {
+                                    "text": "Featherlight Blueprint",
+                                    "color": "gold",
+                                    "italic": false
+                                },
+                                "minecraft:lore": [
+                                    "",
+                                    {
+                                        "text": "Light as spring breeze",
+                                        "color": "dark_gray",
+                                        "italic": true
+                                    },
+                                    {
+                                        "text": "Place in inventory while modifying a blade",
+                                        "color": "gray",
+                                        "italic": false
+                                    },
+                                    {
+                                        "text": "to apply this legendary design",
+                                        "color": "gray",
+                                        "italic": false
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "type": "minecraft:item",
+                    "name": "minecraft:paper",
+                    "weight": 1,
+                    "functions": [
+                        {
+                            "function": "minecraft:set_components",
+                            "components": {
+                                "minecraft:rarity": "epic",
+                                "miapi:module_blueprint": {
+                                    "module": {
+                                        "key": "tm_arsenal:blade/greatsword",
+                                        "data": {
+                                            "skin": "spring/greatsword-trunk",
+                                            "material": "miapi:metal/netherite",
+                                            "properties": {
+                                                "miapi:is_weapon": true,
+                                                "miapi:fracturing": 15.0,
+                                                "miapi:rarity": "epic",
+                                                "miapi:display_name": "Trunk",
+                                                "miapi:item_lore": {
+                                                    "position": "top",
+                                                    "text": {
+                                                        "text": "Strong as an ancient oak",
+                                                        "position": "bottom",
+                                                        "color": "dark_gray",
+                                                        "italic": true
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "ingredient": false,
+                                    "name": "Trunk Blueprint"
+                                },
+                                "minecraft:custom_name": {
+                                    "text": "Trunk Blueprint",
+                                    "color": "gold",
+                                    "italic": false
+                                },
+                                "minecraft:lore": [
+                                    {
+                                        "text": "Strong as an ancient oak",
+                                        "color": "dark_gray",
+                                        "italic": true
+                                    },
+                                    {
+                                        "text": ""
+                                    },
+                                    {
+                                        "text": "Place in inventory while modifying a blade",
+                                        "color": "gray",
+                                        "italic": false
+                                    },
+                                    {
+                                        "text": "to apply this legendary design",
+                                        "color": "gray",
+                                        "italic": false
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "type": "minecraft:item",
+                    "name": "minecraft:paper",
+                    "weight": 1,
+                    "functions": [
+                        {
+                            "function": "minecraft:set_components",
+                            "components": {
+                                "minecraft:rarity": "epic",
+                                "miapi:module_blueprint": {
+                                    "module": {
+                                        "key": "tm_arsenal:blade/katana",
+                                        "data": {
+                                            "skin": "spring/katana-dawnbreaker",
+                                            "material": "miapi:metal/netherite",
+                                            "properties": {
+                                                "miapi:is_weapon": true,
+                                                "miapi:smite_damage": 5.0,
+                                                "miapi:rarity": "epic",
+                                                "miapi:display_name": "Dawnbreaker",
+                                                "miapi:item_lore": {
+                                                    "position": "top",
+                                                    "text": {
+                                                        "text": "First light of morning",
+                                                        "position": "bottom",
+                                                        "color": "dark_gray",
+                                                        "italic": true
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "ingredient": false,
+                                    "name": "Dawnbreaker Blueprint"
+                                },
+                                "minecraft:custom_name": {
+                                    "text": "Dawnbreaker Blueprint",
+                                    "color": "gold",
+                                    "italic": false
+                                },
+                                "minecraft:lore": [
+                                    {
+                                        "text": "First light of morning",
+                                        "color": "dark_gray",
+                                        "italic": true
+                                    },
+                                    {
+                                        "text": ""
+                                    },
+                                    {
+                                        "text": "Place in inventory while modifying a blade",
+                                        "color": "gray",
+                                        "italic": false
+                                    },
+                                    {
+                                        "text": "to apply this legendary design",
+                                        "color": "gray",
+                                        "italic": false
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "type": "minecraft:item",
+                    "name": "minecraft:paper",
+                    "weight": 1,
+                    "functions": [
+                        {
+                            "function": "minecraft:set_components",
+                            "components": {
+                                "minecraft:rarity": "rare",
+                                "miapi:module_blueprint": {
+                                    "module": {
+                                        "key": "tm_arsenal:blade/katana",
+                                        "data": {
+                                            "skin": "spring/katana-leafblade",
+                                            "material": "miapi:metal/netherite",
+                                            "properties": {
+                                                "miapi:is_weapon": true,
+                                                "miapi:leeching": 3.0,
+                                                "miapi:rarity": "rare",
+                                                "miapi:display_name": "Leaf Blade",
+                                                "miapi:item_lore": {
+                                                    "position": "top",
+                                                    "text": {
+                                                        "text": "Sharp as nature's edge",
+                                                        "position": "bottom",
+                                                        "color": "dark_gray",
+                                                        "italic": true
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "ingredient": false,
+                                    "name": "Leaf Blade Blueprint"
+                                },
+                                "minecraft:custom_name": {
+                                    "text": "Leaf Blade Blueprint",
+                                    "color": "light_purple",
+                                    "italic": false
+                                },
+                                "minecraft:lore": [
+                                    {
+                                        "text": "Sharp as nature's edge",
+                                        "color": "dark_gray",
+                                        "italic": true
+                                    },
+                                    {
+                                        "text": ""
+                                    },
+                                    {
+                                        "text": "Place in inventory while modifying a blade",
+                                        "color": "gray",
+                                        "italic": false
+                                    },
+                                    {
+                                        "text": "to apply this legendary design",
+                                        "color": "gray",
+                                        "italic": false
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "type": "minecraft:item",
+                    "name": "minecraft:paper",
+                    "weight": 1,
+                    "functions": [
+                        {
+                            "function": "minecraft:set_components",
+                            "components": {
+                                "minecraft:rarity": "rare",
+                                "miapi:module_blueprint": {
+                                    "module": {
+                                        "key": "tm_arsenal:blade/rapier",
+                                        "data": {
+                                            "skin": "spring/rapier-thorns",
+                                            "material": "miapi:metal/netherite",
+                                            "properties": {
+                                                "miapi:is_weapon": true,
+                                                "miapi:health_percent": 4.0,
+                                                "miapi:rarity": "rare",
+                                                "miapi:display_name": "Thorns",
+                                                "miapi:item_lore": {
+                                                    "position": "top",
+                                                    "text": {
+                                                        "text": "Every rose has its thorns",
+                                                        "position": "bottom",
+                                                        "color": "dark_gray",
+                                                        "italic": true
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "ingredient": false,
+                                    "name": "Thorns Blueprint"
+                                },
+                                "minecraft:custom_name": {
+                                    "text": "Thorns Blueprint",
+                                    "color": "light_purple",
+                                    "italic": false
+                                },
+                                "minecraft:lore": [
+                                    {
+                                        "text": "Every rose has its thorns",
+                                        "color": "dark_gray",
+                                        "italic": true
+                                    },
+                                    {
+                                        "text": ""
+                                    },
+                                    {
+                                        "text": "Place in inventory while modifying a blade",
+                                        "color": "gray",
+                                        "italic": false
+                                    },
+                                    {
+                                        "text": "to apply this legendary design",
+                                        "color": "gray",
+                                        "italic": false
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "type": "minecraft:item",
+                    "name": "minecraft:paper",
+                    "weight": 1,
+                    "functions": [
+                        {
+                            "function": "minecraft:set_components",
+                            "components": {
+                                "minecraft:rarity": "epic",
+                                "miapi:module_blueprint": {
+                                    "module": {
+                                        "key": "tm_arsenal:blade/normal",
+                                        "data": {
+                                            "skin": "spring/sword-green_assault",
+                                            "material": "miapi:metal/netherite",
+                                            "properties": {
+                                                "miapi:is_weapon": true,
+                                                "miapi:on_kill_explosion": {
+                                                    "strength": 1,
+                                                    "fire": false
+                                                },
+                                                "miapi:rarity": "epic",
+                                                "miapi:display_name": "Green Assault",
+                                                "miapi:item_lore": {
+                                                    "position": "top",
+                                                    "text": {
+                                                        "text": "Nature's vengeance",
+                                                        "position": "bottom",
+                                                        "color": "dark_gray",
+                                                        "italic": true
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "ingredient": false,
+                                    "name": "Green Assault Blueprint"
+                                },
+                                "minecraft:custom_name": {
+                                    "text": "Green Assault Blueprint",
+                                    "color": "gold",
+                                    "italic": false
+                                },
+                                "minecraft:lore": [
+                                    {
+                                        "text": "Nature's vengeance",
+                                        "color": "dark_gray",
+                                        "italic": true
+                                    },
+                                    {
+                                        "text": ""
+                                    },
+                                    {
+                                        "text": "Place in inventory while modifying a blade",
+                                        "color": "gray",
+                                        "italic": false
+                                    },
+                                    {
+                                        "text": "to apply this legendary design",
+                                        "color": "gray",
+                                        "italic": false
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

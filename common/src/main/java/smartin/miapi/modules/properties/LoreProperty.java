@@ -160,7 +160,7 @@ public class LoreProperty extends CodecProperty<List<LoreProperty.Holder>> {
     }
 
     public static boolean hasModularItemDescription(ItemStack itemstack) {
-        return VisualModularItem.isModularItem(itemstack) && !(itemstack.getItem() instanceof ModularItemPart);
+        return VisualModularItem.isVisualModularItem(itemstack) && !(itemstack.getItem() instanceof ModularItemPart);
     }
 
     @Environment(EnvType.CLIENT)

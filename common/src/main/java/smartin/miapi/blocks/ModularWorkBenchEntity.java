@@ -124,7 +124,7 @@ public class ModularWorkBenchEntity extends BlockEntity implements MenuProvider,
         CompoundTag persisStatsNbt = new CompoundTag();
 
         //TODO:persistentStats are disabled for now
-        //persistentStats.forEach((key, val) -> persisStatsNbt.put(key, StatProvidersMap.MODULELESS_CODEC.encodeStart(NbtOps.INSTANCE, val).getOrThrow(false, s -> Miapi.LOGGER.error("Failed to encode persistent StatProvidersMap for MWBE! -> {}", s))));
+        //persistentStats.forEach((key, val) -> persisStatsNbt.put(key, StatProvidersMap.MODULELESS_CODEC.encodeStart(Miapi.BOOL_CORRECTED_OPS, val).getOrThrow(false, s -> Miapi.LOGGER.error("Failed to encode persistent StatProvidersMap for MWBE! -> {}", s))));
 
         CompoundTag statsNbt = new CompoundTag();
         stats.forEach((stat, inst) -> {
@@ -134,7 +134,7 @@ public class ModularWorkBenchEntity extends BlockEntity implements MenuProvider,
         if (!getItem().isEmpty()) {
             try {
                 tag.put("item", ItemStack.CODEC.encodeStart(
-                        RegistryOps.create(NbtOps.INSTANCE, level.registryAccess()),
+                        RegistryOps.create(Miapi.BOOL_CORRECTED_OPS, level.registryAccess()),
                         getItem()).getOrThrow());
             } catch (Exception e) {
                 Miapi.LOGGER.error("Could not save Item in Workbench! this indicated the item is broken and will cause more crashese later on!", e);
@@ -176,7 +176,7 @@ public class ModularWorkBenchEntity extends BlockEntity implements MenuProvider,
         CompoundTag persisStatsNbt = tag.getCompound("PersistentStats");
         persisStatsNbt.getAllKeys().forEach(key -> {
             //TODO:this did not work, idk the stats stuff though
-            //persistentStats.put(key, MiscCodecs.quickParse(NbtOps.INSTANCE, persisStatsNbt.getCompound(key), StatProvidersMap.MODULELESS_CODEC, s -> Miapi.LOGGER.error("Failed to decode persistent StatProvidersMap for MWBE! -> {}", s)));
+            //persistentStats.put(key, MiscCodecs.quickParse(Miapi.BOOL_CORRECTED_OPS, persisStatsNbt.getCompound(key), StatProvidersMap.MODULELESS_CODEC, s -> Miapi.LOGGER.error("Failed to decode persistent StatProvidersMap for MWBE! -> {}", s)));
         });
 
         CompoundTag statsNbt = tag.getCompound("Stats");

@@ -1,0 +1,25 @@
+modLoader="lowcodefml" #mandatory
+loaderVersion="${neoforge_loader_version_range}"
+license="CC-BY-NC-4.0"
+issueTrackerURL="https://github.com/Truly-Modular/Modular-Item-API/issues"
+[[mods]] #mandatory
+modId="modular_legends" #mandatory
+version="1.0" #mandatory
+displayName="Modular Legends" #mandatory
+displayURL="https://truly-modular.github.io/" #optional
+logoFile="icon.png" #optional
+credits="Smartin, TheWiseHedgehog" #optional
+authors="smartin" #optional
+description='''Adds Legendary findable Modular Parts'''
+[[dependencies.modular_legends]] #optional
+   modId="neoforge" #mandatory
+   mandatory=true #mandatory
+   versionRange="${neoforge_version_range}" #mandatory
+   ordering="NONE"
+   side="BOTH"
+[[dependencies.modular_legends]]
+   modId="minecraft"
+   mandatory=true
+   versionRange="[${minecraft_version},)"
+   ordering="NONE"
+   side="BOTH"

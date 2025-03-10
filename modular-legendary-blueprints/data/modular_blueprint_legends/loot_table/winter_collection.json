@@ -1,0 +1,282 @@
+{
+    "pools": [
+        {
+            "rolls": 1,
+            "entries": [
+                {
+                    "type": "minecraft:item",
+                    "name": "minecraft:paper",
+                    "weight": 1,
+                    "functions": [
+                        {
+                            "function": "minecraft:set_components",
+                            "components": {
+                                "minecraft:rarity": "epic",
+                                "miapi:module_blueprint": {
+                                    "module": {
+                                        "key": "tm_arsenal:blade/dagger",
+                                        "data": {
+                                            "skin": "winter/dagger-cold_embrace",
+                                            "material": "miapi:metal/netherite",
+                                            "properties": {
+                                                "miapi:is_weapon": true,
+                                                "miapi:leeching": 3.0,
+                                                "miapi:rarity": "epic",
+                                                "miapi:display_name": "Cold Embrace",
+                                                "miapi:item_lore": {
+                                                    "position": "top",
+                                                    "text": {
+                                                        "text": "A chilling touch",
+                                                        "position": "bottom",
+                                                        "color": "dark_gray",
+                                                        "italic": true
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "ingredient": false,
+                                    "name": "Cold Embrace Blueprint"
+                                },
+                                "minecraft:custom_name": "[\"\", {\"text\": \"Cold Embrace Blueprint\", \"color\": \"gold\", \"italic\": false}]",
+                                "minecraft:lore": [
+                                    "[\"\", {\"text\": \"A chilling touch\", \"color\": \"dark_gray\", \"italic\": true}]",
+                                    "[\"\", {\"text\": \"Place in inventory while modifying a blade\", \"color\": \"gray\", \"italic\": false}]",
+                                    "[\"\", {\"text\": \"to apply this legendary design\", \"color\": \"gray\", \"italic\": false}]"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "type": "minecraft:item",
+                    "name": "minecraft:paper",
+                    "weight": 1,
+                    "functions": [
+                        {
+                            "function": "minecraft:set_components",
+                            "components": {
+                                "minecraft:rarity": "epic",
+                                "miapi:module_blueprint": {
+                                    "module": {
+                                        "key": "tm_arsenal:blade/greatsword",
+                                        "data": {
+                                            "skin": "winter/greatsword-snowflake_blade",
+                                            "material": "miapi:metal/netherite",
+                                            "properties": {
+                                                "miapi:is_weapon": true,
+                                                "miapi:slashing": 5.0,
+                                                "miapi:rarity": "epic",
+                                                "miapi:display_name": "Snowflake Blade",
+                                                "miapi:item_lore": {
+                                                    "position": "top",
+                                                    "text": {
+                                                        "text": "Each cut unique as a snowflake",
+                                                        "position": "bottom",
+                                                        "color": "dark_gray",
+                                                        "italic": true
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "ingredient": false,
+                                    "name": "Snowflake Blade Blueprint"
+                                },
+                                "minecraft:custom_name": "[\"\", {\"text\": \"Snowflake Blade Blueprint\", \"color\": \"gold\", \"italic\": false}]",
+                                "minecraft:lore": [
+                                    "[\"\", {\"text\": \"Each cut unique as a snowflake\", \"color\": \"dark_gray\", \"italic\": true}]",
+                                    "[\"\", {\"text\": \"Place in inventory while modifying a blade\", \"color\": \"gray\", \"italic\": false}]",
+                                    "[\"\", {\"text\": \"to apply this legendary design\", \"color\": \"gray\", \"italic\": false}]"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "type": "minecraft:item",
+                    "name": "minecraft:paper",
+                    "weight": 1,
+                    "functions": [
+                        {
+                            "function": "minecraft:set_components",
+                            "components": {
+                                "minecraft:rarity": "rare",
+                                "miapi:module_blueprint": {
+                                    "module": {
+                                        "key": "tm_arsenal:blade/longsword",
+                                        "data": {
+                                            "skin": "winter/longsword-iceslicer",
+                                            "material": "miapi:metal/netherite",
+                                            "properties": {
+                                                "miapi:is_weapon": true,
+                                                "miapi:fracturing": 15.0,
+                                                "miapi:rarity": "rare",
+                                                "miapi:display_name": "Ice Slicer",
+                                                "miapi:item_lore": {
+                                                    "position": "top",
+                                                    "text": {
+                                                        "text": "Cuts through ice like butter",
+                                                        "position": "bottom",
+                                                        "color": "dark_gray",
+                                                        "italic": true
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "ingredient": false,
+                                    "name": "Ice Slicer Blueprint"
+                                },
+                                "minecraft:custom_name": "[\"\", {\"text\": \"Ice Slicer Blueprint\", \"color\": \"light_purple\", \"italic\": false}]",
+                                "minecraft:lore": [
+                                    "[\"\", {\"text\": \"Cuts through ice like butter\", \"color\": \"dark_gray\", \"italic\": true}]",
+                                    "[\"\", {\"text\": \"Place in inventory while modifying a blade\", \"color\": \"gray\", \"italic\": false}]",
+                                    "[\"\", {\"text\": \"to apply this legendary design\", \"color\": \"gray\", \"italic\": false}]"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "type": "minecraft:item",
+                    "name": "minecraft:paper",
+                    "weight": 1,
+                    "functions": [
+                        {
+                            "function": "minecraft:set_components",
+                            "components": {
+                                "minecraft:rarity": "epic",
+                                "miapi:module_blueprint": {
+                                    "module": {
+                                        "key": "tm_arsenal:blade/rapier",
+                                        "data": {
+                                            "skin": "winter/rapier-flaming_ice",
+                                            "material": "miapi:metal/netherite",
+                                            "properties": {
+                                                "miapi:is_weapon": true,
+                                                "miapi:on_kill_explosion": {
+                                                    "strength": 1,
+                                                    "fire": true
+                                                },
+                                                "miapi:rarity": "epic",
+                                                "miapi:display_name": "Flaming Ice",
+                                                "miapi:item_lore": {
+                                                    "position": "top",
+                                                    "text": {
+                                                        "text": "Fire and ice in perfect balance",
+                                                        "position": "bottom",
+                                                        "color": "dark_gray",
+                                                        "italic": true
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "ingredient": false,
+                                    "name": "Flaming Ice Blueprint"
+                                },
+                                "minecraft:custom_name": "[\"\", {\"text\": \"Flaming Ice Blueprint\", \"color\": \"gold\", \"italic\": false}]",
+                                "minecraft:lore": [
+                                    "[\"\", {\"text\": \"Fire and ice in perfect balance\", \"color\": \"dark_gray\", \"italic\": true}]",
+                                    "[\"\", {\"text\": \"Place in inventory while modifying a blade\", \"color\": \"gray\", \"italic\": false}]",
+                                    "[\"\", {\"text\": \"to apply this legendary design\", \"color\": \"gray\", \"italic\": false}]"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "type": "minecraft:item",
+                    "name": "minecraft:paper",
+                    "weight": 1,
+                    "functions": [
+                        {
+                            "function": "minecraft:set_components",
+                            "components": {
+                                "minecraft:rarity": "rare",
+                                "miapi:module_blueprint": {
+                                    "module": {
+                                        "key": "tm_arsenal:blade/normal",
+                                        "data": {
+                                            "skin": "winter/sword-frostblade",
+                                            "material": "miapi:metal/netherite",
+                                            "properties": {
+                                                "miapi:is_weapon": true,
+                                                "miapi:health_percent": 4.0,
+                                                "miapi:rarity": "rare",
+                                                "miapi:display_name": "Frostblade",
+                                                "miapi:item_lore": {
+                                                    "position": "top",
+                                                    "text": {
+                                                        "text": "Cold as winter's heart",
+                                                        "position": "bottom",
+                                                        "color": "dark_gray",
+                                                        "italic": true
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "ingredient": false,
+                                    "name": "Frostblade Blueprint"
+                                },
+                                "minecraft:custom_name": "[\"\", {\"text\": \"Frostblade Blueprint\", \"color\": \"light_purple\", \"italic\": false}]",
+                                "minecraft:lore": [
+                                    "[\"\", {\"text\": \"Cold as winter's heart\", \"color\": \"dark_gray\", \"italic\": true}]",
+                                    "[\"\", {\"text\": \"Place in inventory while modifying a blade\", \"color\": \"gray\", \"italic\": false}]",
+                                    "[\"\", {\"text\": \"to apply this legendary design\", \"color\": \"gray\", \"italic\": false}]"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "type": "minecraft:item",
+                    "name": "minecraft:paper",
+                    "weight": 1,
+                    "functions": [
+                        {
+                            "function": "minecraft:set_components",
+                            "components": {
+                                "minecraft:rarity": "epic",
+                                "miapi:module_blueprint": {
+                                    "module": {
+                                        "key": "tm_arsenal:blade/zweihaender",
+                                        "data": {
+                                            "skin": "winter/zweihaender-cold_death",
+                                            "material": "miapi:metal/netherite",
+                                            "properties": {
+                                                "miapi:is_weapon": true,
+                                                "miapi:smite_damage": 5.0,
+                                                "miapi:rarity": "epic",
+                                                "miapi:display_name": "Cold Death",
+                                                "miapi:item_lore": {
+                                                    "position": "top",
+                                                    "text": {
+                                                        "text": "Brings winter's eternal sleep",
+                                                        "position": "bottom",
+                                                        "color": "dark_gray",
+                                                        "italic": true
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "ingredient": false,
+                                    "name": "Cold Death Blueprint"
+                                },
+                                "minecraft:custom_name": "[\"\", {\"text\": \"Cold Death Blueprint\", \"color\": \"gold\", \"italic\": false}]",
+                                "minecraft:lore": [
+                                    "[\"\", {\"text\": \"Brings winter's eternal sleep\", \"color\": \"dark_gray\", \"italic\": true}]",
+                                    "[\"\", {\"text\": \"Place in inventory while modifying a blade\", \"color\": \"gray\", \"italic\": false}]",
+                                    "[\"\", {\"text\": \"to apply this legendary design\", \"color\": \"gray\", \"italic\": false}]"
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

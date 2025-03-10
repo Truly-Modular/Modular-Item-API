@@ -85,7 +85,7 @@ public class AbilityMangerProperty extends CodecProperty<Map<ItemUseAbility<?>, 
     }
 
     public static boolean isPrimaryAbility(ItemUseAbility<?> itemUseAbility, ItemStack itemStack) {
-        if (VisualModularItem.isModularItem(itemStack) && !ModularItem.isModularItem(itemStack)) {
+        if (VisualModularItem.isVisualModularItem(itemStack) && !ModularItem.isModularItem(itemStack)) {
             return false;
         }
         LinkedHashMap<ItemUseAbility<?>, Object> map = (LinkedHashMap<ItemUseAbility<?>, Object>) property.getData(itemStack).orElse(new LinkedHashMap<>());

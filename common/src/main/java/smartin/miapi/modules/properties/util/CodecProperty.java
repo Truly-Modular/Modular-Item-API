@@ -11,6 +11,8 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.Tag;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.world.item.ItemStack;
 import smartin.miapi.Miapi;
@@ -47,16 +49,17 @@ public abstract class CodecProperty<T> implements ModuleProperty<T> {
     }
 
     public T decode(JsonElement element) {
-        RegistryOps<JsonElement> ops = RegistryOps.create(
-                JsonOps.INSTANCE,
+        RegistryOps<Tag> ops = RegistryOps.create(
+                NbtOps.INSTANCE,
                 RegistryAccess.fromRegistryOfRegistries(BuiltInRegistries.REGISTRY));
         if (Miapi.registryAccess != null) {
             ops = RegistryOps.create(
-                    JsonOps.INSTANCE, Miapi.registryAccess
+                    NbtOps.INSTANCE, Miapi.registryAccess
             );
         }
         return codec.parse(
-                ops, element).getOrThrow((s) -> new DecoderException("could not decode CodecProperty " + this.getClass().getName() + " " + s));
+                ops, JsonOps.INSTANCE.convertTo(NbtOps.INSTANCE, element)).getOrThrow((s) ->
+                new DecoderException("could not decode CodecProperty " + this.getClass().getName() + " " + s));
     }
 
     @Environment(EnvType.CLIENT)

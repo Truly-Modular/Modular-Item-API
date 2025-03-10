@@ -1,0 +1,6 @@
+{
+    "type": "neoforge:add_table",
+    "conditions": [
+    ],
+    "table": "modular_blueprint_legends:complete_lootable"
+} 

@@ -1,0 +1,147 @@
+{
+    "pools": [
+        {
+            "rolls": 1,
+            "entries": [
+                {
+                    "type": "minecraft:item",
+                    "name": "minecraft:paper",
+                    "weight": 1,
+                    "functions": [
+                        {
+                            "function": "minecraft:set_components",
+                            "components": {
+                                "minecraft:rarity": "epic",
+                                "miapi:module_blueprint": {
+                                    "module": {
+                                        "key": "tm_arsenal:blade/greatsword",
+                                        "data": {
+                                            "skin": "bday/greatsword-cake_knife",
+                                            "material": "miapi:metal/netherite",
+                                            "properties": {
+                                                "miapi:is_weapon": true,
+                                                "miapi:slashing": 4.0,
+                                                "miapi:rarity": "epic",
+                                                "miapi:display_name": "Cake Knife",
+                                                "miapi:item_lore": {
+                                                    "position": "top",
+                                                    "text": {
+                                                        "text": "Let them eat cake!",
+                                                        "position": "bottom",
+                                                        "color": "dark_gray",
+                                                        "italic": true
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "ingredient": false,
+                                    "name": "Cake Knife Blueprint"
+                                },
+                                "minecraft:custom_name": "[\"\", {\"text\": \"Cake Knife Blueprint\", \"color\": \"gold\", \"italic\": false}]",
+                                "minecraft:lore": [
+                                    "[\"\", {\"text\": \"Let them eat cake!\", \"color\": \"dark_gray\", \"italic\": true}]",
+                                    "[\"\", {\"text\": \"Place in inventory while modifying a blade\", \"color\": \"gray\", \"italic\": false}]",
+                                    "[\"\", {\"text\": \"to apply this legendary design\", \"color\": \"gray\", \"italic\": false}]"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "type": "minecraft:item",
+                    "name": "minecraft:paper",
+                    "weight": 1,
+                    "functions": [
+                        {
+                            "function": "minecraft:set_components",
+                            "components": {
+                                "minecraft:rarity": "epic",
+                                "miapi:module_blueprint": {
+                                    "module": {
+                                        "key": "tm_arsenal:blade/longsword",
+                                        "data": {
+                                            "skin": "bday/longsword-trumpeting",
+                                            "material": "miapi:metal/netherite",
+                                            "properties": {
+                                                "miapi:is_weapon": true,
+                                                "miapi:on_kill_explosion": {
+                                                    "strength": 1,
+                                                    "fire": false
+                                                },
+                                                "miapi:rarity": "epic",
+                                                "miapi:display_name": "Trumpeting",
+                                                "miapi:item_lore": {
+                                                    "position": "top",
+                                                    "text": {
+                                                        "text": "Sound the celebration!",
+                                                        "position": "bottom",
+                                                        "color": "dark_gray",
+                                                        "italic": true
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "ingredient": false,
+                                    "name": "Trumpeting Blueprint"
+                                },
+                                "minecraft:custom_name": "[\"\", {\"text\": \"Trumpeting Blueprint\", \"color\": \"gold\", \"italic\": false}]",
+                                "minecraft:lore": [
+                                    "[\"\", {\"text\": \"Sound the celebration!\", \"color\": \"dark_gray\", \"italic\": true}]",
+                                    "[\"\", {\"text\": \"Place in inventory while modifying a blade\", \"color\": \"gray\", \"italic\": false}]",
+                                    "[\"\", {\"text\": \"to apply this legendary design\", \"color\": \"gray\", \"italic\": false}]"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "type": "minecraft:item",
+                    "name": "minecraft:paper",
+                    "weight": 1,
+                    "functions": [
+                        {
+                            "function": "minecraft:set_components",
+                            "components": {
+                                "minecraft:rarity": "epic",
+                                "miapi:module_blueprint": {
+                                    "module": {
+                                        "key": "tm_arsenal:blade/normal",
+                                        "data": {
+                                            "skin": "bday/sword-ying_yang",
+                                            "material": "miapi:metal/netherite",
+                                            "properties": {
+                                                "miapi:is_weapon": true,
+                                                "miapi:leeching": 3.0,
+                                                "miapi:rarity": "epic",
+                                                "miapi:display_name": "Ying Yang",
+                                                "miapi:item_lore": {
+                                                    "position": "top",
+                                                    "text": {
+                                                        "text": "Balance in all things",
+                                                        "position": "bottom",
+                                                        "color": "dark_gray",
+                                                        "italic": true
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "ingredient": false,
+                                    "name": "Ying Yang Blueprint"
+                                },
+                                "minecraft:custom_name": "[\"\", {\"text\": \"Ying Yang Blueprint\", \"color\": \"gold\", \"italic\": false}]",
+                                "minecraft:lore": [
+                                    "[\"\", {\"text\": \"Balance in all things\", \"color\": \"dark_gray\", \"italic\": true}]",
+                                    "[\"\", {\"text\": \"Place in inventory while modifying a blade\", \"color\": \"gray\", \"italic\": false}]",
+                                    "[\"\", {\"text\": \"to apply this legendary design\", \"color\": \"gray\", \"italic\": false}]"
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

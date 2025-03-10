@@ -61,7 +61,7 @@ public abstract class MiapiItemStackMixin {
     @Inject(method = "getItem", at = @At("TAIL"))
     public void miapi$capturePotentialItemstack(CallbackInfoReturnable<Item> cir) {
         ItemStack stack = (ItemStack) (Object) this;
-        if (ModularItem.isModularItem(stack)) {
+        if (ModularItem.isModularItem(stack, cir.getReturnValue())) {
             FakeItemstackReferenceProvider.setReference(cir.getReturnValue(), stack);
         }
     }
@@ -85,21 +85,21 @@ public abstract class MiapiItemStackMixin {
         return original;
     }
 
-    @Inject(method = "<init>(Lnet/minecraft/world/level/ItemLike;ILnet/minecraft/core/component/PatchedDataComponentMap;)V", at = @At("TAIL"))
+    @Inject(method = "<init>(Lnet/minecraft/world/level/ItemLike;ILnet/minecraft/core/component/PatchedDataComponentMap;)V", at = @At("RETURN"))
     public void miapi$capturePotentialItemstack(ItemLike item, int count, PatchedDataComponentMap components, CallbackInfo ci) {
         ItemStack stack = (ItemStack) (Object) this;
-        if (ModularItem.isModularItem(stack)) {
+        if (ModularItem.isModularItem(stack, item.asItem())) {
             FakeEnchantmentManager.initOnItemStack(stack);
         }
     }
 
-    @Inject(method = "Lnet/minecraft/world/item/ItemStack;addToTooltip(Lnet/minecraft/core/component/DataComponentType;Lnet/minecraft/world/item/Item$TooltipContext;Ljava/util/function/Consumer;Lnet/minecraft/world/item/TooltipFlag;)V", at = @At("TAIL"))
-    public <T> void miapi$capturePotentialItemstack(DataComponentType<T> component, Item.TooltipContext context, Consumer<Component> tooltipAdder, TooltipFlag tooltipFlag, CallbackInfo ci) {
+    @Inject(method = "addToTooltip(Lnet/minecraft/core/component/DataComponentType;Lnet/minecraft/world/item/Item$TooltipContext;Ljava/util/function/Consumer;Lnet/minecraft/world/item/TooltipFlag;)V", at = @At("TAIL"))
+    public <T> void miapi$injectToolTip(DataComponentType<T> component, Item.TooltipContext context, Consumer<Component> tooltipAdder, TooltipFlag tooltipFlag, CallbackInfo ci) {
         ItemStack stack = (ItemStack) (Object) this;
         PreviewManager.setCursorItemstack(stack);
         if (DataComponents.UNBREAKABLE.equals(component)) {
             FakeEnchantmentManager.initOnItemStack(stack);
-            if (VisualModularItem.isModularItem(stack)) {
+            if (VisualModularItem.isVisualModularItem(stack)) {
                 List<Component> lore = new ArrayList<>();
                 LoreProperty.property.appendLoreBottom(lore, stack);
                 lore.forEach(tooltipAdder);

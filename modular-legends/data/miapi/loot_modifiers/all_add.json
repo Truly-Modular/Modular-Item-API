@@ -1,6 +1,0 @@
-{
-    "type": "neoforge:add_table",
-    "conditions": [
-    ],
-    "table": "miapi:complete_lootable"
-} 

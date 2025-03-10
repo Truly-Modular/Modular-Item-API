@@ -4,11 +4,11 @@ import com.google.gson.JsonElement;
 import com.mojang.serialization.JsonOps;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.item.ItemStack;
+import smartin.miapi.Miapi;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.util.DoubleProperty;
 
@@ -27,7 +27,7 @@ public class InventoryProperty extends DoubleProperty {
         // Load stored data from the module instance
         JsonElement data = moduleInstance.moduleData.get(id);
         if (data != null && data.isJsonArray()) {
-            Tag tag = JsonOps.INSTANCE.convertTo(NbtOps.INSTANCE, data);
+            Tag tag = JsonOps.INSTANCE.convertTo(Miapi.BOOL_CORRECTED_OPS, data);
             if (tag instanceof CompoundTag compoundTag) {
                 ContainerHelper.loadAllItems(compoundTag, slots, moduleInstance.registryAccess);
             }

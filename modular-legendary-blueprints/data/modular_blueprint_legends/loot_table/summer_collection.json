@@ -1,0 +1,282 @@
+{
+    "pools": [
+        {
+            "rolls": 1,
+            "entries": [
+                {
+                    "type": "minecraft:item",
+                    "name": "minecraft:paper",
+                    "weight": 1,
+                    "functions": [
+                        {
+                            "function": "minecraft:set_components",
+                            "components": {
+                                "minecraft:rarity": "epic",
+                                "miapi:module_blueprint": {
+                                    "module": {
+                                        "key": "tm_arsenal:blade/greatsword",
+                                        "data": {
+                                            "skin": "summer/greatsword-sunblade",
+                                            "material": "miapi:metal/netherite",
+                                            "properties": {
+                                                "miapi:is_weapon": true,
+                                                "miapi:smite_damage": 5.0,
+                                                "miapi:rarity": "epic",
+                                                "miapi:display_name": "Sunblade",
+                                                "miapi:item_lore": {
+                                                    "position": "top",
+                                                    "text": {
+                                                        "text": "Forged in solar fire",
+                                                        "position": "bottom",
+                                                        "color": "dark_gray",
+                                                        "italic": true
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "ingredient": false,
+                                    "name": "Sunblade Blueprint"
+                                },
+                                "minecraft:custom_name": "[\"\", {\"text\": \"Sunblade Blueprint\", \"color\": \"gold\", \"italic\": false}]",
+                                "minecraft:lore": [
+                                    "[\"\", {\"text\": \"Forged in solar fire\", \"color\": \"dark_gray\", \"italic\": true}]",
+                                    "[\"\", {\"text\": \"Place in inventory while modifying a blade\", \"color\": \"gray\", \"italic\": false}]",
+                                    "[\"\", {\"text\": \"to apply this legendary design\", \"color\": \"gray\", \"italic\": false}]"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "type": "minecraft:item",
+                    "name": "minecraft:paper",
+                    "weight": 1,
+                    "functions": [
+                        {
+                            "function": "minecraft:set_components",
+                            "components": {
+                                "minecraft:rarity": "epic",
+                                "miapi:module_blueprint": {
+                                    "module": {
+                                        "key": "tm_arsenal:blade/greatsword",
+                                        "data": {
+                                            "skin": "summer/greatsword-thunderbolt",
+                                            "material": "miapi:metal/netherite",
+                                            "properties": {
+                                                "miapi:is_weapon": true,
+                                                "miapi:lightning": 1.0,
+                                                "miapi:rarity": "epic",
+                                                "miapi:display_name": "Thunderbolt",
+                                                "miapi:item_lore": {
+                                                    "position": "top",
+                                                    "text": {
+                                                        "text": "Summer storm's fury",
+                                                        "position": "bottom",
+                                                        "color": "dark_gray",
+                                                        "italic": true
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "ingredient": false,
+                                    "name": "Thunderbolt Blueprint"
+                                },
+                                "minecraft:custom_name": "[\"\", {\"text\": \"Thunderbolt Blueprint\", \"color\": \"gold\", \"italic\": false}]",
+                                "minecraft:lore": [
+                                    "[\"\", {\"text\": \"Summer storm's fury\", \"color\": \"dark_gray\", \"italic\": true}]",
+                                    "[\"\", {\"text\": \"Place in inventory while modifying a blade\", \"color\": \"gray\", \"italic\": false}]",
+                                    "[\"\", {\"text\": \"to apply this legendary design\", \"color\": \"gray\", \"italic\": false}]"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "type": "minecraft:item",
+                    "name": "minecraft:paper",
+                    "weight": 1,
+                    "functions": [
+                        {
+                            "function": "minecraft:set_components",
+                            "components": {
+                                "minecraft:rarity": "rare",
+                                "miapi:module_blueprint": {
+                                    "module": {
+                                        "key": "tm_arsenal:blade/katana",
+                                        "data": {
+                                            "skin": "summer/katana-firefly",
+                                            "material": "miapi:metal/netherite",
+                                            "properties": {
+                                                "miapi:is_weapon": true,
+                                                "miapi:slashing": 3.0,
+                                                "miapi:rarity": "rare",
+                                                "miapi:display_name": "Firefly",
+                                                "miapi:item_lore": {
+                                                    "position": "top",
+                                                    "text": {
+                                                        "text": "Dancing in twilight",
+                                                        "position": "bottom",
+                                                        "color": "dark_gray",
+                                                        "italic": true
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "ingredient": false,
+                                    "name": "Firefly Blueprint"
+                                },
+                                "minecraft:custom_name": "[\"\", {\"text\": \"Firefly Blueprint\", \"color\": \"light_purple\", \"italic\": false}]",
+                                "minecraft:lore": [
+                                    "[\"\", {\"text\": \"Dancing in twilight\", \"color\": \"dark_gray\", \"italic\": true}]",
+                                    "[\"\", {\"text\": \"Place in inventory while modifying a blade\", \"color\": \"gray\", \"italic\": false}]",
+                                    "[\"\", {\"text\": \"to apply this legendary design\", \"color\": \"gray\", \"italic\": false}]"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "type": "minecraft:item",
+                    "name": "minecraft:paper",
+                    "weight": 1,
+                    "functions": [
+                        {
+                            "function": "minecraft:set_components",
+                            "components": {
+                                "minecraft:rarity": "rare",
+                                "miapi:module_blueprint": {
+                                    "module": {
+                                        "key": "tm_arsenal:blade/katana",
+                                        "data": {
+                                            "skin": "summer/katana-sunflower",
+                                            "material": "miapi:metal/netherite",
+                                            "properties": {
+                                                "miapi:is_weapon": true,
+                                                "miapi:health_percent": 3.0,
+                                                "miapi:rarity": "rare",
+                                                "miapi:display_name": "Sunflower",
+                                                "miapi:item_lore": {
+                                                    "position": "top",
+                                                    "text": {
+                                                        "text": "Always facing the sun",
+                                                        "position": "bottom",
+                                                        "color": "dark_gray",
+                                                        "italic": true
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "ingredient": false,
+                                    "name": "Sunflower Blueprint"
+                                },
+                                "minecraft:custom_name": "[\"\", {\"text\": \"Sunflower Blueprint\", \"color\": \"light_purple\", \"italic\": false}]",
+                                "minecraft:lore": [
+                                    "[\"\", {\"text\": \"Always facing the sun\", \"color\": \"dark_gray\", \"italic\": true}]",
+                                    "[\"\", {\"text\": \"Place in inventory while modifying a blade\", \"color\": \"gray\", \"italic\": false}]",
+                                    "[\"\", {\"text\": \"to apply this legendary design\", \"color\": \"gray\", \"italic\": false}]"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "type": "minecraft:item",
+                    "name": "minecraft:paper",
+                    "weight": 1,
+                    "functions": [
+                        {
+                            "function": "minecraft:set_components",
+                            "components": {
+                                "minecraft:rarity": "rare",
+                                "miapi:module_blueprint": {
+                                    "module": {
+                                        "key": "tm_arsenal:blade/rapier",
+                                        "data": {
+                                            "skin": "summer/rapier-cicada",
+                                            "material": "miapi:metal/netherite",
+                                            "properties": {
+                                                "miapi:is_weapon": true,
+                                                "miapi:fracturing": 15.0,
+                                                "miapi:rarity": "rare",
+                                                "miapi:display_name": "Cicada",
+                                                "miapi:item_lore": {
+                                                    "position": "top",
+                                                    "text": {
+                                                        "text": "Summer's song",
+                                                        "position": "bottom",
+                                                        "color": "dark_gray",
+                                                        "italic": true
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "ingredient": false,
+                                    "name": "Cicada Blueprint"
+                                },
+                                "minecraft:custom_name": "[\"\", {\"text\": \"Cicada Blueprint\", \"color\": \"light_purple\", \"italic\": false}]",
+                                "minecraft:lore": [
+                                    "[\"\", {\"text\": \"Summer's song\", \"color\": \"dark_gray\", \"italic\": true}]",
+                                    "[\"\", {\"text\": \"Place in inventory while modifying a blade\", \"color\": \"gray\", \"italic\": false}]",
+                                    "[\"\", {\"text\": \"to apply this legendary design\", \"color\": \"gray\", \"italic\": false}]"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "type": "minecraft:item",
+                    "name": "minecraft:paper",
+                    "weight": 1,
+                    "functions": [
+                        {
+                            "function": "minecraft:set_components",
+                            "components": {
+                                "minecraft:rarity": "epic",
+                                "miapi:module_blueprint": {
+                                    "module": {
+                                        "key": "tm_arsenal:blade/normal",
+                                        "data": {
+                                            "skin": "summer/sword-solar_flare",
+                                            "material": "miapi:metal/netherite",
+                                            "properties": {
+                                                "miapi:is_weapon": true,
+                                                "miapi:on_kill_explosion": {
+                                                    "strength": 1,
+                                                    "fire": true
+                                                },
+                                                "miapi:rarity": "epic",
+                                                "miapi:display_name": "Solar Flare",
+                                                "miapi:item_lore": {
+                                                    "position": "top",
+                                                    "text": {
+                                                        "text": "Burning bright",
+                                                        "position": "bottom",
+                                                        "color": "dark_gray",
+                                                        "italic": true
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "ingredient": false,
+                                    "name": "Solar Flare Blueprint"
+                                },
+                                "minecraft:custom_name": "[\"\", {\"text\": \"Solar Flare Blueprint\", \"color\": \"gold\", \"italic\": false}]",
+                                "minecraft:lore": [
+                                    "[\"\", {\"text\": \"Burning bright\", \"color\": \"dark_gray\", \"italic\": true}]",
+                                    "[\"\", {\"text\": \"Place in inventory while modifying a blade\", \"color\": \"gray\", \"italic\": false}]",
+                                    "[\"\", {\"text\": \"to apply this legendary design\", \"color\": \"gray\", \"italic\": false}]"
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

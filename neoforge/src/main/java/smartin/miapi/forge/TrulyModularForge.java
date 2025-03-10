@@ -131,7 +131,7 @@ public class TrulyModularForge {
                     }
 
                     public Model getGenericArmorModel(LivingEntity livingEntity, ItemStack itemStack, EquipmentSlot equipmentSlot, HumanoidModel<?> original) {
-                        if (VisualModularItem.isModularItem(itemStack)) {
+                        if (VisualModularItem.isVisualModularItem(itemStack)) {
                             cache.computeIfAbsent(itemStack, (i) -> {
 
                                 return new ModelWithHumanModel((a) -> {

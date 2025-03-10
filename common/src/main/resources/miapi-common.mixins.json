@@ -31,6 +31,7 @@
         "MinecraftAccessor",
         "MobMixin",
         "NamedAccessor",
+        "NbtOpsFixMixin",
         "NucleusMixin",
         "PiglinBrainMixin",
         "PlayerEntityMixin",

@@ -43,7 +43,7 @@ public class MiapiItemModel implements MiapiModel {
 
     private MiapiItemModel(ItemStack stack) {
         this.stack = stack;
-        if (!(stack.getItem() instanceof VisualModularItem || VisualModularItem.isModularItem(stack))) {
+        if (!(stack.getItem() instanceof VisualModularItem || VisualModularItem.isVisualModularItem(stack))) {
             throw new RuntimeException("Can only make MiapiModel for Modular Items");
         }
     }

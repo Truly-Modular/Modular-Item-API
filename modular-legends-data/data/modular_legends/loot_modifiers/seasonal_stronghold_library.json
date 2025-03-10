@@ -1,0 +1,14 @@
+{
+    "type": "neoforge:add_table",
+    "conditions": [
+        {
+            "condition": "neoforge:loot_table_id",
+            "loot_table_id": "minecraft:chests/stronghold_library"
+        },
+        {
+            "condition": "minecraft:random_chance",
+            "chance": 0.15
+        }
+    ],
+    "table": "modular_legends:complete_lootable"
+}

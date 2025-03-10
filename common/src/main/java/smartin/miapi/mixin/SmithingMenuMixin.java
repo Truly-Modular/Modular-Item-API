@@ -14,7 +14,7 @@ public class SmithingMenuMixin {
 
     @Inject(method = "onTake(Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/item/ItemStack;)V", at = @At("HEAD"))
     private void miapi$playerTickStart(Player player, ItemStack stack, CallbackInfo ci) {
-        if (VisualModularItem.isModularItem(stack)) {
+        if (VisualModularItem.isVisualModularItem(stack)) {
             SmithingMenu menu = (SmithingMenu) (Object) this;
             menu.getSlot(1).getItem().setCount(0);
         }

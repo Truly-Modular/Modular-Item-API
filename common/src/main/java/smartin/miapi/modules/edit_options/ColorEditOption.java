@@ -54,7 +54,7 @@ public class ColorEditOption implements EditOption {
 
     @Override
     public boolean isVisible(EditContext editContext) {
-        return VisualModularItem.isModularItem(editContext.getItemstack()) && editContext.getItemstack().hasFoil() &&
+        return VisualModularItem.isVisualModularItem(editContext.getItemstack()) && editContext.getItemstack().hasFoil() &&
                (MiapiPermissions.hasPerm(editContext.getPlayer(), "supporter") || MiapiPermissions.hasPerm(editContext.getPlayer(), "glint"));
     }
 
