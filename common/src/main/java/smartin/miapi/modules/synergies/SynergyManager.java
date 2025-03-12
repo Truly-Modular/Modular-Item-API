@@ -80,7 +80,7 @@ public class SynergyManager {
                     }
                 }
             } else {
-                if(entry.getKey().contains("great")){
+                if (entry.getKey().contains("great")) {
                     Miapi.LOGGER.error("greatsword");
                 }
                 ItemModule module = RegistryInventory.modules.get(entry.getKey());
@@ -138,6 +138,7 @@ public class SynergyManager {
                 assert property1 != null;
                 property1.load("synergy", propertyEntry.getValue(), Environment.isClient());
             } catch (Exception e) {
+                Miapi.LOGGER.warn("could not load property " + propertyEntry.getKey() + "for synergy");
                 throw new RuntimeException(e);
             }
             properties.put(property1, propertyEntry.getValue());

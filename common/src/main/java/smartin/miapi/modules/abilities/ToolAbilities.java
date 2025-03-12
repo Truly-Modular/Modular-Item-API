@@ -3,7 +3,6 @@ package smartin.miapi.modules.abilities;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.AxeItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -15,7 +14,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;
-import smartin.miapi.modules.abilities.util.ItemUseAbility;
 import smartin.miapi.modules.abilities.util.ItemUseDefaultCooldownAbility;
 import smartin.miapi.modules.abilities.util.ItemUseMinHoldAbility;
 
@@ -24,13 +22,12 @@ import java.util.Optional;
 public abstract class ToolAbilities implements ItemUseDefaultCooldownAbility, ItemUseMinHoldAbility {
     @Override
     public boolean allowedOnItem(ItemStack itemStack, World world, PlayerEntity player, Hand hand, ItemAbilityManager.AbilityHitContext abilityHitContext) {
-        AxeItem toolItem;
         return abilityHitContext.hitResult() != null;
     }
 
     @Override
     public UseAction getUseAction(ItemStack itemStack) {
-        return null;
+        return UseAction.NONE;
     }
 
     @Override

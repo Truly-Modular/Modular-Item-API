@@ -6,8 +6,10 @@ import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.CrossbowItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.text.Text;
@@ -43,6 +45,17 @@ abstract class ItemStackMixin {
         ItemStack stack = (ItemStack) (Object) this;
         if (stack.getItem() instanceof ModularItem) {
             return HideFlagsProperty.getHideProperty(original, stack);
+        }
+        return original;
+    }
+
+    @ModifyReturnValue(
+            method = "isOf",
+            at = @At("RETURN"))
+    private boolean miapi$adjustIsOF(boolean original, Item item) {
+        ItemStack stack = (ItemStack) (Object) this;
+        if (!original && item.equals(Items.CROSSBOW) && stack.getItem() instanceof ModularItem && stack.getItem() instanceof CrossbowItem) {
+            return true;
         }
         return original;
     }
@@ -86,7 +99,7 @@ abstract class ItemStackMixin {
     }
 
     @ModifyReturnValue(method = "isSuitableFor(Lnet/minecraft/block/BlockState;)Z", at = @At("RETURN"))
-    public boolean miapi$injectIsSuitable(boolean original,BlockState state) {
+    public boolean miapi$injectIsSuitable(boolean original, BlockState state) {
         ItemStack stack = (ItemStack) (Object) this;
         if (stack.getItem() instanceof ModularItem) {
             return MiningLevelProperty.isSuitable(stack, state);

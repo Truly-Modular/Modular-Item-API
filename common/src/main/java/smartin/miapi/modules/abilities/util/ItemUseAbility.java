@@ -37,7 +37,9 @@ public interface ItemUseAbility<T> {
      * @param itemStack The item stack being used.
      * @return The use action of the item stack.
      */
-    UseAction getUseAction(ItemStack itemStack);
+    default UseAction getUseAction(ItemStack itemStack){
+        return UseAction.NONE;
+    }
 
     /**
      * Gets the maximum use time of the specified item stack.

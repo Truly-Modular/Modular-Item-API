@@ -73,8 +73,8 @@ dependencies {
 
     //modCompileOnly "curse.maven:minecolonies-245506:5355518"
     modCompileOnly "curse.maven:apotheosis-313970:5317303"
-    modLocalRuntime "curse.maven:quark-243121:5594847"
-    modLocalRuntime "curse.maven:zeta-968868:5597406"
+    //modLocalRuntime "curse.maven:quark-243121:5594847"
+    //modLocalRuntime "curse.maven:zeta-968868:5597406"
     modCompileOnly "curse.maven:quark-243121:5594847"
     modCompileOnly "curse.maven:zenith-968868:5254672"
     modCompileOnly "maven.modrinth:treechop:${rootProject.forge_treechop_version}"

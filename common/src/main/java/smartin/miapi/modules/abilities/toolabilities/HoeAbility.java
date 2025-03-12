@@ -3,7 +3,6 @@ package smartin.miapi.modules.abilities.toolabilities;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.HoeItem;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -22,7 +21,6 @@ public class HoeAbility extends ToolAbilities {
 
     @Override
     public Optional<BlockState> getBlockState(BlockState blockState, ItemUsageContext context) {
-        HoeItem hoeItem;
         return Optional.empty();
     }
 
