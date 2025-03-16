@@ -56,6 +56,11 @@ public class StatResolver {
                 if (input == null) {
                     return DataResult.success(prefix);
                 }
+                try {
+                    return DataResult.success(JsonOps.INSTANCE.convertTo(ops, input));
+                } catch (RuntimeException e) {
+                    Miapi.LOGGER.info(input + "could not be converted!");
+                }
                 return DataResult.success(JsonOps.INSTANCE.convertTo(ops, input));
             }
 

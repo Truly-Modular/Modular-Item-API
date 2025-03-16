@@ -295,6 +295,8 @@
     "miapi.material_group.rope": "Ropes",
     "miapi.material_group.fletching": "Fletching",
     "miapi.material_group.smithing": "Smithing Material - Applied via Smithing Table",
+    "miapi.material_group.netherite": "Netherite",
+    "miapi.material_group.elytra": "Elytra",
     "miapi.material_template.smithing.header": "Modular Smithing Material",
     "miapi.material_template.smithing": "From %s -> %s",
     "miapi.material.miapi.wood.wood": "Wooden",

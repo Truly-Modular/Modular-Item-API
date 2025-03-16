@@ -74,6 +74,11 @@ public class ArmorModelManager {
                 ((LivingEntityRendererAccessor) livingEntityRenderer).getFeatures().stream().filter(a -> a instanceof ElytraLayer<?, ?>).findAny();
                 if(elytraFeatureRenderer.isPresent()){
                     ElytraModel elytraEntityModel = ((ElytraFeatureRendererAccessor)elytraFeatureRenderer.get()).getElytra();
+                    livingEntity.getYHeadRot();
+                    livingEntity.getViewXRot(0);
+                    livingEntity.getAgeScale();
+
+                    elytraEntityModel.setupAnim(livingEntity,0,0,0,0,0);
                     parts.add((matrixStack, equipmentSlot1, livingEntity1, model1, entityModel1) -> {
                         entityModel.copyPropertiesTo(elytraEntityModel);
                         entityModel1.copyPropertiesTo(model1);

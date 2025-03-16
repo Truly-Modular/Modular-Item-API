@@ -14,7 +14,7 @@ import smartin.miapi.Environment;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.MiapiClient;
 import smartin.miapi.item.modular.ModularItem;
-import smartin.miapi.lootFunctions.LootFunctionsInjection;
+import smartin.miapi.loot.LootHelper;
 import smartin.miapi.modules.properties.attributes.AttributeProperty;
 import smartin.miapi.modules.properties.enchanment.AllowedEnchantments;
 import smartin.miapi.registries.RegistryInventory;
@@ -26,7 +26,7 @@ public class MiapiFabric implements ModInitializer {
     @Override
     public void onInitialize() {
         Miapi.init();
-        LootTableEvents.MODIFY.register((key, tableBuilder, source, registries) -> LootFunctionsInjection.adjusted.forEach(tableBuilder::apply));
+        LootTableEvents.MODIFY.register((key, tableBuilder, source, registries) -> LootHelper.adjusted.forEach(tableBuilder::apply));
 
         //DATA
         if (Environment.isClient()) {

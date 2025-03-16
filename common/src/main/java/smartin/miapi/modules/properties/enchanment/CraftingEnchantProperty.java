@@ -3,7 +3,6 @@ package smartin.miapi.modules.properties.enchanment;
 import com.mojang.serialization.Codec;
 import net.minecraft.core.Holder;
 import net.minecraft.core.RegistryAccess;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -65,7 +64,6 @@ public class CraftingEnchantProperty extends CodecProperty<Map<ResourceLocation,
                 });
             }));
         });
-        DataComponents.ENCHANTMENTS.codec().encodeStart(getOps(), itemStack.get(DataComponents.ENCHANTMENTS));
     }
 
     public static Map<Holder<Enchantment>, DoubleOperationResolvable> tryConvert(Map<ResourceLocation, DoubleOperationResolvable> original, ItemStack itemStack) {

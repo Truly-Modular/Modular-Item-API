@@ -11,8 +11,10 @@
     "client": [
         "EntityMixin",
         "TextMixin",
+        "client.BuiltinModelItemRendererMixin",
         "client.InGameHudMixin",
-        "client.ShaderRegistryNucleusMixin"
+        "client.ShaderRegistryNucleusMixin",
+        "client.ItemRendererMixin"
     ],
     "injectors": {
         "defaultRequire": 1

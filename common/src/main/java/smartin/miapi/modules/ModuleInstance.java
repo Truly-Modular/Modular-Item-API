@@ -1,6 +1,8 @@
 package smartin.miapi.modules;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
@@ -70,7 +72,7 @@ public class ModuleInstance {
                                         .forGetter((moduleInstance) -> moduleInstance.subModules),
                                 dataJsonCodec
                                         .optionalFieldOf("data", new HashMap<>())
-                                        .forGetter((moduleInstance) -> moduleInstance.moduleData)
+                                        .forGetter(ModuleInstance::getSaveData)
                         ).apply(instance, ModuleInstance::new))
         );
         CODEC = registrySavingCodec(basicCodec, (m, l) -> m.allSubModules().forEach(moduleInstance -> moduleInstance.lookup = l));
@@ -591,6 +593,42 @@ public class ModuleInstance {
             }
         }
         return fallback.get();
+    }
+
+    public Map<ResourceLocation, JsonElement> getSaveData() {
+        Map<ResourceLocation, JsonElement> map = new HashMap<>();
+        moduleData.forEach((id, data) -> {
+            if (data != null) {
+                map.put(id, nullSave(data));
+            }
+        });
+        return map;
+    }
+
+    public JsonElement nullSave(JsonElement element) {
+        if (element.isJsonObject()) {
+            JsonObject obj = element.getAsJsonObject();
+            JsonObject cleanedObj = new JsonObject();
+
+            for (String key : obj.keySet()) {
+                JsonElement value = obj.get(key);
+                if (!value.isJsonNull()) {
+                    cleanedObj.add(key, nullSave(value));
+                }
+            }
+            return cleanedObj;
+        } else if (element.isJsonArray()) {
+            JsonArray arr = element.getAsJsonArray();
+            JsonArray cleanedArr = new JsonArray();
+
+            for (JsonElement item : arr) {
+                if (!item.isJsonNull()) {
+                    cleanedArr.add(nullSave(item));
+                }
+            }
+            return cleanedArr;
+        }
+        return element; // Return primitive values as is
     }
 
     @Override

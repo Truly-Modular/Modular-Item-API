@@ -1,4 +1,4 @@
-package smartin.miapi.lootFunctions;
+package smartin.miapi.loot;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
@@ -17,6 +17,7 @@ import smartin.miapi.Miapi;
 import smartin.miapi.item.ModularItemStackConverter;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.items.ModularVisualOnlyItem;
+import smartin.miapi.material.AllowedMaterial;
 import smartin.miapi.material.MaterialProperty;
 import smartin.miapi.material.base.Material;
 import smartin.miapi.modules.ItemModule;
@@ -151,7 +152,17 @@ public record ModuleSwapLootFunction(
                     if (parentSlot != null && !parentSlot.allowedIn(m)) {
                         return false;
                     }
-                    return true; // All slots are compatible
+                    Material material1 = MaterialProperty.getMaterial(module);
+                    var data = AllowedMaterial.property.getData(m);
+                    if (material1 != null) {
+                        if (data.isEmpty()) {
+                            return false;
+                        }
+                        if (!data.get().isValid(material1)) {
+                            return false;
+                        }
+                    }
+                    return true;
                 })
                 .toList();
 

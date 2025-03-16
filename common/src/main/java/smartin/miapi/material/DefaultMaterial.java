@@ -28,6 +28,7 @@ import java.util.Optional;
 
 public class DefaultMaterial implements Material {
     public static ResourceLocation DEFAULT_ID = Miapi.id("default_runtime_material");
+    public static DefaultMaterial material = new DefaultMaterial();
 
     @Override
     public ResourceLocation getID() {

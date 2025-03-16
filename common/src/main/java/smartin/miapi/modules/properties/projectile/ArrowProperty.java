@@ -33,7 +33,7 @@ public class ArrowProperty extends ComplexBooleanProperty {
         property = this;
         MiapiProjectileEvents.MODULAR_PROJECTILE_DATA_TRACKER_SET.register((projectile, nbtCompound) -> {
             if (isTrue(projectile.getPickupItem())) {
-                nbtCompound.set(ItemProjectileEntity.SPEED_DAMAGE, false);
+                nbtCompound.set(ItemProjectileEntity.SPEED_DAMAGE, true);
             }
             return EventResult.pass();
         });

@@ -13,10 +13,24 @@ import smartin.miapi.item.modular.VisualModularItem;
 public class SmithingMenuMixin {
 
     @Inject(method = "onTake(Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/item/ItemStack;)V", at = @At("HEAD"))
-    private void miapi$playerTickStart(Player player, ItemStack stack, CallbackInfo ci) {
+    private void miapi$clearSmithingStart(Player player, ItemStack stack, CallbackInfo ci) {
         if (VisualModularItem.isVisualModularItem(stack)) {
             SmithingMenu menu = (SmithingMenu) (Object) this;
             menu.getSlot(1).getItem().setCount(0);
+            menu.getSlot(1).set(ItemStack.EMPTY);
+            ((SmithingScreenHandlerAccessor) menu).currentRecipe();
+            ((ForgingScreenHandlerAccessor) menu).getInput().setItem(1, ItemStack.EMPTY);
+        }
+    }
+
+    @Inject(method = "onTake(Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/item/ItemStack;)V", at = @At("TAIL"))
+    private void miapi$clearSmithingEnd(Player player, ItemStack stack, CallbackInfo ci) {
+        if (VisualModularItem.isVisualModularItem(stack)) {
+            SmithingMenu menu = (SmithingMenu) (Object) this;
+            menu.getSlot(1).getItem().setCount(0);
+            menu.getSlot(1).set(ItemStack.EMPTY);
+            ((SmithingScreenHandlerAccessor) menu).currentRecipe();
+            ((ForgingScreenHandlerAccessor) menu).getInput().setItem(1, ItemStack.EMPTY);
         }
     }
 }

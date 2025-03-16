@@ -7,16 +7,19 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunction;
 import net.neoforged.neoforge.common.loot.IGlobalLootModifier;
-import smartin.miapi.lootFunctions.LootFunctionsInjection;
+import smartin.miapi.loot.LootHelper;
 
 public class MiapiGlobalLootModifier implements IGlobalLootModifier {
     public static MapCodec<MiapiGlobalLootModifier> CODEC = AutoCodec.of(MiapiGlobalLootModifier.class);
 
     @Override
     public ObjectArrayList<ItemStack> apply(ObjectArrayList<ItemStack> items, LootContext arg) {
-        for (LootItemFunction function : LootFunctionsInjection.adjusted) {
+        for (LootItemFunction function : LootHelper.adjusted) {
             items = ObjectArrayList.wrap(items.stream().map(i -> function.apply(i, arg)).toArray(ItemStack[]::new));
         }
+
+
+
         return items;
     }
 

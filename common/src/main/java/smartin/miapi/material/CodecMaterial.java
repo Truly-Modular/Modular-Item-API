@@ -141,8 +141,10 @@ public class CodecMaterial implements Material {
         this.guiGroups.addAll(groups);
         this.groups.addAll(hiddenGroups);
         this.textureKeys = textureKeys;
-        var found = BuiltInRegistries.BLOCK.getTags().filter(pair -> pair.getFirst().location().equals(incorrectForToolId)).findAny();
-        found.ifPresent(tagKeyNamedPair -> incorrectForTool = Optional.of(tagKeyNamedPair.getFirst()));
+        if(incorrectForToolId.isPresent()){
+            var found = BuiltInRegistries.BLOCK.getTags().filter(pair -> pair.getFirst().location().equals(incorrectForToolId.get())).findAny();
+            found.ifPresent(tagKeyNamedPair -> incorrectForTool = Optional.of(tagKeyNamedPair.getFirst()));
+        }
         if (color.isPresent()) {
             long longValue = Long.parseLong(color.get(), 16);
             this.color = Optional.of((int) (longValue & 0xffffffffL));

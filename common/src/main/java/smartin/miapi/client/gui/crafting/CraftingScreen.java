@@ -1,7 +1,6 @@
 package smartin.miapi.client.gui.crafting;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.bettercombat.logic.WeaponAttributesFallback;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
@@ -65,6 +64,7 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
     static WeakReference<CraftingScreen> craftingScreenWeakReference = new WeakReference<>(null);
     public int overwriteMouseY = 0;
     public int overwriteMouseX = 0;
+    public ItemStack currentStack = ItemStack.EMPTY;
 
     List<InteractAbleWidget> editOptionIcons = new ArrayList<>();
 
@@ -84,7 +84,6 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
         if (craftingScreenWeakReference != null && craftingScreenWeakReference.get() != null) {
             return craftingScreenWeakReference.get();
         }
-        WeaponAttributesFallback fallback;
         return null;
     }
 
@@ -155,7 +154,10 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
         }
         this.menu.addSlotListener(new SimpleScreenHandlerListener((handler, slotId, stack) -> {
             if (slotId == 36) {
-                updateItem(stack);
+                if (!ItemStack.isSameItemSameComponents(stack, currentStack) || stack.isEmpty() || currentStack.isEmpty()) {
+                    currentStack = stack;
+                    updateItem(stack);
+                }
             }
         }));
 
@@ -435,7 +437,7 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
         if (hoverElement != null) {
-            if(hoverElement.mouseDragged(mouseX, mouseY, button, deltaX, deltaY)){
+            if (hoverElement.mouseDragged(mouseX, mouseY, button, deltaX, deltaY)) {
                 return true;
             }
         }

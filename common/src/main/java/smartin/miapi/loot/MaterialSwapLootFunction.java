@@ -1,4 +1,4 @@
-package smartin.miapi.lootFunctions;
+package smartin.miapi.loot;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
@@ -19,6 +19,7 @@ import smartin.miapi.item.ModularItemStackConverter;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.items.ModularVisualOnlyItem;
 import smartin.miapi.material.AllowedMaterial;
+import smartin.miapi.material.CopyParentMaterialProperty;
 import smartin.miapi.material.MaterialProperty;
 import smartin.miapi.material.base.Material;
 import smartin.miapi.modules.ItemModule;
@@ -143,7 +144,9 @@ public record MaterialSwapLootFunction(
     ModuleInstance randomizeMaterialAndChildren(ModuleInstance moduleInstance, Material fallBackMaterial, RandomSource randomSource) {
         if (randomSource.nextFloat() <= chance()) {
             try {
-                moduleInstance = attemptRandomizeMaterial(moduleInstance, fallBackMaterial, randomSource);
+                if (CopyParentMaterialProperty.property.getData(moduleInstance).isEmpty()) {
+                    moduleInstance = attemptRandomizeMaterial(moduleInstance, fallBackMaterial, randomSource);
+                }
             } catch (RuntimeException runtimeException) {
                 Miapi.LOGGER.error("Issue during Material Swap", runtimeException);
             }

@@ -18,6 +18,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.entity.projectile.ProjectileDeflection;
+import net.minecraft.world.item.ArrowItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
@@ -96,6 +97,9 @@ public class ItemProjectileEntity extends AbstractArrow {
     private void setup() {
         ItemStack projectileStack = this.getPickupItem();
         this.setBaseDamage(AttributeUtil.getActualValue(projectileStack, EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_DAMAGE.value()));
+        if (projectileStack.getItem() instanceof ArrowItem arrowItem) {
+            this.setSpeedDamage(true);
+        }
     }
 
     private byte getLoyaltyFromItem(ItemStack stack) {

@@ -38,6 +38,7 @@ import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
+import net.minecraft.world.level.storage.loot.predicates.LootItemConditionType;
 import smartin.miapi.Miapi;
 import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.blocks.ModularWorkBench;
@@ -67,8 +68,10 @@ import smartin.miapi.item.modular.items.shield.ModularNonVanillaShield;
 import smartin.miapi.item.modular.items.shield.ModularVanillaShield;
 import smartin.miapi.item.modular.items.shield.TowerShieldComponent;
 import smartin.miapi.item.modular.items.tools.*;
-import smartin.miapi.lootFunctions.MaterialSwapLootFunction;
-import smartin.miapi.lootFunctions.ModuleSwapLootFunction;
+import smartin.miapi.loot.LootHelper;
+import smartin.miapi.loot.MaterialSwapLootFunction;
+import smartin.miapi.loot.ModuleSwapLootFunction;
+import smartin.miapi.loot.condition.LootTableCondition;
 import smartin.miapi.material.*;
 import smartin.miapi.material.composite.CompositeMaterial;
 import smartin.miapi.modules.ItemModule;
@@ -144,6 +147,7 @@ public class RegistryInventory {
     public static final MiapiRegistry<EditOption> editOptions = MiapiRegistry.getInstance(EditOption.class);
     public static final MiapiRegistry<CraftingStat> craftingStats = MiapiRegistry.getInstance(CraftingStat.class);
     public static final Registrar<LootItemFunctionType<?>> lootItemFunctions = registrar.get().get(Registries.LOOT_FUNCTION_TYPE);
+    public static final Registrar<LootItemConditionType> lootCondition = registrar.get().get(Registries.LOOT_CONDITION_TYPE);
     public static final TagKey<Item> MIAPI_FORBIDDEN_TAG = TagKey.create(Registries.ITEM, ResourceLocation.parse("miapi_forbidden"));
     public static final TagKey<Item> MIAPI_MATERIALS = TagKey.create(Registries.ITEM, ResourceLocation.parse("miapi_materials"));
 
@@ -246,6 +250,9 @@ public class RegistryInventory {
                     RegistryInventory.craftingScreenHandler = scr;
                     if (Platform.getEnvironment() == Env.CLIENT) MiapiClient.registerScreenHandler();
                 });
+
+        RegistryInventory.lootCondition.register(
+                LootHelper.LOOT_TABLE_ID, () -> LootTableCondition.TYPE);
 
         RegistryInventory.components.register(
                 Miapi.id("item_module"), () -> ModuleInstance.MODULE_INSTANCE_COMPONENT);
@@ -453,6 +460,7 @@ public class RegistryInventory {
             ConditionManager.CONDITION_REGISTRY.put(Miapi.id("material"), MaterialCondition.CODEC);
             ConditionManager.CONDITION_REGISTRY.put(Miapi.id("miapi_perm"), MiapiPerm.CODEC);
             ConditionManager.CONDITION_REGISTRY.put(Miapi.id("material_count"), MaterialCountCondition.CODEC);
+            ConditionManager.CONDITION_REGISTRY.put(Miapi.id("material_group"), MaterialGroupCondition.CODEC);
             ConditionManager.CONDITION_REGISTRY.put(Miapi.id("item_in_inventory"), ItemInInventoryCondition.CODEC);
             ConditionManager.CONDITION_REGISTRY.put(Miapi.id("advancement"), AdvancementCondition.CODEC);
             ConditionManager.CONDITION_REGISTRY.put(Miapi.id("number"), NumberCondition.CODEC);

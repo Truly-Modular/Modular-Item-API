@@ -1,16 +1,24 @@
 package smartin.miapi.forge;
 
+import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import dev.architectury.event.events.common.LifecycleEvent;
 import dev.architectury.platform.Platform;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.Model;
+import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.entity.ItemRenderer;
+import net.minecraft.client.renderer.entity.layers.ElytraLayer;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -29,10 +37,12 @@ import net.neoforged.neoforge.event.entity.EntityAttributeModificationEvent;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import net.neoforged.neoforge.registries.RegisterEvent;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Vector3f;
 import smartin.miapi.Miapi;
 import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.client.MiapiClient;
 import smartin.miapi.client.atlas.ArmorModelManager;
+import smartin.miapi.client.model.MiapiItemModel;
 import smartin.miapi.client.model.item.ItemBakedModelReplacement;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.item.modular.VisualModularItem;
@@ -49,6 +59,7 @@ import static smartin.miapi.Miapi.MOD_ID;
 
 @Mod(MOD_ID)
 public class TrulyModularForge {
+    public static int test = 0;
 
     public TrulyModularForge() {
         NeoForge.EVENT_BUS.register(new ServerEvents());
@@ -66,6 +77,7 @@ public class TrulyModularForge {
 
         LifecycleEvent.SERVER_STARTING.register((instance -> setupAttributes()));
         ReloadEvents.START.subscribe((isClient, access) -> setupAttributes());
+        ElytraLayer layer;
         //TODO: why no worky
 
         //KEY_BINDINGS.addCallback((KeyBindingRegistryImpl::registerKeyBinding));
@@ -107,8 +119,18 @@ public class TrulyModularForge {
             //dont ask me, but this fixes registration for client
             List<ModelResourceLocation> ids = RegistryInventory.modularItems.getFlatMap().keySet().stream().map(ModelResourceLocation::inventory).toList();
             ModelProperty.textureGetter = registerAdditional.getTextureGetter();
+            ItemRenderer itemRenderer;
             ids.forEach(id -> {
-                registerAdditional.getModels().put(id, new ItemBakedModelReplacement());
+                registerAdditional.getModels().put(id, new ItemBakedModelReplacement() {
+                    @Override
+                    public boolean isGui3d() {
+                        return false;
+                    }
+
+                    public boolean usesBlockLight() {
+                        return false;
+                    }
+                });
             });
             setupAttributes();
         }
@@ -130,28 +152,49 @@ public class TrulyModularForge {
                         return IClientItemExtensions.super.getFont(stack, context);
                     }
 
+                    public BlockEntityWithoutLevelRenderer getCustomRenderer() {
+                        return new BlockEntityWithoutLevelRenderer(Minecraft.getInstance().getBlockEntityRenderDispatcher(),
+                                Minecraft.getInstance().getEntityModels()) {
+                            public void renderByItem(ItemStack stack, ItemDisplayContext displayContext, PoseStack poseStack, MultiBufferSource buffer, int packedLight, int packedOverlay) {
+                                if (displayContext.equals(ItemDisplayContext.GUI)) {
+                                    //Lighting.setupForFlatItems();
+                                    packedLight = 15728880;
+                                    test += 100;
+                                    //packedLight = test;
+                                    //packedLight = (int)Long.parseLong("0F0080",16);
+                                    packedOverlay = OverlayTexture.NO_OVERLAY;
+                                    poseStack.translate(0.0f, 0.0F, 0.0F);
+                                    poseStack.last().transformNormal(new Vector3f(-1, -1, -1), new Vector3f(0, -1, 0));
+                                }
+                                Lighting.setupForFlatItems();
+                                MiapiItemModel.getItemModel(stack).render(poseStack, displayContext, 0, buffer, packedLight, packedOverlay);
+                                if (buffer instanceof MultiBufferSource.BufferSource multiBufferSource) {
+                                    multiBufferSource.endBatch();
+                                }
+                                Lighting.setupFor3DItems();
+                                //Lighting.setupFor3DItems();
+                            }
+                        };
+                    }
+
+
                     public Model getGenericArmorModel(LivingEntity livingEntity, ItemStack itemStack, EquipmentSlot equipmentSlot, HumanoidModel<?> original) {
                         if (VisualModularItem.isVisualModularItem(itemStack)) {
-                            cache.computeIfAbsent(itemStack, (i) -> {
-
-                                return new ModelWithHumanModel((a) -> {
-                                    return RenderType.armorEntityGlint();
-                                }) {
-                                    @Override
-                                    public void renderToBuffer(PoseStack poseStack, VertexConsumer buffer, int packedLight, int packedOverlay, int color) {
-                                        if (getHumanoidModel() != null && ForgeModel.source != null) {
-                                            ArmorModelManager.renderArmorPiece(
-                                                    poseStack,
-                                                    ForgeModel.source,
-                                                    packedLight,
-                                                    equipmentSlot,
-                                                    itemStack,
-                                                    livingEntity,
-                                                    this.getHumanoidModel(),
-                                                    this.getHumanoidModel());
-                                        }
+                            cache.computeIfAbsent(itemStack, (i) -> new ModelWithHumanModel((a) -> RenderType.armorEntityGlint()) {
+                                @Override
+                                public void renderToBuffer(PoseStack poseStack, VertexConsumer buffer, int packedLight, int packedOverlay, int color) {
+                                    if (getHumanoidModel() != null && ForgeModel.source != null) {
+                                        ArmorModelManager.renderArmorPiece(
+                                                poseStack,
+                                                ForgeModel.source,
+                                                packedLight,
+                                                equipmentSlot,
+                                                itemStack,
+                                                livingEntity,
+                                                this.getHumanoidModel(),
+                                                this.getHumanoidModel());
                                     }
-                                };
+                                }
                             });
                             var model = cache.get(itemStack);
                             if (model != null) {

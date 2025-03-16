@@ -32,10 +32,11 @@ public class ModelTransformationProperty extends CodecProperty<ModelTransformati
         super(AutoCodec.of(ModelTransformationData.class).codec());
         property = this;
         MiapiItemModel.modelTransformersSuppler.add((itemStack, modelType, itemDisplayContext) -> {
-            ItemTransform transforms = getTransformation(itemStack).getTransform(itemDisplayContext);
+            var data = property.getData(itemStack).orElseGet(ModelTransformationData::new);
+            ItemTransform transforms = data.asItemTransforms().getTransform(itemDisplayContext);
             if (transforms != null) {
                 return (matrices, tickDelta) -> {
-                    applyTransformation(transforms, matrices);
+                    applyTransformation(transforms, data.fix_left && isLeftHanded(itemDisplayContext), matrices);
                     return matrices;
                 };
             }
@@ -43,10 +44,10 @@ public class ModelTransformationProperty extends CodecProperty<ModelTransformati
         });
     }
 
-    public static void applyTransformation(ItemTransform transformation, PoseStack matrices) {
+    public static void applyTransformation(ItemTransform transformation, boolean fixLeft, PoseStack matrices) {
         matrices.translate(0.5f, 0.5f, 0.5f);
         if (transformation != null) {
-            transformation.apply(false, matrices);
+            transformation.apply(fixLeft, matrices);
         }
         matrices.translate(-0.5f, -0.5f, -0.5f);
     }
@@ -123,6 +124,8 @@ public class ModelTransformationProperty extends CodecProperty<ModelTransformati
         public Transform thirdPersonRightHand = null;
         @CodecBehavior.Optional
         public boolean overwrite = true;
+        @CodecBehavior.Optional
+        public boolean fix_left = false;
 
         public static ModelTransformationData merge(ModelTransformationData left, ModelTransformationData right, MergeType mergeType) {
             ModelTransformationData data = new ModelTransformationData();
@@ -136,6 +139,7 @@ public class ModelTransformationProperty extends CodecProperty<ModelTransformati
                 data.firstPersonRightHand = overwrite(left.firstPersonRightHand, right.firstPersonRightHand);
                 data.thirdPersonLeftHand = overwrite(left.thirdPersonLeftHand, right.thirdPersonLeftHand);
                 data.thirdPersonRightHand = overwrite(left.thirdPersonRightHand, right.thirdPersonRightHand);
+                data.fix_left = right.fix_left;
             } else {
                 data.gui = merge(left.gui, right.gui);
                 data.head = merge(left.head, right.head);
@@ -145,6 +149,7 @@ public class ModelTransformationProperty extends CodecProperty<ModelTransformati
                 data.firstPersonRightHand = merge(left.firstPersonRightHand, right.firstPersonRightHand);
                 data.thirdPersonLeftHand = merge(left.thirdPersonLeftHand, right.thirdPersonLeftHand);
                 data.thirdPersonRightHand = merge(left.thirdPersonRightHand, right.thirdPersonRightHand);
+                data.fix_left = left.fix_left;
             }
 
             return data;

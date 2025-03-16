@@ -3,6 +3,7 @@ package smartin.miapi.modules.properties.inventory;
 import com.redpxnda.nucleus.util.Color;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemContainerContents;
@@ -37,6 +38,7 @@ public class ItemInventoryManager {
                 }
             }
         });
+        Inventory inventory;
         return map;
     }
 

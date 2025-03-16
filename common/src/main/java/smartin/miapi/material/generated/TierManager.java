@@ -3,7 +3,7 @@ package smartin.miapi.material.generated;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.block.Block;
-import smartin.miapi.lootFunctions.MaterialSwapLootFunction;
+import smartin.miapi.loot.MaterialSwapLootFunction;
 
 public class TierManager {
     public static int getEstimatedTier(TagKey<Block> incorrecTag) {

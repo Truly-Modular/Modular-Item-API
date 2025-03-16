@@ -8,7 +8,7 @@ import com.redpxnda.nucleus.config.ConfigType;
 import net.fabricmc.api.EnvType;
 import smartin.miapi.Environment;
 import smartin.miapi.Miapi;
-import smartin.miapi.lootFunctions.LootFunctionsInjection;
+import smartin.miapi.loot.LootHelper;
 import smartin.miapi.modules.abilities.key.KeyBindManager;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.GlintProperty;
@@ -42,13 +42,13 @@ public class MiapiConfig {
                     if (Miapi.server != null && Miapi.server.getConnection() != null) {
                         //CacheCommands.clearCacheAllClients(Miapi.server);
                     }
-                    LootFunctionsInjection.adjusted = new ArrayList<>();
+                    LootHelper.adjusted = new ArrayList<>();
                     if (MiapiConfig.INSTANCE.server.lootCategory.isEnabled) {
                         if (MiapiConfig.INSTANCE.server.lootCategory.isSwappingMaterials) {
-                            LootFunctionsInjection.adjusted.add(MiapiConfig.INSTANCE.server.lootCategory.materialSwapLootFunction);
+                            LootHelper.adjusted.add(MiapiConfig.INSTANCE.server.lootCategory.materialSwapLootFunction);
                         }
                         if (MiapiConfig.INSTANCE.server.lootCategory.isSwappingModules) {
-                            LootFunctionsInjection.adjusted.add(MiapiConfig.INSTANCE.server.lootCategory.moduleSwapLootFunction);
+                            LootHelper.adjusted.add(MiapiConfig.INSTANCE.server.lootCategory.moduleSwapLootFunction);
                         }
                     }
                 }));

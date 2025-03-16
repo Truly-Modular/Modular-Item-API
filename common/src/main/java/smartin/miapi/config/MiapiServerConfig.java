@@ -8,8 +8,8 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffects;
 import smartin.miapi.Miapi;
-import smartin.miapi.lootFunctions.MaterialSwapLootFunction;
-import smartin.miapi.lootFunctions.ModuleSwapLootFunction;
+import smartin.miapi.loot.MaterialSwapLootFunction;
+import smartin.miapi.loot.ModuleSwapLootFunction;
 
 import java.util.List;
 import java.util.Optional;

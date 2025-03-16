@@ -16,10 +16,10 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import smartin.miapi.Miapi;
+import smartin.miapi.material.MaterialProperty;
+import smartin.miapi.material.base.Material;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.cache.ModularItemCache;
-import smartin.miapi.material.base.Material;
-import smartin.miapi.material.MaterialProperty;
 import smartin.miapi.modules.properties.util.*;
 
 import java.util.*;
@@ -30,10 +30,9 @@ import java.util.*;
  *
  * @header Mining Level Property
  * @path /data_types/properties/mining/mining
- * @description_start
- * The MiningLevelProperty manages the mining capabilities of tools, determining their effectiveness based on various rules and configurations.
+ * @description_start The MiningLevelProperty manages the mining capabilities of tools, determining their effectiveness based on various rules and configurations.
  * These configurations include block-specific mining speeds, block blacklists, and conditions for correct tool usage.
- *
+ * <p>
  * By default, the mining level is influenced by the material properties associated with the tool.
  * Custom rules can be defined to adjust mining speeds and tool compatibilities dynamically.
  * @description_end
@@ -41,14 +40,12 @@ import java.util.*;
  * @data mining_capabilities: A map linking mining rules to specific block tags for determining tool effectiveness.
  * @data codec: A codec for serializing and deserializing mining rules, allowing for flexible data handling.
  * @data caching: The property uses a caching mechanism to optimize performance when accessing mining rules.
- *
  * @data mining_rules:
  * @data `blocks`: List of blocks that the tool can mine.
  * @data `block_list | blacklist_tag`: List of blocks that the tool cannot mine.
  * @data `speed`: A resolvable value that determines the mining speed for the tool.
  * @data `correctForDrops`: Optional boolean indicating whether the tool is correct for drops.
  * @data `useMaterial`: Boolean indicating if material properties should affect mining rules.
- *
  */
 
 public class MiningLevelProperty extends CodecProperty<Map<String, MiningLevelProperty.MiningRule>> implements ComponentApplyProperty {
@@ -67,7 +64,7 @@ public class MiningLevelProperty extends CodecProperty<Map<String, MiningLevelPr
 
     @Override
     public Map<String, MiningRule> merge(Map<String, MiningRule> left, Map<String, MiningRule> right, MergeType mergeType) {
-        return MergeAble.mergeMap(left, right, mergeType, (k,l,r) -> MiningRule.merge(l, r, mergeType));
+        return MergeAble.mergeMap(left, right, mergeType, (k, l, r) -> MiningRule.merge(l, r, mergeType));
     }
 
     @Override
@@ -79,7 +76,8 @@ public class MiningLevelProperty extends CodecProperty<Map<String, MiningLevelPr
 
     Tool asComponent(ItemStack itemStack) {
         List<Tool.Rule> rules = new ArrayList<>();
-        getData(itemStack).orElse(new HashMap<>()).values().forEach(miningRule -> {
+        var rawData = getData(itemStack).orElse(new HashMap<>());
+        rawData.values().forEach(miningRule -> {
             rules.addAll(miningRule.asRules());
         });
         return new Tool(rules, 1.0f, 1);
@@ -99,7 +97,8 @@ public class MiningLevelProperty extends CodecProperty<Map<String, MiningLevelPr
     }
 
     public static boolean isCorrectToolForDrops(ItemStack stack, BlockState state) {
-        return property.asComponentCached(stack).isCorrectForDrops(state);
+        Tool tool = property.asComponentCached(stack);
+        return tool.isCorrectForDrops(state);
     }
 
     public static boolean mineBlock(ItemStack stack, Level level, BlockState state, BlockPos pos, LivingEntity miningEntity) {
@@ -225,7 +224,7 @@ public class MiningLevelProperty extends CodecProperty<Map<String, MiningLevelPr
                     }
                 });
                 toRemoveFromMaterial.forEach(canDropBlocks::remove);
-                List<Block> rawBlocks = canDropBlocks.stream().distinct().toList();
+                List<Block> rawBlocks = new HashSet<>(canDropBlocks).stream().toList();
                 Tool.Rule mineAndDrop = Tool.Rule.minesAndDrops(rawBlocks, speedEvaluated);
                 Tool.Rule overrideSpeed = Tool.Rule.overrideSpeed(blocksWithMiningSpeed, speedEvaluated);
                 return List.of(mineAndDrop, overrideSpeed);

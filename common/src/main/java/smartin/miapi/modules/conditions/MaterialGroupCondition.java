@@ -1,0 +1,55 @@
+package smartin.miapi.modules.conditions;
+
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentSerialization;
+import smartin.miapi.Miapi;
+import smartin.miapi.material.MaterialProperty;
+import smartin.miapi.material.base.Material;
+import smartin.miapi.modules.ModuleInstance;
+
+import java.util.List;
+import java.util.Optional;
+
+/**
+ * @header Material Condition
+ * @description_start this condition checks if this Module has a certain material
+ * @desciption_end
+ * @path /data_types/condition/material
+ * @data type:material
+ * @data material:the material to be checked
+ */
+public class MaterialGroupCondition implements ModuleCondition {
+    public static Codec<MaterialGroupCondition> CODEC = RecordCodecBuilder.create((instance) ->
+            instance.group(
+                    Codec.STRING.fieldOf("material_group")
+                            .forGetter((condition) -> condition.materialGroup),
+                    ComponentSerialization.CODEC
+                            .optionalFieldOf("error", Component.translatable(Miapi.MOD_ID + ".condition.material.error"))
+                            .forGetter((condition) -> condition.error)
+            ).apply(instance, MaterialGroupCondition::new));
+
+    public String materialGroup;
+    public Component error;
+
+    public MaterialGroupCondition(String materialKey, Component error) {
+        this.materialGroup = materialKey;
+        this.error = error;
+    }
+
+    @Override
+    public boolean isAllowed(ConditionManager.ConditionContext conditionContext) {
+        Optional<ModuleInstance> moduleOptional = conditionContext.getContext(ConditionManager.MODULE_CONDITION_CONTEXT);
+        if (moduleOptional.isPresent()) {
+            ModuleInstance moduleInstance = moduleOptional.get();
+            List<Component> reasons = conditionContext.failReasons;
+            if (MaterialProperty.getMaterial(moduleInstance) instanceof Material material && material.getGroups().contains(materialGroup)) {
+                return true;
+            }
+            reasons.add(error);
+        }
+        conditionContext.failReasons.add(Component.translatable(Miapi.MOD_ID + ".condition.material.error"));
+        return false;
+    }
+}
