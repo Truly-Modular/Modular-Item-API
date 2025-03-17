@@ -24,6 +24,7 @@ import smartin.miapi.modules.properties.mining.MiningLevelProperty;
 import smartin.miapi.modules.properties.util.ComponentApplyProperty;
 
 import java.util.List;
+import java.util.MissingResourceException;
 
 @NonnullDefault
 public class ModularElytraItem extends ElytraItem implements PlatformModularItemMethods, ModularItem {
@@ -34,7 +35,8 @@ public class ModularElytraItem extends ElytraItem implements PlatformModularItem
 
     @ExpectPlatform
     public static ModularElytraItem getInstance() {
-        return new ModularElytraItem(new Properties().stacksTo(1).fireResistant());
+        throw new MissingResourceException("no implementation found", "modular-elytra", "platform");
+        //return new ModularElytraItem(new Properties().stacksTo(1).fireResistant().durability(50));
     }
 
     @Override

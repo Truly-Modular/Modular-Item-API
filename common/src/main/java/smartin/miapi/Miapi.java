@@ -2,18 +2,21 @@ package smartin.miapi;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonPrimitive;
 import com.mojang.datafixers.util.Either;
 import com.mojang.datafixers.util.Pair;
-import com.mojang.serialization.*;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.DynamicOps;
+import com.mojang.serialization.MapCodec;
 import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
 import com.redpxnda.nucleus.registry.NucleusNamespaces;
 import dev.architectury.event.events.common.CommandRegistrationEvent;
 import dev.architectury.event.events.common.LifecycleEvent;
 import dev.architectury.event.events.common.PlayerEvent;
 import net.minecraft.core.RegistryAccess;
-import net.minecraft.nbt.*;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -56,8 +59,6 @@ import smartin.miapi.network.Networking;
 import smartin.miapi.network.NetworkingImplCommon;
 import smartin.miapi.registries.RegistryInventory;
 
-import java.nio.ByteBuffer;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -110,7 +111,7 @@ public class Miapi {
     };
 
     public static DynamicOps<Tag> BOOL_CORRECTED_OPS = new NbtOps() {
-        public <U> U convertTo(DynamicOps<U> ops, Tag tag) {
+        /*public <U> U convertTo(DynamicOps<U> ops, Tag tag) {
             return switch (tag.getId()) {
                 case 0 -> ops.empty();
                 case 1 -> ops.createBoolean(((NumericTag) tag).getAsByte() == 1);
@@ -127,18 +128,11 @@ public class Miapi {
                 case 12 -> ops.createLongList(Arrays.stream(((LongArrayTag) tag).getAsLongArray()));
                 default -> throw new IllegalStateException("Unknown tag type: " + String.valueOf(tag));
             };
-        }
+         }
+             */
     };
 
     public static void init() {
-        boolean tets = false;
-        while (tets) {
-            JsonElement element = new JsonPrimitive(true);
-            var data = JsonOps.INSTANCE.convertTo(Miapi.BOOL_CORRECTED_OPS, element);
-            var jsonData = Miapi.BOOL_CORRECTED_OPS.convertTo(JsonOps.INSTANCE, data);
-            Miapi.LOGGER.info("" + data);
-            var decode = Codec.BOOL.decode(NbtOps.INSTANCE,data).getOrThrow().getSecond();
-        }
         CodecBehavior.registerClass(Transform.class, Transform.CODEC);
         CodecBehavior.registerClass(DoubleOperationResolvable.class, DoubleOperationResolvable.CODEC);
         CodecBehavior.registerClass(ModuleInstance.class, ModuleInstance.CODEC);

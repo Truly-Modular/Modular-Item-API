@@ -73,12 +73,12 @@ public class LoreProperty extends CodecProperty<List<LoreProperty.Holder>> {
         });
         ReloadEvents.END.subscribe((isClient, registryAccess) -> {
             try {
+                smithingTemplate.clear();
                 var recipeManager = SmithingRecipeUtil.findManager(isClient);
                 if (recipeManager != null) {
                     recipeManager.getAllRecipesFor(RecipeType.SMITHING).forEach(recipeHolder -> {
                         if (recipeHolder.value() instanceof MaterialSmithingRecipe smithingRecipe) {
-                            smithingTemplate.put(smithingRecipe.smithingTemplate.getItems()[0].getItem(), new ArrayList<>());
-                            List<Component> list = smithingTemplate.getOrDefault(smithingRecipe.smithingTemplate.getItems()[0].getItem(), new ArrayList<>());
+                            List<Component> list = smithingTemplate.computeIfAbsent(smithingRecipe.smithingTemplate.getItems()[0].getItem(), (i) -> new ArrayList<>());
                             Material ingredient = MaterialProperty.materials.get(smithingRecipe.startMaterial);
                             Material target = MaterialProperty.materials.get(smithingRecipe.resultMaterial);
                             if (ingredient != null && target != null) {
@@ -145,8 +145,9 @@ public class LoreProperty extends CodecProperty<List<LoreProperty.Holder>> {
                 return lines;
             }
             ItemStack converted = ModularItemStackConverter.getModularVersion(itemStack);
-            if (ItemStack.matches(converted, itemStack) && hasModularItemDescription(converted)) {
+            if (hasModularItemDescription(converted)) {
                 lines.add(format(Component.translatable("miapi.ui.modular_item"), ChatFormatting.GRAY));
+                return lines;
             }
         }
         if (MiapiConfig.INSTANCE.client.loreConfig.injectLoreModularTemplate) {

@@ -1,6 +1,5 @@
 package smartin.miapi.forge;
 
-import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import dev.architectury.event.events.common.LifecycleEvent;
@@ -137,7 +136,6 @@ public class TrulyModularForge {
 
         @SubscribeEvent
         public static void registerKeybinds(RegisterKeyMappingsEvent registerAdditional) {
-            Miapi.LOGGER.info("forge keybind callback");
             MiapiClient.KEY_BINDINGS.addCallback(registerAdditional::register);
         }
 
@@ -166,12 +164,12 @@ public class TrulyModularForge {
                                     poseStack.translate(0.0f, 0.0F, 0.0F);
                                     poseStack.last().transformNormal(new Vector3f(-1, -1, -1), new Vector3f(0, -1, 0));
                                 }
-                                Lighting.setupForFlatItems();
+                                //Lighting.setupForFlatItems();
                                 MiapiItemModel.getItemModel(stack).render(poseStack, displayContext, 0, buffer, packedLight, packedOverlay);
                                 if (buffer instanceof MultiBufferSource.BufferSource multiBufferSource) {
                                     multiBufferSource.endBatch();
                                 }
-                                Lighting.setupFor3DItems();
+                                //Lighting.setupFor3DItems();
                                 //Lighting.setupFor3DItems();
                             }
                         };
@@ -180,6 +178,7 @@ public class TrulyModularForge {
 
                     public Model getGenericArmorModel(LivingEntity livingEntity, ItemStack itemStack, EquipmentSlot equipmentSlot, HumanoidModel<?> original) {
                         if (VisualModularItem.isVisualModularItem(itemStack)) {
+                            //Miapi.LOGGER.info("rendering armor model " + equipmentSlot.getName());
                             cache.computeIfAbsent(itemStack, (i) -> new ModelWithHumanModel((a) -> RenderType.armorEntityGlint()) {
                                 @Override
                                 public void renderToBuffer(PoseStack poseStack, VertexConsumer buffer, int packedLight, int packedOverlay, int color) {

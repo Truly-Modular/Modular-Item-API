@@ -8,8 +8,10 @@ import net.fabricmc.fabric.api.loot.v3.LootTableEvents;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.util.TriState;
 import net.fabricmc.fabric.impl.client.keybinding.KeyBindingRegistryImpl;
+import net.fabricmc.fabric.impl.item.ItemExtensions;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.world.entity.ai.attributes.RangedAttribute;
+import net.minecraft.world.item.ElytraItem;
 import smartin.miapi.Environment;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.MiapiClient;
@@ -32,6 +34,8 @@ public class MiapiFabric implements ModInitializer {
         if (Environment.isClient()) {
             MiapiClientFabric.setupClient();
         }
+        ItemExtensions extensions;
+        ElytraItem item;
         MiapiClient.KEY_BINDINGS.addCallback(KeyBindingRegistryImpl::registerKeyBinding);
         EnchantmentEvents.ALLOW_ENCHANTING.register((enchantment, target, enchantingContext) -> {
             if (

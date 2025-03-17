@@ -1,18 +1,18 @@
 package smartin.miapi.attributes;
 
-import smartin.miapi.Miapi;
-
-import java.util.Map;
-import java.util.WeakHashMap;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Map;
+import java.util.WeakHashMap;
 
 public class ElytraAttributes {
     public static Map<LivingEntity, Vec3> velocityMap = new WeakHashMap<>();
 
 
-    public static void movementUpdate(LivingEntity livingEntity) {
+    public static void movementUpdate(@NotNull LivingEntity livingEntity) {
         if (!livingEntity.isControlledByLocalInstance()) {
             return;
         }

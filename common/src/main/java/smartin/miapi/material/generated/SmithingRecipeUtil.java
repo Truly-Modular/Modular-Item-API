@@ -7,10 +7,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.item.TieredItem;
-import net.minecraft.world.item.crafting.RecipeHolder;
-import net.minecraft.world.item.crafting.RecipeManager;
-import net.minecraft.world.item.crafting.RecipeType;
-import net.minecraft.world.item.crafting.SmithingTransformRecipe;
+import net.minecraft.world.item.crafting.*;
 import smartin.miapi.Miapi;
 import smartin.miapi.item.MaterialSmithingRecipe;
 import smartin.miapi.material.MaterialProperty;
@@ -172,8 +169,9 @@ public class SmithingRecipeUtil {
         id = id.replace(":", ".");
         ResourceLocation recipeId = Miapi.id(id);
         if (recipeManager.byKey(recipeId).isEmpty()) {
+            Ingredient template = ((SmithingTransformRecipeAccessor) smithingTransformRecipe).getTemplate();
             MaterialSmithingRecipe materialSmithingRecipe = new MaterialSmithingRecipe(
-                    ((SmithingTransformRecipeAccessor) smithingTransformRecipe).getTemplate(),
+                    template,
                     sourceMaterial.getID(),
                     ((SmithingTransformRecipeAccessor) smithingTransformRecipe).getAddition(),
                     outputMaterial.getID()
@@ -186,7 +184,7 @@ public class SmithingRecipeUtil {
             if (verboseLogging()) {
                 Miapi.LOGGER.warn("added Smithing Recipe for " + sourceMaterial.getID() + " to " + outputMaterial.key + " via " + BuiltInRegistries.ITEM.getKey(templateItem.getItem()));
             }
-            outputMaterial.setSmithingMaterial(sourceMaterial.getID());
+            outputMaterial.setSmithingMaterial(sourceMaterial.getID(), template);
             recipeManager.replaceRecipes(recipes);
         }
     }

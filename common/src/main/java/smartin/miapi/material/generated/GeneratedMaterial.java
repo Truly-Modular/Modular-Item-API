@@ -61,6 +61,7 @@ public class GeneratedMaterial implements Material {
     Component name = null;
     public Map<String, Map<ModuleProperty<?>, Object>> properties = new HashMap<>();
     SmithingMode smithingMode = SmithingMode.NONE;
+    ItemStack smithingTemplate = ItemStack.EMPTY;
 
     public static Codec<GeneratedMaterial> CODEC = RecordCodecBuilder.create((instance) ->
             instance.group(
@@ -78,13 +79,16 @@ public class GeneratedMaterial implements Material {
                             .forGetter(m -> m.toolItems.stream().map(Item::getDefaultInstance).toList()),
                     ResourceLocation.CODEC
                             .optionalFieldOf("smithing_key")
-                            .forGetter(m -> m.smithingParent)
-            ).apply(instance, (itemstack, additionalIngredient, swordItem, ingredient_toolItems, smithingKey) -> {
+                            .forGetter(m -> m.smithingParent),
+                    ItemStack.CODEC
+                            .optionalFieldOf("smithing_template", ItemStack.EMPTY)
+                            .forGetter(m -> m.swordItem.getDefaultInstance())
+            ).apply(instance, (itemstack, additionalIngredient, swordItem, ingredient_toolItems, smithingKey, smithingItem) -> {
                 GeneratedMaterial material = new GeneratedMaterial(itemstack, additionalIngredient, ((SwordItem) (swordItem.getItem())).getTier(),
                         ingredient_toolItems.stream().map(itemStack -> (TieredItem) itemStack.getItem()).toList()
                 );
                 if (smithingKey != null && smithingKey.isPresent()) {
-                    material.setSmithingMaterial(smithingKey.get());
+                    material.setSmithingMaterial(smithingKey.get(), Ingredient.of(smithingItem));
                 }
                 return material;
             }));
@@ -223,18 +227,28 @@ public class GeneratedMaterial implements Material {
         return swordItem;
     }
 
-    public void setSmithingMaterial(ResourceLocation other) {
+    public void setSmithingMaterial(ResourceLocation other, Ingredient ingredient) {
         this.smithingParent = Optional.of(other);
         var otherMat = MaterialProperty.getMaterialFromIngredient(mainIngredient);
-        if (otherMat != this) {
+        if (GeneratedMaterialManager.verboseLogging()) {
+            Miapi.LOGGER.info("other mat for smithing test " + otherMat);
+        }
+        if (otherMat == null || this.equals(otherMat) || otherMat.getID().equals(this.getID())) {
+            smithingMode = SmithingMode.INGREDIENT;
+            this.groups = new ArrayList<>(this.groups);
+            this.groups = List.of(getStringID(), "smithing");
+        } else {
             smithingMode = SmithingMode.TEMPLATE;
             if (otherMat != null) {
                 otherMat.addSmithingGroup();
             }
-        } else {
-            smithingMode = SmithingMode.INGREDIENT;
-            this.groups = new ArrayList<>(this.groups);
-            this.groups = List.of(getStringID(), "smithing");
+            if (!ingredient.isEmpty()) {
+                if (ingredient.getItems() != null &&
+                    ingredient.getItems()[0] != null &&
+                    !ingredient.getItems()[0].isEmpty()) {
+                    smithingTemplate = ingredient.getItems()[0];
+                }
+            }
         }
     }
 
@@ -355,6 +369,10 @@ public class GeneratedMaterial implements Material {
             }
             if (ingredient.test(itemStack)) {
                 return -1.0;
+            }
+        } else {
+            if (itemStack.getItem().equals(smithingTemplate.getItem())) {
+                return 1.0;
             }
         }
         return null;

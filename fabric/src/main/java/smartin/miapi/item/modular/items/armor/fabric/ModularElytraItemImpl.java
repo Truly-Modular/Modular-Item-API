@@ -6,7 +6,7 @@ import smartin.miapi.item.modular.items.armor.ModularElytraItem;
 public class ModularElytraItemImpl extends ModularElytraItem implements FabricElytraItem {
 
     public ModularElytraItemImpl() {
-        super(new Properties().stacksTo(1).fireResistant());
+        super(new Properties().stacksTo(1).fireResistant().durability(50));
     }
 
     public static ModularElytraItem getInstance() {

@@ -60,7 +60,7 @@ public class ModularWeapon extends Item implements PlatformModularItemMethods, M
 
     @Override
     public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
-        return ModularAttackEvents.HURT_ENEMY.invoker().hurtEnemy(stack, target, attacker).interruptsFurtherEvaluation();
+        return !ModularAttackEvents.HURT_ENEMY.invoker().hurtEnemy(stack, target, attacker).interruptsFurtherEvaluation();
     }
 
     @Override
