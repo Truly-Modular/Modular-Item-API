@@ -228,6 +228,9 @@ public class CraftAction {
         });
         ItemModule.ModuleInstance parsingInstance = ItemModule.getModules(craftingStack[0]);
         for (int i = slotId.size() - 1; i >= 0; i--) {
+            if (parsingInstance == null) {
+                return craftingStack[0];
+            }
             parsingInstance = parsingInstance.subModules.get(slotId.get(i));
         }
         for (CraftingEvent eventHandler : events)
@@ -279,6 +282,10 @@ public class CraftAction {
             return craftingStack;
         }
         ItemModule.ModuleInstance parsingInstance = newBaseModule;
+        if (parsingInstance == null) {
+            Miapi.LOGGER.error("cannot find editing Slot aborting craft action!");
+            return craftingStack;
+        }
         for (int i = slotId.size() - 1; i > 0; i--) {
             parsingInstance = parsingInstance.subModules.get(slotId.get(i));
             if (parsingInstance == null) {
@@ -371,6 +378,9 @@ public class CraftAction {
     public void forEachCraftingProperty(ItemStack crafted, PropertyConsumer propertyConsumer) {
         ItemModule.ModuleInstance parsingInstance = ItemModule.getModules(crafted);
         for (int i = slotId.size() - 1; i >= 0; i--) {
+            if (parsingInstance == null) {
+                return;
+            }
             parsingInstance = parsingInstance.subModules.get(slotId.get(i));
         }
 

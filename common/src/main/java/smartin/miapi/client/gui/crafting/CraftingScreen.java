@@ -193,6 +193,7 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
         selectSlot(slot1);
         updateEditOptions();
         selectEditOption(op);
+        this.handler.clearSlots();
     }
 
     public void maximizeView() {
@@ -214,6 +215,7 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
         selectSlot(slot1);
         updateEditOptions();
         selectEditOption(op);
+        this.handler.clearSlots();
     }
 
     public ItemStack getItem() {
