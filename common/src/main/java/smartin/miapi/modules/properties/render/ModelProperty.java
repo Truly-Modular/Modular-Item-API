@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import dev.architectury.platform.Platform;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -314,6 +315,9 @@ public class ModelProperty implements RenderProperty {
         }
         if (filePath2.contains("item/") && !filePath2.contains("models/")) {
             filePath2 = filePath2.replace("item/", "models/item/");
+        }
+        if (Platform.isForge()) {
+            //filePath2 = filePath2.replace("models/", "");
         }
         UnbakedModelHolder holder = new UnbakedModelHolder(model, fromPath(ModelLoader.MODELS_FINDER.toResourcePath(modelId)));
         modelCache.put(filePath2, holder);

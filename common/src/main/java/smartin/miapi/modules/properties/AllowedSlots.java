@@ -3,36 +3,21 @@ package smartin.miapi.modules.properties;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.reflect.TypeToken;
-import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.registries.RegistryInventory;
 
 import java.lang.reflect.Type;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This Property is meant to control what is allowed in the moduleSlots of an module
  */
 public class AllowedSlots implements ModuleProperty {
     public static final String KEY = "allowedInSlots";
-    static HashMap<String, Set<ItemModule>> allowedInMap = new HashMap<>();
 
     public AllowedSlots() {
-        RegistryInventory.modules.addCallback(itemModule -> {
-            getAllowedSlots(itemModule).forEach(slot -> {
-                if (allowedInMap.containsKey(slot)) {
-                    allowedInMap.get(slot).add(itemModule);
-                } else {
-                    Set<ItemModule> list = new HashSet<>();
-                    list.add(itemModule);
-                    allowedInMap.put(slot, list);
-                }
-            });
-        });
-        ReloadEvents.START.subscribe(isClient -> {
-            allowedInMap.clear();
-        });
     }
 
     /**
@@ -60,15 +45,8 @@ public class AllowedSlots implements ModuleProperty {
      */
     public static List<ItemModule> allowedIn(SlotProperty.ModuleSlot slot) {
         if (slot == null) return new ArrayList<>();
-        List<ItemModule> allowedModules = new ArrayList<>();
-        slot.allowed.forEach(allowedKey -> {
-            if (allowedInMap.containsKey(allowedKey)) {
-                allowedModules.addAll(allowedInMap.get(allowedKey));
-            }
-        });
-        return allowedModules;
+        return RegistryInventory.modules.getFlatMap().values().stream().filter(m -> slot.allowed.stream().anyMatch(s -> getAllowedSlots(m).contains(s))).toList();
     }
-
 
     @Override
     public boolean load(String moduleKey, JsonElement data) throws Exception {
