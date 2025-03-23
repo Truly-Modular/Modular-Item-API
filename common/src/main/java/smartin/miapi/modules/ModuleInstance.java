@@ -415,9 +415,8 @@ public class ModuleInstance {
         if (clearCache) {
             this.clearCaches();
         }
-        //stack.update(ModuleInstance.MODULE_INSTANCE_COMPONENT, this, (component) -> this);
-        stack.set(ModuleInstance.MODULE_INSTANCE_COMPONENT, this.copy());
         JsonElement element = CODEC.encodeStart(JsonOps.INSTANCE, this).getOrThrow();
+        stack.set(ModuleInstance.MODULE_INSTANCE_COMPONENT, this.copy());
         stack.set(MODULE_BACKUP, element);
     }
 

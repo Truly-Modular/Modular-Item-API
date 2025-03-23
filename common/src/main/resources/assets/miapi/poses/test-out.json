@@ -1,0 +1,481 @@
+{
+    "name": "two_handed_slam",
+    "initialPose": {
+        "head": {
+            "position": [
+                0,
+                0,
+                0
+            ],
+            "rotation": [
+                0,
+                0,
+                0
+            ],
+            "scale": [
+                1,
+                1,
+                1
+            ]
+        },
+        "body": {
+            "position": [
+                0,
+                0,
+                0
+            ],
+            "rotation": [
+                0,
+                0,
+                0
+            ],
+            "scale": [
+                1,
+                1,
+                1
+            ]
+        },
+        "rightLeg": {
+            "position": [
+                0,
+                0,
+                0
+            ],
+            "rotation": [
+                0,
+                0,
+                0
+            ],
+            "scale": [
+                1,
+                1,
+                1
+            ]
+        },
+        "leftLeg": {
+            "position": [
+                0,
+                0,
+                0
+            ],
+            "rotation": [
+                0,
+                0,
+                0
+            ],
+            "scale": [
+                1,
+                1,
+                1
+            ]
+        },
+        "fpUsedArm": {
+            "position": [
+                0,
+                0,
+                0
+            ],
+            "rotation": [
+                0,
+                0,
+                0
+            ],
+            "scale": [
+                1,
+                1,
+                1
+            ]
+        }
+    },
+    "frames": [
+        {
+            "head": {
+                "position": [
+                    0,
+                    0,
+                    0
+                ],
+                "rotation": [
+                    -55.808843915675965,
+                    0,
+                    0
+                ],
+                "scale": [
+                    1,
+                    1,
+                    1
+                ]
+            },
+            "body": {
+                "position": [
+                    0,
+                    0,
+                    -0.3055015504360199
+                ],
+                "rotation": [
+                    0,
+                    0,
+                    0
+                ],
+                "scale": [
+                    1,
+                    1,
+                    1
+                ]
+            },
+            "rightLeg": {
+                "position": [
+                    0,
+                    0,
+                    0.1
+                ],
+                "rotation": [
+                    0,
+                    0,
+                    0
+                ],
+                "scale": [
+                    1,
+                    1,
+                    1
+                ]
+            },
+            "leftLeg": {
+                "position": [
+                    1.9088438987731933,
+                    0,
+                    0
+                ],
+                "rotation": [
+                    0,
+                    0,
+                    0
+                ],
+                "scale": [
+                    1,
+                    1,
+                    1
+                ]
+            },
+            "fpUsedArm": {
+                "position": [
+                    0,
+                    0,
+                    0
+                ],
+                "rotation": [
+                    0,
+                    0,
+                    -13.486475747341453
+                ],
+                "scale": [
+                    1,
+                    1,
+                    1
+                ]
+            },
+            "endTime": 1
+        },
+        {
+            "body": {
+                "position": [
+                    0,
+                    0,
+                    0.06469444930553436
+                ],
+                "rotation": [
+                    0,
+                    0,
+                    0
+                ],
+                "scale": [
+                    1,
+                    1,
+                    1
+                ]
+            },
+            "rightArm": {
+                "position": [
+                    0,
+                    0,
+                    0
+                ],
+                "rotation": [
+                    -218.1991220178166,
+                    0,
+                    0
+                ],
+                "scale": [
+                    1,
+                    1,
+                    1
+                ]
+            },
+            "leftArm": {
+                "position": [
+                    5,
+                    0,
+                    0
+                ],
+                "rotation": [
+                    0,
+                    0,
+                    0
+                ],
+                "scale": [
+                    1,
+                    1,
+                    1
+                ]
+            },
+            "rightLeg": {
+                "position": [
+                    0,
+                    0,
+                    0.1
+                ],
+                "rotation": [
+                    0,
+                    0,
+                    0
+                ],
+                "scale": [
+                    1,
+                    1,
+                    1
+                ]
+            },
+            "leftLeg": {
+                "position": [
+                    1.9,
+                    0,
+                    0
+                ],
+                "rotation": [
+                    0,
+                    0,
+                    0
+                ],
+                "scale": [
+                    1,
+                    1,
+                    1
+                ]
+            },
+            "fpUsedArm": {
+                "position": [
+                    0,
+                    0,
+                    0
+                ],
+                "rotation": [
+                    0,
+                    0,
+                    -7.86990361736054
+                ],
+                "scale": [
+                    1,
+                    1,
+                    1
+                ]
+            },
+            "endTime": 1
+        },
+        {
+            "body": {
+                "position": [
+                    0,
+                    0,
+                    -0.3881666362285614
+                ],
+                "rotation": [
+                    0,
+                    0,
+                    0
+                ],
+                "scale": [
+                    1,
+                    1,
+                    1
+                ]
+            },
+            "rightArm": {
+                "position": [
+                    0,
+                    0,
+                    0
+                ],
+                "rotation": [
+                    -87.85884065251672,
+                    0,
+                    0
+                ],
+                "scale": [
+                    1,
+                    1,
+                    1
+                ]
+            },
+            "leftArm": {
+                "position": [
+                    5.028234958648682,
+                    0,
+                    0
+                ],
+                "rotation": [
+                    0,
+                    0,
+                    0
+                ],
+                "scale": [
+                    1,
+                    1,
+                    1
+                ]
+            },
+            "rightLeg": {
+                "position": [
+                    0,
+                    0,
+                    0.1
+                ],
+                "rotation": [
+                    0,
+                    0,
+                    0
+                ],
+                "scale": [
+                    1,
+                    1,
+                    1
+                ]
+            },
+            "leftLeg": {
+                "position": [
+                    1.9074789524078368,
+                    0,
+                    0
+                ],
+                "rotation": [
+                    0,
+                    0,
+                    0
+                ],
+                "scale": [
+                    1,
+                    1,
+                    1
+                ]
+            },
+            "fpUsedArm": {
+                "position": [
+                    0,
+                    0,
+                    0
+                ],
+                "rotation": [
+                    0,
+                    0,
+                    -13.71500021659174
+                ],
+                "scale": [
+                    1,
+                    1,
+                    1
+                ]
+            },
+            "endTime": 1
+        },
+        {
+            "body": {
+                "position": [
+                    0,
+                    0,
+                    -0.3055015504360199
+                ],
+                "rotation": [
+                    0,
+                    0,
+                    0
+                ],
+                "scale": [
+                    1,
+                    1,
+                    1
+                ]
+            },
+            "rightLeg": {
+                "position": [
+                    0,
+                    0,
+                    0.1
+                ],
+                "rotation": [
+                    0,
+                    0,
+                    0
+                ],
+                "scale": [
+                    1,
+                    1,
+                    1
+                ]
+            },
+            "leftLeg": {
+                "position": [
+                    1.9088438987731933,
+                    0,
+                    0
+                ],
+                "rotation": [
+                    0,
+                    0,
+                    0
+                ],
+                "scale": [
+                    1,
+                    1,
+                    1
+                ]
+            },
+            "fpUsedArm": {
+                "position": [
+                    0,
+                    0,
+                    0
+                ],
+                "rotation": [
+                    0,
+                    0,
+                    -13.486475747341453
+                ],
+                "scale": [
+                    1,
+                    1,
+                    1
+                ]
+            },
+            "endTime": 1
+        },
+        {
+            "fpUsedArm": {
+                "position": [
+                    0,
+                    0,
+                    0
+                ],
+                "rotation": [
+                    0,
+                    0,
+                    -11.877796296847846
+                ],
+                "scale": [
+                    1,
+                    1,
+                    1
+                ]
+            },
+            "endTime": 1
+        }
+    ]
+}

@@ -1,0 +1,69 @@
+{
+    "icon": {
+        "type": "item",
+        "item": "minecraft:crying_obsidian"
+    },
+    "groups": [
+        "stone"
+    ],
+    "hardness": 5,
+    "density": 8,
+    "flexibility": 0,
+    "enchantability": 9,
+    "tier": 2,
+    "durability": 2596,
+    "armor_durability_offset": -1800,
+    "color": "D700EF",
+    "color_palette": {
+        "type": "layered_mask",
+        "base": {
+            "type": "grayscale_map",
+            "colors": {
+                "24": "000001",
+                "68": "06030b",
+                "107": "100c1c",
+                "150": "271e3d",
+                "255": "3b2754"
+            }
+        },
+        "layer": {
+            "type": "overlay_texture",
+            "atlas": "block",
+            "texture": "minecraft:block/crying_obsidian"
+        },
+        "mask": {
+            "type": "texture",
+            "atlas": "block",
+            "texture": "minecraft:block/crying_obsidian"
+        }
+    },
+    "mining_speed": 4,
+    "mining_level": "minecraft:incorrect_for_stone_tool",
+    "textures": [
+        "rough"
+    ],
+    "properties": {
+        "handheld": {
+            "attributes": [
+                {
+                    "attribute": "generic.attack_speed",
+                    "value": "0.95",
+                    "operation": "**",
+                    "slot": "mainhand"
+                }
+            ]
+        },
+        "default": {
+            "emissive": {
+                "sky": 10,
+                "block": 10
+            }
+        }
+    },
+    "items": [
+        {
+            "item": "minecraft:crying_obsidian",
+            "value": 1.0
+        }
+    ]
+}

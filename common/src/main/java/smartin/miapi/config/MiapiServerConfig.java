@@ -45,10 +45,10 @@ public class MiapiServerConfig {
         @AutoCodec.Name("material_swap_loot_functions")
         public MaterialSwapLootFunction materialSwapLootFunction = new MaterialSwapLootFunction(
                 Miapi.id("empty"),
-                -1.5,
-                0.5,
+                -3.5,
+                0.4,
                 1.0,
-                1.0,
+                0.8,
                 1.0,
                 1.0,
                 0.8,

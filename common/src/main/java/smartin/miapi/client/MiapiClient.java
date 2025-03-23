@@ -81,6 +81,7 @@ public class MiapiClient {
     }
 
     public static void init() {
+        //ImGui.begin("miapi_test");
         var config = ConfigManager.getConfigObject(Miapi.id("server"));
         if (config.getInstance() == null) {
             config.load();
@@ -118,9 +119,6 @@ public class MiapiClient {
                 Minecraft.getInstance().getProfiler().pop();
             }
             ClientKeybinding.clientTick(instance);
-        }));
-        ClientTickEvent.CLIENT_POST.register((instance -> {
-            //ClientKeybinding.clientTick(instance);
         }));
         Networking.registerS2CPacket(MaterialCommand.SEND_MATERIAL_CLIENT, (buf -> {
             String materialId = buf.readUtf();

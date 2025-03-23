@@ -50,8 +50,7 @@ public class BlueprintComponent {
                     ComponentSerialization.CODEC
                             .optionalFieldOf("name")
                             .forGetter(blueprintComponent -> blueprintComponent.name)
-            ).apply(instance, BlueprintComponent::new
-            ));
+            ).apply(instance, BlueprintComponent::new));
     public static ResourceLocation ID = Miapi.id("blueprint_slot_id");
 
     public static DataComponentType<BlueprintComponent> BLUEPRINT_COMPONENT = DataComponentType.<BlueprintComponent>builder().persistent(CODEC).networkSynchronized(ByteBufCodecs.fromCodec(CODEC)).build();

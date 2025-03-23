@@ -30,11 +30,14 @@ import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.craft.stat.StatActorType;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.datapack.ReloadHelpers;
+import smartin.miapi.editor.EditorCommands;
 import smartin.miapi.item.ItemToModularConverter;
 import smartin.miapi.item.ModularItemStackConverter;
+import smartin.miapi.item.PoseCommands;
 import smartin.miapi.item.modular.PropertyResolver;
 import smartin.miapi.item.modular.Transform;
 import smartin.miapi.item.modular.VisualModularItem;
+import smartin.miapi.loot.LootHelper;
 import smartin.miapi.loot.MaterialSwapLootFunction;
 import smartin.miapi.loot.ModuleSwapLootFunction;
 import smartin.miapi.material.ComponentMaterial;
@@ -209,6 +212,8 @@ public class Miapi {
         CommandRegistrationEvent.EVENT.register((serverCommandSourceCommandDispatcher, registryAccess, listener) -> {
             MaterialCommand.register(serverCommandSourceCommandDispatcher);
             CacheCommands.register(serverCommandSourceCommandDispatcher);
+            PoseCommands.register(serverCommandSourceCommandDispatcher);
+            EditorCommands.register(serverCommandSourceCommandDispatcher);
         });
 
         LifecycleEvent.SERVER_STARTED.register((minecraftServer -> {
@@ -220,6 +225,7 @@ public class Miapi {
             }
         }));
         BlueprintManager.setup();
+        LootHelper.setup();
     }
 
 

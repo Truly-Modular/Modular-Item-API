@@ -47,6 +47,17 @@ dependencies {
     modApi(include("com.redpxnda.nucleus:nucleus-config-forge:${rootProject.minecraft_version}+${rootProject.nucleus_config_version}"))
     modApi(include("com.redpxnda.nucleus:nucleus-pose-forge:${rootProject.minecraft_version}+${rootProject.nucleus_pose_version}"))
     modApi(include("com.redpxnda.nucleus:nucleus-facet-forge:${rootProject.minecraft_version}+${rootProject.nucleus_facet_version}"))
+    modApi(include("com.redpxnda.nucleus:nucleus-editor-forge:${rootProject.minecraft_version}+${rootProject.nucleus_editor_version}"))
+
+    forgeRuntimeLibrary(implementation(api(include("io.github.spair:imgui-java-binding:$imgui_version"))))
+    forgeRuntimeLibrary(implementation(api(include("io.github.spair:imgui-java-lwjgl3:$imgui_version")))) {
+        exclude group: 'org.lwjgl'
+        exclude group: 'org.lwjgl.lwjgl'
+    }
+
+    runtimeOnly(forgeRuntimeLibrary(implementation(api(include("io.github.spair:imgui-java-natives-linux:$imgui_version")))))
+    runtimeOnly(forgeRuntimeLibrary(implementation(api(include("io.github.spair:imgui-java-natives-macos:$imgui_version")))))
+    runtimeOnly(forgeRuntimeLibrary(implementation(api(include("io.github.spair:imgui-java-natives-windows:$imgui_version")))))
 
 
     modLocalRuntime files('libs/arsenal-local.jar')

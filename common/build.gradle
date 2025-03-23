@@ -68,6 +68,7 @@ dependencies {
     modApi "com.redpxnda.nucleus:nucleus-config-common:${rootProject.minecraft_version}+${rootProject.nucleus_config_version}"
     modApi "com.redpxnda.nucleus:nucleus-pose-common:${rootProject.minecraft_version}+${rootProject.nucleus_pose_version}"
     modApi "com.redpxnda.nucleus:nucleus-facet-common:${rootProject.minecraft_version}+${rootProject.nucleus_facet_version}"
+    modApi "com.redpxnda.nucleus:nucleus-editor-common:${rootProject.minecraft_version}+${rootProject.nucleus_editor_version}"
 
     //https://modrinth.com/mod/treechop/version/tIdTnzkf
 
