@@ -11,6 +11,7 @@ import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.item.crafting.RecipeManager;
 import smartin.miapi.Miapi;
 import smartin.miapi.datapack.ReloadEvents;
+import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.modules.conditions.ConditionManager;
 
 import java.io.BufferedReader;
@@ -98,8 +99,14 @@ public class MiapiReloadListener implements PreparableReloadListener {
     public static void actualReload(RegistryAccess access) {
         ReloadEvents.reloadCounter++;
         timeStart = System.nanoTime();
+        MiapiEvents.ReloadEventData data = new MiapiEvents.ReloadEventData();
+        data.data = new LinkedHashMap<>();
+        data.data.putAll(reloadData);
+        ReloadEvents.RAW_DATA_PACKS.clear();
+        ReloadEvents.RAW_DATA_PACKS.putAll(reloadData);
+        MiapiEvents.ADJUST_RAW_DATA.invoker().onReload(data);
         ReloadEvents.START.fireEvent(false, access);
-        ReloadEvents.DataPackLoader.trigger(reloadData);
+        ReloadEvents.DataPackLoader.trigger(data.data);
         ReloadEvents.MAIN.fireEvent(false, access);
         ReloadEvents.END.fireEvent(false, access);
         Miapi.LOGGER.info("Server load took " + (double) (System.nanoTime() - timeStart) / 1000 / 1000 + " ms");

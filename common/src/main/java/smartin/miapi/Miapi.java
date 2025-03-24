@@ -31,6 +31,7 @@ import smartin.miapi.craft.stat.StatActorType;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.datapack.ReloadHelpers;
 import smartin.miapi.editor.EditorCommands;
+import smartin.miapi.editor.LiveDataPackManager;
 import smartin.miapi.item.ItemToModularConverter;
 import smartin.miapi.item.ModularItemStackConverter;
 import smartin.miapi.item.PoseCommands;
@@ -166,6 +167,7 @@ public class Miapi {
         GeneratedMaterialManager.setup();
         KeyBindManager.setup();
         ReloadHelpers.registerReloadHandlers();
+        LiveDataPackManager.setup();
 
         LifecycleEvent.SERVER_BEFORE_START.register(minecraftServer -> {
             server = minecraftServer;

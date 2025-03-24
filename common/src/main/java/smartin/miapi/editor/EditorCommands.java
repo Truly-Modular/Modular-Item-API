@@ -3,7 +3,6 @@ package smartin.miapi.editor;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
-import com.redpxnda.nucleus.editor.core.ClientLoader;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.world.InteractionHand;
@@ -17,7 +16,12 @@ public class EditorCommands {
                 .then(Commands.literal("editor")
                         .then(Commands.literal("hand")
                                 .executes(EditorCommands::executeHandEditor)));
+        LiteralArgumentBuilder<CommandSourceStack> fs = Commands.literal("miapi")
+                .then(Commands.literal("editor")
+                        .then(Commands.literal("data")
+                                .executes(EditorCommands::executeOpenEditor)));
         dispatcher.register(runPose);
+        dispatcher.register(fs);
 
     }
 
@@ -29,8 +33,15 @@ public class EditorCommands {
                 ModuleEditor moduleEditor = new ModuleEditor(moduleInstance.copy(), (m) -> {
                     m.copy().writeToItem(itemStack);
                 });
-                ClientLoader.RENDER.add(moduleEditor);
+                MiapiEditor.editors.add(moduleEditor);
             }
+        }
+        return 1; // Return success
+    }
+
+    private static int executeOpenEditor(CommandContext<CommandSourceStack> context) {
+        if (context.getSource().isPlayer()) {
+            MiapiEditor.editors.add(new LiveDataPackEditorManager());
         }
         return 1; // Return success
     }

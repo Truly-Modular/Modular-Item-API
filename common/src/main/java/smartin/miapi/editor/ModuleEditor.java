@@ -3,7 +3,6 @@ package smartin.miapi.editor;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.mojang.datafixers.util.Pair;
-import com.redpxnda.nucleus.editor.core.ClientLoader;
 import imgui.ImGui;
 import imgui.flag.ImGuiCond;
 import imgui.flag.ImGuiInputTextFlags;
@@ -24,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
-public class ModuleEditor implements ClientLoader.ImGuiRenderCallback {
+public class ModuleEditor implements MiapiEditor {
     private final ImBoolean show = new ImBoolean(true);
     private final ImString itemModuleName = new ImString(128);
     private final ModuleInstance module;
@@ -90,6 +89,7 @@ public class ModuleEditor implements ClientLoader.ImGuiRenderCallback {
                         ImGui.text("invalid data!");
                     }
                 }
+                //ImGui.sameLine();
                 if (ImGui.inputText("value", data, ImGuiInputTextFlags.None)) {
                     try {
                         JsonElement element = JsonParser.parseString(data.get());
@@ -98,6 +98,7 @@ public class ModuleEditor implements ClientLoader.ImGuiRenderCallback {
                         ImGui.text("invalid data!");
                     }
                 }
+                //ImGui.sameLine();
                 if (ImGui.button("Remove")) {
                     moduleData.remove(pair);
                     module.moduleData.remove(Miapi.id(id.get()));

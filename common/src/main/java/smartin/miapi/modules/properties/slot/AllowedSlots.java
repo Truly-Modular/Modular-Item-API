@@ -80,13 +80,7 @@ public class AllowedSlots extends CodecProperty<List<String>> {
      */
     public static List<ItemModule> allowedIn(SlotProperty.ModuleSlot slot) {
         if (slot == null) return new ArrayList<>();
-        Set<ItemModule> allowedModules = new HashSet<>();
-        slot.allowed.forEach(allowedKey -> {
-            if (allowedInMap.containsKey(allowedKey)) {
-                allowedModules.addAll(allowedInMap.get(allowedKey));
-            }
-        });
-        return new ArrayList<>(allowedModules);
+        return RegistryInventory.modules.getFlatMap().values().stream().filter(m -> getAllowedSlots(m).stream().anyMatch(s -> slot.allowed.contains(s))).toList();
     }
 
     @Override

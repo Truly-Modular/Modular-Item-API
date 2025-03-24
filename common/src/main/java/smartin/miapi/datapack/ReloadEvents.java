@@ -40,6 +40,10 @@ public class ReloadEvents {
      * A map that stores the paths of data packs to be synced.
      */
     public static final Map<ResourceLocation, String> DATA_PACKS = Collections.synchronizedMap(new LinkedHashMap<>());
+    /**
+     * A map that stores the paths of data packs to be synced.
+     */
+    public static final Map<ResourceLocation, String> RAW_DATA_PACKS = Collections.synchronizedMap(new LinkedHashMap<>());
 
     /**
      * A map that stores the paths of data packs that have been synced.

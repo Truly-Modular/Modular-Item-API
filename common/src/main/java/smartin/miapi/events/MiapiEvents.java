@@ -5,6 +5,7 @@ import com.redpxnda.nucleus.event.PrioritizedEvent;
 import dev.architectury.event.EventResult;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.RegistryAccess;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.valueproviders.IntProvider;
 import net.minecraft.world.damagesource.DamageSource;
@@ -35,6 +36,7 @@ import smartin.miapi.material.generated.GeneratedMaterial;
 import smartin.miapi.modules.properties.util.ComponentApplyProperty;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -62,6 +64,8 @@ public class MiapiEvents {
     public static final PrioritizedEvent<LivingEntityAttributeBuild> LIVING_ENTITY_ATTRIBUTE_BUILD_EVENT = PrioritizedEvent.createLoop();
     public static final PrioritizedEvent<PlayerEquip> PLAYER_EQUIP_EVENT = PrioritizedEvent.createLoop();
 
+    public static final PrioritizedEvent<ReloadEvent> ADJUST_RAW_DATA = PrioritizedEvent.createLoop();
+
     static {
         MiapiEvents.SMITHING_EVENT.register((listener) -> {
             ComponentApplyProperty.updateItemStack(listener.itemStack, listener.registryAccess);
@@ -70,7 +74,11 @@ public class MiapiEvents {
     }
 
     public interface ReloadEvent {
-        EventResult onReload(boolean isClient);
+        EventResult onReload(ReloadEventData event);
+    }
+
+    public static class ReloadEventData {
+        public Map<ResourceLocation, String> data = new HashMap<>();
     }
 
     public interface PlayerEquip {

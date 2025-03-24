@@ -14,13 +14,13 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import smartin.miapi.Miapi;
 import smartin.miapi.datapack.ReloadEvents;
+import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.material.MaterialProperty;
 import smartin.miapi.network.modern.ModernNetworking;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * A command related to materials- used to fetch debug data of active materials
@@ -71,15 +71,18 @@ public class CacheCommands {
 
     private static int executeMiapiReload(CommandContext<CommandSourceStack> context) {
         context.getSource().sendSuccess(() -> Component.literal("starting reload"), false);
+        triggerServerReload();
         return 1; // Return success
     }
 
     public static void triggerServerReload() {
-
         ReloadEvents.reloadCounter++;
-        Map<ResourceLocation, String> cacheDatapack = new LinkedHashMap<>(ReloadEvents.DATA_PACKS);
+        MiapiEvents.ReloadEventData data = new MiapiEvents.ReloadEventData();
+        data.data = new LinkedHashMap<>();
+        data.data.putAll(ReloadEvents.RAW_DATA_PACKS);
+        MiapiEvents.ADJUST_RAW_DATA.invoker().onReload(data);
         ReloadEvents.START.fireEvent(false, Miapi.server.registryAccess());
-        ReloadEvents.DataPackLoader.trigger(cacheDatapack);
+        ReloadEvents.DataPackLoader.trigger(data.data);
         ReloadEvents.MAIN.fireEvent(false, Miapi.server.registryAccess());
         ReloadEvents.END.fireEvent(false, Miapi.server.registryAccess());
         ReloadEvents.reloadCounter = 0;

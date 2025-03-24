@@ -221,6 +221,9 @@ public class CraftAction {
         ComponentApplyProperty.updateItemStack(craftingStack[0], player.level().registryAccess());
         ModuleInstance parsingInstance = ItemModule.getModules(craftingStack[0]);
         for (int i = slotLocation.size() - 1; i >= 0; i--) {
+            if (parsingInstance == null) {
+                return craftingStack[0];
+            }
             parsingInstance = parsingInstance.getSubModuleMap().get(slotLocation.get(i));
         }
         for (CraftingEvent eventHandler : events)
