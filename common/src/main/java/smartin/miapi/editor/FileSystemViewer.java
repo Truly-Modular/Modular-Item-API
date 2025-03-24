@@ -6,6 +6,7 @@ import imgui.type.ImBoolean;
 import imgui.type.ImString;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.GuiGraphics;
+import smartin.miapi.Miapi;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,10 +24,12 @@ public class FileSystemViewer implements MiapiEditor {
     private final ImString newFileName = new ImString(64);
     private final ImBoolean showNewFolderPopup = new ImBoolean(false);
     private final ImBoolean showNewFilePopup = new ImBoolean(false);
+    Consumer<File> changed;
 
-    public FileSystemViewer(File rootDirectory) {
+    public FileSystemViewer(File rootDirectory, Consumer<File> changed) {
         this.rootDirectory = rootDirectory;
         updateFileList();
+        this.changed = changed;
     }
 
     public File getRootDirectory() {
@@ -110,7 +113,7 @@ public class FileSystemViewer implements MiapiEditor {
             ImGui.setNextWindowSize(300, 100, ImGuiCond.FirstUseEver);
             if (ImGui.begin("Create New Folder", showNewFolderPopup)) {
                 ImGui.inputText("Folder Name", newFolderName);
-                
+
                 if (ImGui.button("Create")) {
                     createNewFolder();
                 }
@@ -129,7 +132,7 @@ public class FileSystemViewer implements MiapiEditor {
             if (ImGui.begin("Create New File", showNewFilePopup)) {
                 ImGui.inputText("File Name", newFileName);
                 ImGui.text("Note: .json will be added automatically if not specified");
-                
+
                 if (ImGui.button("Create")) {
                     createNewFile();
                 }
@@ -159,10 +162,11 @@ public class FileSystemViewer implements MiapiEditor {
             jsonEditor = new JsonEditor(content, (newContent) -> {
                 try {
                     Files.writeString(file.toPath(), newContent);
+                    changed.accept(file);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-            });
+            }, List.of(Miapi.id("miapi", "json_syntax")));
         } catch (IOException e) {
             e.printStackTrace();
         }

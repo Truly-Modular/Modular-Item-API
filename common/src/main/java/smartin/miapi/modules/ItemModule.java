@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.JsonOps;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -58,11 +59,10 @@ public record ItemModule(ResourceLocation id, Map<ModuleProperty<?>, Object> pro
      * Loads an ItemModule from a JSON string.
      *
      * @param path             the path of the JSON file
-     * @param moduleJsonString the JSON string to load from
      */
-    public static void loadFromData(ResourceLocation path, String moduleJsonString, boolean isClient) {
+    public static ItemModule loadFromData(boolean isClient, ResourceLocation path, JsonElement data, RegistryAccess registryAccess) {
         try {
-            JsonObject moduleJson = gson.fromJson(moduleJsonString, JsonObject.class);
+            JsonObject moduleJson = data.getAsJsonObject();
             Type type = new TypeToken<Map<String, JsonElement>>() {
             }.getType();
             Map<ModuleProperty<?>, Object> decodedProperties = new HashMap<>();
@@ -70,11 +70,13 @@ public record ItemModule(ResourceLocation id, Map<ModuleProperty<?>, Object> pro
             id = id.replace("miapi/modules/", "");
             id = id.replace(".json", "");
             ResourceLocation revisedID = ResourceLocation.parse(id);
-            Map<String, JsonElement> rawProperties = gson.fromJson(moduleJsonString, type);
+            Map<String, JsonElement> rawProperties = moduleJson.asMap();
             rawProperties.forEach((key, json) -> isValidProperty(key, path, json, isClient, (pair) -> decodedProperties.put(pair.getFirst(), pair.getSecond())));
-            RegistryInventory.modules.register(revisedID, new ItemModule(revisedID, decodedProperties));
+            return new ItemModule(revisedID, decodedProperties);
+            //RegistryInventory.modules.register(revisedID, new ItemModule(revisedID, decodedProperties));
         } catch (Exception e) {
             LOGGER.warn("Could not load Module " + path, e);
+            return null;
         }
     }
 
@@ -100,12 +102,12 @@ public record ItemModule(ResourceLocation id, Map<ModuleProperty<?>, Object> pro
                 ItemModule module = RegistryInventory.modules.get(id);
                 if (module == null) {
                     LOGGER.error("module not found for id " + id + " by module extention " + path);
-                }else{
+                } else {
                     RegistryInventory.modules.remove(module.id);
                     RegistryInventory.modules.register(module.id, new ItemModule(module.id, holder.applyHolder(module.properties())));
                 }
-            } else{
-                LOGGER.error("module extension "+path+" did not include a id or tag.");
+            } else {
+                LOGGER.error("module extension " + path + " did not include a id or tag.");
             }
         } catch (Exception e) {
             LOGGER.warn("Could not load Module to extend " + path, e);

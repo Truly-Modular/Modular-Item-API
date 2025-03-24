@@ -37,12 +37,6 @@ public class LiveDataPackEditorManager implements MiapiEditor {
         this.manager = LiveDataPackManager.getInstance();
     }
 
-    public static LiveDataPackEditorManager open() {
-        LiveDataPackEditorManager editor = new LiveDataPackEditorManager();
-        MiapiEditor.editors.add(editor);
-        return editor;
-    }
-
     private void clearNewPackFields() {
         newPackName.clear();
         newPackId.clear();
@@ -68,7 +62,7 @@ public class LiveDataPackEditorManager implements MiapiEditor {
             }
             ImGui.sameLine();
             if (ImGui.button("Reload")) {
-                CacheCommands.triggerServerReload();
+                reload();
             }
 
             ImGui.separator();
@@ -124,7 +118,9 @@ public class LiveDataPackEditorManager implements MiapiEditor {
                         if (fileSystemViewer != null) {
                             ClientLoader.RENDER.remove(fileSystemViewer);
                         }
-                        fileSystemViewer = new FileSystemViewer(pack.directory);
+                        fileSystemViewer = new FileSystemViewer(pack.directory, (file) -> {
+                            reload();
+                        });
                         MiapiEditor.editors.add(fileSystemViewer);
                     }
 
@@ -157,9 +153,9 @@ public class LiveDataPackEditorManager implements MiapiEditor {
                 ImGui.inputTextMultiline("Description", newPackDescription);
                 ImGui.checkbox("Enabled", newPackEnabled);
 
-                boolean canCreate = !newPackName.get().trim().isEmpty() && 
-                                  !newPackId.get().trim().isEmpty() &&
-                                  !newPackAuthor.get().trim().isEmpty();
+                boolean canCreate = !newPackName.get().trim().isEmpty() &&
+                                    !newPackId.get().trim().isEmpty() &&
+                                    !newPackAuthor.get().trim().isEmpty();
 
                 if (!canCreate) {
                     ImGui.textColored(1.0f, 0.0f, 0.0f, 1.0f, "Please fill in all required fields");
@@ -167,11 +163,11 @@ public class LiveDataPackEditorManager implements MiapiEditor {
 
                 if (ImGui.button("Create") && canCreate) {
                     manager.createNewPack(
-                        newPackName.get().trim(),
-                        newPackId.get().trim(),
-                        newPackAuthor.get().trim(),
-                        newPackDescription.get().trim(),
-                        newPackEnabled.get()
+                            newPackName.get().trim(),
+                            newPackId.get().trim(),
+                            newPackAuthor.get().trim(),
+                            newPackDescription.get().trim(),
+                            newPackEnabled.get()
                     );
                     showCreateWindow.set(false);
                     clearNewPackFields();
@@ -184,5 +180,9 @@ public class LiveDataPackEditorManager implements MiapiEditor {
             }
             ImGui.end();
         }
+    }
+
+    public void reload(){
+        CacheCommands.triggerServerReload();
     }
 }

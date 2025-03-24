@@ -1,6 +1,7 @@
 package smartin.miapi.datapack;
 
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 import io.netty.handler.codec.DecoderException;
@@ -15,6 +16,7 @@ import smartin.miapi.material.CodecMaterial;
 import smartin.miapi.material.MaterialProperty;
 import smartin.miapi.material.composite.material.DatapackComposite;
 import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.ItemModuleExtension;
 import smartin.miapi.modules.abilities.key.KeyBindManager;
 import smartin.miapi.modules.edit_options.CreateItemOption.CreateItemOption;
 import smartin.miapi.modules.edit_options.skins.SkinOptions;
@@ -22,26 +24,30 @@ import smartin.miapi.modules.synergies.SynergyManager;
 import smartin.miapi.registries.MiapiRegistry;
 import smartin.miapi.registries.RegistryInventory;
 
-import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+
+import static smartin.miapi.Miapi.gson;
 
 public class ReloadHelpers {
     /**
      * these need to be registered before most other things
      */
-    public static void registerReloadHandlers(){
-        ReloadHelpers.registerReloadHandler(ReloadEvents.MAIN, "miapi/modules", RegistryInventory.modules,
-                (isClient, path, data, access) -> ItemModule.loadFromData(path, data, isClient), -0.5f);
-        ReloadHelpers.registerReloadHandler(ReloadEvents.MAIN, "miapi/module_extensions", Collections.synchronizedMap(new LinkedHashMap<>()),
-                (isClient, path, data, access) -> ItemModule.loadModuleExtension(path, data, isClient), -0.4f);
+    public static void registerReloadHandlers() {
+        ReloadHelpers.registerReloadHandler("miapi/modules",
+                RegistryInventory.modules,
+                ItemModule::loadFromData, -0.5f);
+        ReloadHelpers.registerReloadHandler("miapi/module_extensions",
+                () -> {
+                },
+                (isClient, path, data, access) -> ItemModuleExtension.loadModuleExtension(path, data, isClient),
+                (isClient, path, data, access) -> data.apply(), -0.4f);
         ReloadHelpers.registerReloadHandler(ReloadEvents.MAIN, "miapi/synergies",
                 SynergyManager.moduleSynergies,
                 (isClient, path, data, registryAccess) -> SynergyManager.load(data, path), 2);
         ReloadHelpers.registerReloadHandler(ReloadEvents.MAIN, "miapi/skins/module", SkinOptions.skins, (isClient, path, data, registryAccess) -> {
-            SkinOptions.load(path,data);
+            SkinOptions.load(path, data);
         }, 1);
         ReloadHelpers.registerReloadHandler(ReloadEvents.MAIN, "miapi/skins/tab", SkinOptions.tabMap, (isClient, path, data, registryAccess) -> {
             SkinOptions.loadTabData(data);
@@ -172,6 +178,41 @@ public class ReloadHelpers {
 
     public static <T> void registerReloadHandler(
             String location,
+            MiapiRegistry<T> registry,
+            SimpleDecoder<T> decoder,
+            float prio) {
+        ReloadHelpers.registerReloadHandler(location, registry::clear,
+                decoder,
+                (isClient, path, data, registryAccess) -> registry.register(path, data), prio);
+    }
+
+    public static <T> void registerReloadHandler(
+            String location,
+            Runnable clear,
+            SimpleDecoder<T> decoder,
+            SingleDecodedFileHandler<T> onDecode,
+            float prio) {
+        registerReloadHandler(ReloadEvents.MAIN, location, true, (a) -> {
+        }, new SingleFileHandler() {
+            @Override
+            public void reloadFile(boolean isClient, ResourceLocation path, String data, RegistryAccess registryAccess) {
+                try {
+                    JsonElement element = gson.fromJson(data, JsonObject.class);
+                    ResourceLocation shortened = Miapi.id(path.toString().replace(":" + location + "/", ":").replace(".json", ""));
+                    T decoded = decoder.decode(isClient, shortened, element, registryAccess);
+                    onDecode.reloadFile(isClient, shortened, decoded, registryAccess);
+                } catch (RuntimeException e) {
+                    Miapi.LOGGER.error("could not decode " + path + " for full-path " + path, e);
+                    Miapi.LOGGER.error("raw data :");
+                    Miapi.LOGGER.error(data);
+                }
+            }
+        }, prio);
+        ReloadEvents.START.subscribe((isClient, registryAccess) -> clear.run());
+    }
+
+    public static <T> void registerReloadHandler(
+            String location,
             Runnable clear,
             BiConsumer<ResourceLocation, T> onDecode,
             Codec<T> codec,
@@ -208,10 +249,14 @@ public class ReloadHelpers {
                 Miapi.LOGGER.error(data);
             }
         }
+    }
 
-        @FunctionalInterface
-        public interface SingleDecodedFileHandler<T> {
-            void reloadFile(boolean isClient, ResourceLocation path, T data, RegistryAccess registryAccess);
-        }
+    @FunctionalInterface
+    public interface SingleDecodedFileHandler<T> {
+        void reloadFile(boolean isClient, ResourceLocation path, T data, RegistryAccess registryAccess);
+    }
+
+    public interface SimpleDecoder<T> {
+        T decode(boolean isClient, ResourceLocation path, JsonElement element, RegistryAccess registryAccess) throws DecoderException;
     }
 }

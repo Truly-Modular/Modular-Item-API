@@ -22,7 +22,7 @@ public class EditorCommands {
                                 .executes(EditorCommands::executeOpenEditor)));
         dispatcher.register(runPose);
         dispatcher.register(fs);
-
+        JsonEditor.registerGlobalInterface(new JsonSyntaxHighlighter());
     }
 
     private static int executeHandEditor(CommandContext<CommandSourceStack> context) {
