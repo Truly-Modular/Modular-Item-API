@@ -65,12 +65,17 @@ public class MiapiEvents {
     public static final PrioritizedEvent<PlayerEquip> PLAYER_EQUIP_EVENT = PrioritizedEvent.createLoop();
 
     public static final PrioritizedEvent<ReloadEvent> ADJUST_RAW_DATA = PrioritizedEvent.createLoop();
+    public static final PrioritizedEvent<ReloadEventPost> POST_HOT_RELOAD = PrioritizedEvent.createLoop();
 
     static {
         MiapiEvents.SMITHING_EVENT.register((listener) -> {
             ComponentApplyProperty.updateItemStack(listener.itemStack, listener.registryAccess);
             return EventResult.pass();
         });
+    }
+
+    public interface ReloadEventPost {
+        EventResult onReload();
     }
 
     public interface ReloadEvent {

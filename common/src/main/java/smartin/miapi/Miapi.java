@@ -10,6 +10,7 @@ import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.MapCodec;
 import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
 import com.redpxnda.nucleus.registry.NucleusNamespaces;
+import dev.architectury.event.EventResult;
 import dev.architectury.event.events.common.CommandRegistrationEvent;
 import dev.architectury.event.events.common.LifecycleEvent;
 import dev.architectury.event.events.common.PlayerEvent;
@@ -32,6 +33,7 @@ import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.datapack.ReloadHelpers;
 import smartin.miapi.editor.EditorCommands;
 import smartin.miapi.editor.LiveDataPackManager;
+import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.item.ItemToModularConverter;
 import smartin.miapi.item.ModularItemStackConverter;
 import smartin.miapi.item.PoseCommands;
@@ -228,6 +230,18 @@ public class Miapi {
         }));
         BlueprintManager.setup();
         LootHelper.setup();
+        MiapiEvents.POST_HOT_RELOAD.register(() -> {
+            if (Miapi.server != null) {
+                Miapi.server.getPlayerList().getPlayers().forEach(p -> {
+                    p.getInventory().setChanged();
+                    CompoundTag tag = new CompoundTag();
+                    if(p.save(tag)){
+                        p.load(tag);
+                    }
+                });
+            }
+            return EventResult.pass();
+        });
     }
 
 

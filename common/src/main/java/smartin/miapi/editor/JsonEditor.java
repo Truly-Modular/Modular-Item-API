@@ -12,6 +12,8 @@ import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
 
+import java.io.IOException;
+import java.nio.file.*;
 import java.util.*;
 import java.util.function.Consumer;
 
@@ -26,22 +28,104 @@ public class JsonEditor implements MiapiEditor {
     private static final Map<ResourceLocation, EditorInterface> GLOBAL_INTERFACES = new HashMap<>();
     public static int padding = 2;
     public boolean showErrors = false;
+    private boolean readOnly = false;
+    private boolean watchFile = true;
+    private boolean reloadOnChange = false;
+    private Path filePath;
+    private WatchService watchService;
+    private WatchKey watchKey;
+    private long lastModified = 0;
+    private ResourceLocation resourceLocation;
 
     public JsonEditor(String initialContent, Consumer<String> onChange) {
-        this(initialContent, onChange, Collections.emptyList());
+        this(initialContent, onChange, null, null);
     }
 
-    public JsonEditor(String initialContent, Consumer<String> onChange, List<ResourceLocation> defaultInterfaces) {
+    public JsonEditor(String initialContent, Consumer<String> onChange, Path filePath) {
+        this(initialContent, onChange, filePath, null);
+    }
+
+    public JsonEditor(String initialContent, Consumer<String> onChange, Path filePath, ResourceLocation resourceLocation) {
         this.content.set(initialContent);
         this.onChange = onChange;
-        defaultInterfaces.forEach(id -> {
-            EditorInterface iface = GLOBAL_INTERFACES.get(id);
-            if (iface != null) {
-                interfaces.put(id, iface);
+        this.filePath = filePath;
+        this.resourceLocation = resourceLocation;
+        
+        // Get interfaces through event system
+        if (resourceLocation != null && filePath != null) {
+            List<EditorInterface> eventInterfaces = new ArrayList<>();
+            EditorEvents.EDITOR_INTERFACES.invoker().onGetInterfaces(
+                new EditorEvents.EditorInterfaceData(resourceLocation, filePath.toString(), eventInterfaces)
+            );
+            
+            eventInterfaces.forEach(iface -> {
+                interfaces.put(iface.getId(), iface);
                 activeInterfaces.add(iface);
-            }
-        });
+            });
+        }
+        
         validateContent();
+        setupFileWatcher();
+    }
+
+    private void setupFileWatcher() {
+        if (filePath != null) {
+            try {
+                watchService = filePath.getFileSystem().newWatchService();
+                watchKey = filePath.getParent().register(watchService, StandardWatchEventKinds.ENTRY_MODIFY);
+                lastModified = Files.getLastModifiedTime(filePath).toMillis();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    boolean skipNext = false;
+
+    private void checkFileChanges() {
+        if (!watchFile || watchService == null) return;
+
+        try {
+            WatchKey key = watchService.poll();
+            if (key != null) {
+                for (WatchEvent<?> event : key.pollEvents()) {
+                    Path changed = (Path) event.context();
+                    if (filePath.getFileName().equals(changed)) {
+                        long newLastModified = Files.getLastModifiedTime(filePath).toMillis();
+                        if (newLastModified > lastModified) {
+                            if (skipNext) {
+                                skipNext = !skipNext;
+                                return;
+                            }
+                            lastModified = newLastModified;
+                            reloadFile();
+                            if (reloadOnChange) {
+                                onChange.accept(content.get());
+                            }
+                        }
+                    }
+                }
+                key.reset();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void reloadFile() {
+        if (filePath != null) {
+            try {
+                String newContent = Files.readString(filePath);
+                content.set(newContent);
+                validateContent();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void setReadOnly(boolean readOnly) {
+        this.readOnly = readOnly;
     }
 
     public static void registerGlobalInterface(EditorInterface editorInterface) {
@@ -97,13 +181,53 @@ public class JsonEditor implements MiapiEditor {
     public void render(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
         if (!show.get()) return;
 
+        // Check for file changes
+        checkFileChanges();
+
         ImGui.setNextWindowSize(800, 600, ImGuiCond.FirstUseEver);
         if (ImGui.begin("JSON Editor", show)) {
             float windowWidth = ImGui.getWindowWidth();
             float windowHeight = ImGui.getWindowHeight();
-            float buttonHeight = 50;
-            float contentHeight = windowHeight - buttonHeight - ImGui.getStyle().getWindowPaddingY() * 2;
+
+            // Toolbar at the top
+            if (ImGui.button("Save") && currentJson != null && !readOnly) {
+                save(content.get());
+                onChange.accept(content.get());
+            }
+            ImGui.sameLine();
+            if (ImGui.button("Format") && !readOnly) {
+                try {
+                    if (currentJson != null) {
+                        content.set(currentJson.toString());
+                        validateContent();
+                    }
+                } catch (Exception ignored) {
+                }
+            }
+            if (filePath != null) {
+                ImGui.sameLine();
+                if (ImGui.button("Reload")) {
+                    reloadFile();
+                }
+                ImGui.sameLine();
+                if (ImGui.checkbox("Watch File", watchFile)) {
+                    watchFile = !watchFile;
+                }
+                ImGui.sameLine();
+                if (ImGui.checkbox("Auto Reload", reloadOnChange)) {
+                    reloadOnChange = !reloadOnChange;
+                }
+            }
+            if (readOnly) {
+                ImGui.sameLine();
+                ImGui.textColored(1.0f, 0.7f, 0.0f, 1.0f, "Read Only");
+            }
+            float toolbarHeight = ImGui.getFrameHeightWithSpacing();  // Height for toolbar
+            String[] lines = content.get().split("\n", -1);
             float lineHeight = ImGui.getTextLineHeight();
+            float desiredHeight = lines.length * lineHeight + ImGui.getStyle().getWindowPaddingY() * 2;
+            float contentHeight = windowHeight - toolbarHeight - ImGui.getStyle().getWindowPaddingY() * 8;
+            ImGui.separator();
 
             // Calculate gutter width (for line numbers and error indicators)
             float gutterWidth = 40;  // Base width for line numbers
@@ -118,18 +242,16 @@ public class JsonEditor implements MiapiEditor {
 
             // Main editor container
             if (ImGui.beginChild("EditorContainer", editorWidth, contentHeight, true)) {
-                // Store scroll position to sync gutter and editor
-                float scrollY = ImGui.getScrollY();
-                int visibleLines = (int) (contentHeight / lineHeight);
+                if (ImGui.beginChild("EditorScrollContainer", editorWidth, desiredHeight + ImGui.getStyle().getWindowPaddingY() * 2, true)) {
+                    // Store scroll position to sync gutter and editor
+                    float scrollY = ImGui.getScrollY();
 
-                // Left gutter for line numbers and error indicators
-                ImGui.beginChild("Gutter", gutterWidth, contentHeight - ImGui.getStyle().getScrollbarSize(), false);
-                String[] lines = content.get().split("\n", -1);
-                float currentY = 0;
+                    // Left gutter for line numbers and error indicators
+                    ImGui.beginChild("Gutter", gutterWidth, desiredHeight, false);
+                    ImGui.setScrollY(ImGui.getScrollY());
+                    float currentY = 0;
 
-                for (int i = 0; i < lines.length; i++) {
-                    // Only render visible line numbers
-                    if (currentY >= scrollY - lineHeight && currentY <= scrollY + contentHeight) {
+                    for (int i = 0; i < lines.length; i++) {
                         ImGui.setCursorPosY(currentY);
 
                         // Check if line has error
@@ -150,46 +272,45 @@ public class JsonEditor implements MiapiEditor {
                             // Line number
                             ImGui.textDisabled("" + (i + 1));
                         }
+                        currentY += lineHeight;
                     }
-                    currentY += lineHeight;
-                }
-                ImGui.endChild();
+                    ImGui.endChild();
 
-                // Main editor
-                ImGui.sameLine();
-                ImGui.beginChild("MainEditor", mainEditorWidth, contentHeight - ImGui.getStyle().getScrollbarSize(), false);
+                    // Main editor
+                    ImGui.sameLine();
+                    ImGui.beginChild("MainEditor", mainEditorWidth, desiredHeight, false);
 
-                // Ensure both scroll positions stay in sync
-                ImGui.setScrollY(scrollY);
+                    // Ensure both scroll positions stay in sync
+                    ImGui.setScrollY(scrollY);
 
-                if (ImGui.inputTextMultiline("##content", content,
-                        mainEditorWidth - ImGui.getStyle().getWindowPaddingX(),
-                        contentHeight - ImGui.getStyle().getWindowPaddingY() * 2,
-                        ImGuiInputTextFlags.AllowTabInput)) {
-                    validateContent();
-                }
-                ImGui.endChild();
+                    // Update input flags for read-only mode
+                    int inputFlags = ImGuiInputTextFlags.AllowTabInput;
+                    if (readOnly) {
+                        inputFlags |= ImGuiInputTextFlags.ReadOnly;
+                    }
 
-                ImGui.endChild();
-            }
-
-            // Button row at bottom
-            ImGui.separator();
-            if (ImGui.button("Save") && currentJson != null) {
-                onChange.accept(content.get());
-            }
-            ImGui.sameLine();
-            if (ImGui.button("Format")) {
-                try {
-                    if (currentJson != null) {
-                        content.set(currentJson.toString());
+                    if (ImGui.inputTextMultiline("##content", content,
+                            mainEditorWidth - ImGui.getStyle().getWindowPaddingX(),
+                            desiredHeight,
+                            inputFlags)) {
                         validateContent();
                     }
-                } catch (Exception ignored) {
-                }
-            }
+                    ImGui.endChild();
 
+                    ImGui.endChild();
+                }
+                ImGui.endChild();
+            }
             ImGui.end();
+        }
+    }
+
+    public void save(String newContent) {
+        try {
+            skipNext = true;
+            Files.writeString(filePath, newContent);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -208,5 +329,16 @@ public class JsonEditor implements MiapiEditor {
     }
 
     private record ErrorSection(int line, EditorInterface.EditorError error) implements Section {
+    }
+
+    @Override
+    public void close() {
+        if (watchService != null) {
+            try {
+                watchService.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

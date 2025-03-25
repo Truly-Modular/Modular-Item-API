@@ -195,6 +195,9 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
         selectSlot(slot1);
         updateEditOptions();
         selectEditOption(op);
+        if (Minecraft.getInstance().player.containerMenu instanceof CraftingScreenHandler craftingScreenHandler) {
+            craftingScreenHandler.clearSlots();
+        }
     }
 
     public void maximizeView() {
@@ -214,7 +217,11 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
         selectSlot(slot1);
         updateEditOptions();
         selectEditOption(op);
+        if (Minecraft.getInstance().player.containerMenu instanceof CraftingScreenHandler craftingScreenHandler) {
+            craftingScreenHandler.clearSlots();
+        }
     }
+
 
     public ItemStack getItem() {
         return menu.inventory.getItem(0);

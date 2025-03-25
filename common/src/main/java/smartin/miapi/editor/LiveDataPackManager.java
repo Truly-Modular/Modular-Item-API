@@ -2,20 +2,22 @@ package smartin.miapi.editor;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import dev.architectury.event.EventResult;
-import net.fabricmc.loader.api.FabricLoader;
+import dev.architectury.platform.Platform;
 import net.minecraft.resources.ResourceLocation;
+import smartin.miapi.Miapi;
 import smartin.miapi.events.MiapiEvents;
+import smartin.miapi.modules.cache.CacheCommands;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
+import java.nio.file.*;
+import java.util.*;
 import java.util.stream.Stream;
 
-public class LiveDataPackManager {
+public class LiveDataPackManager implements AutoCloseable {
     private static final String RUNTIME_FOLDER = "miapi_runtime_datapacks";
     private static final String CONTEXT_FILE = "miapi-editor-context.json";
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
@@ -23,8 +25,14 @@ public class LiveDataPackManager {
 
     private final List<DataPackContext> loadedPacks = new ArrayList<>();
     private final File runtimeFolder;
+    private WatchService watchService;
+    private final Map<WatchKey, DataPackContext> watchKeys = new HashMap<>();
 
     public static void setup() {
+        MiapiEvents.PLAYER_TICK_END.register(player -> {
+            INSTANCE.checkAndValidateDatapacks();
+            return EventResult.pass();
+        });
         MiapiEvents.ADJUST_RAW_DATA.register(event -> {
             getInstance().processDataPacks(event);
             return EventResult.pass();
@@ -43,14 +51,89 @@ public class LiveDataPackManager {
         if (!runtimeFolder.exists()) {
             runtimeFolder.mkdirs();
         }
+        setupFileWatcher();
         scanForDataPacks();
     }
 
     private File getRuntimeFolder() {
-        return FabricLoader.getInstance().getGameDir().resolve(RUNTIME_FOLDER).toFile();
+        return Platform.getGameFolder().resolve(RUNTIME_FOLDER).toFile();
+    }
+
+    private void setupFileWatcher() {
+        try {
+            watchService = runtimeFolder.toPath().getFileSystem().newWatchService();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void watchDataPack(DataPackContext context) {
+        watchDataPack(context, new File(context.directory, context.dataPath));
+    }
+
+    public void watchDataPack(DataPackContext context, File dataDir) {
+        if (!context.watchFiles) return;
+
+        try {
+            if (dataDir.exists() && dataDir.isDirectory()) {
+                WatchKey key = dataDir.toPath().register(watchService,
+                        StandardWatchEventKinds.ENTRY_CREATE,
+                        StandardWatchEventKinds.ENTRY_MODIFY,
+                        StandardWatchEventKinds.ENTRY_DELETE);
+                watchKeys.put(key, context);
+                if (dataDir.isDirectory()) {
+                    Arrays.stream(dataDir.listFiles(File::isDirectory)).forEach(f -> {
+                        watchDataPack(context, f);
+                    });
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void unwatchDataPack(DataPackContext context) {
+        watchKeys.entrySet().removeIf(entry -> {
+            if (entry.getValue() == context) {
+                entry.getKey().cancel();
+                return true;
+            }
+            return false;
+        });
+    }
+
+    private boolean checkFileChanges() {
+        if (watchService == null) return false;
+        boolean changeOccured = false;
+        try {
+            WatchKey key = watchService.poll();
+            if (key != null) {
+                DataPackContext context = watchKeys.get(key);
+                if (context != null && context.watchFiles) {
+                    for (WatchEvent<?> event : key.pollEvents()) {
+                        Path changed = (Path) event.context();
+                        if (changed.toString().endsWith(".json")) {
+                            // Validate all files when any JSON file changes
+                            //context.validateAllFiles();
+                            changeOccured = true;
+                        } else {
+                        }
+                    }
+                    key.reset();
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return changeOccured;
     }
 
     public void scanForDataPacks() {
+        // Unwatch all existing packs
+        loadedPacks.forEach(this::unwatchDataPack);
+        watchKeys.clear();
+
         loadedPacks.clear();
         File[] directories = runtimeFolder.listFiles(File::isDirectory);
 
@@ -58,6 +141,7 @@ public class LiveDataPackManager {
             for (File dir : directories) {
                 DataPackContext context = loadOrCreateContext(dir);
                 loadedPacks.add(context);
+                watchDataPack(context);
             }
         }
     }
@@ -74,8 +158,10 @@ public class LiveDataPackManager {
                 context.author = author;
                 context.description = description;
                 context.enabled = enabled;
+                context.dataPath = "data";
                 saveContext(context);
                 loadedPacks.add(context);
+                watchDataPack(context);
                 return context;
             }
         }
@@ -84,6 +170,7 @@ public class LiveDataPackManager {
 
     public void deletePack(DataPackContext context) {
         try {
+            unwatchDataPack(context);
             deleteDirectory(context.directory);
             loadedPacks.remove(context);
         } catch (IOException e) {
@@ -114,6 +201,7 @@ public class LiveDataPackManager {
                 String json = Files.readString(contextFile.toPath());
                 context = GSON.fromJson(json, DataPackContext.class);
                 context.directory = directory;
+                context.repair();
             } catch (IOException e) {
                 e.printStackTrace();
                 context = createDefaultContext(directory);
@@ -133,6 +221,7 @@ public class LiveDataPackManager {
         context.author = "Unknown";
         context.description = "A MIAPI runtime datapack";
         context.enabled = true;
+        context.dataPath = "data";
         context.directory = directory;
         return context;
     }
@@ -149,9 +238,9 @@ public class LiveDataPackManager {
 
     private void processDataPacks(MiapiEvents.ReloadEventData event) {
         for (DataPackContext context : loadedPacks) {
-            if (!context.enabled) continue;
+            if (!context.enabled || !context.passedValidation) continue;
 
-            File dataDir = new File(context.directory, "data");
+            File dataDir = new File(context.directory, context.dataPath);
             if (!dataDir.exists() || !dataDir.isDirectory()) continue;
 
             try (Stream<Path> paths = Files.walk(dataDir.toPath())) {
@@ -174,6 +263,50 @@ public class LiveDataPackManager {
         }
     }
 
+    private void checkAndValidateDatapacks() {
+        if (!checkFileChanges()) {
+            return;
+        }
+
+        for (DataPackContext context : loadedPacks) {
+            if (!context.enabled) continue;
+            context.passedValidation = true;
+            File dataDir = new File(context.directory, context.dataPath);
+            if (!dataDir.exists() || !dataDir.isDirectory()) {
+                dataDir.mkdirs();
+                continue;
+            }
+
+            try (Stream<Path> paths = Files.walk(dataDir.toPath())) {
+                paths.filter(Files::isRegularFile)
+                        .filter(path -> path.toString().endsWith(".json"))
+                        .forEach(path -> {
+                            File file = path.toFile();
+                            String relativePath = dataDir.toPath().relativize(path).toString();
+
+                            // Only process valid files
+                            if (!context.isFileValid(relativePath, file)) {
+                                try {
+                                    String pathWithoutExt = relativePath.replace(".json", "").replace("\\", "/");
+                                    pathWithoutExt = pathWithoutExt.replaceFirst("/", ":");
+                                    ResourceLocation resourceLocation = Miapi.id(pathWithoutExt);
+                                    MiapiEditor.editors.add(new JsonEditor(Files.readString(file.toPath()), (f) -> {
+                                    }, path, resourceLocation));
+                                } catch (RuntimeException e) {
+                                    Miapi.LOGGER.warn("", e);
+                                } catch (IOException e) {
+                                    Miapi.LOGGER.warn("", e);
+                                }
+                                context.passedValidation = false;
+                            }
+                        });
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        CacheCommands.triggerServerReload();
+    }
+
     private ResourceLocation getResourceLocation(Path dataDir, Path filePath) {
         Path relativePath = dataDir.relativize(filePath);
         if (relativePath.getNameCount() < 2) return null;
@@ -191,12 +324,104 @@ public class LiveDataPackManager {
         return new ArrayList<>(loadedPacks);
     }
 
+    @Override
+    public void close() {
+        if (watchService != null) {
+            try {
+                watchService.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     public static class DataPackContext {
         public String name;
         public String id;
         public String author;
         public String description;
         public boolean enabled;
+        public String dataPath;
+        public boolean watchFiles = true;
         public transient File directory;
+        public transient boolean passedValidation = true;
+        public transient Map<String, ValidationCache> validatedFiles = new HashMap<>();
+
+        public void repair() {
+            if (dataPath == null) {
+                dataPath = "data";
+            }
+            if (validatedFiles == null) {
+                validatedFiles = new HashMap<>();
+            }
+        }
+
+        public boolean isFileValid(String relativePath, File file) {
+            ValidationCache cache = validatedFiles.get(relativePath);
+            if (cache == null || cache.lastModified != file.lastModified()) {
+                try {
+                    // Convert relative path to ResourceLocation
+                    // Remove .json extension and replace path separators with /
+                    String pathWithoutExt = relativePath.replace(".json", "").replace("\\", "/");
+                    pathWithoutExt = pathWithoutExt.replaceFirst("/", ":");
+                    ResourceLocation resourceLocation = Miapi.id(pathWithoutExt);
+
+                    // Get interfaces through event system
+                    List<EditorInterface> interfaces = new ArrayList<>();
+                    EditorEvents.EDITOR_INTERFACES.invoker().onGetInterfaces(
+                            new EditorEvents.EditorInterfaceData(resourceLocation, file.getPath(), interfaces)
+                    );
+
+                    // Read and parse the file content
+                    String content = Files.readString(file.toPath());
+                    JsonElement json = JsonParser.parseString(content);
+
+                    // Validate using all interfaces
+                    boolean isValid = true;
+                    for (EditorInterface iface : interfaces) {
+                        List<EditorInterface.EditorError> errors = iface.validateContent(json, content);
+                        // File is invalid if there are any errors (not just warnings)
+                        if (errors.stream().anyMatch(error -> error.severity() == EditorInterface.EditorError.ErrorSeverity.ERROR)) {
+                            isValid = false;
+                            break;
+                        }
+                        if (errors.stream().anyMatch(error -> error.severity() == EditorInterface.EditorError.ErrorSeverity.WARNING)) {
+                            isValid = false;
+                            break;
+                        }
+                    }
+
+                    // Cache the result
+                    long lastModified = Files.getLastModifiedTime(file.toPath()).toMillis();
+                    cache = new ValidationCache(lastModified, isValid);
+                    validatedFiles.put(relativePath, cache);
+                } catch (Exception e) {
+                    // If any error occurs during validation, consider the file invalid
+                    long lastModified = 0;
+                    try {
+                        lastModified = Files.getLastModifiedTime(file.toPath()).toMillis();
+                    } catch (IOException ex) {
+                        Miapi.LOGGER.warn("", ex);
+                    }
+                    cache = new ValidationCache(lastModified, false);
+                    validatedFiles.put(relativePath, cache);
+                }
+            }
+            return cache != null && cache.isValid;
+        }
+
+        private boolean validateFile(String relativePath, File file) {
+            try {
+                // Basic JSON validation
+                String content = Files.readString(file.toPath());
+                JsonParser.parseString(content);
+                return true;
+            } catch (Exception e) {
+                return false;
+            }
+        }
+    }
+
+    private record ValidationCache(long lastModified, boolean isValid) {
     }
 } 

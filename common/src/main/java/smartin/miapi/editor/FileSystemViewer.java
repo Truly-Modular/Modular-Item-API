@@ -6,6 +6,7 @@ import imgui.type.ImBoolean;
 import imgui.type.ImString;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.resources.ResourceLocation;
 import smartin.miapi.Miapi;
 
 import java.io.File;
@@ -157,16 +158,35 @@ public class FileSystemViewer implements MiapiEditor {
     }
 
     private void openJsonFile(File file) {
+        openJsonFile(file, changed);
+    }
+
+    public static void openJsonFile(File file, Consumer<File> onChange) {
         try {
             String content = Files.readString(file.toPath());
-            jsonEditor = new JsonEditor(content, (newContent) -> {
-                try {
-                    Files.writeString(file.toPath(), newContent);
-                    changed.accept(file);
-                } catch (IOException e) {
-                    e.printStackTrace();
+            ResourceLocation resourceLocation = null;
+            
+            // Try to determine the resource location from the file path
+            if (file.getPath().contains("/modules/")) {
+                String[] parts = file.getPath().split("/modules/");
+                if (parts.length > 1) {
+                    String modulePath = parts[1].replace(".json", "");
+                    resourceLocation = Miapi.id("miapi", "modules/" + modulePath);
                 }
-            }, List.of(Miapi.id("miapi", "json_syntax")));
+            } else if (file.getName().endsWith("_module.json")) {
+                String moduleName = file.getName().replace("_module.json", "");
+                resourceLocation = Miapi.id("miapi", "modules/" + moduleName);
+            }
+
+            JsonEditor jsonEditor = new JsonEditor(content, (newContent) -> {
+                onChange.accept(file);
+            }, file.toPath(), resourceLocation);
+
+            if (file.getName().endsWith(".java")) {
+                jsonEditor.setReadOnly(true);
+            }
+
+            MiapiEditor.editors.add(jsonEditor);
         } catch (IOException e) {
             e.printStackTrace();
         }

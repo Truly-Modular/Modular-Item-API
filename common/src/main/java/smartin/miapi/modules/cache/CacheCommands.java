@@ -87,6 +87,7 @@ public class CacheCommands {
         ReloadEvents.END.fireEvent(false, Miapi.server.registryAccess());
         ReloadEvents.reloadCounter = 0;
         Miapi.server.getPlayerList().getPlayers().forEach(ReloadEvents::triggerReloadOnClient);
+        MiapiEvents.POST_HOT_RELOAD.invoker().onReload();
     }
 
     static ArgumentType<String> getArgumentType() {

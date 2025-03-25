@@ -9,6 +9,7 @@ import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.GuiGraphics;
 import smartin.miapi.modules.cache.CacheCommands;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -28,6 +29,8 @@ public class LiveDataPackEditorManager implements MiapiEditor {
     private final ImString editId = new ImString(64);
     private final ImString editAuthor = new ImString(64);
     private final ImString editDescription = new ImString(256);
+    private final ImString editDataPath = new ImString(64);
+    private final ImBoolean editWatchFiles = new ImBoolean(true);
 
     static {
         ClientLoader.RENDER.add((guiGraphics, deltaTracker) -> new ArrayList<>(editors).forEach(miapiEditor -> miapiEditor.render(guiGraphics, deltaTracker)));
@@ -87,6 +90,17 @@ public class LiveDataPackEditorManager implements MiapiEditor {
                         if (ImGui.inputTextMultiline("Description", editDescription)) {
                             pack.description = editDescription.get();
                         }
+                        if (ImGui.inputText("Data Path", editDataPath)) {
+                            pack.dataPath = editDataPath.get();
+                        }
+                        if (ImGui.checkbox("Watch Files", editWatchFiles)) {
+                            pack.watchFiles = editWatchFiles.get();
+                            if (pack.watchFiles) {
+                                manager.watchDataPack(pack);
+                            } else {
+                                manager.unwatchDataPack(pack);
+                            }
+                        }
                         if (ImGui.checkbox("Enabled", pack.enabled)) {
                             pack.enabled = !pack.enabled;
                         }
@@ -103,6 +117,8 @@ public class LiveDataPackEditorManager implements MiapiEditor {
                         ImGui.text("ID: " + pack.id);
                         ImGui.text("Author: " + pack.author);
                         ImGui.text("Description: " + pack.description);
+                        ImGui.text("Data Path: " + pack.dataPath);
+                        ImGui.text("Watch Files: " + (pack.watchFiles ? "Yes" : "No"));
                         ImGui.text("Enabled: " + (pack.enabled ? "Yes" : "No"));
                         if (ImGui.button("Edit")) {
                             editingContext = pack;
@@ -110,6 +126,8 @@ public class LiveDataPackEditorManager implements MiapiEditor {
                             editId.set(pack.id);
                             editAuthor.set(pack.author);
                             editDescription.set(pack.description);
+                            editDataPath.set(pack.dataPath);
+                            editWatchFiles.set(pack.watchFiles);
                         }
                     }
 
@@ -118,7 +136,11 @@ public class LiveDataPackEditorManager implements MiapiEditor {
                         if (fileSystemViewer != null) {
                             ClientLoader.RENDER.remove(fileSystemViewer);
                         }
-                        fileSystemViewer = new FileSystemViewer(pack.directory, (file) -> {
+                        File dataDir = new File(pack.directory, pack.dataPath);
+                        if (!dataDir.exists()) {
+                            dataDir.mkdirs();
+                        }
+                        fileSystemViewer = new FileSystemViewer(dataDir, (file) -> {
                             reload();
                         });
                         MiapiEditor.editors.add(fileSystemViewer);

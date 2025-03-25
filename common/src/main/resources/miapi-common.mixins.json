@@ -32,7 +32,6 @@
         "LootTableAccessor",
         "LootTableMixin",
         "MiapiItemStackMixin",
-        "MinecraftAccessor",
         "MobMixin",
         "NamedAccessor",
         "NucleusMixin",
@@ -47,11 +46,12 @@
         "SmithingScreenHandlerAccessor",
         "SmithingTransformRecipeAccessor",
         "TagManagerMixin",
-        "TextureAtlasAccessor",
-        "TextureAtlasHolderAccessor",
         "ThrowablePotionItemAccessor"
     ],
     "client": [
+        "MinecraftAccessor",
+        "TextureAtlasAccessor",
+        "TextureAtlasHolderAccessor",
         "client.BuiltinModelItemRendererMixin",
         "client.ClientAdvancementManagerAccessor",
         "client.ClientPlayerEntityMixin",

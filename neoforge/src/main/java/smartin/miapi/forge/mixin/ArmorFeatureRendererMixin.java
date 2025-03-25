@@ -17,7 +17,6 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import smartin.miapi.Miapi;
 import smartin.miapi.client.atlas.ArmorModelManager;
 import smartin.miapi.forge.ForgeModel;
 import smartin.miapi.item.modular.VisualModularItem;
@@ -49,7 +48,6 @@ public abstract class ArmorFeatureRendererMixin<T extends LivingEntity, M extend
     @Inject(method = "renderArmorPiece", at = @At("HEAD"), cancellable = true)
     void miapi$renderArmorInject(PoseStack matrices, MultiBufferSource vertexConsumers, T entity, EquipmentSlot armorSlot, int light, A model, CallbackInfo ci) {
         ItemStack itemStack = entity.getItemBySlot(armorSlot);
-        Miapi.LOGGER.info("rendering armor callback " + armorSlot.getName());
         HumanoidArmorLayer renderer = (HumanoidArmorLayer) (Object) this;
         if (itemStack.getItem() instanceof VisualModularItem) {
             renderPieces(matrices, vertexConsumers, light, armorSlot, itemStack, entity, model, ((FeatureRendererAccessor) renderer).getContext());
