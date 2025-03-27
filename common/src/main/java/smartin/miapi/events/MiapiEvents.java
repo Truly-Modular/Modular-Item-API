@@ -84,6 +84,9 @@ public class MiapiEvents {
 
     public static class ReloadEventData {
         public Map<ResourceLocation, String> data = new HashMap<>();
+
+        public void setData(ResourceLocation id, String data) {
+        }
     }
 
     public interface PlayerEquip {

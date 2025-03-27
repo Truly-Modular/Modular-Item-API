@@ -63,7 +63,7 @@ public class LoreProperty extends CodecProperty<List<LoreProperty.Holder>> {
 
 
     public LoreProperty() {
-        super(Miapi.ToListOrSimple(CODEC));
+        super(Miapi.toListOrSimple(CODEC));
         property = this;
         loreSuppliers.add((ItemStack itemStack, List<Component> tooltip, Item.TooltipContext context, TooltipFlag tooltipType) -> {
             if (hasModularItemDescription(itemStack)) {

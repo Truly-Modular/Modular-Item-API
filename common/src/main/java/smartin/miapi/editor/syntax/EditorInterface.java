@@ -1,8 +1,9 @@
-package smartin.miapi.editor;
+package smartin.miapi.editor.syntax;
 
 import com.google.gson.JsonElement;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
+import smartin.miapi.modules.properties.util.EditorError;
 
 import java.util.List;
 import java.util.Map;
@@ -10,7 +11,8 @@ import java.util.Map;
 public interface EditorInterface {
     /**
      * Called when the content of the editor changes
-     * @param json The current JSON content, null if invalid
+     *
+     * @param json       The current JSON content, null if invalid
      * @param rawContent The raw text content
      * @return List of errors, empty if none
      */
@@ -18,6 +20,7 @@ public interface EditorInterface {
 
     /**
      * Get syntax highlighting for specific parts of the text
+     *
      * @param content The current text content
      * @return Map of character ranges to colors (RGBA format)
      */
@@ -29,18 +32,16 @@ public interface EditorInterface {
     ResourceLocation getId();
 
     /**
-     * Record for representing a range of text
+     * A List of Clickable Toolbar Buttons
      */
-    record TextRange(int start, int end) {}
+    default Map<String, Runnable> toolbarButtons() {
+        return Map.of();
+    }
 
     /**
-     * Record for representing an error in the editor
+     * Record for representing a range of text
      */
-    record EditorError(int line, String message, ErrorSeverity severity) {
-        public enum ErrorSeverity {
-            ERROR,
-            WARNING,
-            INFO
-        }
+    record TextRange(int start, int end) {
     }
-} 
+
+}

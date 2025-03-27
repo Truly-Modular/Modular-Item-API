@@ -25,7 +25,7 @@ public class CopyItemLoreProperty extends CodecProperty<List<Holder<Item>>> {
     public static CopyItemLoreProperty property;
 
     public CopyItemLoreProperty() {
-        super(Miapi.ToListOrSimple(BuiltInRegistries.ITEM.holderByNameCodec()));
+        super(Miapi.toListOrSimple(BuiltInRegistries.ITEM.holderByNameCodec()));
         property = this;
         LoreProperty.loreSuppliers.add((itemStack, tooltip, context, tooltipType) -> {
             getData(itemStack).ifPresent(list -> {

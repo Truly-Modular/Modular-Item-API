@@ -1,10 +1,14 @@
-package smartin.miapi.editor;
+package smartin.miapi.editor.syntax;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.minecraft.resources.ResourceLocation;
 import smartin.miapi.Miapi;
+import smartin.miapi.editor.MiapiEditor;
+import smartin.miapi.editor.registry.PropertyRegistryViewer;
+import smartin.miapi.modules.properties.util.EditorError;
 import smartin.miapi.modules.properties.util.ModuleProperty;
+import smartin.miapi.modules.properties.util.Validator;
 import smartin.miapi.registries.RegistryInventory;
 
 import java.util.ArrayList;
@@ -14,16 +18,14 @@ import java.util.Map;
 
 public class PropertyMapHighlighter implements EditorInterface {
     public static final ResourceLocation id = Miapi.id("miapi:property_map");
-    private final ResourceLocation modulePath;
-    private final boolean isClient;
+    private ResourceLocation modulePath;
 
     public PropertyMapHighlighter() {
-        this(Miapi.id("runtime_editor_property_checker"), true);
+        this(Miapi.id("runtime_editor_property_checker"));
     }
 
-    public PropertyMapHighlighter(ResourceLocation modulePath, boolean isClient) {
+    public PropertyMapHighlighter(ResourceLocation modulePath) {
         this.modulePath = modulePath;
-        this.isClient = isClient;
     }
 
     @Override
@@ -40,10 +42,23 @@ public class PropertyMapHighlighter implements EditorInterface {
             return errors;
         }
 
+        return getEditorErrors(rawContent, moduleJson);
+    }
+
+    public Map<String, Runnable> toolbarButtons() {
+        return Map.of("Property Registry", () -> {
+            PropertyRegistryViewer viewer = new PropertyRegistryViewer();
+            MiapiEditor.editors.add(viewer);
+        });
+    }
+
+    public static List<EditorError> getEditorErrors(String rawContent, JsonObject moduleJson) {
+        List<EditorError> errors = new ArrayList<>();
         Map<String, JsonElement> rawProperties = moduleJson.asMap();
         rawProperties.forEach((key, data) -> {
             int line = getLineNumber(rawContent, key);
-            ModuleProperty<?> property = RegistryInventory.moduleProperties.get(Miapi.id(key));
+            ResourceLocation id = Miapi.id(key);
+            ModuleProperty<?> property = RegistryInventory.moduleProperties.get(id);
 
             if (property == null) {
                 errors.add(new EditorError(
@@ -55,13 +70,17 @@ public class PropertyMapHighlighter implements EditorInterface {
             }
 
             try {
-                boolean valid = property.load(Miapi.id(key), data, isClient);
+                boolean valid = property.load(Miapi.id(key), data, true);
                 if (!valid) {
                     errors.add(new EditorError(
                             line,
                             "Property was not loaded '" + key + "' this is usually due to the property deactivating itself when requirements arent met like for compat properties.",
                             EditorError.ErrorSeverity.WARNING
                     ));
+                } else {
+                    if (property instanceof Validator validator) {
+                        errors.addAll(validator.validate(line, property.decode(data), true));
+                    }
                 }
             } catch (Exception e) {
                 errors.add(new EditorError(
@@ -81,7 +100,7 @@ public class PropertyMapHighlighter implements EditorInterface {
         return new HashMap<>();
     }
 
-    private int getLineNumber(String content, String searchText) {
+    private static int getLineNumber(String content, String searchText) {
         String[] lines = content.split("\n");
         for (int i = 0; i < lines.length; i++) {
             if (lines[i].contains("\"" + searchText + "\"")) {

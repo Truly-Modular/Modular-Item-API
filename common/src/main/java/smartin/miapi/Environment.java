@@ -8,7 +8,7 @@ import net.fabricmc.api.EnvType;
 public class Environment {
 
     /**
-     * This method returns if the current thread has access to Clientclasses
+     * This method returns if the current thread has access to Client classes
      * in most cases this will return true if a logical client is loaded
      */
     public static boolean isClient(){

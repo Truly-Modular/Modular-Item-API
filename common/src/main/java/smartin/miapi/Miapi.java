@@ -90,14 +90,14 @@ public class Miapi {
     public static MinecraftServer server;
     public static RegistryAccess registryAccess;
     /**
-     * idk, sometimes in networking bools seem to become 0 and 1, default codec cant deal with that,
+     * idk, sometimes in networking booleans seem to become 0 and 1, default codec cant deal with that,
      * this one can
      */
     public static Codec<Boolean> FIXED_BOOL_CODEC = Codec.withAlternative(
             Codec.BOOL,
             Codec.INT.xmap(i -> i == 1, b -> (b ? 0 : 1)));
 
-    public static <T> Codec<List<T>> ToListOrSimple(Codec<T> base) {
+    public static <T> Codec<List<T>> toListOrSimple(Codec<T> base) {
         return Codec.withAlternative(Codec.list(base), base, List::of);
     }
 
@@ -117,25 +117,6 @@ public class Miapi {
     };
 
     public static DynamicOps<Tag> BOOL_CORRECTED_OPS = new NbtOps() {
-        /*public <U> U convertTo(DynamicOps<U> ops, Tag tag) {
-            return switch (tag.getId()) {
-                case 0 -> ops.empty();
-                case 1 -> ops.createBoolean(((NumericTag) tag).getAsByte() == 1);
-                case 2 -> ops.createShort(((NumericTag) tag).getAsShort());
-                case 3 -> ops.createInt(((NumericTag) tag).getAsInt());
-                case 4 -> ops.createLong(((NumericTag) tag).getAsLong());
-                case 5 -> ops.createFloat(((NumericTag) tag).getAsFloat());
-                case 6 -> ops.createDouble(((NumericTag) tag).getAsDouble());
-                case 7 -> ops.createByteList(ByteBuffer.wrap(((ByteArrayTag) tag).getAsByteArray()));
-                case 8 -> ops.createString(tag.getAsString());
-                case 9 -> this.convertList(ops, tag);
-                case 10 -> this.convertMap(ops, tag);
-                case 11 -> ops.createIntList(Arrays.stream(((IntArrayTag) tag).getAsIntArray()));
-                case 12 -> ops.createLongList(Arrays.stream(((LongArrayTag) tag).getAsLongArray()));
-                default -> throw new IllegalStateException("Unknown tag type: " + String.valueOf(tag));
-            };
-         }
-             */
     };
 
     public static void init() {
@@ -219,15 +200,6 @@ public class Miapi {
             PoseCommands.register(serverCommandSourceCommandDispatcher);
             EditorCommands.register(serverCommandSourceCommandDispatcher);
         });
-
-        LifecycleEvent.SERVER_STARTED.register((minecraftServer -> {
-            if (MiapiConfig.INSTANCE.server.other.doubleReload && false) {
-                Miapi.LOGGER.info("Truly Modular will now go onto reload twice.");
-                Miapi.LOGGER.info("This is done because for compat reasons and because forge sometimes breaks badly");
-                Miapi.LOGGER.info("This can be turned off in Miapi`s config.json");
-                CacheCommands.triggerServerReload();
-            }
-        }));
         BlueprintManager.setup();
         LootHelper.setup();
         MiapiEvents.POST_HOT_RELOAD.register(() -> {

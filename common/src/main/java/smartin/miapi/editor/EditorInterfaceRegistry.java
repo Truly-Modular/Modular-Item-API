@@ -1,6 +1,8 @@
 package smartin.miapi.editor;
 
 import dev.architectury.event.EventResult;
+import smartin.miapi.editor.syntax.JsonSyntaxHighlighter;
+import smartin.miapi.editor.syntax.PropertyMapHighlighter;
 
 public class EditorInterfaceRegistry {
     public static void init() {
@@ -16,7 +18,7 @@ public class EditorInterfaceRegistry {
         EditorEvents.EDITOR_INTERFACES.register(event -> {
             if (event.resourceLocation != null &&
                 event.resourceLocation.getPath().startsWith("miapi/modules/")) {
-                event.interfaces.add(new PropertyMapHighlighter(event.resourceLocation, true));
+                event.interfaces.add(new PropertyMapHighlighter(event.resourceLocation));
             }
             return EventResult.pass();
         });

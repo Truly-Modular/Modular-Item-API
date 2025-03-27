@@ -12,15 +12,6 @@ public class AttributeRegistry {
             return;
         }
         init = true;
-
-        /*
-        EntityAttributeRegistry.register(() -> {
-            return null;
-        }, () -> {
-            return null;
-        });
-        
-         */
         //ATTRIBUTE
 
         // mining

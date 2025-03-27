@@ -3,6 +3,7 @@ package smartin.miapi.editor;
 import com.redpxnda.nucleus.event.PrioritizedEvent;
 import dev.architectury.event.EventResult;
 import net.minecraft.resources.ResourceLocation;
+import smartin.miapi.editor.syntax.EditorInterface;
 
 import java.util.List;
 

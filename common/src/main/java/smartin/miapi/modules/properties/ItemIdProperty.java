@@ -12,6 +12,7 @@ import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.util.CodecProperty;
 import smartin.miapi.modules.properties.util.CraftingProperty;
+import smartin.miapi.modules.properties.util.EditorError;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.registries.RegistryInventory;
 
@@ -46,6 +47,15 @@ public class ItemIdProperty extends CodecProperty<ResourceLocation> implements C
     public boolean shouldExecuteOnCraft(ModuleInstance module, ModuleInstance root, ItemStack stack, CraftAction action) {
         return true;
     }
+
+    @Override
+    public List<EditorError> validate(int line, ResourceLocation component, boolean isClient) {
+        if (!RegistryInventory.modularItems.contains(component)) {
+            return List.of(new EditorError(line, "Only pre-registered ItemIDs are allowed!", EditorError.ErrorSeverity.WARNING));
+        }
+        return List.of();
+    }
+
 
     public static ItemStack changeId(ItemStack itemStack) {
         ModuleInstance root = ItemModule.getModules(itemStack);

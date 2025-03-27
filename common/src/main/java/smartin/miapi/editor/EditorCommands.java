@@ -12,6 +12,8 @@ import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
+import smartin.miapi.editor.syntax.JsonSyntaxHighlighter;
+import smartin.miapi.editor.syntax.PropertyMapHighlighter;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
 
@@ -41,7 +43,7 @@ public class EditorCommands {
         EditorEvents.EDITOR_INTERFACES.register(event -> {
             if (event.resourceLocation != null &&
                 event.resourceLocation.getPath().startsWith("miapi/modules/")) {
-                event.interfaces.add(new PropertyMapHighlighter(event.resourceLocation, true));
+                event.interfaces.add(new PropertyMapHighlighter(event.resourceLocation));
             }
             return EventResult.pass();
         });

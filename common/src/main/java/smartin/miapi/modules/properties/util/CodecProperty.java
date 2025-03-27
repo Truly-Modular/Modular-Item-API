@@ -14,9 +14,13 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.RegistryOps;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import smartin.miapi.Miapi;
 import smartin.miapi.modules.ModuleInstance;
+import smartin.miapi.registries.RegistryInventory;
+
+import java.util.List;
 
 /**
  * Simple property template with loading and caching via codecs.
@@ -26,7 +30,7 @@ import smartin.miapi.modules.ModuleInstance;
  *
  * @param <T> The type of object to hold
  */
-public abstract class CodecProperty<T> implements ModuleProperty<T> {
+public abstract class CodecProperty<T> implements ModuleProperty<T>, Validator<T> {
     protected final Codec<T> codec;
     public static RegistryOps<JsonElement> ops = RegistryOps.create(
             JsonOps.INSTANCE,
@@ -41,6 +45,27 @@ public abstract class CodecProperty<T> implements ModuleProperty<T> {
                     Miapi.registryAccess);
         }
         return ops;
+    }
+
+    public boolean load(ResourceLocation id, JsonElement element, boolean isClient) throws Exception {
+        T decoded = decode(element);
+        for (EditorError editorError : validate(0, decoded, isClient)) {
+            if (editorError.severity() == EditorError.ErrorSeverity.INFO) {
+                Miapi.LOGGER.info(RegistryInventory.moduleProperties.findKey(this) + " from " + id + " : " + editorError.message());
+                Miapi.LOGGER.info("" + element);
+            } else if (editorError.severity() == EditorError.ErrorSeverity.WARNING) {
+                Miapi.LOGGER.warn(RegistryInventory.moduleProperties.findKey(this) + " from " + id + " : " + editorError.message());
+                Miapi.LOGGER.warn("" + element);
+            } else if (editorError.severity() == EditorError.ErrorSeverity.ERROR) {
+                Miapi.LOGGER.error(RegistryInventory.moduleProperties.findKey(this) + " from " + id + " : " + editorError.message());
+                Miapi.LOGGER.error("" + element);
+            }
+        }
+        return true;
+    }
+
+    public List<EditorError> validate(int line, T property, boolean isClient) {
+        return List.of();
     }
 
 

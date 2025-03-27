@@ -1,9 +1,10 @@
-package smartin.miapi.editor;
+package smartin.miapi.editor.syntax;
 
 import com.google.gson.JsonElement;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
+import smartin.miapi.modules.properties.util.EditorError;
 
 import java.util.*;
 import java.util.regex.Matcher;

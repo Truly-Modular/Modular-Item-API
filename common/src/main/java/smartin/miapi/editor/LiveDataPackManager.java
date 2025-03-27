@@ -8,7 +8,9 @@ import dev.architectury.event.EventResult;
 import dev.architectury.platform.Platform;
 import net.minecraft.resources.ResourceLocation;
 import smartin.miapi.Miapi;
+import smartin.miapi.editor.syntax.EditorInterface;
 import smartin.miapi.events.MiapiEvents;
+import smartin.miapi.modules.properties.util.EditorError;
 import smartin.miapi.modules.cache.CacheCommands;
 
 import java.io.File;
@@ -311,13 +313,12 @@ public class LiveDataPackManager implements AutoCloseable {
         Path relativePath = dataDir.relativize(filePath);
         if (relativePath.getNameCount() < 2) return null;
 
-        String namespace = relativePath.getName(0).toString();
+        String namespace = relativePath.getName(0).toString().toLowerCase();
         String path = relativePath.subpath(1, relativePath.getNameCount())
                 .toString()
-                .replace('\\', '/')
-                .replaceAll("\\.json$", "");
+                .replace('\\', '/').toLowerCase();
 
-        return ResourceLocation.parse(namespace + ":" + path);
+        return ResourceLocation.tryBuild(namespace, path);
     }
 
     public List<DataPackContext> getLoadedPacks() {
@@ -379,13 +380,13 @@ public class LiveDataPackManager implements AutoCloseable {
                     // Validate using all interfaces
                     boolean isValid = true;
                     for (EditorInterface iface : interfaces) {
-                        List<EditorInterface.EditorError> errors = iface.validateContent(json, content);
+                        List<EditorError> errors = iface.validateContent(json, content);
                         // File is invalid if there are any errors (not just warnings)
-                        if (errors.stream().anyMatch(error -> error.severity() == EditorInterface.EditorError.ErrorSeverity.ERROR)) {
+                        if (errors.stream().anyMatch(error -> error.severity() == EditorError.ErrorSeverity.ERROR)) {
                             isValid = false;
                             break;
                         }
-                        if (errors.stream().anyMatch(error -> error.severity() == EditorInterface.EditorError.ErrorSeverity.WARNING)) {
+                        if (errors.stream().anyMatch(error -> error.severity() == EditorError.ErrorSeverity.WARNING)) {
                             isValid = false;
                             break;
                         }

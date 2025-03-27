@@ -25,7 +25,7 @@ public class CopyItemOnHit extends CodecProperty<List<Holder<Item>>> {
     public static CopyItemOnHit property;
 
     public CopyItemOnHit() {
-        super(Miapi.ToListOrSimple(BuiltInRegistries.ITEM.holderByNameCodec()));
+        super(Miapi.toListOrSimple(BuiltInRegistries.ITEM.holderByNameCodec()));
         property = this;
         ModularAttackEvents.ATTACK_DAMAGE_BONUS.register((target, itemStack, baseDamage, damageSource, bonusDamage) -> {
             getData(itemStack).ifPresent(list -> {

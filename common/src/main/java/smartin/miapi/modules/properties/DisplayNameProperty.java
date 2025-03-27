@@ -5,27 +5,28 @@ import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import smartin.miapi.Miapi;
+import smartin.miapi.material.MaterialProperty;
+import smartin.miapi.material.base.Material;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.cache.ModularItemCache;
-import smartin.miapi.material.base.Material;
-import smartin.miapi.material.MaterialProperty;
 import smartin.miapi.modules.properties.util.CodecProperty;
+import smartin.miapi.modules.properties.util.EditorError;
 import smartin.miapi.modules.properties.util.MergeAble;
 import smartin.miapi.modules.properties.util.MergeType;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 /**
  * @header Display Name Property
  * @path /data_types/properties/display_name
- * @description_start
- * The DisplayNameProperty enables the customization of item display names based on module data. It retrieves the display name
+ * @description_start The DisplayNameProperty enables the customization of item display names based on module data. It retrieves the display name
  * by resolving it through module instances and materials. The display name can be dynamically generated using translation keys
  * and material-specific translations.
  * @description_end
  * @data display_name: A Text element representing the display name of the item.
- *
  * @see CodecProperty
  * @see Component
  * @see Material
@@ -45,6 +46,16 @@ public class DisplayNameProperty extends CodecProperty<Component> {
 
     public static Component getDisplayText(ItemStack stack) {
         return ModularItemCache.getVisualOnlyCache(stack, KEY.toString(), Component.empty());
+    }
+
+    @Override
+    public List<EditorError> validate(int line, Component component, boolean isClient) {
+        String regex = "^[a-z_]+(?:\\.[a-z_]+)+$";
+        String string = component.getString();
+        if (Pattern.matches(regex, string) && Component.translatable(string).getString().equals(string)) {
+            return List.of(new EditorError(line, "translation seems to be missing!", EditorError.ErrorSeverity.WARNING));
+        }
+        return List.of();
     }
 
     private static Component resolveDisplayText(ItemStack itemStack) {

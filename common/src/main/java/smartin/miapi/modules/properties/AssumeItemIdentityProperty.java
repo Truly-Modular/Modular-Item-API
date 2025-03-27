@@ -25,7 +25,7 @@ public class AssumeItemIdentityProperty extends CodecProperty<List<Holder<Item>>
     public static AssumeItemIdentityProperty property;
 
     public AssumeItemIdentityProperty() {
-        super(Miapi.ToListOrSimple(BuiltInRegistries.ITEM.holderByNameCodec()));
+        super(Miapi.toListOrSimple(BuiltInRegistries.ITEM.holderByNameCodec()));
         property = this;
     }
 

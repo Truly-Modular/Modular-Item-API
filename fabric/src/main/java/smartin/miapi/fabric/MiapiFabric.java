@@ -2,17 +2,14 @@ package smartin.miapi.fabric;
 
 import dev.architectury.platform.Platform;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.item.v1.EnchantmentEvents;
 import net.fabricmc.fabric.api.loot.v3.LootTableEvents;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.util.TriState;
-import net.fabricmc.fabric.impl.client.keybinding.KeyBindingRegistryImpl;
-import net.minecraft.core.Registry;
 import net.minecraft.server.packs.PackType;
-import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.entity.ai.attributes.RangedAttribute;
-import net.minecraft.world.level.storage.loot.LootTable;
 import smartin.miapi.Environment;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.MiapiClient;
@@ -37,7 +34,7 @@ public class MiapiFabric implements ModInitializer {
         if (Environment.isClient()) {
             MiapiClientFabric.setupClient();
         }
-        MiapiClient.KEY_BINDINGS.addCallback(KeyBindingRegistryImpl::registerKeyBinding);
+        MiapiClient.KEY_BINDINGS.addCallback(KeyBindingHelper::registerKeyBinding);
         EnchantmentEvents.ALLOW_ENCHANTING.register((enchantment, target, enchantingContext) -> {
             if (
                     ModularItem.isModularItem(target) &&

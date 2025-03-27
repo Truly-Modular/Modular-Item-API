@@ -19,17 +19,17 @@ public class LiveDataPackEditorManager implements MiapiEditor {
     private FileSystemViewer fileSystemViewer;
     private final ImBoolean show = new ImBoolean(true);
     private final ImBoolean showCreateWindow = new ImBoolean(false);
-    private final ImString newPackName = new ImString(64);
-    private final ImString newPackId = new ImString(64);
-    private final ImString newPackAuthor = new ImString(64);
-    private final ImString newPackDescription = new ImString(256);
+    private final ImString newPackName = new ImString(256);
+    private final ImString newPackId = new ImString(256);
+    private final ImString newPackAuthor = new ImString(256);
+    private final ImString newPackDescription = new ImString(1024);
     private final ImBoolean newPackEnabled = new ImBoolean(true);
     private LiveDataPackManager.DataPackContext editingContext;
-    private final ImString editName = new ImString(64);
-    private final ImString editId = new ImString(64);
-    private final ImString editAuthor = new ImString(64);
+    private final ImString editName = new ImString(256);
+    private final ImString editId = new ImString(256);
+    private final ImString editAuthor = new ImString(256);
     private final ImString editDescription = new ImString(256);
-    private final ImString editDataPath = new ImString(64);
+    private final ImString editDataPath = new ImString(1024);
     private final ImBoolean editWatchFiles = new ImBoolean(true);
 
     static {
@@ -53,7 +53,7 @@ public class LiveDataPackEditorManager implements MiapiEditor {
         if (!show.get()) return;
 
         ImGui.setNextWindowSize(400, 600, ImGuiCond.FirstUseEver);
-        if (ImGui.begin("DataPack Manager", show)) {
+        if (ImGui.begin("LivePack Manager", show)) {
             // Top button row
             if (ImGui.button("Create New Pack")) {
                 showCreateWindow.set(true);

@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public class FileSystemViewer implements MiapiEditor {
@@ -42,7 +43,9 @@ public class FileSystemViewer implements MiapiEditor {
         File[] files = rootDirectory.listFiles();
         if (files != null) {
             for (File file : files) {
-                rootNodes.add(new FileNode(file, this::openJsonFile));
+                rootNodes.add(new FileNode(file, file.getName(), (f, node) -> {
+                    openJsonFile(f, node.relativePath);
+                }));
             }
         }
         rootNodes.sort((a, b) -> {
@@ -93,6 +96,7 @@ public class FileSystemViewer implements MiapiEditor {
         ImGui.setNextWindowSize(800, 600, ImGuiCond.FirstUseEver);
         if (ImGui.begin("File System Viewer", show)) {
             // Add buttons at the top
+            /*
             if (ImGui.button("New Folder")) {
                 showNewFolderPopup.set(true);
                 newFolderName.clear();
@@ -102,6 +106,7 @@ public class FileSystemViewer implements MiapiEditor {
                 showNewFilePopup.set(true);
                 newFileName.clear();
             }
+             */
 
             ImGui.separator();
 
@@ -157,26 +162,16 @@ public class FileSystemViewer implements MiapiEditor {
         }
     }
 
-    private void openJsonFile(File file) {
-        openJsonFile(file, changed);
+    private void openJsonFile(File file, String relativePath) {
+        openJsonFile(file, relativePath, changed);
     }
 
-    public static void openJsonFile(File file, Consumer<File> onChange) {
+    public static void openJsonFile(File file, String relativePath, Consumer<File> onChange) {
         try {
             String content = Files.readString(file.toPath());
-            ResourceLocation resourceLocation = null;
-            
-            // Try to determine the resource location from the file path
-            if (file.getPath().contains("/modules/")) {
-                String[] parts = file.getPath().split("/modules/");
-                if (parts.length > 1) {
-                    String modulePath = parts[1].replace(".json", "");
-                    resourceLocation = Miapi.id("miapi", "modules/" + modulePath);
-                }
-            } else if (file.getName().endsWith("_module.json")) {
-                String moduleName = file.getName().replace("_module.json", "");
-                resourceLocation = Miapi.id("miapi", "modules/" + moduleName);
-            }
+            String pathWithoutExt = relativePath.replace(".json", "").replace("\\", "/");
+            pathWithoutExt = pathWithoutExt.replaceFirst("/", ":");
+            ResourceLocation resourceLocation = Miapi.id(pathWithoutExt);
 
             JsonEditor jsonEditor = new JsonEditor(content, (newContent) -> {
                 onChange.accept(file);
@@ -196,15 +191,17 @@ public class FileSystemViewer implements MiapiEditor {
         private final File file;
         private final String name;
         private final boolean isDirectory;
-        private final Consumer<File> onFileClick;
+        private final BiConsumer<File, FileNode> onFileClick;
         private final List<FileNode> children = new ArrayList<>();
         private boolean isExpanded = false;
+        private String relativePath;
 
-        public FileNode(File file, Consumer<File> onFileClick) {
+        public FileNode(File file, String relativePath, BiConsumer<File, FileNode> onFileClick) {
             this.file = file;
             this.name = file.getName();
             this.isDirectory = file.isDirectory();
             this.onFileClick = onFileClick;
+            this.relativePath = relativePath;
             if (isDirectory) {
                 loadChildren();
             }
@@ -214,7 +211,7 @@ public class FileSystemViewer implements MiapiEditor {
             File[] files = file.listFiles();
             if (files != null) {
                 for (File childFile : files) {
-                    children.add(new FileNode(childFile, onFileClick));
+                    children.add(new FileNode(childFile, relativePath + "/" + childFile.getName(), onFileClick));
                 }
                 children.sort((a, b) -> {
                     if (a.isDirectory && !b.isDirectory) return -1;
@@ -238,7 +235,7 @@ public class FileSystemViewer implements MiapiEditor {
             } else {
                 if (ImGui.treeNodeEx(name)) {
                     if (ImGui.isItemClicked() && name.endsWith(".json")) {
-                        onFileClick.accept(file);
+                        onFileClick.accept(file, this);
                     }
                     ImGui.treePop();
                 }

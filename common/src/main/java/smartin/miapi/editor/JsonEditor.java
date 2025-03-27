@@ -11,6 +11,8 @@ import imgui.type.ImString;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
+import smartin.miapi.editor.syntax.EditorInterface;
+import smartin.miapi.modules.properties.util.EditorError;
 
 import java.io.IOException;
 import java.nio.file.*;
@@ -24,7 +26,7 @@ public class JsonEditor implements MiapiEditor {
     private JsonElement currentJson;
     private final Map<ResourceLocation, EditorInterface> interfaces = new HashMap<>();
     private final List<EditorInterface> activeInterfaces = new ArrayList<>();
-    private final List<EditorInterface.EditorError> currentErrors = new ArrayList<>();
+    private final List<EditorError> currentErrors = new ArrayList<>();
     private static final Map<ResourceLocation, EditorInterface> GLOBAL_INTERFACES = new HashMap<>();
     public static int padding = 2;
     public boolean showErrors = false;
@@ -155,10 +157,10 @@ public class JsonEditor implements MiapiEditor {
             }
         } catch (Exception e) {
             currentJson = null;
-            currentErrors.add(new EditorInterface.EditorError(
+            currentErrors.add(new EditorError(
                     getLineNumber(content.get(), e.getMessage()),
                     e.getMessage(),
-                    EditorInterface.EditorError.ErrorSeverity.ERROR
+                    EditorError.ErrorSeverity.ERROR
             ));
         }
     }
@@ -222,6 +224,18 @@ public class JsonEditor implements MiapiEditor {
                 ImGui.sameLine();
                 ImGui.textColored(1.0f, 0.7f, 0.0f, 1.0f, "Read Only");
             }
+
+            // Add toolbar buttons from interfaces
+            for (EditorInterface iface : activeInterfaces) {
+                Map<String, Runnable> buttons = iface.toolbarButtons();
+                for (Map.Entry<String, Runnable> button : buttons.entrySet()) {
+                    ImGui.sameLine();
+                    if (ImGui.button(button.getKey())) {
+                        button.getValue().run();
+                    }
+                }
+            }
+
             float toolbarHeight = ImGui.getFrameHeightWithSpacing();  // Height for toolbar
             String[] lines = content.get().split("\n", -1);
             float lineHeight = ImGui.getTextLineHeight();
@@ -235,8 +249,8 @@ public class JsonEditor implements MiapiEditor {
             float mainEditorWidth = editorWidth - gutterWidth;
 
             // Create map of line numbers to errors for quick lookup
-            Map<Integer, EditorInterface.EditorError> errorsByLine = new HashMap<>();
-            for (EditorInterface.EditorError error : currentErrors) {
+            Map<Integer, EditorError> errorsByLine = new HashMap<>();
+            for (EditorError error : currentErrors) {
                 errorsByLine.put(error.line(), error);
             }
 
@@ -255,7 +269,7 @@ public class JsonEditor implements MiapiEditor {
                         ImGui.setCursorPosY(currentY);
 
                         // Check if line has error
-                        EditorInterface.EditorError error = errorsByLine.get(i + 1);
+                        EditorError error = errorsByLine.get(i + 1);
                         if (error != null) {
                             float[] color = getErrorColor(error.severity());
                             ImGui.pushStyleColor(ImGuiCol.Text, color[0], color[1], color[2], 1.0f);
@@ -314,7 +328,7 @@ public class JsonEditor implements MiapiEditor {
         }
     }
 
-    private float[] getErrorColor(EditorInterface.EditorError.ErrorSeverity severity) {
+    private float[] getErrorColor(EditorError.ErrorSeverity severity) {
         return switch (severity) {
             case ERROR -> new float[]{1.0f, 0.0f, 0.0f, 1.0f};
             case WARNING -> new float[]{1.0f, 0.8f, 0.0f, 1.0f};
@@ -328,7 +342,7 @@ public class JsonEditor implements MiapiEditor {
     private record ContentSection(int start, int end, String[] lines) implements Section {
     }
 
-    private record ErrorSection(int line, EditorInterface.EditorError error) implements Section {
+    private record ErrorSection(int line, EditorError error) implements Section {
     }
 
     @Override
