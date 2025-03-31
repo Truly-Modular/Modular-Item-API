@@ -20,7 +20,7 @@ import java.util.function.Supplier;
 
 /**
  * Edits allow you to edit a Module on an Itemstack.
- * EditOptions need to be registered at {@link RegistryInventory#editOptions}
+ * EditOptions need to be registered at {@link RegistryInventory#EDIT_OPTION_MIAPI_REGISTRY}
  */
 public interface EditOption {
     /**

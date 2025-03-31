@@ -114,7 +114,7 @@ public class MaterialSmithingRecipe implements SmithingRecipe {
             instance.allSubModules().forEach(module -> {
                 Material material = MaterialProperty.getMaterial(module);
                 if (material != null && material.getID().equals(startMaterial)) {
-                    MaterialProperty.setMaterial(module, MaterialProperty.materials.get(resultMaterial));
+                    MaterialProperty.setMaterial(module, MaterialProperty.MATERIAL_REGISTRY.get(resultMaterial));
                 }
             });
             instance.writeToItem(old);

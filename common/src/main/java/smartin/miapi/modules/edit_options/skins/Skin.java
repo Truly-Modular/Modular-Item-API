@@ -4,18 +4,18 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.mojang.serialization.JsonOps;
+import io.netty.handler.codec.DecoderException;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.util.FastColor;
 import org.jetbrains.annotations.Nullable;
-import smartin.miapi.Environment;
 import smartin.miapi.Miapi;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
+import smartin.miapi.modules.PropertyHolder;
 import smartin.miapi.modules.conditions.ConditionManager;
 import smartin.miapi.modules.conditions.ModuleCondition;
 import smartin.miapi.modules.properties.TagProperty;
-import smartin.miapi.modules.synergies.SynergyManager;
 import smartin.miapi.registries.RegistryInventory;
 
 import java.util.ArrayList;
@@ -28,7 +28,7 @@ public class Skin {
     public String modID;
     public ItemModule module;
     public ModuleCondition condition;
-    public SynergyManager.PropertyHolder propertyHolder;
+    public PropertyHolder propertyHolder;
     public TextureOptions textureOptions = new TextureOptions(Miapi.id("textures/gui/skin/skin_button.png"), 100, 16, 3, FastColor.ARGB32.color(255, 255, 255, 255), 1, false);
     @Nullable
     public Component hoverDescription;
@@ -42,7 +42,7 @@ public class Skin {
             skin.module = itemModule;
             skin.condition = ConditionManager.get(jsonObject.get("condition"));
             skin.path = jsonObject.get("path").getAsString();
-            skin.propertyHolder = SynergyManager.getFrom(jsonObject, Environment.isClient(), Miapi.id(skin.path));
+            skin.propertyHolder = PropertyHolder.MAP_CODEC.codec().decode(JsonOps.INSTANCE, jsonObject).getOrThrow((s) -> new DecoderException("Failed to decode skin !" + s)).getFirst();
             skin.textureOptions = TextureOptions.fromJson(jsonObject.get("texture"), Miapi.id("textures/gui/skin/skin_button.png"), 100, 16, 3, FastColor.ARGB32.color(255, 255, 255, 255));
             if (jsonObject.has("hover")) {
                 skin.hoverDescription = ComponentSerialization.CODEC.parse(
@@ -68,7 +68,7 @@ public class Skin {
     }
 
     public static void writeSkin(ModuleInstance moduleInstance, String skinKey) {
-        moduleInstance.moduleData.put(Miapi.id("skin"),new JsonPrimitive(skinKey));
+        moduleInstance.moduleData.put(Miapi.id("skin"), new JsonPrimitive(skinKey));
     }
 
     public static List<ItemModule> getModules(JsonElement element) {
@@ -83,13 +83,13 @@ public class Skin {
             JsonElement moduleElement = jsonObject.get("module");
             if (moduleElement.isJsonArray()) {
                 jsonObject.get("module").getAsJsonArray().asList().forEach(jsonElement -> {
-                    ItemModule itemModule = RegistryInventory.modules.get(jsonElement.getAsString());
+                    ItemModule itemModule = RegistryInventory.ITEM_MODULE_MIAPI_REGISTRY.get(jsonElement.getAsString());
                     if (itemModule != null) {
                         modules.add(itemModule);
                     }
                 });
             } else {
-                ItemModule itemModule = RegistryInventory.modules.get(jsonObject.get("module").getAsString());
+                ItemModule itemModule = RegistryInventory.ITEM_MODULE_MIAPI_REGISTRY.get(jsonObject.get("module").getAsString());
                 if (itemModule != null) {
                     modules.add(itemModule);
                 }

@@ -185,8 +185,8 @@ public class HoverMaterialList extends InteractAbleWidget {
 
     public static Component getTranslation(String materialOrGroupKey) {
         ResourceLocation id = Miapi.id(materialOrGroupKey);
-        if (MaterialProperty.materials.containsKey(id)) {
-            Material material = MaterialProperty.materials.get(id);
+        if (MaterialProperty.MATERIAL_REGISTRY.containsKey(id)) {
+            Material material = MaterialProperty.MATERIAL_REGISTRY.get(id);
             return material.getTranslation();
         }
         Component testTranslation = Component.translatable("miapi.material_group." + materialOrGroupKey);

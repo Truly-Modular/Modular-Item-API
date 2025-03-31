@@ -79,8 +79,8 @@ public class LoreProperty extends CodecProperty<List<LoreProperty.Holder>> {
                     recipeManager.getAllRecipesFor(RecipeType.SMITHING).forEach(recipeHolder -> {
                         if (recipeHolder.value() instanceof MaterialSmithingRecipe smithingRecipe) {
                             List<Component> list = smithingTemplate.computeIfAbsent(smithingRecipe.smithingTemplate.getItems()[0].getItem(), (i) -> new ArrayList<>());
-                            Material ingredient = MaterialProperty.materials.get(smithingRecipe.startMaterial);
-                            Material target = MaterialProperty.materials.get(smithingRecipe.resultMaterial);
+                            Material ingredient = MaterialProperty.MATERIAL_REGISTRY.get(smithingRecipe.startMaterial);
+                            Material target = MaterialProperty.MATERIAL_REGISTRY.get(smithingRecipe.resultMaterial);
                             if (ingredient != null && target != null) {
                                 Component materialDescription = Component.translatable("miapi.material_template.smithing", ingredient.getTranslation().getString(), target.getTranslation().getString()).withStyle(ChatFormatting.GRAY);
                                 list.add(materialDescription);

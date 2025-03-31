@@ -56,7 +56,7 @@ public class TagProperty extends CodecProperty<List<String>> {
 
     public static List<ItemModule> getModulesWithTag(String tag) {
         List<ItemModule> modules = new ArrayList<>();
-        RegistryInventory.modules.getFlatMap().forEach((key, module) -> {
+        RegistryInventory.ITEM_MODULE_MIAPI_REGISTRY.getFlatMap().forEach((key, module) -> {
             if (getTags(module).contains(tag)) modules.add(module);
         });
         return modules;

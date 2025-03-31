@@ -5,15 +5,15 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
-import smartin.miapi.material.base.Material;
-import smartin.miapi.network.Networking;
-
-import java.util.List;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
+import smartin.miapi.material.base.Material;
+import smartin.miapi.network.Networking;
+
+import java.util.List;
 
 /**
  * A command related to materials- used to fetch debug data of active materials
@@ -81,6 +81,6 @@ public class MaterialCommand {
     };
 
     private static List<String> getMaterialOptions() {
-        return MaterialProperty.materials.values().stream().map(Material::getStringID).toList();
+        return MaterialProperty.MATERIAL_REGISTRY.getFlatMap().values().stream().map(Material::getStringID).toList();
     }
 }

@@ -1,234 +1,111 @@
 package smartin.miapi.modules.synergies;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.resources.ResourceLocation;
-import org.jetbrains.annotations.Nullable;
-import smartin.miapi.Environment;
+import org.apache.commons.codec.DecoderException;
 import smartin.miapi.Miapi;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.item.modular.PropertyResolver;
 import smartin.miapi.material.MaterialProperty;
 import smartin.miapi.material.base.Material;
-import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.ModuleInstance;
+import smartin.miapi.modules.PropertyHolder;
 import smartin.miapi.modules.conditions.ConditionManager;
 import smartin.miapi.modules.conditions.ModuleCondition;
 import smartin.miapi.modules.properties.TagProperty;
-import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
-import smartin.miapi.registries.RegistryInventory;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class SynergyManager {
-    public static Map<ResourceLocation, List<Synergy>> moduleSynergies = new ConcurrentHashMap<>();
-    public static Map<ResourceLocation, List<Synergy>> materialSynergies = new ConcurrentHashMap<>();
+    public static final Map<ResourceLocation, MapCodec<? extends Synergy>> SYNERGY_TYPE_REGISTRY = new ConcurrentHashMap<>();
+    protected static final Map<ResourceLocation, List<Synergy>> moduleSynergies = new ConcurrentHashMap<>();
+    protected static final Map<ResourceLocation, List<Synergy>> materialSynergies = new ConcurrentHashMap<>();
+    protected static final Map<String, List<Synergy>> tagSynergies = new ConcurrentHashMap<>();
+    public static final Codec<Synergy> SYNERGY_CODEC = Miapi.ID_CODEC.dispatch(Synergy::getType, SynergyManager::getType);
 
     public static void setup() {
+        SYNERGY_TYPE_REGISTRY.put(Miapi.id("module"), ModuleSynergy.CODEC);
+        SYNERGY_TYPE_REGISTRY.put(Miapi.id("material"), MaterialSynergy.CODEC);
+        SYNERGY_TYPE_REGISTRY.put(Miapi.id("tag"), TagSynergy.CODEC);
         PropertyResolver.register("synergies", (moduleInstance, oldMap) -> {
             if (moduleInstance != null) {
-                List<Synergy> synergies = moduleSynergies.get(moduleInstance.module.id());
+                var synergies = moduleSynergies.get(moduleInstance.module.id());
                 if (synergies != null) {
                     for (Synergy synergy : synergies) {
-                        if (synergy.condition.isAllowed(ConditionManager.moduleContext(moduleInstance, oldMap))) {
-                            oldMap = synergy.holder.applyHolder(oldMap);
+                        oldMap = synergy.apply(moduleInstance, oldMap);
+                    }
+                }
+                for (String tag : TagProperty.getTags(moduleInstance)) {
+                    var tagSynergy = tagSynergies.get(tag);
+                    if (tagSynergy != null) {
+                        for (Synergy synergy : tagSynergy) {
+                            oldMap = synergy.apply(moduleInstance, oldMap);
                         }
                     }
                 }
-            }
-            Material material = MaterialProperty.getMaterial(oldMap);
-            if (material != null) {
-                List<Synergy> synergies = materialSynergies.get(material.getID());
-                if (synergies != null) {
-                    for (Synergy synergy : synergies) {
-                        if (synergy.condition.isAllowed(ConditionManager.moduleContext(moduleInstance, oldMap))) {
-                            oldMap = synergy.holder.applyHolder(oldMap);
+                Material material = MaterialProperty.getMaterial(moduleInstance);
+                if (material != null) {
+                    var materialSynergy = materialSynergies.get(material.getID());
+                    if (materialSynergy != null) {
+                        for (Synergy synergy : materialSynergy) {
+                            oldMap = synergy.apply(moduleInstance, oldMap);
                         }
                     }
                 }
             }
             return oldMap;
         });
-        ReloadEvents.END.subscribe(((isClient, registryAccess) -> {
-            int size = 0;
-            for (List<Synergy> synergies : moduleSynergies.values()) {
-                size += synergies.size();
+
+        ReloadEvents.END.subscribe((isClient, registryAccess) -> {
+            int totalSynergies = moduleSynergies.values().stream()
+                                         .mapToInt(List::size)
+                                         .sum() + materialSynergies.values().stream()
+                                         .mapToInt(List::size)
+                                         .sum() + tagSynergies.values().stream()
+                                         .mapToInt(List::size)
+                                         .sum();
+            Miapi.LOGGER.info("Loaded " + totalSynergies + " Synergies");
+        });
+    }
+
+    public static MapCodec<? extends Synergy> getType(ResourceLocation id) {
+        var codec = SYNERGY_TYPE_REGISTRY.get(id);
+        if (codec == null) {
+            try {
+                throw new DecoderException("Synergy Type " + id + " does not exist!");
+            } catch (DecoderException e) {
+                throw new RuntimeException(e);
             }
-            Miapi.LOGGER.info("Loaded " + size + " Synergies");
-        }));
+        }
+        return codec;
     }
 
-    public static void load(String data, ResourceLocation path) {
-        JsonObject element = Miapi.gson.fromJson(data, JsonObject.class);
-        element.getAsJsonObject().entrySet().forEach((entry) -> {
-            if (element.has("type")) {
-                String type = element.get("type").getAsString();
-                if (type.equals("tag")) {
-                    String tagKey = entry.getKey();
-                    TagProperty.getModulesWithTag(tagKey).forEach(itemModule -> {
-                        loadSynergy(itemModule, entry.getValue().getAsJsonObject(), path);
-                    });
-                }
-                if (type.equals("material")) {
-                    String tagKey = entry.getKey();
-                    Material material = MaterialProperty.materials.get(tagKey);
-                    if (material != null) {
-                        loadSynergy(material, entry.getValue().getAsJsonObject(), path);
-                    }
-                }
-                if (type.equals("all")) {
-                    if (entry.getValue().isJsonObject()) {
-                        RegistryInventory.modules.getFlatMap().forEach((id, module) -> {
-                            loadSynergy(module, entry.getValue().getAsJsonObject(), path);
-                        });
-                    }
-                }
-            } else {
-                ItemModule property = RegistryInventory.modules.get(entry.getKey());
-                JsonObject entryData = entry.getValue().getAsJsonObject();
-                if (property == null) {
-                    Miapi.LOGGER.info("Module doesn't exist for synergy " + path + " " + entry.getKey());
-                } else {
-                    loadSynergy(property, entryData, path);
-                }
+    public static void clear() {
+        moduleSynergies.clear();
+        materialSynergies.clear();
+        tagSynergies.clear();
+    }
+
+    public abstract static class Synergy {
+
+        protected ModuleCondition condition;
+        protected PropertyHolder holder;
+        protected ResourceLocation id;
+
+        protected abstract ResourceLocation getType();
+
+        public abstract void register();
+
+        public Map<ModuleProperty<?>, Object> apply(ModuleInstance moduleInstance, Map<ModuleProperty<?>, Object> properties) {
+            if (condition.isAllowed(ConditionManager.moduleContext(moduleInstance, properties))) {
+                return holder.applyHolder(properties);
             }
-        });
-    }
-
-    public static void loadSynergy(ItemModule itemModule, JsonObject entryData, ResourceLocation id) {
-        if (itemModule == null) {
-            Miapi.LOGGER.warn("ItemModule is null in synergy load ? " + id);
-            return;
-        }
-        Synergy synergy = new Synergy();
-        synergy.condition = ConditionManager.get(entryData.get("condition"));
-        List<Synergy> synergies = moduleSynergies.computeIfAbsent(itemModule.id(), (module) -> {
-            return new ArrayList<>();
-        });
-        synergies.add(synergy);
-        synergy.id = id;
-        synergy.holder = readFromObject(entryData, Environment.isClient(), synergy.id);
-    }
-
-    public static void loadSynergy(Material material, JsonObject entryData, ResourceLocation id) {
-        if (material == null) {
-            Miapi.LOGGER.warn("ItemModule is null? Synergy was not loaded" + id);
-            return;
-        }
-        Synergy synergy = new Synergy();
-        synergy.condition = ConditionManager.get(entryData.get("condition"));
-        List<Synergy> synergies = materialSynergies.computeIfAbsent(material.getID(), (module) -> {
-            return new ArrayList<>();
-        });
-        synergies.add(synergy);
-        synergy.id = id;
-        synergy.holder = readFromObject(entryData, Environment.isClient(), synergy.id);
-    }
-
-    public static PropertyHolder getFrom(JsonElement element, boolean isClient, ResourceLocation context) {
-        return readFromObject(element, isClient, context);
-    }
-
-    public static PropertyHolder readFromObject(JsonElement jsonElement, boolean isClient, ResourceLocation source) {
-        JsonObject entryData = jsonElement.getAsJsonObject();
-        PropertyHolder propertyHolder = new PropertyHolder();
-        JsonElement replaceProperty = entryData.get("replace");
-        if (entryData.has("properties")) {
-            replaceProperty = entryData.get("properties");
-            Miapi.LOGGER.warn("The raw use of the Field `properties` should be replaced with the field `replace` in " + source);
-        }
-        propertyHolder.replace = getProperties(replaceProperty, isClient, source, "replace");
-        propertyHolder.merge = getProperties(entryData.get("merge"), isClient, source, "merge");
-        propertyHolder.remove = getRemoveProperties(entryData.get("remove"), source, "remove");
-        return propertyHolder;
-    }
-
-    public static class Synergy {
-        public ModuleCondition condition;
-        public PropertyHolder holder = new PropertyHolder();
-        public ResourceLocation id;
-    }
-
-    public static Map<ModuleProperty<?>, Object> getProperties(@Nullable JsonElement element, boolean isClient, ResourceLocation source, String context) {
-        Map<ModuleProperty<?>, Object> properties = new HashMap<>();
-        if (element == null || element.isJsonNull() || element.isJsonPrimitive()) {
             return properties;
         }
-        element.getAsJsonObject().entrySet().forEach(propertyEntry -> {
-            String propertyKey = propertyEntry.getKey();
-            ModuleProperty<?> property = RegistryInventory.moduleProperties.get(Miapi.id(propertyKey));
-            if (property != null) {
-                try {
-                    if (property.load(source, propertyEntry.getValue(), isClient)) {
-                        properties.put(property, property.decode(propertyEntry.getValue()));
-                    }
-                } catch (Exception e) {
-                    Miapi.LOGGER.error("could not load property " + propertyKey + " in context " + context + " from source " + source.toString(), e);
-                    Miapi.LOGGER.error(Miapi.gson.toJson(element));
-                }
-            } else {
-                Miapi.LOGGER.warn("could not find property " + propertyKey + " in context " + context + " from source " + source.toString());
-                Miapi.LOGGER.error(Miapi.gson.toJson(element));
-            }
-        });
-        return properties;
     }
 
-    public static List<ModuleProperty<?>> getRemoveProperties(JsonElement element, ResourceLocation source, String context) {
-        List<ModuleProperty<?>> removeFields = new ArrayList<>();
-        if (element == null) {
-            return removeFields;
-        }
-        if (element.isJsonArray()) {
-            element.getAsJsonArray().forEach((element1 -> {
-                if (element1.isJsonPrimitive()) {
-                    String key = element1.getAsString();
-                    ModuleProperty<?> moduleProperty = RegistryInventory.moduleProperties.get(Miapi.id(key));
-                    if (moduleProperty != null) {
-                        removeFields.add(moduleProperty);
-                    } else {
-                        Miapi.LOGGER.error("Could not find Property " + key + " in context " + context + " from source " + source.toString());
-                        Miapi.LOGGER.error(Miapi.gson.toJson(element));
-                    }
-                }
-            }));
-        }
-        return removeFields;
-    }
-
-    public static class PropertyHolder {
-        public Map<ModuleProperty<?>, Object> replace = new HashMap<>();
-        public Map<ModuleProperty<?>, Object> merge = new HashMap<>();
-        public List<ModuleProperty<?>> remove = new ArrayList<>();
-
-        public Map<ModuleProperty<?>, Object> applyHolder(Map<ModuleProperty<?>, Object> oldMap) {
-            remove.forEach((oldMap::remove));
-            merge.forEach((key, value) -> {
-                if (oldMap.containsKey(key)) {
-                    oldMap.put(key, ItemModule.merge(key, oldMap.get(key), value, MergeType.SMART));
-                } else {
-                    oldMap.put(key, value);
-                }
-            });
-            oldMap.putAll(replace);
-            return oldMap;
-        }
-
-        public Map<ModuleProperty<?>, Object> applyHolderRaw(Map<ModuleProperty<?>, Object> oldMap) {
-            remove.forEach(oldMap::remove);
-            merge.forEach((key, value) -> {
-                if (oldMap.containsKey(key)) {
-                    oldMap.put(key, ItemModule.merge(key, oldMap.get(key), value, MergeType.SMART));
-                } else {
-                    oldMap.put(key, value);
-                }
-            });
-            oldMap.putAll(replace);
-            return oldMap;
-        }
-    }
 }

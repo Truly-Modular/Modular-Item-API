@@ -41,7 +41,7 @@ public class StatRequirementProperty implements ModuleProperty<Object>, Crafting
             AtomicBoolean canCraft = new AtomicBoolean(true);
 
             element.getAsJsonObject().asMap().forEach((key, val) -> {
-                CraftingStat<?> stat = RegistryInventory.craftingStats.get(key);
+                CraftingStat<?> stat = RegistryInventory.CRAFTING_STATS_REGISTRY.get(key);
                 if (stat != null) {
                     Object instance = bench.getStat(stat);
                     boolean craftable = ((CraftingStat) stat).canCraft(instance == null ? stat.getDefault() : instance, stat.createFromJson(val, newModule), old, crafting, bench, player, newModule, module, inventory, data);

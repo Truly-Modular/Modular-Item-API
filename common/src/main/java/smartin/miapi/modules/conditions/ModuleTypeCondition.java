@@ -36,7 +36,7 @@ public class ModuleTypeCondition implements ModuleCondition {
     public Component error;
 
     public ModuleTypeCondition(ResourceLocation moduleID, Component error) {
-        this.module = RegistryInventory.modules.get(moduleID);
+        this.module = RegistryInventory.ITEM_MODULE_MIAPI_REGISTRY.get(moduleID);
         this.error = error;
     }
 

@@ -104,6 +104,6 @@ public class CacheCommands {
     }
 
     private static List<String> getMaterialOptions() {
-        return MaterialProperty.materials.keySet().stream().map(ResourceLocation::toString).toList();
+        return MaterialProperty.MATERIAL_REGISTRY.getFlatMap().keySet().stream().map(ResourceLocation::toString).toList();
     }
 }

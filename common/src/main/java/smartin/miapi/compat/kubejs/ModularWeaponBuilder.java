@@ -20,7 +20,7 @@ public class ModularWeaponBuilder extends ItemBuilder {
     @Override
     public Item createObject() {
         return new ModularWeapon(createItemProperties(), true) {{
-            RegistryInventory.modularItems.registerWithoutRegistrar(id, this);
+            RegistryInventory.MODULAR_ITEMS.registerWithoutRegistrar(id, this);
         }};
     }
 
@@ -32,7 +32,7 @@ public class ModularWeaponBuilder extends ItemBuilder {
         @Override
         public Item createObject() {
             return new ModularArrow(createItemProperties()) {{
-                RegistryInventory.modularItems.registerWithoutRegistrar(id, this);
+                RegistryInventory.MODULAR_ITEMS.registerWithoutRegistrar(id, this);
             }};
         }
     }
@@ -45,7 +45,7 @@ public class ModularWeaponBuilder extends ItemBuilder {
         @Override
         public Item createObject() {
             return new ModularAxe(createItemProperties()) {{
-                RegistryInventory.modularItems.registerWithoutRegistrar(id, this);
+                RegistryInventory.MODULAR_ITEMS.registerWithoutRegistrar(id, this);
             }};
         }
     }
@@ -58,7 +58,7 @@ public class ModularWeaponBuilder extends ItemBuilder {
         @Override
         public Item createObject() {
             return new ModularBoots(createItemProperties()) {{
-                RegistryInventory.modularItems.registerWithoutRegistrar(id, this);
+                RegistryInventory.MODULAR_ITEMS.registerWithoutRegistrar(id, this);
             }};
         }
     }
@@ -71,7 +71,7 @@ public class ModularWeaponBuilder extends ItemBuilder {
         @Override
         public Item createObject() {
             return new ModularChestPlate(createItemProperties()) {{
-                RegistryInventory.modularItems.registerWithoutRegistrar(id, this);
+                RegistryInventory.MODULAR_ITEMS.registerWithoutRegistrar(id, this);
             }};
         }
     }
@@ -84,7 +84,7 @@ public class ModularWeaponBuilder extends ItemBuilder {
         @Override
         public Item createObject() {
             return new ModularCrossbow(createItemProperties()) {{
-                RegistryInventory.modularItems.registerWithoutRegistrar(id, this);
+                RegistryInventory.MODULAR_ITEMS.registerWithoutRegistrar(id, this);
             }};
         }
     }
@@ -97,7 +97,7 @@ public class ModularWeaponBuilder extends ItemBuilder {
         @Override
         public Item createObject() {
             return new ModularHelmet(createItemProperties()) {{
-                RegistryInventory.modularItems.registerWithoutRegistrar(id, this);
+                RegistryInventory.MODULAR_ITEMS.registerWithoutRegistrar(id, this);
             }};
         }
     }
@@ -110,7 +110,7 @@ public class ModularWeaponBuilder extends ItemBuilder {
         @Override
         public Item createObject() {
             return new ModularHoe(createItemProperties()) {{
-                RegistryInventory.modularItems.registerWithoutRegistrar(id, this);
+                RegistryInventory.MODULAR_ITEMS.registerWithoutRegistrar(id, this);
             }};
         }
     }
@@ -123,7 +123,7 @@ public class ModularWeaponBuilder extends ItemBuilder {
         @Override
         public Item createObject() {
             return new ModularLeggings(createItemProperties()) {{
-                RegistryInventory.modularItems.registerWithoutRegistrar(id, this);
+                RegistryInventory.MODULAR_ITEMS.registerWithoutRegistrar(id, this);
             }};
         }
     }
@@ -136,7 +136,7 @@ public class ModularWeaponBuilder extends ItemBuilder {
         @Override
         public Item createObject() {
             return new ModularPickaxe(createItemProperties()) {{
-                RegistryInventory.modularItems.registerWithoutRegistrar(id, this);
+                RegistryInventory.MODULAR_ITEMS.registerWithoutRegistrar(id, this);
             }};
         }
     }
@@ -149,7 +149,7 @@ public class ModularWeaponBuilder extends ItemBuilder {
         @Override
         public Item createObject() {
             return new ModularShovel(createItemProperties()) {{
-                RegistryInventory.modularItems.registerWithoutRegistrar(id, this);
+                RegistryInventory.MODULAR_ITEMS.registerWithoutRegistrar(id, this);
             }};
         }
     }
@@ -162,7 +162,7 @@ public class ModularWeaponBuilder extends ItemBuilder {
         @Override
         public Item createObject() {
             return new ModularSword(createItemProperties()) {{
-                RegistryInventory.modularItems.registerWithoutRegistrar(id, this);
+                RegistryInventory.MODULAR_ITEMS.registerWithoutRegistrar(id, this);
             }};
         }
     }

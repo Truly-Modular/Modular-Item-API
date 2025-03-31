@@ -41,7 +41,7 @@ public class PropertyInjectionDev implements EditOption {
             if (moduleJson != null) {
                 for (Map.Entry<String, JsonElement> stringJsonElementEntry : moduleJson.entrySet()) {
                     ResourceLocation id = Miapi.id(stringJsonElementEntry.getKey());
-                    ModuleProperty<?> property = RegistryInventory.moduleProperties.get(id);
+                    ModuleProperty<?> property = RegistryInventory.MODULE_PROPERTY_MIAPI_REGISTRY.get(id);
                     try {
                         assert property != null;
                         property.load(Miapi.id("property-injection"), stringJsonElementEntry.getValue(), true);
@@ -112,7 +112,7 @@ public class PropertyInjectionDev implements EditOption {
                         if (moduleJson != null) {
                             for (Map.Entry<String, JsonElement> stringJsonElementEntry : moduleJson.entrySet()) {
                                 ResourceLocation id = Miapi.id(stringJsonElementEntry.getKey());
-                                ModuleProperty<?> property = RegistryInventory.moduleProperties.get(id);
+                                ModuleProperty<?> property = RegistryInventory.MODULE_PROPERTY_MIAPI_REGISTRY.get(id);
                                 try {
                                     assert property != null;
                                     property.load(Miapi.id("property-injection"), stringJsonElementEntry.getValue(), true);

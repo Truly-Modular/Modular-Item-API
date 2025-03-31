@@ -11,12 +11,17 @@ import imgui.type.ImString;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
+import smartin.miapi.editor.registry.RegistryViewer;
 import smartin.miapi.editor.syntax.EditorInterface;
 import smartin.miapi.modules.properties.util.EditorError;
+import smartin.miapi.registries.MiapiRegistry;
 
 import java.io.IOException;
 import java.nio.file.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
 public class JsonEditor implements MiapiEditor {
@@ -38,6 +43,7 @@ public class JsonEditor implements MiapiEditor {
     private WatchKey watchKey;
     private long lastModified = 0;
     private ResourceLocation resourceLocation;
+    public boolean closeOnNoError = false;
 
     public JsonEditor(String initialContent, Consumer<String> onChange) {
         this(initialContent, onChange, null, null);
@@ -52,20 +58,20 @@ public class JsonEditor implements MiapiEditor {
         this.onChange = onChange;
         this.filePath = filePath;
         this.resourceLocation = resourceLocation;
-        
+
         // Get interfaces through event system
         if (resourceLocation != null && filePath != null) {
             List<EditorInterface> eventInterfaces = new ArrayList<>();
             EditorEvents.EDITOR_INTERFACES.invoker().onGetInterfaces(
-                new EditorEvents.EditorInterfaceData(resourceLocation, filePath.toString(), eventInterfaces)
+                    new EditorEvents.EditorInterfaceData(resourceLocation, filePath.toString(), eventInterfaces)
             );
-            
+
             eventInterfaces.forEach(iface -> {
                 interfaces.put(iface.getId(), iface);
                 activeInterfaces.add(iface);
             });
         }
-        
+
         validateContent();
         setupFileWatcher();
     }
@@ -182,11 +188,13 @@ public class JsonEditor implements MiapiEditor {
     @Override
     public void render(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
         if (!show.get()) return;
+        boolean hasErrors = false;
 
         // Check for file changes
         checkFileChanges();
 
         ImGui.setNextWindowSize(800, 600, ImGuiCond.FirstUseEver);
+        ImGui.pushID(resourceLocation.toString());
         if (ImGui.begin("JSON Editor", show)) {
             float windowWidth = ImGui.getWindowWidth();
             float windowHeight = ImGui.getWindowHeight();
@@ -219,6 +227,18 @@ public class JsonEditor implements MiapiEditor {
                 if (ImGui.checkbox("Auto Reload", reloadOnChange)) {
                     reloadOnChange = !reloadOnChange;
                 }
+            }
+            // Dropdown menu
+            if (ImGui.button("Dropdown")) {
+                ImGui.openPopup("DropdownMenu");
+            }
+            if (ImGui.beginPopup("DropdownMenu")) {
+                for (MiapiRegistry<?> registry : MiapiRegistry.REGISTRY_MAP.values()) {
+                    if (ImGui.menuItem(registry.getName())) {
+                        MiapiEditor.editors.add(new RegistryViewer<>(registry));
+                    }
+                }
+                ImGui.endPopup();
             }
             if (readOnly) {
                 ImGui.sameLine();
@@ -271,6 +291,7 @@ public class JsonEditor implements MiapiEditor {
                         // Check if line has error
                         EditorError error = errorsByLine.get(i + 1);
                         if (error != null) {
+                            hasErrors = true;
                             float[] color = getErrorColor(error.severity());
                             ImGui.pushStyleColor(ImGuiCol.Text, color[0], color[1], color[2], 1.0f);
                             ImGui.text("⚠" + (i + 1));
@@ -316,6 +337,12 @@ public class JsonEditor implements MiapiEditor {
                 ImGui.endChild();
             }
             ImGui.end();
+        }
+        ImGui.popID();
+        if (closeOnNoError && !hasErrors) {
+            save(content.get());
+            this.close();
+            MiapiEditor.editors.remove(this);
         }
     }
 

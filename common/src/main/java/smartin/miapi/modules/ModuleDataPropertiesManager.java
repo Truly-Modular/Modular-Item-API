@@ -39,7 +39,7 @@ public class ModuleDataPropertiesManager {
             JsonObject moduleJson = properties.getAsJsonObject();
             if (moduleJson != null) {
                 moduleJson.entrySet().forEach(stringJsonElementEntry -> {
-                    ModuleProperty<?> property = RegistryInventory.moduleProperties
+                    ModuleProperty<?> property = RegistryInventory.MODULE_PROPERTY_MIAPI_REGISTRY
                             .get(Miapi.id(stringJsonElementEntry.getKey()));
                     if (property != null) {
                         try {
@@ -59,7 +59,7 @@ public class ModuleDataPropertiesManager {
     public static @NotNull JsonObject createJsonFromProperties(Map<ModuleProperty<?>, Object> propertyMap) {
         JsonObject object = new JsonObject();
         propertyMap.forEach(((moduleProperty, element) -> {
-            ResourceLocation key = RegistryInventory.moduleProperties.findKey(moduleProperty);
+            ResourceLocation key = RegistryInventory.MODULE_PROPERTY_MIAPI_REGISTRY.findKey(moduleProperty);
             assert key != null;
             try {
                 JsonElement encoded = encode(moduleProperty, element);

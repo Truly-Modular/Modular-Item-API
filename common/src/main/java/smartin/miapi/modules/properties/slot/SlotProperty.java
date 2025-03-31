@@ -46,7 +46,7 @@ public class SlotProperty extends CodecProperty<Map<String, SlotProperty.ModuleS
     }
 
     public static SlotProperty getInstance() {
-        return (SlotProperty) RegistryInventory.moduleProperties.get(KEY);
+        return (SlotProperty) RegistryInventory.MODULE_PROPERTY_MIAPI_REGISTRY.get(KEY);
     }
 
     @Environment(EnvType.CLIENT)

@@ -58,7 +58,7 @@ public class PropertyMapHighlighter implements EditorInterface {
         rawProperties.forEach((key, data) -> {
             int line = getLineNumber(rawContent, key);
             ResourceLocation id = Miapi.id(key);
-            ModuleProperty<?> property = RegistryInventory.moduleProperties.get(id);
+            ModuleProperty<?> property = RegistryInventory.MODULE_PROPERTY_MIAPI_REGISTRY.get(id);
 
             if (property == null) {
                 errors.add(new EditorError(

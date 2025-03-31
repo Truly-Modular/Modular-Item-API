@@ -21,7 +21,7 @@ public class PropertyRegistryViewer extends RegistryViewer<ModuleProperty> {
     private final ImBoolean testSuccess = new ImBoolean(false);
 
     public PropertyRegistryViewer() {
-        super(RegistryInventory.moduleProperties);
+        super(RegistryInventory.MODULE_PROPERTY_MIAPI_REGISTRY);
         testJson.set("{\n  \"test\": \"value\"\n}");
     }
 

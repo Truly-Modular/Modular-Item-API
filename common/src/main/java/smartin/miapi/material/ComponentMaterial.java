@@ -23,7 +23,7 @@ import smartin.miapi.modules.ModuleInstance;
 import java.util.Objects;
 import java.util.Optional;
 
-import static smartin.miapi.material.MaterialProperty.materials;
+import static smartin.miapi.material.MaterialProperty.MATERIAL_REGISTRY;
 
 public class ComponentMaterial extends JsonMaterial {
     public static ResourceLocation KEY = Miapi.id("component_runtime_material");
@@ -42,7 +42,7 @@ public class ComponentMaterial extends JsonMaterial {
                             .fieldOf("parent")
                             .forGetter((material) -> material.parent.getID())
             ).apply(instance, (cost, json, materialKey) -> {
-                Material material = materials.get(materialKey);
+                Material material = MATERIAL_REGISTRY.get(materialKey);
                 return new ComponentMaterial(material, json, cost, Environment.isClient());
             }));
 
@@ -97,7 +97,7 @@ public class ComponentMaterial extends JsonMaterial {
     public static void setup() {
         ReloadEvents.MAIN.subscribe((isClient, registryAccess) -> {
             JsonObject object = new JsonObject();
-            materials.put(
+            MATERIAL_REGISTRY.register(
                     KEY,
                     new ComponentMaterial(
                             new JsonMaterial(KEY, object, isClient),
@@ -143,7 +143,7 @@ public class ComponentMaterial extends JsonMaterial {
     public Optional<Material> decode(JsonObject object) {
         try {
             String parentID = object.get("parent").getAsString();
-            Material parentMaterial = MaterialProperty.materials.get(ResourceLocation.parse(parentID));
+            Material parentMaterial = MaterialProperty.MATERIAL_REGISTRY.get(ResourceLocation.parse(parentID));
             if (parentMaterial == null) {
                 Miapi.LOGGER.error("Could not find Material:" + parentID);
                 return Optional.empty();

@@ -39,7 +39,7 @@ public interface ComponentApplyProperty {
             module.registryAccess = registryAccess;
         }
         module.clearCaches();
-        RegistryInventory.moduleProperties
+        RegistryInventory.MODULE_PROPERTY_MIAPI_REGISTRY
                 .getFlatMap()
                 .values()
                 .stream()

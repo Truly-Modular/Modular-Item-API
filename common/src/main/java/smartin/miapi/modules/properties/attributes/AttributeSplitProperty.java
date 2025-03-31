@@ -1,26 +1,24 @@
 package smartin.miapi.modules.properties.attributes;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
-import com.mojang.datafixers.util.Pair;
+import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.DataResult;
-import com.mojang.serialization.DynamicOps;
-import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
-import net.minecraft.core.Holder;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import dev.architectury.event.EventResult;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlotGroup;
-import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
-import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.util.CodecProperty;
+import smartin.miapi.modules.properties.util.DoubleOperationResolvable;
 import smartin.miapi.modules.properties.util.MergeType;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * This property allows modules to define and modify attribute splits for items.
@@ -34,15 +32,15 @@ import java.util.*;
  * This Example would give 20% of the weapons attack damage as offhand damage
  * ```json
  * "attribute_split": {
- *   "minecraft:generic.attack_damage": {
- *     "mainhand": [
- *       {
- *         "attribute": "minecraft:generic.attack_damage",
- *         "percentage": "20",
- *         "target":"offhand"
- *       }
- *     ]
- *   }
+ * "minecraft:generic.attack_damage": {
+ * "mainhand": [
+ * {
+ * "attribute": "minecraft:generic.attack_damage",
+ * "percentage": "20",
+ * "target":"offhand"
+ * }
+ * ]
+ * }
  * }
  * ```
  * @description_end
@@ -57,48 +55,43 @@ import java.util.*;
 
 public class AttributeSplitProperty extends CodecProperty<Map<AttributeSplitProperty.Context, List<AttributeSplitProperty.SplitContext>>> {
     public static final ResourceLocation KEY = Miapi.id("attribute_split");
-    public static Codec<Map<Context, List<SplitContext>>> CODEC = new Codec<>() {
-        @Override
-        public <T> DataResult<Pair<Map<Context, List<SplitContext>>, T>> decode(DynamicOps<T> ops, T input) {
-            Map<Context, List<SplitContext>> map = new HashMap<>();
-            ops.getMap(input).getOrThrow().entries().forEach(pair -> {
-                ResourceLocation attributeID = ResourceLocation.CODEC.parse(ops, pair.getFirst()).getOrThrow();
-                ops.getMap(pair.getSecond()).getOrThrow().entries().forEach(ttPair -> {
-                    EquipmentSlotGroup group = EquipmentSlotGroup.CODEC.parse(ops, ttPair.getFirst()).getOrThrow();
-                    Attribute attribute = BuiltInRegistries.ATTRIBUTE.get(attributeID);
-                    if (attribute == null) {
-                        Miapi.LOGGER.error("could not find Attribute " + attributeID);
-                    } else {
-                        Context context = new Context(BuiltInRegistries.ATTRIBUTE.wrapAsHolder(attribute), group);
-                        ops.getList(ttPair.getSecond()).getOrThrow().accept(inner -> {
-                            ResourceLocation replaceAttributeID = ResourceLocation.CODEC.decode(ops, ops.getMap(input).getOrThrow().get("attribute")).getOrThrow().getFirst();
-                            StatResolver.DoubleFromStat doubleFromStat = StatResolver.DoubleFromStat.codec.decode(ops, ops.getMap(input).getOrThrow().get("attribute")).getOrThrow().getFirst();
-                            Attribute replaceAttribute = BuiltInRegistries.ATTRIBUTE.get(replaceAttributeID);
-                            if (replaceAttribute == null) {
-                                Miapi.LOGGER.error("could not find Attribute " + replaceAttribute);
-                            } else {
-                                SplitContext splitContext = new SplitContext(BuiltInRegistries.ATTRIBUTE.wrapAsHolder(replaceAttribute), doubleFromStat, 0.0, null);
-                                List<SplitContext> list = map.computeIfAbsent(context, (c) -> new ArrayList<>());
-                                list.add(splitContext);
-                            }
-                        });
-                    }
+    public static final Codec<Map<ResourceLocation, Map<EquipmentSlotGroup, List<ActualInner>>>> ACUTAL_CODEC = Codec.unboundedMap(
+            ResourceLocation.CODEC,
+            Codec.unboundedMap(
+                    EquipmentSlotGroup.CODEC,
+                    ActualInner.CODEC.listOf()
+            )
+    );
+
+    public static final Codec<Map<AttributeSplitProperty.Context, List<AttributeSplitProperty.SplitContext>>> CODEC = ACUTAL_CODEC.xmap(map -> {
+        Map<AttributeSplitProperty.Context, List<AttributeSplitProperty.SplitContext>> finishedMap = new HashMap<>();
+        map.forEach((id, innerMap) -> {
+            innerMap.forEach((group, dataList) -> {
+                dataList.forEach(data -> {
+                    Context context = new Context(id, group);
+                    finishedMap.computeIfAbsent(context, (c) -> new ArrayList<>()).add(new SplitContext(data.targetAttribute(), data.percent, data.target, null));
                 });
             });
-            return DataResult.success(new Pair<>(map, input));
-        }
-
-        @Override
-        public <T> DataResult<T> encode(Map<Context, List<SplitContext>> input, DynamicOps<T> ops, T prefix) {
-            return DataResult.error(() -> "encoding properties is not fully supported");
-        }
-    };
+        });
+        return finishedMap;
+    }, inner ->
+    {
+        Map<ResourceLocation, Map<EquipmentSlotGroup, List<ActualInner>>> finishedMap = new HashMap<>();
+        inner.forEach((context, split) -> {
+            split.forEach(splitContext -> {
+                finishedMap
+                        .computeIfAbsent(context.entityAttribute(), (c) -> new HashMap<>())
+                        .computeIfAbsent(context.target(), (e) -> new ArrayList<>()).add(new ActualInner(splitContext.entityAttribute(), splitContext.percent(), splitContext.target()));
+            });
+        });
+        return finishedMap;
+    });
 
     @Override
     public Map<Context, List<SplitContext>> initialize(Map<Context, List<SplitContext>> property, ModuleInstance context) {
         Map<Context, List<SplitContext>> map = new HashMap<>();
         property.forEach((attributeContext, list) -> {
-            List<SplitContext> newList = list.stream().map(splitContext -> new SplitContext(splitContext.entityAttribute(), splitContext.percent(), splitContext.percent().evaluate(context) / 100.0, splitContext.target)).toList();
+            List<SplitContext> newList = list.stream().map(splitContext -> new SplitContext(splitContext.entityAttribute(), splitContext.percent().initialize(context), splitContext.target, context)).toList();
             map.put(attributeContext, newList);
         });
         return map;
@@ -106,61 +99,56 @@ public class AttributeSplitProperty extends CodecProperty<Map<AttributeSplitProp
 
     public AttributeSplitProperty() {
         super(CODEC);
-        AttributeProperty.attributeTransformers.add((oldMap, itemstack) -> {
-            Multimap<Holder<Attribute>, AttributeProperty.EntityAttributeModifierHolder> map = ArrayListMultimap.create(oldMap);
-            Map<Context, List<SplitContext>> replaceMap = getData(itemstack).orElse(new HashMap<>());
+        AttributeUtil.ITEM_ATTRIBUTE_ADJUST.register((attributeContext, itemStack) -> {
+            Map<ResourceLocation, Map<AttributeModifier.Operation, Map<Either<EquipmentSlotGroup, Boolean>, DoubleOperationResolvable>>> map = new HashMap<>(attributeContext.map);
+            Map<Context, List<SplitContext>> replaceMap = getData(itemStack).orElse(new HashMap<>());
+
             for (Map.Entry<Context, List<SplitContext>> entry : replaceMap.entrySet()) {
-                Holder<Attribute> currentAttribute = entry.getKey().entityAttribute();
                 EquipmentSlotGroup equipmentSlot = entry.getKey().target();
                 List<SplitContext> ratios = entry.getValue();
 
-                if (!map.containsKey(currentAttribute)) {
+                ResourceLocation attributeKey;
+                if (AttributePropertyRework.replaceMap.containsKey(entry.getKey().entityAttribute().toString())) {
+                    attributeKey = BuiltInRegistries.ATTRIBUTE.getKey(AttributePropertyRework.replaceMap.get(entry.getKey().entityAttribute().toString()).get());
+                } else {
+                    attributeKey = entry.getKey().entityAttribute();
+                }
+                if (!map.containsKey(attributeKey)) {
                     continue;
                 }
 
-                Collection<AttributeProperty.EntityAttributeModifierHolder> list = oldMap.get(currentAttribute);
+                Map<AttributeModifier.Operation, Map<Either<EquipmentSlotGroup, Boolean>, DoubleOperationResolvable>> operationMap = map.get(attributeKey);
+                Map<Either<EquipmentSlotGroup, Boolean>, DoubleOperationResolvable> addValueMap = operationMap.get(AttributeModifier.Operation.ADD_VALUE);
+                if (addValueMap == null) {
+                    continue;
+                }
 
-                double totalValue = list.stream()
-                        .filter(attributeEntry -> attributeEntry.mergeTo().equals(AttributeModifier.Operation.ADD_VALUE))
-                        .filter(attributeEntry -> attributeEntry.slot().equals(equipmentSlot))
-                        .mapToDouble(entityAttributeModifierHolder -> entityAttributeModifierHolder.attributeModifier().amount())
+                double totalValue = addValueMap.entrySet().stream()
+                        .filter(entrySet -> entrySet.getKey().left().isPresent() && entrySet.getKey().left().get().equals(equipmentSlot))
+                        .mapToDouble(entrySet -> entrySet.getValue().getValue())
                         .sum();
-                ratios.forEach(((entityAttribute) -> {
-                    Collection<AttributeProperty.EntityAttributeModifierHolder> foundAttributes = oldMap.get(entityAttribute.entityAttribute());
 
-                    double baseValue = 0.0;
-                    EquipmentSlotGroup targetGroup = entityAttribute.target() == null ? equipmentSlot : entityAttribute.target();
+                for (SplitContext splitContext : ratios) {
+                    EquipmentSlotGroup targetGroup = splitContext.target() == null ? equipmentSlot : splitContext.target();
+                    Either<EquipmentSlotGroup, Boolean> targetKey = Either.left(targetGroup);
 
-                    ResourceLocation id = AttributeUtil.getIDForSlot(targetGroup, entityAttribute.entityAttribute().value(), AttributeModifier.Operation.ADD_VALUE, "miapi:attribute_split");
-
-                    if (foundAttributes != null && !foundAttributes.isEmpty()) {
-                        Optional<AttributeProperty.EntityAttributeModifierHolder> holder = foundAttributes.stream()
-                                .filter(attributeEntry -> attributeEntry.mergeTo().equals(AttributeModifier.Operation.ADD_VALUE))
-                                .filter(attributeEntry -> attributeEntry.slot().equals(targetGroup))
-                                .findFirst();
-
-                        if (holder.isPresent()) {
-                            baseValue = holder.get().attributeModifier().amount();
-                            id = holder.get().attributeModifier().id();
-                            map.remove(entityAttribute.entityAttribute(), holder.get());
-                        }
+                    var resolveAble = addValueMap.get(targetKey);
+                    if (resolveAble != null) {
+                        var operation = new DoubleOperationResolvable.Operation(totalValue * splitContext.percent().getValue() / 100.0, AttributeModifier.Operation.ADD_VALUE);
+                        operation.instance = splitContext.moduleInstance;
+                        List<DoubleOperationResolvable.Operation> operations = new ArrayList<>(resolveAble.operations);
+                        operations.add(operation);
+                        resolveAble.operations = operations;
+                        resolveAble.clearCache();
+                        resolveAble.getValue();
+                    } else {
+                        resolveAble = new DoubleOperationResolvable(List.of(new DoubleOperationResolvable.Operation(totalValue * splitContext.percent().getValue() / 100.0, AttributeModifier.Operation.ADD_VALUE)));
+                        resolveAble = resolveAble.initialize(splitContext.moduleInstance);
+                        addValueMap.put(targetKey, resolveAble);
                     }
-
-                    double value = baseValue + totalValue * entityAttribute.value();
-                    if (value != 0) {
-                        map.put(
-                                entityAttribute.entityAttribute(),
-                                new AttributeProperty.EntityAttributeModifierHolder(
-                                        new AttributeModifier(id, baseValue + totalValue * entityAttribute.value(), AttributeModifier.Operation.ADD_VALUE),
-                                        targetGroup,
-                                        AttributeModifier.Operation.ADD_VALUE
-                                ));
-                    }
-                }));
-
+                }
             }
-
-            return map;
+            return EventResult.pass();
         });
     }
 
@@ -179,10 +167,22 @@ public class AttributeSplitProperty extends CodecProperty<Map<AttributeSplitProp
         return merged;
     }
 
-    public record SplitContext(Holder<Attribute> entityAttribute, StatResolver.DoubleFromStat percent, double value,
-                               @Nullable @CodecBehavior.Optional EquipmentSlotGroup target) {
+    public record SplitContext(ResourceLocation entityAttribute,
+                               DoubleOperationResolvable percent,
+                               @Nullable EquipmentSlotGroup target,
+                               @Nullable ModuleInstance moduleInstance) {
     }
 
-    public record Context(Holder<Attribute> entityAttribute, EquipmentSlotGroup target) {
+    public record Context(ResourceLocation entityAttribute, EquipmentSlotGroup target) {
     }
+
+    public record ActualInner(ResourceLocation targetAttribute, DoubleOperationResolvable percent,
+                              EquipmentSlotGroup target) {
+        public static final Codec<ActualInner> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+                ResourceLocation.CODEC.fieldOf("attribute").forGetter(ActualInner::targetAttribute),
+                DoubleOperationResolvable.CODEC.fieldOf("percentage").forGetter(ActualInner::percent),
+                EquipmentSlotGroup.CODEC.fieldOf("target").forGetter(ActualInner::target)
+        ).apply(instance, ActualInner::new));
+    }
+
 }

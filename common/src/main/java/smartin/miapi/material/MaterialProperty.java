@@ -29,6 +29,7 @@ import smartin.miapi.modules.properties.util.CodecProperty;
 import smartin.miapi.modules.properties.util.MergeAble;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
+import smartin.miapi.registries.MiapiRegistry;
 import smartin.miapi.registries.RegistryInventory;
 
 import java.util.*;
@@ -40,7 +41,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class MaterialProperty extends CodecProperty<ResourceLocation> {
     public static final ResourceLocation KEY = Miapi.id("material");
     public static ModuleProperty property;
-    public static Map<ResourceLocation, Material> materials = new ConcurrentHashMap<>();
+    public static MiapiRegistry<Material> MATERIAL_REGISTRY = MiapiRegistry.getInstance(Material.class);
     public static Codec<Material> MATERIAL_CODEC = new Codec<>() {
         @Override
         public <T> DataResult<Pair<Material, T>> decode(DynamicOps<T> ops, T input) {
@@ -104,11 +105,11 @@ public class MaterialProperty extends CodecProperty<ResourceLocation> {
         ReloadEvents.END.subscribe(((isClient, registryAccess) -> {
             HolderSet.Named<Item> named = BuiltInRegistries.ITEM.getOrCreateTag(RegistryInventory.MIAPI_MATERIALS);
             if (named instanceof NamedAccessor namedAccessor) {
-                materials.forEach((id, material) -> {
+                MATERIAL_REGISTRY.getFlatMap().forEach((id, material) -> {
                 });
                 namedAccessor.callBind(List.of());
             }
-            Miapi.LOGGER.info("Loaded " + materials.size() + " Materials");
+            Miapi.LOGGER.info("Loaded " + MATERIAL_REGISTRY.getFlatMap().size() + " Materials");
         }));
         ModularItemCache.MODULE_CACHE_SUPPLIER.put(KEY.toString(), MaterialProperty::getMaterialRaw);
     }
@@ -118,7 +119,7 @@ public class MaterialProperty extends CodecProperty<ResourceLocation> {
             JsonParser parser = new JsonParser();
             JsonObject obj = parser.parse(data).getAsJsonObject();
             String idString = obj.get("key").getAsString();
-            Material material = materials.get(Miapi.id(idString));
+            Material material = MATERIAL_REGISTRY.get(Miapi.id(idString));
             if (material != null && material instanceof CodecMaterial codecMaterial) {
                 CodecMaterial toMerge = CodecMaterial.CODEC.decode(RegistryOps.create(JsonOps.INSTANCE, registryAccess), obj).getOrThrow(s -> new DecoderException("Could not decode Material Extention " + s)).getFirst();
                 codecMaterial.merge(toMerge);
@@ -138,7 +139,7 @@ public class MaterialProperty extends CodecProperty<ResourceLocation> {
     public static List<String> getTextureKeys() {
         Set<String> textureKeys = new HashSet<>();
         textureKeys.add("base");
-        for (Material material : materials.values()) {
+        for (Material material : MATERIAL_REGISTRY.getFlatMap().values()) {
             textureKeys.add(material.getStringID());
             textureKeys.addAll(material.getTextureKeys());
         }
@@ -155,7 +156,7 @@ public class MaterialProperty extends CodecProperty<ResourceLocation> {
     public static Material getMaterialFromIngredient(ItemStack item) {
         double lowestPrio = Double.MAX_VALUE;
         Material foundMaterial = null;
-        for (Material material : materials.values()) {
+        for (Material material : MATERIAL_REGISTRY.getFlatMap().values()) {
             Double matPrio = material.getPriorityOfIngredientItem(item);
             if (matPrio != null && matPrio < lowestPrio) {
                 lowestPrio = matPrio;
@@ -179,7 +180,7 @@ public class MaterialProperty extends CodecProperty<ResourceLocation> {
     public static Material getMaterial(JsonElement element) {
         if (element.isJsonPrimitive()) {
             ResourceLocation materialID = Miapi.id(element.getAsString());
-            Material material = MaterialProperty.materials.get(materialID);
+            Material material = MaterialProperty.MATERIAL_REGISTRY.get(materialID);
             if (material != null) {
                 return material;
             }
@@ -187,7 +188,7 @@ public class MaterialProperty extends CodecProperty<ResourceLocation> {
             try {
                 JsonObject materialSaveData = element.getAsJsonObject();
                 ResourceLocation materialID = Miapi.id(materialSaveData.get("type").getAsString());
-                Material material = MaterialProperty.materials.get(materialID);
+                Material material = MaterialProperty.MATERIAL_REGISTRY.get(materialID);
                 if (material != null) {
                     if (material.codec().isEmpty()) {
                         return material;
@@ -229,7 +230,7 @@ public class MaterialProperty extends CodecProperty<ResourceLocation> {
             }
         }
         if (property.getData(instance).isPresent()) {
-            Material material = MaterialProperty.materials.get((ResourceLocation) property.getData(instance).get());
+            Material material = MaterialProperty.MATERIAL_REGISTRY.get((ResourceLocation) property.getData(instance).get());
             if (material != null) {
                 material = material.getMaterial(instance);
                 return MaterialOverwriteProperty.property.adjustMaterial(instance, material);
@@ -250,7 +251,7 @@ public class MaterialProperty extends CodecProperty<ResourceLocation> {
     public static Material getMaterial(Map<ModuleProperty<?>, Object> properties) {
         ResourceLocation id = (ResourceLocation) properties.get(property);
         if (id != null) {
-            return MaterialProperty.materials.get(id);
+            return MaterialProperty.MATERIAL_REGISTRY.get(id);
         }
         return null;
     }

@@ -36,16 +36,19 @@ public class ReloadHelpers {
      */
     public static void registerReloadHandlers() {
         ReloadHelpers.registerReloadHandler("miapi/modules",
-                RegistryInventory.modules,
+                RegistryInventory.ITEM_MODULE_MIAPI_REGISTRY,
                 ItemModule::loadFromData, -0.5f);
         ReloadHelpers.registerReloadHandler("miapi/module_extensions",
                 () -> {
                 },
                 (isClient, path, data, access) -> ItemModuleExtension.loadModuleExtension(path, data, isClient),
                 (isClient, path, data, access) -> data.apply(), -0.4f);
-        ReloadHelpers.registerReloadHandler(ReloadEvents.MAIN, "miapi/synergies",
-                SynergyManager.moduleSynergies,
-                (isClient, path, data, registryAccess) -> SynergyManager.load(data, path), 2);
+        ReloadHelpers.registerReloadHandler("miapi/synergies",
+                SynergyManager::clear,
+                (isClient, path, data, access) -> SynergyManager.SYNERGY_CODEC.decode(JsonOps.INSTANCE, data).getOrThrow((string ->
+                        new DecoderException("Could not decode Synergy " + path + string)
+                )).getFirst(),
+                (isClient, path, data, access) -> data.register(), 2);
         ReloadHelpers.registerReloadHandler(ReloadEvents.MAIN, "miapi/skins/module", SkinOptions.skins, (isClient, path, data, registryAccess) -> {
             SkinOptions.load(path, data);
         }, 1);
@@ -75,10 +78,10 @@ public class ReloadHelpers {
                 }, -1.5f);
         ReloadHelpers.registerReloadHandler(
                 "miapi/materials",
-                () -> MaterialProperty.materials.clear(),
+                () -> MaterialProperty.MATERIAL_REGISTRY.clear(),
                 (id, mat) -> {
                     mat.setID(id);
-                    MaterialProperty.materials.put(id, mat);
+                    MaterialProperty.MATERIAL_REGISTRY.register(id, mat);
                 },
                 CodecMaterial.CODEC,
                 -2.0f);

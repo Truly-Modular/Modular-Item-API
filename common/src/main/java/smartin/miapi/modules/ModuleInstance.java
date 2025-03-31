@@ -179,7 +179,7 @@ public class ModuleInstance {
         this.subModules = subModules;
         this.moduleData = new HashMap<>(data);
         subModules.values().forEach(subModule -> subModule.parent = this);
-        this.module = RegistryInventory.modules.get(module.toString());
+        this.module = RegistryInventory.ITEM_MODULE_MIAPI_REGISTRY.get(module.toString());
         if (this.module == null) {
             this.module = ItemModule.empty;
             Miapi.LOGGER.warn("could not find module " + module + " substituting with empty module");

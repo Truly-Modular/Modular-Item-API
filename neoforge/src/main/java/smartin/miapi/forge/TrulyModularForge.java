@@ -118,7 +118,7 @@ public class TrulyModularForge {
         @SubscribeEvent
         public static void entityRenderers(ModelEvent.ModifyBakingResult registerAdditional) {
             //dont ask me, but this fixes registration for client
-            List<ModelResourceLocation> ids = RegistryInventory.modularItems.getFlatMap().keySet().stream().map(ModelResourceLocation::inventory).toList();
+            List<ModelResourceLocation> ids = RegistryInventory.MODULAR_ITEMS.getFlatMap().keySet().stream().map(ModelResourceLocation::inventory).toList();
             ModelProperty.textureGetter = registerAdditional.getTextureGetter();
             ItemRenderer itemRenderer;
             ids.forEach(id -> {
@@ -143,7 +143,7 @@ public class TrulyModularForge {
 
         @SubscribeEvent
         public static void setupArmorRender(RegisterClientExtensionsEvent itemExtention) {
-            RegistryInventory.modularItems.addCallback((item -> {
+            RegistryInventory.MODULAR_ITEMS.addCallback((item -> {
                 itemExtention.registerItem(new IClientItemExtensions() {
                     public Map<ItemStack, ModelWithHumanModel> cache = new WeakHashMap<>();
 

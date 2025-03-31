@@ -122,7 +122,7 @@ public record MaterialSwapLootFunction(
                     }
                 }
                 if (material != null) {
-                    Material fromJson = MaterialProperty.materials.get(material);
+                    Material fromJson = MaterialProperty.MATERIAL_REGISTRY.get(material);
                     if (highestMaterial == null || fromJson != null && isHigher(highestMaterial, fromJson) > 0) {
                         highestMaterial = fromJson;
                     }
@@ -169,7 +169,7 @@ public record MaterialSwapLootFunction(
             fallBackMaterial = currentMaterial;
         }
         Material finalFallBackMaterial = fallBackMaterial;
-        List<Material> possibleSubstitutes = MaterialProperty.materials.values().stream()
+        List<Material> possibleSubstitutes = MaterialProperty.MATERIAL_REGISTRY.getFlatMap().values().stream()
                 .filter(m -> {
                     if (m.getID().toString().contains("custom")) {
                         return false;

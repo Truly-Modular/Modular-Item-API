@@ -42,20 +42,20 @@ import java.util.*;
 
 public class CodecMaterial implements Material {
     ResourceLocation id;
-    Optional<JsonElement> iconJson;
+    public Optional<JsonElement> iconJson;
     Optional<JsonElement> paletteJson;
     Optional<JsonElement> dyePaletteJson;
     Map<String, Map<ModuleProperty<?>, Object>> propertyMap = new HashMap<>();
     Map<String, Map<ModuleProperty<?>, Object>> displayPropertyMap = new HashMap<>();
-    List<String> groups;
+    public List<String> groups;
     List<String> guiGroups;
-    List<String> textureKeys;
+    public List<String> textureKeys;
     Optional<TagKey<Block>> incorrectForTool = Optional.empty();
     Optional<Integer> color = Optional.empty();
-    List<IngredientWithCount> items;
+    public List<IngredientWithCount> items;
     Optional<Boolean> generateConverters;
-    Map<String, String> stringData = new HashMap<>();
-    Map<String, Double> doubleMap = new HashMap<>();
+    public Map<String, String> stringData = new HashMap<>();
+    public Map<String, Double> doubleMap = new HashMap<>();
     public Optional<Component> translation = Optional.empty();
     @Environment(EnvType.CLIENT)
     public MaterialIcons.MaterialIcon icon;
@@ -119,20 +119,20 @@ public class CodecMaterial implements Material {
             Miapi.FIXED_BOOL_CODEC.optionalFieldOf("generate_converters").forGetter(m -> Optional.of(m.generateConverters()))
     ).apply(instance, CodecMaterial::new));
 
-    private CodecMaterial(Optional<JsonElement> iconJson,
-                          Optional<JsonElement> paletteJson,
-                          Optional<JsonElement> dyePaletteJson,
-                          List<String> groups,
-                          List<String> hiddenGroups,
-                          List<String> guiGroups,
-                          Map<String, JsonElement> property,
-                          Map<String, JsonElement> visualProperty,
-                          Map<String, JsonElement> hiddenProperty,
-                          List<String> textureKeys,
-                          Optional<ResourceLocation> incorrectForToolId,
-                          Optional<String> color,
-                          List<IngredientWithCount> items,
-                          Optional<Boolean> generateConverters) {
+    public CodecMaterial(Optional<JsonElement> iconJson,
+                         Optional<JsonElement> paletteJson,
+                         Optional<JsonElement> dyePaletteJson,
+                         List<String> groups,
+                         List<String> hiddenGroups,
+                         List<String> guiGroups,
+                         Map<String, JsonElement> property,
+                         Map<String, JsonElement> visualProperty,
+                         Map<String, JsonElement> hiddenProperty,
+                         List<String> textureKeys,
+                         Optional<ResourceLocation> incorrectForToolId,
+                         Optional<String> color,
+                         List<IngredientWithCount> items,
+                         Optional<Boolean> generateConverters) {
         this.iconJson = iconJson;
         this.paletteJson = paletteJson;
         this.dyePaletteJson = dyePaletteJson;

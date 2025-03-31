@@ -3,9 +3,13 @@ package smartin.miapi.client.gui.crafting.statdisplay;
 import com.google.common.collect.Multimap;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ai.attributes.Attribute;
@@ -13,6 +17,8 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 import smartin.miapi.Miapi;
+import smartin.miapi.client.gui.ParentHandledScreen;
+import smartin.miapi.modules.properties.attributes.AttributePropertyRework;
 import smartin.miapi.modules.properties.attributes.AttributeUtil;
 
 import java.text.DecimalFormat;
@@ -134,6 +140,46 @@ public class AttributeSingleDisplay extends SingleStatDisplayDouble {
         } else {
             return !list.isEmpty();
         }
+    }
+
+    @Override
+    public void renderHover(GuiGraphics drawContext, int mouseX, int mouseY, float delta) {
+        List<Component> list = new ArrayList(getHoverLines(drawContext, mouseX, mouseY, delta));
+        if (this.isMouseOver(mouseX, mouseY) && ParentHandledScreen.hasShiftDown()) {
+            AttributePropertyRework.property.getData(original).ifPresent(data -> {
+                data.forEach((id, attributeOperationMap) -> {
+                    if (id.equals(BuiltInRegistries.ATTRIBUTE.getKey(attribute))) {
+                        attributeOperationMap.computeIfPresent(operation, (op, map) -> {
+                            map.forEach((either, resolveAble) -> {
+                                if (either.left().isPresent() && (this.slot == null || either.left().get().test(this.slot))) {
+                                    resolveAble.operations.forEach(operation1 -> {
+                                        if (operation1.solve() != 0) {
+                                            list.add(Component.literal(SinglePropertyStatDisplay.stringForOperation(operation1)));
+                                            if (ParentHandledScreen.hasAltDown()) {
+                                                list.add(Component.literal("  " + operation1.value).withStyle(ChatFormatting.GRAY));
+                                            }
+                                        }
+                                    });
+                                }
+                            });
+                            return map;
+                        });
+                    }
+                });
+            });
+
+        }
+        drawContext.renderComponentTooltip(
+                Minecraft.getInstance().font,
+                list, mouseX, mouseY);
+    }
+
+    public String getStringName(AttributeModifier.Operation operation) {
+        return switch (operation) {
+            case AttributeModifier.Operation.ADD_VALUE -> "+";
+            case ADD_MULTIPLIED_BASE -> "*";
+            case ADD_MULTIPLIED_TOTAL -> "**";
+        };
     }
 
     public static Builder builder(Holder<Attribute> attribute) {

@@ -49,7 +49,7 @@ public class CreateItemOption implements EditOption {
         int count = buffer.readInt();
         ItemStack itemStack = new ItemStack(BuiltInRegistries.ITEM.get(ResourceLocation.parse(itemID)));
         itemStack.setCount(count);
-        ModuleInstance instance = new ModuleInstance(RegistryInventory.modules.get(module));
+        ModuleInstance instance = new ModuleInstance(RegistryInventory.ITEM_MODULE_MIAPI_REGISTRY.get(module));
         instance.writeToItem(itemStack);
         CraftAction action = new CraftAction(buffer, editContext.getWorkbench(), editContext.getScreenHandler());
         Container inventory = editContext.getLinkedInventory();
@@ -72,7 +72,7 @@ public class CreateItemOption implements EditOption {
         int count = buffer.readInt();
         ItemStack itemStack = new ItemStack(BuiltInRegistries.ITEM.get(ResourceLocation.parse(itemID)));
         itemStack.setCount(count);
-        ModuleInstance instance = new ModuleInstance(RegistryInventory.modules.get(module));
+        ModuleInstance instance = new ModuleInstance(RegistryInventory.ITEM_MODULE_MIAPI_REGISTRY.get(module));
         instance.writeToItem(itemStack);
         CraftAction action = new CraftAction(buffer, editContext.getWorkbench(), editContext.getScreenHandler());
         action.setItem(itemStack);
@@ -207,7 +207,7 @@ public class CreateItemOption implements EditOption {
 
         @Override
         public ItemModule getBaseModule() {
-            return RegistryInventory.modules.get(module);
+            return RegistryInventory.ITEM_MODULE_MIAPI_REGISTRY.get(module);
         }
 
         @Override

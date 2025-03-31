@@ -111,7 +111,7 @@ public class StatProvidersMap {
             map.entries().forEach(p -> {
                 String str = ops.getStringValue(p.getFirst()).getOrThrow(s -> new RuntimeException("Failed to create string value in StatRequirementMapCodec! -> {}"));
 
-                CraftingStat stat = RegistryInventory.craftingStats.get(str);
+                CraftingStat stat = RegistryInventory.CRAFTING_STATS_REGISTRY.get(str);
                 if (stat == null) return; // i could warn if the stat doesn't exist, but optional compat exists
 
                 ops.getStream(p.getSecond()).getOrThrow(s -> new RuntimeException("Failed to getVertexConsumer data as a list for stat '{}' in StatProvidersMapCodec! -> {}")).forEach(val -> {
@@ -184,7 +184,7 @@ public class StatProvidersMap {
                     });
                 });
 
-                map.put(ops.createString(RegistryInventory.craftingStats.findKey(stat).toString()), ops.createList(objects.stream()));
+                map.put(ops.createString(RegistryInventory.CRAFTING_STATS_REGISTRY.findKey(stat).toString()), ops.createList(objects.stream()));
             });
 
             return DataResult.success(ops.createMap(map));

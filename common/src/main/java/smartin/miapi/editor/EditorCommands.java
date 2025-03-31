@@ -3,6 +3,7 @@ package smartin.miapi.editor;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
+import com.redpxnda.nucleus.editor.core.ClientLoader;
 import dev.architectury.event.EventResult;
 import dev.architectury.platform.Platform;
 import net.fabricmc.api.EnvType;
@@ -12,10 +13,21 @@ import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
+import smartin.miapi.Miapi;
+import smartin.miapi.editor.material.MaterialEditor;
+import smartin.miapi.editor.syntax.CodecValidatorInterface;
 import smartin.miapi.editor.syntax.JsonSyntaxHighlighter;
 import smartin.miapi.editor.syntax.PropertyMapHighlighter;
+import smartin.miapi.material.CodecMaterial;
+import smartin.miapi.material.MaterialProperty;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
+import smartin.miapi.modules.synergies.SynergyManager;
+
+import java.util.ArrayList;
+import java.util.function.Function;
+
+import static smartin.miapi.editor.MiapiEditor.editors;
 
 public class EditorCommands {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
@@ -27,10 +39,17 @@ public class EditorCommands {
                 .then(Commands.literal("editor")
                         .then(Commands.literal("data")
                                 .executes(EditorCommands::executeOpenEditor)));
+        LiteralArgumentBuilder<CommandSourceStack> material_editor = Commands.literal("miapi")
+                .then(Commands.literal("editor")
+                        .then(Commands.literal("material")
+                                .executes(EditorCommands::executeOpenMaterialEditor)));
         dispatcher.register(runPose);
         dispatcher.register(fs);
+        dispatcher.register(material_editor);
         JsonEditor.registerGlobalInterface(new JsonSyntaxHighlighter());
         JsonEditor.registerGlobalInterface(new PropertyMapHighlighter());
+        var synergyValidator = new CodecValidatorInterface(SynergyManager.SYNERGY_CODEC, "Synergy Validator");
+        JsonEditor.registerGlobalInterface(synergyValidator);
         // Register default JSON syntax highlighter
         EditorEvents.EDITOR_INTERFACES.register(event -> {
             if (event.filePath.endsWith(".json")) {
@@ -45,39 +64,49 @@ public class EditorCommands {
                 event.resourceLocation.getPath().startsWith("miapi/modules/")) {
                 event.interfaces.add(new PropertyMapHighlighter(event.resourceLocation));
             }
+            if (event.resourceLocation != null &&
+                event.resourceLocation.getPath().startsWith("miapi/synergies/")) {
+                event.interfaces.add(new CodecValidatorInterface(SynergyManager.SYNERGY_CODEC, "Synergy Validator"));
+            }
             return EventResult.pass();
         });
+        ClientLoader.RENDER.add((guiGraphics, deltaTracker) -> new ArrayList<>(editors).forEach(miapiEditor -> miapiEditor.render(guiGraphics, deltaTracker)));
     }
 
     private static int executeHandEditor(CommandContext<CommandSourceStack> context) {
-        if (context.getSource().isPlayer()) {
-            if (Platform.getEnv().equals(EnvType.SERVER)) {
-                context.getSource().sendFailure(Component.literal("Command only allowed in SinglePlayer"));
-                return -1;
-            }
-            if (!Minecraft.getInstance().player.getUUID().equals(context.getSource().getPlayer().getUUID())) {
-                context.getSource().sendFailure(Component.literal("Command only allowed in SinglePlayer"));
-                return -1;
-            }
+        return canExecute(context, (c) -> {
             ItemStack itemStack = context.getSource().getPlayer().getItemInHand(InteractionHand.MAIN_HAND);
             ModuleInstance moduleInstance = ItemModule.getModules(itemStack);
             if (moduleInstance != null) {
                 ModuleEditor moduleEditor = new ModuleEditor(moduleInstance.copy(), (m) -> {
                     m.copy().writeToItem(itemStack);
                 });
-                MiapiEditor.editors.add(moduleEditor);
+                editors.add(moduleEditor);
                 return 1;
             } else {
                 context.getSource().sendFailure(Component.literal("Hand Item is not a valid modular item!"));
                 return -1;
             }
-        } else {
-            context.getSource().sendFailure(Component.literal("Only Player can execute this command!"));
-            return -1;
-        }
+        });
     }
 
     private static int executeOpenEditor(CommandContext<CommandSourceStack> context) {
+        return canExecute(context, (c) -> {
+            editors.add(new LiveDataPackEditorManager());
+            return 1; // Return success
+        });
+    }
+
+    private static int executeOpenMaterialEditor(CommandContext<CommandSourceStack> context) {
+        return canExecute(context, (c) -> {
+            editors.add(new MaterialEditor((CodecMaterial) MaterialProperty.MATERIAL_REGISTRY.get(Miapi.id("metal/iron")), (m) -> {
+
+            }));
+            return 1; // Return success
+        });
+    }
+
+    public static int canExecute(CommandContext<CommandSourceStack> context, Function<CommandContext<CommandSourceStack>, Integer> onExecute) {
         if (context.getSource().isPlayer()) {
             if (Platform.getEnv().equals(EnvType.SERVER)) {
                 context.getSource().sendFailure(Component.literal("Command only allowed in SinglePlayer"));
@@ -87,8 +116,11 @@ public class EditorCommands {
                 context.getSource().sendFailure(Component.literal("Command only allowed in SinglePlayer"));
                 return -1;
             }
-            MiapiEditor.editors.add(new LiveDataPackEditorManager());
-            return 1; // Return success
+            if (!context.getSource().hasPermission(4)) {
+                context.getSource().sendFailure(Component.literal("Command only allowed for operators"));
+                return -1;
+            }
+            return onExecute.apply(context);
         } else {
             context.getSource().sendFailure(Component.literal("Only Player can execute this command!"));
             return -1;

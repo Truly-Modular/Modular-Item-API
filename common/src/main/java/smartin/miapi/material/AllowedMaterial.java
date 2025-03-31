@@ -57,7 +57,7 @@ public class AllowedMaterial extends CodecProperty<AllowedMaterial.AllowedMateri
     }
 
     public List<Material> getMaterials(String key) {
-        return MaterialProperty.materials.values().stream().filter(a -> a.getGroups().contains(key)).collect(Collectors.toList());
+        return MaterialProperty.MATERIAL_REGISTRY.getFlatMap().values().stream().filter(a -> a.getGroups().contains(key)).collect(Collectors.toList());
     }
 
     public List<Vec2> getSlotPositions() {

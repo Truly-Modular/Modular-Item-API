@@ -22,7 +22,7 @@ import java.util.Optional;
 
 /**
  * This Property changes the ItemIdentifier of an ModularItem on Craft
- * it only supports preregisterd ids in {@link RegistryInventory#modularItems}
+ * it only supports preregisterd ids in {@link RegistryInventory#MODULAR_ITEMS}
  *
  * @header Item ID Property
  * @path /data_types/properties/item_id
@@ -50,7 +50,7 @@ public class ItemIdProperty extends CodecProperty<ResourceLocation> implements C
 
     @Override
     public List<EditorError> validate(int line, ResourceLocation component, boolean isClient) {
-        if (!RegistryInventory.modularItems.contains(component)) {
+        if (!RegistryInventory.MODULAR_ITEMS.contains(component)) {
             return List.of(new EditorError(line, "Only pre-registered ItemIDs are allowed!", EditorError.ErrorSeverity.WARNING));
         }
         return List.of();
@@ -61,7 +61,7 @@ public class ItemIdProperty extends CodecProperty<ResourceLocation> implements C
         ModuleInstance root = ItemModule.getModules(itemStack);
         Optional<ResourceLocation> optional = property.getData(itemStack);
         if (optional.isPresent()) {
-            Item item = RegistryInventory.modularItems.get(optional.get().toString());
+            Item item = RegistryInventory.MODULAR_ITEMS.get(optional.get().toString());
             if (item != null) {
                 root.clearCaches();
                 ItemStack newStack = new ItemStack(item);

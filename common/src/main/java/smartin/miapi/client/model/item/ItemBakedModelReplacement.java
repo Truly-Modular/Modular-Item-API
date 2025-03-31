@@ -31,7 +31,7 @@ public class ItemBakedModelReplacement implements UnbakedModel, BakedModel {
 
     public static boolean isModularItem(ResourceLocation identifier) {
         if (identifier != null && identifier.toString() != null) {
-            return RegistryInventory.modularItems.get(identifier.toString().replace("item/", "")) != null;
+            return RegistryInventory.MODULAR_ITEMS.get(identifier.toString().replace("item/", "")) != null;
         }
         return false;
     }

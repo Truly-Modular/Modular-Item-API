@@ -1,15 +1,13 @@
 package smartin.miapi.editor;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
+import com.google.gson.*;
 import dev.architectury.event.EventResult;
 import dev.architectury.platform.Platform;
 import net.minecraft.resources.ResourceLocation;
 import smartin.miapi.Miapi;
 import smartin.miapi.editor.syntax.EditorInterface;
 import smartin.miapi.events.MiapiEvents;
+import smartin.miapi.modules.conditions.ConditionManager;
 import smartin.miapi.modules.properties.util.EditorError;
 import smartin.miapi.modules.cache.CacheCommands;
 
@@ -250,18 +248,41 @@ public class LiveDataPackManager implements AutoCloseable {
                         .filter(path -> path.toString().endsWith(".json"))
                         .forEach(path -> {
                             try {
-                                String content = Files.readString(path);
                                 ResourceLocation location = getResourceLocation(dataDir.toPath(), path);
-                                if (location != null) {
+                                String content = Files.readString(path);
+                                if (shouldLoadJson(Files.readString(path))) {
                                     event.data.put(location, content);
                                 }
                             } catch (IOException e) {
-                                e.printStackTrace();
                             }
                         });
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    private boolean shouldLoadJson(String content) {
+        try {
+            JsonObject element = Miapi.gson.fromJson(content, JsonObject.class);
+            if (!element.has("load_condition")) {
+                return true;
+            } else {
+                boolean allowed = ConditionManager.get(element.get("load_condition")).isAllowed(new ConditionManager.ConditionContext() {
+                    @Override
+                    public ConditionManager.ConditionContext copy() {
+                        return this;
+                    }
+                });
+                if (allowed) {
+                    element.remove("load_condition");
+                    //Miapi.LOGGER.info("redid " + location);
+                    return true;
+                }
+                return false;
+            }
+        } catch (Exception e) {
+            return true;
         }
     }
 
@@ -292,8 +313,13 @@ public class LiveDataPackManager implements AutoCloseable {
                                     String pathWithoutExt = relativePath.replace(".json", "").replace("\\", "/");
                                     pathWithoutExt = pathWithoutExt.replaceFirst("/", ":");
                                     ResourceLocation resourceLocation = Miapi.id(pathWithoutExt);
-                                    MiapiEditor.editors.add(new JsonEditor(Files.readString(file.toPath()), (f) -> {
-                                    }, path, resourceLocation));
+                                    String data = Files.readString(file.toPath());
+                                    if (shouldLoadJson(data)) {
+                                        var editor = new JsonEditor(Files.readString(file.toPath()), (f) -> {
+                                        }, path, resourceLocation);
+                                        editor.closeOnNoError = true;
+                                        MiapiEditor.editors.add(editor);
+                                    }
                                 } catch (RuntimeException e) {
                                     Miapi.LOGGER.warn("", e);
                                 } catch (IOException e) {

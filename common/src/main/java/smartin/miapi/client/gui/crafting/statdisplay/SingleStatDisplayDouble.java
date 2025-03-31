@@ -64,20 +64,18 @@ public abstract class SingleStatDisplayDouble extends InteractAbleWidget impleme
         this.inverse = inverse;
     }
 
-    public int getRed(){
-        if(inverse){
+    public int getRed() {
+        if (inverse) {
             return MiapiConfig.INSTANCE.client.guiColors.green.argb();
-        }
-        else{
+        } else {
             return MiapiConfig.INSTANCE.client.guiColors.red.argb();
         }
     }
 
-    public int getGreen(){
-        if(inverse){
+    public int getGreen() {
+        if (inverse) {
             return MiapiConfig.INSTANCE.client.guiColors.red.argb();
-        }
-        else{
+        } else {
             return MiapiConfig.INSTANCE.client.guiColors.green.argb();
         }
     }
@@ -163,13 +161,21 @@ public abstract class SingleStatDisplayDouble extends InteractAbleWidget impleme
 
     @Override
     public void renderHover(GuiGraphics drawContext, int mouseX, int mouseY, float delta) {
+        drawContext.renderComponentTooltip(
+                Minecraft.getInstance().font,
+                getHoverLines(drawContext, mouseX, mouseY, delta),
+                mouseX,
+                mouseY);
+    }
+
+    public List<Component> getHoverLines(GuiGraphics drawContext, int mouseX, int mouseY, float delta) {
         if (isMouseOver(mouseX, mouseY)) {
             Component text1 = this.hover.resolve(compareTo);
             if (!text1.getString().isEmpty()) {
-                List<Component> texts = Arrays.stream(text1.getString().split("\n")).map(a -> Component.literal(a)).collect(Collectors.toList());
-                drawContext.renderComponentTooltip(Minecraft.getInstance().font, texts, mouseX, mouseY);
+                return Arrays.stream(text1.getString().split("\n")).map(a -> Component.literal(a)).collect(Collectors.toList());
             }
         }
+        return List.of();
     }
 
     public InteractAbleWidget getHoverWidget() {

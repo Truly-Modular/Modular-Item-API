@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
-public abstract class RegistryViewer<T> implements MiapiEditor {
+public class RegistryViewer<T> implements MiapiEditor {
     protected final ImBoolean show = new ImBoolean(true);
     protected final MiapiRegistry<T> registry;
     protected final ImString searchText = new ImString(256);
@@ -28,12 +28,6 @@ public abstract class RegistryViewer<T> implements MiapiEditor {
 
     public RegistryViewer(MiapiRegistry<T> registry) {
         this.registry = registry;
-        updateFilteredEntries();
-    }
-
-    public RegistryViewer(MiapiRegistry<T> registry, Consumer<T> onSelect) {
-        this.registry = registry;
-        this.onSelect = onSelect;
         updateFilteredEntries();
     }
 
@@ -81,7 +75,9 @@ public abstract class RegistryViewer<T> implements MiapiEditor {
         ImGui.end();
     }
 
-    protected abstract String getWindowTitle();
+    protected String getWindowTitle() {
+        return "Registry " + registry.getName();
+    }
 
     protected void renderEntry(Map.Entry<ResourceLocation, T> entry) {
         if (ImGui.isItemClicked()) {
@@ -94,7 +90,9 @@ public abstract class RegistryViewer<T> implements MiapiEditor {
         }
     }
 
-    protected abstract void renderDetails(T value);
+    protected void renderDetails(T value){
+
+    }
 
     public void setOnSelect(Consumer<T> onSelect) {
         this.onSelect = onSelect;
@@ -113,5 +111,9 @@ public abstract class RegistryViewer<T> implements MiapiEditor {
                 showDetails.set(true);
             }
         }
+    }
+
+    public interface DetailSupplier<T> {
+        T details(ResourceLocation id, T entry);
     }
 } 

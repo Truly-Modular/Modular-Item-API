@@ -158,9 +158,9 @@ public class Miapi {
         });
         PlayerEvent.PLAYER_JOIN.register((player -> new Thread(() -> MiapiPermissions.getPerms(player)).start()));
         ReloadEvents.END.subscribe((isClient, registryAccess) -> {
-            RegistryInventory.modules.register(ItemModule.empty.id(), ItemModule.empty);
-            RegistryInventory.modules.register(ItemModule.internal.id(), ItemModule.internal);
-            Miapi.LOGGER.info("Loaded " + RegistryInventory.modules.getFlatMap().size() + " Modules");
+            RegistryInventory.ITEM_MODULE_MIAPI_REGISTRY.register(ItemModule.empty.id(), ItemModule.empty);
+            RegistryInventory.ITEM_MODULE_MIAPI_REGISTRY.register(ItemModule.internal.id(), ItemModule.internal);
+            Miapi.LOGGER.info("Loaded " + RegistryInventory.ITEM_MODULE_MIAPI_REGISTRY.getFlatMap().size() + " Modules");
             ModularItemCache.discardCache();
         });
         PropertyResolver.register(ResourceLocation.fromNamespaceAndPath(Miapi.MOD_ID, "miapi/module"), (moduleInstance, oldMap) -> {

@@ -15,9 +15,9 @@ public class MiapiClientFabric {
 
     public static void setupClient() {
         //smartin.miapi.client.MiapiClient.KEY_BINDINGS.addCallback((KeyBindingHelper::registerKeyBinding));
-        RegistryInventory.modularItems.addCallback((item) -> ArmorRenderer.register(new ModularArmorRenderer(), item));
+        RegistryInventory.MODULAR_ITEMS.addCallback((item) -> ArmorRenderer.register(new ModularArmorRenderer(), item));
         ModelLoadingPlugin.register(pluginContext -> {
-            List<ResourceLocation> ids = RegistryInventory.modularItems.getFlatMap().keySet().stream().map(id -> ResourceLocation.parse(id.toString().replace("item/", ""))).toList();
+            List<ResourceLocation> ids = RegistryInventory.MODULAR_ITEMS.getFlatMap().keySet().stream().map(id -> ResourceLocation.parse(id.toString().replace("item/", ""))).toList();
             pluginContext.addModels(ids);
             pluginContext.resolveModel().register((context) -> {
                 if (ItemBakedModelReplacement.isModularItem(context.id())) {

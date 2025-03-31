@@ -296,7 +296,7 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
         }
         editHolder.children().clear();
 
-        for (EditOption option : RegistryInventory.editOptions.getFlatMap().values()) {
+        for (EditOption option : RegistryInventory.EDIT_OPTION_MIAPI_REGISTRY.getFlatMap().values()) {
             EditOption.EditContext context = get(option);
             if (option.isVisible(context)) {
                 InteractAbleWidget widget = option.getIconGui(x, y, 32, 28, this::selectEditOption, this::getEditOption);

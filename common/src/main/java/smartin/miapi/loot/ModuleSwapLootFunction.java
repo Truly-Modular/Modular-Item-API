@@ -89,7 +89,7 @@ public record ModuleSwapLootFunction(
                 }
             }
             if (material != null) {
-                Material fromJson = MaterialProperty.materials.get(material);
+                Material fromJson = MaterialProperty.MATERIAL_REGISTRY.get(material);
                 if (highestMaterial == null || fromJson != null && isHigher(highestMaterial, fromJson)) {
                     highestMaterial = fromJson;
                 }
@@ -119,7 +119,7 @@ public record ModuleSwapLootFunction(
 
     ModuleInstance findPossibleSubstitute(ModuleInstance module, RandomSource randomSource) {
         // Collect all possible substitute modules
-        List<ItemModule> possibleSubstitutes = RegistryInventory.modules.getFlatMap().values().stream()
+        List<ItemModule> possibleSubstitutes = RegistryInventory.ITEM_MODULE_MIAPI_REGISTRY.getFlatMap().values().stream()
                 .filter(m -> {
                     if (whitelist().isPresent()) {
                         if (!whitelist().get().contains(m.id())) {

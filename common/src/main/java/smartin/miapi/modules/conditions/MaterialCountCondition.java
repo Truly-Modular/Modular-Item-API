@@ -50,7 +50,7 @@ public class MaterialCountCondition implements ModuleCondition {
         Optional<ModuleInstance> optional = conditionContext.getContext(ConditionManager.MODULE_CONDITION_CONTEXT);
         if (optional.isPresent()) {
             ModuleInstance moduleInstance = optional.get();
-            Material material1 = MaterialProperty.materials.get(material);
+            Material material1 = MaterialProperty.MATERIAL_REGISTRY.get(material);
             if (material1 != null && count >= getCount(moduleInstance, material1)) {
                 return true;
             }

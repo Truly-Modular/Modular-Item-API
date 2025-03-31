@@ -63,7 +63,7 @@ public class StatRequirementMap {
                 String str = ops.getStringValue(p.getFirst()).getOrThrow(s ->
                         new RuntimeException("Failed to getVertexConsumer string value in StatRequirementMapCodec! -> "+s));
 
-                CraftingStat stat = RegistryInventory.craftingStats.get(str);
+                CraftingStat stat = RegistryInventory.CRAFTING_STATS_REGISTRY.get(str);
                 T element = p.getSecond();
                 if (stat != null) {
                     if (element instanceof JsonElement json) {
@@ -90,7 +90,7 @@ public class StatRequirementMap {
             input.raw.forEach((stat, inst) -> {
                 T obj = ExtraCodecs.JSON.encodeStart(ops, ((CraftingStat) stat).saveToJson(inst))
                         .getOrThrow(s -> new RuntimeException("Failed to turn instance into a JsonElement while encoding a StatRequirementMap! -> "+ s));
-                map.put(ops.createString(RegistryInventory.craftingStats.findKey(stat).toString()), obj);
+                map.put(ops.createString(RegistryInventory.CRAFTING_STATS_REGISTRY.findKey(stat).toString()), obj);
             });
 
             return DataResult.success(ops.createMap(map));

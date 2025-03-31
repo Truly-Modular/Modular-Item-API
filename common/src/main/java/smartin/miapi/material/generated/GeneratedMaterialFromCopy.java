@@ -56,7 +56,7 @@ public class GeneratedMaterialFromCopy implements Material {
                             .fieldOf("material").
                             forGetter(m -> m.source.getID())
             ).apply(instance, (itemstack, material) -> {
-                return new GeneratedMaterialFromCopy(itemstack, MaterialProperty.materials.get(material));
+                return new GeneratedMaterialFromCopy(itemstack, MaterialProperty.MATERIAL_REGISTRY.get(material));
             }));
 
 

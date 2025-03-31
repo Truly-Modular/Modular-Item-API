@@ -344,7 +344,7 @@ public class StatListWidget extends InteractAbleWidget {
                         })).build());
 
         AttributeSingleDisplay.attributesWithDisplay.add(AttributeRegistry.ARMOR_CRUSHING.value());
-        RegistryInventory.moduleProperties.getFlatMap().values().stream()
+        RegistryInventory.MODULE_PROPERTY_MIAPI_REGISTRY.getFlatMap().values().stream()
                 .filter(StatWidgetSupplier.class::isInstance)
                 .map(StatWidgetSupplier.class::cast)
                 .filter(statWidgetSupplier::contains)

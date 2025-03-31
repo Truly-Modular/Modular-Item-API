@@ -31,9 +31,9 @@ public class SmithingRecipeUtil {
     public static RecipeManager manager = null;
 
     public static void setupSmithingRecipes(boolean isClient, RegistryAccess registryAccess, RecipeManager manager) {
-        List<GeneratedMaterial> materials = MaterialProperty.materials.values().stream().filter(GeneratedMaterial.class::isInstance).map(m -> (GeneratedMaterial) m).toList();
-        materials.forEach(m -> MaterialProperty.materials.remove(m.key));
-        setupSmithingRecipe(materials, isClient, m -> MaterialProperty.materials.put(m.key, m), registryAccess, null);
+        List<GeneratedMaterial> materials = MaterialProperty.MATERIAL_REGISTRY.getFlatMap() .values().stream().filter(GeneratedMaterial.class::isInstance).map(m -> (GeneratedMaterial) m).toList();
+        materials.forEach(m -> MaterialProperty.MATERIAL_REGISTRY.remove(m.key));
+        setupSmithingRecipe(materials, isClient, m -> MaterialProperty.MATERIAL_REGISTRY.register(m.key, m), registryAccess, null);
     }
 
     public static void setupSmithingRecipe(List<GeneratedMaterial> materials, boolean isClient, Consumer<GeneratedMaterial> register, RegistryAccess registryAccess, RecipeManager recipeManager) {

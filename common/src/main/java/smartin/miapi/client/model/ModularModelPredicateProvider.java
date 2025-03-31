@@ -15,7 +15,7 @@ public class ModularModelPredicateProvider {
     }
 
     public static void registerModularModelOverride(ResourceLocation id, ClampedItemPropertyFunction provider){
-        RegistryInventory.addCallback(RegistryInventory.modularItems, item -> {
+        RegistryInventory.addCallback(RegistryInventory.MODULAR_ITEMS, item -> {
             ModelPredicateProviderRegistryAccessor.register(item,id,provider);
         });
     }
@@ -25,7 +25,7 @@ public class ModularModelPredicateProvider {
     }
 
     public static void registerModularItemModelOverride(ResourceLocation identifier, ResourceLocation id, ClampedItemPropertyFunction provider){
-        Item item = RegistryInventory.modularItems.get(identifier);
+        Item item = RegistryInventory.MODULAR_ITEMS.get(identifier);
         ModelPredicateProviderRegistryAccessor.register(item,id,provider);
     }
 }

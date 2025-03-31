@@ -23,7 +23,7 @@ import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import static smartin.miapi.material.MaterialProperty.materials;
+import static smartin.miapi.material.MaterialProperty.MATERIAL_REGISTRY;
 
 public class GeneratedMaterialManager {
     public static final List<GeneratedMaterial> generatedMaterials = new ArrayList<>();
@@ -34,9 +34,9 @@ public class GeneratedMaterialManager {
             if (!isClient) {
                 onReloadServer(registryAccess);
             } else {
-                basicGeneratedMaterials.forEach(generatedMaterial -> materials.put(generatedMaterial.getID(), generatedMaterial));
+                basicGeneratedMaterials.forEach(generatedMaterial -> MATERIAL_REGISTRY.register(generatedMaterial.getID(), generatedMaterial));
                 SmithingRecipeUtil.setupSmithingRecipe(generatedMaterials, true, (material) -> {
-                    materials.put(material.getID(), material);
+                    MATERIAL_REGISTRY.register(material.getID(), material);
                 }, registryAccess, null);
             }
         }, -1);
@@ -175,7 +175,7 @@ public class GeneratedMaterialManager {
                             try {
                                 if (isValidItem(item)) {
                                     Material old = MaterialProperty.getMaterialFromIngredient(item.getDefaultInstance());
-                                    Material baseWood = materials.get(Miapi.id("wood/wood"));
+                                    Material baseWood = MATERIAL_REGISTRY.get(Miapi.id("wood/wood"));
                                     if (old != null && baseWood != null && old == baseWood) {
                                         GeneratedMaterialFromCopy generatedMaterial = new GeneratedMaterialFromCopy(
                                                 item.getDefaultInstance(),
@@ -202,7 +202,7 @@ public class GeneratedMaterialManager {
                             try {
                                 if (isValidItem(item) && !item.equals(Items.COBBLESTONE)) {
                                     Material old = MaterialProperty.getMaterialFromIngredient(item.getDefaultInstance());
-                                    Material baseStone = materials.get(Miapi.id("stone/stone"));
+                                    Material baseStone = MATERIAL_REGISTRY.get(Miapi.id("stone/stone"));
                                     if (old != null && baseStone != null && old == baseStone) {
                                         GeneratedMaterialFromCopy generatedMaterial = new GeneratedMaterialFromCopy(
                                                 item.getDefaultInstance(),
@@ -220,7 +220,7 @@ public class GeneratedMaterialManager {
                         });
             }
             SmithingRecipeUtil.setupSmithingRecipe(generatedMaterials, false, (material -> {
-                materials.put(material.getID(), material);
+                MATERIAL_REGISTRY.register(material.getID(), material);
                 MiapiEvents.GENERATE_MATERIAL_CONVERTERS.invoker().generated(material, material.toolItems, material.armorItems, smartin.miapi.Environment.isClient());
             }), access, null);
             if (verboseLogging()) {

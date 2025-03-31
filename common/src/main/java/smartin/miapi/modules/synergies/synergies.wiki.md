@@ -5,17 +5,46 @@ Synergies are used to adjust a ModuleInstances properties based on condition.
 They can be found/added in mod-id:miapi/synergies/any-path-and-file-name.json
 
 ### `type`
-The Type of synergy, can either by "tag", "material", "all", if no type is given module is asumed.
+The Type of synergy, can either by "tag", "material", "all" or "module"
 - tag applies to module with the tag.   
 - all applies to all modules    
 - material applies to a certain material  
 
+### `module/material/tag mentioned above`
+- data type you wish to reference
 
 ### `condition`
-A complex Condition
+A complex Condition, parsed from the perspective of the target module
 
-### `module/material/tag mentioned above`
+### `properties`
 this is the key, the inner data is split into
 - `replace` Replaces the property, erasing previous data
 - `merge` properties to be merged into the modules property
 - `remove` a list of properties to remove
+
+### Example
+```json
+{
+    "type": "module",
+    "module": "tm_arsenal:pommel/cross",
+    "condition": {
+        "type": "other_module",
+        "condition": {
+            "type": "tag",
+            "tag": "blade_large"
+        }
+    },
+    "properties": {
+        "merge": {
+            "attributes": [
+                {
+                    "attribute": "generic.attack_speed",
+                    "value": "0.05",
+                    "operation": "**",
+                    "slot": "mainhand"
+                }
+            ]
+        }
+    }
+}
+```

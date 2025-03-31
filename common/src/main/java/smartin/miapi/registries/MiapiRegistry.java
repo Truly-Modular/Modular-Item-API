@@ -2,6 +2,7 @@ package smartin.miapi.registries;
 
 import com.mojang.serialization.Codec;
 import net.minecraft.resources.ResourceLocation;
+import org.apache.logging.log4j.util.InternalApi;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 
@@ -23,7 +24,8 @@ public class MiapiRegistry<T> {
     /**
      * The map of all MiapiRegistry instances, indexed by class type.
      */
-    protected static final Map<Class<?>, MiapiRegistry<?>> REGISTRY_MAP = Collections.synchronizedMap(new LinkedHashMap<>());
+    @InternalApi
+    public static final Map<Class<?>, MiapiRegistry<?>> REGISTRY_MAP = Collections.synchronizedMap(new LinkedHashMap<>());
     /**
      * The list of callbacks to invoke when new entries are added to the registry.
      */
@@ -136,6 +138,10 @@ public class MiapiRegistry<T> {
         suppliers.put(name, value);
     }
 
+    public boolean containsKey(ResourceLocation id) {
+        return entries.containsKey(id);
+    }
+
     /**
      * Removes all entries from this registry.
      */
@@ -206,6 +212,15 @@ public class MiapiRegistry<T> {
     public void addCallback(Consumer<T> callback) {
         callbacks.add(callback);
         entries.values().forEach(callback);
+    }
+
+    public String getName() {
+        for (Class key : REGISTRY_MAP.keySet()) {
+            if (REGISTRY_MAP.get(key) == this) {
+                return key.getName();
+            }
+        }
+        return "Unknown Registry";
     }
 
     /**

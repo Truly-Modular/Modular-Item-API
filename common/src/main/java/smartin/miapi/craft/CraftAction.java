@@ -90,7 +90,7 @@ public class CraftAction {
         }
         String modules = buf.readUtf();
         if (!modules.equals("null")) {
-            toAdd = RegistryInventory.modules.get(modules);
+            toAdd = RegistryInventory.ITEM_MODULE_MIAPI_REGISTRY.get(modules);
         } else {
             toAdd = null;
         }
@@ -393,7 +393,7 @@ public class CraftAction {
 
         ModuleInstance newInstance = parsingInstance;
         List<CraftingProperty> sortedProperties =
-                RegistryInventory.moduleProperties.getFlatMap().values().stream()
+                RegistryInventory.MODULE_PROPERTY_MIAPI_REGISTRY.getFlatMap().values().stream()
                         .filter(CraftingProperty.class::isInstance)
                         .filter(property -> ((CraftingProperty) property).shouldExecuteOnCraft(newInstance, ItemModule.getModules(crafted), crafted, this))
                         .map(CraftingProperty.class::cast)

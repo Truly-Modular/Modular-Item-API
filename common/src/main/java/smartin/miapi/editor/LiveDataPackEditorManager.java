@@ -10,7 +10,6 @@ import net.minecraft.client.gui.GuiGraphics;
 import smartin.miapi.modules.cache.CacheCommands;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -31,10 +30,6 @@ public class LiveDataPackEditorManager implements MiapiEditor {
     private final ImString editDescription = new ImString(256);
     private final ImString editDataPath = new ImString(1024);
     private final ImBoolean editWatchFiles = new ImBoolean(true);
-
-    static {
-        ClientLoader.RENDER.add((guiGraphics, deltaTracker) -> new ArrayList<>(editors).forEach(miapiEditor -> miapiEditor.render(guiGraphics, deltaTracker)));
-    }
 
     public LiveDataPackEditorManager() {
         this.manager = LiveDataPackManager.getInstance();

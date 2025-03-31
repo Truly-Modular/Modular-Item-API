@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import static smartin.miapi.material.MaterialProperty.materials;
+import static smartin.miapi.material.MaterialProperty.MATERIAL_REGISTRY;
 
 /**
  * This Property defines composite materials, which are a list of composites that augment the base material to return a full material.
@@ -58,7 +58,7 @@ public class CompositeMaterial extends DelegatingMaterial {
 
     static {
         ReloadEvents.MAIN.subscribe((isClient, registryAccess) -> {
-            materials.put(
+            MATERIAL_REGISTRY.register(
                     KEY,
                     new CompositeMaterial(new DefaultMaterial(), List.of()));
         }, -1);

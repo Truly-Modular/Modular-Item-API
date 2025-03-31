@@ -127,7 +127,7 @@ public class ModularWorkBenchEntity extends BlockEntity implements MenuProvider,
 
         CompoundTag statsNbt = new CompoundTag();
         stats.forEach((stat, inst) -> {
-            statsNbt.put(RegistryInventory.craftingStats.findKey(stat).toString(), stat.saveToNbt(inst));
+            statsNbt.put(RegistryInventory.CRAFTING_STATS_REGISTRY.findKey(stat).toString(), stat.saveToNbt(inst));
         });
 
         if (!getItem().isEmpty()) {
@@ -180,7 +180,7 @@ public class ModularWorkBenchEntity extends BlockEntity implements MenuProvider,
 
         CompoundTag statsNbt = tag.getCompound("Stats");
         statsNbt.getAllKeys().forEach(key -> {
-            CraftingStat stat = RegistryInventory.craftingStats.get(key);
+            CraftingStat stat = RegistryInventory.CRAFTING_STATS_REGISTRY.get(key);
             if (stat == null) {
                 Miapi.LOGGER.warn("Found unknown CraftingStat id '{}'!", key);
                 return;

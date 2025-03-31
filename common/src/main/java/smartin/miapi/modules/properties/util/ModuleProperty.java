@@ -36,6 +36,11 @@ public interface ModuleProperty<T> extends MergeAble<T>, InitializeAble<T> {
      */
     JsonElement encode(T property);
 
+    @SuppressWarnings("unchecked")
+    default JsonElement encodeCast(Object property) {
+        return encode((T) property);
+    }
+
     default T merge(T left, ModuleInstance leftModule, T right, ModuleInstance rightModule, MergeType mergeType) {
         return merge(left, right, mergeType);
     }

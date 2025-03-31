@@ -35,7 +35,7 @@ public class AllowedSlots extends CodecProperty<List<String>> {
 
     public AllowedSlots() {
         super(CODEC);
-        RegistryInventory.modules.addCallback(itemModule -> {
+        RegistryInventory.ITEM_MODULE_MIAPI_REGISTRY.addCallback(itemModule -> {
             getAllowedSlots(itemModule).forEach(slot -> {
                 if (allowedInMap.containsKey(slot)) {
                     allowedInMap.get(slot).add(itemModule);
@@ -80,7 +80,7 @@ public class AllowedSlots extends CodecProperty<List<String>> {
      */
     public static List<ItemModule> allowedIn(SlotProperty.ModuleSlot slot) {
         if (slot == null) return new ArrayList<>();
-        return RegistryInventory.modules.getFlatMap().values().stream().filter(m -> getAllowedSlots(m).stream().anyMatch(s -> slot.allowed.contains(s))).toList();
+        return RegistryInventory.ITEM_MODULE_MIAPI_REGISTRY.getFlatMap().values().stream().filter(m -> getAllowedSlots(m).stream().anyMatch(s -> slot.allowed.contains(s))).toList();
     }
 
     @Override

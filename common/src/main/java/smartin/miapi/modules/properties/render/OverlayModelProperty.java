@@ -199,7 +199,7 @@ public class OverlayModelProperty extends CodecProperty<List<OverlayModelPropert
                     }
                     if (colorProvider.startsWith("material:")) {
                         ResourceLocation materialId = ResourceLocation.parse(colorProvider.split(":", 2)[1]);
-                        smartin.miapi.material.base.Material material = MaterialProperty.materials.get(materialId);
+                        smartin.miapi.material.base.Material material = MaterialProperty.MATERIAL_REGISTRY.get(materialId);
                         if (material != null) {
                             return new ColorProvider.MaterialColorProvider(material);
                         }

@@ -110,7 +110,7 @@ public class MiapiClient {
                 return EventResult.pass();
             });
         }
-        RegistryInventory.modularItems.addCallback((MiapiClient::registerAnimations));
+        RegistryInventory.MODULAR_ITEMS.addCallback((MiapiClient::registerAnimations));
         //BoomerangClientRendering.setup();
         ClientTickEvent.CLIENT_PRE.register((instance -> {
             if (MiapiConfig.INSTANCE.client.other.animatedMaterials) {
@@ -123,7 +123,7 @@ public class MiapiClient {
         Networking.registerS2CPacket(MaterialCommand.SEND_MATERIAL_CLIENT, (buf -> {
             String materialId = buf.readUtf();
             Minecraft.getInstance().execute(() -> {
-                Material material = MaterialProperty.materials.get(Miapi.id(materialId));
+                Material material = MaterialProperty.MATERIAL_REGISTRY.get(Miapi.id(materialId));
                 if (material != null) {
                     String raw = Miapi.gson.toJson(material.getDebugJson());
                     Component text = Component.literal(raw);
@@ -183,7 +183,7 @@ public class MiapiClient {
         ClientReloadShadersEvent.EVENT.register((resourceFactory, asd) -> {
             ModularItemCache.discardCache();
         });
-        RegistryInventory.modularItems.addCallback((item -> {
+        RegistryInventory.MODULAR_ITEMS.addCallback((item -> {
             ModularModelPredicateProvider.registerModelOverride(item, Miapi.id("damage"), (stack, world, entity, seed) -> stack.isDamageableItem() && stack.getDamageValue() > 0 ? ((float) stack.getDamageValue() / stack.getMaxDamage()) : 0.0f);
             ModularModelPredicateProvider.registerModelOverride(item, Miapi.id("damaged"), (stack, world, entity, seed) -> stack.isDamaged() ? 1.0F : 0.0F);
         }));

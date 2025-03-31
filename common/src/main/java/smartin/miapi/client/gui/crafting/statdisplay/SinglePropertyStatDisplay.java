@@ -2,15 +2,23 @@ package smartin.miapi.client.gui.crafting.statdisplay;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.ItemStack;
 import smartin.miapi.Miapi;
+import smartin.miapi.client.gui.ParentHandledScreen;
+import smartin.miapi.modules.properties.util.DoubleOperationResolvable;
 import smartin.miapi.modules.properties.util.DoubleProperty;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.function.BiFunction;
 
@@ -36,6 +44,43 @@ public class SinglePropertyStatDisplay extends SingleStatDisplayDouble {
     @Override
     public double getValue(ItemStack stack) {
         return property.getValue(stack).orElse(0.0);
+    }
+
+    @Override
+    public void renderHover(GuiGraphics drawContext, int mouseX, int mouseY, float delta) {
+        List<Component> list = new ArrayList(getHoverLines(drawContext, mouseX, mouseY, delta));
+        if (this.isMouseOver(mouseX, mouseY) && ParentHandledScreen.hasShiftDown()) {
+            property.getData(original).ifPresent(resolvable -> {
+                resolvable.operations.forEach(operation -> {
+                    if (operation.solve() != 0) {
+                        list.add(Component.literal(stringForOperation(operation)));
+                        if (ParentHandledScreen.hasAltDown()) {
+                            list.add(Component.literal("  " + operation.value).withStyle(ChatFormatting.GRAY));
+                        }
+                    }
+                });
+            });
+        }
+        drawContext.renderComponentTooltip(
+                Minecraft.getInstance().font,
+                list, mouseX, mouseY);
+    }
+
+    public static String stringForOperation(DoubleOperationResolvable.Operation resolvable) {
+        String number = "" + resolvable.solve();
+        String operation = getStringName(resolvable.attributeOperation);
+        if (operation.equals("+") && number.startsWith("-")) {
+            return number + " " + resolvable.instance.getModuleName().getString();
+        }
+        return operation + number + " " + resolvable.instance.getModuleName().getString();
+    }
+
+    public static String getStringName(AttributeModifier.Operation operation) {
+        return switch (operation) {
+            case AttributeModifier.Operation.ADD_VALUE -> "+";
+            case ADD_MULTIPLIED_BASE -> "*";
+            case ADD_MULTIPLIED_TOTAL -> "**";
+        };
     }
 
     public static Builder builder(DoubleProperty property) {
@@ -66,7 +111,7 @@ public class SinglePropertyStatDisplay extends SingleStatDisplayDouble {
             return this;
         }
 
-        public Builder setCondition(BiFunction<ItemStack, ItemStack, Boolean> condition){
+        public Builder setCondition(BiFunction<ItemStack, ItemStack, Boolean> condition) {
             this.condition = condition;
             return this;
         }

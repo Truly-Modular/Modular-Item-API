@@ -73,6 +73,7 @@ import smartin.miapi.loot.MaterialSwapLootFunction;
 import smartin.miapi.loot.ModuleSwapLootFunction;
 import smartin.miapi.loot.condition.LootTableCondition;
 import smartin.miapi.material.*;
+import smartin.miapi.material.base.Material;
 import smartin.miapi.material.composite.CompositeMaterial;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
@@ -96,8 +97,10 @@ import smartin.miapi.modules.edit_options.skins.SkinOptions;
 import smartin.miapi.modules.properties.*;
 import smartin.miapi.modules.properties.armor.*;
 import smartin.miapi.modules.properties.attributes.AttributeProperty;
+import smartin.miapi.modules.properties.attributes.AttributePropertyRework;
 import smartin.miapi.modules.properties.attributes.AttributeSplitProperty;
 import smartin.miapi.modules.properties.compat.better_combat.BetterCombatHelper;
+import smartin.miapi.modules.properties.compat.ht_treechop.TreechopProperty;
 import smartin.miapi.modules.properties.enchanment.*;
 import smartin.miapi.modules.properties.mining.MiningLevelProperty;
 import smartin.miapi.modules.properties.mining.MiningShapeProperty;
@@ -128,26 +131,27 @@ import static smartin.miapi.modules.abilities.util.ItemAbilityManager.useAbility
 public class RegistryInventory {
     public static final Supplier<RegistrarManager> registrar = Suppliers.memoize(() -> RegistrarManager.get(MOD_ID));
 
-    public static final MiapiRegistrar<Item> modularItems = MiapiRegistrar.of(registrar.get().get(Registries.ITEM));
-    public static final Registrar<Item> items = registrar.get().get(Registries.ITEM);
-    public static final Registrar<DataComponentType<?>> components = registrar.get().get(Registries.DATA_COMPONENT_TYPE);
-    public static final Registrar<Block> blocks = registrar.get().get(Registries.BLOCK);
-    public static final Registrar<BlockEntityType<?>> blockEntities = registrar.get().get(Registries.BLOCK_ENTITY_TYPE);
+    public static final MiapiRegistrar<Item> MODULAR_ITEMS = MiapiRegistrar.of(registrar.get().get(Registries.ITEM));
+    public static final Registrar<Item> ITEM_REGISTRAR = registrar.get().get(Registries.ITEM);
+    public static final Registrar<DataComponentType<?>> COMPONENT_TYPE_REGISTRAR = registrar.get().get(Registries.DATA_COMPONENT_TYPE);
+    public static final Registrar<Block> BLOCK_REGISTRAR = registrar.get().get(Registries.BLOCK);
+    public static final Registrar<BlockEntityType<?>> BLOCK_ENTITY_TYPE_REGISTRAR = registrar.get().get(Registries.BLOCK_ENTITY_TYPE);
     //TODO:make entity attached attributes work again
-    public static final Registrar<Attribute> attributes = registrar.get().get(Registries.ATTRIBUTE);
-    public static final Registrar<ArmorMaterial> armorMaterials = registrar.get().get(Registries.ARMOR_MATERIAL);
-    public static final Registrar<EntityType<?>> entityTypes = registrar.get().get(Registries.ENTITY_TYPE);
-    public static final Registrar<MenuType<?>> screenHandlers = registrar.get().get(Registries.MENU);
-    public static final Registrar<MobEffect> statusEffects = registrar.get().get(Registries.MOB_EFFECT);
-    public static final Registrar<CreativeModeTab> tab = registrar.get().get(Registries.CREATIVE_MODE_TAB);
-    public static final Registrar<GameEvent> gameEvents = registrar.get().get(Registries.GAME_EVENT);
-    public static final Registrar<RecipeSerializer<?>> recipeSerializers = registrar.get().get(Registries.RECIPE_SERIALIZER);
-    public static final MiapiRegistry<ModuleProperty> moduleProperties = MiapiRegistry.getInstance(ModuleProperty.class);
-    public static final MiapiRegistry<ItemModule> modules = MiapiRegistry.getInstance(ItemModule.class);
-    public static final MiapiRegistry<EditOption> editOptions = MiapiRegistry.getInstance(EditOption.class);
-    public static final MiapiRegistry<CraftingStat> craftingStats = MiapiRegistry.getInstance(CraftingStat.class);
-    public static final Registrar<LootItemFunctionType<?>> lootItemFunctions = registrar.get().get(Registries.LOOT_FUNCTION_TYPE);
-    public static final Registrar<LootItemConditionType> lootCondition = registrar.get().get(Registries.LOOT_CONDITION_TYPE);
+    public static final Registrar<Attribute> ATTRIBUTE_REGISTRAR = registrar.get().get(Registries.ATTRIBUTE);
+    public static final Registrar<ArmorMaterial> ARMOR_MATERIAL_REGISTRAR = registrar.get().get(Registries.ARMOR_MATERIAL);
+    public static final Registrar<EntityType<?>> ENTITY_TYPE_REGISTRAR = registrar.get().get(Registries.ENTITY_TYPE);
+    public static final Registrar<MenuType<?>> MENU_TYPE_REGISTRAR = registrar.get().get(Registries.MENU);
+    public static final Registrar<MobEffect> MOB_EFFECT_REGISTRAR = registrar.get().get(Registries.MOB_EFFECT);
+    public static final Registrar<CreativeModeTab> CREATIVE_MODE_TAB_REGISTRAR = registrar.get().get(Registries.CREATIVE_MODE_TAB);
+    public static final Registrar<GameEvent> GAME_EVENT_REGISTRAR = registrar.get().get(Registries.GAME_EVENT);
+    public static final Registrar<RecipeSerializer<?>> RECIPE_SERIALIZER_REGISTRAR = registrar.get().get(Registries.RECIPE_SERIALIZER);
+    public static final MiapiRegistry<ModuleProperty> MODULE_PROPERTY_MIAPI_REGISTRY = MiapiRegistry.getInstance(ModuleProperty.class);
+    public static final MiapiRegistry<ItemModule> ITEM_MODULE_MIAPI_REGISTRY = MiapiRegistry.getInstance(ItemModule.class);
+    public static final MiapiRegistry<EditOption> EDIT_OPTION_MIAPI_REGISTRY = MiapiRegistry.getInstance(EditOption.class);
+    public static final MiapiRegistry<CraftingStat> CRAFTING_STATS_REGISTRY = MiapiRegistry.getInstance(CraftingStat.class);
+    public static final MiapiRegistry<Material> MATERIAL_REGISTRY = MiapiRegistry.getInstance(Material.class);
+    public static final Registrar<LootItemFunctionType<?>> LOOT_ITEM_FUNCTION_TYPE_REGISTRAR = registrar.get().get(Registries.LOOT_FUNCTION_TYPE);
+    public static final Registrar<LootItemConditionType> LOOT_ITEM_CONDITION_TYPE_REGISTRAR = registrar.get().get(Registries.LOOT_CONDITION_TYPE);
     public static final TagKey<Item> MIAPI_FORBIDDEN_TAG = TagKey.create(Registries.ITEM, ResourceLocation.parse("miapi_forbidden"));
     public static final TagKey<Item> MIAPI_MATERIALS = TagKey.create(Registries.ITEM, ResourceLocation.parse("miapi_materials"));
 
@@ -198,11 +202,11 @@ public class RegistryInventory {
     public static void registerAtt(String id, boolean attach, Supplier<Attribute> sup, Consumer<Holder<Attribute>> onRegister) {
         ResourceLocation rl = ResourceLocation.fromNamespaceAndPath(MOD_ID, id);
 
-        RegistrySupplier<Attribute> obj = attributes.register(rl, sup); // actually register the object
+        RegistrySupplier<Attribute> obj = ATTRIBUTE_REGISTRAR.register(rl, sup); // actually register the object
         obj.listen((attribute -> {
-            onRegister.accept(attributes.getHolder(rl));
+            onRegister.accept(ATTRIBUTE_REGISTRAR.getHolder(rl));
             if (attach) {
-                AttributeRegistry.entityAttributeMap.put(rl, attributes.getHolder(rl));
+                AttributeRegistry.entityAttributeMap.put(rl, ATTRIBUTE_REGISTRAR.getHolder(rl));
             }
         }));
     }
@@ -224,7 +228,7 @@ public class RegistryInventory {
     public static Holder<ArmorMaterial> armorMaterial;
     //public static SimpleCraftingStat exampleCraftingStat;
     public static RecipeSerializer serializer;
-    public static RegistrySupplier<EntityType<ItemProjectileEntity>> itemProjectileType = (RegistrySupplier) registerAndSupply(entityTypes, "thrown_item", () ->
+    public static RegistrySupplier<EntityType<ItemProjectileEntity>> itemProjectileType = (RegistrySupplier) registerAndSupply(ENTITY_TYPE_REGISTRAR, "thrown_item", () ->
             EntityType.Builder.of(ItemProjectileEntity::new, MobCategory.MISC).sized(0.5F, 0.5F).clientTrackingRange(4).updateInterval(20).build("miapi:thrown_item"));
     public static EntityType<ItemProjectileEntity> registeredItemProjectileType;
     public static LootItemFunctionType<ModuleSwapLootFunction> moduleSwapLootFunctionLootItemFunctionType = new LootItemFunctionType<>(ModuleSwapLootFunction.CODEC);
@@ -244,46 +248,46 @@ public class RegistryInventory {
     public static void setup() {
 
         //SCREEN
-        register(screenHandlers, "default_crafting", () ->
+        register(MENU_TYPE_REGISTRAR, "default_crafting", () ->
                         new MenuType<>(CraftingScreenHandler::new, FeatureFlagSet.of()),
                 scr -> {
                     RegistryInventory.craftingScreenHandler = scr;
                     if (Platform.getEnvironment() == Env.CLIENT) MiapiClient.registerScreenHandler();
                 });
 
-        RegistryInventory.lootCondition.register(
+        RegistryInventory.LOOT_ITEM_CONDITION_TYPE_REGISTRAR.register(
                 LootHelper.LOOT_TABLE_ID, () -> LootTableCondition.TYPE);
 
-        RegistryInventory.components.register(
+        RegistryInventory.COMPONENT_TYPE_REGISTRAR.register(
                 Miapi.id("item_module"), () -> ModuleInstance.MODULE_INSTANCE_COMPONENT);
-        RegistryInventory.components.register(
+        RegistryInventory.COMPONENT_TYPE_REGISTRAR.register(
                 Miapi.id("modular_material"), () -> ComponentMaterial.NBT_MATERIAL_COMPONENT);
-        RegistryInventory.components.register(
+        RegistryInventory.COMPONENT_TYPE_REGISTRAR.register(
                 Miapi.id("module_blueprint"), () -> BlueprintComponent.BLUEPRINT_COMPONENT);
-        RegistryInventory.components.register(
+        RegistryInventory.COMPONENT_TYPE_REGISTRAR.register(
                 Miapi.id("nemesis_property"), () -> NemesisProperty.NEMESIS_COMPONENT);
-        RegistryInventory.components.register(
+        RegistryInventory.COMPONENT_TYPE_REGISTRAR.register(
                 Miapi.id("magazine_property"), () -> RapidfireCrossbowProperty.ADDITIONAL_PROJECTILES_COMPONENT);
-        RegistryInventory.components.register(
+        RegistryInventory.COMPONENT_TYPE_REGISTRAR.register(
                 Miapi.id("item_module_property"), () -> ItemModelProperty.ITEM_MODEL_COMPONENT);
-        RegistryInventory.components.register(
+        RegistryInventory.COMPONENT_TYPE_REGISTRAR.register(
                 Miapi.id("stack_storage"), () -> StackStorageComponent.STACK_STORAGE_COMPONENT);
-        RegistryInventory.components.register(
+        RegistryInventory.COMPONENT_TYPE_REGISTRAR.register(
                 Miapi.id("tower_shield"), () -> TowerShieldComponent.TOWER_SHIELD_COMPONENT);
-        RegistryInventory.components.register(
+        RegistryInventory.COMPONENT_TYPE_REGISTRAR.register(
                 CompositeMaterial.KEY, () -> CompositeMaterial.COMPOSITE_MATERIAL_COMPONENT);
-        RegistryInventory.components.register(
+        RegistryInventory.COMPONENT_TYPE_REGISTRAR.register(
                 Miapi.id("gun_magazine"), () -> GunMagazineComponent.STACK_STORAGE_COMPONENT);
-        RegistryInventory.components.register(
+        RegistryInventory.COMPONENT_TYPE_REGISTRAR.register(
                 Miapi.id("module_fallback"), () -> ModuleInstance.MODULE_BACKUP);
 
-        RegistryInventory.lootItemFunctions.register(
+        RegistryInventory.LOOT_ITEM_FUNCTION_TYPE_REGISTRAR.register(
                 Miapi.id("module_swap"), () -> moduleSwapLootFunctionLootItemFunctionType);
 
-        RegistryInventory.lootItemFunctions.register(
+        RegistryInventory.LOOT_ITEM_FUNCTION_TYPE_REGISTRAR.register(
                 Miapi.id("material_swap"), () -> materialSwapLootFunctionLootItemFunctionType);
 
-        register(armorMaterials, "modular_armor_material", () ->
+        register(ARMOR_MATERIAL_REGISTRAR, "modular_armor_material", () ->
                 new ArmorMaterial(
                         Util.make(new EnumMap(ArmorItem.Type.class), (enumMap) -> {
                             enumMap.put(ArmorItem.Type.BOOTS, 1);
@@ -309,11 +313,11 @@ public class RegistryInventory {
                 type -> itemProjectileType = (EntityType<ItemProjectile>) type);*/
 
         //RECIPE SERIALIZERS
-        register(recipeSerializers, "smithing", MaterialSmithingRecipe.Serializer::new, i -> serializer = i);
+        register(RECIPE_SERIALIZER_REGISTRAR, "smithing", MaterialSmithingRecipe.Serializer::new, i -> serializer = i);
 
 
         //BLOCK
-        register(blocks, "modular_work_bench", () -> new ModularWorkBench(
+        register(BLOCK_REGISTRAR, "modular_work_bench", () -> new ModularWorkBench(
                 BlockBehaviour.Properties.of().
                         mapColor(MapColor.METAL).
                         instrument(NoteBlockInstrument.IRON_XYLOPHONE).
@@ -322,13 +326,13 @@ public class RegistryInventory {
                         sound(SoundType.METAL).
                         noOcclusion().
                         pushReaction(PushReaction.IGNORE)), b -> modularWorkBench = b);
-        register(blockEntities, "modular_work_bench", () -> BlockEntityType.Builder.of(
+        register(BLOCK_ENTITY_TYPE_REGISTRAR, "modular_work_bench", () -> BlockEntityType.Builder.of(
                 ModularWorkBenchEntity::new, modularWorkBench
         ).build(null), be -> {
             modularWorkBenchEntityType = be;
             if (Platform.getEnvironment() == Env.CLIENT) MiapiClient.registerBlockEntityRenderer();
         });
-        register(items, "modular_work_bench", () -> new BlockItem(modularWorkBench, new Item.Properties()));
+        register(ITEM_REGISTRAR, "modular_work_bench", () -> new BlockItem(modularWorkBench, new Item.Properties()));
 
 
 //        registerMiapi(craftingStats, "hammering", new SimpleCraftingStat(0), stat -> exampleCraftingStat = stat);
@@ -338,7 +342,7 @@ public class RegistryInventory {
 
 
         // CREATIVE TAB
-        register(tab, "miapi_tab", () -> CreativeTabRegistry.create
+        register(CREATIVE_MODE_TAB_REGISTRAR, "miapi_tab", () -> CreativeTabRegistry.create
                 (b -> {
                     b.title(Component.translatable("miapi.tab.name"));
                     b.icon(() -> new ItemStack(modularWorkBench));
@@ -348,76 +352,76 @@ public class RegistryInventory {
                 }));
 
         //ITEM
-        register(modularItems, "modular_broken_item", BrokenModularVisualOnlyItem::new, i -> visualOnlymodularItem = i);
-        register(modularItems, "modular_part_visual", ModularVisualOnlyItem::new, i -> visualOnlymodularItem = i);
+        register(MODULAR_ITEMS, "modular_broken_item", BrokenModularVisualOnlyItem::new, i -> visualOnlymodularItem = i);
+        register(MODULAR_ITEMS, "modular_part_visual", ModularVisualOnlyItem::new, i -> visualOnlymodularItem = i);
 
-        register(modularItems, "modular_item", ExampleModularItem::new, i -> modularItem = i);
-        register(modularItems, "modular_stackable_item", ExampleModularStrackableItem::new, (i) -> modularStackableItem = i);
-        register(modularItems, "modular_part", ModularItemPart::new);
+        register(MODULAR_ITEMS, "modular_item", ExampleModularItem::new, i -> modularItem = i);
+        register(MODULAR_ITEMS, "modular_stackable_item", ExampleModularStrackableItem::new, (i) -> modularStackableItem = i);
+        register(MODULAR_ITEMS, "modular_part", ModularItemPart::new);
 
-        register(modularItems, "modular_handheld", ModularWeapon::new);
-        register(modularItems, "modular_katars", ModularSword::new);
-        register(modularItems, "modular_gauntlets", ModularWeapon::new);
-        register(modularItems, "modular_knuckles", ModularWeapon::new);
-        register(modularItems, "modular_tonfa", ModularWeapon::new);
+        register(MODULAR_ITEMS, "modular_handheld", ModularWeapon::new);
+        register(MODULAR_ITEMS, "modular_katars", ModularSword::new);
+        register(MODULAR_ITEMS, "modular_gauntlets", ModularWeapon::new);
+        register(MODULAR_ITEMS, "modular_knuckles", ModularWeapon::new);
+        register(MODULAR_ITEMS, "modular_tonfa", ModularWeapon::new);
 
-        register(modularItems, "modular_handle", ModularWeapon::new);
-        register(modularItems, "modular_sword", ModularSword::new);
-        register(modularItems, "twin_blade", ModularSword::new);
-        register(modularItems, "modular_katana", ModularSword::new);
-        register(modularItems, "modular_naginata", ModularSword::new);
-        register(modularItems, "modular_greatsword", ModularSword::new);
-        register(modularItems, "modular_dagger", ModularSword::new);
-        register(modularItems, "modular_spear", ModularSword::new);
-        register(modularItems, "modular_throwing_knife", ModularSword::new);
-        register(modularItems, "modular_rapier", ModularSword::new);
-        register(modularItems, "modular_longsword", ModularSword::new);
-        register(modularItems, "modular_trident", ModularSword::new);
-        register(modularItems, "modular_scythe", ModularSword::new);
-        register(modularItems, "modular_sickle", ModularSword::new);
+        register(MODULAR_ITEMS, "modular_handle", ModularWeapon::new);
+        register(MODULAR_ITEMS, "modular_sword", ModularSword::new);
+        register(MODULAR_ITEMS, "twin_blade", ModularSword::new);
+        register(MODULAR_ITEMS, "modular_katana", ModularSword::new);
+        register(MODULAR_ITEMS, "modular_naginata", ModularSword::new);
+        register(MODULAR_ITEMS, "modular_greatsword", ModularSword::new);
+        register(MODULAR_ITEMS, "modular_dagger", ModularSword::new);
+        register(MODULAR_ITEMS, "modular_spear", ModularSword::new);
+        register(MODULAR_ITEMS, "modular_throwing_knife", ModularSword::new);
+        register(MODULAR_ITEMS, "modular_rapier", ModularSword::new);
+        register(MODULAR_ITEMS, "modular_longsword", ModularSword::new);
+        register(MODULAR_ITEMS, "modular_trident", ModularSword::new);
+        register(MODULAR_ITEMS, "modular_scythe", ModularSword::new);
+        register(MODULAR_ITEMS, "modular_sickle", ModularSword::new);
 
-        register(modularItems, "modular_shovel", ModularShovel::new);
-        register(modularItems, "modular_pickaxe", ModularPickaxe::new);
-        register(modularItems, "modular_hammer", ModularPickaxe::new);
-        register(modularItems, "modular_axe", ModularAxe::new, i -> modularAxe = i);
-        register(modularItems, "modular_hoe", ModularHoe::new);
-        register(modularItems, "modular_mattock", ModularAxe::new, i -> modularMattock = i);
+        register(MODULAR_ITEMS, "modular_shovel", ModularShovel::new);
+        register(MODULAR_ITEMS, "modular_pickaxe", ModularPickaxe::new);
+        register(MODULAR_ITEMS, "modular_hammer", ModularPickaxe::new);
+        register(MODULAR_ITEMS, "modular_axe", ModularAxe::new, i -> modularAxe = i);
+        register(MODULAR_ITEMS, "modular_hoe", ModularHoe::new);
+        register(MODULAR_ITEMS, "modular_mattock", ModularAxe::new, i -> modularMattock = i);
 
-        register(modularItems, "modular_mace", ModularMace::new);
+        register(MODULAR_ITEMS, "modular_mace", ModularMace::new);
 
-        register(modularItems, "modular_bow", ModularBow::new);
-        register(modularItems, "modular_small_bow", ModularBow::new);
-        register(modularItems, "modular_large_bow", ModularBow::new);
-        register(modularItems, "modular_bow_part", ExampleModularItem::new);
-        register(modularItems, "modular_crossbow", ModularCrossbow::new);
-        register(modularItems, "modular_small_crossbow", ModularCrossbow::new);
-        register(modularItems, "modular_large_crossbow", ModularCrossbow::new);
-        register(modularItems, "modular_crossbow_part", ExampleModularItem::new);
-        register(modularItems, "modular_arrow", ModularArrow::new);
-        register(modularItems, "modular_arrow_part", ExampleModularStrackableItem::new);
+        register(MODULAR_ITEMS, "modular_bow", ModularBow::new);
+        register(MODULAR_ITEMS, "modular_small_bow", ModularBow::new);
+        register(MODULAR_ITEMS, "modular_large_bow", ModularBow::new);
+        register(MODULAR_ITEMS, "modular_bow_part", ExampleModularItem::new);
+        register(MODULAR_ITEMS, "modular_crossbow", ModularCrossbow::new);
+        register(MODULAR_ITEMS, "modular_small_crossbow", ModularCrossbow::new);
+        register(MODULAR_ITEMS, "modular_large_crossbow", ModularCrossbow::new);
+        register(MODULAR_ITEMS, "modular_crossbow_part", ExampleModularItem::new);
+        register(MODULAR_ITEMS, "modular_arrow", ModularArrow::new);
+        register(MODULAR_ITEMS, "modular_arrow_part", ExampleModularStrackableItem::new);
 
-        register(modularItems, "modular_helmet", ModularHelmet::new);
-        register(modularItems, "modular_chestplate", ModularChestPlate::new);
-        register(modularItems, "modular_leggings", ModularLeggings::new);
-        register(modularItems, "modular_boots", ModularBoots::new);
+        register(MODULAR_ITEMS, "modular_helmet", ModularHelmet::new);
+        register(MODULAR_ITEMS, "modular_chestplate", ModularChestPlate::new);
+        register(MODULAR_ITEMS, "modular_leggings", ModularLeggings::new);
+        register(MODULAR_ITEMS, "modular_boots", ModularBoots::new);
 
-        register(modularItems, "modular_tower_shield", ModularVanillaShield::new);
-        register(modularItems, "modular_shield", ModularNonVanillaShield::new);
+        register(MODULAR_ITEMS, "modular_tower_shield", ModularVanillaShield::new);
+        register(MODULAR_ITEMS, "modular_shield", ModularNonVanillaShield::new);
 
-        register(modularItems, "modular_elytra", ModularElytraItem::getInstance);
+        register(MODULAR_ITEMS, "modular_elytra", ModularElytraItem::getInstance);
 
         //STATUS EFFECTS
-        register(statusEffects, "cryo", CryoStatusEffect::new, eff -> {
-            cryoStatusEffect = statusEffects.getHolder(statusEffects.getId(eff));
+        register(MOB_EFFECT_REGISTRAR, "cryo", CryoStatusEffect::new, eff -> {
+            cryoStatusEffect = MOB_EFFECT_REGISTRAR.getHolder(MOB_EFFECT_REGISTRAR.getId(eff));
         });
-        register(statusEffects, "teleport_block", TeleportBlockEffect::new, eff -> {
-            teleportBlockEffect = statusEffects.getHolder(statusEffects.getId(eff));
+        register(MOB_EFFECT_REGISTRAR, "teleport_block", TeleportBlockEffect::new, eff -> {
+            teleportBlockEffect = MOB_EFFECT_REGISTRAR.getHolder(MOB_EFFECT_REGISTRAR.getId(eff));
         });
-        register(statusEffects, "stun", StunStatusEffect::new, eff -> {
-            stunEffect = statusEffects.getHolder(statusEffects.getId(eff));
+        register(MOB_EFFECT_REGISTRAR, "stun", StunStatusEffect::new, eff -> {
+            stunEffect = MOB_EFFECT_REGISTRAR.getHolder(MOB_EFFECT_REGISTRAR.getId(eff));
         });
-        register(statusEffects, "stun_resistance", StunResistanceStatusEffect::new, eff -> {
-            stunResistanceEffect = statusEffects.getHolder(statusEffects.getId(eff));
+        register(MOB_EFFECT_REGISTRAR, "stun_resistance", StunResistanceStatusEffect::new, eff -> {
+            stunResistanceEffect = MOB_EFFECT_REGISTRAR.getHolder(MOB_EFFECT_REGISTRAR.getId(eff));
         });
 
         smartin.miapi.registries.AttributeRegistry.registerAttributes();
@@ -432,18 +436,18 @@ public class RegistryInventory {
 
 
         // GAME EVENTS
-        register(gameEvents, "stat_provider_added", () -> new GameEvent(16), ev -> statProviderCreatedEvent = ev);
-        register(gameEvents, "stat_provider_removed", () -> new GameEvent(16), ev -> statProviderRemovedEvent = ev);
+        register(GAME_EVENT_REGISTRAR, "stat_provider_added", () -> new GameEvent(16), ev -> statProviderCreatedEvent = ev);
+        register(GAME_EVENT_REGISTRAR, "stat_provider_removed", () -> new GameEvent(16), ev -> statProviderRemovedEvent = ev);
 
 
         LifecycleEvent.SETUP.register(() -> {
             //EDITPROPERTIES
-            registerMiapi(editOptions, "replace", new ReplaceOption());
-            registerMiapi(editOptions, "dev", new PropertyInjectionDev());
-            registerMiapi(editOptions, "skin", new SkinOptions());
-            registerMiapi(editOptions, "create", new CreateItemOption());
-            registerMiapi(editOptions, "cosmetic", new CosmeticEditOption());
-            registerMiapi(editOptions, "glint_settings", new GlintEditOption());
+            registerMiapi(EDIT_OPTION_MIAPI_REGISTRY, "replace", new ReplaceOption());
+            registerMiapi(EDIT_OPTION_MIAPI_REGISTRY, "dev", new PropertyInjectionDev());
+            registerMiapi(EDIT_OPTION_MIAPI_REGISTRY, "skin", new SkinOptions());
+            registerMiapi(EDIT_OPTION_MIAPI_REGISTRY, "create", new CreateItemOption());
+            registerMiapi(EDIT_OPTION_MIAPI_REGISTRY, "cosmetic", new CosmeticEditOption());
+            registerMiapi(EDIT_OPTION_MIAPI_REGISTRY, "glint_settings", new GlintEditOption());
             SynergyManager.setup();
 
             //CONDITIONS
@@ -467,123 +471,124 @@ public class RegistryInventory {
 
             //MODULEPROPERTIES
             if (smartin.miapi.Environment.isClient()) {
-                registerMiapi(moduleProperties, ModelProperty.KEY, new ModelProperty());
-                registerMiapi(moduleProperties, ModelTransformationProperty.KEY, new ModelTransformationProperty());
-                registerMiapi(moduleProperties, GuiOffsetProperty.KEY, new GuiOffsetProperty());
-                registerMiapi(moduleProperties, ItemModelProperty.KEY, new ItemModelProperty());
-                registerMiapi(moduleProperties, BannerModelProperty.KEY, new BannerModelProperty());
-                registerMiapi(moduleProperties, BlockModelProperty.KEY, new BlockModelProperty());
-                registerMiapi(moduleProperties, EntityModelProperty.KEY, new EntityModelProperty());
-                registerMiapi(moduleProperties, CrystalModelProperty.KEY, new CrystalModelProperty());
-                registerMiapi(moduleProperties, ConduitModelProperty.KEY, new ConduitModelProperty());
-                registerMiapi(moduleProperties, OverlayModelProperty.KEY, new OverlayModelProperty());
+                registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, ModelProperty.KEY, new ModelProperty());
+                registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, ModelTransformationProperty.KEY, new ModelTransformationProperty());
+                registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, GuiOffsetProperty.KEY, new GuiOffsetProperty());
+                registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, ItemModelProperty.KEY, new ItemModelProperty());
+                registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, BannerModelProperty.KEY, new BannerModelProperty());
+                registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, BlockModelProperty.KEY, new BlockModelProperty());
+                registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, EntityModelProperty.KEY, new EntityModelProperty());
+                registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, CrystalModelProperty.KEY, new CrystalModelProperty());
+                registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, ConduitModelProperty.KEY, new ConduitModelProperty());
+                registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, OverlayModelProperty.KEY, new OverlayModelProperty());
             } else {
-                registerMiapi(moduleProperties, "model", new ServerReplaceProperty());
-                registerMiapi(moduleProperties, "model_transform", new ServerReplaceProperty());
+                registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, "model", new ServerReplaceProperty());
+                registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, "model_transform", new ServerReplaceProperty());
                 //registerMiapi(moduleProperties, "modelMerge", new ServerReplaceProperty());
-                registerMiapi(moduleProperties, "gui_offset", new ServerReplaceProperty());
-                registerMiapi(moduleProperties, "item_model", new ServerReplaceProperty());
+                registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, "gui_offset", new ServerReplaceProperty());
+                registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, "item_model", new ServerReplaceProperty());
                 //registerMiapi(moduleProperties, "itemLore", new ServerReplaceProperty());
-                registerMiapi(moduleProperties, "banner", new ServerReplaceProperty());
-                registerMiapi(moduleProperties, "crystal_model", new ServerReplaceProperty());
-                registerMiapi(moduleProperties, "block_model", new ServerReplaceProperty());
-                registerMiapi(moduleProperties, "entity_model", new ServerReplaceProperty());
-                registerMiapi(moduleProperties, "conduit_model", new ServerReplaceProperty());
-                registerMiapi(moduleProperties, "overlay_texture_model", new ServerReplaceProperty());
+                registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, "banner", new ServerReplaceProperty());
+                registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, "crystal_model", new ServerReplaceProperty());
+                registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, "block_model", new ServerReplaceProperty());
+                registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, "entity_model", new ServerReplaceProperty());
+                registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, "conduit_model", new ServerReplaceProperty());
+                registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, "overlay_texture_model", new ServerReplaceProperty());
             }
-            registerMiapi(moduleProperties, CanChildBeEmpty.KEY, new CanChildBeEmpty());
-            registerMiapi(moduleProperties, LoreProperty.KEY, new LoreProperty());
-            registerMiapi(moduleProperties, OldNameProperty.KEY, new OldNameProperty());
-            registerMiapi(moduleProperties, SlotProperty.KEY, new SlotProperty());
-            registerMiapi(moduleProperties, AllowedSlots.KEY, new AllowedSlots());
-            registerMiapi(moduleProperties, MaterialProperty.KEY, new MaterialProperty());
-            registerMiapi(moduleProperties, AllowedMaterial.KEY, new AllowedMaterial());
-            registerMiapi(moduleProperties, AttributeProperty.KEY, new AttributeProperty());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, CanChildBeEmpty.KEY, new CanChildBeEmpty());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, LoreProperty.KEY, new LoreProperty());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, OldNameProperty.KEY, new OldNameProperty());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, SlotProperty.KEY, new SlotProperty());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, AllowedSlots.KEY, new AllowedSlots());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, MaterialProperty.KEY, new MaterialProperty());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, AllowedMaterial.KEY, new AllowedMaterial());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, AttributeProperty.KEY, new AttributePropertyRework());
             //registerMiapi(moduleProperties, ParticleShapingProperty.KEY, new ParticleShapingProperty());
-            registerMiapi(moduleProperties, DisplayNameProperty.KEY, new DisplayNameProperty());
-            registerMiapi(moduleProperties, ItemIdProperty.KEY, new ItemIdProperty());
-            registerMiapi(moduleProperties, EquipmentSlotProperty.KEY, new EquipmentSlotProperty());
-            registerMiapi(moduleProperties, HealthPercentDamage.KEY, new HealthPercentDamage());
-            registerMiapi(moduleProperties, ArmorPenProperty.KEY, new ArmorPenProperty());
-            registerMiapi(moduleProperties, ToolOrWeaponProperty.KEY, new ToolOrWeaponProperty());
-            registerMiapi(moduleProperties, MiningLevelProperty.KEY, new MiningLevelProperty());
-            registerMiapi(moduleProperties, TagProperty.KEY, new TagProperty());
-            registerMiapi(moduleProperties, MaterialProperties.KEY, new MaterialProperties());
-            registerMiapi(moduleProperties, CraftingConditionProperty.KEY, new CraftingConditionProperty());
-            registerMiapi(moduleProperties, StatRequirementProperty.KEY, new StatRequirementProperty());
-            registerMiapi(moduleProperties, GlintProperty.KEY, new GlintProperty());
-            registerMiapi(moduleProperties, EnderpearlProperty.KEY, new EnderpearlProperty());
-            registerMiapi(moduleProperties, TeleportTarget.KEY, new TeleportTarget());
-            registerMiapi(moduleProperties, ExplosionProperty.KEY, new ExplosionProperty());
-            registerMiapi(moduleProperties, ProjectileTriggerProperty.KEY, new ProjectileTriggerProperty());
-            registerMiapi(moduleProperties, ChannelingProperty.KEY, new ChannelingProperty());
-            registerMiapi(moduleProperties, AirDragProperty.KEY, new AirDragProperty());
-            registerMiapi(moduleProperties, WaterDragProperty.KEY, new WaterDragProperty());
-            registerMiapi(moduleProperties, ArrowProperty.KEY, new ArrowProperty());
-            registerMiapi(moduleProperties, DurabilityProperty.KEY, new DurabilityProperty());
-            registerMiapi(moduleProperties, FracturingProperty.KEY, new FracturingProperty());
-            registerMiapi(moduleProperties, IsPiglinGold.KEY, new IsPiglinGold());
-            registerMiapi(moduleProperties, CanWalkOnSnow.KEY, new CanWalkOnSnow());
-            registerMiapi(moduleProperties, FireProof.KEY, new FireProof());
-            registerMiapi(moduleProperties, RepairPriority.KEY, new RepairPriority());
-            registerMiapi(moduleProperties, PriorityProperty.KEY, new PriorityProperty());
-            registerMiapi(moduleProperties, ImmolateProperty.KEY, new ImmolateProperty());
-            registerMiapi(moduleProperties, LeechingProperty.KEY, new LeechingProperty());
-            registerMiapi(moduleProperties, IsCrossbowShootAble.KEY, new IsCrossbowShootAble());
-            registerMiapi(moduleProperties, CryoProperty.KEY, new CryoProperty());
-            registerMiapi(moduleProperties, AquaticDamage.KEY, new AquaticDamage());
-            registerMiapi(moduleProperties, SpiderDamage.KEY, new SpiderDamage());
-            registerMiapi(moduleProperties, SmiteDamage.KEY, new SmiteDamage());
-            registerMiapi(moduleProperties, IllagerBane.KEY, new IllagerBane());
-            registerMiapi(moduleProperties, PillagesGuard.KEY, new PillagesGuard());
-            registerMiapi(moduleProperties, LuminousLearningProperty.KEY, new LuminousLearningProperty());
-            registerMiapi(moduleProperties, WaterGravityProperty.KEY, new WaterGravityProperty());
-            registerMiapi(moduleProperties, CraftingEnchantProperty.KEY, new CraftingEnchantProperty());
-            registerMiapi(moduleProperties, ExhaustionProperty.KEY, new ExhaustionProperty());
-            registerMiapi(moduleProperties, MaterialInscribeDataProperty.KEY, new MaterialInscribeDataProperty());
-            registerMiapi(moduleProperties, FakeItemTagProperty.KEY, new FakeItemTagProperty());
-            registerMiapi(moduleProperties, RarityProperty.KEY, new RarityProperty());
-            registerMiapi(moduleProperties, MiningShapeProperty.KEY, new MiningShapeProperty());
-            registerMiapi(moduleProperties, ModuleStats.KEY, new ModuleStats());
-            registerMiapi(moduleProperties, EnchantAbilityProperty.KEY, new EnchantAbilityProperty());
-            registerMiapi(moduleProperties, StepCancelingProperty.KEY, new StepCancelingProperty());
-            registerMiapi(moduleProperties, LightningOnHit.KEY, new LightningOnHit());
-            registerMiapi(moduleProperties, GuiStatProperty.KEY, new GuiStatProperty());
-            registerMiapi(moduleProperties, AbilityMangerProperty.KEY, new AbilityMangerProperty());
-            registerMiapi(moduleProperties, OnHitTargetEffects.KEY, new OnHitTargetEffects());
-            registerMiapi(moduleProperties, OnDamagedEffects.KEY, new OnDamagedEffects());
-            registerMiapi(moduleProperties, OnKillEffects.KEY, new OnKillEffects());
-            registerMiapi(moduleProperties, OnKillExplosion.KEY, new OnKillExplosion());
-            registerMiapi(moduleProperties, CanChangeParentModule.KEY, new CanChangeParentModule());
-            registerMiapi(moduleProperties, NemesisProperty.KEY, new NemesisProperty());
-            registerMiapi(moduleProperties, CopyParentMaterialProperty.KEY, new CopyParentMaterialProperty());
-            registerMiapi(moduleProperties, EmissivityProperty.KEY, new EmissivityProperty());
-            registerMiapi(moduleProperties, RapidfireCrossbowProperty.KEY, new RapidfireCrossbowProperty());
-            registerMiapi(moduleProperties, MagazineCrossbowShotDelay.KEY, new MagazineCrossbowShotDelay());
-            registerMiapi(moduleProperties, HandheldItemProperty.KEY, new HandheldItemProperty());
-            registerMiapi(moduleProperties, AttributeSplitProperty.KEY, new AttributeSplitProperty());
-            registerMiapi(moduleProperties, FakeEnchantmentProperty.KEY, new FakeEnchantmentProperty());
-            registerMiapi(moduleProperties, AllowedEnchantments.KEY, new AllowedEnchantments());
-            registerMiapi(moduleProperties, BlueprintCrafting.KEY, new BlueprintCrafting());
-            registerMiapi(moduleProperties, SlashingProperty.KEY, new SlashingProperty());
-            registerMiapi(moduleProperties, ComponentProperty.KEY, new ComponentProperty());
-            registerMiapi(moduleProperties, MaterialInscribeProperty.KEY, new MaterialInscribeProperty());
-            registerMiapi(moduleProperties, DrawTimeProperty.KEY, new DrawTimeProperty());
-            registerMiapi(moduleProperties, MaterialOverwriteProperty.KEY, new MaterialOverwriteProperty());
-            registerMiapi(moduleProperties, CopyItemOnHit.KEY, new CopyItemOnHit());
-            registerMiapi(moduleProperties, AllowedInLootProperty.KEY, new AllowedInLootProperty());
-            registerMiapi(moduleProperties, PogoAbility.KEY, new PogoAbility());
-            registerMiapi(moduleProperties, CopyItemLoreProperty.KEY, new CopyItemLoreProperty());
-            registerMiapi(moduleProperties, ColorProperty.KEY, new ColorProperty());
-            registerMiapi(moduleProperties, KeyBindAbilityManagerProperty.KEY, new KeyBindAbilityManagerProperty());
-            registerMiapi(moduleProperties, FakeEitherEnchantmentProperty.KEY, new FakeEitherEnchantmentProperty());
-            registerMiapi(moduleProperties, MakesImpactSoundProperty.KEY, new MakesImpactSoundProperty());
-            registerMiapi(moduleProperties, ProjectileDropItemProperty.KEY, new ProjectileDropItemProperty());
-            registerMiapi(moduleProperties, MaterialStatIndicatorProperty.KEY, new MaterialStatIndicatorProperty());
-            registerMiapi(moduleProperties, ComponentMaterialProperty.KEY, new ComponentMaterialProperty());
-            registerMiapi(moduleProperties, AlphaOverwriteProperty.KEY, new AlphaOverwriteProperty());
-            registerMiapi(moduleProperties, IconRenderProperty.KEY, new IconRenderProperty());
-            registerMiapi(moduleProperties, AssumeItemIdentityProperty.KEY, new AssumeItemIdentityProperty());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, DisplayNameProperty.KEY, new DisplayNameProperty());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, ItemIdProperty.KEY, new ItemIdProperty());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, EquipmentSlotProperty.KEY, new EquipmentSlotProperty());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, HealthPercentDamage.KEY, new HealthPercentDamage());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, ArmorPenProperty.KEY, new ArmorPenProperty());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, ToolOrWeaponProperty.KEY, new ToolOrWeaponProperty());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, MiningLevelProperty.KEY, new MiningLevelProperty());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, TagProperty.KEY, new TagProperty());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, MaterialProperties.KEY, new MaterialProperties());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, CraftingConditionProperty.KEY, new CraftingConditionProperty());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, StatRequirementProperty.KEY, new StatRequirementProperty());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, GlintProperty.KEY, new GlintProperty());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, EnderpearlProperty.KEY, new EnderpearlProperty());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, TeleportTarget.KEY, new TeleportTarget());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, ExplosionProperty.KEY, new ExplosionProperty());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, ProjectileTriggerProperty.KEY, new ProjectileTriggerProperty());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, ChannelingProperty.KEY, new ChannelingProperty());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, AirDragProperty.KEY, new AirDragProperty());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, WaterDragProperty.KEY, new WaterDragProperty());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, ArrowProperty.KEY, new ArrowProperty());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, DurabilityProperty.KEY, new DurabilityProperty());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, FracturingProperty.KEY, new FracturingProperty());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, IsPiglinGold.KEY, new IsPiglinGold());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, CanWalkOnSnow.KEY, new CanWalkOnSnow());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, FireProof.KEY, new FireProof());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, RepairPriority.KEY, new RepairPriority());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, PriorityProperty.KEY, new PriorityProperty());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, ImmolateProperty.KEY, new ImmolateProperty());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, LeechingProperty.KEY, new LeechingProperty());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, IsCrossbowShootAble.KEY, new IsCrossbowShootAble());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, CryoProperty.KEY, new CryoProperty());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, AquaticDamage.KEY, new AquaticDamage());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, SpiderDamage.KEY, new SpiderDamage());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, SmiteDamage.KEY, new SmiteDamage());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, IllagerBane.KEY, new IllagerBane());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, PillagesGuard.KEY, new PillagesGuard());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, LuminousLearningProperty.KEY, new LuminousLearningProperty());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, WaterGravityProperty.KEY, new WaterGravityProperty());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, CraftingEnchantProperty.KEY, new CraftingEnchantProperty());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, ExhaustionProperty.KEY, new ExhaustionProperty());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, MaterialInscribeDataProperty.KEY, new MaterialInscribeDataProperty());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, FakeItemTagProperty.KEY, new FakeItemTagProperty());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, RarityProperty.KEY, new RarityProperty());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, MiningShapeProperty.KEY, new MiningShapeProperty());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, ModuleStats.KEY, new ModuleStats());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, EnchantAbilityProperty.KEY, new EnchantAbilityProperty());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, StepCancelingProperty.KEY, new StepCancelingProperty());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, LightningOnHit.KEY, new LightningOnHit());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, GuiStatProperty.KEY, new GuiStatProperty());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, AbilityMangerProperty.KEY, new AbilityMangerProperty());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, OnHitTargetEffects.KEY, new OnHitTargetEffects());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, OnDamagedEffects.KEY, new OnDamagedEffects());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, OnKillEffects.KEY, new OnKillEffects());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, OnKillExplosion.KEY, new OnKillExplosion());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, CanChangeParentModule.KEY, new CanChangeParentModule());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, NemesisProperty.KEY, new NemesisProperty());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, CopyParentMaterialProperty.KEY, new CopyParentMaterialProperty());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, EmissivityProperty.KEY, new EmissivityProperty());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, RapidfireCrossbowProperty.KEY, new RapidfireCrossbowProperty());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, MagazineCrossbowShotDelay.KEY, new MagazineCrossbowShotDelay());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, HandheldItemProperty.KEY, new HandheldItemProperty());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, AttributeSplitProperty.KEY, new AttributeSplitProperty());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, FakeEnchantmentProperty.KEY, new FakeEnchantmentProperty());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, AllowedEnchantments.KEY, new AllowedEnchantments());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, BlueprintCrafting.KEY, new BlueprintCrafting());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, SlashingProperty.KEY, new SlashingProperty());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, ComponentProperty.KEY, new ComponentProperty());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, MaterialInscribeProperty.KEY, new MaterialInscribeProperty());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, DrawTimeProperty.KEY, new DrawTimeProperty());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, MaterialOverwriteProperty.KEY, new MaterialOverwriteProperty());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, CopyItemOnHit.KEY, new CopyItemOnHit());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, AllowedInLootProperty.KEY, new AllowedInLootProperty());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, PogoAbility.KEY, new PogoAbility());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, CopyItemLoreProperty.KEY, new CopyItemLoreProperty());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, ColorProperty.KEY, new ColorProperty());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, KeyBindAbilityManagerProperty.KEY, new KeyBindAbilityManagerProperty());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, FakeEitherEnchantmentProperty.KEY, new FakeEitherEnchantmentProperty());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, MakesImpactSoundProperty.KEY, new MakesImpactSoundProperty());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, ProjectileDropItemProperty.KEY, new ProjectileDropItemProperty());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, MaterialStatIndicatorProperty.KEY, new MaterialStatIndicatorProperty());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, ComponentMaterialProperty.KEY, new ComponentMaterialProperty());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, AlphaOverwriteProperty.KEY, new AlphaOverwriteProperty());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, IconRenderProperty.KEY, new IconRenderProperty());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, AssumeItemIdentityProperty.KEY, new AssumeItemIdentityProperty());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, TreechopProperty.KEY, new TreechopProperty());
             //compat
             //registerMiapi(moduleProperties, BetterCombatProperty.KEY, new BetterCombatProperty());
             BetterCombatHelper.setup();
@@ -611,7 +616,7 @@ public class RegistryInventory {
 
             registerMiapi(useAbilityRegistry, ShootAbility.KEY, new ShootAbility());
             registerMiapi(useAbilityRegistry, ReloadSingleBulletAbility.KEY, new ReloadSingleBulletAbility());
-            registerMiapi(moduleProperties, GunContextProperty.KEY, new GunContextProperty());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, GunContextProperty.KEY, new GunContextProperty());
 
             registerMiapi(useAbilityRegistry, "full_block", new ShieldBlockAbility());
             registerMiapi(useAbilityRegistry, "parry_block", new ParryShieldBlock());

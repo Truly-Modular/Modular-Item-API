@@ -3,6 +3,9 @@ package smartin.miapi.modules.properties.attributes;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Multimap;
+import com.mojang.datafixers.util.Either;
+import com.redpxnda.nucleus.event.PrioritizedEvent;
+import dev.architectury.event.EventResult;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.ResourceLocation;
@@ -15,11 +18,15 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 import smartin.miapi.Miapi;
+import smartin.miapi.modules.ModuleInstance;
+import smartin.miapi.modules.properties.util.DoubleOperationResolvable;
 
 import java.util.*;
 
 public class AttributeUtil {
-
+    public static final PrioritizedEvent<AttributeAdjustEvent> MODULE_ATTRIBUTE_ADJUST = PrioritizedEvent.createEventResult();
+    public static final PrioritizedEvent<ItemAttributeAdjustEvent> ITEM_ATTRIBUTE_ADJUST = PrioritizedEvent.createEventResult();
+    public static final PrioritizedEvent<ItemVanillaAttributeAdjustEvent> VANILLA_ITEM_ATTRIBUTE_ADJUST = PrioritizedEvent.createEventResult();
 
     public static Multimap<Attribute, AttributeModifier> getAttribute(ItemStack itemStack, EquipmentSlot equipmentSlot) {
         Multimap<Attribute, AttributeModifier> multimap = ArrayListMultimap.create();
@@ -178,5 +185,26 @@ public class AttributeUtil {
 
     public static ResourceLocation getIDForSlot(String slotidString) {
         return Miapi.id(slotidString.toLowerCase(Locale.ROOT));
+    }
+
+    public interface AttributeAdjustEvent {
+        EventResult adjust(AttributeContext attributeContext, ModuleInstance moduleInstance);
+    }
+
+    public interface ItemAttributeAdjustEvent {
+        EventResult adjust(AttributeContext attributeContext, ItemStack itemStack);
+    }
+
+    public static class AttributeContext {
+        Map<ResourceLocation, Map<AttributeModifier.Operation, Map<Either<EquipmentSlotGroup, Boolean>, DoubleOperationResolvable>>> map;
+    }
+
+
+    public interface ItemVanillaAttributeAdjustEvent {
+        EventResult adjust(ItemVanillaAttributeContext attributeContext, ItemStack itemStack);
+    }
+
+    public static class ItemVanillaAttributeContext {
+        List<ItemAttributeModifiers.Entry> list;
     }
 }

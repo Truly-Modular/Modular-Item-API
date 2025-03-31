@@ -172,6 +172,11 @@ public class DoubleOperationResolvable {
         return evaluate(baseValue).orElse(fallback);
     }
 
+    public void clearCache(){
+        this.cachedResult = null;
+    }
+
+
     public Optional<Double> evaluate(double baseValue) {
         if (cachedResult == null || baseValue != this.baseValue) {
             resolve(operations, baseValue).ifPresent(result -> cachedResult = result);
@@ -336,7 +341,7 @@ public class DoubleOperationResolvable {
             return StatResolver.resolveDouble(transformed, instance);
         }
 
-        private static AttributeModifier.Operation getOperation(String operationString) {
+        public static AttributeModifier.Operation getOperation(String operationString) {
             return switch (operationString) {
                 case "*" -> AttributeModifier.Operation.ADD_MULTIPLIED_BASE;
                 case "**" -> AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL;

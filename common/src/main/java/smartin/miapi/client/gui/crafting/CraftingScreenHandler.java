@@ -130,7 +130,7 @@ public class CraftingScreenHandler extends AbstractContainerMenu {
             });
             Networking.registerC2SPacket(editPacketID, (buffer, player) -> {
                 String editOptionKey = buffer.readUtf();
-                EditOption option = RegistryInventory.editOptions.get(editOptionKey);
+                EditOption option = RegistryInventory.EDIT_OPTION_MIAPI_REGISTRY.get(editOptionKey);
                 String[] array = buffer.readUtf().split("\n");
                 ItemStack stack = ModularItemStackConverter.getModularVersion(inventory.getItem(0));
                 ModuleInstance root = ItemModule.getModules(stack);

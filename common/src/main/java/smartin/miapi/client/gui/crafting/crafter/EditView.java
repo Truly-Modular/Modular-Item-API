@@ -121,7 +121,7 @@ public class EditView extends InteractAbleWidget {
                 return null;
             }
         };
-        RegistryInventory.editOptions.getFlatMap().forEach((s, editOption) -> {
+        RegistryInventory.EDIT_OPTION_MIAPI_REGISTRY.getFlatMap().forEach((s, editOption) -> {
             if (editOption.isVisible(editContext)) {
                 ModuleInstance moduleInstance = null;
                 if (instance != null) {
@@ -156,7 +156,7 @@ public class EditView extends InteractAbleWidget {
                 if (screenHandler instanceof CraftingScreenHandler screenHandler1) {
                     ModuleInstance toCrafter = instance;
                     FriendlyByteBuf buf = Networking.createBuffer();
-                    buf.writeUtf(RegistryInventory.editOptions.findKey(option).toString());
+                    buf.writeUtf(RegistryInventory.EDIT_OPTION_MIAPI_REGISTRY.findKey(option).toString());
                     List<String> position = new ArrayList<>();
                     if (toCrafter != null) {
                         toCrafter.calculatePosition(position);

@@ -51,13 +51,13 @@ public abstract class CodecProperty<T> implements ModuleProperty<T>, Validator<T
         T decoded = decode(element);
         for (EditorError editorError : validate(0, decoded, isClient)) {
             if (editorError.severity() == EditorError.ErrorSeverity.INFO) {
-                Miapi.LOGGER.info(RegistryInventory.moduleProperties.findKey(this) + " from " + id + " : " + editorError.message());
+                Miapi.LOGGER.info(RegistryInventory.MODULE_PROPERTY_MIAPI_REGISTRY.findKey(this) + " from " + id + " : " + editorError.message());
                 Miapi.LOGGER.info("" + element);
             } else if (editorError.severity() == EditorError.ErrorSeverity.WARNING) {
-                Miapi.LOGGER.warn(RegistryInventory.moduleProperties.findKey(this) + " from " + id + " : " + editorError.message());
+                Miapi.LOGGER.warn(RegistryInventory.MODULE_PROPERTY_MIAPI_REGISTRY.findKey(this) + " from " + id + " : " + editorError.message());
                 Miapi.LOGGER.warn("" + element);
             } else if (editorError.severity() == EditorError.ErrorSeverity.ERROR) {
-                Miapi.LOGGER.error(RegistryInventory.moduleProperties.findKey(this) + " from " + id + " : " + editorError.message());
+                Miapi.LOGGER.error(RegistryInventory.MODULE_PROPERTY_MIAPI_REGISTRY.findKey(this) + " from " + id + " : " + editorError.message());
                 Miapi.LOGGER.error("" + element);
             }
         }

@@ -13,10 +13,8 @@ import smartin.miapi.Miapi;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.item.modular.VisualModularItem;
-import smartin.miapi.modules.properties.TagProperty;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
-import smartin.miapi.modules.synergies.SynergyManager;
 import smartin.miapi.registries.RegistryInventory;
 
 import java.lang.reflect.Type;
@@ -58,7 +56,7 @@ public record ItemModule(ResourceLocation id, Map<ModuleProperty<?>, Object> pro
     /**
      * Loads an ItemModule from a JSON string.
      *
-     * @param path             the path of the JSON file
+     * @param path the path of the JSON file
      */
     public static ItemModule loadFromData(boolean isClient, ResourceLocation path, JsonElement data, RegistryAccess registryAccess) {
         try {
@@ -80,40 +78,6 @@ public record ItemModule(ResourceLocation id, Map<ModuleProperty<?>, Object> pro
         }
     }
 
-    /**
-     * Loads an ItemModule from a JSON string.
-     *
-     * @param path             the path of the JSON file
-     * @param moduleJsonString the JSON string to load from
-     */
-    public static void loadModuleExtension(ResourceLocation path, String moduleJsonString, boolean isClient) {
-        try {
-            JsonObject moduleJson = gson.fromJson(moduleJsonString, JsonObject.class);
-            SynergyManager.PropertyHolder holder = SynergyManager.getFrom(moduleJson, isClient, path);
-            if (moduleJson.has("tag")) {
-                String tag = moduleJson.get("tag").getAsString();
-                List<ItemModule> toChange = TagProperty.getModulesWithTag(tag);
-                for (ItemModule module : toChange) {
-                    RegistryInventory.modules.remove(module.id);
-                    RegistryInventory.modules.register(module.id, new ItemModule(module.id, holder.applyHolder(module.properties())));
-                }
-            } else if (moduleJson.has("id")) {
-                ResourceLocation id = Miapi.id(moduleJson.get("id").getAsString());
-                ItemModule module = RegistryInventory.modules.get(id);
-                if (module == null) {
-                    LOGGER.error("module not found for id " + id + " by module extention " + path);
-                } else {
-                    RegistryInventory.modules.remove(module.id);
-                    RegistryInventory.modules.register(module.id, new ItemModule(module.id, holder.applyHolder(module.properties())));
-                }
-            } else {
-                LOGGER.error("module extension " + path + " did not include a id or tag.");
-            }
-        } catch (Exception e) {
-            LOGGER.warn("Could not load Module to extend " + path, e);
-        }
-    }
-
     @SuppressWarnings("unchecked")
     public static <T> T merge(ModuleProperty<T> property, Object left, Object right, MergeType mergeType) {
         return property.merge((T) left, (T) right, mergeType);
@@ -128,7 +92,7 @@ public record ItemModule(ResourceLocation id, Map<ModuleProperty<?>, Object> pro
      */
     @SuppressWarnings("unchecked")
     private static void isValidProperty(String key, ResourceLocation path, JsonElement data, boolean isClient, Consumer<Pair<ModuleProperty<?>, Object>> onValid) {
-        ModuleProperty<?> property = RegistryInventory.moduleProperties.get(Miapi.id(key));
+        ModuleProperty<?> property = RegistryInventory.MODULE_PROPERTY_MIAPI_REGISTRY.get(Miapi.id(key));
         if (property != null) {
             try {
                 boolean valid = property.load(Miapi.id(key), data, isClient);
