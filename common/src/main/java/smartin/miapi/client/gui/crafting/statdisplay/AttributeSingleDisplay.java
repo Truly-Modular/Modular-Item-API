@@ -18,7 +18,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.ParentHandledScreen;
-import smartin.miapi.modules.properties.attributes.AttributePropertyRework;
+import smartin.miapi.modules.properties.attributes.AttributeProperty;
 import smartin.miapi.modules.properties.attributes.AttributeUtil;
 
 import java.text.DecimalFormat;
@@ -146,7 +146,7 @@ public class AttributeSingleDisplay extends SingleStatDisplayDouble {
     public void renderHover(GuiGraphics drawContext, int mouseX, int mouseY, float delta) {
         List<Component> list = new ArrayList(getHoverLines(drawContext, mouseX, mouseY, delta));
         if (this.isMouseOver(mouseX, mouseY) && ParentHandledScreen.hasShiftDown()) {
-            AttributePropertyRework.property.getData(original).ifPresent(data -> {
+            AttributeProperty.property.getData(original).ifPresent(data -> {
                 data.forEach((id, attributeOperationMap) -> {
                     if (id.equals(BuiltInRegistries.ATTRIBUTE.getKey(attribute))) {
                         attributeOperationMap.computeIfPresent(operation, (op, map) -> {

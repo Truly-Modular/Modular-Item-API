@@ -48,7 +48,8 @@ public record ModuleSwapLootFunction(
         ResourceLocation material,
         double chance,
         Optional<List<ResourceLocation>> blacklist,
-        Optional<List<ResourceLocation>> whitelist
+        Optional<List<ResourceLocation>> whitelist,
+        boolean allowStackable
 ) implements LootItemFunction {
 
     public static MapCodec<ModuleSwapLootFunction> CODEC = RecordCodecBuilder.mapCodec((instance) ->
@@ -60,7 +61,9 @@ public record ModuleSwapLootFunction(
                     Codec.list(ResourceLocation.CODEC).optionalFieldOf("blacklist")
                             .forGetter(c -> c.blacklist),
                     Codec.list(ResourceLocation.CODEC).optionalFieldOf("whitelist")
-                            .forGetter(c -> c.whitelist)
+                            .forGetter(c -> c.whitelist),
+                    Codec.BOOL.optionalFieldOf("allow_stackable", false)
+                            .forGetter(c -> c.allowStackable())
             ).apply(instance, ModuleSwapLootFunction::new));
 
 
@@ -73,6 +76,9 @@ public record ModuleSwapLootFunction(
     public ItemStack apply(ItemStack stack, LootContext lootContext) {
         ItemStack modular = ModularItemStackConverter.getModularVersion(stack);
         if (ModularItem.isModularItem(modular)) {
+            if (modular.isStackable() && !allowStackable()) {
+                return stack;
+            }
             ModuleInstance root = ItemModule.getModules(modular);
             if (stack.getItem() instanceof ModularVisualOnlyItem) {
                 return stack;

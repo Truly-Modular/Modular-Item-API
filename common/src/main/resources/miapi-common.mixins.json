@@ -60,6 +60,7 @@
         "client.ElytraFeatureRendererAccessor",
         "client.ElytraLayerMixin",
         "client.FeatureRendererAccessor",
+        "client.GuiMixin",
         "client.GuiSpritesManagerMixin",
         "client.ItemRendererAccessor",
         "client.ItemRendererMixin",

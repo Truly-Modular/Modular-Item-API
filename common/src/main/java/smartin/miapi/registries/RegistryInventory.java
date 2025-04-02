@@ -97,7 +97,6 @@ import smartin.miapi.modules.edit_options.skins.SkinOptions;
 import smartin.miapi.modules.properties.*;
 import smartin.miapi.modules.properties.armor.*;
 import smartin.miapi.modules.properties.attributes.AttributeProperty;
-import smartin.miapi.modules.properties.attributes.AttributePropertyRework;
 import smartin.miapi.modules.properties.attributes.AttributeSplitProperty;
 import smartin.miapi.modules.properties.compat.better_combat.BetterCombatHelper;
 import smartin.miapi.modules.properties.compat.ht_treechop.TreechopProperty;
@@ -502,7 +501,7 @@ public class RegistryInventory {
             registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, AllowedSlots.KEY, new AllowedSlots());
             registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, MaterialProperty.KEY, new MaterialProperty());
             registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, AllowedMaterial.KEY, new AllowedMaterial());
-            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, AttributeProperty.KEY, new AttributePropertyRework());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, AttributeProperty.KEY, new AttributeProperty());
             //registerMiapi(moduleProperties, ParticleShapingProperty.KEY, new ParticleShapingProperty());
             registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, DisplayNameProperty.KEY, new DisplayNameProperty());
             registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, ItemIdProperty.KEY, new ItemIdProperty());

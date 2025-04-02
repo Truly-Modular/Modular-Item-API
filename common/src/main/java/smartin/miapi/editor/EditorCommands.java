@@ -3,10 +3,10 @@ package smartin.miapi.editor;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
-import com.redpxnda.nucleus.editor.core.ClientLoader;
 import dev.architectury.event.EventResult;
 import dev.architectury.platform.Platform;
 import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -14,6 +14,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 import smartin.miapi.Miapi;
+import smartin.miapi.blueprint.BlueprintComponent;
+import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.editor.material.MaterialEditor;
 import smartin.miapi.editor.syntax.CodecValidatorInterface;
 import smartin.miapi.editor.syntax.JsonSyntaxHighlighter;
@@ -22,9 +24,9 @@ import smartin.miapi.material.CodecMaterial;
 import smartin.miapi.material.MaterialProperty;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
+import smartin.miapi.modules.abilities.key.MiapiBinding;
 import smartin.miapi.modules.synergies.SynergyManager;
 
-import java.util.ArrayList;
 import java.util.function.Function;
 
 import static smartin.miapi.editor.MiapiEditor.editors;
@@ -39,13 +41,20 @@ public class EditorCommands {
                 .then(Commands.literal("editor")
                         .then(Commands.literal("data")
                                 .executes(EditorCommands::executeOpenEditor)));
-        LiteralArgumentBuilder<CommandSourceStack> material_editor = Commands.literal("miapi")
+        LiteralArgumentBuilder<CommandSourceStack> materialEditor = Commands.literal("miapi")
                 .then(Commands.literal("editor")
                         .then(Commands.literal("material")
                                 .executes(EditorCommands::executeOpenMaterialEditor)));
         dispatcher.register(runPose);
         dispatcher.register(fs);
-        dispatcher.register(material_editor);
+        dispatcher.register(materialEditor);
+        if (Platform.getEnv() == EnvType.CLIENT) {
+            registerClient();
+        }
+    }
+
+    @Environment(EnvType.CLIENT)
+    private static void registerClient() {
         JsonEditor.registerGlobalInterface(new JsonSyntaxHighlighter());
         JsonEditor.registerGlobalInterface(new PropertyMapHighlighter());
         var synergyValidator = new CodecValidatorInterface(SynergyManager.SYNERGY_CODEC, "Synergy Validator");
@@ -68,9 +77,49 @@ public class EditorCommands {
                 event.resourceLocation.getPath().startsWith("miapi/synergies/")) {
                 event.interfaces.add(new CodecValidatorInterface(SynergyManager.SYNERGY_CODEC, "Synergy Validator"));
             }
+            if (event.resourceLocation != null &&
+                event.resourceLocation.getPath().startsWith("miapi/modular_converters/")) {
+                event.interfaces.add(new CodecValidatorInterface(ModuleInstance.CODEC, "Modular Converter Validator"));
+            }
+            if (event.resourceLocation != null &&
+                event.resourceLocation.getPath().startsWith("miapi/material/")) {
+                event.interfaces.add(new CodecValidatorInterface(CodecMaterial.CODEC, "Material Validator"));
+            }
+            if (event.resourceLocation != null &&
+                event.resourceLocation.getPath().startsWith("miapi/blueprints/")) {
+                event.interfaces.add(new CodecValidatorInterface(BlueprintComponent.CODEC, "Blueprint Validator"));
+            }
+            if (event.resourceLocation != null &&
+                event.resourceLocation.getPath().startsWith("miapi/key_binding")) {
+                event.interfaces.add(new CodecValidatorInterface(MiapiBinding.CODEC, "KeyBind Validator"));
+            }
+            if (event.resourceLocation != null &&
+                event.resourceLocation.getPath().startsWith("miapi/create_options/")) {
+                //TODO:validator
+            }
+            if (event.resourceLocation != null &&
+                event.resourceLocation.getPath().startsWith("miapi/material_extension/")) {
+                //TODO:validator
+            }
+            if (event.resourceLocation != null &&
+                event.resourceLocation.getPath().startsWith("miapi/module_extension/")) {
+                //TODO:validator
+            }
+            if (event.resourceLocation != null &&
+                event.resourceLocation.getPath().startsWith("miapi/skin/module")) {
+                //TODO:validator
+            }
+            if (event.resourceLocation != null &&
+                event.resourceLocation.getPath().startsWith("miapi/skin/tab")) {
+                //TODO:validator
+            }
             return EventResult.pass();
         });
-        ClientLoader.RENDER.add((guiGraphics, deltaTracker) -> new ArrayList<>(editors).forEach(miapiEditor -> miapiEditor.render(guiGraphics, deltaTracker)));
+        if (Platform.isModLoaded("nucleus_editor")) {
+            NucleusEditor.setup();
+        } else if (MiapiConfig.INSTANCE.client.other.allowEditorNoNucleus) {
+
+        }
     }
 
     private static int executeHandEditor(CommandContext<CommandSourceStack> context) {
@@ -118,6 +167,10 @@ public class EditorCommands {
             }
             if (!context.getSource().hasPermission(4)) {
                 context.getSource().sendFailure(Component.literal("Command only allowed for operators"));
+                return -1;
+            }
+            if (!MiapiConfig.INSTANCE.client.other.allowEditorNoNucleus && !Platform.isModLoaded("nucleus_editor")) {
+                context.getSource().sendFailure(Component.literal("Requires Nucleus Editor to be installed!"));
                 return -1;
             }
             return onExecute.apply(context);

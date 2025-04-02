@@ -11,5 +11,11 @@ public interface MiapiEditor extends AutoCloseable {
 
     void render(GuiGraphics guiGraphics, DeltaTracker deltaTracker);
 
-    default void close() {}
+    default void close() {
+    }
+
+    static void renderAll(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
+        new ArrayList<>(editors).forEach(miapiEditor -> miapiEditor.render(guiGraphics, deltaTracker));
+    }
+
 }

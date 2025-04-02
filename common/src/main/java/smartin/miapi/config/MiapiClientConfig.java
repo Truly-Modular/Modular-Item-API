@@ -46,6 +46,14 @@ public class MiapiClientConfig {
         @AutoCodec.Name("animated_materials")
         public boolean animatedMaterials = true;
 
+        @Comment("If Editor is enabled despite nucleus not being loaded")
+        @AutoCodec.Name("allow_editor_no_nucleus")
+        public boolean allowEditorNoNucleus = false;
+
+        @Comment("If a custom render mixin should be used to substitute nucleus editor")
+        @AutoCodec.Name("enable_editor_mixin")
+        public boolean enableEditorMixin = false;
+
         //@AutoCodec.Name("keybinds")
         //@Comment("""
         //        Keybinds are kept in the config so they are available during gamestart.

@@ -28,12 +28,12 @@ public class LootHelper {
                     1.0,
                     1.0,
                     Optional.empty(),
-                    Optional.empty()),
+                    Optional.empty(),false),
             new ModuleSwapLootFunction(
                     Miapi.id("empty"),
                     1.0,
                     Optional.empty(),
-                    Optional.empty()));
+                    Optional.empty(),false));
 
     public static final ResourceLocation LOOT_TABLE_ID = Miapi.id("loot_table_id");
     public static final LootContextParam<ResourceLocation> LOOT_TABLE_PARAM = new LootContextParam<>(LOOT_TABLE_ID);

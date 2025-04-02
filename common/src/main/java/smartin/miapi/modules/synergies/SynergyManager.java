@@ -2,8 +2,8 @@ package smartin.miapi.modules.synergies;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
+import io.netty.handler.codec.DecoderException;
 import net.minecraft.resources.ResourceLocation;
-import org.apache.commons.codec.DecoderException;
 import smartin.miapi.Miapi;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.item.modular.PropertyResolver;

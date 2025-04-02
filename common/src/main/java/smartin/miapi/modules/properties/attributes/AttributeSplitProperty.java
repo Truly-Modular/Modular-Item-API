@@ -108,8 +108,8 @@ public class AttributeSplitProperty extends CodecProperty<Map<AttributeSplitProp
                 List<SplitContext> ratios = entry.getValue();
 
                 ResourceLocation attributeKey;
-                if (AttributePropertyRework.replaceMap.containsKey(entry.getKey().entityAttribute().toString())) {
-                    attributeKey = BuiltInRegistries.ATTRIBUTE.getKey(AttributePropertyRework.replaceMap.get(entry.getKey().entityAttribute().toString()).get());
+                if (AttributeProperty.replaceMap.containsKey(entry.getKey().entityAttribute().toString())) {
+                    attributeKey = BuiltInRegistries.ATTRIBUTE.getKey(AttributeProperty.replaceMap.get(entry.getKey().entityAttribute().toString()).get());
                 } else {
                     attributeKey = entry.getKey().entityAttribute();
                 }

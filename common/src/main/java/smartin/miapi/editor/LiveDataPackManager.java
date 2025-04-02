@@ -11,6 +11,7 @@ import smartin.miapi.modules.conditions.ConditionManager;
 import smartin.miapi.modules.properties.util.EditorError;
 import smartin.miapi.modules.cache.CacheCommands;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
@@ -27,6 +28,7 @@ public class LiveDataPackManager implements AutoCloseable {
     private final File runtimeFolder;
     private WatchService watchService;
     private final Map<WatchKey, DataPackContext> watchKeys = new HashMap<>();
+    public List<MiapiEditor> openedEditors = new ArrayList<>();
 
     public static void setup() {
         MiapiEvents.PLAYER_TICK_END.register(player -> {
@@ -290,6 +292,16 @@ public class LiveDataPackManager implements AutoCloseable {
         if (!checkFileChanges()) {
             return;
         }
+        openedEditors.forEach(miapiEditor -> {
+            if(miapiEditor instanceof Closeable closeable){
+                try {
+                    closeable.close();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            MiapiEditor.editors.remove(miapiEditor);
+        });
 
         for (DataPackContext context : loadedPacks) {
             if (!context.enabled) continue;
@@ -317,8 +329,10 @@ public class LiveDataPackManager implements AutoCloseable {
                                     if (shouldLoadJson(data)) {
                                         var editor = new JsonEditor(Files.readString(file.toPath()), (f) -> {
                                         }, path, resourceLocation);
+                                        editor.resourceLocation = resourceLocation;
                                         editor.closeOnNoError = true;
                                         MiapiEditor.editors.add(editor);
+                                        openedEditors.add(editor);
                                     }
                                 } catch (RuntimeException e) {
                                     Miapi.LOGGER.warn("", e);

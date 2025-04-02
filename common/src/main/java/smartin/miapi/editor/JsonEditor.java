@@ -42,7 +42,7 @@ public class JsonEditor implements MiapiEditor {
     private WatchService watchService;
     private WatchKey watchKey;
     private long lastModified = 0;
-    private ResourceLocation resourceLocation;
+    public ResourceLocation resourceLocation;
     public boolean closeOnNoError = false;
 
     public JsonEditor(String initialContent, Consumer<String> onChange) {
@@ -193,9 +193,9 @@ public class JsonEditor implements MiapiEditor {
         // Check for file changes
         checkFileChanges();
 
-        ImGui.setNextWindowSize(800, 600, ImGuiCond.FirstUseEver);
         ImGui.pushID(resourceLocation.toString());
-        if (ImGui.begin("JSON Editor", show)) {
+        ImGui.setNextWindowSize(800, 600, ImGuiCond.FirstUseEver);
+        if (ImGui.begin("JSON Editor " + resourceLocation, show)) {
             float windowWidth = ImGui.getWindowWidth();
             float windowHeight = ImGui.getWindowHeight();
 
@@ -230,9 +230,9 @@ public class JsonEditor implements MiapiEditor {
             }
             // Dropdown menu
             if (ImGui.button("Dropdown")) {
-                ImGui.openPopup("DropdownMenu");
+                ImGui.openPopup("DropdownMenu"+resourceLocation);
             }
-            if (ImGui.beginPopup("DropdownMenu")) {
+            if (ImGui.beginPopup("DropdownMenu"+resourceLocation)) {
                 for (MiapiRegistry<?> registry : MiapiRegistry.REGISTRY_MAP.values()) {
                     if (ImGui.menuItem(registry.getName())) {
                         MiapiEditor.editors.add(new RegistryViewer<>(registry));
@@ -275,13 +275,13 @@ public class JsonEditor implements MiapiEditor {
             }
 
             // Main editor container
-            if (ImGui.beginChild("EditorContainer", editorWidth, contentHeight, true)) {
-                if (ImGui.beginChild("EditorScrollContainer", editorWidth, desiredHeight + ImGui.getStyle().getWindowPaddingY() * 2, true)) {
+            if (ImGui.beginChild("EditorContainer"+resourceLocation, editorWidth, contentHeight, true)) {
+                if (ImGui.beginChild("EditorScrollContainer"+resourceLocation, editorWidth, desiredHeight + ImGui.getStyle().getWindowPaddingY() * 2, true)) {
                     // Store scroll position to sync gutter and editor
                     float scrollY = ImGui.getScrollY();
 
                     // Left gutter for line numbers and error indicators
-                    ImGui.beginChild("Gutter", gutterWidth, desiredHeight, false);
+                    ImGui.beginChild("Gutter"+resourceLocation, gutterWidth, desiredHeight, false);
                     ImGui.setScrollY(ImGui.getScrollY());
                     float currentY = 0;
 
@@ -313,7 +313,7 @@ public class JsonEditor implements MiapiEditor {
 
                     // Main editor
                     ImGui.sameLine();
-                    ImGui.beginChild("MainEditor", mainEditorWidth, desiredHeight, false);
+                    ImGui.beginChild("MainEditor"+resourceLocation, mainEditorWidth, desiredHeight, false);
 
                     // Ensure both scroll positions stay in sync
                     ImGui.setScrollY(scrollY);
@@ -324,11 +324,15 @@ public class JsonEditor implements MiapiEditor {
                         inputFlags |= ImGuiInputTextFlags.ReadOnly;
                     }
 
-                    if (ImGui.inputTextMultiline("##content", content,
-                            mainEditorWidth - ImGui.getStyle().getWindowPaddingX(),
-                            desiredHeight,
-                            inputFlags)) {
-                        validateContent();
+                    if (ImGui.isWindowFocused()) {
+                        if (ImGui.inputTextMultiline("##content" + resourceLocation, content,
+                                mainEditorWidth - ImGui.getStyle().getWindowPaddingX(),
+                                desiredHeight,
+                                inputFlags)) {
+                            validateContent();  // Only update content when window is focused
+                        }
+                    } else {
+                        ImGui.textUnformatted(content.get());  // Display content but prevent edits
                     }
                     ImGui.endChild();
 

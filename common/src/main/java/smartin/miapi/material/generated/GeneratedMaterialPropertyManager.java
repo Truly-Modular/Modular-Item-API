@@ -1,6 +1,7 @@
 package smartin.miapi.material.generated;
 
 import com.google.gson.JsonElement;
+import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.JsonOps;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponentType;
@@ -10,6 +11,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
@@ -18,7 +20,6 @@ import net.minecraft.world.level.storage.loot.functions.LootItemFunctions;
 import smartin.miapi.Miapi;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.config.MiapiServerConfig;
-import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.abilities.CopyItemAbility;
 import smartin.miapi.modules.abilities.util.AbilityMangerProperty;
 import smartin.miapi.modules.properties.ComponentProperty;
@@ -173,21 +174,17 @@ public class GeneratedMaterialPropertyManager {
                         .toList();
             }
 
-            List<AttributeProperty.AttributeJson> jsonList = modifiers.stream().map(e -> {
-                var json = new AttributeProperty.AttributeJson();
-                json.targetOperation = "+";
-                json.operation = "+";
-                json.attribute = e.attribute().getRegisteredName();
-                if (cost != null) {
-                    json.value = new StatResolver.DoubleFromStat("" + e.modifier().amount() + "/" + cost + " * [module.cost]");
-                } else {
-                    json.value = new StatResolver.DoubleFromStat(e.modifier().amount());
-                }
-                json.slot = e.slot();
-                return json;
-            }).toList();
+            Map<ResourceLocation, Map<AttributeModifier.Operation, Map<Either<EquipmentSlotGroup, Boolean>, DoubleOperationResolvable>>> attributes = new HashMap<>();
 
-            propertyMap.put(AttributeProperty.property, jsonList);
+            modifiers.forEach(e -> {
+                DoubleOperationResolvable resolvable = new DoubleOperationResolvable(List.of(new DoubleOperationResolvable.Operation("" + e.modifier().amount() + "/" + cost + " * [module.cost]")));
+                attributes
+                        .computeIfAbsent(BuiltInRegistries.ATTRIBUTE.getKey(e.attribute().value()), (c) -> new HashMap<>())
+                        .computeIfAbsent(AttributeModifier.Operation.ADD_VALUE, (c) -> new HashMap<>())
+                        .put(Either.left(e.slot()), resolvable);
+            });
+
+            propertyMap.put(AttributeProperty.property, attributes);
         }
 
         // Add the collected propertyMap to the properties map
