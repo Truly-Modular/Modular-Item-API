@@ -3,6 +3,7 @@ package smartin.miapi.editor;
 import com.google.gson.*;
 import dev.architectury.event.EventResult;
 import dev.architectury.platform.Platform;
+import net.fabricmc.api.EnvType;
 import net.minecraft.resources.ResourceLocation;
 import smartin.miapi.Miapi;
 import smartin.miapi.editor.syntax.EditorInterface;
@@ -32,11 +33,15 @@ public class LiveDataPackManager implements AutoCloseable {
 
     public static void setup() {
         MiapiEvents.PLAYER_TICK_END.register(player -> {
-            INSTANCE.checkAndValidateDatapacks();
+            if (Platform.getEnv() == EnvType.CLIENT && Miapi.server != null && INSTANCE != null) {
+                INSTANCE.checkAndValidateDatapacks();
+            }
             return EventResult.pass();
         });
         MiapiEvents.ADJUST_RAW_DATA.register(event -> {
-            getInstance().processDataPacks(event);
+            if (Platform.getEnv() == EnvType.CLIENT && Miapi.server != null) {
+                getInstance().processDataPacks(event);
+            }
             return EventResult.pass();
         });
     }
@@ -293,7 +298,7 @@ public class LiveDataPackManager implements AutoCloseable {
             return;
         }
         openedEditors.forEach(miapiEditor -> {
-            if(miapiEditor instanceof Closeable closeable){
+            if (miapiEditor instanceof Closeable closeable) {
                 try {
                     closeable.close();
                 } catch (IOException e) {

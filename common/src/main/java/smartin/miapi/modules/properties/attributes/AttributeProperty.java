@@ -104,7 +104,6 @@ public class AttributeProperty extends CodecProperty<Map<ResourceLocation, Map<A
         priorityMap.put(AttributeRegistry.CRITICAL_DAMAGE.value(), -10.9f);
         priorityMap.put(AttributeRegistry.CRITICAL_CHANCE.value(), -10.8f);
         priorityMap.put(AttributeRegistry.PROJECTILE_DAMAGE.value(), -10.0f);
-        priorityMap.put(AttributeRegistry.PROJECTILE_CRIT_MULTIPLIER.value(), -9.5f);
         priorityMap.put(AttributeRegistry.PROJECTILE_SPEED.value(), -9.0f);
         priorityMap.put(AttributeRegistry.PROJECTILE_ACCURACY.value(), -9.0f);
         priorityMap.put(AttributeRegistry.PROJECTILE_PIERCING.value(), -9.0f);

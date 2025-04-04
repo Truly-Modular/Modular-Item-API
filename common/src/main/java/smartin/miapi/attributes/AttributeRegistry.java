@@ -32,6 +32,7 @@ import smartin.miapi.modules.properties.attributes.AttributeUtil;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.WeakHashMap;
 
 
@@ -66,11 +67,6 @@ public class AttributeRegistry {
     public static Holder<Attribute> PLAYER_ITEM_USE_MOVEMENT_SPEED;
 
     public static Holder<Attribute> PROJECTILE_DAMAGE;
-    @Deprecated
-    /**
-     * @deprecated use {@link AttributeRegistry#CRITICAL_DAMAGE} instead, its more general and has better logic
-     */
-    public static Holder<Attribute> PROJECTILE_CRIT_MULTIPLIER;
     public static Holder<Attribute> PROJECTILE_SPEED;
     public static Holder<Attribute> PROJECTILE_ACCURACY;
     public static Holder<Attribute> PROJECTILE_PIERCING;
@@ -141,7 +137,7 @@ public class AttributeRegistry {
                 try {
                     facet.tick();
                 } catch (RuntimeException e) {
-
+                    Miapi.LOGGER.warn("facet error", e);
                 }
             }
             return EventResult.pass();
@@ -172,9 +168,9 @@ public class AttributeRegistry {
                     livingHurtEvent.damageSource.getEntity() instanceof LivingEntity attacker) {
                 if (attacker.getAttributes().hasAttribute(BACK_STAB) && attacker.getAttributes().getInstance(BACK_STAB) != null) {
                     if (livingHurtEvent.damageSource.getEntity().getLookAngle().dot(livingHurtEvent.defender.getLookAngle()) > 0) {
-                        attacker.getAttributes().getInstance(BACK_STAB).addTransientModifier(new AttributeModifier(TEMP_BACKSTAB_DMG_UUID, livingHurtEvent.amount, AttributeModifier.Operation.ADD_VALUE));
+                        Objects.requireNonNull(attacker.getAttributes().getInstance(BACK_STAB)).addTransientModifier(new AttributeModifier(TEMP_BACKSTAB_DMG_UUID, livingHurtEvent.amount, AttributeModifier.Operation.ADD_VALUE));
                         livingHurtEvent.amount = (float) attacker.getAttributeValue(BACK_STAB);
-                        attacker.getAttributes().getInstance(BACK_STAB).removeModifier(TEMP_BACKSTAB_DMG_UUID);
+                        Objects.requireNonNull(attacker.getAttributes().getInstance(BACK_STAB)).removeModifier(TEMP_BACKSTAB_DMG_UUID);
                     }
                 }
             }
@@ -238,9 +234,9 @@ public class AttributeRegistry {
                     !livingHurtEvent.defender.level().isClientSide()
             ) {
                 if (attacker.getAttributes().hasAttribute(CRITICAL_CHANCE) && !livingHurtEvent.isCritical) {
-                    attacker.getAttributes().getInstance(CRITICAL_CHANCE).addTransientModifier(new AttributeModifier(TEMP_CRIT_DMG_UUID, 1, AttributeModifier.Operation.ADD_VALUE));
+                    Objects.requireNonNull(attacker.getAttributes().getInstance(CRITICAL_CHANCE)).addTransientModifier(new AttributeModifier(TEMP_CRIT_DMG_UUID, 1, AttributeModifier.Operation.ADD_VALUE));
                     double value = attacker.getAttributeValue(CRITICAL_CHANCE) - 1;
-                    attacker.getAttributes().getInstance(CRITICAL_CHANCE).removeModifier(TEMP_CRIT_DMG_UUID);
+                    Objects.requireNonNull(attacker.getAttributes().getInstance(CRITICAL_CHANCE)).removeModifier(TEMP_CRIT_DMG_UUID);
                     if (attacker.level().getRandom().nextDouble() < value) {
                         livingHurtEvent.isCritical = true;
                         livingHurtEvent.amount = livingHurtEvent.amount * 1.5f;
@@ -262,15 +258,22 @@ public class AttributeRegistry {
                         livingHurtEvent.isCritical &&
                         attacker.getAttributes().getInstance(CRITICAL_DAMAGE) != null) {
                     attacker.getAttribute(CRITICAL_DAMAGE);
-                    attacker.getAttributes().getInstance(CRITICAL_DAMAGE).addTransientModifier(new AttributeModifier(TEMP_CRIT_DMG_UUID, livingHurtEvent.amount / 1.5, AttributeModifier.Operation.ADD_VALUE));
-                    attacker.getAttributes().getInstance(CRITICAL_DAMAGE).addTransientModifier(new AttributeModifier(TEMP_CRIT_DMG_MULTIPLIER_UUID, 0.5, AttributeModifier.Operation.ADD_MULTIPLIED_BASE));
+                    Objects.requireNonNull(attacker.getAttributes().getInstance(CRITICAL_DAMAGE)).addTransientModifier(new AttributeModifier(TEMP_CRIT_DMG_UUID, livingHurtEvent.amount / 1.5, AttributeModifier.Operation.ADD_VALUE));
+                    Objects.requireNonNull(attacker.getAttributes().getInstance(CRITICAL_DAMAGE)).addTransientModifier(new AttributeModifier(TEMP_CRIT_DMG_MULTIPLIER_UUID, 0.5, AttributeModifier.Operation.ADD_MULTIPLIED_BASE));
                     livingHurtEvent.amount = (float) attacker.getAttributeValue(CRITICAL_DAMAGE);
-                    attacker.getAttributes().getInstance(CRITICAL_DAMAGE).removeModifier(TEMP_CRIT_DMG_UUID);
-                    attacker.getAttributes().getInstance(CRITICAL_DAMAGE).removeModifier(TEMP_CRIT_DMG_MULTIPLIER_UUID);
+                    Objects.requireNonNull(attacker.getAttributes().getInstance(CRITICAL_DAMAGE)).removeModifier(TEMP_CRIT_DMG_UUID);
+                    Objects.requireNonNull(attacker.getAttributes().getInstance(CRITICAL_DAMAGE)).removeModifier(TEMP_CRIT_DMG_MULTIPLIER_UUID);
                 }
             }
             return EventResult.pass();
         }, -1);
+        MiapiProjectileEvents.MODULAR_PROJECTILE_ENTITY_HIT.register(event -> {
+            double critModifier = AttributeUtil.getActualValue(event.projectile.thrownStack, EquipmentSlot.MAINHAND, CRITICAL_DAMAGE.value(), 1.5);
+            if (critModifier != 1 && event.projectile.isCritArrow()) {
+                event.damage = event.damage * (float) (critModifier / 1.5);
+            }
+            return EventResult.pass();
+        });
     }
 
     public static double getAttribute(ItemStack stack, Attribute attribute, EquipmentSlot slot, double defaultValue) {

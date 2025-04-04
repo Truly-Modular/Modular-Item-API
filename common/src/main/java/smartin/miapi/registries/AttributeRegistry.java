@@ -85,9 +85,6 @@ public class AttributeRegistry {
         RegistryInventory.registerAtt("generic.projectile_piercing", true, () ->
                         new RangedAttribute("miapi.attribute.name.projectile_piercing", 0.0, 0.0, 1024.0).setSyncable(true),
                 att -> PROJECTILE_PIERCING = att);
-        RegistryInventory.registerAtt("generic.projectile_crit_multiplier", true, () ->
-                        new RangedAttribute("miapi.attribute.name.projectile_crit_multiplier", 1.5, 0.0, 1024.0).setSyncable(true),
-                att -> PROJECTILE_CRIT_MULTIPLIER = att);
 
         RegistryInventory.registerAtt("generic.elytra_turn_efficiency", true, () ->
                         new RangedAttribute("miapi.attribute.name.elytra_turn_efficiency", 0.0, -1024.0, 100.0).setSyncable(true),

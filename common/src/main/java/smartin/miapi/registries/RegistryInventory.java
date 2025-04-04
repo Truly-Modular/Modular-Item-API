@@ -135,7 +135,6 @@ public class RegistryInventory {
     public static final Registrar<DataComponentType<?>> COMPONENT_TYPE_REGISTRAR = registrar.get().get(Registries.DATA_COMPONENT_TYPE);
     public static final Registrar<Block> BLOCK_REGISTRAR = registrar.get().get(Registries.BLOCK);
     public static final Registrar<BlockEntityType<?>> BLOCK_ENTITY_TYPE_REGISTRAR = registrar.get().get(Registries.BLOCK_ENTITY_TYPE);
-    //TODO:make entity attached attributes work again
     public static final Registrar<Attribute> ATTRIBUTE_REGISTRAR = registrar.get().get(Registries.ATTRIBUTE);
     public static final Registrar<ArmorMaterial> ARMOR_MATERIAL_REGISTRAR = registrar.get().get(Registries.ARMOR_MATERIAL);
     public static final Registrar<EntityType<?>> ENTITY_TYPE_REGISTRAR = registrar.get().get(Registries.ENTITY_TYPE);
@@ -146,6 +145,7 @@ public class RegistryInventory {
     public static final Registrar<RecipeSerializer<?>> RECIPE_SERIALIZER_REGISTRAR = registrar.get().get(Registries.RECIPE_SERIALIZER);
     public static final MiapiRegistry<ModuleProperty> MODULE_PROPERTY_MIAPI_REGISTRY = MiapiRegistry.getInstance(ModuleProperty.class);
     public static final MiapiRegistry<ItemModule> ITEM_MODULE_MIAPI_REGISTRY = MiapiRegistry.getInstance(ItemModule.class);
+    public static final MiapiRegistry<ItemModule> modules = ITEM_MODULE_MIAPI_REGISTRY;
     public static final MiapiRegistry<EditOption> EDIT_OPTION_MIAPI_REGISTRY = MiapiRegistry.getInstance(EditOption.class);
     public static final MiapiRegistry<CraftingStat> CRAFTING_STATS_REGISTRY = MiapiRegistry.getInstance(CraftingStat.class);
     public static final MiapiRegistry<Material> MATERIAL_REGISTRY = MiapiRegistry.getInstance(Material.class);
@@ -243,6 +243,7 @@ public class RegistryInventory {
     }
 
     public static MenuType<CraftingScreenHandler> craftingScreenHandler;
+    public static MenuType<CraftingScreenHandler> backpackScreenHandler;
 
     public static void setup() {
 

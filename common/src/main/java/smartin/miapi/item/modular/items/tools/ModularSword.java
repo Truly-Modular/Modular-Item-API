@@ -1,6 +1,8 @@
 package smartin.miapi.item.modular.items.tools;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.Position;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
@@ -10,6 +12,8 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.AbstractArrow;
+import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
@@ -17,6 +21,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.apache.commons.lang3.mutable.MutableFloat;
 import org.lwjgl.system.NonnullDefault;
 import smartin.miapi.config.MiapiConfig;
+import smartin.miapi.entity.ItemProjectileEntity;
 import smartin.miapi.events.ModularAttackEvents;
 import smartin.miapi.item.FakeItemstackReferenceProvider;
 import smartin.miapi.item.modular.ModularItem;
@@ -34,7 +39,7 @@ import smartin.miapi.modules.properties.util.ComponentApplyProperty;
 import java.util.List;
 
 @NonnullDefault
-public class ModularSword extends SwordItem implements PlatformModularItemMethods, ModularItem, ModularSetableToolMaterial {
+public class ModularSword extends SwordItem implements PlatformModularItemMethods, ModularItem, ModularSetableToolMaterial, ProjectileItem {
     public Tier currentFakeToolMaterial = ModularToolMaterial.toolMaterial;
 
     public ModularSword(Properties settings) {
@@ -57,6 +62,16 @@ public class ModularSword extends SwordItem implements PlatformModularItemMethod
             ModularAttackEvents.ATTACK_DAMAGE_BONUS.invoker().getAttackDamageBonus(target, damageSource.getWeaponItem(), damage, damageSource, mutableFloat);
         }
         return mutableFloat.floatValue();
+    }
+
+    @Override
+    public Projectile asProjectile(Level world, Position position, ItemStack stack, Direction direction) {
+        ItemStack itemStack = stack.copy();
+        itemStack.setCount(1);
+        ItemProjectileEntity arrowEntity = new ItemProjectileEntity(world, position, itemStack);
+        arrowEntity.setPosRaw(position.x(), position.y(), position.z());
+        arrowEntity.pickup = AbstractArrow.Pickup.ALLOWED;
+        return arrowEntity;
     }
 
     @Override

@@ -147,6 +147,10 @@ public class EditorCommands {
     }
 
     private static int executeOpenMaterialEditor(CommandContext<CommandSourceStack> context) {
+        if(true){
+            context.getSource().sendFailure(Component.literal("Material editor is not yet finished!"));
+            return 1;
+        }
         return canExecute(context, (c) -> {
             editors.add(new MaterialEditor((CodecMaterial) MaterialProperty.MATERIAL_REGISTRY.get(Miapi.id("metal/iron")), (m) -> {
 

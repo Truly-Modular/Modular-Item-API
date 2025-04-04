@@ -15,9 +15,11 @@ import smartin.miapi.modules.properties.util.DoubleProperty;
 import java.util.List;
 
 public class InventoryProperty extends DoubleProperty {
+    public static InventoryProperty property;
 
     public InventoryProperty(ResourceLocation cacheKey) {
         super(cacheKey);
+        property = this;
     }
 
     public List<ItemStack> getSlots(ModuleInstance moduleInstance, ItemStack backPackItem) {

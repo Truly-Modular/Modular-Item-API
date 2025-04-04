@@ -33,12 +33,13 @@ public class ItemModelProperty extends CodecProperty<List<ModelJson>> {
     public ItemModelProperty() {
         super(Codec.list(CODEC));
         property = this;
-        if(Environment.isClient()){
+        if (Environment.isClient()) {
             clientSetup();
         }
     }
-    public void clientSetup(){
-        MiapiItemModel.modelSuppliers.add((key,mode, model, stack) -> {
+
+    public void clientSetup() {
+        MiapiItemModel.modelSuppliers.add((key, mode, model, stack) -> {
             List<ModelJson> modelJsons = getData(stack).orElse(new ArrayList<>());
             List<MiapiModel> models = new ArrayList<>();
             modelJsons.forEach(modelJson -> {
@@ -64,6 +65,10 @@ public class ItemModelProperty extends CodecProperty<List<ModelJson>> {
                                     ModelProperty.isAllowedKey(modelJson.modelType, key) &&
                                     stack.has(DataComponents.CHARGED_PROJECTILES)
                             ) {
+                                var component = stack.get(DataComponents.CHARGED_PROJECTILES);
+                                assert component != null;
+                                var items = component.getItems();
+                                var optional = items.stream().findFirst();
                                 return stack.get(DataComponents.CHARGED_PROJECTILES).getItems().stream().findFirst().orElse(ItemStack.EMPTY);
                             }
                             return ItemStack.EMPTY;

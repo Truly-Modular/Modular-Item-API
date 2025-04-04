@@ -2,8 +2,11 @@ package smartin.miapi.modules.properties.util;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import dev.architectury.platform.Platform;
+import net.fabricmc.api.EnvType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import smartin.miapi.Miapi;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.modules.ItemModule;
@@ -31,6 +34,17 @@ public interface ModuleProperty<T> extends MergeAble<T>, InitializeAble<T> {
 
     T decode(JsonElement element);
 
+    default T decodeAndLoad(JsonElement element) {
+        try{
+            if (load(Miapi.id("runtime_load"), element, Platform.getEnv() == EnvType.CLIENT)) {
+                return decode(element);
+            }
+        }catch (Exception e){
+            throw new RuntimeException(e);
+        }
+        return null;
+    }
+
     /**
      * this should NOT be called, as most properties do not properly implement this because im lazy.
      */
@@ -38,6 +52,11 @@ public interface ModuleProperty<T> extends MergeAble<T>, InitializeAble<T> {
 
     @SuppressWarnings("unchecked")
     default JsonElement encodeCast(Object property) {
+        return encode((T) property);
+    }
+
+    @SuppressWarnings("unchecked")
+    default JsonElement encodeCastAndLoad(Object property) {
         return encode((T) property);
     }
 

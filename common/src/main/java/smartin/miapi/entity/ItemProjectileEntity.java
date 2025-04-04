@@ -224,16 +224,18 @@ public class ItemProjectileEntity extends AbstractArrow {
     }
 
     @Override
-    public void shootFromRotation(Entity shooter, float pitch, float yaw, float roll, float speed, float divergence) {
+    public void shoot(double x, double y, double z, float velocity, float inaccuracy) {
         ItemStack projectileStack = this.getPickupItem();
-        speed = (float) Math.max(0.1, speed + AttributeUtil.getActualValue(projectileStack, EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_SPEED.value()));
-        divergence *= (float) Math.pow(12.0, -AttributeUtil.getActualValue(projectileStack, EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_ACCURACY.value()));
-        float f = -Mth.sin(yaw * ((float) Math.PI / 180)) * Mth.cos(pitch * ((float) Math.PI / 180));
-        float g = -Mth.sin((pitch + roll) * ((float) Math.PI / 180));
-        float h = Mth.cos(yaw * ((float) Math.PI / 180)) * Mth.cos(pitch * ((float) Math.PI / 180));
-        this.shoot(f, g, h, speed, divergence);
-        Vec3 vec3d = shooter.getDeltaMovement();
-        this.setDeltaMovement(this.getDeltaMovement().add(vec3d.x, shooter.onGround() ? 0.0 : vec3d.y, vec3d.z));
+        velocity = (float) Math.max(0.1, velocity + AttributeUtil.getActualValue(projectileStack, EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_SPEED.value()));
+        inaccuracy *= (float) Math.pow(12.0, -AttributeUtil.getActualValue(projectileStack, EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_ACCURACY.value()));
+        Vec3 vec3 = this.getMovementToShoot(x, y, z, velocity, inaccuracy);
+        this.setDeltaMovement(vec3);
+        this.hasImpulse = true;
+        double d = vec3.horizontalDistance();
+        this.setYRot((float) (Mth.atan2(vec3.x, vec3.z) * 57.2957763671875));
+        this.setXRot((float) (Mth.atan2(vec3.y, d) * 57.2957763671875));
+        this.yRotO = this.getYRot();
+        this.xRotO = this.getXRot();
     }
 
     @Override

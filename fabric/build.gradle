@@ -135,6 +135,8 @@ dependencies {
 
     //modLocalRuntime "maven.modrinth:obsidian-equipment:kwMkZlFD"
     modCompileOnly "maven.modrinth:zenith:1.1.9-1.20.1"
+    modLocalRuntime "maven.modrinth:mmmmmmmmmmmm:fabric_1.21-2.0.7"
+    modLocalRuntime "maven.modrinth:moonlight:fHnDuS0y"
 
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) { transitive false }

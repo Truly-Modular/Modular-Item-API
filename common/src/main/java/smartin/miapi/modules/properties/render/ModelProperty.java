@@ -161,6 +161,7 @@ public class ModelProperty extends CodecProperty<List<ModelProperty.ModelData>> 
                jsonKey != null && jsonKey.equals(modelTypeKey) ||
                jsonKey != null && modelTypeKey == null && jsonKey.equals("default") ||
                jsonKey == null && modelTypeKey != null && modelTypeKey.equals("default") ||
+               "item".equals(modelTypeKey) && "default".equals(jsonKey) ||
                ("item".equals(jsonKey) && modelTypeKey == null);
     }
 

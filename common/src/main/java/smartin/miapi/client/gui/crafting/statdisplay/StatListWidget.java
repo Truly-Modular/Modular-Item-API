@@ -145,11 +145,6 @@ public class StatListWidget extends InteractAbleWidget {
                 .setTranslationKey("miapi.projectile_piercing")
                 .setFormat("##.##")
                 .setMax(10).build());
-        addStatDisplay(AttributeSingleDisplay
-                .builder(AttributeRegistry.PROJECTILE_CRIT_MULTIPLIER)
-                .setTranslationKey("miapi.projectile_crit_multiplier")
-                .setFormat("##.##")
-                .setMax(10).build());
         addStatDisplay(SinglePropertyStatDisplay
                 .builder(HealthPercentDamage.property)
                 .setMax(50)
