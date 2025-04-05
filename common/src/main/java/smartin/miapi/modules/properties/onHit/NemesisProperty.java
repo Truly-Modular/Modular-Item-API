@@ -63,8 +63,9 @@ public class NemesisProperty extends DoubleProperty implements CraftingProperty 
             if (ModularItem.isModularItem(weapon) && !livingEntity.level().isClientSide()) {
                 double nemesisScale = getValue(weapon).orElse(0.0);
                 NemesisData data = weapon.get(NEMESIS_COMPONENT);
+                EntityType attackedType = livingEntity.getType();
                 if (data != null && nemesisScale > 0) {
-                    EntityType attackedType = livingEntity.getType();
+                    data = data.clone();
                     Optional<EntityType<?>> entityType1 = EntityType.byString(data.entityType);
                     if (entityType1.isPresent()) {
                         EntityType targetType = entityType1.get();
@@ -75,15 +76,25 @@ public class NemesisProperty extends DoubleProperty implements CraftingProperty 
                             data.kills -= 5;
                             if (data.kills < 0) {
                                 data.kills = 0;
+                                data.entityType = "";
                             }
-                            weapon.set(NEMESIS_COMPONENT, data);
                         }
                     } else {
                         data.entityType = EntityType.getKey(attackedType).toString();
                         data.kills = 1;
                     }
+                } else {
+                    data.entityType = EntityType.getKey(attackedType).toString();
+                    data.kills = 1;
                 }
-                weapon.set(NEMESIS_COMPONENT, data);
+                if (livingEntity.getUseItem().equals(weapon)) {
+                    weapon.set(NEMESIS_COMPONENT, data);
+                    if (livingEntity instanceof Player player) {
+                        player.setItemInHand(player.getUsedItemHand(), weapon);
+                    }
+                } else {
+                    weapon.set(NEMESIS_COMPONENT, data);
+                }
             }
             return EventResult.pass();
         });
@@ -108,7 +119,6 @@ public class NemesisProperty extends DoubleProperty implements CraftingProperty 
                             listener.amount -= (float) (factor) * listener.amount;
                         }
                     }
-                    weapon.set(NEMESIS_COMPONENT, data);
                 }
             }
             return EventResult.pass();
@@ -126,15 +136,14 @@ public class NemesisProperty extends DoubleProperty implements CraftingProperty 
                     if (entityType1.isPresent()) {
                         EntityType targetType = entityType1.get();
                         if (attackedType.equals(targetType)) {
-                            double factor = scale(data.kills, nemesisScale) - 1;
+                            double factor = scale(data.kills, nemesisScale);
                             bonusDamage.add((factor) * baseDamage);
                         } else {
-                            double factor = scale(data.kills, nemesisScale) - 1;
+                            double factor = scale(data.kills, nemesisScale);
                             factor = Math.min(0.95, factor);
                             bonusDamage.add((factor) * baseDamage);
                         }
                     }
-                    weapon.set(NEMESIS_COMPONENT, data);
                 }
             }
             return EventResult.pass();
@@ -151,7 +160,7 @@ public class NemesisProperty extends DoubleProperty implements CraftingProperty 
                 double factor = scale(data.kills, nemesisScale) * 100 - 1;
                 Optional<EntityType<?>> entityType1 = EntityType.byString(data.entityType);
                 Component entity = Component.translatable("miapi.lore.nemesis.no_entity");
-                if (entityType1.isPresent()) {
+                if (entityType1.isPresent() && data.kills != 0) {
                     entity = entityType1.get().getDescription();
                 }
                 Component blueNumber = Component.literal(modifierFormat.format(factor) + "%").withStyle(Style.EMPTY.withColor(ChatFormatting.BLUE));
@@ -189,6 +198,13 @@ public class NemesisProperty extends DoubleProperty implements CraftingProperty 
         public NemesisData(String entityType, int kills) {
             this.entityType = entityType;
             this.kills = kills;
+        }
+
+        public NemesisData() {
+        }
+
+        public NemesisData clone() {
+            return new NemesisData(entityType, kills);
         }
 
         @Override

@@ -6,6 +6,7 @@ import com.redpxnda.nucleus.codec.auto.AutoCodec;
 import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
@@ -14,12 +15,14 @@ import smartin.miapi.item.modular.TransformMap;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.util.CodecProperty;
+import smartin.miapi.modules.properties.util.EditorError;
 import smartin.miapi.modules.properties.util.MergeAble;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.registries.RegistryInventory;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.regex.Pattern;
 
 /**
  * The SlotProperty class manages and defines submodule slots within modules.
@@ -56,6 +59,18 @@ public class SlotProperty extends CodecProperty<Map<String, SlotProperty.ModuleS
             return new TransformMap();
         }
         return getTransformStack(slot);
+    }
+
+    @Override
+    public List<EditorError> validate(int line, Map<String, SlotProperty.ModuleSlot> component, boolean isClient) {
+        List<EditorError> list = new ArrayList<>();
+        component.values().forEach(slot -> {
+            String regex = "^[a-z_-]+(?:\\.[a-z._-]+)";
+            if (Pattern.matches(regex, slot.translationKey) && Component.translatable(slot.translationKey).getString().equals(slot.translationKey)) {
+                list.add(new EditorError(line, "translation seems to be missing!", EditorError.ErrorSeverity.WARNING));
+            }
+        });
+        return list;
     }
 
     @Environment(EnvType.CLIENT)
