@@ -31,7 +31,6 @@ import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.NeoForgeMod;
-import net.neoforged.neoforge.common.loot.LootTableIdCondition;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeModificationEvent;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
@@ -64,7 +63,6 @@ public class TrulyModularForge {
     public TrulyModularForge() {
         NeoForge.EVENT_BUS.register(new ServerEvents());
         Miapi.init();
-        LootTableIdCondition lootTableIdCondition;
 
 
         loadCompat("epicfight", () -> {

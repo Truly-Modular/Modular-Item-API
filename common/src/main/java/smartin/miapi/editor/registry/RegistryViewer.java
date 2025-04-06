@@ -8,6 +8,7 @@ import imgui.type.ImString;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
+import smartin.miapi.editor.DocPage;
 import smartin.miapi.editor.MiapiEditor;
 import smartin.miapi.registries.MiapiRegistry;
 
@@ -55,7 +56,7 @@ public class RegistryViewer<T> implements MiapiEditor {
             // Registry content
             if (ImGui.beginChild("RegistryContent", 0, -ImGui.getFrameHeightWithSpacing(), true)) {
                 for (Map.Entry<ResourceLocation, T> entry : filteredEntries) {
-                    if (ImGui.treeNodeEx(entry.getKey().toString(), ImGuiTreeNodeFlags.DefaultOpen)) {
+                    if (ImGui.treeNodeEx(entry.getKey().toString(), ImGuiTreeNodeFlags.None)) {
                         renderEntry(entry);
                         ImGui.treePop();
                     }
@@ -80,17 +81,41 @@ public class RegistryViewer<T> implements MiapiEditor {
     }
 
     protected void renderEntry(Map.Entry<ResourceLocation, T> entry) {
-        if (ImGui.isItemClicked()) {
-            selectedValue = entry.getValue();
-            selectedEntry.set(entry.getKey().toString());
-            if (onSelect != null) {
-                onSelect.accept(selectedValue);
-            }
-            showDetails.set(true);
+        selectedValue = entry.getValue();
+        selectedEntry.set(entry.getKey().toString());
+        if (onSelect != null) {
+            onSelect.accept(selectedValue);
         }
+        if (DocPage.PAGE_LOOKUP.containsKey(entry.getValue().getClass())) {
+            DocPage page = DocPage.PAGE_LOOKUP.get(entry.getValue().getClass());
+
+                // Header (maybe bold)
+            ImGui.textColored(1f, 1f, 0f, 1f, page.header); // yellowish
+
+            ImGui.separator();
+
+            // Description with support for newlines
+            if (page.description != null && !page.description.isEmpty()) {
+                for (String line : page.description.split("\n")) {
+                    ImGui.textWrapped(line);
+                }
+            }
+
+            // Spacer
+            ImGui.spacing();
+            ImGui.separator();
+            ImGui.text("Details:");
+
+            // Key-Value data rendering
+            for (Map.Entry<String, String> dataEntry : page.data.entrySet()) {
+                ImGui.bulletText("%s: %s".formatted(dataEntry.getKey(), dataEntry.getValue()));
+            }
+
+        }
+        showDetails.set(true);
     }
 
-    protected void renderDetails(T value){
+    protected void renderDetails(T value) {
 
     }
 

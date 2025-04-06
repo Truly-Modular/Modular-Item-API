@@ -65,6 +65,7 @@ import smartin.miapi.network.Networking;
 import smartin.miapi.network.NetworkingImplCommon;
 import smartin.miapi.registries.RegistryInventory;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -118,6 +119,19 @@ public class Miapi {
 
     public static DynamicOps<Tag> BOOL_CORRECTED_OPS = new NbtOps() {
     };
+
+    private static final int CHUNK_SIZE = 9_000; // or whatever limit you want
+    public static final Codec<String> CHUNKED_STRING_CODEC = Codec.list(Codec.STRING)
+            .xmap(
+                    list -> String.join("", list),
+                    str -> {
+                        List<String> parts = new ArrayList<>();
+                        for (int i = 0; i < str.length(); i += CHUNK_SIZE) {
+                            parts.add(str.substring(i, Math.min(str.length(), i + CHUNK_SIZE)));
+                        }
+                        return parts;
+                    }
+            );
 
     public static void init() {
         CodecBehavior.registerClass(Transform.class, Transform.CODEC);

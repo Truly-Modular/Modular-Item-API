@@ -100,7 +100,8 @@ public class ReloadEvents {
             }
         }));
 
-        Codec<Map<ResourceLocation, String>> codec = Codec.unboundedMap(ResourceLocation.CODEC, Codec.STRING);
+
+        Codec<Map<ResourceLocation, String>> codec = Codec.unboundedMap(ResourceLocation.CODEC, Miapi.CHUNKED_STRING_CODEC);
         StreamCodec<ByteBuf, Map<ResourceLocation, String>> streamCodec = ByteBufCodecs.fromCodec(codec);
 
         dataSyncerRegistry.register(Miapi.id("data_packs"), new SimpleSyncer<Map<ResourceLocation, String>>(streamCodec) {

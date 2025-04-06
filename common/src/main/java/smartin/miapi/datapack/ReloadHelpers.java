@@ -11,6 +11,7 @@ import net.minecraft.resources.ResourceLocation;
 import smartin.miapi.Miapi;
 import smartin.miapi.blueprint.BlueprintComponent;
 import smartin.miapi.blueprint.BlueprintManager;
+import smartin.miapi.editor.DocPage;
 import smartin.miapi.item.ItemToModularConverter;
 import smartin.miapi.material.CodecMaterial;
 import smartin.miapi.material.MaterialProperty;
@@ -49,6 +50,15 @@ public class ReloadHelpers {
                         new DecoderException("Could not decode Synergy " + path + string)
                 )).getFirst(),
                 (isClient, path, data, access) -> data.register(), 2);
+        ReloadHelpers.registerReloadHandler("miapi/wiki", () -> {
+                    DocPage.PAGE_LOOKUP.clear();
+                }, ((isClient, path, data, registryAccess) ->
+                        DocPage.CODEC.decode(
+                                JsonOps.INSTANCE,
+                                data).getOrThrow(s -> new DecoderException("could not decode wiki info"+s)).getFirst()),
+                ((isClient, path, data, registryAccess) -> {
+                    DocPage.setupLookup(data);
+                }), 0.0f);
         ReloadHelpers.registerReloadHandler(ReloadEvents.MAIN, "miapi/skins/module", SkinOptions.skins, (isClient, path, data, registryAccess) -> {
             SkinOptions.load(path, data);
         }, 1);
