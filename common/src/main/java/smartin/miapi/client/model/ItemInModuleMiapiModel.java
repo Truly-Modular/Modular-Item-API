@@ -27,7 +27,7 @@ public class ItemInModuleMiapiModel implements MiapiModel {
 
     @Override
     public void render(PoseStack matrices, ItemStack stack, ItemDisplayContext transformationMode, float tickDelta, MultiBufferSource vertexConsumers, LivingEntity entity, int light, int overlay) {
-        Minecraft.getInstance().level.getProfiler().push("ItemOnTopRendering");
+        Minecraft.getInstance().getProfiler().push("ItemOnTopRendering");
         matrices.pushPose();
         matrices.mulPose(matrix4f);
         ItemStack modelStack = stackSupplier.get();
@@ -44,6 +44,6 @@ public class ItemInModuleMiapiModel implements MiapiModel {
                 Minecraft.getInstance().level,
                 0);
         matrices.popPose();
-        Minecraft.getInstance().level.getProfiler().pop();
+        Minecraft.getInstance().getProfiler().pop();
     }
 }

@@ -14,18 +14,34 @@
     "enchantability": 11,
     "color": "CDE7E6",
     "color_palette": {
-        "type": "grayscale_map",
-        "colors": {
-            "0": "628B92FF",
-            "24": "628B92FF",
-            "68": "CDE7E6FF",
-            "107": "CDE7E600",
-            "150": "CDE7E600",
-            "190": "CDE7E633",
-            "216": "628B9200",
-            "255": "CDE7E611"
+        "type": "layered_mask",
+        "base": {
+            "type": "grayscale_map",
+            "colors": {
+                "0": "628B92FF",
+                "24": "628B92FF",
+                "68": "CDE7E6FF",
+                "107": "CDE7E622",
+                "150": "CDE7E622",
+                "190": "CDE7E633",
+                "216": "628B9222",
+                "255": "CDE7E622"
+            },
+            "filler": "interpolate"
         },
-        "filler": "interpolate"
+        "layer": {
+            "type": "grayscale_map",
+            "colors": {
+                "0": "FFFFFF55",
+                "255": "FFFFFF55"
+            },
+            "filler": "interpolate"
+        },
+        "mask": {
+            "type": "texture",
+            "atlas": "block",
+            "texture": "minecraft:block/glass"
+        }
     },
     "properties": {
         "default": {

@@ -1,6 +1,7 @@
 package smartin.miapi.modules.properties.render;
 
 import com.mojang.serialization.Codec;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -60,18 +61,43 @@ public class ItemModelProperty extends CodecProperty<List<ModelJson>> {
                         yield () -> ItemStack.EMPTY;
                     }
                     case "projectile": {
-                        yield () -> {
-                            if (
-                                    ModelProperty.isAllowedKey(modelJson.modelType, key) &&
-                                    stack.has(DataComponents.CHARGED_PROJECTILES)
-                            ) {
+                        yield new Supplier<ItemStack>() {
+                            int hash = 0;
+                            ItemStack cache = null;
+                            @Override
+                            public ItemStack get() {
+                                Minecraft.getInstance().getProfiler().push("projectile");
+                                Minecraft.getInstance().getProfiler().push("getProjectile");
                                 var component = stack.get(DataComponents.CHARGED_PROJECTILES);
-                                assert component != null;
-                                var items = component.getItems();
-                                var optional = items.stream().findFirst();
-                                return stack.get(DataComponents.CHARGED_PROJECTILES).getItems().stream().findFirst().orElse(ItemStack.EMPTY);
+                                Minecraft.getInstance().getProfiler().pop();
+                                if (
+                                        ModelProperty.isAllowedKey(modelJson.modelType, key) &&
+                                        component != null
+                                ) {
+                                    if (hash == component.hashCode() && cache != null) {
+                                        //optimize to avoid component logic
+                                        return cache;
+                                    }
+                                    assert component != null;
+                                    Minecraft.getInstance().getProfiler().push("getItem");
+                                    var items = component.getItems();
+                                    var optional = items.stream().findFirst();
+                                    Minecraft.getInstance().getProfiler().pop();
+                                    if (optional.isPresent()) {
+                                        if (cache != null && ItemStack.isSameItem(optional.get(), cache)) {
+                                            Minecraft.getInstance().getProfiler().pop();
+                                            return cache;
+                                        } else {
+                                            cache = optional.get();
+                                            hash = component.hashCode();
+                                        }
+                                    }
+                                    Minecraft.getInstance().getProfiler().pop();
+                                    return stack.get(DataComponents.CHARGED_PROJECTILES).getItems().stream().findFirst().orElse(ItemStack.EMPTY);
+                                }
+                                Minecraft.getInstance().getProfiler().pop();
+                                return ItemStack.EMPTY;
                             }
-                            return ItemStack.EMPTY;
                         };
                     }
                     default:

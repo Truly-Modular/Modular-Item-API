@@ -76,8 +76,8 @@ public class BakedMiapiModel implements MiapiModel {
     @Override
     public void render(PoseStack matrices, ItemStack stack, ItemDisplayContext transformationMode, float tickDelta, MultiBufferSource vertexConsumers, LivingEntity entity, int packedLight, int overlay) {
         assert Minecraft.getInstance().level != null;
-        Minecraft.getInstance().level.getProfiler().push("BakedModel");
-        Minecraft.getInstance().level.getProfiler().push("BakedModel-logic");
+        Minecraft.getInstance().getProfiler().push("BakedModel");
+        Minecraft.getInstance().getProfiler().push("BakedModel-logic");
         matrices.pushPose();
 
         int sky = LightTexture.sky(packedLight);
@@ -90,8 +90,8 @@ public class BakedMiapiModel implements MiapiModel {
 
         Transform.applyPosition(matrices, modelMatrix);
         BakedModel currentModel = resolve(model, stack, entity, light);
-        Minecraft.getInstance().level.getProfiler().pop();
-        Minecraft.getInstance().level.getProfiler().push("BakedModel - quads");
+        Minecraft.getInstance().getProfiler().pop();
+        Minecraft.getInstance().getProfiler().push("BakedModel - quads");
 
         //render normally
         try {
@@ -105,9 +105,9 @@ public class BakedMiapiModel implements MiapiModel {
         } catch (RuntimeException e) {
             Miapi.LOGGER.error("rendering error in module " + instance.moduleID + " " + MaterialProperty.getMaterial(instance), e);
         }
-        Minecraft.getInstance().level.getProfiler().pop();
+        Minecraft.getInstance().getProfiler().pop();
 
-        Minecraft.getInstance().level.getProfiler().push("BakedModel Glint");
+        Minecraft.getInstance().getProfiler().push("BakedModel Glint");
 
         //render normally
         if (stack.hasFoil() && MiapiConfig.INSTANCE.client.enchantingGlint.enabled) {
@@ -124,9 +124,9 @@ public class BakedMiapiModel implements MiapiModel {
                 Miapi.LOGGER.error("rendering glint error in module " + instance.moduleID + " " + MaterialProperty.getMaterial(instance), e);
             }
         }
-        Minecraft.getInstance().level.getProfiler().pop();
+        Minecraft.getInstance().getProfiler().pop();
 
-        Minecraft.getInstance().level.getProfiler().push("TrimModel");
+        Minecraft.getInstance().getProfiler().push("TrimModel");
         //render Trims
         Holder<ArmorMaterial> armorMaterial = (stack.getItem() instanceof ArmorItem armorItem) ? armorItem.getMaterial() : null;
 
@@ -135,19 +135,19 @@ public class BakedMiapiModel implements MiapiModel {
                 TrimRenderer.renderTrims(matrices, quad, modelHolder.trimMode(), light, vertexConsumers, armorMaterial, stack);
             });
         }
-        Minecraft.getInstance().level.getProfiler().pop();
+        Minecraft.getInstance().getProfiler().pop();
 
         //render from both sides if requested
         if (modelHolder.entityRendering()) {
-            Minecraft.getInstance().level.getProfiler().push("EntityModel");
+            Minecraft.getInstance().getProfiler().push("EntityModel");
             ModelTransformer.getInverse(currentModel, random).forEach(quad -> {
                 VertexConsumer vertexConsumer = modelHolder.colorProvider().getConsumer(vertexConsumers, quad.getSprite(), stack, instance, transformationMode);
                 vertexConsumer.putBulkData(matrices.last(), quad, colors[0], colors[1], colors[2], alpha, light, overlay);
             });
-            Minecraft.getInstance().level.getProfiler().pop();
+            Minecraft.getInstance().getProfiler().pop();
         }
         matrices.popPose();
-        Minecraft.getInstance().level.getProfiler().pop();
+        Minecraft.getInstance().getProfiler().pop();
     }
 
     public BakedModel resolve(BakedModel model, ItemStack stack, @Nullable LivingEntity entity, int light) {

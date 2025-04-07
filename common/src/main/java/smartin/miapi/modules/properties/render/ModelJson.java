@@ -3,6 +3,7 @@ package smartin.miapi.modules.properties.render;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
+import net.minecraft.world.item.ItemStack;
 import smartin.miapi.item.modular.Transform;
 
 public class ModelJson {
@@ -13,6 +14,8 @@ public class ModelJson {
     public String modelType = "default";
     @CodecBehavior.Optional
     public Transform transform = Transform.IDENTITY;
+
+    public ItemStack cache = ItemStack.EMPTY;
 
     // Codec for ModelJson
     public static final Codec<ModelJson> CODEC = RecordCodecBuilder.create((instance) ->

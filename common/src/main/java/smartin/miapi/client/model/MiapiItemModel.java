@@ -22,6 +22,7 @@ import smartin.miapi.modules.cache.ModularItemCache;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.WeakHashMap;
 
 @Environment(EnvType.CLIENT)
 public class MiapiItemModel implements MiapiModel {
@@ -31,9 +32,17 @@ public class MiapiItemModel implements MiapiModel {
     private static final String CACHE_KEY = "miapi_model_rework";
     public final DualKeyCache<String, ItemDisplayContext, List<ModelTransformer>> transformerCache = new DualKeyCache<>();
     public final DualKeyCache<String, ItemDisplayContext, ModuleModel> modelCache = new DualKeyCache<>();
+    public static final WeakHashMap<ItemStack, MiapiItemModel> fallbackLookup = new WeakHashMap<>();
 
     static {
-        ModularItemCache.setSupplier(CACHE_KEY, (MiapiItemModel::new));
+        ModularItemCache.setSupplier(CACHE_KEY, (s) -> {
+            if (fallbackLookup.containsKey(s)) {
+                return fallbackLookup.get(s);
+            }
+            MiapiItemModel model = new MiapiItemModel(s);
+            fallbackLookup.put(s, model);
+            return model;
+        });
     }
 
     @Nullable
@@ -73,29 +82,29 @@ public class MiapiItemModel implements MiapiModel {
             int overlay) {
         if (ReloadEvents.isInReload()) return;
         assert Minecraft.getInstance().level != null;
-        Minecraft.getInstance().level.getProfiler().push("modular_item");
-        Minecraft.getInstance().level.getProfiler().push("root-logic");
+        Minecraft.getInstance().getProfiler().push("modular_item");
+        Minecraft.getInstance().getProfiler().push("root-logic");
         String modelType = modelTypeRaw == null ? "item" : modelTypeRaw;
         ModuleModel rootModel = modelCache.getNullSave(modelType, mode, (s, k) -> new ModuleModel(ItemModule.getModules(stack), stack, s, k));
         matrices.pushPose();
-        Minecraft.getInstance().level.getProfiler().push("model-transformers");
+        Minecraft.getInstance().getProfiler().push("model-transformers");
         List<ModelTransformer> transformers = transformerCache.getNullSave(modelType, mode, (s, t) -> getTransfomers(stack, mode, modelType));
         for (ModelTransformer transformer : transformers) {
             matrices = transformer.transform(matrices, tickDelta);
         }
-        Minecraft.getInstance().level.getProfiler().pop();
+        Minecraft.getInstance().getProfiler().pop();
         if (entity == null) {
             //needed because otherwise overwrites dont work
             entity = Minecraft.getInstance().player;
         }
-        Minecraft.getInstance().level.getProfiler().push("glint-setup");
+        Minecraft.getInstance().getProfiler().push("glint-setup");
         GlintShader.setupItem(matrices.last().pose());
-        Minecraft.getInstance().level.getProfiler().pop();
-        Minecraft.getInstance().level.getProfiler().pop();
+        Minecraft.getInstance().getProfiler().pop();
+        Minecraft.getInstance().getProfiler().pop();
         //IconRenderProperty.property.renderIcon(ItemModule.getModules(stack), matrices, tickDelta, vertexConsumers, entity, light, overlay);
         rootModel.render(modelType, stack, matrices, mode, tickDelta, vertexConsumers, entity, light, overlay);
         matrices.popPose();
-        Minecraft.getInstance().level.getProfiler().pop();
+        Minecraft.getInstance().getProfiler().pop();
     }
 
     private static @NotNull List<ModelTransformer> getTransfomers(ItemStack stack, ItemDisplayContext mode, String modelType) {
