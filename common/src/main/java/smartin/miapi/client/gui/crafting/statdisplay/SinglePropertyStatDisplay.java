@@ -49,17 +49,22 @@ public class SinglePropertyStatDisplay extends SingleStatDisplayDouble {
     @Override
     public void renderHover(GuiGraphics drawContext, int mouseX, int mouseY, float delta) {
         List<Component> list = new ArrayList(getHoverLines(drawContext, mouseX, mouseY, delta));
-        if (this.isMouseOver(mouseX, mouseY) && ParentHandledScreen.hasShiftDown()) {
-            property.getData(original).ifPresent(resolvable -> {
-                resolvable.operations.forEach(operation -> {
-                    if (operation.solve() != 0) {
-                        list.add(Component.literal(stringForOperation(operation)));
-                        if (ParentHandledScreen.hasAltDown()) {
-                            list.add(Component.literal("  " + operation.value).withStyle(ChatFormatting.GRAY));
+        if (this.isMouseOver(mouseX, mouseY)) {
+            if (ParentHandledScreen.hasShiftDown()) {
+                property.getData(compareTo == null ? original : compareTo).ifPresent(resolvable -> {
+                    resolvable.operations.forEach(operation -> {
+                        if (operation.solve() != 0) {
+                            list.add(Component.literal(stringForOperation(operation)).withStyle(ChatFormatting.GRAY));
+                            if (ParentHandledScreen.hasAltDown()) {
+                                list.add(Component.literal("  " + operation.value).withStyle(ChatFormatting.DARK_GRAY));
+                            }
                         }
-                    }
+                    });
                 });
-            });
+                list.add(Component.translatable("miapi.ui.stat_detail.shift_alt").withStyle(ChatFormatting.DARK_GRAY));
+            } else {
+                list.add(Component.translatable("miapi.ui.stat_detail.shift").withStyle(ChatFormatting.DARK_GRAY));
+            }
         }
         drawContext.renderComponentTooltip(
                 Minecraft.getInstance().font,

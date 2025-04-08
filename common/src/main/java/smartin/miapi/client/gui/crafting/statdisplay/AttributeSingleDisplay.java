@@ -145,29 +145,33 @@ public class AttributeSingleDisplay extends SingleStatDisplayDouble {
     @Override
     public void renderHover(GuiGraphics drawContext, int mouseX, int mouseY, float delta) {
         List<Component> list = new ArrayList(getHoverLines(drawContext, mouseX, mouseY, delta));
-        if (this.isMouseOver(mouseX, mouseY) && ParentHandledScreen.hasShiftDown()) {
-            AttributeProperty.property.getData(original).ifPresent(data -> {
-                data.forEach((id, attributeOperationMap) -> {
-                    if (id.equals(BuiltInRegistries.ATTRIBUTE.getKey(attribute))) {
-                        attributeOperationMap.computeIfPresent(operation, (op, map) -> {
-                            map.forEach((either, resolveAble) -> {
-                                if (either.left().isPresent() && (this.slot == null || either.left().get().test(this.slot))) {
-                                    resolveAble.operations.forEach(operation1 -> {
-                                        if (operation1.solve() != 0) {
-                                            list.add(Component.literal(SinglePropertyStatDisplay.stringForOperation(operation1)));
-                                            if (ParentHandledScreen.hasAltDown()) {
-                                                list.add(Component.literal("  " + operation1.value).withStyle(ChatFormatting.GRAY));
+        if (this.isMouseOver(mouseX, mouseY)) {
+            if (ParentHandledScreen.hasShiftDown()) {
+                AttributeProperty.property.getData(compareTo == null ? original : compareTo).ifPresent(data -> {
+                    data.forEach((id, attributeOperationMap) -> {
+                        if (id.equals(BuiltInRegistries.ATTRIBUTE.getKey(attribute))) {
+                            attributeOperationMap.computeIfPresent(operation, (op, map) -> {
+                                map.forEach((either, resolveAble) -> {
+                                    if (either.left().isPresent() && (this.slot == null || either.left().get().test(this.slot))) {
+                                        resolveAble.operations.forEach(operation1 -> {
+                                            if (operation1.solve() != 0) {
+                                                list.add(Component.literal(SinglePropertyStatDisplay.stringForOperation(operation1)).withStyle(ChatFormatting.GRAY));
+                                                if (ParentHandledScreen.hasAltDown()) {
+                                                    list.add(Component.literal("  " + operation1.value).withStyle(ChatFormatting.DARK_GRAY));
+                                                }
                                             }
-                                        }
-                                    });
-                                }
+                                        });
+                                    }
+                                });
+                                return map;
                             });
-                            return map;
-                        });
-                    }
+                        }
+                    });
                 });
-            });
-
+                list.add(Component.translatable("miapi.ui.stat_detail.shift_alt").withStyle(ChatFormatting.DARK_GRAY));
+            } else {
+                list.add(Component.translatable("miapi.ui.stat_detail.shift").withStyle(ChatFormatting.DARK_GRAY));
+            }
         }
         drawContext.renderComponentTooltip(
                 Minecraft.getInstance().font,

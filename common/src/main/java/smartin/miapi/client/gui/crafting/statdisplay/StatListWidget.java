@@ -188,15 +188,8 @@ public class StatListWidget extends InteractAbleWidget {
                 .builder(DurabilityProperty.property)
                 .setMax(2000)
                 .setFormat("##")
-                .setCondition((old, current) -> {
-                    if (
-                            old.isDamageableItem() &&
-                            current.isDamageableItem()
-                    ) {
-                        return true;
-                    }
-                    return false;
-                })
+                .setCondition((old, current) -> old.isDamageableItem() &&
+                                                current.isDamageableItem())
                 .setTranslationKey(DurabilityProperty.KEY).build());
         addStatDisplay(SinglePropertyStatDisplay
                 .builder(FracturingProperty.property)
@@ -337,6 +330,12 @@ public class StatListWidget extends InteractAbleWidget {
                             value = (double) Math.round((1 - value) * 1000) / 10;
                             return Component.translatable("miapi.stat.pillagerGuard.description", value);
                         })).build());
+
+        addStatDisplay(new MiningPropertyStatDisplay("pickaxe"));
+        addStatDisplay(new MiningPropertyStatDisplay("shovel"));
+        addStatDisplay(new MiningPropertyStatDisplay("sword"));
+        addStatDisplay(new MiningPropertyStatDisplay("axe"));
+        addStatDisplay(new MiningPropertyStatDisplay("hoe"));
 
         AttributeSingleDisplay.attributesWithDisplay.add(AttributeRegistry.ARMOR_CRUSHING.value());
         RegistryInventory.MODULE_PROPERTY_MIAPI_REGISTRY.getFlatMap().values().stream()

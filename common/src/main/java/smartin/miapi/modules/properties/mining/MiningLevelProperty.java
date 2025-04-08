@@ -110,25 +110,22 @@ public class MiningLevelProperty extends CodecProperty<Map<String, MiningLevelPr
         return true;
     }
 
-    public record MiningRule(HolderSet<Block> blocks, HolderSet<Block> blacklist, DoubleOperationResolvable speed,
+    public record MiningRule(List<HolderSet<Block>> blocks, List<HolderSet<Block>> blacklist,
+                             DoubleOperationResolvable speed,
                              Optional<Boolean> correctForDrops, boolean useMaterial,
                              List<Material> respectMaterialBlacklists) {
         public static final Codec<MiningRule> CODEC = RecordCodecBuilder.create((instance) -> {
             return instance.group(
                             RegistryCodecs
                                     .homogeneousList(Registries.BLOCK)
-                                    .optionalFieldOf("block_list", HolderSet.direct())
+                                    .listOf()
+                                    .optionalFieldOf("allowed", List.of())
                                     .forGetter(MiningRule::blocks),
-                            ResourceLocation.CODEC
-                                    .optionalFieldOf("blocks")
-                                    .forGetter((rule) -> Optional.empty()),
                             RegistryCodecs
                                     .homogeneousList(Registries.BLOCK)
-                                    .optionalFieldOf("blacklist", HolderSet.direct())
+                                    .listOf()
+                                    .optionalFieldOf("forbidden", List.of())
                                     .forGetter(MiningRule::blacklist),
-                            ResourceLocation.CODEC
-                                    .optionalFieldOf("blacklist_tag")
-                                    .forGetter((rule) -> Optional.empty()),
                             DoubleOperationResolvable.CODEC
                                     .optionalFieldOf("speed", new DoubleOperationResolvable(1))
                                     .forGetter(MiningRule::speed),
@@ -138,32 +135,15 @@ public class MiningLevelProperty extends CodecProperty<Map<String, MiningLevelPr
                             Miapi.FIXED_BOOL_CODEC
                                     .optionalFieldOf("use_material", false)
                                     .forGetter(MiningRule::useMaterial))
-                    .apply(instance, (blockList, blockTag, blacklist, blackTag, speed, correct, useMaterial) -> {
-                        List<Holder<Block>> blocks = new ArrayList<>();
-                        blockTag.ifPresent(location -> BuiltInRegistries.BLOCK.getTags().forEach(tagKeyNamedPair -> {
-                            if (tagKeyNamedPair.getFirst().location().equals(location)) {
-                                tagKeyNamedPair.getSecond().forEach(blocks::add);
-                            }
-                        }));
-                        blockList.stream().forEach(blocks::add);
-                        List<Holder<Block>> black = new ArrayList<>();
-                        blackTag.ifPresent(location -> BuiltInRegistries.BLOCK.getTags().forEach(tagKeyNamedPair -> {
-                            if (tagKeyNamedPair.getFirst().location().equals(location)) {
-                                tagKeyNamedPair.getSecond().forEach(black::add);
-                            }
-                        }));
-                        blacklist.stream().forEach(black::add);
-                        return new MiningRule(
-                                HolderSet.direct(blocks),
-                                HolderSet.direct(black), speed, correct, useMaterial, new ArrayList<>());
-                    });
+                    .apply(instance, (blockList, blacklist, speed, correct, useMaterial) -> new MiningRule(
+                            blockList,
+                            blacklist, speed, correct, useMaterial, new ArrayList<>()));
         });
 
         public static MiningRule merge(MiningRule left, MiningRule right, MergeType mergeType) {
-            List<Holder<Block>> blocks = new ArrayList<>(left.blocks().stream().toList());
-            blocks.addAll(right.blocks().stream().toList());
-            List<Holder<Block>> blacklist = new ArrayList<>(left.blacklist().stream().toList());
-            blacklist.addAll(right.blacklist().stream().toList());
+            List<HolderSet<Block>> blocks = MergeAble.mergeList(left.blocks(), right.blocks(), mergeType);
+            List<HolderSet<Block>> blacklist = MergeAble.mergeList(left.blacklist(), right.blacklist(), mergeType);
+            List<Material> mergedMaterials = MergeAble.mergeList(left.respectMaterialBlacklists(), right.respectMaterialBlacklists(), mergeType);
             DoubleOperationResolvable merged = left.speed().merge(right.speed(), mergeType);
             Optional<Boolean> mergedBoolean = Optional.empty();
             if (left.correctForDrops().isPresent()) {
@@ -172,13 +152,11 @@ public class MiningLevelProperty extends CodecProperty<Map<String, MiningLevelPr
             if (right.correctForDrops().isPresent()) {
                 mergedBoolean = right.correctForDrops();
             }
-            List<Material> mergedMaterials = new ArrayList<>(left.respectMaterialBlacklists());
-            mergedMaterials.addAll(right.respectMaterialBlacklists);
-            return new MiningRule(HolderSet.direct(blocks), HolderSet.direct(blacklist), merged, mergedBoolean, left.useMaterial() || right.useMaterial(), mergedMaterials);
+            return new MiningRule(blocks, blacklist, merged, mergedBoolean, left.useMaterial() || right.useMaterial(), mergedMaterials);
         }
 
         public MiningRule initialize(ModuleInstance moduleInstance) {
-            List<Holder<Block>> blockBlackList = new ArrayList<>(blacklist().stream().toList());
+            List<HolderSet<Block>> blockBlackList = new ArrayList<>(blacklist().stream().toList());
             Optional<Boolean> correctForDrops = correctForDrops();
             List<Material> mergedMaterials = new ArrayList<>(this.respectMaterialBlacklists());
             if (useMaterial()) {
@@ -187,7 +165,7 @@ public class MiningLevelProperty extends CodecProperty<Map<String, MiningLevelPr
                     mergedMaterials.add(material);
                 }
             }
-            return new MiningRule(HolderSet.direct(blocks().stream().toList()), HolderSet.direct(blockBlackList), speed().initialize(moduleInstance), correctForDrops, useMaterial(), mergedMaterials);
+            return new MiningRule(blocks().stream().toList(), blockBlackList, speed().initialize(moduleInstance), correctForDrops, useMaterial(), mergedMaterials);
         }
 
         public List<Tool.Rule> asRules() {
@@ -196,43 +174,81 @@ public class MiningLevelProperty extends CodecProperty<Map<String, MiningLevelPr
                 speedEvaluated = 1.0f;
             }
             if (useMaterial()) {
-                List<Block> canDropBlocks = new ArrayList<>(blocks().stream().map(Holder::value).distinct().toList());
+                List<Holder<Block>> canDropBlocks = toList(blocks());
                 if (!canDropBlocks.isEmpty()) {
-                    blacklist()
+                    toList(blacklist())
                             .stream()
                             .map(Holder::value)
                             .distinct()
                             .forEach(canDropBlocks::remove);
                 }
-                List<Block> blocksWithMiningSpeed = new ArrayList<>(canDropBlocks);
-                List<Block> toRemoveFromMaterial = new ArrayList<>();
+                List<Holder<Block>> blocksWithMiningSpeed = new ArrayList<>(canDropBlocks);
+                List<Holder<Block>> toRemoveFromMaterial = new ArrayList<>();
                 respectMaterialBlacklists().forEach(material -> {
                     if (toRemoveFromMaterial.isEmpty()) {
                         BuiltInRegistries.BLOCK.getTag(
                                 material.getIncorrectBlocksForDrops()
                         ).ifPresent(named -> {
-                            named.stream().map(Holder::value).distinct().forEach(toRemoveFromMaterial::add);
+                            named.stream().distinct().forEach(toRemoveFromMaterial::add);
                         });
                     } else {
-                        List<Block> notShared = new ArrayList<>(toRemoveFromMaterial);
+                        List<Holder<Block>> notShared = new ArrayList<>(toRemoveFromMaterial);
                         BuiltInRegistries.BLOCK.getTag(
                                 material.getIncorrectBlocksForDrops()
                         ).ifPresent(named -> {
-                            named.stream().map(Holder::value).distinct().forEach(notShared::remove);
+                            toList(named).stream().map(Holder::value).distinct().forEach(notShared::remove);
                         });
                         notShared.forEach(toRemoveFromMaterial::remove);
                     }
                 });
                 toRemoveFromMaterial.forEach(canDropBlocks::remove);
-                List<Block> rawBlocks = new HashSet<>(canDropBlocks).stream().toList();
+                List<Block> rawBlocks = new HashSet<>(canDropBlocks).stream().distinct().map(Holder::value).toList();
                 Tool.Rule mineAndDrop = Tool.Rule.minesAndDrops(rawBlocks, speedEvaluated);
-                Tool.Rule overrideSpeed = Tool.Rule.overrideSpeed(blocksWithMiningSpeed, speedEvaluated);
+                Tool.Rule overrideSpeed = Tool.Rule.overrideSpeed(blocksWithMiningSpeed.stream().map(Holder::value).toList(), speedEvaluated);
                 return List.of(mineAndDrop, overrideSpeed);
             }
+            List<Holder<Block>> canDropBlocks = new ArrayList<>();
+            blocks.forEach(set -> set.forEach(canDropBlocks::add));
+            List<Holder<Block>> forbiddenBlocks = new ArrayList<>();
+            blacklist.forEach(set -> set.forEach(canDropBlocks::add));
             return List.of(
-                    new Tool.Rule(blacklist, Optional.of(speedEvaluated), Optional.of(false)),
-                    new Tool.Rule(blocks, Optional.of(speedEvaluated), correctForDrops())
+                    new Tool.Rule(HolderSet.direct(forbiddenBlocks), Optional.of(speedEvaluated), Optional.of(false)),
+                    new Tool.Rule(HolderSet.direct(canDropBlocks), Optional.of(speedEvaluated), correctForDrops())
             );
         }
+    }
+
+    /**
+     * yeah, idk ask the easy anvil team why they are incompetent and dont properly add their tags
+     * @param blocks
+     * @return
+     */
+    private static List<Holder<Block>> toList(List<HolderSet<Block>> blocks) {
+        List<Holder<Block>> canDropBlocks = new ArrayList<>();
+        BuiltInRegistries.BLOCK.forEach(block -> {
+            blocks.forEach(set -> {
+                var holder = BuiltInRegistries.BLOCK.wrapAsHolder(block);
+                if (set.contains(holder)) {
+                    canDropBlocks.add(holder);
+                }
+            });
+        });
+        return canDropBlocks;
+    }
+
+    /**
+     * yeah, idk ask the easy anvil team why they are incompetent and dont properly add their tags
+     * @param blocks
+     * @return
+     */
+    private static List<Holder<Block>> toList(HolderSet<Block> blocks) {
+        List<Holder<Block>> canDropBlocks = new ArrayList<>();
+        BuiltInRegistries.BLOCK.forEach(block -> {
+            var holder = BuiltInRegistries.BLOCK.wrapAsHolder(block);
+            if (blocks.contains(holder)) {
+                canDropBlocks.add(holder);
+            }
+        });
+        return canDropBlocks;
     }
 }

@@ -52,6 +52,8 @@
     "miapi.ui.craft.warning.flexibility": "Flexibility cannot go below 0",
     "miapi.ui.craft.warning.durability_negative": "Durability can't be negative",
     "miapi.ui.craft.result_equal_warning": "Crafting does not change the Item.",
+    "miapi.ui.stat_detail.shift": "(Shift for details)",
+    "miapi.ui.stat_detail.shift_alt": "(Shift+Alt for more details)",
     "miapi.ui.boolean.true": "True",
     "miapi.ui.boolean.false": "False",
     "miapi.lore.draw_time.tooltip": "%ss Draw Time",
