@@ -34,7 +34,7 @@ Add this to every subproject.
 ```js
 repositories {
     maven {
-        url 'http://trulymodular.duckdns.org/maven'
+        url 'http://trulymodular.dedyn.io/maven'
         allowInsecureProtocol = true
     }
     maven { url 'https://maven.uuid.gg/releases' }
@@ -56,6 +56,7 @@ repositories {
     }
 }
 ```
+incase dedyn is ever unresponsive you can try to use http://trulymodular.duckdns.org/maven instead
 ## Common
 ```js
 dependencies {
