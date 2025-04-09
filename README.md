@@ -32,7 +32,7 @@ the miapi_version needed is the same as the github release tag
 ```js
 repositories {
     maven {
-        url 'http://trulymodular.duckdns.org/maven'
+        url 'http://trulymodular.dedyn.io/maven'
         allowInsecureProtocol = true
     }
     maven { url 'https://maven.uuid.gg/releases' }
