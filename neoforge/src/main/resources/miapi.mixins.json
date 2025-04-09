@@ -6,7 +6,8 @@
     "mixins": [
         "LivingEntityMixin",
         "ReloadAbleServerResourcesMixin",
-        "item.ModularItemMixin"
+        "item.ModularItemMixin",
+        "item.ModularItemTestMixin"
     ],
     "client": [
         "ArmorFeatureRendererMixin",

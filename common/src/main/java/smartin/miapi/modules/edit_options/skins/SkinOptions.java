@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import smartin.miapi.Miapi;
@@ -35,7 +36,11 @@ public class SkinOptions implements EditOption {
             if (moduleInstance != null) {
                 Optional<Skin> foundSkin = Skin.getSkin(moduleInstance);
                 if (foundSkin.isPresent()) {
-                    oldMap = foundSkin.get().propertyHolder.applyHolder(oldMap);
+                    String[] parts = foundSkin.get().path.split("/");
+                    oldMap = foundSkin.get().propertyHolder.applyHolder(oldMap,
+                            Optional.of(
+                                    Component.translatable("miapi.property.source.skin",
+                                            Component.translatable(Miapi.MOD_ID + ".skin." + foundSkin.get().modID + ".name." + parts[parts.length - 1]))));
                 }
             }
             return oldMap;

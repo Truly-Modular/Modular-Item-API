@@ -5,6 +5,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 import com.redpxnda.nucleus.codec.auto.AutoCodec;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import smartin.miapi.modules.ModuleInstance;
@@ -12,7 +13,7 @@ import smartin.miapi.modules.ModuleInstance;
 import java.util.List;
 import java.util.Optional;
 
-public abstract class DoubleProperty extends CodecProperty<DoubleOperationResolvable> {
+public abstract class DoubleProperty extends CodecProperty<DoubleOperationResolvable> implements SourceSetter<DoubleOperationResolvable> {
     public DoubleProperty property;
     public double baseValue = 0;
     public boolean allowVisualOnly = false;
@@ -73,6 +74,10 @@ public abstract class DoubleProperty extends CodecProperty<DoubleOperationResolv
 
     public DoubleOperationResolvable merge(DoubleOperationResolvable left, DoubleOperationResolvable right, MergeType mergeType) {
         return left.merge(right, mergeType);
+    }
+
+    public DoubleOperationResolvable setSource(DoubleOperationResolvable data, Component source) {
+        return data.setSource(data, source);
     }
 
 }

@@ -1,5 +1,6 @@
 package smartin.miapi.item.modular;
 
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Tuple;
 import smartin.miapi.Miapi;
@@ -7,6 +8,7 @@ import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
+import smartin.miapi.modules.properties.util.SourceSetter;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -88,6 +90,25 @@ public class PropertyResolver {
             }
         }));
         return merged;
+    }
+
+    public static Map<ModuleProperty<?>, Object> setSource(Map<ModuleProperty<?>, Object> toConvert, Optional<Component> source) {
+        return setSource(toConvert, source.orElse(null));
+    }
+
+    public static Map<ModuleProperty<?>, Object> setSource(Map<ModuleProperty<?>, Object> toConvert, Component source) {
+        if (source == null) {
+            return toConvert;
+        }
+        Map<ModuleProperty<?>, Object> convert = new HashMap<>();
+        toConvert.forEach((property, object) -> {
+            if (property instanceof SourceSetter<?> setter) {
+                convert.put(property, setter.setSourceCast(object, source));
+            } else {
+                convert.put(property, object);
+            }
+        });
+        return convert;
     }
 
     /**

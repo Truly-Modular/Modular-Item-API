@@ -4,8 +4,10 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.netty.handler.codec.DecoderException;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import smartin.miapi.Miapi;
+import smartin.miapi.item.modular.PropertyResolver;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
@@ -76,16 +78,16 @@ public class PropertyHolder {
         return remove;
     }
 
-    public Map<ModuleProperty<?>, Object> applyHolder(Map<ModuleProperty<?>, Object> oldMap) {
+    public Map<ModuleProperty<?>, Object> applyHolder(Map<ModuleProperty<?>, Object> oldMap, Optional<Component> component) {
         remove.forEach(oldMap::remove);
-        merge.forEach((key, value) -> {
+        PropertyResolver.setSource(merge, component).forEach((key, value) -> {
             if (oldMap.containsKey(key)) {
                 oldMap.put(key, ItemModule.merge(key, oldMap.get(key), value, MergeType.SMART));
             } else {
                 oldMap.put(key, value);
             }
         });
-        oldMap.putAll(replace);
+        oldMap.putAll(PropertyResolver.setSource(replace, component));
         return oldMap;
     }
 }

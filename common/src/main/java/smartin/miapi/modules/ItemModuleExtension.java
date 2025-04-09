@@ -10,6 +10,7 @@ import smartin.miapi.modules.properties.TagProperty;
 import smartin.miapi.registries.RegistryInventory;
 
 import java.util.List;
+import java.util.Optional;
 
 public record ItemModuleExtension(PropertyHolder holder, List<ItemModule> modules) {
 
@@ -44,7 +45,7 @@ public record ItemModuleExtension(PropertyHolder holder, List<ItemModule> module
     public void apply() {
         for (ItemModule module : modules) {
             RegistryInventory.ITEM_MODULE_MIAPI_REGISTRY.remove(module.id());
-            RegistryInventory.ITEM_MODULE_MIAPI_REGISTRY.register(module.id(), new ItemModule(module.id(), holder.applyHolder(module.properties())));
+            RegistryInventory.ITEM_MODULE_MIAPI_REGISTRY.register(module.id(), new ItemModule(module.id(), holder.applyHolder(module.properties(), Optional.empty())));
         }
     }
 }

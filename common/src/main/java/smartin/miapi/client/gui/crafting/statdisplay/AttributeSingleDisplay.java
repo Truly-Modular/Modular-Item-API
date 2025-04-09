@@ -1,25 +1,25 @@
 package smartin.miapi.client.gui.crafting.statdisplay;
 
 import com.google.common.collect.Multimap;
+import com.mojang.datafixers.util.Either;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 import smartin.miapi.Miapi;
-import smartin.miapi.client.gui.ParentHandledScreen;
 import smartin.miapi.modules.properties.attributes.AttributeProperty;
 import smartin.miapi.modules.properties.attributes.AttributeUtil;
+import smartin.miapi.modules.properties.util.DoubleOperationResolvable;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -142,48 +142,38 @@ public class AttributeSingleDisplay extends SingleStatDisplayDouble {
         }
     }
 
-    @Override
-    public void renderHover(GuiGraphics drawContext, int mouseX, int mouseY, float delta) {
-        List<Component> list = new ArrayList(getHoverLines(drawContext, mouseX, mouseY, delta));
-        if (this.isMouseOver(mouseX, mouseY)) {
-            if (ParentHandledScreen.hasShiftDown()) {
-                AttributeProperty.property.getData(compareTo == null ? original : compareTo).ifPresent(data -> {
-                    data.forEach((id, attributeOperationMap) -> {
-                        if (id.equals(BuiltInRegistries.ATTRIBUTE.getKey(attribute))) {
-                            attributeOperationMap.computeIfPresent(operation, (op, map) -> {
-                                map.forEach((either, resolveAble) -> {
-                                    if (either.left().isPresent() && (this.slot == null || either.left().get().test(this.slot))) {
-                                        resolveAble.operations.forEach(operation1 -> {
-                                            if (operation1.solve() != 0) {
-                                                list.add(Component.literal(SinglePropertyStatDisplay.stringForOperation(operation1)).withStyle(ChatFormatting.GRAY));
-                                                if (ParentHandledScreen.hasAltDown()) {
-                                                    list.add(Component.literal("  " + operation1.value).withStyle(ChatFormatting.DARK_GRAY));
-                                                }
-                                            }
-                                        });
-                                    }
-                                });
-                                return map;
-                            });
+    public DoubleOperationResolvable getResolvable(ItemStack stack) {
+        Optional<Map<ResourceLocation, Map<AttributeModifier.Operation, Map<Either<EquipmentSlotGroup, Boolean>, DoubleOperationResolvable>>>> optional =
+                AttributeProperty.property.getData(stack);
+
+        if (optional.isPresent()) {
+            Map<ResourceLocation, Map<AttributeModifier.Operation, Map<Either<EquipmentSlotGroup, Boolean>, DoubleOperationResolvable>>> attributeMap = optional.get();
+
+            ResourceLocation attributeKey = BuiltInRegistries.ATTRIBUTE.getKey(attribute);
+            if (attributeKey != null) {
+                Map<AttributeModifier.Operation, Map<Either<EquipmentSlotGroup, Boolean>, DoubleOperationResolvable>> operationMap =
+                        attributeMap.get(attributeKey);
+
+                if (operationMap != null) {
+                    Map<Either<EquipmentSlotGroup, Boolean>, DoubleOperationResolvable> resolvableMap = operationMap.get(operation);
+
+                    if (resolvableMap != null) {
+                        for (Map.Entry<Either<EquipmentSlotGroup, Boolean>, DoubleOperationResolvable> entry : resolvableMap.entrySet()) {
+                            Either<EquipmentSlotGroup, Boolean> either = entry.getKey();
+
+                            if (either.left().isPresent()) {
+                                EquipmentSlotGroup group = either.left().get();
+                                if (this.slot == null || group.test(this.slot)) {
+                                    return entry.getValue();
+                                }
+                            }
                         }
-                    });
-                });
-                list.add(Component.translatable("miapi.ui.stat_detail.shift_alt").withStyle(ChatFormatting.DARK_GRAY));
-            } else {
-                list.add(Component.translatable("miapi.ui.stat_detail.shift").withStyle(ChatFormatting.DARK_GRAY));
+                    }
+                }
             }
         }
-        drawContext.renderComponentTooltip(
-                Minecraft.getInstance().font,
-                list, mouseX, mouseY);
-    }
 
-    public String getStringName(AttributeModifier.Operation operation) {
-        return switch (operation) {
-            case AttributeModifier.Operation.ADD_VALUE -> "+";
-            case ADD_MULTIPLIED_BASE -> "*";
-            case ADD_MULTIPLIED_TOTAL -> "**";
-        };
+        return null;
     }
 
     public static Builder builder(Holder<Attribute> attribute) {

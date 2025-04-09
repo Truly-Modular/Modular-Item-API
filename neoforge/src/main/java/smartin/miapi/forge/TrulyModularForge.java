@@ -12,7 +12,6 @@ import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.ItemRenderer;
-import net.minecraft.client.renderer.entity.layers.ElytraLayer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -76,7 +75,7 @@ public class TrulyModularForge {
 
         LifecycleEvent.SERVER_STARTING.register((instance -> setupAttributes()));
         ReloadEvents.START.subscribe((isClient, access) -> setupAttributes());
-        ElytraLayer layer;
+        Injection.setup();
         //TODO: why no worky
 
         //KEY_BINDINGS.addCallback((KeyBindingRegistryImpl::registerKeyBinding));

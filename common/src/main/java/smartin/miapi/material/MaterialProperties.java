@@ -1,6 +1,8 @@
 package smartin.miapi.material;
 
 import com.mojang.serialization.Codec;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import smartin.miapi.Miapi;
 import smartin.miapi.item.modular.PropertyResolver;
@@ -40,7 +42,10 @@ public class MaterialProperties extends CodecProperty<List<String>> {
                     keys = newKeys;
                 }
                 for (String key : keys) {
-                    Map<ModuleProperty<?>, Object> materialProperties = material.materialProperties(key);
+                    Map<ModuleProperty<?>, Object> materialProperties = PropertyResolver
+                            .setSource(
+                                    material.materialProperties(key),
+                                    Component.translatable("miapi.property.source.material", material.getTranslation().getString()).withStyle(ChatFormatting.DARK_GRAY));
                     if (!materialProperties.isEmpty()) {
                         returnMap = PropertyResolver.merge(oldMap, materialProperties, MergeType.SMART);
                     }

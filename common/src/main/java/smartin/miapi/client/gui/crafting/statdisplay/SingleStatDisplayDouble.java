@@ -3,6 +3,7 @@ package smartin.miapi.client.gui.crafting.statdisplay;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -11,14 +12,18 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FastColor;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.Nullable;
 import smartin.miapi.client.gui.InteractAbleWidget;
+import smartin.miapi.client.gui.ParentHandledScreen;
 import smartin.miapi.client.gui.ScrollingTextWidget;
 import smartin.miapi.client.gui.StatBar;
 import smartin.miapi.client.gui.crafting.CraftingScreen;
 import smartin.miapi.config.MiapiConfig;
+import smartin.miapi.modules.properties.util.DoubleOperationResolvable;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
@@ -171,11 +176,39 @@ public abstract class SingleStatDisplayDouble extends InteractAbleWidget impleme
     public List<Component> getHoverLines(GuiGraphics drawContext, int mouseX, int mouseY, float delta) {
         if (isMouseOver(mouseX, mouseY)) {
             Component text1 = this.hover.resolve(compareTo);
+            List<Component> components = new ArrayList<>();
             if (!text1.getString().isEmpty()) {
-                return Arrays.stream(text1.getString().split("\n")).map(a -> Component.literal(a)).collect(Collectors.toList());
+                components.addAll(Arrays.stream(text1.getString().split("\n")).map(a -> Component.literal(a)).collect(Collectors.toList()));
+                components.addAll(getLinesForDouble(getResolvable(compareTo == null ? original : compareTo)));
             }
+            return components;
         }
         return List.of();
+    }
+
+    public DoubleOperationResolvable getResolvable(ItemStack stack) {
+        return null;
+    }
+
+    public List<Component> getLinesForDouble(@Nullable DoubleOperationResolvable resolvable) {
+        List<Component> list = new ArrayList();
+        if (ParentHandledScreen.hasShiftDown()) {
+            if (resolvable != null) {
+                resolvable.operations.forEach(operation1 -> {
+                    if (operation1.solve() != 0) {
+                        list.add(Component.literal(SinglePropertyStatDisplay.stringForOperation(operation1)).withStyle(ChatFormatting.GRAY));
+                        if (ParentHandledScreen.hasAltDown()) {
+                            operation1.source.ifPresent(list::add);
+                            list.add(Component.literal("  " + operation1.value).withStyle(ChatFormatting.DARK_GRAY));
+                        }
+                    }
+                });
+            }
+            list.add(Component.translatable("miapi.ui.stat_detail.shift_alt").withStyle(ChatFormatting.DARK_GRAY));
+        } else {
+            list.add(Component.translatable("miapi.ui.stat_detail.shift").withStyle(ChatFormatting.DARK_GRAY));
+        }
+        return list;
     }
 
     public InteractAbleWidget getHoverWidget() {

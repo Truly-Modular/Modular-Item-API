@@ -6,6 +6,7 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 import com.redpxnda.nucleus.codec.auto.AutoCodec;
 import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import smartin.miapi.Miapi;
 import smartin.miapi.item.modular.StatResolver;
@@ -33,7 +34,7 @@ import java.util.function.Function;
  * @keywords Double Resolvable,DoubleResolvable
  * @data a string or number representing a calculation/numeric value
  */
-public class DoubleOperationResolvable {
+public class DoubleOperationResolvable implements SourceSetter<DoubleOperationResolvable> {
     static Codec<Operation> autoCodec = AutoCodec.of(Operation.class).codec();
     static Codec<Operation> operationCodec = Codec.withAlternative(new Codec<>() {
         @Override
@@ -153,6 +154,7 @@ public class DoubleOperationResolvable {
                 copiesOperation.attributeOperation = operation.attributeOperation;
                 copiesOperation.instance = moduleInstance;
                 copiesOperation.transformer = this.functionTransformer;
+                copiesOperation.source = operation.source;
                 operationList.add(copiesOperation);
             });
         }
@@ -172,7 +174,7 @@ public class DoubleOperationResolvable {
         return evaluate(baseValue).orElse(fallback);
     }
 
-    public void clearCache(){
+    public void clearCache() {
         this.cachedResult = null;
     }
 
@@ -249,6 +251,12 @@ public class DoubleOperationResolvable {
         return new DoubleOperationResolvable(operationList, functionTransformer);
     }
 
+    @Override
+    public DoubleOperationResolvable setSource(DoubleOperationResolvable data, Component source) {
+        data.operations.forEach(op -> op.source = Optional.of(source));
+        return data;
+    }
+
     public static class Operation {
 
 
@@ -317,6 +325,8 @@ public class DoubleOperationResolvable {
         public ModuleInstance instance;
         @AutoCodec.Ignored
         public Function<Pair<String, ModuleInstance>, String> transformer = (Pair::getFirst);
+        @AutoCodec.Ignored
+        public Optional<Component> source = Optional.empty();
 
         public Operation() {
             this.value = "1";

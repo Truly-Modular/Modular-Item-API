@@ -46,8 +46,8 @@ public class SinglePropertyStatDisplay extends SingleStatDisplayDouble {
         return property.getValue(stack).orElse(0.0);
     }
 
-    @Override
-    public void renderHover(GuiGraphics drawContext, int mouseX, int mouseY, float delta) {
+    //@Override
+    public void renderHover2(GuiGraphics drawContext, int mouseX, int mouseY, float delta) {
         List<Component> list = new ArrayList(getHoverLines(drawContext, mouseX, mouseY, delta));
         if (this.isMouseOver(mouseX, mouseY)) {
             if (ParentHandledScreen.hasShiftDown()) {
@@ -69,6 +69,10 @@ public class SinglePropertyStatDisplay extends SingleStatDisplayDouble {
         drawContext.renderComponentTooltip(
                 Minecraft.getInstance().font,
                 list, mouseX, mouseY);
+    }
+
+    public DoubleOperationResolvable getResolvable(ItemStack stack) {
+        return property.getData(stack).orElse(null);
     }
 
     public static String stringForOperation(DoubleOperationResolvable.Operation resolvable) {

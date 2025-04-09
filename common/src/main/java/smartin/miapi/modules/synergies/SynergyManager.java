@@ -3,6 +3,7 @@ package smartin.miapi.modules.synergies;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import io.netty.handler.codec.DecoderException;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import smartin.miapi.Miapi;
 import smartin.miapi.datapack.ReloadEvents;
@@ -18,6 +19,7 @@ import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class SynergyManager {
@@ -102,7 +104,7 @@ public class SynergyManager {
 
         public Map<ModuleProperty<?>, Object> apply(ModuleInstance moduleInstance, Map<ModuleProperty<?>, Object> properties) {
             if (condition.isAllowed(ConditionManager.moduleContext(moduleInstance, properties))) {
-                return holder.applyHolder(properties);
+                return holder.applyHolder(properties, Optional.of(Component.translatable("miapi.property.source.synergy")));
             }
             return properties;
         }
