@@ -2,6 +2,7 @@ package smartin.miapi.forge;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import dev.architectury.event.events.client.ClientLifecycleEvent;
 import dev.architectury.event.events.common.LifecycleEvent;
 import dev.architectury.platform.Platform;
 import net.minecraft.client.Minecraft;
@@ -79,6 +80,18 @@ public class TrulyModularForge {
         //TODO: why no worky
 
         //KEY_BINDINGS.addCallback((KeyBindingRegistryImpl::registerKeyBinding));
+        ClientLifecycleEvent.CLIENT_STARTED.register(new ClientLifecycleEvent.ClientState() {
+            @Override
+            public void stateChanged(Minecraft instance) {
+                RegistryInventory.MODULAR_ITEMS.getFlatMap().values().forEach(item -> {
+                    var methods = item.getClass().getDeclaredMethods();
+                    //item.canEquip(null,null,null);
+                    //item.canPerformAction(item.getDefaultInstance(), ItemAbilities.AXE_DIG);
+                    //Block block;
+                   //block.getToolModifiedState(null,null,null,null);
+                });
+            }
+        });
     }
 
     public static void setupAttributes() {

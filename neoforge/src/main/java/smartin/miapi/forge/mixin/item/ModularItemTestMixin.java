@@ -5,16 +5,20 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.common.ItemAbilities;
 import net.neoforged.neoforge.common.ItemAbility;
-import net.neoforged.neoforge.common.extensions.IItemExtension;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import smartin.miapi.Miapi;
 import smartin.miapi.item.modular.ModularItem;
+import smartin.miapi.item.modular.items.BrokenModularVisualOnlyItem;
 import smartin.miapi.item.modular.items.ExampleModularItem;
 import smartin.miapi.item.modular.items.ExampleModularStrackableItem;
 import smartin.miapi.item.modular.items.armor.*;
 import smartin.miapi.item.modular.items.bows.ModularArrow;
 import smartin.miapi.item.modular.items.bows.ModularBow;
 import smartin.miapi.item.modular.items.bows.ModularCrossbow;
+import smartin.miapi.item.modular.items.shield.ModularNonVanillaShield;
+import smartin.miapi.item.modular.items.shield.ModularVanillaShield;
+import smartin.miapi.item.modular.items.shield.TowerShieldComponent;
 import smartin.miapi.item.modular.items.tools.*;
 import smartin.miapi.modules.abilities.toolabilities.AxeAbility;
 import smartin.miapi.modules.abilities.toolabilities.HoeAbility;
@@ -33,15 +37,21 @@ import java.util.function.Predicate;
         value = {
                 ExampleModularItem.class,
                 ExampleModularStrackableItem.class,
+                BrokenModularVisualOnlyItem.class,
 
                 ModularArrow.class,
                 ModularCrossbow.class,
                 ModularBow.class,
 
+                ModularNonVanillaShield.class,
+                ModularVanillaShield.class,
+                TowerShieldComponent.class,
+
                 ModularAxe.class,
                 ModularHoe.class,
                 ModularPickaxe.class,
                 ModularShovel.class,
+                ModularMace.class,
                 ModularSword.class,
                 ModularWeapon.class,
 
@@ -51,13 +61,18 @@ import java.util.function.Predicate;
                 ModularLeggings.class,
                 ModularBoots.class
         })
-public abstract class ModularItemTestMixin implements IItemExtension {
+public abstract class ModularItemTestMixin {
     public boolean makesPiglinsNeutral(ItemStack stack, LivingEntity wearer) {
         return IsPiglinGold.isPiglinGoldItem(stack);
     }
 
     public boolean canEquip(ItemStack stack, EquipmentSlot armorType, LivingEntity entity) {
         return entity.getEquipmentSlotForItem(stack) == armorType || EquipmentSlotProperty.getSlot(stack).test(armorType);
+    }
+
+    @Unique
+    public void test(){
+
     }
 
     public boolean canPerformAction(ItemStack stack, ItemAbility toolAction) {

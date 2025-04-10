@@ -2,6 +2,7 @@ package smartin.miapi.modules.abilities.util;
 
 import com.mojang.serialization.DynamicOps;
 import dev.architectury.event.events.common.TickEvent;
+import dev.architectury.platform.Platform;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -228,6 +229,14 @@ public class ItemAbilityManager {
             return getItem.get();
         }
         abilityMap.put(context.getItemInHand(), ability);
+        if (Platform.isForgeLike()) {
+            //fuck you forge, implemented fallback for ItemAbility shit
+            InteractionResult result = getAbility(context.getItemInHand()).ability().useOnBlock(context);
+            if(result.equals(InteractionResult.PASS)){
+                return getItem.get();
+            }
+            return result;
+        }
         return getAbility(context.getItemInHand()).ability().useOnBlock(context);
     }
 

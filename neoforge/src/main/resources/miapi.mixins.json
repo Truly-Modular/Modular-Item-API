@@ -6,7 +6,6 @@
     "mixins": [
         "LivingEntityMixin",
         "ReloadAbleServerResourcesMixin",
-        "item.ModularItemMixin",
         "item.ModularItemTestMixin"
     ],
     "client": [
