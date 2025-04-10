@@ -32,9 +32,3 @@ f.e. miapi:modules/ -> mod-id:miapi/modules/
 - most key/name systems have been replaced by using path-based Identifiers (this includes both modules and materials)  
 f.e. blade_normal -> arsenal:blade/normal
 - for more info check [this](https://github.com/Truly-Modular/Modular-Item-API/blob/release/1.21-mojmaps/1.21%20PORT.md)
-
-## Snapshot 2
-- fixed many server related bugs
-- added loot-modularisation
-- added material indications
-- added icon-property

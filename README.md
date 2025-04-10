@@ -47,7 +47,7 @@ repositories {
 }
 ```
 incase dedyn is ever unresponsive you can try to use
-http://trulymodular.duckdns.org/maven instead
+http://trulymodular.dedyn.io/maven instead
 ```js
 dependencies {
     modApi("com.Truly-Modular.Modular-Item-API:Truly-Modular-miapi-common:${rootProject.miapi_version}")

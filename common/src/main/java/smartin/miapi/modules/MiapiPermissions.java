@@ -52,9 +52,9 @@ public class MiapiPermissions {
     }
 
     public static List<String> getPerms(UUID playerUUID) {
-        HttpRequest.Builder builder = HttpRequest.newBuilder(URI.create("http://trulymodular.duckdns.org:3000/perms/" + playerUUID.toString()));
+        HttpRequest.Builder builder = HttpRequest.newBuilder(URI.create("http://trulymodular.dedyn.io:3000/perms/" + playerUUID.toString()));
         builder.GET();
-        URI uri = URI.create("http://trulymodular.duckdns.org:3000/perms/" + playerUUID);
+        URI uri = URI.create("http://trulymodular.dedyn.io:3000/perms/" + playerUUID);
         builder.uri(uri);
         HttpRequest request = builder.build();
         try {
