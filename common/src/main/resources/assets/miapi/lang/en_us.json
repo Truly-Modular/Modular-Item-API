@@ -223,6 +223,8 @@
     "miapi.stat.miapi.mining.level.shovel.description": "Mining Speed and Level for Blocks like Sand",
     "miapi.stat.miapi.mining.level.hoe": "Hoe Mining",
     "miapi.stat.miapi.mining.level.hoe.description": "Mining Speed and Level for Blocks like Hay Bales",
+    "miapi.stat.miapi.mining.level.sword": "Sword Mining",
+    "miapi.stat.miapi.mining.level.sword.description": "Mining Speed and Level for Cobwebs",
     "miapi.stat.miapi.durability": "Durability",
     "miapi.stat.miapi.durability.description": "Item Durability",
     "miapi.stat.miapi.water_drag": "\uD83C\uDF0A\uD83D\uDD31 Drag",

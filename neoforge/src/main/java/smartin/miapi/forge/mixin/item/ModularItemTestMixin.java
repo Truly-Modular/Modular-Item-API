@@ -9,8 +9,13 @@ import net.neoforged.neoforge.common.extensions.IItemExtension;
 import org.spongepowered.asm.mixin.Mixin;
 import smartin.miapi.Miapi;
 import smartin.miapi.item.modular.ModularItem;
-import smartin.miapi.item.modular.items.armor.ModularElytraItem;
-import smartin.miapi.item.modular.items.tools.ModularHoe;
+import smartin.miapi.item.modular.items.ExampleModularItem;
+import smartin.miapi.item.modular.items.ExampleModularStrackableItem;
+import smartin.miapi.item.modular.items.armor.*;
+import smartin.miapi.item.modular.items.bows.ModularArrow;
+import smartin.miapi.item.modular.items.bows.ModularBow;
+import smartin.miapi.item.modular.items.bows.ModularCrossbow;
+import smartin.miapi.item.modular.items.tools.*;
 import smartin.miapi.modules.abilities.toolabilities.AxeAbility;
 import smartin.miapi.modules.abilities.toolabilities.HoeAbility;
 import smartin.miapi.modules.abilities.toolabilities.ShovelAbility;
@@ -26,7 +31,25 @@ import java.util.function.Predicate;
 
 @Mixin(
         value = {
-                ModularHoe.class
+                ExampleModularItem.class,
+                ExampleModularStrackableItem.class,
+
+                ModularArrow.class,
+                ModularCrossbow.class,
+                ModularBow.class,
+
+                ModularAxe.class,
+                ModularHoe.class,
+                ModularPickaxe.class,
+                ModularShovel.class,
+                ModularSword.class,
+                ModularWeapon.class,
+
+                ModularHelmet.class,
+                ModularChestPlate.class,
+                ModularElytraItem.class,
+                ModularLeggings.class,
+                ModularBoots.class
         })
 public abstract class ModularItemTestMixin implements IItemExtension {
     public boolean makesPiglinsNeutral(ItemStack stack, LivingEntity wearer) {
