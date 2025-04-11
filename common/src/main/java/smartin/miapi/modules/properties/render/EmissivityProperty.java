@@ -15,6 +15,8 @@ import smartin.miapi.modules.properties.util.MergeType;
  * The EmissivityProperty defines the emissive light levels for an item or block. Emissive properties affect how much light
  * an item or block emits.
  * These values are applied to the item or block to control its visual appearance in lighting conditions.
+ * This can also be used in a mcmeta for models under "miapi_model_data" "lightValues"
+ *
  * @description_end
  * @data sky: An integer representing the light level emitted in the sky.
  * @data block: An integer representing the light level emitted from the block.
