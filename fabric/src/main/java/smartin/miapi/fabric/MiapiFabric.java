@@ -40,33 +40,34 @@ public class MiapiFabric implements ModInitializer {
         //DATA
         if (Environment.isClient()) {
             MiapiClientFabric.setupClient();
-        }
-        MiapiClient.KEY_BINDINGS.addCallback((key) -> {
-            try {
-                KeyBindingHelper.registerKeyBinding(key);
-            } catch (RuntimeException e) {
+            MiapiClient.KEY_BINDINGS.addCallback((key) -> {
+                try {
+                    KeyBindingHelper.registerKeyBinding(key);
+                } catch (RuntimeException e) {
 
-            }
-        });
-        ReloadEvents.END.subscribe((isClient, registryAccess) -> {
-            List<KeyMapping> mappings = new ArrayList<>(Arrays.stream(Minecraft.getInstance().options.keyMappings).toList());
-            MiapiClient.KEY_BINDINGS.getFlatMap().forEach((id, key) -> {
-                if (!mappings.contains(key)) {
-                    mappings.add(key);
-                }
-                Set<String> categories = new HashSet<>(KeyMappingAccessor.getCATEGORIES());
-                categories.add(key.getCategory());
-
-                KeyMappingAccessor.setCATEGORIES(categories);
-                Map<String, Integer> mapPrio = new HashMap<>(KeyMappingAccessor.getCATEGORY_SORT_ORDER());
-                int max = Collections.max(mapPrio.values());
-                if (!mapPrio.keySet().contains(key.getCategory())) {
-                    mapPrio.put(key.getCategory(), max + 1);
-                    KeyMappingAccessor.setCATEGORY_SORT_ORDER(mapPrio);
                 }
             });
-            ((OptionsAccessor) Minecraft.getInstance().options).setKeyMappings(mappings.toArray(new KeyMapping[0]));
-        });
+            ReloadEvents.END.subscribe((isClient, registryAccess) -> {
+                List<KeyMapping> mappings = new ArrayList<>(Arrays.stream(Minecraft.getInstance().options.keyMappings).toList());
+                MiapiClient.KEY_BINDINGS.getFlatMap().forEach((id, key) -> {
+                    if (!mappings.contains(key)) {
+                        mappings.add(key);
+                    }
+                    Set<String> categories = new HashSet<>(KeyMappingAccessor.getCATEGORIES());
+                    categories.add(key.getCategory());
+
+                    KeyMappingAccessor.setCATEGORIES(categories);
+                    Map<String, Integer> mapPrio = new HashMap<>(KeyMappingAccessor.getCATEGORY_SORT_ORDER());
+                    int max = Collections.max(mapPrio.values());
+                    if (!mapPrio.keySet().contains(key.getCategory())) {
+                        mapPrio.put(key.getCategory(), max + 1);
+                        KeyMappingAccessor.setCATEGORY_SORT_ORDER(mapPrio);
+                    }
+                });
+                ((OptionsAccessor) Minecraft.getInstance().options).setKeyMappings(mappings.toArray(new KeyMapping[0]));
+            });
+        }
+
 
         EnchantmentEvents.ALLOW_ENCHANTING.register((enchantment, target, enchantingContext) -> {
             if (

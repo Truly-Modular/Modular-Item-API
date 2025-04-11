@@ -1,11 +1,14 @@
 package smartin.miapi.client.gui.crafting.statdisplay;
 
+import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import smartin.miapi.modules.properties.mining.MiningLevelProperty;
 import smartin.miapi.modules.properties.util.DoubleOperationResolvable;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class MiningPropertyStatDisplay extends SingleStatDisplayDouble {
     public final String type;
@@ -29,9 +32,11 @@ public class MiningPropertyStatDisplay extends SingleStatDisplayDouble {
     public boolean shouldRender(ItemStack original, ItemStack compareTo) {
         super.shouldRender(original, compareTo);
         return MiningLevelProperty.property.getData(original).orElse(new HashMap<>()).containsKey(type) &&
-               MiningLevelProperty.property.getData(original).orElse(new HashMap<>()).get(type).speed().getValue() != 1 ||
+               !(MiningLevelProperty.property.getData(original).orElse(new HashMap<>()).get(type).speed().getValue() == 1 ||
+                 MiningLevelProperty.property.getData(original).orElse(new HashMap<>()).get(type).speed().getValue() == 0) ||
                MiningLevelProperty.property.getData(compareTo).orElse(new HashMap<>()).containsKey(type) &&
-               MiningLevelProperty.property.getData(compareTo).orElse(new HashMap<>()).get(type).speed().getValue() != 1;
+               !(MiningLevelProperty.property.getData(compareTo).orElse(new HashMap<>()).get(type).speed().getValue() == 1 ||
+                 MiningLevelProperty.property.getData(compareTo).orElse(new HashMap<>()).get(type).speed().getValue() == 0);
     }
 
     public DoubleOperationResolvable getResolvable(ItemStack stack) {
@@ -40,5 +45,20 @@ public class MiningPropertyStatDisplay extends SingleStatDisplayDouble {
             return rule.speed();
         }
         return null;
+    }
+
+    public List<Component> additionalHoverLines() {
+        List<Component> lines = new ArrayList<>();
+        var rule = MiningLevelProperty.property.getData(compareTo == null ? original : compareTo).orElse(new HashMap<>()).get(type);
+        if (rule != null) {
+            rule.respectMaterialBlacklists().stream().distinct().forEach(m -> {
+                lines.add(
+                        Component.translatable(
+                                        "miapi.stat.miapi.mining.level.material.source",
+                                        m.getTranslation())
+                                .withStyle(ChatFormatting.GRAY));
+            });
+        }
+        return lines;
     }
 }

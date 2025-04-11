@@ -27,7 +27,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
-import java.util.stream.Collectors;
 
 @Environment(EnvType.CLIENT)
 public abstract class SingleStatDisplayDouble extends InteractAbleWidget implements SingleStatDisplay, Renderable {
@@ -166,11 +165,13 @@ public abstract class SingleStatDisplayDouble extends InteractAbleWidget impleme
 
     @Override
     public void renderHover(GuiGraphics drawContext, int mouseX, int mouseY, float delta) {
-        drawContext.renderComponentTooltip(
-                Minecraft.getInstance().font,
-                getHoverLines(drawContext, mouseX, mouseY, delta),
-                mouseX,
-                mouseY);
+        if (isMouseOver(mouseX, mouseY)) {
+            drawContext.renderComponentTooltip(
+                    Minecraft.getInstance().font,
+                    getHoverLines(drawContext, mouseX, mouseY, delta),
+                    mouseX,
+                    mouseY);
+        }
     }
 
     public List<Component> getHoverLines(GuiGraphics drawContext, int mouseX, int mouseY, float delta) {
@@ -178,11 +179,16 @@ public abstract class SingleStatDisplayDouble extends InteractAbleWidget impleme
             Component text1 = this.hover.resolve(compareTo);
             List<Component> components = new ArrayList<>();
             if (!text1.getString().isEmpty()) {
-                components.addAll(Arrays.stream(text1.getString().split("\n")).map(a -> Component.literal(a)).collect(Collectors.toList()));
-                components.addAll(getLinesForDouble(getResolvable(compareTo == null ? original : compareTo)));
+                components.addAll(Arrays.stream(text1.getString().split("\n")).map(Component::literal).toList());
             }
+            components.addAll(additionalHoverLines());
+            components.addAll(getLinesForDouble(getResolvable(compareTo == null ? original : compareTo)));
             return components;
         }
+        return List.of();
+    }
+
+    public List<Component> additionalHoverLines() {
         return List.of();
     }
 
