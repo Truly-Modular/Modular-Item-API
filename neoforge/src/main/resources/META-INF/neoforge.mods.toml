@@ -36,6 +36,6 @@ config = "miapi-common.mixins.json"
 [[dependencies.${mod_id}]]
    modId="minecraft"
    mandatory=true
-   versionRange="[${minecraft_version},)"
+   versionRange="[1.21,1.21.1]"
    ordering="NONE"
    side="BOTH"

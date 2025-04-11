@@ -32,7 +32,10 @@
         "fabricloader": ">=${fabric_loader_version}",
         "fabric-api": ">=${fabric_api_version}",
         "architectury": ">=13.0.0",
-        "minecraft": ">=${minecraft_version}"
+        "minecraft": [
+            "1.21",
+            "1.21.1"
+        ]
     },
     "custom": {
         "modmenu": {
