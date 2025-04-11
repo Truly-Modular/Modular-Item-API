@@ -1,4 +1,3 @@
-## v1.1.43 (1.20.1)
-- fixed UseAnim on ToolActions
-- fixed issue where module extensions duplicating ui entries
-- fixed issue related minimize and maximize button
+## v1.1.44 (1.20.1)
+- improved ui logic
+- updates to chinese translations (thanks to sweeperssl)

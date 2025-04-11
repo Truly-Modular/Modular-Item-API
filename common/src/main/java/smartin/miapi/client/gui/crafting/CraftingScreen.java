@@ -240,7 +240,13 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
         }
     }
 
+    static boolean hasUpdate = false;
+
     public void updatePreviewItemStack(ItemStack stack) {
+        if (hasUpdate) {
+            return;
+        }
+        hasUpdate = true;
         stack = stack.copy();
         if (stack.isEmpty()) {
             //Miapi.LOGGER.info("warn");
@@ -381,6 +387,7 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
 
     @Override
     public void render(DrawContext drawContext, int mouseX, int mouseY, float delta) {
+        hasUpdate = false;
         overwriteMouseX = mouseX;
         overwriteMouseY = mouseY;
         if (framesSinceLastUpdate > 10 && !nextItemStack.isEmpty()) {
