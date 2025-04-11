@@ -78,8 +78,11 @@ public class SkinOptions implements EditOption {
         String skin = buffer.readUtf();
         if (context.getInstance() != null) {
             Skin.writeSkin(context.getInstance(), skin);
-            context.getInstance().getRoot().writeToItem(context.getItemstack());
+            ItemStack stack = context.getItemstack().copy();
+
+            context.getInstance().getRoot().writeToItem(stack);
             context.getInstance().clearCaches();
+            return stack;
         } else {
             Miapi.LOGGER.error("could not set skin, no module found");
         }

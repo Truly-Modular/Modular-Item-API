@@ -7,6 +7,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import smartin.miapi.Miapi;
 import smartin.miapi.events.MiapiEvents;
+import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.LoreProperty;
 import smartin.miapi.modules.properties.util.CodecProperty;
 import smartin.miapi.modules.properties.util.MergeType;
@@ -17,8 +18,7 @@ import java.util.List;
 /**
  * @header On Hit Target Effects Property
  * @path /data_types/properties/potion/on_hit_target_effects
- * @description_start
- * This property triggers specific potion effects on the target entity when the attacker hits it. The effects
+ * @description_start This property triggers specific potion effects on the target entity when the attacker hits it. The effects
  * are defined by `PossibleEffect` instances, which include parameters like probability, duration, and amplifier.
  * The effects can be configured to apply based on various conditions, and the tooltip will display relevant
  * information about these effects.
@@ -58,5 +58,10 @@ public class OnHitTargetEffects extends CodecProperty<List<PossibleEffect>> {
     @Override
     public List<PossibleEffect> merge(List<PossibleEffect> left, List<PossibleEffect> right, MergeType mergeType) {
         return PossibleEffect.merge(left, right, mergeType);
+    }
+
+    @Override
+    public List<PossibleEffect> initialize(List<PossibleEffect> effects, ModuleInstance module) {
+        return effects.stream().map(e -> e.initialize(e,module)).toList();
     }
 }

@@ -5,6 +5,7 @@ import dev.architectury.event.EventResult;
 import net.minecraft.resources.ResourceLocation;
 import smartin.miapi.Miapi;
 import smartin.miapi.events.MiapiEvents;
+import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.LoreProperty;
 import smartin.miapi.modules.properties.util.CodecProperty;
 import smartin.miapi.modules.properties.util.MergeType;
@@ -60,5 +61,10 @@ public class OnDamagedEffects extends CodecProperty<List<PossibleEffect>> {
     @Override
     public List<PossibleEffect> merge(List<PossibleEffect> left, List<PossibleEffect> right, MergeType mergeType) {
         return PossibleEffect.merge(left, right, mergeType);
+    }
+
+    @Override
+    public List<PossibleEffect> initialize(List<PossibleEffect> effects, ModuleInstance module) {
+        return effects.stream().map(e -> e.initialize(e,module)).toList();
     }
 }

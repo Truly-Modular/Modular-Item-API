@@ -14,7 +14,9 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
+import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.util.DoubleOperationResolvable;
+import smartin.miapi.modules.properties.util.InitializeAble;
 import smartin.miapi.modules.properties.util.MergeType;
 
 import java.util.ArrayList;
@@ -39,7 +41,7 @@ public record PossibleEffect(Holder<MobEffect> potion,
                              DoubleOperationResolvable showIcon,
                              DoubleOperationResolvable probability,
                              DoubleOperationResolvable targetSelf,
-                             EquipmentSlotGroup group) {
+                             EquipmentSlotGroup group) implements InitializeAble<PossibleEffect> {
     public static final Codec<PossibleEffect> CODEC = RecordCodecBuilder.create((instance) -> {
         return instance.group(
                 MobEffect.CODEC
@@ -99,8 +101,8 @@ public record PossibleEffect(Holder<MobEffect> potion,
     public Component getTooltip(String key, String showTargetSelf) {
         return Component.translatable(targetSelf().isTrue() ? key : showTargetSelf,
                 potion().value().getDisplayName(),
-                (int) duration().getValue(),
-                (int) amplifier().getValue(),
+                (int) duration().getValue() / 20,
+                (int) amplifier().getValue() + 1,
                 probability().getValue() == 1.0 ? Component.empty() : probability()
         );
     }
@@ -147,8 +149,8 @@ public record PossibleEffect(Holder<MobEffect> potion,
 
                 double combinedProbability = first.probability().getValue() + possibleEffect.probability().getValue();
                 int combinedDuration = (int) (first.duration().getValue() +
-                                                              (combinedProbability > 1.0f ? (int) (first.duration().getValue() * (combinedProbability - 1.0f))
-                                                               : first.duration().getValue()));
+                                              (combinedProbability > 1.0f ? (int) (first.duration().getValue() * (combinedProbability - 1.0f))
+                                                      : first.duration().getValue()));
                 combinedProbability = Math.min(combinedProbability, 1.0f);
 
                 /*
@@ -170,15 +172,15 @@ public record PossibleEffect(Holder<MobEffect> potion,
                  */
 
                 mergedList.add(new PossibleEffect(
-                        first.potion,
-                        DoubleOperationResolvable.merge(first.amplifier, possibleEffect.amplifier, mergeType),
-                        new DoubleOperationResolvable(combinedDuration),
-                        DoubleOperationResolvable.merge(first.ambient, possibleEffect.ambient, mergeType),
-                        DoubleOperationResolvable.merge(first.showParticle, possibleEffect.showParticle, mergeType),
-                        DoubleOperationResolvable.merge(first.showIcon, possibleEffect.showIcon, mergeType),
-                        new DoubleOperationResolvable(combinedProbability),
-                        first.targetSelf,
-                        first.group()
+                                first.potion,
+                                DoubleOperationResolvable.merge(first.amplifier, possibleEffect.amplifier, mergeType),
+                                new DoubleOperationResolvable(combinedDuration),
+                                DoubleOperationResolvable.merge(first.ambient, possibleEffect.ambient, mergeType),
+                                DoubleOperationResolvable.merge(first.showParticle, possibleEffect.showParticle, mergeType),
+                                DoubleOperationResolvable.merge(first.showIcon, possibleEffect.showIcon, mergeType),
+                                new DoubleOperationResolvable(combinedProbability),
+                                first.targetSelf,
+                                first.group()
                         )
                 );
             } else {
@@ -186,6 +188,20 @@ public record PossibleEffect(Holder<MobEffect> potion,
             }
         });
         return mergedList;
+    }
+
+    public PossibleEffect initialize(PossibleEffect original, ModuleInstance moduleInstance) {
+        return new PossibleEffect(
+                original.potion(),
+                original.amplifier().initialize(moduleInstance),
+                original.duration().initialize(moduleInstance),
+                original.ambient().initialize(moduleInstance),
+                original.showParticle().initialize(moduleInstance),
+                original.showIcon().initialize(moduleInstance),
+                original.probability().initialize(moduleInstance),
+                original.targetSelf().initialize(moduleInstance),
+                original.group()
+        );
     }
 
     public static final StreamCodec<RegistryFriendlyByteBuf, PossibleEffect> STREAM_CODEC = ByteBufCodecs.fromCodecWithRegistries(CODEC);

@@ -18,6 +18,7 @@ public class MiningPropertyStatDisplay extends SingleStatDisplayDouble {
                         stack -> Component.translatable("miapi.stat.miapi.mining.level." + type)),
                 s -> Component.translatable("miapi.stat.miapi.mining.level." + type + ".description"));
         this.type = type;
+        this.maxValue = 15;
     }
 
     @Override

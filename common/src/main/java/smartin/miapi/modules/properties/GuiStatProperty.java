@@ -71,7 +71,11 @@ public class GuiStatProperty extends CodecProperty<Map<String, GuiStatProperty.G
                                 gui.min.getValue(),
                                 gui.max.getValue()
 
-                        );
+                        ) {
+                            public DoubleOperationResolvable getResolvable(ItemStack stack) {
+                                return gui.value;
+                            }
+                        };
                         combined.add((T) display);
                     });
                     return combined;

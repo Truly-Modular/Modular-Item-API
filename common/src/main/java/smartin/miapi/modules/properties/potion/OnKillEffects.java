@@ -7,6 +7,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import smartin.miapi.Miapi;
+import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.LoreProperty;
 import smartin.miapi.modules.properties.util.CodecProperty;
 import smartin.miapi.modules.properties.util.MergeType;
@@ -59,5 +60,10 @@ public class OnKillEffects extends CodecProperty<List<PossibleEffect>> {
     @Override
     public List<PossibleEffect> merge(List<PossibleEffect> left, List<PossibleEffect> right, MergeType mergeType) {
         return PossibleEffect.merge(left, right, mergeType);
+    }
+
+    @Override
+    public List<PossibleEffect> initialize(List<PossibleEffect> effects, ModuleInstance module) {
+        return effects.stream().map(e -> e.initialize(e,module)).toList();
     }
 }
