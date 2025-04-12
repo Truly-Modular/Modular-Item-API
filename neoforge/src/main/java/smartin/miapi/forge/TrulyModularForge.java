@@ -78,20 +78,21 @@ public class TrulyModularForge {
         ReloadEvents.START.subscribe((isClient, access) -> setupAttributes());
         Injection.setup();
         //TODO: why no worky
-
-        //KEY_BINDINGS.addCallback((KeyBindingRegistryImpl::registerKeyBinding));
-        ClientLifecycleEvent.CLIENT_STARTED.register(new ClientLifecycleEvent.ClientState() {
-            @Override
-            public void stateChanged(Minecraft instance) {
-                RegistryInventory.MODULAR_ITEMS.getFlatMap().values().forEach(item -> {
-                    var methods = item.getClass().getDeclaredMethods();
-                    //item.canEquip(null,null,null);
-                    //item.canPerformAction(item.getDefaultInstance(), ItemAbilities.AXE_DIG);
-                    //Block block;
-                   //block.getToolModifiedState(null,null,null,null);
-                });
-            }
-        });
+        if (Platform.getEnv() == Dist.CLIENT) {
+            //KEY_BINDINGS.addCallback((KeyBindingRegistryImpl::registerKeyBinding));
+            ClientLifecycleEvent.CLIENT_STARTED.register(new ClientLifecycleEvent.ClientState() {
+                @Override
+                public void stateChanged(Minecraft instance) {
+                    RegistryInventory.MODULAR_ITEMS.getFlatMap().values().forEach(item -> {
+                        var methods = item.getClass().getDeclaredMethods();
+                        //item.canEquip(null,null,null);
+                        //item.canPerformAction(item.getDefaultInstance(), ItemAbilities.AXE_DIG);
+                        //Block block;
+                        //block.getToolModifiedState(null,null,null,null);
+                    });
+                }
+            });
+        }
     }
 
     public static void setupAttributes() {
