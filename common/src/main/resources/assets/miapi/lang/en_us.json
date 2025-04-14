@@ -286,6 +286,7 @@
     "miapi.material_stat.density": "Density",
     "miapi.material_stat.hardness": "Hardness",
     "miapi.material_stat.durability": "Durability",
+    "miapi.material_stat.enchantability": "Enchantability",
     "miapi.material_stat.mining_speed": "Mining Speed",
     "miapi.material_stat.mining_level": "Mining Level",
     "miapi.material_group.stone": "Stone",

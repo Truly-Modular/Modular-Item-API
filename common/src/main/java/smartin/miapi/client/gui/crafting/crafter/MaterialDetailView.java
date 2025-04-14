@@ -43,6 +43,9 @@ public class MaterialDetailView extends InteractAbleWidget {
                 new Builder("durability").setMax(2000).setFormat("##")
         );
         registerBuilder(
+                new Builder("enchantability")
+        );
+        registerBuilder(
                 new Builder("mining_speed")
         );
         registerBuilder(
@@ -108,8 +111,8 @@ public class MaterialDetailView extends InteractAbleWidget {
     public static class InfoBar extends InteractAbleWidget {
         public StatBar statBar;
         public ScrollingTextWidget textWidget;
-        public static int textWidth = 65;
-        public static int barWitdh = 35;
+        public static int textWidth = 69;
+        public static int barWitdh = 34;
         public static int spacer = 1;
         public ScrollingTextWidget valueHolder;
 
