@@ -13,6 +13,7 @@
         "miapi:modular_longsword",
         "miapi:modular_trident",
         "miapi:modular_scythe",
-        "miapi:modular_sickle"
+        "miapi:modular_sickle",
+        "miapi:twin_blade"
     ]
 }
