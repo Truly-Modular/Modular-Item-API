@@ -84,10 +84,16 @@ public class AttributeProperty extends CodecProperty<Map<ResourceLocation, Map<A
                     }
                     doubleOperation.attributeOperation = operation;
 
-                    DoubleOperationResolvable resolvable = new DoubleOperationResolvable(List.of(doubleOperation));
                     map.computeIfAbsent(id, i -> new LinkedHashMap<>())
                             .computeIfAbsent(targetOperation, t -> new LinkedHashMap<>())
-                            .computeIfAbsent(Either.left(equipmentSlotGroup), e -> resolvable);
+                            .compute(Either.left(equipmentSlotGroup), (e, resolvable1) -> {
+                                if (resolvable1 == null) {
+                                    return new DoubleOperationResolvable(List.of(doubleOperation));
+                                }
+                                List<DoubleOperationResolvable.Operation> operations = new ArrayList<>(resolvable1.operations);
+                                operations.add(doubleOperation);
+                                return new DoubleOperationResolvable(operations);
+                            });
                 });
                 return map;
             }, map -> List.of()));

@@ -41,6 +41,7 @@ public abstract class SingleStatDisplayDouble extends InteractAbleWidget impleme
     public double maxValue = 100;
     public double minValue = 0;
     public DecimalFormat modifierFormat;
+    public DecimalFormat hoverFormat;
     public StatListWidget.TextGetter text;
     public StatListWidget.TextGetter hover;
     public Component postfix = Component.nullToEmpty("");
@@ -196,13 +197,20 @@ public abstract class SingleStatDisplayDouble extends InteractAbleWidget impleme
         return null;
     }
 
+    public DecimalFormat getHoverFormat() {
+        if (hoverFormat == null) {
+            return modifierFormat;
+        }
+        return hoverFormat;
+    }
+
     public List<Component> getLinesForDouble(@Nullable DoubleOperationResolvable resolvable) {
         List<Component> list = new ArrayList();
         if (ParentHandledScreen.hasShiftDown()) {
             if (resolvable != null) {
                 resolvable.operations.forEach(operation1 -> {
                     if (operation1.solve() != 0) {
-                        list.add(Component.literal(SinglePropertyStatDisplay.stringForOperation(operation1)).withStyle(ChatFormatting.GRAY));
+                        list.add(Component.literal(SinglePropertyStatDisplay.stringForOperation(getHoverFormat(), operation1)).withStyle(ChatFormatting.GRAY));
                         if (ParentHandledScreen.hasAltDown()) {
                             operation1.source.ifPresent(list::add);
                             list.add(Component.literal("  " + operation1.value).withStyle(ChatFormatting.DARK_GRAY));

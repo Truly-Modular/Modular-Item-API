@@ -188,6 +188,7 @@ public class StatListWidget extends InteractAbleWidget {
                 .builder(DurabilityProperty.property)
                 .setMax(2000)
                 .setFormat("##")
+                .setHoverFormat("##.##")
                 .setCondition((old, current) -> old.isDamageableItem() &&
                                                 current.isDamageableItem())
                 .setTranslationKey(DurabilityProperty.KEY).build());

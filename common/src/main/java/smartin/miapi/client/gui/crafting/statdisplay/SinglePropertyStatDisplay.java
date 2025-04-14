@@ -2,23 +2,17 @@ package smartin.miapi.client.gui.crafting.statdisplay;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.ItemStack;
 import smartin.miapi.Miapi;
-import smartin.miapi.client.gui.ParentHandledScreen;
 import smartin.miapi.modules.properties.util.DoubleOperationResolvable;
 import smartin.miapi.modules.properties.util.DoubleProperty;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 import java.util.function.BiFunction;
 
@@ -46,37 +40,12 @@ public class SinglePropertyStatDisplay extends SingleStatDisplayDouble {
         return property.getValue(stack).orElse(0.0);
     }
 
-    //@Override
-    public void renderHover2(GuiGraphics drawContext, int mouseX, int mouseY, float delta) {
-        List<Component> list = new ArrayList(getHoverLines(drawContext, mouseX, mouseY, delta));
-        if (this.isMouseOver(mouseX, mouseY)) {
-            if (ParentHandledScreen.hasShiftDown()) {
-                property.getData(compareTo == null ? original : compareTo).ifPresent(resolvable -> {
-                    resolvable.operations.forEach(operation -> {
-                        if (operation.solve() != 0) {
-                            list.add(Component.literal(stringForOperation(operation)).withStyle(ChatFormatting.GRAY));
-                            if (ParentHandledScreen.hasAltDown()) {
-                                list.add(Component.literal("  " + operation.value).withStyle(ChatFormatting.DARK_GRAY));
-                            }
-                        }
-                    });
-                });
-                list.add(Component.translatable("miapi.ui.stat_detail.shift_alt").withStyle(ChatFormatting.DARK_GRAY));
-            } else {
-                list.add(Component.translatable("miapi.ui.stat_detail.shift").withStyle(ChatFormatting.DARK_GRAY));
-            }
-        }
-        drawContext.renderComponentTooltip(
-                Minecraft.getInstance().font,
-                list, mouseX, mouseY);
-    }
-
     public DoubleOperationResolvable getResolvable(ItemStack stack) {
         return property.getData(stack).orElse(null);
     }
 
-    public static String stringForOperation(DoubleOperationResolvable.Operation resolvable) {
-        String number = "" + resolvable.solve();
+    public static String stringForOperation(DecimalFormat format, DoubleOperationResolvable.Operation resolvable) {
+        String number = "" + format.format(resolvable.solve());
         String operation = getStringName(resolvable.attributeOperation);
         if (operation.equals("+") && number.startsWith("-")) {
             return number + " " + resolvable.instance.getModuleName().getString();
@@ -103,6 +72,7 @@ public class SinglePropertyStatDisplay extends SingleStatDisplayDouble {
         public String translationKey = "";
         public Object[] descriptionArgs = new Object[]{};
         public DecimalFormat modifierFormat;
+        public DecimalFormat hoverFormat;
         public double min = 0;
         public double max = 100;
         public boolean inverse = false;
@@ -169,6 +139,13 @@ public class SinglePropertyStatDisplay extends SingleStatDisplayDouble {
             return this;
         }
 
+        public Builder setHoverFormat(String format) {
+            hoverFormat = Util.make(new DecimalFormat(format), (decimalFormat) -> {
+                decimalFormat.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ROOT));
+            });
+            return this;
+        }
+
         public SinglePropertyStatDisplay build() {
             // Validate the required fields
             if (name == null) {
@@ -185,6 +162,10 @@ public class SinglePropertyStatDisplay extends SingleStatDisplayDouble {
             display.modifierFormat = modifierFormat;
             display.inverse = inverse;
             display.condition = condition;
+            if (hoverFormat == null) {
+                hoverFormat = modifierFormat;
+            }
+            display.hoverFormat = hoverFormat;
             return display;
         }
     }
