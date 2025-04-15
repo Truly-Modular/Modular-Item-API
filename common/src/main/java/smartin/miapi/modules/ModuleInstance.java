@@ -75,7 +75,10 @@ public class ModuleInstance {
                                         .forGetter(ModuleInstance::getSaveData)
                         ).apply(instance, ModuleInstance::new))
         );
-        CODEC = registrySavingCodec(basicCodec, (m, l) -> m.allSubModules().forEach(moduleInstance -> moduleInstance.lookup = l));
+        CODEC = registrySavingCodec(basicCodec, (m, l) -> m.allSubModules().forEach(moduleInstance -> {
+            moduleInstance.lookup = l;
+            moduleInstance.mutable = false;
+        }));
         MODULE_INSTANCE_COMPONENT = DataComponentType.<ModuleInstance>builder().persistent(CODEC).networkSynchronized(ByteBufCodecs.fromCodec(CODEC)).build();
     }
 
@@ -160,6 +163,8 @@ public class ModuleInstance {
     @Nullable
     public ItemStack contextStack = null;
 
+    private boolean mutable = true;
+
     /**
      * Constructs a new module instance with the given item module.
      *
@@ -200,6 +205,9 @@ public class ModuleInstance {
     }
 
     public void setSubModule(String id, ModuleInstance submodule) {
+        if (!mutable) {
+            throw new RuntimeException(new UnsupportedOperationException("cannot modify Modules on ItemStacks. call copy first!"));
+        }
         removeSubModule(id);
         subModules.put(id, submodule);
         submodule.slotName = id;
@@ -209,6 +217,9 @@ public class ModuleInstance {
     }
 
     public void removeSubModule(String id) {
+        if (!mutable) {
+            throw new RuntimeException(new UnsupportedOperationException("cannot modify Modules on ItemStacks. call copy first!"));
+        }
         ModuleInstance oldModule = subModules.get(id);
         if (oldModule != null) {
             //oldModule.parent = null;
@@ -308,6 +319,7 @@ public class ModuleInstance {
         calculatePosition(position);
 
         ModuleInstance root = this.getRoot().deepCopy();
+        root.mutable = true;
         root.registryAccess = this.registryAccess;
         root.lookup = this.lookup;
         root.allSubModules().forEach(m -> {

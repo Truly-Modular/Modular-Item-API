@@ -38,7 +38,6 @@ public interface ComponentApplyProperty {
         if (module.registryAccess == null) {
             module.registryAccess = registryAccess;
         }
-        module.clearCaches();
         RegistryInventory.MODULE_PROPERTY_MIAPI_REGISTRY
                 .getFlatMap()
                 .values()
