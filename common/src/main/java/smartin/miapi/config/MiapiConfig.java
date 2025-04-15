@@ -25,6 +25,20 @@ public class MiapiConfig {
     @net.fabricmc.api.Environment(EnvType.CLIENT)
     public static ConfigObject<MiapiClientConfig> clientConfigObject;
 
+    public static MiapiClientConfig getClientConfig() {
+        if (INSTANCE == null || INSTANCE.client == null) {
+            return new MiapiClientConfig();
+        }
+        return INSTANCE.client;
+    }
+
+    public static MiapiServerConfig getServerConfig() {
+        if (INSTANCE == null || INSTANCE.server == null) {
+            return new MiapiServerConfig();
+        }
+        return INSTANCE.server;
+    }
+
 
     public static void setupConfigs() {
         if (Environment.isClient()) {
@@ -43,12 +57,12 @@ public class MiapiConfig {
                         //CacheCommands.clearCacheAllClients(Miapi.server);
                     }
                     LootHelper.adjusted = new ArrayList<>();
-                    if (MiapiConfig.INSTANCE.server.lootCategory.isEnabled) {
-                        if (MiapiConfig.INSTANCE.server.lootCategory.isSwappingMaterials) {
-                            LootHelper.adjusted.add(MiapiConfig.INSTANCE.server.lootCategory.materialSwapLootFunction);
+                    if (MiapiConfig.getServerConfig().lootCategory.isEnabled) {
+                        if (MiapiConfig.getServerConfig().lootCategory.isSwappingMaterials) {
+                            LootHelper.adjusted.add(MiapiConfig.getServerConfig().lootCategory.materialSwapLootFunction);
                         }
-                        if (MiapiConfig.INSTANCE.server.lootCategory.isSwappingModules) {
-                            LootHelper.adjusted.add(MiapiConfig.INSTANCE.server.lootCategory.moduleSwapLootFunction);
+                        if (MiapiConfig.getServerConfig().lootCategory.isSwappingModules) {
+                            LootHelper.adjusted.add(MiapiConfig.getServerConfig().lootCategory.moduleSwapLootFunction);
                         }
                     }
                 }));
@@ -68,7 +82,7 @@ public class MiapiConfig {
                     if (Environment.isClient()) {
                         GlintProperty.updateConfig();
                     }
-                    KeyBindManager.configLoad(MiapiConfig.INSTANCE.client.other.bindings);
+                    KeyBindManager.configLoad(MiapiConfig.getClientConfig().other.bindings);
                     ModularItemCache.discardCache();
                 }));
     }

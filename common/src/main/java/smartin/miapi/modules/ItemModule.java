@@ -122,7 +122,7 @@ public record ItemModule(ResourceLocation id, Map<ModuleProperty<?>, Object> pro
      */
     public static ModuleInstance getModules(ItemStack stack) {
         if (ReloadEvents.isInReload()) {
-            if (MiapiConfig.INSTANCE.server.other.verboseLogging) {
+            if (MiapiConfig.getServerConfig().other.verboseLogging) {
                 LOGGER.info("Item cannot have modules during a reload.");
             }
             return new ModuleInstance(ItemModule.empty);

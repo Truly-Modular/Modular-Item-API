@@ -18,7 +18,7 @@ public class MiapiPermissions {
     static WeakHashMap<Player, List<String>> playerPerms = new WeakHashMap<>();
 
     public static boolean hasPerm(Player player, String perm) {
-        if (MiapiConfig.INSTANCE.server.other.developmentMode) {
+        if (MiapiConfig.getServerConfig().other.developmentMode) {
             return true;
         }
         if(perm.equals(player.getUUID().toString())){

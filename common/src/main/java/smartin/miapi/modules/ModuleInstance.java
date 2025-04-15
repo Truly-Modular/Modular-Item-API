@@ -137,6 +137,8 @@ public class ModuleInstance {
      */
     public Map<ModuleProperty<?>, Object> properties = null;
 
+    public final Object propertyThreadLock = new Object();
+
     /**
      * A map of the raw properties.
      * Only access this when you know what you are doing.

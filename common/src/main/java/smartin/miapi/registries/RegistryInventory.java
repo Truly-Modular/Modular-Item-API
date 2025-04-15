@@ -29,6 +29,7 @@ import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -227,6 +228,7 @@ public class RegistryInventory {
     public static Holder<ArmorMaterial> armorMaterial;
     //public static SimpleCraftingStat exampleCraftingStat;
     public static RecipeSerializer serializer;
+    public static RecipeType<?> recipeType;
     public static RegistrySupplier<EntityType<ItemProjectileEntity>> itemProjectileType = (RegistrySupplier) registerAndSupply(ENTITY_TYPE_REGISTRAR, "thrown_item", () ->
             EntityType.Builder.of(ItemProjectileEntity::new, MobCategory.MISC).sized(0.5F, 0.5F).clientTrackingRange(4).updateInterval(20).build("miapi:thrown_item"));
     public static EntityType<ItemProjectileEntity> registeredItemProjectileType;
@@ -313,7 +315,7 @@ public class RegistryInventory {
                 type -> itemProjectileType = (EntityType<ItemProjectile>) type);*/
 
         //RECIPE SERIALIZERS
-        register(RECIPE_SERIALIZER_REGISTRAR, "smithing", MaterialSmithingRecipe.Serializer::new, i -> serializer = i);
+        register(RECIPE_SERIALIZER_REGISTRAR, "material_smithing", MaterialSmithingRecipe.Serializer::new, i -> serializer = i);
 
 
         //BLOCK

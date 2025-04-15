@@ -7,6 +7,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import smartin.miapi.Miapi;
 import smartin.miapi.modules.properties.util.ComplexBooleanProperty;
+import smartin.miapi.modules.properties.util.DoubleOperationResolvable;
 
 @Environment(EnvType.CLIENT)
 public class ComplexBooleanStatDisplay extends SingleStatDisplayBoolean {
@@ -26,6 +27,10 @@ public class ComplexBooleanStatDisplay extends SingleStatDisplayBoolean {
     @Override
     public boolean hasValueItemStack(ItemStack itemStack) {
         return property.hasValue(itemStack);
+    }
+
+    public DoubleOperationResolvable getResolvable(ItemStack stack) {
+        return property.getData(stack).orElse(null);
     }
 
     public static Builder builder(ComplexBooleanProperty property) {

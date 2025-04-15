@@ -149,7 +149,7 @@ public class AllowedMaterial extends CodecProperty<AllowedMaterial.AllowedMateri
             //Miapi.LOGGER.info("dmg " + crafting.getDamage());
             ModuleInstance moduleInstance = craftAction.getModifyingModuleInstance(crafting);
             Double scannedDurability = DurabilityProperty.property.getValue(moduleInstance).orElse(0.0);
-            int durability = (int) (scannedDurability.intValue() * MiapiConfig.INSTANCE.server.other.repairRatio);
+            int durability = (int) (scannedDurability.intValue() * MiapiConfig.getServerConfig().other.repairRatio);
             //Miapi.LOGGER.info("set dmg to " + (crafting.getDamage() - durability));
             crafting.setDamageValue(crafting.getDamageValue() - durability);
             //Miapi.LOGGER.info("set dmg end " + crafting.getDamage());
@@ -187,7 +187,7 @@ public class AllowedMaterial extends CodecProperty<AllowedMaterial.AllowedMateri
             crafting = eventData.crafted;
             if (crafting.isDamageableItem()) {
                 //Miapi.LOGGER.info("dmg " + crafting.getDamage());
-                int durability = (int) (DurabilityProperty.property.getValue(craftAction.getModifyingModuleInstance(crafting)).orElse(0.0).intValue() * MiapiConfig.INSTANCE.server.other.repairRatio);
+                int durability = (int) (DurabilityProperty.property.getValue(craftAction.getModifyingModuleInstance(crafting)).orElse(0.0).intValue() * MiapiConfig.getServerConfig().other.repairRatio);
                 //Miapi.LOGGER.info("set dmg to " + (crafting.getDamage() - durability));
                 crafting.setDamageValue(crafting.getDamageValue() - durability);
                 //Miapi.LOGGER.info("set dmg end " + crafting.getDamage());

@@ -72,7 +72,7 @@ public class ModularHoe extends HoeItem implements PlatformModularItemMethods, M
 
     @Override
     public Tier getTier() {
-        if(MiapiConfig.INSTANCE.server.other.looseToolMaterial){
+        if(MiapiConfig.getServerConfig().other.looseToolMaterial){
             return currentFakeToolmaterial;
         }
         return super.getTier();

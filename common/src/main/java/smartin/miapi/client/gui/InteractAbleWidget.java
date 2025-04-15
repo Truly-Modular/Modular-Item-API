@@ -383,7 +383,7 @@ public abstract class InteractAbleWidget extends AbstractWidget implements Rende
      */
     @Override
     public void renderWidget(GuiGraphics drawContext, int mouseX, int mouseY, float delta) {
-        if ((debug || MiapiConfig.INSTANCE.server.other.developmentMode) && Screen.hasAltDown())
+        if ((debug || MiapiConfig.getServerConfig().other.developmentMode) && Screen.hasAltDown())
             drawSquareBorder(drawContext, getX(), getY(), getWidth(), getHeight(), 1, randomColor);
 
         RenderSystem.setShader(GameRenderer::getPositionShader);

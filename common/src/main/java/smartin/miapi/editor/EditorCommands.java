@@ -117,7 +117,7 @@ public class EditorCommands {
         });
         if (Platform.isModLoaded("nucleus_editor")) {
             NucleusEditor.setup();
-        } else if (MiapiConfig.INSTANCE.client.other.allowEditorNoNucleus) {
+        } else if (MiapiConfig.getClientConfig().other.allowEditorNoNucleus) {
 
         }
     }
@@ -173,7 +173,7 @@ public class EditorCommands {
                 context.getSource().sendFailure(Component.literal("Command only allowed for operators"));
                 return -1;
             }
-            if (!MiapiConfig.INSTANCE.client.other.allowEditorNoNucleus && !Platform.isModLoaded("nucleus_editor")) {
+            if (!MiapiConfig.getClientConfig().other.allowEditorNoNucleus && !Platform.isModLoaded("nucleus_editor")) {
                 context.getSource().sendFailure(Component.literal("Requires Nucleus Editor to be installed!"));
                 return -1;
             }

@@ -44,14 +44,14 @@ public class InGameHudMixin {
         int healthAbsorptionTotal = MathHelper.ceil((maxHealth + (float) absorptionAmount) / 2.0F / 10.0F);
         int numHearts = Math.max(10 - (healthAbsorptionTotal - 2), 3);
         int startY = scaledHeight - 39 - 10;
-        if (MiapiConfig.INSTANCE.client.shieldingArmor.respectHealth) {
+        if (MiapiConfig.getClientConfig().shieldingArmor.respectHealth) {
             startY -= (healthAbsorptionTotal - 1) * numHearts;
         }
-        if (MiapiConfig.INSTANCE.client.shieldingArmor.respectArmor && playerEntity.getArmor() > 0) {
+        if (MiapiConfig.getClientConfig().shieldingArmor.respectArmor && playerEntity.getArmor() > 0) {
             startY -= 10;
         }
-        startY -= MiapiConfig.INSTANCE.client.shieldingArmor.otherOffests * 10;
-        startY -= MiapiConfig.INSTANCE.client.shieldingArmor.attributesSingleLine.stream()
+        startY -= MiapiConfig.getClientConfig().shieldingArmor.otherOffests * 10;
+        startY -= MiapiConfig.getClientConfig().shieldingArmor.attributesSingleLine.stream()
                           .filter(id -> Registries.ATTRIBUTE.containsId(id))
                           .map(id -> Registries.ATTRIBUTE.get(id))
                           .filter(entityAttribute -> playerEntity.getAttributes().hasAttribute(entityAttribute))

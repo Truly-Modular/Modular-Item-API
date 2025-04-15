@@ -76,7 +76,7 @@ public class ModularPickaxe extends PickaxeItem implements PlatformModularItemMe
 
     @Override
     public Tier getTier() {
-        if(MiapiConfig.INSTANCE.server.other.looseToolMaterial){
+        if(MiapiConfig.getServerConfig().other.looseToolMaterial){
             return currentFakeToolMaterial;
         }
         return super.getTier();

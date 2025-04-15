@@ -16,7 +16,7 @@ public class GuiMixin {
 
     @Inject(method = "Lnet/minecraft/client/gui/Gui;render(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/DeltaTracker;)V", at = @At("TAIL"), cancellable = true)
     private void miapi$editorRenderCallback(GuiGraphics guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) {
-        if (MiapiConfig.INSTANCE.client.other.enableEditorMixin) {
+        if (MiapiConfig.getClientConfig().other.enableEditorMixin) {
             RenderSystem.enableDepthTest();
             MiapiEditor.renderAll(guiGraphics, deltaTracker);
             RenderSystem.disableDepthTest();

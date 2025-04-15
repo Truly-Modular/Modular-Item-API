@@ -176,6 +176,7 @@ public class SmithingRecipeUtil {
                     ((SmithingTransformRecipeAccessor) smithingTransformRecipe).getAddition(),
                     outputMaterial.getID()
             );
+
             RecipeHolder<MaterialSmithingRecipe> materialSmithingRecipeRecipeHolder = new RecipeHolder<>(
                     recipeId, materialSmithingRecipe
             );

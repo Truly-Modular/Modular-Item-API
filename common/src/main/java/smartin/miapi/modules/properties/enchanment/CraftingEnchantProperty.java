@@ -53,7 +53,7 @@ public class CraftingEnchantProperty extends CodecProperty<Map<ResourceLocation,
                             int prevLevel = mutable.getLevel(enchantment);
                             value.setFunctionTransformer((s) -> s.getFirst().replace("[old_level]", String.valueOf(prevLevel)));
                             int nextLevel = (int) value.evaluate(0.0, prevLevel);
-                            if (MiapiConfig.INSTANCE.server.other.verboseLogging) {
+                            if (MiapiConfig.getServerConfig().other.verboseLogging) {
                                 Miapi.LOGGER.info("updated level to " + enchantment.value().description() + " " + nextLevel);
                             }
                             mutable.set(enchantment, nextLevel);

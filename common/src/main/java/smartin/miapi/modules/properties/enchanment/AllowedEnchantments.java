@@ -6,17 +6,21 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.ItemEnchantments;
+import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.mixin.NamedAccessor;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.util.CodecProperty;
+import smartin.miapi.modules.properties.util.ComponentApplyProperty;
 import smartin.miapi.modules.properties.util.MergeAble;
 import smartin.miapi.modules.properties.util.MergeType;
 
@@ -24,10 +28,10 @@ import java.util.*;
 
 /**
  * This property allows modules to define and restrict which enchantments are allowed on items.
+ *
  * @header Allowed Enchantments Property
  * @path /data_types/properties/enchantments/allowed_enchantments
- * @description_start
- * The Allowed Enchantments Property is used to specify and manage enchantments that can or cannot be applied to certain items.
+ * @description_start The Allowed Enchantments Property is used to specify and manage enchantments that can or cannot be applied to certain items.
  * It handles enchantment restrictions based on item types and also allows extensions to be detected and dynamically added.
  * This property is crucial for controlling item enchantment compatibility within the modular item system.
  * @descriptino_end
@@ -35,7 +39,7 @@ import java.util.*;
  * @data forbidden: a list of forbidden enchantments (ResourceLocation).
  */
 
-public class AllowedEnchantments extends CodecProperty<AllowedEnchantments.AllowedEnchantsData> {
+public class AllowedEnchantments extends CodecProperty<AllowedEnchantments.AllowedEnchantsData> implements ComponentApplyProperty {
     public static final ResourceLocation KEY = Miapi.id("enchantments");
     public static AllowedEnchantments property;
     public static Map<ResourceLocation, List<ResourceLocation>> enchantmentExtentionsMap = new HashMap<>();
@@ -120,6 +124,25 @@ public class AllowedEnchantments extends CodecProperty<AllowedEnchantments.Allow
             }
         }
         return expanded.stream().distinct().toList();
+    }
+
+    @Override
+    public void updateComponent(ItemStack itemStack, @Nullable RegistryAccess registryAccess) {
+        if (itemStack.has(DataComponents.ENCHANTMENTS)) {
+            ItemEnchantments enchantments = itemStack.getEnchantments();
+            itemStack.update(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY, (old -> {
+                ItemEnchantments.Mutable mutable = new ItemEnchantments.Mutable(old);
+                getData(itemStack).ifPresent(data -> {
+                    enchantments.keySet().forEach(e -> {
+                        var optional = data.isAllowed(e);
+                        if (optional.isEmpty() || !optional.get()) {
+                            mutable.removeIf((enchant -> enchant.value().equals(e.value())));
+                        }
+                    });
+                });
+                return mutable.toImmutable();
+            }));
+        }
     }
 
     public record AllowedEnchantsData(List<ResourceLocation> allowed,

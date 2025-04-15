@@ -7,7 +7,6 @@ import net.neoforged.neoforge.common.ItemAbilities;
 import net.neoforged.neoforge.common.ItemAbility;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
-import smartin.miapi.Miapi;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.items.BrokenModularVisualOnlyItem;
 import smartin.miapi.item.modular.items.ExampleModularItem;
@@ -76,7 +75,6 @@ public abstract class ModularItemTestMixin {
     }
 
     public boolean canPerformAction(ItemStack stack, ItemAbility toolAction) {
-        Miapi.LOGGER.info("can perform action check");
         if (ModularItem.isModularItem(stack)) {
             if (toolAction.equals(ItemAbilities.AXE_DIG)) {
                 return canMine(stack, "axe");

@@ -59,7 +59,7 @@ public class AttributeRegistry {
 
         RegistryInventory.registerAtt("generic.stun_max_health", true, () ->
                         new RangedAttribute("miapi.attribute.name.stun_max_health",
-                                //MiapiConfig.INSTANCE.server.stunEffectCategory.stunHealth
+                                //MiapiConfig.getServerConfig().stunEffectCategory.stunHealth
                                 20.0,
                                 0.0, 1024.0).setSyncable(true),
                 att -> STUN_MAX_HEALTH = att);

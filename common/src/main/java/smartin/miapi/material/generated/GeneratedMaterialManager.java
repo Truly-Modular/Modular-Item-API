@@ -102,7 +102,7 @@ public class GeneratedMaterialManager {
             }
             generatedMaterials.clear();
             basicGeneratedMaterials.clear();
-            if (!MiapiConfig.INSTANCE.server.generatedMaterials.generateMaterials) {
+            if (!MiapiConfig.getServerConfig().generatedMaterials.generateMaterials) {
                 return;
             }
             var registiry = getRegistry();
@@ -131,13 +131,13 @@ public class GeneratedMaterialManager {
             });
             insufficientItems.forEach((t, items) -> tieredItem.remove(t));
 
-            if (MiapiConfig.INSTANCE.server.generatedMaterials.generateOtherMaterials) {
+            if (MiapiConfig.getServerConfig().generatedMaterials.generateOtherMaterials) {
                 toolItems.stream()
                         .filter(GeneratedMaterialManager::isValidItem)
                         .map(TieredItem::getTier)
                         .collect(Collectors.toSet())
                         .stream()
-                        .limit(MiapiConfig.INSTANCE.server.generatedMaterials.maximumGeneratedMaterials)
+                        .limit(MiapiConfig.getServerConfig().generatedMaterials.maximumGeneratedMaterials)
                         .collect(Collectors.toSet()).forEach(toolMaterial -> {
                             try {
                                 ItemStack mainIngredient = toolMaterial.getRepairIngredient().getItems()[0];
@@ -166,11 +166,11 @@ public class GeneratedMaterialManager {
             }
 
 
-            if (MiapiConfig.INSTANCE.server.generatedMaterials.generateWoodMaterials) {
+            if (MiapiConfig.getServerConfig().generatedMaterials.generateWoodMaterials) {
                 BuiltInRegistries.ITEM.stream()
                         .filter(item -> item.getDefaultInstance().is(ItemTags.PLANKS) &&
                                         !item.getDefaultInstance().is(RegistryInventory.MIAPI_FORBIDDEN_TAG))
-                        .limit(MiapiConfig.INSTANCE.server.generatedMaterials.maximumGeneratedMaterials)
+                        .limit(MiapiConfig.getServerConfig().generatedMaterials.maximumGeneratedMaterials)
                         .forEach(item -> {
                             try {
                                 if (isValidItem(item)) {
@@ -193,11 +193,11 @@ public class GeneratedMaterialManager {
                         });
             }
 
-            if (MiapiConfig.INSTANCE.server.generatedMaterials.generateStoneMaterials) {
+            if (MiapiConfig.getServerConfig().generatedMaterials.generateStoneMaterials) {
                 BuiltInRegistries.ITEM.stream()
                         .filter(item -> item.getDefaultInstance().is(ItemTags.STONE_TOOL_MATERIALS) &&
                                         !item.getDefaultInstance().is(RegistryInventory.MIAPI_FORBIDDEN_TAG))
-                        .limit(MiapiConfig.INSTANCE.server.generatedMaterials.maximumGeneratedMaterials)
+                        .limit(MiapiConfig.getServerConfig().generatedMaterials.maximumGeneratedMaterials)
                         .forEach(item -> {
                             try {
                                 if (isValidItem(item) && !item.equals(Items.COBBLESTONE)) {
@@ -273,13 +273,13 @@ public class GeneratedMaterialManager {
 
     public static boolean isValidItem(Item item) {
         ResourceLocation identifier = BuiltInRegistries.ITEM.getKey(item);
-        Pattern pattern = Pattern.compile(MiapiConfig.INSTANCE.server.generatedMaterials.blockRegex);
+        Pattern pattern = Pattern.compile(MiapiConfig.getServerConfig().generatedMaterials.blockRegex);
         return !pattern.matcher(identifier.toString()).find() &&
                !item.builtInRegistryHolder().is(RegistryInventory.MIAPI_FORBIDDEN_TAG);
     }
 
 
     public static boolean verboseLogging() {
-        return MiapiConfig.INSTANCE.server.other.verboseLogging;
+        return MiapiConfig.getServerConfig().other.verboseLogging;
     }
 }

@@ -72,7 +72,7 @@ public class ModularShovel extends ShovelItem implements PlatformModularItemMeth
 
     @Override
     public Tier getTier() {
-        if(MiapiConfig.INSTANCE.server.other.looseToolMaterial){
+        if(MiapiConfig.getServerConfig().other.looseToolMaterial){
             return currentFakeToolMaterial;
         }
         return super.getTier();

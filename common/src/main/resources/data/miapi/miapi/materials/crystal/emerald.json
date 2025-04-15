@@ -37,10 +37,10 @@
                     "min": 0,
                     "max": 3,
                     "header": {
-                        "translate": "miapi.stat.fortune"
+                        "translate": "miapi.stat.miapi.fortune"
                     },
                     "description": {
-                        "translate": "miapi.stat.fortune.description"
+                        "translate": "miapi.stat.miapi.fortune.description"
                     }
                 }
             }

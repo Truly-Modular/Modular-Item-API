@@ -35,7 +35,7 @@ abstract class LivingEntityMixin {
     @ModifyReturnValue(method = "randomTeleport", at = @At("RETURN"))
     private boolean miapi$optionalTeleportBlockEffect(boolean original, double x, double y, double z, boolean particleEffects) {
         LivingEntity entity = (LivingEntity) (Object) this;
-        if (particleEffects && MiapiConfig.INSTANCE.server.other.blockAllTeleportsEffect && entity.hasEffect(RegistryInventory.teleportBlockEffect)) {
+        if (particleEffects && MiapiConfig.getServerConfig().other.blockAllTeleportsEffect && entity.hasEffect(RegistryInventory.teleportBlockEffect)) {
             return false;
         }
         return original;

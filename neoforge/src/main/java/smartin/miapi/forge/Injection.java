@@ -81,7 +81,7 @@ public class Injection {
         }
 
         default boolean canPerformAction(ItemStack stack, ItemAbility toolAction) {
-            Miapi.LOGGER.info("can perform action check");
+
             if (ModularItem.isModularItem(stack)) {
                 if (toolAction.equals(ItemAbilities.AXE_DIG)) {
                     return canMine(stack, "axe");

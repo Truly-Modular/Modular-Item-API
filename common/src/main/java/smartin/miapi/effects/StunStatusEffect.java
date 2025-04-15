@@ -20,7 +20,7 @@ public class StunStatusEffect extends MobEffect {
         addAttributeModifier(
                 Attributes.ATTACK_SPEED,
                 Miapi.id("stun_status_attackspeed_reduction"),
-                -1 + MiapiConfig.INSTANCE.server.stunEffectCategory.attackSpeedFactor,
+                -1 + MiapiConfig.getServerConfig().stunEffectCategory.attackSpeedFactor,
                 AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);
     }
 
@@ -33,7 +33,7 @@ public class StunStatusEffect extends MobEffect {
         var active = livingEntity.getEffect(RegistryInventory.stunEffect);
         if (active != null && active.endsWithin(1)) {
             livingEntity.removeEffect(RegistryInventory.stunEffect);
-            livingEntity.addEffect(new MobEffectInstance(RegistryInventory.stunResistanceEffect, MiapiConfig.INSTANCE.server.stunEffectCategory.stunResistanceLength), livingEntity);
+            livingEntity.addEffect(new MobEffectInstance(RegistryInventory.stunResistanceEffect, MiapiConfig.getServerConfig().stunEffectCategory.stunResistanceLength), livingEntity);
         }
         if (livingEntity.hasEffect(RegistryInventory.stunResistanceEffect)) {
             livingEntity.removeEffect(RegistryInventory.stunEffect);
@@ -44,7 +44,7 @@ public class StunStatusEffect extends MobEffect {
     public void onEffectStarted(LivingEntity livingEntity, int amplifier) {
         if (livingEntity instanceof Player player) {
             int timer = player.getEffect(RegistryInventory.stunEffect).getDuration();
-            MiapiConfig.INSTANCE.server.stunEffectCategory.playerEffects.forEach(id -> {
+            MiapiConfig.getServerConfig().stunEffectCategory.playerEffects.forEach(id -> {
                 var attribute = player.registryAccess().registry(Registries.MOB_EFFECT).get().get(id);
                 if (attribute != null) {
                     var holder = player.registryAccess().registry(Registries.MOB_EFFECT).get().wrapAsHolder(attribute);

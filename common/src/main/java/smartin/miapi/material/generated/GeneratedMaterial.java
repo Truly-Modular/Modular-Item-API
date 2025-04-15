@@ -191,7 +191,9 @@ public class GeneratedMaterial implements Material {
                     @Override
                     public double getDouble(String property) {
                         if (property.equals("hardness")) {
-                            Miapi.LOGGER.info("returning hardness " + stats.get("armor_hardness"));
+                            if(GeneratedMaterialManager.verboseLogging()){
+                                Miapi.LOGGER.info("returning hardness " + stats.get("armor_hardness"));
+                            }
                             return stats.get("armor_hardness");
                         }
                         if (stats.containsKey(property)) {

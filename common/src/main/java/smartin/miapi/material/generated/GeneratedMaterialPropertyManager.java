@@ -87,27 +87,27 @@ public class GeneratedMaterialPropertyManager {
         // Create an intermediate map to accumulate the properties
         Map<ModuleProperty<?>, Object> propertyMap = new HashMap<>();
 
-        if (shouldApplyProperty(MiapiConfig.INSTANCE.server.generatedMaterials.properties.abilityProperty, id.toString())) {
+        if (shouldApplyProperty(MiapiConfig.getServerConfig().generatedMaterials.properties.abilityProperty, id.toString())) {
             propertyMap.put(
                     AbilityMangerProperty.property,
                     Map.of(CopyItemAbility.ability, new CopyItemAbility.ItemContext(item))
             );
         }
 
-        if (shouldApplyProperty(MiapiConfig.INSTANCE.server.generatedMaterials.properties.loreProperty, id.toString())) {
+        if (shouldApplyProperty(MiapiConfig.getServerConfig().generatedMaterials.properties.loreProperty, id.toString())) {
             propertyMap.put(
                     CopyItemLoreProperty.property,
                     List.of(BuiltInRegistries.ITEM.wrapAsHolder(item)));
         }
 
-        if (shouldApplyProperty(MiapiConfig.INSTANCE.server.generatedMaterials.properties.onHitProperty, id.toString())) {
+        if (shouldApplyProperty(MiapiConfig.getServerConfig().generatedMaterials.properties.onHitProperty, id.toString())) {
             propertyMap.put(
                     CopyItemOnHit.property,
                     List.of(BuiltInRegistries.ITEM.wrapAsHolder(item))
             );
         }
 
-        if (shouldApplyProperty(MiapiConfig.INSTANCE.server.generatedMaterials.properties.tagProperty, id.toString())) {
+        if (shouldApplyProperty(MiapiConfig.getServerConfig().generatedMaterials.properties.tagProperty, id.toString())) {
             Set<TagKey<Item>> tagsCompare1 = vanillaCompare.builtInRegistryHolder().tags().collect(Collectors.toSet());
             Set<TagKey<Item>> tagsCompare2 = vanillaCompare2.builtInRegistryHolder().tags().collect(Collectors.toSet());
             // Find the common tags
@@ -127,7 +127,7 @@ public class GeneratedMaterialPropertyManager {
             propertyMap.put(FakeItemTagProperty.property, uniqueTags);
         }
 
-        if (shouldApplyProperty(MiapiConfig.INSTANCE.server.generatedMaterials.properties.componentProperty, id.toString())) {
+        if (shouldApplyProperty(MiapiConfig.getServerConfig().generatedMaterials.properties.componentProperty, id.toString())) {
             // Get the tags from both vanillaCompare and vanillaCompare2
             var componentTypes = vanillaCompare.components().stream().map(TypedDataComponent::type).collect(Collectors.toSet());
             var commonComponents = vanillaCompare2.components().stream().map(TypedDataComponent::type).filter(componentTypes::contains).collect(Collectors.toSet());
@@ -143,7 +143,7 @@ public class GeneratedMaterialPropertyManager {
             propertyMap.put(ComponentProperty.property, components);
         }
 
-        if (shouldApplyProperty(MiapiConfig.INSTANCE.server.generatedMaterials.properties.enchantProperty, id.toString())) {
+        if (shouldApplyProperty(MiapiConfig.getServerConfig().generatedMaterials.properties.enchantProperty, id.toString())) {
             Map<ResourceLocation, DoubleOperationResolvable> enchantments = new HashMap<>();
             ItemEnchantments itemEnchantments = getDefaultStack(item).getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY);
             itemEnchantments.keySet().forEach(enchantment -> {
@@ -156,7 +156,7 @@ public class GeneratedMaterialPropertyManager {
             propertyMap.put(CraftingEnchantProperty.property, enchantments);
         }
 
-        if (shouldApplyProperty(MiapiConfig.INSTANCE.server.generatedMaterials.properties.attributeProperty, id.toString())) {
+        if (shouldApplyProperty(MiapiConfig.getServerConfig().generatedMaterials.properties.attributeProperty, id.toString())) {
             // Get the tags from both vanillaCompare and vanillaCompare2
             var firstAttributes = getDefaultStack(vanillaCompare).get(DataComponents.ATTRIBUTE_MODIFIERS).modifiers().stream().map(ItemAttributeModifiers.Entry::attribute).toList();
             var secondAttributes = getDefaultStack(vanillaCompare2).get(DataComponents.ATTRIBUTE_MODIFIERS).modifiers().stream().map(ItemAttributeModifiers.Entry::attribute).toList();

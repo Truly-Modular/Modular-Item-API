@@ -39,7 +39,7 @@ public class StunHealthFacet implements EntityFacet<CompoundTag> {
         currentAmount -= stunDamage;
         if (currentAmount <= 0) {
             if (!livingEntity.hasEffect(RegistryInventory.stunResistanceEffect)) {
-                this.livingEntity.addEffect(new MobEffectInstance(RegistryInventory.stunEffect, MiapiConfig.INSTANCE.server.stunEffectCategory.stunLength, 0, false, true), attacker);
+                this.livingEntity.addEffect(new MobEffectInstance(RegistryInventory.stunEffect, MiapiConfig.getServerConfig().stunEffectCategory.stunLength, 0, false, true), attacker);
             }
             currentAmount = getMaxAmount();
         }

@@ -131,7 +131,7 @@ public class GlintEditView extends InteractAbleWidget {
     public void renderWidget(GuiGraphics drawContext, int mouseX, int mouseY, float delta) {
         drawContext.blit(TEXTURE, getX(), getY() + getHeight() - 18, 0, 0, 295 + 92, 92, 16, 512, 512);
         super.renderWidget(drawContext, mouseX, mouseY, delta);
-        if ((debug || MiapiConfig.INSTANCE.server.other.developmentMode) && Screen.hasAltDown())
+        if ((debug || MiapiConfig.getServerConfig().other.developmentMode) && Screen.hasAltDown())
             drawSquareBorder(drawContext, getX(), getY(), getWidth(), getHeight(), 1, randomColor);
     }
 

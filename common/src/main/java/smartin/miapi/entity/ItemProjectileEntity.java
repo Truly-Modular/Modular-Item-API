@@ -154,7 +154,7 @@ public class ItemProjectileEntity extends AbstractArrow {
             this.setDeltaMovement(new Vec3(0, 0, 0));
             this.dealtDamage = true;
         }
-        if (this.blockPosition().getY() < this.level().getMinBuildHeight() - 50 && MiapiConfig.INSTANCE.server.enchants.betterLoyalty) {
+        if (this.blockPosition().getY() < this.level().getMinBuildHeight() - 50 && MiapiConfig.getServerConfig().enchants.betterLoyalty) {
             //loyalty in void
             this.dealtDamage = true;
         }

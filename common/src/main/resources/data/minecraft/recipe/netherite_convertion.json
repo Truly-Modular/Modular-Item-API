@@ -1,5 +1,5 @@
 {
-    "type": "miapi:smithing",
+    "type": "miapi:material_smithing",
     "template": {
         "item": "minecraft:netherite_upgrade_smithing_template"
     },

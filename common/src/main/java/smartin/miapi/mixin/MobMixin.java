@@ -22,7 +22,7 @@ public class MobMixin {
             var active = livingEntity.getEffect(RegistryInventory.stunEffect);
             if (active != null && active.endsWithin(1)) {
                 livingEntity.removeEffect(RegistryInventory.stunEffect);
-                livingEntity.addEffect(new MobEffectInstance(RegistryInventory.stunResistanceEffect, MiapiConfig.INSTANCE.server.stunEffectCategory.stunResistanceLength), livingEntity);
+                livingEntity.addEffect(new MobEffectInstance(RegistryInventory.stunResistanceEffect, MiapiConfig.getServerConfig().stunEffectCategory.stunResistanceLength), livingEntity);
             }
             if (livingEntity instanceof Player playerEntity) {
                 if (!playerEntity.hasEffect(MobEffects.BLINDNESS)) {

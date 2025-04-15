@@ -29,7 +29,7 @@ public class PropertyResolver {
         if (moduleInstance.properties == null) {
             moduleInstance.properties = new ConcurrentHashMap<>();
         }
-        synchronized (moduleInstance.properties) {
+        synchronized (moduleInstance.propertyThreadLock) {
             registry.forEach((pair) -> {
                 PropertyProvider propertyProvider = pair.getB();
                 moduleInstance.allSubModules().forEach(instance -> {

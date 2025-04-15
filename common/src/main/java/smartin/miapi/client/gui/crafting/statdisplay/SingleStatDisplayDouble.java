@@ -71,17 +71,17 @@ public abstract class SingleStatDisplayDouble extends InteractAbleWidget impleme
 
     public int getRed() {
         if (inverse) {
-            return MiapiConfig.INSTANCE.client.guiColors.green.argb();
+            return MiapiConfig.getClientConfig().guiColors.green.argb();
         } else {
-            return MiapiConfig.INSTANCE.client.guiColors.red.argb();
+            return MiapiConfig.getClientConfig().guiColors.red.argb();
         }
     }
 
     public int getGreen() {
         if (inverse) {
-            return MiapiConfig.INSTANCE.client.guiColors.red.argb();
+            return MiapiConfig.getClientConfig().guiColors.red.argb();
         } else {
-            return MiapiConfig.INSTANCE.client.guiColors.green.argb();
+            return MiapiConfig.getClientConfig().guiColors.green.argb();
         }
     }
 
@@ -206,21 +206,23 @@ public abstract class SingleStatDisplayDouble extends InteractAbleWidget impleme
 
     public List<Component> getLinesForDouble(@Nullable DoubleOperationResolvable resolvable) {
         List<Component> list = new ArrayList();
-        if (ParentHandledScreen.hasShiftDown()) {
-            if (resolvable != null) {
-                resolvable.operations.forEach(operation1 -> {
-                    if (operation1.solve() != 0) {
-                        list.add(Component.literal(SinglePropertyStatDisplay.stringForOperation(getHoverFormat(), operation1)).withStyle(ChatFormatting.GRAY));
-                        if (ParentHandledScreen.hasAltDown()) {
-                            operation1.source.ifPresent(list::add);
-                            list.add(Component.literal("  " + operation1.value).withStyle(ChatFormatting.DARK_GRAY));
+        if(resolvable!=null){
+            if (ParentHandledScreen.hasShiftDown()) {
+                if (resolvable != null) {
+                    resolvable.operations.forEach(operation1 -> {
+                        if (operation1.solve() != 0) {
+                            list.add(Component.literal(SinglePropertyStatDisplay.stringForOperation(getHoverFormat(), operation1)).withStyle(ChatFormatting.GRAY));
+                            if (ParentHandledScreen.hasAltDown()) {
+                                operation1.source.ifPresent(list::add);
+                                list.add(Component.literal("  " + operation1.value).withStyle(ChatFormatting.DARK_GRAY));
+                            }
                         }
-                    }
-                });
+                    });
+                }
+                list.add(Component.translatable("miapi.ui.stat_detail.shift_alt").withStyle(ChatFormatting.DARK_GRAY));
+            } else {
+                list.add(Component.translatable("miapi.ui.stat_detail.shift").withStyle(ChatFormatting.DARK_GRAY));
             }
-            list.add(Component.translatable("miapi.ui.stat_detail.shift_alt").withStyle(ChatFormatting.DARK_GRAY));
-        } else {
-            list.add(Component.translatable("miapi.ui.stat_detail.shift").withStyle(ChatFormatting.DARK_GRAY));
         }
         return list;
     }

@@ -52,7 +52,7 @@ public class KeyBindManager {
         }
         MiapiBinding binding = BINDING_REGISTRY.get(id);
         if (clientRegister(isClient, binding)) {
-            MiapiConfig.INSTANCE.client.other.bindings.put(binding.id, binding);
+            MiapiConfig.getClientConfig().other.bindings.put(binding.id, binding);
         }
     }
 
@@ -63,7 +63,7 @@ public class KeyBindManager {
                 BINDING_REGISTRY.register(binding.id, binding);
             }
             if (clientRegister(Environment.isClient(), binding)) {
-                MiapiConfig.INSTANCE.client.other.bindings.put(binding.id, binding);
+                MiapiConfig.getClientConfig().other.bindings.put(binding.id, binding);
             }
         });
     }

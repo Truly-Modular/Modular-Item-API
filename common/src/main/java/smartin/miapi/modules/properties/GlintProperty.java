@@ -63,7 +63,7 @@ public class GlintProperty extends CodecProperty<GlintProperty.RainbowGlintSetti
             }
             return Optional.empty();
         }).orElseGet(() -> {
-            if (MiapiConfig.INSTANCE.client.enchantingGlint.vanillaLike) {
+            if (MiapiConfig.getClientConfig().enchantingGlint.vanillaLike) {
                 return vanillaLike;
             }
             Material material = MaterialProperty.getMaterial(instance);
@@ -71,7 +71,7 @@ public class GlintProperty extends CodecProperty<GlintProperty.RainbowGlintSetti
                 Color adjusted = new Color(material.getColor(instance, ItemDisplayContext.GUI));
                 return defaultSettings.copyWithColor(adjustWith(
                         adjusted,
-                        MiapiConfig.INSTANCE.client.enchantingGlint.materialRatioColor,
+                        MiapiConfig.getClientConfig().enchantingGlint.materialRatioColor,
                         defaultSettings.colors));
             }
             return defaultSettings;
@@ -91,16 +91,16 @@ public class GlintProperty extends CodecProperty<GlintProperty.RainbowGlintSetti
     }
 
     public static void updateConfig() {
-        Color[] newColors = new Color[MiapiConfig.INSTANCE.client.enchantingGlint.enchantColors.size()];
+        Color[] newColors = new Color[MiapiConfig.getClientConfig().enchantingGlint.enchantColors.size()];
         for (int i = 0; i < newColors.length; i++) {
-            newColors[i] = MiapiConfig.INSTANCE.client.enchantingGlint.enchantColors.get(i);
+            newColors[i] = MiapiConfig.getClientConfig().enchantingGlint.enchantColors.get(i);
         }
         if (newColors.length == 0) {
             newColors = new Color[]{Color.WHITE};
         }
         SettingsControlledGlint glintSettings = new SettingsControlledGlint();
         glintSettings.colors = newColors;
-        glintSettings.rainbowSpeed = MiapiConfig.INSTANCE.client.enchantingGlint.enchantingGlintSpeed;
+        glintSettings.rainbowSpeed = MiapiConfig.getClientConfig().enchantingGlint.enchantingGlintSpeed;
         defaultSettings = glintSettings;
         ModularItemCache.discardCache();
     }

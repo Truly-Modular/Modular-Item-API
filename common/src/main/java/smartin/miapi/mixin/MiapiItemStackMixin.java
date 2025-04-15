@@ -117,7 +117,7 @@ public abstract class MiapiItemStackMixin {
             cancellable = true)
     public void miapi$preventFullBreak(int damage, ServerLevel level, ServerPlayer player, Consumer<Item> onBreak, CallbackInfo ci) {
         ItemStack current = (ItemStack) (Object) this;
-        if (ModularItem.isModularItem(current) && current.isDamageableItem() && !MiapiConfig.INSTANCE.server.other.fullBreakModularItems) {
+        if (ModularItem.isModularItem(current) && current.isDamageableItem() && !MiapiConfig.getServerConfig().other.fullBreakModularItems) {
             if (player != null && !player.hasInfiniteMaterials()) {
                 if (damage + current.getDamageValue() >= current.getMaxDamage()) {
                     for (EquipmentSlot slot : EquipmentSlot.values()) {
@@ -141,7 +141,7 @@ public abstract class MiapiItemStackMixin {
             cancellable = true)
     public <T> void miapi$preventFullBreak(int amount, LivingEntity entity, EquipmentSlot slot, CallbackInfo ci) {
         ItemStack current = (ItemStack) (Object) this;
-        if (ModularItem.isModularItem(current) && current.isDamageableItem() && !MiapiConfig.INSTANCE.server.other.fullBreakModularItems) {
+        if (ModularItem.isModularItem(current) && current.isDamageableItem() && !MiapiConfig.getServerConfig().other.fullBreakModularItems) {
             if (entity != null && !entity.hasInfiniteMaterials()) {
                 if (amount + current.getDamageValue() >= current.getMaxDamage()) {
                     ItemStack broken = new ItemStack(RegistryInventory.visualOnlymodularItem);

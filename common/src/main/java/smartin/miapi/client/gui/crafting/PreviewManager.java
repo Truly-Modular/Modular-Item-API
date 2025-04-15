@@ -1,7 +1,9 @@
 package smartin.miapi.client.gui.crafting;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
+import smartin.miapi.Environment;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.material.MaterialProperty;
 import smartin.miapi.material.base.Material;
@@ -16,11 +18,15 @@ public class PreviewManager {
     private static Material lastFramePreviewMaterial = null;
 
     public static void setCursorItemstack(ItemStack itemstack) {
-        if (cursorStack != itemstack) {
-            Material material = MaterialProperty.getMaterialFromIngredient(itemstack);
-            if (material != currentPreviewMaterial) {
-                cursorStack = itemstack;
-                updateMaterial(material, cursorStack);
+        if(Environment.isClient()){
+            if(Minecraft.getInstance().isSameThread()){
+                if (cursorStack != itemstack) {
+                    Material material = MaterialProperty.getMaterialFromIngredient(itemstack);
+                    if (material != currentPreviewMaterial) {
+                        cursorStack = itemstack;
+                        updateMaterial(material, cursorStack);
+                    }
+                }
             }
         }
     }

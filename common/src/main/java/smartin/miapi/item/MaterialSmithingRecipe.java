@@ -8,11 +8,9 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.RecipeSerializer;
-import net.minecraft.world.item.crafting.SmithingRecipe;
-import net.minecraft.world.item.crafting.SmithingRecipeInput;
+import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.NotNull;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.item.modular.VisualModularItem;
 import smartin.miapi.material.base.Material;
@@ -55,7 +53,7 @@ public class MaterialSmithingRecipe implements SmithingRecipe {
      * @return if the stack parses the ingredient
      */
     @Override
-    public boolean isTemplateIngredient(ItemStack stack) {
+    public boolean isTemplateIngredient(@NotNull ItemStack stack) {
         return smithingTemplate.test(stack);
     }
 
@@ -87,7 +85,7 @@ public class MaterialSmithingRecipe implements SmithingRecipe {
      * @return if the stack is of the right ingredient
      */
     @Override
-    public boolean isAdditionIngredient(ItemStack stack) {
+    public boolean isAdditionIngredient(@NotNull ItemStack stack) {
         return addition.test(stack);
     }
 
@@ -99,7 +97,7 @@ public class MaterialSmithingRecipe implements SmithingRecipe {
      * @return
      */
     @Override
-    public boolean matches(SmithingRecipeInput inventory, Level world) {
+    public boolean matches(SmithingRecipeInput inventory, @NotNull Level world) {
         return isTemplateIngredient(inventory.getItem(0)) && isBaseIngredient(inventory.getItem(1)) && addition.test(inventory.getItem(2));
     }
 
@@ -107,7 +105,7 @@ public class MaterialSmithingRecipe implements SmithingRecipe {
      * @return the crafted stack
      */
     @Override
-    public ItemStack assemble(SmithingRecipeInput input, HolderLookup.Provider registries) {
+    public @NotNull ItemStack assemble(SmithingRecipeInput input, HolderLookup.@NotNull Provider registries) {
         ItemStack old = input.getItem(1).copy();
         if (old.getItem() instanceof VisualModularItem) {
             ModuleInstance instance = ItemModule.getModules(old).copy();
@@ -131,25 +129,31 @@ public class MaterialSmithingRecipe implements SmithingRecipe {
      * @return an empty itemstack since we dont know
      */
     @Override
-    public ItemStack getResultItem(HolderLookup.Provider registries) {
+    public @NotNull ItemStack getResultItem(HolderLookup.Provider registries) {
         return ItemStack.EMPTY;
+    }
+
+    public RecipeType<?> getType() {
+        //RecipeType.SMITHING;
+        //return RegistryInventory.;
+        return RecipeType.SMITHING;
     }
 
 
     @Override
-    public RecipeSerializer<?> getSerializer() {
+    public @NotNull RecipeSerializer<?> getSerializer() {
         return RegistryInventory.serializer;
     }
 
     public static class Serializer
             implements RecipeSerializer<MaterialSmithingRecipe> {
         @Override
-        public MapCodec<MaterialSmithingRecipe> codec() {
+        public @NotNull MapCodec<MaterialSmithingRecipe> codec() {
             return CODEC;
         }
 
         @Override
-        public StreamCodec<RegistryFriendlyByteBuf, MaterialSmithingRecipe> streamCodec() {
+        public @NotNull StreamCodec<RegistryFriendlyByteBuf, MaterialSmithingRecipe> streamCodec() {
             return ByteBufCodecs.fromCodecWithRegistries(CODEC.codec());
         }
     }

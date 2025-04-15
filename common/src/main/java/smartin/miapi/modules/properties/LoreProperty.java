@@ -107,7 +107,7 @@ public class LoreProperty extends CodecProperty<List<LoreProperty.Holder>> {
     }
 
     public void injectTooltipOnNonModularItems(List<Component> tooltip, ItemStack itemStack) {
-        if (!smartin.miapi.Environment.isClient() && MiapiConfig.INSTANCE.server.other.serverLoreInjection) {
+        if (!smartin.miapi.Environment.isClient() && MiapiConfig.getServerConfig().other.serverLoreInjection) {
             return;
         }
         synchronized (property) {
@@ -122,12 +122,12 @@ public class LoreProperty extends CodecProperty<List<LoreProperty.Holder>> {
     @Environment(EnvType.CLIENT)
     List<Component> addToolTipsClient(ItemStack itemStack) {
         List<Component> lines = new ArrayList<>();
-        if (MiapiConfig.INSTANCE.client.loreConfig.injectLoreModularMaterial) {
+        if (MiapiConfig.getClientConfig().loreConfig.injectLoreModularMaterial) {
             Material material = materialLookupTable.computeIfAbsent(itemStack, itemStack1 -> MaterialProperty.getMaterialFromIngredient(itemStack));
             if (material != null) {
                 int i = material.getGroups().size();
                 if (i == 1) {
-                    if (MiapiConfig.INSTANCE.client.loreConfig.injectLoreWithoutGroup) {
+                    if (MiapiConfig.getClientConfig().loreConfig.injectLoreWithoutGroup) {
                         lines.add(gray(Component.translatable("miapi.ui.material_desc")));
                     }
                 } else {
@@ -139,7 +139,7 @@ public class LoreProperty extends CodecProperty<List<LoreProperty.Holder>> {
                 }
             }
         }
-        if (MiapiConfig.INSTANCE.client.loreConfig.injectLoreModularItem) {
+        if (MiapiConfig.getClientConfig().loreConfig.injectLoreModularItem) {
             if (hasModularItemDescription(itemStack)) {
                 lines.add(format(Component.translatable("miapi.ui.modular_item"), ChatFormatting.GRAY));
                 return lines;
@@ -150,7 +150,7 @@ public class LoreProperty extends CodecProperty<List<LoreProperty.Holder>> {
                 return lines;
             }
         }
-        if (MiapiConfig.INSTANCE.client.loreConfig.injectLoreModularTemplate) {
+        if (MiapiConfig.getClientConfig().loreConfig.injectLoreModularTemplate) {
             var description = smithingTemplate.get(itemStack.getItem());
             if (description != null) {
                 lines.add(Component.translatable("miapi.material_template.smithing.header").withStyle(ChatFormatting.GRAY));
@@ -171,12 +171,12 @@ public class LoreProperty extends CodecProperty<List<LoreProperty.Holder>> {
 
     List<Component> addToolTipsServer(ItemStack itemStack) {
         List<Component> lines = new ArrayList<>();
-        if (MiapiConfig.INSTANCE.client.loreConfig.injectLoreModularMaterial) {
+        if (MiapiConfig.getClientConfig().loreConfig.injectLoreModularMaterial) {
             Material material = materialLookupTable.computeIfAbsent(itemStack, itemStack1 -> MaterialProperty.getMaterialFromIngredient(itemStack));
             if (material != null) {
                 int i = material.getGroups().size();
                 if (i == 1) {
-                    if (MiapiConfig.INSTANCE.client.loreConfig.injectLoreWithoutGroup) {
+                    if (MiapiConfig.getClientConfig().loreConfig.injectLoreWithoutGroup) {
                         lines.add(gray(Component.translatable("miapi.ui.material_desc")));
                     }
                 } else {
@@ -185,7 +185,7 @@ public class LoreProperty extends CodecProperty<List<LoreProperty.Holder>> {
                 }
             }
         }
-        if (MiapiConfig.INSTANCE.client.loreConfig.injectLoreModularItem) {
+        if (MiapiConfig.getClientConfig().loreConfig.injectLoreModularItem) {
             ItemStack converted = ModularItemStackConverter.getModularVersion(itemStack);
             if (!ItemStack.matches(converted, itemStack) && hasModularItemDescription(converted)) {
                 lines.add(format(Component.translatable("miapi.ui.modular_item"), ChatFormatting.GRAY));

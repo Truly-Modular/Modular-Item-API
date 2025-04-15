@@ -8,7 +8,6 @@ import net.neoforged.neoforge.common.ItemAbilities;
 import net.neoforged.neoforge.common.ItemAbility;
 import net.neoforged.neoforge.common.extensions.IItemExtension;
 import org.spongepowered.asm.mixin.Mixin;
-import smartin.miapi.Miapi;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.PlatformModularItemMethods;
 import smartin.miapi.item.modular.items.armor.ModularElytraItem;
@@ -43,7 +42,6 @@ public interface ModularItemMixin extends IItemExtension {
     }
 
     default boolean canPerformAction(ItemStack stack, ItemAbility toolAction) {
-        Miapi.LOGGER.info("can perform action check");
         if (ModularItem.isModularItem(stack)) {
             if (toolAction.equals(ItemAbilities.AXE_DIG)) {
                 return canMine(stack, "axe");

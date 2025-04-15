@@ -79,7 +79,7 @@ public class FloatWidgetField extends EditBox implements GuiEventListener {
         if (prefix != null)
             context.drawString(textRenderer, prefix, getX() - textRenderer.width(prefix) - 4, getY() - 1, Color.WHITE.argb(), true);
 
-        if ((MiapiConfig.INSTANCE.server.other.developmentMode) && Screen.hasAltDown())
+        if ((MiapiConfig.getServerConfig().other.developmentMode) && Screen.hasAltDown())
             drawSquareBorder(context, getX(), getY(), getWidth(), getHeight(), 1, Color.YELLOW.argb());
         super.renderWidget(context, mouseX, mouseY, delta);
     }
