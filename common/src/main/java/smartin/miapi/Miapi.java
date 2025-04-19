@@ -22,6 +22,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.EquipmentSlotGroup;
+import net.minecraft.world.item.crafting.Ingredient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import smartin.miapi.attributes.AttributeRegistry;
@@ -148,6 +149,7 @@ public class Miapi {
         if (Environment.isClient()) {
             CodecBehavior.registerClass(MiapiBinding.class, MiapiBinding.CODEC);
         }
+        Ingredient ingredient;
 
         ItemStackAccessor.setCODEC(ModuleInstance.registrySavingCodec(ItemStackAccessor.getCODEC(), (i, registryAccess) ->
                 ModularItemStackConverter.lookupMap.put(i, registryAccess)));

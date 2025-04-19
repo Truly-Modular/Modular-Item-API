@@ -1,7 +1,3 @@
-## v2.0.4 (1.21)
-- improved performance on item copy
-- fixed issues related to attribute math
-- fixed enchanting related issues
-- added support for anvil-only enchantments
-- fixed incorrectly set tags
-- fixed compat with farmers delight
+## v2.0.5 (1.21)
+- fixed fake-tag ingredient interactions
+- fixed crash related to opening statistics on forge (or other unaccounted accesses of armorrendering)
