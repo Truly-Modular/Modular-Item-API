@@ -2,3 +2,4 @@
 - improved performance on item copy
 - fixed issues related to attribute math
 - fixed enchanting related issues
+- added support for anvil-only enchantments
