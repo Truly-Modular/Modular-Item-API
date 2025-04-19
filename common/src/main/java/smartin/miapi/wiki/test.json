@@ -1,5 +1,7 @@
 {
-    "crafting_enchants": {
-        "minecraft:sharpness": 5
+    "enchantments": {
+        "anvil_allowed": [
+            "minecraft:sharpness"
+        ]
     }
 }

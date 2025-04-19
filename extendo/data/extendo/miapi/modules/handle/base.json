@@ -1,0 +1,125 @@
+{
+    "model": {
+        "path": "miapi:models/item/handle/extendo/[material.texture].json",
+        "transform": {
+            "rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "translation": {
+                "x": -4.0,
+                "y": -5.0,
+                "z": 0.0
+            },
+            "scale": {
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
+            }
+        }
+    },
+    "priority": -10,
+    "repair_priority": 0,
+    "material_property": [
+        "default",
+        "handheld"
+    ],
+    "allowed_in_slots": [
+        "sword_guard"
+    ],
+    "slots": {
+        "guard": {
+            "allowed": [
+                "sword_guard",
+                "sword_blade_small"
+            ],
+            "translationKey": "miapi.slot.guard.name",
+            "priority": 0,
+            "transform": {
+                "rotation": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "translation": {
+                    "x": 2.0,
+                    "y": 2.0,
+                    "z": 0.0
+                },
+                "scale": {
+                    "x": 1.0,
+                    "y": 1.0,
+                    "z": 1.0
+                }
+            }
+        }
+    },
+    "allowed_material": {
+        "allowedMaterials": [
+            "wood",
+            "metal",
+            "flint",
+            "bone",
+            "stone",
+            "rod",
+            "crystal",
+            "glass"
+        ],
+        "cost": 1
+    },
+    "attributes": [
+        {
+            "attribute": "generic.attack_speed",
+            "value": "-0.10",
+            "operation": "**",
+            "slot": "mainhand"
+        },
+        {
+            "attribute": "miapi:generic.reach",
+            "value": "0.1",
+            "operation": "+",
+            "slot": "mainhand"
+        },
+        {
+            "attribute": "miapi:generic.attack_range",
+            "value": "0.1",
+            "operation": "+",
+            "slot": "mainhand"
+        }
+    ],
+    "mining_level": {
+        "pickaxe": {
+            "allowed": ["#minecraft:mineable/pickaxe"],
+            "speed": {
+                "operation": "**",
+                "value": "-0.05"
+            }
+        },
+        "axe": {
+            "allowed": ["#minecraft:mineable/axe"],
+            "speed": {
+                "operation": "**",
+                "value": "-0.05"
+            }
+        },
+        "shovel": {
+            "allowed": ["#minecraft:mineable/shovel"],
+            "speed": {
+                "operation": "**",
+                "value": "-0.05"
+            }
+        },
+        "hoe": {
+            "allowed": ["#minecraft:mineable/hoe"],
+            "speed": {
+                "operation": "**",
+                "value": "-0.05"
+            }
+        }
+    },
+    "gui_offset": {
+        "sizeX": 2,
+        "sizeY": 2
+    }
+}

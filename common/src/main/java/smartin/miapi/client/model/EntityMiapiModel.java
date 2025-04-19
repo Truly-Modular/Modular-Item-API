@@ -30,11 +30,12 @@ public class EntityMiapiModel implements MiapiModel {
     @Override
     public void render(PoseStack matrixStack, ItemStack stack, ItemDisplayContext transformationMode, float tickDelta, MultiBufferSource vertexConsumers, LivingEntity entity, int light, int overlay) {
         if (doTick) {
-            if (lastTick > tickDelta) {
+            lastTick += tickDelta;
+            if (lastTick > 1) {
                 //i dont like this tick code, its bad but functional
                 toRenderEntity.tick();
+                lastTick -= 1;
             }
-            lastTick = tickDelta;
         }
         matrixStack.pushPose();
         transform.applyPosition(matrixStack);

@@ -7,6 +7,7 @@ import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.ai.attributes.Attribute;
@@ -38,7 +39,9 @@ import java.util.function.Supplier;
  * @data slot: the target slot group
  * @data targetOperation : optional, the operation to be merged to
  */
-public class AttributeProperty extends CodecProperty<Map<ResourceLocation, Map<AttributeModifier.Operation, Map<Either<EquipmentSlotGroup, Boolean>, DoubleOperationResolvable>>>> implements ComponentApplyProperty {
+public class AttributeProperty extends
+        CodecProperty<Map<ResourceLocation, Map<AttributeModifier.Operation, Map<Either<EquipmentSlotGroup, Boolean>, DoubleOperationResolvable>>>>
+        implements ComponentApplyProperty, SourceSetter<Map<ResourceLocation, Map<AttributeModifier.Operation, Map<Either<EquipmentSlotGroup, Boolean>, DoubleOperationResolvable>>>> {
     public static final ResourceLocation KEY = Miapi.id("attributes");
     public static AttributeProperty property;
     public static final Map<String, Supplier<Attribute>> replaceMap = new HashMap<>();
@@ -157,7 +160,7 @@ public class AttributeProperty extends CodecProperty<Map<ResourceLocation, Map<A
                                 slotGroup = EquipmentSlotGroup.ANY;
                             }
                             ResourceLocation slotId = AttributeUtil.getIDForSlot(slotGroup, attribute, attributeOperation);
-                            double value = operation.getValue();
+                            double value = operation.evaluate(attribute.getDefaultValue()).orElse(0.0) - attribute.getDefaultValue();
                             filteredList.add(new ItemAttributeModifiers.Entry(
                                     BuiltInRegistries.ATTRIBUTE.wrapAsHolder(attribute),
                                     new AttributeModifier(slotId, value, attributeOperation),
@@ -211,6 +214,25 @@ public class AttributeProperty extends CodecProperty<Map<ResourceLocation, Map<A
         AttributeUtil.AttributeContext context = new AttributeUtil.AttributeContext();
         context.map = init;
         AttributeUtil.MODULE_ATTRIBUTE_ADJUST.invoker().adjust(context, moduleInstance);
+        return context.map;
+    }
+
+    @Override
+    public Map<ResourceLocation, Map<AttributeModifier.Operation, Map<Either<EquipmentSlotGroup, Boolean>, DoubleOperationResolvable>>> setSource(
+            Map<ResourceLocation, Map<AttributeModifier.Operation, Map<Either<EquipmentSlotGroup, Boolean>, DoubleOperationResolvable>>> map, Component source) {
+        Map<ResourceLocation, Map<AttributeModifier.Operation, Map<Either<EquipmentSlotGroup, Boolean>, DoubleOperationResolvable>>> init = new LinkedHashMap<>();
+        map.forEach((id, attributeOpMap) -> {
+            attributeOpMap.forEach((op, groupMap) -> {
+                groupMap.forEach((slot, resolveAble) -> {
+                    init.computeIfAbsent(id,
+                            (s) -> new LinkedHashMap<>()).computeIfAbsent(op,
+                            (a) -> new LinkedHashMap<>()).computeIfAbsent(slot,
+                            (b) -> resolveAble.setSource(resolveAble, source));
+                });
+            });
+        });
+        AttributeUtil.AttributeContext context = new AttributeUtil.AttributeContext();
+        context.map = init;
         return context.map;
     }
 

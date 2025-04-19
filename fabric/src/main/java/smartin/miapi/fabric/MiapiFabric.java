@@ -72,7 +72,7 @@ public class MiapiFabric implements ModInitializer {
         EnchantmentEvents.ALLOW_ENCHANTING.register((enchantment, target, enchantingContext) -> {
             if (
                     ModularItem.isModularItem(target) &&
-                    (AllowedEnchantments.isAllowed(target, enchantment, false))) {
+                    (AllowedEnchantments.isSupported(target, enchantment, false))) {
                 return TriState.TRUE;
             }
             return TriState.DEFAULT;

@@ -16,6 +16,7 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
+import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.mixin.NamedAccessor;
 import smartin.miapi.modules.ModuleInstance;
@@ -48,12 +49,7 @@ public class AllowedEnchantments extends CodecProperty<AllowedEnchantments.Allow
         super(AllowedEnchantsData.CODEC);
         property = this;
         ReloadEvents.END.subscribe((isClient, registryAccess) -> {
-            enchantmentExtentionsMap = new HashMap<>(Map.of(
-                    ResourceLocation.parse("c:enchantable/pickaxe"), new ArrayList<>(),
-                    ResourceLocation.parse("c:enchantable/axe"), new ArrayList<>(),
-                    ResourceLocation.parse("c:enchantable/shovel"), new ArrayList<>(),
-                    ResourceLocation.parse("c:enchantable/hoe"), new ArrayList<>()
-            ));
+            enchantmentExtentionsMap = new HashMap<>(Map.of(ResourceLocation.parse("c:enchantable/pickaxe"), new ArrayList<>(), ResourceLocation.parse("c:enchantable/axe"), new ArrayList<>(), ResourceLocation.parse("c:enchantable/shovel"), new ArrayList<>(), ResourceLocation.parse("c:enchantable/hoe"), new ArrayList<>()));
             if (registryAccess != null) {
                 detectEnchantments(registryAccess);
             }
@@ -98,22 +94,41 @@ public class AllowedEnchantments extends CodecProperty<AllowedEnchantments.Allow
         return true;
     }
 
-    public static boolean isAllowed(ItemStack itemStack, Holder<Enchantment> enchantment, boolean oldValue) {
+    /**
+     * whether the modular item is allowed
+     *
+     * @param itemStack
+     * @param enchantment
+     * @param oldValue
+     * @return
+     */
+    public static boolean isSupported(ItemStack itemStack, Holder<Enchantment> enchantment, boolean oldValue) {
         Optional<AllowedEnchantsData> optional = property.getData(itemStack);
-        return optional.map(allowedEnchantsData -> allowedEnchantsData.isAllowed(enchantment).orElse(oldValue)).orElse(oldValue);
+        return optional.map(allowedEnchantsData -> allowedEnchantsData
+                        .isSupported(enchantment)
+                        .orElse(oldValue && MiapiConfig.getServerConfig().enchants.lenientEnchantments))
+                .orElse(oldValue);
+    }
+
+    public static boolean canEnchant(ItemStack itemStack, Holder<Enchantment> enchantment, boolean oldValue) {
+        Optional<AllowedEnchantsData> optional = property.getData(itemStack);
+        return optional.map(allowedEnchantsData -> allowedEnchantsData
+                        .canEnchant(enchantment)
+                        .orElse(oldValue && MiapiConfig.getServerConfig().enchants.lenientEnchantments))
+                .orElse(oldValue);
     }
 
     @Override
     public AllowedEnchantsData merge(AllowedEnchantsData left, AllowedEnchantsData right, MergeType mergeType) {
         return new AllowedEnchantsData(
                 MergeAble.mergeList(left.allowed(), right.allowed(), mergeType),
-                MergeAble.mergeList(left.forbidden(), right.forbidden(), mergeType)
-        );
+                MergeAble.mergeList(left.anvilAllowed(), right.anvilAllowed(), mergeType),
+                MergeAble.mergeList(left.forbidden(), right.forbidden(), mergeType));
     }
 
     @Override
     public AllowedEnchantsData initialize(AllowedEnchantsData property, ModuleInstance context) {
-        return new AllowedEnchantsData(initialize(property.allowed()), initialize(property.forbidden()));
+        return new AllowedEnchantsData(initialize(property.allowed()), initialize(property.anvilAllowed()), initialize(property.forbidden()));
     }
 
     public List<ResourceLocation> initialize(List<ResourceLocation> ids) {
@@ -134,8 +149,7 @@ public class AllowedEnchantments extends CodecProperty<AllowedEnchantments.Allow
                 ItemEnchantments.Mutable mutable = new ItemEnchantments.Mutable(old);
                 getData(itemStack).ifPresent(data -> {
                     enchantments.keySet().forEach(e -> {
-                        var optional = data.isAllowed(e);
-                        if (optional.isEmpty() || !optional.get()) {
+                        if (!e.value().isSupportedItem(itemStack)) {
                             mutable.removeIf((enchant -> enchant.value().equals(e.value())));
                         }
                     });
@@ -146,27 +160,41 @@ public class AllowedEnchantments extends CodecProperty<AllowedEnchantments.Allow
     }
 
     public record AllowedEnchantsData(List<ResourceLocation> allowed,
+                                      List<ResourceLocation> anvilAllowed,
                                       List<ResourceLocation> forbidden) {
-        public static Codec<Either<Holder<Enchantment>, ResourceLocation>> codec = Codec.either(
-                Enchantment.CODEC,
-                ResourceLocation.CODEC
-        );
-        public static Codec<AllowedEnchantsData> CODEC = RecordCodecBuilder.create((instance) -> instance.group(
-                        Codec.list(ResourceLocation.CODEC)
-                                .optionalFieldOf("allowed", List.of())
-                                .forGetter(AllowedEnchantsData::allowed),
-                        Codec.list(ResourceLocation.CODEC)
-                                .optionalFieldOf("forbidden", List.of())
-                                .forGetter(AllowedEnchantsData::allowed)
-                )
-                .apply(instance, AllowedEnchantsData::new));
+        public static Codec<Either<Holder<Enchantment>, ResourceLocation>> codec = Codec.either(Enchantment.CODEC, ResourceLocation.CODEC);
+        public static Codec<AllowedEnchantsData> CODEC = RecordCodecBuilder.create((instance) ->
+                instance.group(
+                                Codec.list(ResourceLocation.CODEC)
+                                        .optionalFieldOf("allowed", List.of())
+                                        .forGetter(AllowedEnchantsData::allowed),
+                                Codec.list(ResourceLocation.CODEC)
+                                        .optionalFieldOf("anvil_allowed", List.of())
+                                        .forGetter(AllowedEnchantsData::anvilAllowed),
+                                Codec.list(ResourceLocation.CODEC)
+                                        .optionalFieldOf("forbidden", List.of())
+                                        .forGetter(AllowedEnchantsData::forbidden))
+                        .apply(instance, AllowedEnchantsData::new));
 
 
-        Optional<Boolean> isAllowed(Holder<Enchantment> enchantment) {
+        Optional<Boolean> isSupported(Holder<Enchantment> enchantment) {
             if (contains(enchantment, forbidden())) {
                 return Optional.of(false);
             }
-            if (contains(enchantment, allowed)) {
+            if (contains(enchantment, allowed())) {
+                return Optional.of(true);
+            }
+            if (contains(enchantment, anvilAllowed())) {
+                return Optional.of(true);
+            }
+            return Optional.empty();
+        }
+
+        Optional<Boolean> canEnchant(Holder<Enchantment> enchantment) {
+            if (contains(enchantment, forbidden())) {
+                return Optional.of(false);
+            }
+            if (contains(enchantment, allowed())) {
                 return Optional.of(true);
             }
             return Optional.empty();
@@ -176,6 +204,27 @@ public class AllowedEnchantments extends CodecProperty<AllowedEnchantments.Allow
             for (ResourceLocation id : ids) {
                 if (enchantment.is(id)) {
                     return true;
+                }
+                if (enchantment instanceof Holder.Direct<Enchantment> direct) {
+                    if (Miapi.registryAccess != null) {
+                        direct.value();
+                        Miapi.registryAccess.lookup(Registries.ENCHANTMENT).get();
+                        var ads = Miapi.registryAccess.registry(Registries.ENCHANTMENT).get().wrapAsHolder(direct.value());
+                        if (ads.is(id)) {
+                            return true;
+                        }
+                        var optional = Miapi.registryAccess
+                                .lookup(Registries.ENCHANTMENT)
+                                .get()
+                                .listElements()
+                                .filter(a -> a.value().equals(direct.value()))
+                                .findFirst();
+                        if (optional.isPresent() && optional.get().is(id)) {
+                            return false;
+                        }
+                    }
+                    direct.value().definition();
+
                 }
                 if (enchantment.value().definition().supportedItems() instanceof HolderSet.Named<Item> set) {
                     ResourceLocation tagID = ((NamedAccessor) set).getKey().location();
