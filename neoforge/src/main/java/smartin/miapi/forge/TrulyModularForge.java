@@ -42,6 +42,7 @@ import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.client.MiapiClient;
 import smartin.miapi.client.atlas.ArmorModelManager;
 import smartin.miapi.client.model.MiapiItemModel;
+import smartin.miapi.client.model.MiapiModel;
 import smartin.miapi.client.model.item.ItemBakedModelReplacement;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.item.modular.VisualModularItem;
@@ -178,7 +179,10 @@ public class TrulyModularForge {
                                     poseStack.last().transformNormal(new Vector3f(-1, -1, -1), new Vector3f(0, -1, 0));
                                 }
                                 //Lighting.setupForFlatItems();
-                                MiapiItemModel.getItemModel(stack).render(poseStack, displayContext, 0, buffer, packedLight, packedOverlay);
+                                MiapiModel model = MiapiItemModel.getItemModel(stack);
+                                if (model != null) {
+                                    model.render(poseStack, stack, displayContext, 0, buffer, null, packedLight, packedOverlay);
+                                }
                                 if (buffer instanceof MultiBufferSource.BufferSource multiBufferSource) {
                                     multiBufferSource.endBatch();
                                 }
