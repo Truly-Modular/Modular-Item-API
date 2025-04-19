@@ -3,3 +3,5 @@
 - fixed issues related to attribute math
 - fixed enchanting related issues
 - added support for anvil-only enchantments
+- fixed incorrectly set tags
+- fixed compat with farmers delight
