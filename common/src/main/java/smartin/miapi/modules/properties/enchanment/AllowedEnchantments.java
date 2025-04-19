@@ -1,5 +1,6 @@
 package smartin.miapi.modules.properties.enchanment;
 
+import com.google.gson.JsonElement;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -9,19 +10,22 @@ import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
-import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
+import smartin.miapi.blocks.ModularWorkBenchEntity;
 import smartin.miapi.config.MiapiConfig;
+import smartin.miapi.craft.CraftAction;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.mixin.NamedAccessor;
+import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.util.CodecProperty;
-import smartin.miapi.modules.properties.util.ComponentApplyProperty;
+import smartin.miapi.modules.properties.util.CraftingProperty;
 import smartin.miapi.modules.properties.util.MergeAble;
 import smartin.miapi.modules.properties.util.MergeType;
 
@@ -40,7 +44,7 @@ import java.util.*;
  * @data forbidden: a list of forbidden enchantments (ResourceLocation).
  */
 
-public class AllowedEnchantments extends CodecProperty<AllowedEnchantments.AllowedEnchantsData> implements ComponentApplyProperty {
+public class AllowedEnchantments extends CodecProperty<AllowedEnchantments.AllowedEnchantsData> implements CraftingProperty {
     public static final ResourceLocation KEY = Miapi.id("enchantments");
     public static AllowedEnchantments property;
     public static Map<ResourceLocation, List<ResourceLocation>> enchantmentExtentionsMap = new HashMap<>();
@@ -142,7 +146,7 @@ public class AllowedEnchantments extends CodecProperty<AllowedEnchantments.Allow
     }
 
     @Override
-    public void updateComponent(ItemStack itemStack, @Nullable RegistryAccess registryAccess) {
+    public ItemStack preview(ItemStack oldStack, ItemStack itemStack, Player player, ModularWorkBenchEntity bench, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<ResourceLocation, JsonElement> moduleData) {
         if (itemStack.has(DataComponents.ENCHANTMENTS)) {
             ItemEnchantments enchantments = itemStack.getEnchantments();
             itemStack.update(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY, (old -> {
@@ -157,6 +161,7 @@ public class AllowedEnchantments extends CodecProperty<AllowedEnchantments.Allow
                 return mutable.toImmutable();
             }));
         }
+        return itemStack;
     }
 
     public record AllowedEnchantsData(List<ResourceLocation> allowed,

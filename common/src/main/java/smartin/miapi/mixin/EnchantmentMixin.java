@@ -1,6 +1,7 @@
 package smartin.miapi.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
+import net.fabricmc.api.EnvType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
@@ -10,6 +11,7 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import org.apache.commons.lang3.mutable.MutableFloat;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import smartin.miapi.Environment;
 import smartin.miapi.item.modular.ModularItem;
@@ -19,9 +21,6 @@ import smartin.miapi.modules.properties.enchanment.AllowedEnchantments;
 
 @Mixin(Enchantment.class)
 public abstract class EnchantmentMixin {
-
-    @Shadow
-    public abstract void modifyAmmoCount(ServerLevel level, int enchantmentLevel, ItemStack tool, MutableFloat ammoCount);
 
     @ModifyReturnValue(method = "isPrimaryItem(Lnet/minecraft/world/item/ItemStack;)Z", at = @At(value = "RETURN"))
     private boolean miapi$adjustPrimaryItem(boolean original, ItemStack itemStack) {
@@ -40,7 +39,7 @@ public abstract class EnchantmentMixin {
             if (moduleInstance != null && moduleInstance.registryAccess != null) {
                 Holder<Enchantment> holder = moduleInstance.registryAccess.registry(Registries.ENCHANTMENT).get().wrapAsHolder(enchantment);
                 if (Environment.isClient() && holder instanceof Holder.Direct<Enchantment>) {
-                    holder = Minecraft.getInstance().level.registryAccess().registry(Registries.ENCHANTMENT).get().wrapAsHolder(enchantment);
+                    holder = getClient(enchantment);
                 }
                 if (holder != null) {
                     return AllowedEnchantments.isSupported(itemStack, holder, original);
@@ -50,6 +49,12 @@ public abstract class EnchantmentMixin {
         return original;
     }
 
+    @net.fabricmc.api.Environment(EnvType.CLIENT)
+     @Unique
+     public Holder<Enchantment> getClient(Enchantment enchantment){
+        return Minecraft.getInstance().level.registryAccess().registry(Registries.ENCHANTMENT).get().wrapAsHolder(enchantment);
+     }
+
     @ModifyReturnValue(method = "canEnchant(Lnet/minecraft/world/item/ItemStack;)Z", at = @At(value = "RETURN"))
     private boolean miapi$adjustcanEnchant(boolean original, ItemStack itemStack) {
         if (ModularItem.isModularItem(itemStack)) {
@@ -58,7 +63,7 @@ public abstract class EnchantmentMixin {
             if (moduleInstance != null && moduleInstance.registryAccess != null) {
                 Holder<Enchantment> holder = moduleInstance.registryAccess.registry(Registries.ENCHANTMENT).get().wrapAsHolder(enchantment);
                 if (Environment.isClient() && holder instanceof Holder.Direct<Enchantment>) {
-                    holder = Minecraft.getInstance().level.registryAccess().registry(Registries.ENCHANTMENT).get().wrapAsHolder(enchantment);
+                    holder = getClient(enchantment);
                 }
                 if (holder != null) {
                     return AllowedEnchantments.canEnchant(itemStack, holder, original);
