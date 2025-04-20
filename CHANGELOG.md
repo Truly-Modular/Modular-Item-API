@@ -1,3 +1,2 @@
-## v1.1.44 (1.20.1)
-- improved ui logic
-- updates to chinese translations (thanks to sweeperssl)
+## v1.1.45 (1.20.1)
+- made UI more responsive
