@@ -3,6 +3,7 @@ package smartin.miapi.material.generated;
 import com.google.gson.JsonElement;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.JsonOps;
+import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
@@ -12,7 +13,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.EquipmentSlotGroup;
+import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
@@ -165,12 +168,14 @@ public class GeneratedMaterialPropertyManager {
                     .stream()
                     .filter(a -> !firstAttributes.contains(a.attribute()) && !secondAttributes.contains(a.attribute()))
                     .filter(a -> a.modifier().operation() == AttributeModifier.Operation.ADD_VALUE)
+                    .filter(GeneratedMaterialPropertyManager::isRelevantAttribute)
                     .toList();
             if (modifiers.isEmpty()) {
                 modifiers = item.getDefaultAttributeModifiers().modifiers()
                         .stream()
                         .filter(a -> !firstAttributes.contains(a.attribute()) && !secondAttributes.contains(a.attribute()))
                         .filter(a -> a.modifier().operation() == AttributeModifier.Operation.ADD_VALUE)
+                        .filter(GeneratedMaterialPropertyManager::isRelevantAttribute)
                         .toList();
             }
 
@@ -189,6 +194,22 @@ public class GeneratedMaterialPropertyManager {
 
         // Add the collected propertyMap to the properties map
         properties.put(type, propertyMap);
+    }
+
+    private static final Set<Holder<Attribute>> IGNORED_ATTRIBUTES = Set.of(
+            Attributes.ATTACK_DAMAGE,
+            Attributes.ATTACK_SPEED,
+            Attributes.ARMOR,
+            Attributes.ARMOR_TOUGHNESS,
+            Attributes.KNOCKBACK_RESISTANCE
+    );
+
+    private static boolean isRelevantAttribute(ItemAttributeModifiers.Entry a) {
+        boolean att = IGNORED_ATTRIBUTES.contains(a.attribute());
+        if (!att) {
+            Miapi.LOGGER.info("valid attribute!" + a.attribute().getRegisteredName());
+        }
+        return !att;
     }
 
     public static boolean shouldApplyProperty(

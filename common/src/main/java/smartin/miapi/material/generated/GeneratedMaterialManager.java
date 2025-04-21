@@ -114,26 +114,71 @@ public class GeneratedMaterialManager {
                             toolMaterial.getTier().getRepairIngredient().getItems() != null &&
                             toolMaterial.getTier().getRepairIngredient().getItems().length > 0)
                     .filter(toolMaterial -> !toolMaterial.getTier().getRepairIngredient().getItems()[0].is(RegistryInventory.MIAPI_FORBIDDEN_TAG))
+                    .filter(GeneratedMaterialManager::isValidItem)
                     .filter(toolMaterial -> Arrays.stream(toolMaterial.getTier().getRepairIngredient().getItems())
                             .allMatch(itemStack -> MaterialProperty.getMaterialFromIngredient(itemStack) == null && !itemStack.getItem().equals(Items.BARRIER)))
+
                     .toList());
             Map<Tier, List<TieredItem>> tieredItem = new HashMap<>();
             toolItems.forEach(item -> {
                 tieredItem.computeIfAbsent(item.getTier(), (i) -> new ArrayList<>()).add(item);
             });
+            Map<Tier, List<TieredItem>> consolidated = new HashMap<>();
+
+            for (Map.Entry<Tier, List<TieredItem>> entry : tieredItem.entrySet()) {
+                Tier currentTier = entry.getKey();
+                List<TieredItem> currentItems = entry.getValue();
+
+                boolean merged = false;
+
+                for (Map.Entry<Tier, List<TieredItem>> consolidatedEntry : consolidated.entrySet()) {
+                    Tier existingTier = consolidatedEntry.getKey();
+
+                    if (isSameTier(currentTier, existingTier)) {
+                        consolidatedEntry.getValue().addAll(currentItems);
+                        merged = true;
+                        break;
+                    }
+                }
+
+                if (!merged) {
+                    // No matching tier found, so just put a fresh entry
+                    consolidated.put(currentTier, new ArrayList<>(currentItems));
+                }
+            }
             Map<Tier, List<TieredItem>> insufficientItems = new HashMap<>();
-            tieredItem.forEach((t, items) -> {
+            consolidated.forEach((t, items) -> {
                 boolean hasSword = items.stream().anyMatch(SwordItem.class::isInstance);
                 boolean hasAxe = items.stream().anyMatch(AxeItem.class::isInstance);
                 if (!(hasSword && hasAxe)) {
                     insufficientItems.put(t, items);
                 }
             });
-            insufficientItems.forEach((t, items) -> tieredItem.remove(t));
+            insufficientItems.forEach((t, items) -> consolidated.remove(t));
 
             if (MiapiConfig.getServerConfig().generatedMaterials.generateOtherMaterials) {
+                consolidated.forEach((tier, tieredItems) -> {
+                    ItemStack mainIngredient = tier.getRepairIngredient().getItems()[0];
+                    if (verboseLogging()) {
+                        Miapi.LOGGER.info("attempting material generation for " + mainIngredient.getHoverName().getString());
+                    }
+                    if (isValidItem(mainIngredient.getItem())) {
+                        GeneratedMaterial generatedMaterial = new GeneratedMaterial(
+                                mainIngredient,
+                                tier.getRepairIngredient(),
+                                tier,
+                                tieredItems
+                        );
+                        if (generatedMaterial.isValid()) {
+                            if (verboseLogging()) {
+                                Miapi.LOGGER.info("Generated Material " + generatedMaterial.getID());
+                            }
+                            generatedMaterials.add(generatedMaterial);
+                        }
+                    }
+                });
+                /*
                 toolItems.stream()
-                        .filter(GeneratedMaterialManager::isValidItem)
                         .map(TieredItem::getTier)
                         .collect(Collectors.toSet())
                         .stream()
@@ -163,6 +208,8 @@ public class GeneratedMaterialManager {
                                 Miapi.LOGGER.error("could not generate Material for " + toolMaterial.getRepairIngredient().getItems()[0], e);
                             }
                         });
+
+                 */
             }
 
 
@@ -246,10 +293,34 @@ public class GeneratedMaterialManager {
             if (!isSameIngredient(first.getRepairIngredient(), second.getRepairIngredient())) {
                 return false;
             }
+            if (percentDif(first.getAttackDamageBonus(), second.getAttackDamageBonus()) > 0.1) {
+                return false;
+            }
+            if (percentDif(first.getSpeed(), second.getSpeed()) > 0.1) {
+                return false;
+            }
+            if (percentDif(first.getUses(), second.getUses()) >0.1) {
+                return false;
+            }
+            if (percentDif(first.getEnchantmentValue(), second.getEnchantmentValue()) > 0.1) {
+                return false;
+            }
         } catch (RuntimeException runtimeException) {
             return false;
         }
         return true;
+    }
+
+    public static double percentDif(int a, int b) {
+        return percentDif(a, (double) b);
+    }
+
+    public static double percentDif(float a, float b) {
+        return percentDif(a, (double) b);
+    }
+
+    public static double percentDif(double a, double b) {
+        return (Math.abs(a - b) / ((a + b) / 2.0)) * 100.0;
     }
 
     public static Tier selectBetterTier(Tier first, Tier second) {

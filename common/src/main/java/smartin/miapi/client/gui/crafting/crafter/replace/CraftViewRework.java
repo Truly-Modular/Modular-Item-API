@@ -18,6 +18,7 @@ import org.joml.Matrix4f;
 import org.joml.Vector4f;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.*;
+import smartin.miapi.client.gui.crafting.CraftingScreen;
 import smartin.miapi.craft.CraftAction;
 import smartin.miapi.modules.edit_options.EditOption;
 import smartin.miapi.modules.properties.slot.SlotProperty;
@@ -122,6 +123,7 @@ public class CraftViewRework extends InteractAbleWidget {
                 ItemStack craftedStack = action.getPreview();
                 if (!ItemStack.matches(editContext.getItemstack(), craftedStack)) {
                     editContext.craft(action.toPacket(Networking.createBuffer()));
+                    CraftingScreen.getInstance().setItem(craftedStack);
                 }
                 editContext.getScreenHandler().removeSlotListener(listener);
             }

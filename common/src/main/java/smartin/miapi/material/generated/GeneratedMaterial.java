@@ -62,6 +62,7 @@ public class GeneratedMaterial implements Material {
     public Map<String, Map<ModuleProperty<?>, Object>> properties = new HashMap<>();
     SmithingMode smithingMode = SmithingMode.NONE;
     ItemStack smithingTemplate = ItemStack.EMPTY;
+    Optional<Float> armorHardness = Optional.empty();
 
     public static Codec<GeneratedMaterial> CODEC = RecordCodecBuilder.create((instance) ->
             instance.group(
@@ -77,19 +78,23 @@ public class GeneratedMaterial implements Material {
                     Codec.list(ItemStack.CODEC)
                             .fieldOf("toolItems")
                             .forGetter(m -> m.toolItems.stream().map(Item::getDefaultInstance).toList()),
+                    Codec.FLOAT
+                            .optionalFieldOf("armor_hardness")
+                            .forGetter(m -> m.armorHardness),
                     ResourceLocation.CODEC
                             .optionalFieldOf("smithing_key")
                             .forGetter(m -> m.smithingParent),
                     ItemStack.CODEC
                             .optionalFieldOf("smithing_template", ItemStack.EMPTY)
                             .forGetter(m -> m.swordItem.getDefaultInstance())
-            ).apply(instance, (itemstack, additionalIngredient, swordItem, ingredient_toolItems, smithingKey, smithingItem) -> {
+            ).apply(instance, (itemstack, additionalIngredient, swordItem, ingredient_toolItems, armor, smithingKey, smithingItem) -> {
                 GeneratedMaterial material = new GeneratedMaterial(itemstack, additionalIngredient, ((SwordItem) (swordItem.getItem())).getTier(),
                         ingredient_toolItems.stream().map(itemStack -> (TieredItem) itemStack.getItem()).toList()
                 );
                 if (smithingKey != null && smithingKey.isPresent()) {
                     material.setSmithingMaterial(smithingKey.get(), Ingredient.of(smithingItem));
                 }
+                armor.ifPresent(aFloat -> material.stats.put("armor_hardness", (double) aFloat));
                 return material;
             }));
 
@@ -191,7 +196,7 @@ public class GeneratedMaterial implements Material {
                     @Override
                     public double getDouble(String property) {
                         if (property.equals("hardness")) {
-                            if(GeneratedMaterialManager.verboseLogging()){
+                            if (GeneratedMaterialManager.verboseLogging()) {
                                 Miapi.LOGGER.info("returning hardness " + stats.get("armor_hardness"));
                             }
                             return stats.get("armor_hardness");

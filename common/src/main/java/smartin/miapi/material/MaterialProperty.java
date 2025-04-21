@@ -204,12 +204,6 @@ public class MaterialProperty extends CodecProperty<ResourceLocation> {
         return null;
     }
 
-    /**
-     * Gets the used Material of a ModuleInstance
-     *
-     * @param instance
-     * @return
-     */
     @Nullable
     /**
      * Gets the used Material of a ModuleInstance
