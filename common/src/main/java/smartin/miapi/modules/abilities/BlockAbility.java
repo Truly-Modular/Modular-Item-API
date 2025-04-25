@@ -2,10 +2,8 @@ package smartin.miapi.modules.abilities;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.DynamicOps;
+import com.mojang.serialization.MapCodec;
 import com.redpxnda.nucleus.codec.auto.AutoCodec;
-import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
 import com.redpxnda.nucleus.pose.server.ServerPoseFacet;
 import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
@@ -22,13 +20,13 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import smartin.miapi.Miapi;
 import smartin.miapi.attributes.AttributeRegistry;
-import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.abilities.util.AbilityMangerProperty;
 import smartin.miapi.modules.abilities.util.EntityAttributeAbility;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;
 import smartin.miapi.modules.properties.LoreProperty;
 import smartin.miapi.modules.properties.util.DoubleOperationResolvable;
+import smartin.miapi.modules.properties.util.MergeType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +36,7 @@ import java.util.List;
  * transforms the Value of {@link BlockAbility#calculate(double)} to the actual damage resistance and slowdown percentages
  */
 public class BlockAbility extends EntityAttributeAbility<BlockAbility.BlockAbilityJson> {
-    public static Codec<BlockAbilityJson> CODEC = AutoCodec.of(BlockAbilityJson.class).codec();
+    public static MapCodec<BlockAbilityJson> CODEC = AutoCodec.of(BlockAbilityJson.class);
     ResourceLocation id = Miapi.id("block_ability_temporary_attribute");
 
     public BlockAbility() {
@@ -55,8 +53,7 @@ public class BlockAbility extends EntityAttributeAbility<BlockAbility.BlockAbili
     @Override
     protected Multimap<Holder<Attribute>, AttributeModifier> getAttributes(ItemStack itemStack) {
         Multimap<Holder<Attribute>, AttributeModifier> multimap = ArrayListMultimap.create();
-        BlockAbilityJson json = getSpecialContext(itemStack);
-        double value = json.blocking.getValue();
+        double value = getData(itemStack).map(c -> c.blocking.getValue()).orElse(1.0).doubleValue();
         value = calculate(value);
         multimap.put(Attributes.MOVEMENT_SPEED, new AttributeModifier(id, -(value / 2) / 100, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
         multimap.put(AttributeRegistry.DAMAGE_RESISTANCE, new AttributeModifier(id, value, AttributeModifier.Operation.ADD_VALUE));
@@ -70,11 +67,6 @@ public class BlockAbility extends EntityAttributeAbility<BlockAbility.BlockAbili
     @Override
     public boolean allowedOnItem(ItemStack itemStack, Level world, Player player, InteractionHand hand, ItemAbilityManager.AbilityHitContext abilityHitContext) {
         return true;
-    }
-
-    @Override
-    public int getMaxUseTime(ItemStack itemStack, LivingEntity entity) {
-        return 20 * 60 * 60;
     }
 
     @Override
@@ -101,11 +93,6 @@ public class BlockAbility extends EntityAttributeAbility<BlockAbility.BlockAbili
         super.onStoppedHolding(stack, world, user);
     }
 
-    @Override
-    public BlockAbilityJson getDefaultContext() {
-        return null;
-    }
-
     public void setAnimation(Player p, InteractionHand hand) {
         if (p instanceof ServerPlayer player) {
             ServerPoseFacet facet = ServerPoseFacet.KEY.get(player);
@@ -124,38 +111,27 @@ public class BlockAbility extends EntityAttributeAbility<BlockAbility.BlockAbili
     }
 
     @Override
-    public int getCooldown(ItemStack itemstack) {
-        return getSpecialContext(itemstack).cooldown.evaluatedOutput;
+    protected BlockAbilityJson mergeData(BlockAbilityJson left, BlockAbilityJson right, MergeType mergeType) {
+        BlockAbilityJson blockAbilityJson = new BlockAbilityJson();
+        blockAbilityJson.blocking = DoubleOperationResolvable.merge(left.blocking, right.blocking, mergeType);
+        return blockAbilityJson;
     }
 
-    @Override
-    public int getMinHoldTime(ItemStack itemStack) {
-        return getSpecialContext(itemStack).minUseTime.evaluatedOutput;
-    }
-
-    public <K> BlockAbilityJson decode(DynamicOps<K> ops, K prefix) {
-        return CODEC.decode(ops, prefix).getOrThrow().getFirst();
-    }
-
-    public BlockAbilityJson initialize(BlockAbilityJson data, ModuleInstance moduleInstance) {
+    public BlockAbilityJson initializeData(BlockAbilityJson data, ModuleInstance moduleInstance) {
         return data.initialize(moduleInstance);
     }
 
+    @Override
+    protected MapCodec<BlockAbilityJson> getMapCodec() {
+        return CODEC;
+    }
+
     public static class BlockAbilityJson {
-        @CodecBehavior.Optional
-        @AutoCodec.Name("min_hold_time")
-        public StatResolver.IntegerFromStat minUseTime = new StatResolver.IntegerFromStat(0);
-        @CodecBehavior.Optional
-        public StatResolver.IntegerFromStat cooldown = new StatResolver.IntegerFromStat(0);
         public DoubleOperationResolvable blocking = new DoubleOperationResolvable(10);
 
 
         public BlockAbilityJson initialize(ModuleInstance moduleInstance) {
             BlockAbilityJson init = new BlockAbilityJson();
-            init.minUseTime = minUseTime;
-            init.cooldown = cooldown;
-            minUseTime.evaluate(moduleInstance);
-            cooldown.evaluate(moduleInstance);
             init.blocking = blocking.initialize(moduleInstance);
             return init;
         }

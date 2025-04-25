@@ -29,7 +29,7 @@ public class DrawTimeProperty extends DoubleProperty {
         LoreProperty.loreSuppliers.add((itemStack, tooltip, context, tooltipType) -> {
             if (getData(itemStack).isPresent()) {
                 double drawTime = roundToNearest(getData(itemStack).get().getValue(), 0.05);
-                tooltip.add(2, Component.translatable("miapi.lore.draw_time.tooltip", FORMAT.format(drawTime)));
+                tooltip.add(Math.min(2, tooltip.size() - 1), Component.translatable("miapi.lore.draw_time.tooltip", FORMAT.format(drawTime)));
             }
         });
     }

@@ -64,6 +64,11 @@ public class RiptideAbility implements ItemUseDefaultCooldownAbility<RiptideAbil
         }
     }
 
+    @Override
+    public Codec<RiptideContextJson> getCodec() {
+        return RiptideAbility.CODEC;
+    }
+
     public void onStoppedUsingAfter(ItemStack stack, Level world, LivingEntity user, int remainingUseTicks) {
         if (user instanceof Player playerEntity && world instanceof ServerLevel serverLevel) {
             int i = this.getMaxUseTime(stack, user) - remainingUseTicks;
@@ -92,11 +97,6 @@ public class RiptideAbility implements ItemUseDefaultCooldownAbility<RiptideAbil
                 world.playSound(null, playerEntity, soundEvent, SoundSource.PLAYERS, 1.0F, 1.0F);
             }
         }
-    }
-
-    @Override
-    public <K> RiptideContextJson decode(DynamicOps<K> ops, K prefix) {
-        return CODEC.decode(ops, prefix).getOrThrow().getFirst();
     }
 
     @Override

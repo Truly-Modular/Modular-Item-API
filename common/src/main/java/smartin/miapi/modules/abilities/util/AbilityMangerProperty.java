@@ -12,6 +12,7 @@ import smartin.miapi.item.modular.VisualModularItem;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.util.CodecProperty;
 import smartin.miapi.modules.properties.util.MergeType;
+import smartin.miapi.registries.RegistryInventory;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -33,7 +34,7 @@ public class AbilityMangerProperty extends CodecProperty<Map<ItemUseAbility<?>, 
                 Object data = entry.getValue();
 
                 // Retrieve the ability's registry key
-                String abilityId = ItemAbilityManager.useAbilityRegistry.findKey(ability).toString();
+                String abilityId = RegistryInventory.ITEM_USE_ABILITY_MIAPI_REGISTRY.findKey(ability).toString();
                 if (abilityId == null) {
                     Miapi.LOGGER.error("Failed to encode ItemUseAbility: Ability not found in registry.");
                     continue;
@@ -43,6 +44,10 @@ public class AbilityMangerProperty extends CodecProperty<Map<ItemUseAbility<?>, 
                 DataResult<T> keyResult = Codec.STRING.encode(abilityId, ops, ops.empty());
                 if (keyResult.error().isPresent()) {
                     Miapi.LOGGER.error("Failed to encode ItemUseAbility key: " + keyResult.error().get().message());
+                    continue;
+                }
+                if(keyResult.result().isEmpty()){
+                    Miapi.LOGGER.error("Failed to encode ItemUseAbility key: " + abilityId);
                     continue;
                 }
 
@@ -67,7 +72,7 @@ public class AbilityMangerProperty extends CodecProperty<Map<ItemUseAbility<?>, 
             ops.getMap(input).getOrThrow().entries();
             ops.getMapValues(input).getOrThrow().toList().forEach((pair) -> {
                 String resourceLocation = Codec.STRING.decode(ops, pair.getFirst()).getOrThrow().getFirst();
-                ItemUseAbility<?> itemUseAbility = ItemAbilityManager.useAbilityRegistry.get(resourceLocation);
+                ItemUseAbility<?> itemUseAbility = RegistryInventory.ITEM_USE_ABILITY_MIAPI_REGISTRY.get(resourceLocation);
                 if (itemUseAbility == null) {
                     Miapi.LOGGER.error("can not find ItemUseAbility " + resourceLocation);
                 } else {

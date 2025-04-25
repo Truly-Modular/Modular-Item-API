@@ -8,6 +8,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import smartin.miapi.modules.properties.mining.MiningShapeProperty;
 import smartin.miapi.modules.properties.mining.modifier.MiningModifier;
+import smartin.miapi.modules.properties.util.InitializeAble;
 
 import java.util.List;
 
@@ -17,7 +18,7 @@ import java.util.List;
  * They are not meant to filter the mining blocks
  * {@link MiningModifier} is meant to filter blocks from the shape
  */
-public interface MiningMode {
+public interface MiningMode extends InitializeAble<MiningMode> {
 
     void execute(List<BlockPos> posList, Level world, ServerPlayer player, BlockPos origin, ItemStack itemStack);
 

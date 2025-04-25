@@ -73,6 +73,11 @@ public class SpecialAttackAbility implements
     }
 
     @Override
+    public Codec<SpecialAttackJson> getCodec() {
+        return CODEC;
+    }
+
+    @Override
     public void onStoppedUsingAfter(ItemStack stack, Level world, LivingEntity user, int remainingUseTicks) {
         SpecialAttackJson specialAttackJson = getSpecialContext(stack);
         if (user instanceof Player player && getMaxUseTime(stack, user) - remainingUseTicks > specialAttackJson.minHold.getValue()) {
@@ -103,11 +108,6 @@ public class SpecialAttackAbility implements
     @Override
     public int getCooldown(ItemStack itemStack) {
         return (int) getSpecialContext(itemStack).cooldown.getValue();
-    }
-
-    @Override
-    public <K> SpecialAttackJson decode(DynamicOps<K> ops, K prefix) {
-        return CODEC.decode(ops, prefix).getOrThrow().getFirst();
     }
 
     @Override

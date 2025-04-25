@@ -9,6 +9,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import smartin.miapi.Miapi;
+import smartin.miapi.modules.ModuleInstance;
+import smartin.miapi.modules.properties.util.DoubleOperationResolvable;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -21,14 +23,13 @@ public class VeinMiningShape implements MiningShape {
 
     public int size = 5;
     @CodecBehavior.Optional
-    public int maxBlocks = 15;
-
+    public DoubleOperationResolvable max = new DoubleOperationResolvable(15);
 
 
     @Override
     public List<BlockPos> getMiningBlocks(Level world, BlockPos pos, Direction face) {
         List<BlockPos> miningBlocks = new ArrayList<>();
-        if (maxBlocks < 1) {
+        if (max.getValue() < 1) {
             return miningBlocks;
         }
         Queue<BlockPos> queue = new LinkedList<>();
@@ -39,7 +40,7 @@ public class VeinMiningShape implements MiningShape {
 
         BlockState centerState = world.getBlockState(pos);
 
-        while (!queue.isEmpty() && miningBlocks.size() < size * size * size && miningBlocks.size() < maxBlocks) {
+        while (!queue.isEmpty() && miningBlocks.size() < size * size * size && miningBlocks.size() < max.getValue()) {
             BlockPos currentPos = queue.poll();
             miningBlocks.add(currentPos);
 
@@ -51,7 +52,7 @@ public class VeinMiningShape implements MiningShape {
                 int dy1 = neighborPos.getY() - pos.getY() + size;
                 int dz1 = neighborPos.getZ() - pos.getZ() + size;
                 if (Math.abs(dx1 - size) <= size && Math.abs(dy1 - size) <= size && Math.abs(dz1 - size) <= size
-                        && !visited.contains(neighborPos)) {
+                    && !visited.contains(neighborPos)) {
 
                     visited.add(neighborPos);
 
@@ -67,7 +68,15 @@ public class VeinMiningShape implements MiningShape {
     }
 
     @Override
-    public ResourceLocation getID(){
+    public ResourceLocation getID() {
         return ID;
+    }
+
+    @Override
+    public MiningShape initialize(MiningShape property, ModuleInstance context) {
+        VeinMiningShape miningShape = new VeinMiningShape();
+        miningShape.max = ((VeinMiningShape) property).max.initialize(context);
+        miningShape.size =((VeinMiningShape) property).size;
+        return miningShape;
     }
 }

@@ -6,7 +6,7 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.common.ItemAbilities;
 import net.neoforged.neoforge.common.ItemAbility;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Unique;
+import smartin.miapi.Miapi;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.items.BrokenModularVisualOnlyItem;
 import smartin.miapi.item.modular.items.ExampleModularItem;
@@ -69,13 +69,10 @@ public abstract class ModularItemTestMixin {
         return entity.getEquipmentSlotForItem(stack) == armorType || EquipmentSlotProperty.getSlot(stack).test(armorType);
     }
 
-    @Unique
-    public void test(){
-
-    }
-
     public boolean canPerformAction(ItemStack stack, ItemAbility toolAction) {
+        Miapi.LOGGER.info("testing action " + stack.getDisplayName().getString() + " " + toolAction.name());
         if (ModularItem.isModularItem(stack)) {
+            Miapi.LOGGER.info("is modular");
             if (toolAction.equals(ItemAbilities.AXE_DIG)) {
                 return canMine(stack, "axe");
             }
@@ -92,6 +89,7 @@ public abstract class ModularItemTestMixin {
                 return canMine(stack, "shear");
             }
             if (toolAction.equals(ItemAbilities.SWORD_DIG)) {
+                Miapi.LOGGER.info("is sword dig");
                 return canMine(stack, "sword");
             }
             if (ItemAbilities.DEFAULT_AXE_ACTIONS.contains(toolAction)) {
@@ -109,7 +107,7 @@ public abstract class ModularItemTestMixin {
 
     private static boolean canMine(ItemStack stack, String type) {
         var optional = MiningLevelProperty.property.getData(stack);
-        return optional.map(stringMiningRuleMap -> stringMiningRuleMap.containsKey(type)).orElse(false);
+        return optional.map(stringMiningRuleMap -> stringMiningRuleMap.containsKey(type) && stringMiningRuleMap.get(type).speed().getValue() > 1.0).orElse(false);
     }
 
     private static boolean hasRightClickBehaviour(ItemStack stack, Predicate<? super ItemUseAbility> predicate) {

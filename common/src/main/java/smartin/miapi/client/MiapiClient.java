@@ -86,7 +86,7 @@ public class MiapiClient {
         if (config.getInstance() == null) {
             config.load();
         }
-        if ( Platform.getMod("nucleus").getVersion().equals("1.1.4")) {
+        if (Platform.getMod("nucleus").getVersion().equals("1.1.4")) {
             RenderEvents.LIVING_ENTITY_RENDER.register((stage, model, entity, entityYaw, partialTick, matrixStack, multiBufferSource, packedLight) -> {
                 if (stage != RenderEvents.EntityRenderStage.PRE) return EventResult.pass();
                 for (Map.Entry<Holder<MobEffect>, MobEffectInstance> entry : entity.getActiveEffectsMap().entrySet()) {
@@ -186,6 +186,8 @@ public class MiapiClient {
         RegistryInventory.MODULAR_ITEMS.addCallback((item -> {
             ModularModelPredicateProvider.registerModelOverride(item, Miapi.id("damage"), (stack, world, entity, seed) -> stack.isDamageableItem() && stack.getDamageValue() > 0 ? ((float) stack.getDamageValue() / stack.getMaxDamage()) : 0.0f);
             ModularModelPredicateProvider.registerModelOverride(item, Miapi.id("damaged"), (stack, world, entity, seed) -> stack.isDamaged() ? 1.0F : 0.0F);
+            ModularModelPredicateProvider.registerModelOverride(item, Miapi.id("use"), (stack, world, entity, seed) -> entity.isUsingItem() && stack.equals(entity.getUseItem()) ? 1.0F : 0.0F);
+            ModularModelPredicateProvider.registerModelOverride(item, Miapi.id("use_ticks"), (stack, world, entity, seed) -> entity.isUsingItem() && stack.equals(entity.getUseItem()) ? entity.getTicksUsingItem() : 0.0f);
         }));
         ReloadEvents.START.subscribe((isClient, registryAccess) -> {
             if (isClient) {

@@ -6,6 +6,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import smartin.miapi.modules.properties.mining.shape.MiningShape;
+import smartin.miapi.modules.properties.util.InitializeAble;
 
 import java.util.List;
 
@@ -14,7 +15,7 @@ import java.util.List;
  * they are meant to filter after the {@link MiningShape} scanned for the block
  * use cautiously
  */
-public interface MiningModifier {
+public interface MiningModifier extends InitializeAble<MiningModifier> {
     List<BlockPos> adjustMiningBlock(Level world, BlockPos pos, Player player, ItemStack itemStack, List<BlockPos> blocks);
 
     ResourceLocation getID();

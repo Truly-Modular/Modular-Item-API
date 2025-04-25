@@ -12,19 +12,21 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import smartin.miapi.Miapi;
+import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.mining.condition.AlwaysMiningCondition;
 import smartin.miapi.modules.properties.mining.condition.MiningCondition;
 import smartin.miapi.modules.properties.mining.mode.InstantMiningMode;
 import smartin.miapi.modules.properties.mining.mode.MiningMode;
 import smartin.miapi.modules.properties.mining.modifier.MiningModifier;
 import smartin.miapi.modules.properties.mining.shape.MiningShape;
+import smartin.miapi.modules.properties.util.InitializeAble;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public record MiningShapeEntry(MiningCondition condition, MiningShape shape, MiningMode mode,
-                               Map<ResourceLocation, MiningModifier> modifiers) {
+                               Map<ResourceLocation, MiningModifier> modifiers) implements InitializeAble<MiningShapeEntry> {
     public static Codec<MiningCondition> MINING_CONDITION_CODEC =
             Miapi.ID_CODEC.dispatch("type", MiningCondition::getID,
                     (id) -> MiningShapeProperty.miningConditionMap.getOrDefault(id, AlwaysMiningCondition.CODEC));
@@ -75,5 +77,19 @@ public record MiningShapeEntry(MiningCondition condition, MiningShape shape, Min
             posList = modifier.adjustMiningBlock(level, pos, player, stack, posList);
         }
         mode().execute(posList, level, player, pos, stack);
+    }
+
+    @Override
+    public MiningShapeEntry initialize(MiningShapeEntry property, ModuleInstance context) {
+        Map<ResourceLocation, MiningModifier> modifiers = new HashMap<>();
+        property.modifiers.forEach((id, entry) -> {
+            modifiers.put(id, entry.initialize(entry, context));
+        });
+        return new MiningShapeEntry(
+                property.condition(),
+                property.shape().initialize(property.shape(), context),
+                property.mode().initialize(property.mode(), context),
+                modifiers
+        );
     }
 }

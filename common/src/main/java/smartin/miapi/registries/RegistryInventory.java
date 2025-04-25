@@ -82,8 +82,6 @@ import smartin.miapi.modules.StackStorageComponent;
 import smartin.miapi.modules.abilities.*;
 import smartin.miapi.modules.abilities.gun.GunContextProperty;
 import smartin.miapi.modules.abilities.gun.GunMagazineComponent;
-import smartin.miapi.modules.abilities.gun.ReloadSingleBulletAbility;
-import smartin.miapi.modules.abilities.gun.ShootAbility;
 import smartin.miapi.modules.abilities.key.KeyBindAbilityManagerProperty;
 import smartin.miapi.modules.abilities.shield.ParryShieldBlock;
 import smartin.miapi.modules.abilities.shield.TowerShieldBlock;
@@ -91,6 +89,7 @@ import smartin.miapi.modules.abilities.toolabilities.AxeAbility;
 import smartin.miapi.modules.abilities.toolabilities.HoeAbility;
 import smartin.miapi.modules.abilities.toolabilities.ShovelAbility;
 import smartin.miapi.modules.abilities.util.AbilityMangerProperty;
+import smartin.miapi.modules.abilities.util.ItemUseAbility;
 import smartin.miapi.modules.conditions.*;
 import smartin.miapi.modules.edit_options.*;
 import smartin.miapi.modules.edit_options.CreateItemOption.CreateItemOption;
@@ -147,6 +146,7 @@ public class RegistryInventory {
     public static final MiapiRegistry<ModuleProperty> MODULE_PROPERTY_MIAPI_REGISTRY = MiapiRegistry.getInstance(ModuleProperty.class);
     public static final MiapiRegistry<ItemModule> ITEM_MODULE_MIAPI_REGISTRY = MiapiRegistry.getInstance(ItemModule.class);
     public static final MiapiRegistry<ItemModule> modules = ITEM_MODULE_MIAPI_REGISTRY;
+    public static final MiapiRegistry<ItemUseAbility> ITEM_USE_ABILITY_MIAPI_REGISTRY = useAbilityRegistry;
     public static final MiapiRegistry<EditOption> EDIT_OPTION_MIAPI_REGISTRY = MiapiRegistry.getInstance(EditOption.class);
     public static final MiapiRegistry<CraftingStat> CRAFTING_STATS_REGISTRY = MiapiRegistry.getInstance(CraftingStat.class);
     public static final MiapiRegistry<Material> MATERIAL_REGISTRY = MiapiRegistry.getInstance(Material.class);
@@ -616,8 +616,6 @@ public class RegistryInventory {
             registerMiapi(useAbilityRegistry, CastLightingAbility.KEY, new CastLightingAbility());
             registerMiapi(useAbilityRegistry, SonicBoomAbility.KEY, new SonicBoomAbility());
 
-            registerMiapi(useAbilityRegistry, ShootAbility.KEY, new ShootAbility());
-            registerMiapi(useAbilityRegistry, ReloadSingleBulletAbility.KEY, new ReloadSingleBulletAbility());
             registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, GunContextProperty.KEY, new GunContextProperty());
 
             registerMiapi(useAbilityRegistry, "full_block", new ShieldBlockAbility());

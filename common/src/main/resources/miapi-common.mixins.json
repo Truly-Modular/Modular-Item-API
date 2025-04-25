@@ -9,7 +9,6 @@
         "ApoliStackPowerMixin",
         "ArcheryHookMixin",
         "AxeItemAccessor",
-        "BCWeaponRegistryMixin",
         "ChorusFruitMixin",
         "CraftingResultInventorMixin",
         "CrossbowItemAccessor",

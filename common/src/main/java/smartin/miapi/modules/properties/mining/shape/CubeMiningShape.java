@@ -8,6 +8,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 import smartin.miapi.Miapi;
+import smartin.miapi.modules.ModuleInstance;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,5 +59,11 @@ public class CubeMiningShape implements MiningShape {
     @Override
     public ResourceLocation getID(){
         return ID;
+    }
+
+    @Override
+    public MiningShape initialize(MiningShape property, ModuleInstance context) {
+        //TODO:swap to Double resovlable
+        return property;
     }
 }

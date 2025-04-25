@@ -12,6 +12,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import smartin.miapi.Miapi;
+import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.mining.condition.AlwaysMiningCondition;
 import smartin.miapi.modules.properties.mining.condition.BlockTagCondition;
 import smartin.miapi.modules.properties.mining.condition.MiningCondition;
@@ -24,6 +25,7 @@ import smartin.miapi.modules.properties.mining.shape.CubeMiningShape;
 import smartin.miapi.modules.properties.mining.shape.MiningShape;
 import smartin.miapi.modules.properties.mining.shape.VeinMiningShape;
 import smartin.miapi.modules.properties.util.CodecProperty;
+import smartin.miapi.modules.properties.util.MergeAble;
 import smartin.miapi.modules.properties.util.MergeType;
 
 import java.util.*;
@@ -34,10 +36,9 @@ import java.util.*;
  *
  * @header Mining Shape Property
  * @path /data_types/properties/mining/shape
- * @description_start
- * The MiningShapeProperty controls how tools mine multiple blocks based on the configured mining shapes, conditions, and modes.
+ * @description_start The MiningShapeProperty controls how tools mine multiple blocks based on the configured mining shapes, conditions, and modes.
  * This allows for varied mining behaviors such as mining entire veins or large areas with a single action.
- *
+ * <p>
  * The property supports different mining shapes (e.g., cubes, veins), conditions (e.g., block tags, always mine), and modes (e.g., instant, staggered).
  * It also incorporates mining modifiers that can influence mining behavior, such as requiring all blocks to be the same type.
  * @description_end
@@ -57,7 +58,11 @@ public class MiningShapeProperty extends CodecProperty<List<MiningShapeEntry>> {
 
     @Override
     public List<MiningShapeEntry> merge(List<MiningShapeEntry> left, List<MiningShapeEntry> right, MergeType mergeType) {
-        return List.of();
+        return MergeAble.mergeList(left, right, mergeType);
+    }
+
+    public List<MiningShapeEntry> initialize(List<MiningShapeEntry> base, ModuleInstance moduleInstance) {
+        return base.stream().map(a -> a.initialize(a,moduleInstance)).toList();
     }
 
 
@@ -70,7 +75,7 @@ public class MiningShapeProperty extends CodecProperty<List<MiningShapeEntry>> {
                 List<MiningShapeEntry> miningShapeJsons = getData(miningItem).orElse(new ArrayList<>());
                 HitResult hitResult = player.pick(player.getAttributeValue(Attributes.BLOCK_INTERACTION_RANGE), 0, false);
                 if (hitResult instanceof BlockHitResult blockHitResult) {
-                    if(!blockHitResult.getBlockPos().equals(pos)){
+                    if (!blockHitResult.getBlockPos().equals(pos)) {
                         return EventResult.pass();
                     }
                     Direction facing = blockHitResult.getDirection();

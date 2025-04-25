@@ -1,7 +1,6 @@
 package smartin.miapi.modules.abilities;
 
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.DynamicOps;
 import com.redpxnda.nucleus.codec.auto.AutoCodec;
 import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
 import net.minecraft.network.chat.Component;
@@ -69,6 +68,11 @@ public class ThrowingAbility implements ItemUseDefaultCooldownAbility<ThrowingAb
     }
 
     @Override
+    public Codec<BasicContext> getCodec() {
+        return CODEC;
+    }
+
+    @Override
     public void onStoppedUsingAfter(ItemStack stack, Level world, LivingEntity user, int remainingUseTicks) {
         if (user instanceof Player playerEntity) {
             int i = this.getMaxUseTime(stack, user) - remainingUseTicks;
@@ -110,13 +114,10 @@ public class ThrowingAbility implements ItemUseDefaultCooldownAbility<ThrowingAb
         }
     }
 
-    public <K> BasicContext decode(DynamicOps<K> ops, K prefix) {
-        return CODEC.decode(ops, prefix).getOrThrow().getFirst();
-    }
-
-    public void initialize(ToolAbilities.ToolAbilityContext data, ModuleInstance moduleInstance) {
+    public BasicContext initialize(BasicContext data, ModuleInstance moduleInstance) {
         data.cooldown.initialize(moduleInstance);
         data.minUseTime.initialize(moduleInstance);
+        return data;
     }
 
     @Override

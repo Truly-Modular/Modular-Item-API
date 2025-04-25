@@ -1,6 +1,6 @@
 package smartin.miapi.modules.abilities;
 
-import com.mojang.serialization.DynamicOps;
+import com.mojang.serialization.Codec;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.LivingEntity;
@@ -35,12 +35,7 @@ public class ShieldBlockAbility implements ItemUseDefaultCooldownAbility, ItemUs
     }
 
     @Override
-    public Object getDefaultContext() {
-        return null;
-    }
-
-    @Override
-    public Object decode(DynamicOps ops, Object prefix) {
+    public Codec getCodec() {
         return null;
     }
 

@@ -6,7 +6,6 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.HoeItem;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
@@ -22,7 +21,6 @@ public class HoeAbility extends ToolAbilities {
 
     @Override
     public Optional<BlockState> getBlockState(BlockState blockState, UseOnContext context) {
-        HoeItem hoeItem;
         return Optional.empty();
     }
 

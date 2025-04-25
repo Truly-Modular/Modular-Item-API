@@ -1,4 +1,5 @@
-## v2.0.5 (1.21)
-- fixed fake-tag ingredient interactions
-- fixed crash related to opening statistics on forge (or other unaccounted accesses of armorrendering)
-- adjusted armor strength for generated materials
+## v2.0.6 (1.21)
+- fixed tool miss-identification on neoforge
+- fixed bug where fake enchants could become permanent (whoops)
+- fixed vein mining max being not set correctly
+- fixed bug where we expected the item name to be added to the lore list

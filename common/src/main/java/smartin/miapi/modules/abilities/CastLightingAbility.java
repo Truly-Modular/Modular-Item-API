@@ -1,7 +1,6 @@
 package smartin.miapi.modules.abilities;
 
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
@@ -82,8 +81,8 @@ public class CastLightingAbility implements ItemUseDefaultCooldownAbility<CastLi
     }
 
     @Override
-    public <K> CastLightingContext decode(DynamicOps<K> ops, K prefix) {
-        return CastLightingContext.CODEC.decode(ops, prefix).getOrThrow().getFirst();
+    public Codec<CastLightingContext> getCodec() {
+        return CastLightingContext.CODEC;
     }
 
     @Override

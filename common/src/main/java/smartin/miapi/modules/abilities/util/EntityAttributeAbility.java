@@ -21,8 +21,12 @@ import java.util.Map;
  * It provides functionality to give the player attributes while holding right-click.
  * Extend this class and implement the getAttributes() method to define the attributes to be applied.
  */
-public abstract class EntityAttributeAbility<T> implements ItemUseDefaultCooldownAbility<T>, ItemUseMinHoldAbility<T> {
+public abstract class EntityAttributeAbility<T> extends MinMaxCDAbility<T> {
     Map<LivingEntity, Multimap<Holder<Attribute>, AttributeModifier>> playerEntityMultimapMap = new HashMap<>();
+
+    protected EntityAttributeAbility() {
+        super(0,0);
+    }
 
     /**
      * Get the attributes and modifiers to be applied for the specified item stack.

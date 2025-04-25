@@ -9,6 +9,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import smartin.miapi.Miapi;
+import smartin.miapi.modules.ModuleInstance;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -55,5 +56,10 @@ public class InstantMiningMode implements MiningMode {
     @Override
     public ResourceLocation getID(){
         return ID;
+    }
+
+    @Override
+    public MiningMode initialize(MiningMode property, ModuleInstance context) {
+        return property;
     }
 }

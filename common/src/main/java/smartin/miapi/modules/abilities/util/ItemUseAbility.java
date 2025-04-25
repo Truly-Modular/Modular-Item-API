@@ -1,6 +1,8 @@
 package smartin.miapi.modules.abilities.util;
 
+import com.mojang.serialization.Codec;
 import com.mojang.serialization.DynamicOps;
+import io.netty.handler.codec.DecoderException;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
@@ -14,15 +16,17 @@ import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.cache.ModularItemCache;
+import smartin.miapi.modules.properties.util.InitializeAble;
 import smartin.miapi.modules.properties.util.MergeAble;
 import smartin.miapi.modules.properties.util.MergeType;
+import smartin.miapi.registries.RegistryInventory;
 
 /**
  * Implement this interface to provide custom behavior for item usage and handling.
  * This class allows Modular Items to swap their Actions on RightClick (UseKey).
  * Register implementations in the {@link ItemAbilityManager#useAbilityRegistry} to be used.
  */
-public interface ItemUseAbility<T> extends MergeAble<T> {
+public interface ItemUseAbility<T> extends MergeAble<T>, InitializeAble<T> {
     /**
      * Checks if this {@link ItemUseAbility} is allowed on the specified item stack, world, player, and hand.
      *
@@ -131,9 +135,19 @@ public interface ItemUseAbility<T> extends MergeAble<T> {
 
     }
 
-    <K> T decode(DynamicOps<K> ops, K prefix);
+    Codec<T> getCodec();
+
+    default <K> T decode(DynamicOps<K> ops, K prefix) {
+        return getCodec().decode(ops, prefix).getOrThrow(s ->
+                new DecoderException("Could not decode Ability " + getClass().getName() + " with error" + s)).getFirst();
+    }
 
     default <K> K encode(DynamicOps<K> ops, T input) {
+        return getCodec().encodeStart(ops, input).getOrThrow(s ->
+                new DecoderException("Could not encode Ability " + getClass().getName() + " with error" + s));
+    }
+
+    default T getDefaultContext(){
         return null;
     }
 
@@ -150,9 +164,6 @@ public interface ItemUseAbility<T> extends MergeAble<T> {
     }
 
     @Nullable
-    T getDefaultContext();
-
-    @Nullable
     default T getSpecialContext(ItemStack itemStack) {
         return getSpecialContext(itemStack, getDefaultContext());
     }
@@ -161,7 +172,7 @@ public interface ItemUseAbility<T> extends MergeAble<T> {
     default T getSpecialContext(ItemStack itemStack, T defaultValue) {
         return ModularItemCache.get(
                 itemStack,
-                AbilityMangerProperty.KEY + "_" + ItemAbilityManager.useAbilityRegistry.findKey(this), defaultValue);
+                AbilityMangerProperty.KEY + "_" + RegistryInventory.ITEM_USE_ABILITY_MIAPI_REGISTRY.findKey(this), defaultValue);
     }
 
     @SuppressWarnings("unchecked")

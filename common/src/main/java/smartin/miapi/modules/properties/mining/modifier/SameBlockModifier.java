@@ -12,6 +12,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import smartin.miapi.Miapi;
+import smartin.miapi.modules.ModuleInstance;
 
 import java.util.List;
 
@@ -60,5 +61,10 @@ public class SameBlockModifier implements MiningModifier {
     @Override
     public ResourceLocation getID() {
         return ID;
+    }
+
+    @Override
+    public MiningModifier initialize(MiningModifier property, ModuleInstance context) {
+        return property;
     }
 }

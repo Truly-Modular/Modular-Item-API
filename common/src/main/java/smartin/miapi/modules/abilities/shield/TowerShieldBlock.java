@@ -113,6 +113,11 @@ public class TowerShieldBlock implements ItemUseDefaultCooldownAbility<TowerShie
         resetAnimation(user);
     }
 
+    @Override
+    public Codec<BlockData> getCodec() {
+        return AutoCodec.of(BlockData.class).codec();
+    }
+
     public void setAnimation(Player p, InteractionHand hand, ResourceLocation id) {
         if (p instanceof ServerPlayer player && id != null) {
             ServerPoseFacet facet = ServerPoseFacet.KEY.get(player);

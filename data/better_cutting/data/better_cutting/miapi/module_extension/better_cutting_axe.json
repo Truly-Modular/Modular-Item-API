@@ -1,0 +1,39 @@
+{
+    "id": "tm_arsenal:tool/axe_cutter",
+    "replace": {
+        "gui_stat": {
+            "ht_treechop_gui": {
+                "value": "ceil( min(200,(([material.tier] * 1.5 + [material.hardness] / 10 ) ^ 3 + 2))-0.5) * 3",
+                "min": 0,
+                "max": 20,
+                "header": {
+                    "translate": "miapi.tm_arsenal.tree_mining"
+                },
+                "description": {
+                    "translate": "miapi.tm_arsenal.tree_mining.description"
+                }
+            }
+        },
+        "mining_shape": [
+            {
+                "condition": {
+                    "type": "block_tag",
+                    "tags": [
+                        "minecraft:logs"
+                    ]
+                },
+                "mode": {
+                    "type": "staggered"
+                },
+                "modifier": {
+                    "require_same": true
+                },
+                "shape": {
+                    "type": "vein",
+                    "size": 100,
+                    "max": "ceil( min(200,(([material.tier] * 1.5 + [material.hardness] / 10 ) ^ 3 + 2))-0.5) * 3"
+                }
+            }
+        ]
+    }
+}

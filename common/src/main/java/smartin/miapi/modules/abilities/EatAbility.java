@@ -1,7 +1,6 @@
 package smartin.miapi.modules.abilities;
 
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.DynamicOps;
 import com.redpxnda.nucleus.codec.auto.AutoCodec;
 import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
 import net.minecraft.server.level.ServerPlayer;
@@ -94,8 +93,8 @@ public class EatAbility implements ItemUseDefaultCooldownAbility<EatAbility.EatR
     }
 
     @Override
-    public <K> EatAbility.EatRawData decode(DynamicOps<K> ops, K prefix) {
-        return EatRawData.codec.decode(ops, prefix).getOrThrow().getFirst();
+    public Codec<EatRawData> getCodec() {
+        return EatRawData.codec;
     }
 
     @Override

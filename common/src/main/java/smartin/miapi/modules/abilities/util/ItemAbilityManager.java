@@ -1,6 +1,7 @@
 package smartin.miapi.modules.abilities.util;
 
-import com.mojang.serialization.DynamicOps;
+import com.mojang.serialization.Codec;
+import com.redpxnda.nucleus.codec.auto.AutoCodec;
 import dev.architectury.event.events.common.TickEvent;
 import dev.architectury.platform.Platform;
 import net.minecraft.resources.ResourceLocation;
@@ -22,6 +23,7 @@ import smartin.miapi.modules.abilities.key.KeyBindAbilityManagerProperty;
 import smartin.miapi.modules.abilities.key.KeyBindFacet;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.registries.MiapiRegistry;
+import smartin.miapi.registries.RegistryInventory;
 
 import java.util.*;
 import java.util.function.Supplier;
@@ -59,7 +61,7 @@ public class ItemAbilityManager {
             }
         });
         useAbilityRegistry.addCallback(ability -> ModularItemCache.setSupplier(
-                AbilityMangerProperty.KEY + "_" + ItemAbilityManager.useAbilityRegistry.findKey(ability),
+                AbilityMangerProperty.KEY + "_" + RegistryInventory.ITEM_USE_ABILITY_MIAPI_REGISTRY.findKey(ability),
                 (itemStack -> {
                     Optional<AbilityHolder<?>> optional = abilityMap.values().stream().filter(e -> e.ability().equals(ability)).findFirst();
                     return optional.<Object>map(AbilityHolder::context).orElse(null);
@@ -270,13 +272,8 @@ public class ItemAbilityManager {
         }
 
         @Override
-        public Object decode(DynamicOps ops, Object prefix) {
-            return null;
-        }
-
-        @Override
-        public Object getDefaultContext() {
-            return null;
+        public Codec getCodec() {
+            return AutoCodec.of(EmptyAbility.class).codec();
         }
     }
 

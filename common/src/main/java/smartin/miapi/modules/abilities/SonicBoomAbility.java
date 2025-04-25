@@ -64,6 +64,11 @@ public class SonicBoomAbility implements ItemUseDefaultCooldownAbility<SonicBoom
     }
 
     @Override
+    public Codec<SonicBoomContext> getCodec() {
+        return SonicBoomContext.CODEC;
+    }
+
+    @Override
     public void onStoppedUsingAfter(ItemStack stack, Level world, LivingEntity user, int remainingUseTicks) {
         SonicBoomContext context = getSpecialContext(stack);
         if (user instanceof Player player && getMaxUseTime(stack, user) - remainingUseTicks >= context.minHold().getValue()) {
@@ -91,11 +96,6 @@ public class SonicBoomAbility implements ItemUseDefaultCooldownAbility<SonicBoom
                 player.swing(player.getUsedItemHand());
             }
         }
-    }
-
-    @Override
-    public <K> SonicBoomContext decode(DynamicOps<K> ops, K prefix) {
-        return SonicBoomContext.CODEC.decode(ops, prefix).getOrThrow().getFirst();
     }
 
     @Override

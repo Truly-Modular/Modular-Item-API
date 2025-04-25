@@ -1,7 +1,6 @@
 package smartin.miapi.modules.abilities;
 
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.DynamicOps;
 import com.redpxnda.nucleus.codec.auto.AutoCodec;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
@@ -118,6 +117,11 @@ public class CopyItemAbility implements ItemUseAbility<CopyItemAbility.ItemConte
     }
 
     @Override
+    public Codec<ItemContext> getCodec() {
+        return AutoCodec.of(ItemContext.class).codec();
+    }
+
+    @Override
     public ItemContext initialize(ItemContext data, ModuleInstance moduleInstance) {
         ItemContext itemContext = new ItemContext();
         itemContext.id = data.id;
@@ -128,12 +132,6 @@ public class CopyItemAbility implements ItemUseAbility<CopyItemAbility.ItemConte
     @Override
     public ItemContext getDefaultContext() {
         return new ItemContext();
-    }
-
-    @Override
-    public <K> ItemContext decode(DynamicOps<K> ops, K prefix) {
-        Codec<ItemContext> codec = AutoCodec.of(ItemContext.class).codec();
-        return codec.decode(ops, prefix).getOrThrow().getFirst();
     }
 
     public static class ItemContext {
