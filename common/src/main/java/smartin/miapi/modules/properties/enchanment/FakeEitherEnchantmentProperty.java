@@ -67,7 +67,7 @@ public class FakeEitherEnchantmentProperty extends EitherModuleProperty<
                 context.lookup.lookup(Registries.ENCHANTMENT).ifPresentOrElse(enchantmentRegistryInfo -> {
                     enchantmentRegistryInfo.getter().get(ResourceKey.create(Registries.ENCHANTMENT, id)).ifPresentOrElse(holder -> {
                                 initialized.put(holder, resolvable.initialize(context));
-                                Miapi.LOGGER.info("full ID "+holder.key().location());
+                                Miapi.LOGGER.info("full ID " + holder.key().location());
                             }, () -> Miapi.LOGGER.warn("Could not find enchanment " + id + " skiping")
                     );
                 }, () -> Miapi.LOGGER.warn("Enchantment Registries not Found - could not decode enchantments"));
@@ -91,17 +91,12 @@ public class FakeEitherEnchantmentProperty extends EitherModuleProperty<
     @Override
     protected Map<ResourceLocation, DoubleOperationResolvable> deInitialize(Map<Holder.Reference<Enchantment>, DoubleOperationResolvable> property) {
         Map<ResourceLocation, DoubleOperationResolvable> map = new HashMap<>();
-        property.forEach((id, resolvable) -> map.put(id.key().location(),resolvable));
+        property.forEach((id, resolvable) -> map.put(id.key().location(), resolvable));
         return map;
     }
 
-    public Map<Holder.Reference<Enchantment>, DoubleOperationResolvable> getEnchants(ItemStack itemStack){
-        if(getData(itemStack).isPresent()){
-            if(getData(itemStack).get().right().isPresent()){
-                return getData(itemStack).get().right().get();
-            }
-        }
-        return Map.of();
+    public Map<Holder.Reference<Enchantment>, DoubleOperationResolvable> getEnchants(ItemStack itemStack) {
+        return getData(itemStack).flatMap(c -> c.right()).orElse(Map.of());
     }
 
     @net.fabricmc.api.Environment(EnvType.CLIENT)
