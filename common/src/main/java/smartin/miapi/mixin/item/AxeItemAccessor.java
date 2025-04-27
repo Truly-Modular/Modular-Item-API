@@ -1,4 +1,4 @@
-package smartin.miapi.mixin;
+package smartin.miapi.mixin.item;
 
 import net.minecraft.world.item.AxeItem;
 import net.minecraft.world.level.block.Block;

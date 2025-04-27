@@ -12,7 +12,7 @@ import smartin.miapi.Miapi;
 import smartin.miapi.item.MaterialSmithingRecipe;
 import smartin.miapi.material.MaterialProperty;
 import smartin.miapi.material.base.Material;
-import smartin.miapi.mixin.SmithingTransformRecipeAccessor;
+import smartin.miapi.mixin.smithing.SmithingTransformRecipeAccessor;
 
 import java.util.ArrayList;
 import java.util.Arrays;

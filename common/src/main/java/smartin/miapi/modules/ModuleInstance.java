@@ -30,6 +30,7 @@ import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.slot.SlotProperty;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
+import smartin.miapi.registries.RegistryHelper;
 import smartin.miapi.registries.RegistryInventory;
 
 import java.util.*;
@@ -78,6 +79,11 @@ public class ModuleInstance {
         CODEC = registrySavingCodec(basicCodec, (m, l) -> m.allSubModules().forEach(moduleInstance -> {
             moduleInstance.lookup = l;
             moduleInstance.mutable = false;
+            moduleInstance.registryAccess = RegistryHelper.tryFind(l);
+            moduleInstance.allSubModules().forEach(sub -> {
+                sub.registryAccess = moduleInstance.registryAccess;
+                sub.lookup = moduleInstance.lookup;
+            });
         }));
         MODULE_INSTANCE_COMPONENT = DataComponentType.<ModuleInstance>builder().persistent(CODEC).networkSynchronized(ByteBufCodecs.fromCodec(CODEC)).build();
     }

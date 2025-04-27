@@ -4,6 +4,7 @@ import com.google.gson.JsonElement;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.JsonOps;
 import net.minecraft.client.Minecraft;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceLocation;
@@ -335,12 +336,27 @@ public class CraftAction {
                 });
                 return old;
             }
+            if (player != null && player.level() != null) {
+                parsingInstance.registryAccess = player.level().registryAccess();
+            }
             parsingInstance = parsingInstance.getSubModule(slotLocation.get(i));
         }
         for (CraftingEvent eventHandler : events) {
             craftingStack.set(eventHandler.onPreview(old, craftingStack.get(), parsingInstance));
         }
+        ItemModule.getModules(craftingStack.get()).clearCaches();
         linkedInventory.setChanged();
+        try {
+            if (this.player != null && this.player.level() != null) {
+                ModuleInstance moduleInstance = ItemModule.getModules(craftingStack.get());
+                var ops = RegistryOps.create(NbtOps.INSTANCE, this.player.level().registryAccess());
+                ItemStack stack = craftingStack.get();
+                ModuleInstance.CODEC.decode(ops, ModuleInstance.CODEC.encodeStart(ops, moduleInstance).result().get()).result().get().getFirst().writeToItem(stack);
+                return stack;
+            }
+        } catch (RuntimeException suppressed) {
+
+        }
         return craftingStack.get();
     }
 

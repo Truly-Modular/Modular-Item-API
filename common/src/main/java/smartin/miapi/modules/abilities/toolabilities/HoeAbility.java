@@ -9,7 +9,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import smartin.miapi.mixin.HoeItemAccessor;
+import smartin.miapi.mixin.item.HoeItemAccessor;
 import smartin.miapi.modules.abilities.util.ToolAbilities;
 
 import java.util.Optional;

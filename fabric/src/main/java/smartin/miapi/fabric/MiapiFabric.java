@@ -18,7 +18,7 @@ import smartin.miapi.client.MiapiClient;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.loot.LootHelper;
-import smartin.miapi.mixin.KeyMappingAccessor;
+import smartin.miapi.mixin.client.KeyMappingAccessor;
 import smartin.miapi.mixin.OptionsAccessor;
 import smartin.miapi.modules.properties.attributes.AttributeProperty;
 import smartin.miapi.modules.properties.enchanment.AllowedEnchantments;

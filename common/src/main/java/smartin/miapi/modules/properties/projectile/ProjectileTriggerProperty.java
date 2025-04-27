@@ -11,7 +11,7 @@ import net.minecraft.world.phys.HitResult;
 import smartin.miapi.Miapi;
 import smartin.miapi.entity.ItemProjectileEntity;
 import smartin.miapi.events.MiapiProjectileEvents;
-import smartin.miapi.mixin.ThrowablePotionItemAccessor;
+import smartin.miapi.mixin.item.ThrowablePotionItemAccessor;
 import smartin.miapi.modules.StackStorageComponent;
 import smartin.miapi.modules.properties.util.CodecProperty;
 import smartin.miapi.modules.properties.util.MergeAble;

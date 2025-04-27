@@ -66,13 +66,14 @@ public class FakeEitherEnchantmentProperty extends EitherModuleProperty<
             if (context.lookup != null) {
                 context.lookup.lookup(Registries.ENCHANTMENT).ifPresentOrElse(enchantmentRegistryInfo -> {
                     enchantmentRegistryInfo.getter().get(ResourceKey.create(Registries.ENCHANTMENT, id)).ifPresentOrElse(holder -> {
+                                resolvable.setFunctionTransformer((s) -> s.getFirst().replace("[old_level]", "0"));
                                 initialized.put(holder, resolvable.initialize(context));
-                                Miapi.LOGGER.info("full ID " + holder.key().location());
+                                //Miapi.LOGGER.info("full ID " + holder.key().location());
                             }, () -> Miapi.LOGGER.warn("Could not find enchanment " + id + " skiping")
                     );
                 }, () -> Miapi.LOGGER.warn("Enchantment Registries not Found - could not decode enchantments"));
             } else {
-                Miapi.LOGGER.warn("could not decode enchantments - missing lookup!");
+                //Miapi.LOGGER.warn("could not decode enchantments - missing lookup!");
             }
         });
         return initialized;

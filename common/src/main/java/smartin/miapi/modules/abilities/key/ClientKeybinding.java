@@ -11,7 +11,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import smartin.miapi.Miapi;
 import smartin.miapi.item.modular.ModularItem;
-import smartin.miapi.mixin.MinecraftAccessor;
+import smartin.miapi.mixin.client.MinecraftAccessor;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;
 
 import java.util.Collection;

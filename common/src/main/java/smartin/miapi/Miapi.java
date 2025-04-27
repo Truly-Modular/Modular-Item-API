@@ -48,7 +48,7 @@ import smartin.miapi.material.ComponentMaterial;
 import smartin.miapi.material.MaterialCommand;
 import smartin.miapi.material.MaterialIcons;
 import smartin.miapi.material.generated.GeneratedMaterialManager;
-import smartin.miapi.mixin.ItemStackAccessor;
+import smartin.miapi.mixin.item.ItemStackAccessor;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.MiapiPermissions;
 import smartin.miapi.modules.ModuleDataPropertiesManager;
@@ -223,7 +223,7 @@ public class Miapi {
                 Miapi.server.getPlayerList().getPlayers().forEach(p -> {
                     p.getInventory().setChanged();
                     CompoundTag tag = new CompoundTag();
-                    if(p.save(tag)){
+                    if (p.save(tag)) {
                         p.load(tag);
                     }
                 });

@@ -1,4 +1,4 @@
-package smartin.miapi.mixin;
+package smartin.miapi.mixin.item;
 
 import net.minecraft.world.entity.projectile.ThrownPotion;
 import net.minecraft.world.phys.HitResult;

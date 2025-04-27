@@ -1,4 +1,4 @@
-package smartin.miapi.mixin;
+package smartin.miapi.mixin.item;
 
 import com.mojang.serialization.Codec;
 import net.minecraft.world.item.ItemStack;

@@ -11,7 +11,7 @@ import net.minecraft.world.level.storage.loot.functions.LootItemFunction;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParam;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import smartin.miapi.Miapi;
-import smartin.miapi.mixin.LootTableAccessor;
+import smartin.miapi.mixin.loot.LootTableAccessor;
 
 import java.util.List;
 import java.util.Optional;

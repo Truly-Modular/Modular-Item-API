@@ -11,7 +11,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.CampfireBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
-import smartin.miapi.mixin.ShovelItemAccessor;
+import smartin.miapi.mixin.item.ShovelItemAccessor;
 import smartin.miapi.modules.abilities.util.ToolAbilities;
 
 import java.util.Optional;

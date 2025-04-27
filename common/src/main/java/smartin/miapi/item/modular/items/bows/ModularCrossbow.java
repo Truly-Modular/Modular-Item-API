@@ -29,7 +29,7 @@ import smartin.miapi.events.MiapiProjectileEvents;
 import smartin.miapi.item.FakeItemstackReferenceProvider;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.PlatformModularItemMethods;
-import smartin.miapi.mixin.CrossbowItemAccessor;
+import smartin.miapi.mixin.item.CrossbowItemAccessor;
 import smartin.miapi.modules.properties.DisplayNameProperty;
 import smartin.miapi.modules.properties.LoreProperty;
 import smartin.miapi.modules.properties.RepairPriority;

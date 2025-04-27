@@ -9,8 +9,8 @@ import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.resources.TextureAtlasHolder;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
-import smartin.miapi.mixin.TextureAtlasAccessor;
-import smartin.miapi.mixin.TextureAtlasHolderAccessor;
+import smartin.miapi.mixin.client.TextureAtlasAccessor;
+import smartin.miapi.mixin.client.TextureAtlasHolderAccessor;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -27,7 +27,8 @@ import smartin.miapi.mixin.client.FeatureRendererAccessor;
         priority = 700
 )
 public abstract class ArmorFeatureRendererMixin<T extends LivingEntity, M extends HumanoidModel<T>, A extends HumanoidModel<T>> extends RenderLayer<T, M> {
-    @Shadow protected abstract A getArmorModel(EquipmentSlot slot);
+    @Shadow
+    protected abstract A getArmorModel(EquipmentSlot slot);
 
     protected ArmorFeatureRendererMixin(RenderLayerParent<T, M> context) {
         super(context);
@@ -39,7 +40,7 @@ public abstract class ArmorFeatureRendererMixin<T extends LivingEntity, M extend
         HumanoidArmorLayer renderer = (HumanoidArmorLayer) (Object) this;
         for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
             ItemStack itemStack = livingEntity.getItemBySlot(equipmentSlot);
-            if(VisualModularItem.isVisualModularItem(itemStack)){
+            if (VisualModularItem.isVisualModularItem(itemStack) && equipmentSlot.isArmor()) {
                 renderPieces(poseStack, buffer, packedLight, equipmentSlot, itemStack, livingEntity, getArmorModel(equipmentSlot), ((FeatureRendererAccessor) renderer).getContext());
             }
         }

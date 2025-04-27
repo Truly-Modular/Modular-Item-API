@@ -17,7 +17,6 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.monster.warden.WardenAi;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
@@ -193,8 +192,6 @@ public class TrulyModularForge {
                         };
                     }
 
-                    WardenAi wardenAi;
-
 
                     public Model getGenericArmorModel(LivingEntity livingEntity, ItemStack itemStack, EquipmentSlot equipmentSlot, HumanoidModel<?> original) {
                         if (VisualModularItem.isVisualModularItem(itemStack)) {
@@ -222,6 +219,34 @@ public class TrulyModularForge {
                             }
                         }
                         return IClientItemExtensions.super.getGenericArmorModel(livingEntity, itemStack, equipmentSlot, original);
+                    }
+
+                    public HumanoidModel<?> getHumanoidArmorModel(LivingEntity livingEntity, ItemStack itemStack, EquipmentSlot equipmentSlot, HumanoidModel<?> original) {
+                        if (VisualModularItem.isVisualModularItem(itemStack)) {
+                            //Miapi.LOGGER.info("rendering armor model " + equipmentSlot.getName());
+                            cache.computeIfAbsent(itemStack, (i) -> new ModelWithHumanModel((a) -> RenderType.armorEntityGlint()) {
+                                @Override
+                                public void renderToBuffer(PoseStack poseStack, VertexConsumer buffer, int packedLight, int packedOverlay, int color) {
+                                    if (getHumanoidModel() != null && ForgeModel.source != null) {
+                                        ArmorModelManager.renderArmorPiece(
+                                                poseStack,
+                                                ForgeModel.source,
+                                                packedLight,
+                                                equipmentSlot,
+                                                itemStack,
+                                                livingEntity,
+                                                this.getHumanoidModel(),
+                                                this.getHumanoidModel());
+                                    }
+                                }
+                            });
+                            var model = cache.get(itemStack);
+                            if (model != null) {
+                                model.humanoidModel = original;
+                                return model.humanoidModel;
+                            }
+                        }
+                        return IClientItemExtensions.super.getHumanoidArmorModel(livingEntity, itemStack, equipmentSlot, original);
                     }
                 }, item);
             }));

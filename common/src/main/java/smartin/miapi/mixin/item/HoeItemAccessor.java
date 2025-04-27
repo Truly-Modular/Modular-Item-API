@@ -1,4 +1,4 @@
-package smartin.miapi.mixin;
+package smartin.miapi.mixin.item;
 
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.world.item.HoeItem;

@@ -1,19 +1,17 @@
-package smartin.miapi.mixin;
+package smartin.miapi.mixin.enchant;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import net.fabricmc.api.EnvType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
-import org.apache.commons.lang3.mutable.MutableFloat;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import smartin.miapi.Environment;
+import smartin.miapi.MixinContextFlags;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
@@ -33,6 +31,10 @@ public abstract class EnchantmentMixin {
 
     @ModifyReturnValue(method = "isSupportedItem", at = @At(value = "RETURN"))
     private boolean miapi$adjustSupportedItem(boolean original, ItemStack itemStack) {
+        if (MixinContextFlags.CALLED_FROM_MUTABLE.get()) {
+            return original;
+        }
+
         if (ModularItem.isModularItem(itemStack)) {
             Enchantment enchantment = (Enchantment) (Object) (this);
             ModuleInstance moduleInstance = ItemModule.getModules(itemStack);
@@ -57,6 +59,9 @@ public abstract class EnchantmentMixin {
 
     @ModifyReturnValue(method = "canEnchant(Lnet/minecraft/world/item/ItemStack;)Z", at = @At(value = "RETURN"))
     private boolean miapi$adjustcanEnchant(boolean original, ItemStack itemStack) {
+        if (MixinContextFlags.CALLED_FROM_MUTABLE.get()) {
+            return original;
+        }
         if (ModularItem.isModularItem(itemStack)) {
             Enchantment enchantment = (Enchantment) (Object) (this);
             ModuleInstance moduleInstance = ItemModule.getModules(itemStack);
