@@ -9,6 +9,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 import smartin.miapi.Miapi;
 import smartin.miapi.modules.ModuleInstance;
+import smartin.miapi.modules.properties.util.DoubleOperationResolvable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,11 +23,11 @@ public class CubeMiningShape implements MiningShape {
     public static MapCodec<CubeMiningShape> CODEC = AutoCodec.of(CubeMiningShape.class);
     public static ResourceLocation ID = Miapi.id("cube");
     @CodecBehavior.Optional
-    public int width = 1;
+    public DoubleOperationResolvable width = new DoubleOperationResolvable(1);
     @CodecBehavior.Optional
-    public int height = 1;
+    public DoubleOperationResolvable height = new DoubleOperationResolvable(1);
     @CodecBehavior.Optional
-    public int depth = 1;
+    public DoubleOperationResolvable depth = new DoubleOperationResolvable(1);
 
     @Override
     public List<BlockPos> getMiningBlocks(Level world, BlockPos pos, Direction face) {
@@ -34,10 +35,10 @@ public class CubeMiningShape implements MiningShape {
         axisList.remove(face.getAxis());
         Direction.Axis widthDirection = axisList.remove(0);
         Direction.Axis heightDirection = axisList.remove(0);
-        List<BlockPos> list = new ArrayList<>(depth * height * width);
-        for (int x = 0; x < depth; x++) {
-            for (int y = 1; y <= width; y++) {
-                for (int z = 1; z <= height; z++) {
+        List<BlockPos> list = new ArrayList<>((int) depth.getValue() * (int) height.getValue() * (int) width.getValue());
+        for (int x = 0; x < (int) depth.getValue(); x++) {
+            for (int y = 1; y <= (int) width.getValue(); y++) {
+                for (int z = 1; z <= (int) height.getValue(); z++) {
                     BlockPos pos1 = pos.mutable();
                     pos1 = pos1.offset(face.getNormal().multiply(-x));
                     pos1 = pos1.relative(widthDirection, intHalfInverse(y));
@@ -57,13 +58,17 @@ public class CubeMiningShape implements MiningShape {
     }
 
     @Override
-    public ResourceLocation getID(){
+    public ResourceLocation getID() {
         return ID;
     }
 
     @Override
     public MiningShape initialize(MiningShape property, ModuleInstance context) {
         //TODO:swap to Double resovlable
-        return property;
+        CubeMiningShape shape = new CubeMiningShape();
+        shape.width = ((CubeMiningShape) property).width.initialize(context);
+        shape.depth = ((CubeMiningShape) property).depth.initialize(context);
+        shape.height = ((CubeMiningShape) property).height.initialize(context);
+        return shape;
     }
 }

@@ -38,7 +38,7 @@ public class ModularBoots extends ArmorItem implements PlatformModularItemMethod
 
     @Override
     public void verifyComponentsAfterLoad(ItemStack stack) {
-        ComponentApplyProperty.updateItemStack(stack, Miapi.registryAccess);
+        ComponentApplyProperty.initializeItemStack(stack, Miapi.registryAccess);
     }
 
     @Override

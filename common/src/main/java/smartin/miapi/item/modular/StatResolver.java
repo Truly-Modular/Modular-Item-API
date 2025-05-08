@@ -209,10 +209,6 @@ public class StatResolver {
                 return 0;
             }
 
-            @Override
-            public String resolveString(String data, ModuleInstance instance) {
-                return null;
-            }
         });
         StatResolver.registerResolver("material-module", new Resolver() {
 
@@ -307,11 +303,6 @@ public class StatResolver {
                     }
                 }
                 return count;
-            }
-
-            @Override
-            public String resolveString(String data, ModuleInstance instance) {
-                return null;
             }
         });
     }
@@ -445,7 +436,9 @@ public class StatResolver {
          * @param instance the module instance for which to resolve the value
          * @return the resolved string value
          */
-        String resolveString(String data, ModuleInstance instance);
+        default String resolveString(String data, ModuleInstance instance){
+            return "";
+        }
     }
 
     public static double resolveCalculation(String string, String original) {

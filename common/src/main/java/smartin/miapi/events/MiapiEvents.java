@@ -25,6 +25,7 @@ import net.minecraft.world.item.TieredItem;
 import org.apache.commons.lang3.mutable.Mutable;
 import org.apache.commons.lang3.mutable.MutableFloat;
 import org.jetbrains.annotations.Nullable;
+import org.spongepowered.asm.mixin.Mixin;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
 import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
 import smartin.miapi.craft.CraftAction;
@@ -63,6 +64,12 @@ public class MiapiEvents {
     public static final PrioritizedEvent<SmithingEvent> SMITHING_EVENT = PrioritizedEvent.createLoop();
     public static final PrioritizedEvent<LivingEntityAttributeBuild> LIVING_ENTITY_ATTRIBUTE_BUILD_EVENT = PrioritizedEvent.createLoop();
     public static final PrioritizedEvent<PlayerEquip> PLAYER_EQUIP_EVENT = PrioritizedEvent.createLoop();
+    /**
+     * This gives the pre-enchantment adjusted values.
+     * This call is extracted from the Enchantment logic, if a mod wishes to adjust durability
+     * without enchantment effect this should not trigger.
+     */
+    public static final PrioritizedEvent<DurabilityEvent> MODULAR_ITEM_DAMAGE = PrioritizedEvent.createLoop();
 
     public static final PrioritizedEvent<ReloadEvent> ADJUST_RAW_DATA = PrioritizedEvent.createLoop();
     public static final PrioritizedEvent<ReloadEventPost> POST_HOT_RELOAD = PrioritizedEvent.createLoop();
@@ -72,6 +79,10 @@ public class MiapiEvents {
             ComponentApplyProperty.updateItemStack(listener.itemStack, listener.registryAccess);
             return EventResult.pass();
         });
+    }
+
+    public interface DurabilityEvent {
+        void durability(int damage, ItemStack itemStack, ServerLevel level);
     }
 
     public interface ReloadEventPost {

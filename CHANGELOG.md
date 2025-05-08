@@ -1,4 +1,4 @@
-## v2.0.7 (1.21)
-- fixes to armor rendering on forge
-- fixed issues related to fake enchantments
-- fixed cache issues on craft
+## v2.0.8 (1.21)
+- fixed armor slot behaviour in workbench
+- fixes to armor-rendering 
+- fixed crash with Enchantment Infuser

@@ -62,7 +62,7 @@ public class ModularCrossbow extends CrossbowItem implements PlatformModularItem
 
     @Override
     public void verifyComponentsAfterLoad(ItemStack stack) {
-        ComponentApplyProperty.updateItemStack(stack, Miapi.registryAccess);
+        ComponentApplyProperty.initializeItemStack(stack, Miapi.registryAccess);
     }
 
     @Environment(EnvType.CLIENT)

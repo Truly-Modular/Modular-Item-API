@@ -124,8 +124,8 @@ public class CraftingScreenHandler extends AbstractContainerMenu {
                 int slotId = buffer.readInt();
                 Miapi.server.execute(() -> {
                     Slot slot = this.getSlot(slotId);
-                    mutableSlots.remove(slot);
                     quickMoveStack(playerInventory.player, slotId);
+                    mutableSlots.remove(slot);
                 });
             });
             Networking.registerC2SPacket(editPacketID, (buffer, player) -> {
@@ -247,9 +247,19 @@ public class CraftingScreenHandler extends AbstractContainerMenu {
                 }
 
                 @Override
-                public boolean mayPickup(Player playerEntity) {
+                public void set(ItemStack stack) {
+                    super.set(stack);
+                    playerInventory.setChanged();
+                }
+
+                public void setByPlayer(ItemStack newStack, ItemStack oldStack) {
+                    playerInventory.player.onEquipItem(equipmentSlot, oldStack, newStack);
+                    super.setByPlayer(newStack, oldStack);
+                }
+
+                public boolean mayPickup(Player player) {
                     ItemStack itemStack = this.getItem();
-                    return (itemStack.isEmpty() || playerEntity.isCreative() || !EnchantmentHelper.has(itemStack, EnchantmentEffectComponents.PREVENT_ARMOR_CHANGE)) && super.mayPickup(playerEntity);
+                    return !itemStack.isEmpty() && !player.isCreative() && EnchantmentHelper.has(itemStack, EnchantmentEffectComponents.PREVENT_ARMOR_CHANGE) ? false : super.mayPickup(player);
                 }
 
                 @Override
@@ -258,12 +268,14 @@ public class CraftingScreenHandler extends AbstractContainerMenu {
                 }
             });
         }
-        this.addSlot(new Slot(playerInventory, 40, 111 - 61 + 5 * 18 + 18 - 15 - 3, 118 + 71 - 14) {
-            @Override
-            public Pair<ResourceLocation, ResourceLocation> getNoItemIcon() {
-                return Pair.of(BLOCK_ATLAS, EMPTY_ARMOR_SLOT_SHIELD);
-            }
-        });
+        if (playerInventory.player instanceof Player player) {
+            this.addSlot(new Slot(playerInventory, 40, 111 - 61 + 5 * 18 + 18 - 15 - 3, 118 + 71 - 14) {
+                @Override
+                public Pair<ResourceLocation, ResourceLocation> getNoItemIcon() {
+                    return Pair.of(BLOCK_ATLAS, EMPTY_ARMOR_SLOT_SHIELD);
+                }
+            });
+        }
         this.addDataSlots(delegate);
     }
 
@@ -277,7 +289,7 @@ public class CraftingScreenHandler extends AbstractContainerMenu {
         if (notClient()) {
             ItemStack block = blockEntity.getItem();
             ItemStack inv = inventory.getItem(0);
-            if(!ItemStack.isSameItem(block,inv)){
+            if (!ItemStack.isSameItem(block, inv)) {
                 blockEntity.setItem(inventory.getItem(0));
                 blockEntity.saveAndSync();
                 updateBE();
@@ -309,8 +321,8 @@ public class CraftingScreenHandler extends AbstractContainerMenu {
     public void removeSlotByClient(Slot slot) {
         if (!slots.contains(slot))
             return;
-        quickMoveStack(playerInventory.player, slot.index);
-        slot.setChanged();
+        //quickMoveStack(playerInventory.player, slot.index);
+        //slot.setChanged();
         if (slot instanceof MutableSlot mutableSlot) {
             mutableSlot.setEnabled(false);
         }

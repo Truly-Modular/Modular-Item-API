@@ -23,6 +23,7 @@ import smartin.miapi.modules.properties.armor.EquipmentSlotProperty;
 import smartin.miapi.modules.properties.util.*;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
 
 /**
@@ -142,6 +143,7 @@ public class AttributeProperty extends
                            || entry.modifier().id().equals(Item.BASE_ATTACK_DAMAGE_ID)
                            || entry.modifier().id().equals(Item.BASE_ATTACK_SPEED_ID))
         ).toList());
+        AtomicBoolean hasChanged = new AtomicBoolean(false);
         getData(itemStack).ifPresent(idMap -> {
             AttributeUtil.AttributeContext context = new AttributeUtil.AttributeContext();
             context.map = idMap;

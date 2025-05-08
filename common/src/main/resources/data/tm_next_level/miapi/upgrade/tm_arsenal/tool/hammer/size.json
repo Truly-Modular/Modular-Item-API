@@ -1,0 +1,17 @@
+{
+    "tag": "hammer",
+    "condition": {
+        "type": "true"
+    },
+    "max": "2",
+    "properties": {
+        "1": {
+            "merge": {
+                "module_stats": {
+                    "width": "[module_upgrade.tm_next_level.tm_arsenal/tool/hammer/size]*2+3",
+                    "height": "[module_upgrade.tm_next_level.tm_arsenal/tool/hammer/size]*2+3"
+                }
+            }
+        }
+    }
+}

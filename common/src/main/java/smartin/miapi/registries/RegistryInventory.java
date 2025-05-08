@@ -83,7 +83,8 @@ import smartin.miapi.modules.abilities.*;
 import smartin.miapi.modules.abilities.gun.GunContextProperty;
 import smartin.miapi.modules.abilities.gun.GunMagazineComponent;
 import smartin.miapi.modules.abilities.key.KeyBindAbilityManagerProperty;
-import smartin.miapi.modules.abilities.shield.ParryShieldBlock;
+import smartin.miapi.modules.abilities.shield.BlockAbility;
+import smartin.miapi.modules.abilities.shield.ParryBlock;
 import smartin.miapi.modules.abilities.shield.TowerShieldBlock;
 import smartin.miapi.modules.abilities.toolabilities.AxeAbility;
 import smartin.miapi.modules.abilities.toolabilities.HoeAbility;
@@ -619,7 +620,7 @@ public class RegistryInventory {
             registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, GunContextProperty.KEY, new GunContextProperty());
 
             registerMiapi(useAbilityRegistry, "full_block", new ShieldBlockAbility());
-            registerMiapi(useAbilityRegistry, "parry_block", new ParryShieldBlock());
+            registerMiapi(useAbilityRegistry, ParryBlock.KEY, new ParryBlock());
 
             smartin.miapi.registries.AttributeRegistry.registerAttributes();
 

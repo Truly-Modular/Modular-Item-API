@@ -11,6 +11,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import smartin.miapi.Miapi;
 import smartin.miapi.modules.ModuleInstance;
+import smartin.miapi.modules.properties.util.DoubleOperationResolvable;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -18,10 +19,10 @@ import java.util.List;
 
 /**
  * The `StaggeredMiningMode` class represents a mining mode where blocks are mined in a staggered fashion. This means that blocks are processed one at a time with a slight delay between them, allowing for a more controlled mining experience.
+ *
  * @header Staggered Mining
  * @path /data_types/properties/mining/shape/staggered_mining
- * @description_start
- * This mode processes blocks in a staggered manner, giving a more gradual mining experience compared to instant mining. It handles mining tasks in a delayed fashion, which can help manage performance and resource usage during mining operations.
+ * @description_start This mode processes blocks in a staggered manner, giving a more gradual mining experience compared to instant mining. It handles mining tasks in a delayed fashion, which can help manage performance and resource usage during mining operations.
  * @description_end
  * @data speed: The rate at which blocks are mined. Higher values result in faster mining speeds.
  * @data durabilityBreakChance: The probability that the item's durability will decrease during mining, ranging from 0.0 (no chance) to 1.0 (guaranteed breakage).
@@ -41,10 +42,10 @@ public class StaggeredMiningMode implements MiningMode {
     }
 
     @CodecBehavior.Optional
-    public float speed = 1.0f;
+    public DoubleOperationResolvable speed = new DoubleOperationResolvable(1.0);
     @CodecBehavior.Optional
     @AutoCodec.Name("durability_break_chance")
-    public double durabilityBreakChance = 1.0;
+    public DoubleOperationResolvable durabilityBreakChance = new DoubleOperationResolvable(1.0);
 
     @Override
     public void execute(List<BlockPos> posList, Level world, ServerPlayer player, BlockPos origin, ItemStack itemStack) {
@@ -58,11 +59,11 @@ public class StaggeredMiningMode implements MiningMode {
                 if (tryBreakBlock(player, pos)) {
                     success++;
                     if (!player.isCreative()) {
-                        removeDurability(durabilityBreakChance, itemStack, world, player);
+                        removeDurability(durabilityBreakChance.getValue(), itemStack, world, player);
                     }
                 }
             } while (
-                    success < speed
+                    success < speed.getValue()
                     && !reducedList.isEmpty() && itemStack.getMaxDamage() - itemStack.getDamageValue() > 1
             );
             if (!reducedList.isEmpty() && itemStack.getMaxDamage() - itemStack.getDamageValue() > 1) {
@@ -72,7 +73,6 @@ public class StaggeredMiningMode implements MiningMode {
     }
 
 
-
     @Override
     public ResourceLocation getID() {
         return ID;
@@ -80,6 +80,9 @@ public class StaggeredMiningMode implements MiningMode {
 
     @Override
     public MiningMode initialize(MiningMode property, ModuleInstance context) {
-        return property;
+        StaggeredMiningMode mode = new StaggeredMiningMode();
+        mode.speed = ((StaggeredMiningMode) property).speed.initialize(context);
+        mode.durabilityBreakChance = ((StaggeredMiningMode) property).durabilityBreakChance.initialize(context);
+        return mode;
     }
 }

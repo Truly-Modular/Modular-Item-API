@@ -1,16 +1,18 @@
-package smartin.miapi.modules.abilities;
+package smartin.miapi.modules.abilities.shield;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import com.mojang.serialization.MapCodec;
-import com.redpxnda.nucleus.codec.auto.AutoCodec;
 import com.redpxnda.nucleus.pose.server.ServerPoseFacet;
+import dev.architectury.event.EventResult;
 import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -20,13 +22,15 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import smartin.miapi.Miapi;
 import smartin.miapi.attributes.AttributeRegistry;
+import smartin.miapi.events.MiapiEvents;
+import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.abilities.util.AbilityMangerProperty;
 import smartin.miapi.modules.abilities.util.EntityAttributeAbility;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;
 import smartin.miapi.modules.properties.LoreProperty;
-import smartin.miapi.modules.properties.util.DoubleOperationResolvable;
 import smartin.miapi.modules.properties.util.MergeType;
+import smartin.miapi.registries.RegistryInventory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,8 +39,7 @@ import java.util.List;
  * This Ability is a lesser form of the Block of a Shield.
  * transforms the Value of {@link BlockAbility#calculate(double)} to the actual damage resistance and slowdown percentages
  */
-public class BlockAbility extends EntityAttributeAbility<BlockAbility.BlockAbilityJson> {
-    public static MapCodec<BlockAbilityJson> CODEC = AutoCodec.of(BlockAbilityJson.class);
+public class BlockAbility extends EntityAttributeAbility<BlockData> {
     ResourceLocation id = Miapi.id("block_ability_temporary_attribute");
 
     public BlockAbility() {
@@ -47,6 +50,44 @@ public class BlockAbility extends EntityAttributeAbility<BlockAbility.BlockAbili
                 texts.add(raw);
             }
             return texts;
+        });
+        MiapiEvents.LIVING_HURT.register(event -> {
+            if (!(event.defender instanceof Player player)) return EventResult.pass();
+            ItemStack stack = player.getUseItem();
+            if (stack == null || stack.isEmpty()) return EventResult.pass();
+
+            ModuleInstance moduleInstance = ItemModule.getModules(stack);
+            BlockData data = getData(stack).orElse(null);
+            if (data == null || moduleInstance == null) return EventResult.pass();
+
+            player.getCooldowns().addCooldown(stack.getItem(), getCooldown(stack));
+
+            if (event.damageSource.getEntity() instanceof LivingEntity attacker) {
+                int attackerCD = (int) data.cooldownAttackerWeapon.getValue();
+                if (attacker instanceof Player p) {
+                    ItemStack attackStack = p.getMainHandItem();
+                    if (!attackStack.isEmpty()) {
+                        p.getCooldowns().addCooldown(attackStack.getItem(), attackerCD);
+                    }
+                } else {
+                    // Apply a stun effect
+
+                    attacker.addEffect(new MobEffectInstance(RegistryInventory.stunEffect, attackerCD));
+                }
+
+                float returnPercent = (float) data.damageReturnPercent.getValue() / 100f;
+                float reflected = event.amount * returnPercent;
+
+                attacker.hurt(player.damageSources().playerAttack(player), reflected);
+            }
+
+            // Play sound
+            if (data.sound != null) {
+                Holder<SoundEvent> holder = Holder.direct(SoundEvent.createVariableRangeEvent(data.sound));
+                player.playSound(holder.value(), (float) data.volume.getValue(), (float) data.pitch.getValue());
+            }
+
+            return EventResult.pass();
         });
     }
 
@@ -111,29 +152,17 @@ public class BlockAbility extends EntityAttributeAbility<BlockAbility.BlockAbili
     }
 
     @Override
-    protected BlockAbilityJson mergeData(BlockAbilityJson left, BlockAbilityJson right, MergeType mergeType) {
-        BlockAbilityJson blockAbilityJson = new BlockAbilityJson();
-        blockAbilityJson.blocking = DoubleOperationResolvable.merge(left.blocking, right.blocking, mergeType);
-        return blockAbilityJson;
-    }
-
-    public BlockAbilityJson initializeData(BlockAbilityJson data, ModuleInstance moduleInstance) {
-        return data.initialize(moduleInstance);
+    protected MapCodec<BlockData> getMapCodec() {
+        return BlockData.CODEC;
     }
 
     @Override
-    protected MapCodec<BlockAbilityJson> getMapCodec() {
-        return CODEC;
+    protected BlockData mergeData(BlockData left, BlockData right, MergeType mergeType) {
+        return left.merge(left, right, mergeType);
     }
 
-    public static class BlockAbilityJson {
-        public DoubleOperationResolvable blocking = new DoubleOperationResolvable(10);
-
-
-        public BlockAbilityJson initialize(ModuleInstance moduleInstance) {
-            BlockAbilityJson init = new BlockAbilityJson();
-            init.blocking = blocking.initialize(moduleInstance);
-            return init;
-        }
+    @Override
+    public BlockData initializeData(BlockData data, ModuleInstance moduleInstance) {
+        return data.initialize(data, moduleInstance);
     }
 }

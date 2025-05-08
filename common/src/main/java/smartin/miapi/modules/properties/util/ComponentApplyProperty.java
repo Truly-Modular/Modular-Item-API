@@ -4,6 +4,7 @@ import net.minecraft.core.RegistryAccess;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
+import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
@@ -17,6 +18,17 @@ import smartin.miapi.registries.RegistryInventory;
  * {@link CraftingProperty} instead, it is ONLY triggered during crafting actions
  */
 public interface ComponentApplyProperty {
+
+    /**
+     * This should be called to update an ItemStacks Component
+     *
+     * @param toUpdate the Itemstack to be updated
+     */
+    static void initializeItemStack(ItemStack toUpdate, @Nullable RegistryAccess registryAccess) {
+        if(MiapiConfig.getServerConfig().other.liveUpdate){
+            updateItemStack(toUpdate, registryAccess);
+        }
+    }
 
     /**
      * This should be called to update an ItemStacks Component

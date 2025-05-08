@@ -28,7 +28,6 @@ import java.util.WeakHashMap;
 public class MiapiItemModel implements MiapiModel {
     public static List<ModelSupplier> modelSuppliers = new ArrayList<>();
     public static List<ModelTransformerSupplier> modelTransformersSuppler = new ArrayList<>();
-    public final ItemStack stack;
     private static final String CACHE_KEY = "miapi_model_rework";
     public final DualKeyCache<String, ItemDisplayContext, List<ModelTransformer>> transformerCache = new DualKeyCache<>();
     public final DualKeyCache<String, ItemDisplayContext, ModuleModel> modelCache = new DualKeyCache<>();
@@ -51,14 +50,13 @@ public class MiapiItemModel implements MiapiModel {
     }
 
     private MiapiItemModel(ItemStack stack) {
-        this.stack = stack;
         if (!(stack.getItem() instanceof VisualModularItem || VisualModularItem.isVisualModularItem(stack))) {
             throw new RuntimeException("Can only make MiapiModel for Modular Items");
         }
     }
 
-    public void render(PoseStack matrices, ItemDisplayContext mode, float tickDelta, MultiBufferSource vertexConsumers, int light, int overlay) {
-        render(null, matrices, mode, tickDelta, vertexConsumers, light, overlay);
+    public void render(PoseStack matrices, ItemStack stack, ItemDisplayContext mode, float tickDelta, MultiBufferSource vertexConsumers, int light, int overlay) {
+        render(null, stack, matrices, mode, tickDelta, vertexConsumers, light, overlay);
     }
 
     @Override
@@ -66,7 +64,7 @@ public class MiapiItemModel implements MiapiModel {
         render(null, stack, matrices, mode, tickDelta, vertexConsumers, entity, light, overlay);
     }
 
-    public void render(String modelType, PoseStack matrices, ItemDisplayContext mode, float tickDelta, MultiBufferSource vertexConsumers, int light, int overlay) {
+    public void render(String modelType, ItemStack stack, PoseStack matrices, ItemDisplayContext mode, float tickDelta, MultiBufferSource vertexConsumers, int light, int overlay) {
         render(modelType, stack, matrices, mode, tickDelta, vertexConsumers, null, light, overlay);
     }
 

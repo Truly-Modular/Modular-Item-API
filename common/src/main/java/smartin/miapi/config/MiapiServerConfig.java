@@ -53,14 +53,14 @@ public class MiapiServerConfig {
                 1.0,
                 0.8,
                 Optional.empty(),
-                Optional.empty(),false);
+                Optional.empty(), false);
 
         @AutoCodec.Name("module_swap_loot_functions")
         public ModuleSwapLootFunction moduleSwapLootFunction = new ModuleSwapLootFunction(
                 Miapi.id("empty"),
                 0.5,
                 Optional.empty(),
-                Optional.empty(),false);
+                Optional.empty(), false);
     }
 
     @ConfigAutoCodec.ConfigClassMarker
@@ -128,6 +128,14 @@ public class MiapiServerConfig {
                 """)
         @AutoCodec.Name("repair_ratio")
         public double repairRatio = 1.0;
+
+        @Comment("""
+                Update Components on Item instanciation
+                This is very useful for addon developers or when working on datapacks,
+                otherwise items need to be re-crafted to update their stats.             
+                """)
+        @AutoCodec.Name("live_update")
+        public boolean liveUpdate = Platform.isDevelopmentEnvironment();
     }
 
     @ConfigAutoCodec.ConfigClassMarker

@@ -55,6 +55,7 @@
     "miapi.ui.stat_detail.shift": "(§6§oShift §r§8for details)",
     "miapi.ui.stat_detail.shift_alt": "(§b§oShift+Alt §r§8for more details)",
     "miapi.ui.boolean.true": "True",
+    "miapi.ui.apply": "Apply",
     "miapi.ui.boolean.false": "False",
     "miapi.property.source.material":" From %s Material",
     "miapi.property.source.synergy":" From unnamed synergy",

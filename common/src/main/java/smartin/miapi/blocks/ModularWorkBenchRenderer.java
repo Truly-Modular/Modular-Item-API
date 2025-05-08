@@ -5,13 +5,7 @@ import com.mojang.math.Axis;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
-import net.minecraft.world.item.ArrowItem;
-import net.minecraft.world.item.Equipable;
-import net.minecraft.world.item.ItemDisplayContext;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.ProjectileWeaponItem;
-import net.minecraft.world.item.SwordItem;
-import net.minecraft.world.item.TieredItem;
+import net.minecraft.world.item.*;
 import smartin.miapi.item.modular.VisualModularItem;
 
 public class ModularWorkBenchRenderer implements BlockEntityRenderer<ModularWorkBenchEntity> {

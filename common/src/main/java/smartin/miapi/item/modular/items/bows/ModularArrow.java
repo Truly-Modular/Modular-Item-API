@@ -40,7 +40,7 @@ public class ModularArrow extends ArrowItem implements PlatformModularItemMethod
 
     @Override
     public void verifyComponentsAfterLoad(ItemStack stack) {
-        ComponentApplyProperty.updateItemStack(stack, Miapi.registryAccess);
+        ComponentApplyProperty.initializeItemStack(stack, Miapi.registryAccess);
     }
 
     @Override

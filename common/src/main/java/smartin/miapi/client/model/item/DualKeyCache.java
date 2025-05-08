@@ -25,4 +25,9 @@ public class DualKeyCache<K1, K2, V> {
         Map<K2, V> innerMap = cache.get(key1);
         return innerMap != null && innerMap.containsKey(key2);
     }
+
+    public void clear(){
+        cache.clear();
+        singleKeyCache.clear();
+    }
 }

@@ -1,0 +1,54 @@
+{
+    "tag": "blade",
+    "condition": {
+        "type": "true"
+    },
+    "max": "5",
+    "incompatible": [
+        "tm_next_level:tm_arsenal/rapier"
+    ],
+    "properties": {
+        "1": {
+            "merge": {
+                "slashing": [
+                    {
+                        "operation": "**",
+                        "value": "0.1"
+                    },
+                    {
+                        "operation": "+",
+                        "value": "[module_upgrade.tm_next_level.tm_arsenal/slashing]/2"
+                    }
+                ]
+            }
+        },
+        "3": {
+            "merge": {
+                "slashing": [
+                    {
+                        "operation": "**",
+                        "value": "0.2"
+                    },
+                    {
+                        "operation": "+",
+                        "value": "[module_upgrade.tm_next_level.tm_arsenal/slashing]/2"
+                    }
+                ]
+            }
+        },
+        "5": {
+            "merge": {
+                "slashing": [
+                    {
+                        "operation": "**",
+                        "value": "0.3"
+                    },
+                    {
+                        "operation": "+",
+                        "value": "[module_upgrade.tm_next_level.tm_arsenal/slashing]/2"
+                    }
+                ]
+            }
+        }
+    }
+}

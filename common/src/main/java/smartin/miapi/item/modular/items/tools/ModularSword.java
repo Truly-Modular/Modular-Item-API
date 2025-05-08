@@ -52,7 +52,7 @@ public class ModularSword extends SwordItem implements PlatformModularItemMethod
 
     @Override
     public void verifyComponentsAfterLoad(ItemStack stack) {
-        ComponentApplyProperty.updateItemStack(stack, null);
+        ComponentApplyProperty.initializeItemStack(stack, null);
     }
 
     @Override

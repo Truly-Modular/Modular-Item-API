@@ -67,7 +67,7 @@ public class ModularWeapon extends Item implements PlatformModularItemMethods, M
 
     @Override
     public void verifyComponentsAfterLoad(ItemStack stack) {
-        ComponentApplyProperty.updateItemStack(stack, Miapi.registryAccess);
+        ComponentApplyProperty.initializeItemStack(stack, Miapi.registryAccess);
     }
 
     @Override

@@ -1,0 +1,26 @@
+{
+    "tag": "blade",
+    "condition": {
+        "type": "true"
+    },
+    "max": "5",
+    "incompatible": [
+        "tm_next_level:tm_arsenal/slashing"
+    ],
+    "properties": {
+        "1": {
+            "merge": {
+                "armor_pen": [
+                    {
+                        "operation": "**",
+                        "value": "0.3"
+                    },
+                    {
+                        "operation": "+",
+                        "value": "[module_upgrade.tm_next_level.tm_arsenal/slashing]"
+                    }
+                ]
+            }
+        }
+    }
+}

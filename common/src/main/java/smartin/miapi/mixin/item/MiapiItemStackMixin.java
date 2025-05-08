@@ -77,7 +77,7 @@ public abstract class MiapiItemStackMixin {
     @ModifyReturnValue(method = "is(Lnet/minecraft/world/item/Item;)Z", at = @At("RETURN"))
     public boolean miapi$adjustIsItem(boolean original, Item item) {
         ItemStack stack = (ItemStack) (Object) this;
-        if (!original && ModularItem.isModularItem(stack)) {
+        if (item != null && !original && ModularItem.isModularItem(stack)) {
             var property = AssumeItemIdentityProperty.property.getData(stack);
             var match = property.map(a -> a.stream().anyMatch(h -> h.value().equals(item)));
             return match.orElse(original);

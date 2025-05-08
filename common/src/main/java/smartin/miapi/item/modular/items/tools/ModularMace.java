@@ -48,7 +48,7 @@ public class ModularMace extends MaceItem implements PlatformModularItemMethods,
 
     @Override
     public void verifyComponentsAfterLoad(ItemStack stack) {
-        ComponentApplyProperty.updateItemStack(stack, Miapi.registryAccess);
+        ComponentApplyProperty.initializeItemStack(stack, Miapi.registryAccess);
     }
 
     @Override

@@ -47,7 +47,7 @@ public class ModularPickaxe extends PickaxeItem implements PlatformModularItemMe
 
     @Override
     public void verifyComponentsAfterLoad(ItemStack stack) {
-        ComponentApplyProperty.updateItemStack(stack, Miapi.registryAccess);
+        ComponentApplyProperty.initializeItemStack(stack, Miapi.registryAccess);
     }
 
     @Override

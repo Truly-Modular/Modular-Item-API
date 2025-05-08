@@ -71,14 +71,14 @@ public class ArmorModelManager {
             List<ArmorPart> parts = new ArrayList<>();
             if (Minecraft.getInstance().getEntityRenderDispatcher().getRenderer(livingEntity) instanceof LivingEntityRenderer livingEntityRenderer) {
                 Optional<ElytraLayer<?, ?>> elytraFeatureRenderer =
-                ((LivingEntityRendererAccessor) livingEntityRenderer).getFeatures().stream().filter(a -> a instanceof ElytraLayer<?, ?>).findAny();
-                if(elytraFeatureRenderer.isPresent()){
-                    ElytraModel elytraEntityModel = ((ElytraFeatureRendererAccessor)elytraFeatureRenderer.get()).getElytra();
+                        ((LivingEntityRendererAccessor) livingEntityRenderer).getFeatures().stream().filter(a -> a instanceof ElytraLayer<?, ?>).findAny();
+                if (elytraFeatureRenderer.isPresent()) {
+                    ElytraModel elytraEntityModel = ((ElytraFeatureRendererAccessor) elytraFeatureRenderer.get()).getElytra();
                     livingEntity.getYHeadRot();
                     livingEntity.getViewXRot(0);
                     livingEntity.getAgeScale();
 
-                    elytraEntityModel.setupAnim(livingEntity,0,0,0,0,0);
+                    elytraEntityModel.setupAnim(livingEntity, 0, 0, 0, 0, 0);
                     parts.add((matrixStack, equipmentSlot1, livingEntity1, model1, entityModel1) -> {
                         entityModel.copyPropertiesTo(elytraEntityModel);
                         entityModel1.copyPropertiesTo(model1);
@@ -109,7 +109,7 @@ public class ArmorModelManager {
                 String key = armorPart.apply(matrices, armorSlot, entity, outerModel, entityModel);
                 MiapiItemModel miapiItemModel = MiapiItemModel.getItemModel(itemStack);
                 if (miapiItemModel != null) {
-                    miapiItemModel.render(key, matrices, ItemDisplayContext.HEAD, 0, vertexConsumers, light, OverlayTexture.NO_OVERLAY);
+                    miapiItemModel.render(key, itemStack, matrices, ItemDisplayContext.HEAD, 0, vertexConsumers, entity, light, OverlayTexture.NO_OVERLAY);
                 }
                 matrices.popPose();
             });

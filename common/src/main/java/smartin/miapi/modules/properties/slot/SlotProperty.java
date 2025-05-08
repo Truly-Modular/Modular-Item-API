@@ -8,6 +8,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.item.modular.Transform;
@@ -147,6 +148,14 @@ public class SlotProperty extends CodecProperty<Map<String, SlotProperty.ModuleS
         return new TransformMap();
     }
 
+    public static List<String> getLocationSave(ModuleInstance moduleInstance) {
+        ModuleSlot slot = getSlotIn(moduleInstance);
+        if (slot != null) {
+            return slot.getAsLocation();
+        }
+        return List.of();
+    }
+
     @Nullable
     public static ModuleSlot getSlotIn(ModuleInstance instance) {
         if (instance != null && instance.getParent() != null) {
@@ -172,6 +181,24 @@ public class SlotProperty extends CodecProperty<Map<String, SlotProperty.ModuleS
             slot.id = key;
         });
         return map;
+    }
+
+    public static Optional<ModuleSlot> findSlot(ItemStack itemStack, List<String> slotLocation) {
+        ModuleInstance moduleInstance = ItemModule.getModules(itemStack);
+        if (moduleInstance != null) {
+            for (int i = 0; i < slotLocation.size(); i++) {
+                String id = slotLocation.get(slotLocation.size() - i - 1);
+                if (moduleInstance.getSubModule(id) != null) {
+                    moduleInstance = moduleInstance.getSubModule(id);
+                } else if (slotLocation.size() == i - 1) {
+                    return Optional.ofNullable(getSlots(moduleInstance).getOrDefault(id, new ModuleSlot(moduleInstance, null, id)));
+                }
+            }
+            if (moduleInstance != null) {
+                return Optional.ofNullable(getSlotIn(moduleInstance));
+            }
+        }
+        return Optional.empty();
     }
 
     public static List<ModuleSlot> asSortedList(Map<String, ModuleSlot> map) {
@@ -225,6 +252,13 @@ public class SlotProperty extends CodecProperty<Map<String, SlotProperty.ModuleS
         public ModuleSlot() {
             this.allowed = new ArrayList<>();
             id = "primary";
+        }
+
+        public ModuleSlot(ModuleInstance parent, ModuleInstance insSlot, String id) {
+            this.allowed = new ArrayList<>();
+            this.id = id;
+            this.parent = parent;
+            this.inSlot = insSlot;
         }
 
         public boolean allowedIn(ModuleInstance instance) {

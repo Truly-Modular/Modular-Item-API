@@ -1,0 +1,16 @@
+{
+    "tag": "excavator",
+    "condition": {
+        "type": "true"
+    },
+    "max": "3",
+    "properties": {
+        "1": {
+            "merge": {
+                "module_stats": {
+                    "depth": "[module_upgrade.tm_next_level.tm_arsenal/tool/excavator/depth]+1"
+                }
+            }
+        }
+    }
+}

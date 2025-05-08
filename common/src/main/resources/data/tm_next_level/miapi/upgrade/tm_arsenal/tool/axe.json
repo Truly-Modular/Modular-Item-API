@@ -1,0 +1,22 @@
+{
+    "tag": "axe_head",
+    "condition": {
+        "type": "true"
+    },
+    "max": "5",
+    "properties": {
+        "1": {
+            "merge": {
+                "mining_level": {
+                    "axe": {
+                        "allowed": ["#minecraft:mineable/axe"],
+                        "speed": {
+                            "operation": "**",
+                            "value": "[module_upgrade.tm_next_level.tm_arsenal/tool/axe]/10"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
