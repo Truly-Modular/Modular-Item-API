@@ -2,3 +2,4 @@
 - fixed armor slot behaviour in workbench
 - fixes to armor-rendering 
 - fixed crash with Enchantment Infuser
+- added durability loss event

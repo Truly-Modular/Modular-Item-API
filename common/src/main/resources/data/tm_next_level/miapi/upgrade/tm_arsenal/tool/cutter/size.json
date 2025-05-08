@@ -1,9 +1,10 @@
 {
-    "tag": "hammer",
+    "tag": "cutter_axe",
     "condition": {
         "type": "true"
     },
     "max": "5",
+    "cost": 2,
     "properties": {
         "1": {
             "merge": {

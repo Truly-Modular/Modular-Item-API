@@ -4,6 +4,7 @@
         "type": "true"
     },
     "max": "1",
+    "cost": 3,
     "properties": {
         "1": {
             "merge": {

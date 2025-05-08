@@ -9,6 +9,7 @@ import net.minecraft.world.item.ItemStack;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.crafting.CraftingScreen;
 import smartin.miapi.item.modular.VisualModularItem;
+import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.MiapiPermissions;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.conditions.ConditionManager;
@@ -48,6 +49,19 @@ public class UpgradeEditOption implements EditOption {
 
         int currentLevel = rawUpgradeMap.getOrDefault(selection.upgradeId(), 0);
         if (currentLevel >= upgrade.max()) return itemStack;
+
+        // === XP Cost Logic ===
+        int xpCost = 0;
+        for (int i = 0; i < upgrade.cost(); i++) {
+            xpCost += Upgrade.xpCost(getTotalUpgradeLevel(itemStack) + i);
+        }
+        int currentXP = getItemXP(itemStack);
+        if (currentXP < xpCost) {
+            return itemStack; // Not enough XP to apply the upgrade
+        }
+
+        // Deduct XP (you’ll later persist this)
+        setItemXP(itemStack, currentXP - xpCost);
 
         rawUpgradeMap.put(selection.upgradeId(), currentLevel + 1);
 
@@ -89,5 +103,32 @@ public class UpgradeEditOption implements EditOption {
     @Override
     public InteractAbleWidget getIconGui(int x, int y, int width, int height, Consumer<EditOption> select, Supplier<EditOption> getSelected) {
         return new EditOptionIcon(x, y, width, height, select, getSelected, CraftingScreen.BACKGROUND_TEXTURE, 339, 220, 512, 512, "miapi.ui.edit_option.hover.upgrade", this);
+    }
+
+
+    private int getItemXP(ItemStack stack) {
+        return stack.getOrDefault(Upgrade.COMPONENT, 0);
+    }
+
+    private void setItemXP(ItemStack stack, int newXP) {
+        stack.set(Upgrade.COMPONENT, Math.max(newXP, 0));
+    }
+
+    public static int getTotalUpgradeLevel(ItemStack stack) {
+        int total = 0;
+        for (ModuleInstance instance : ItemModule.getModules(stack).allSubModules()) {
+            if (instance.moduleData.containsKey(Upgrade.upgradeId)) {
+                var decodeResult = Upgrade.MODULE_UPGRADE_ID_CODEC
+                        .decode(JsonOps.INSTANCE, instance.moduleData.get(Upgrade.upgradeId))
+                        .result();
+                if (decodeResult.isPresent()) {
+                    Map<ResourceLocation, Integer> map = decodeResult.get().getFirst();
+                    for (int level : map.values()) {
+                        total += level;
+                    }
+                }
+            }
+        }
+        return total;
     }
 }

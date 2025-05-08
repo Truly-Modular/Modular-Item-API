@@ -33,7 +33,8 @@ public record Upgrade(
         ModuleCondition condition,
         Map<Integer, PropertyHolder> properties,
         List<ResourceLocation> incompatible,
-        int max
+        int max,
+        int cost
 ) {
     public static final MiapiRegistry<Upgrade> UPGRADE_MIAPI_REGISTRY = MiapiRegistry.getInstance(Upgrade.class);
     public static final ResourceLocation upgradeId = Miapi.id("upgrade");
@@ -45,7 +46,8 @@ public record Upgrade(
             ConditionManager.CONDITION_CODEC_DIRECT.fieldOf("condition").forGetter(Upgrade::condition),
             Codec.unboundedMap(INT_CODEC, PropertyHolder.MAP_CODEC.codec()).fieldOf("properties").forGetter(Upgrade::properties),
             ResourceLocation.CODEC.listOf().optionalFieldOf("incompatible", List.of()).forGetter(Upgrade::incompatible),
-            INT_CODEC.optionalFieldOf("max", 0).forGetter(Upgrade::max)
+            INT_CODEC.optionalFieldOf("max", 0).forGetter(Upgrade::max),
+            INT_CODEC.optionalFieldOf("cost", 1).forGetter(Upgrade::cost)
     ).apply(instance, Upgrade::new));
     public static final Codec<Map<ResourceLocation, Integer>> MODULE_UPGRADE_ID_CODEC =
             Codec.unboundedMap(ResourceLocation.CODEC, INT_CODEC);
@@ -53,6 +55,11 @@ public record Upgrade(
     public static DataComponentType<Integer> COMPONENT = DataComponentType.<Integer>builder()
             .persistent(ExtraCodecs.NON_NEGATIVE_INT)
             .networkSynchronized(ByteBufCodecs.VAR_INT).build();
+
+    // Dummy XP cost logic (double per level)
+    public static int xpCost(int oldUpgrades) {
+        return (int) Math.pow(2, oldUpgrades) * 10 + 100;
+    }
 
     public Component name() {
         ResourceLocation id = getID();
