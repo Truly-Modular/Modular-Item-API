@@ -54,6 +54,10 @@ public class MiapiClientConfig {
         @AutoCodec.Name("enable_editor_mixin")
         public boolean enableEditorMixin = false;
 
+        @Comment("Can split into new lines on every character, not just space")
+        @AutoCodec.Name("splt_new_line")
+        public boolean splitNewLineAlways = false;
+
         //@AutoCodec.Name("keybinds")
         //@Comment("""
         //        Keybinds are kept in the config so they are available during gamestart.

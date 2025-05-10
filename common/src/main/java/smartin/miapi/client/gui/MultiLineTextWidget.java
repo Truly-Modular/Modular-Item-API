@@ -7,6 +7,8 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.FastColor;
+import smartin.miapi.config.MiapiConfig;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -42,7 +44,12 @@ public class MultiLineTextWidget extends InteractAbleWidget {
         while (!rawLines.isEmpty()) {
             String rawLine = rawLines.remove(0);
             if (maxLineLength > 0 && textRenderer.width(rawLine) > maxLineLength) {
-                List<String> words = new ArrayList<>(Arrays.stream(rawLine.split(" ")).toList());
+                List<String> words;
+                if (MiapiConfig.getClientConfig().other.splitNewLineAlways) {
+                    words = new ArrayList<>(Arrays.asList(rawLine.split("")));
+                } else {
+                    words = new ArrayList<>(Arrays.stream(rawLine.split(" ")).toList());
+                }
                 StringBuilder currentLine = new StringBuilder();
                 currentLine.append(words.remove(0));
                 currentLine.append(" ");

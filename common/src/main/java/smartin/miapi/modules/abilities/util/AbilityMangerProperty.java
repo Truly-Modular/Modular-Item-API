@@ -11,6 +11,7 @@ import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.VisualModularItem;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.util.CodecProperty;
+import smartin.miapi.modules.properties.util.MergeAble;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.registries.RegistryInventory;
 
@@ -46,7 +47,7 @@ public class AbilityMangerProperty extends CodecProperty<Map<ItemUseAbility<?>, 
                     Miapi.LOGGER.error("Failed to encode ItemUseAbility key: " + keyResult.error().get().message());
                     continue;
                 }
-                if(keyResult.result().isEmpty()){
+                if (keyResult.result().isEmpty()) {
                     Miapi.LOGGER.error("Failed to encode ItemUseAbility key: " + abilityId);
                     continue;
                 }
@@ -102,15 +103,9 @@ public class AbilityMangerProperty extends CodecProperty<Map<ItemUseAbility<?>, 
 
     @Override
     public Map<ItemUseAbility<?>, Object> merge(Map<ItemUseAbility<?>, Object> left, Map<ItemUseAbility<?>, Object> right, MergeType mergeType) {
-        Map<ItemUseAbility<?>, Object> merged = new LinkedHashMap<>(left);
-        right.forEach(((itemUseAbility, o) -> {
-            if (merged.containsKey(itemUseAbility)) {
-                merged.put(itemUseAbility, mergeValues(itemUseAbility, merged.get(itemUseAbility), o, mergeType));
-            } else {
-                merged.put(itemUseAbility, o);
-            }
-        }));
-        return merged;
+        return MergeAble.mergeMap(left, right, mergeType, (key, leftAbility, rightAbility) -> {
+            return mergeValues(key, leftAbility, rightAbility, mergeType);
+        });
     }
 
     public Map<ItemUseAbility<?>, Object> initialize(Map<ItemUseAbility<?>, Object> property, ModuleInstance context) {

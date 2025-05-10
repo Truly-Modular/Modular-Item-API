@@ -16,16 +16,19 @@ public class PreviewManager {
     private static ItemStack cursorStack = ItemStack.EMPTY;
 
     private static Material lastFramePreviewMaterial = null;
+    private static int noUpdate = 0;
 
     public static void setCursorItemstack(ItemStack itemstack) {
-        if(Environment.isClient()){
-            if(Minecraft.getInstance().isSameThread()){
+        if (Environment.isClient()) {
+            if (Minecraft.getInstance().isSameThread()) {
                 if (cursorStack != itemstack) {
                     Material material = MaterialProperty.getMaterialFromIngredient(itemstack);
                     if (material != currentPreviewMaterial) {
                         cursorStack = itemstack;
                         updateMaterial(material, cursorStack);
                     }
+                } else {
+                    noUpdate = 0;
                 }
             }
         }
@@ -49,8 +52,10 @@ public class PreviewManager {
     }
 
     public static void tick() {
+        noUpdate++;
         if (lastFramePreviewMaterial != currentPreviewMaterial) {
             lastFramePreviewMaterial = currentPreviewMaterial;
+            noUpdate = 0;
             if (CraftingScreen.getInstance() != null) {
                 CraftingScreen craftingScreen = CraftingScreen.getInstance();
                 ItemStack currentStack = craftingScreen.getItem();
@@ -62,6 +67,20 @@ public class PreviewManager {
                     }
                 } else {
                     ReplaceOption.tryPreview();
+                }
+            }
+        } else {
+            if (noUpdate > 5 && currentPreviewMaterial != null) {
+                if (CraftingScreen.getInstance() != null) {
+                    CraftingScreen craftingScreen = CraftingScreen.getInstance();
+                    if (craftingScreen != null) {
+                        ItemStack currentStack = craftingScreen.getItem();
+                        if (currentStack.isEmpty()) {
+                            craftingScreen.updatePreviewItemStack(ItemStack.EMPTY);
+                        }else{
+                            ReplaceOption.tryPreview();
+                        }
+                    }
                 }
             }
         }

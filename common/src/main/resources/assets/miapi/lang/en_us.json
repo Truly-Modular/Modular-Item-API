@@ -193,7 +193,7 @@
     "miapi.stat.miapi.slashing": "Slashing",
     "miapi.stat.miapi.slashing.description": "Slashing Damage deals bonus dmg up to the Slashing value directly reduced by Targets Armor\n Every armor toughness point of the target reduces slashing by one\n Every 3 armor points of the target reduces slashing by one",
     "miapi.stat.miapi.armor_pen": "Armor Pierce",
-    "miapi.stat.miapi.armor_pen.description": "Scales Target armor to %d percent",
+    "miapi.stat.miapi.armor_pen.description": "Reduced Target armor by %d percent",
     "miapi.stat.miapi.shield_break": "Shield Break",
     "miapi.stat.miapi.shield_break.description": "Time an attack disables a Victims Shield in seconds",
     "miapi.stat.minecraft.reach": "⛏ Reach",

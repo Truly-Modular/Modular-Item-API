@@ -28,7 +28,6 @@ public class ModularToolMaterial implements Tier {
 
     @Override
     public TagKey<Block> getIncorrectBlocksForDrops() {
-        //TODO:
         return BlockTags.INCORRECT_FOR_WOODEN_TOOL;
     }
 

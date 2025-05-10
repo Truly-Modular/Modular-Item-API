@@ -1,6 +1,5 @@
 package smartin.miapi.client.gui;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Renderable;
@@ -128,7 +127,7 @@ public abstract class ParentHandledScreen<T extends AbstractContainerMenu> exten
     public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
         for (GuiEventListener child : this.children().stream().toList()) {
             if (
-                    //child.isMouseOver(mouseX, mouseY) &&
+                //child.isMouseOver(mouseX, mouseY) &&
                     child.mouseDragged(mouseX, mouseY, button, deltaX, deltaY)) {
                 return true;
             }
@@ -137,8 +136,8 @@ public abstract class ParentHandledScreen<T extends AbstractContainerMenu> exten
     }
 
     /**
-     * @param mouseX current X Position of the Mouse
-     * @param mouseY current Y Position of the Mouse
+     * @param mouseX  current X Position of the Mouse
+     * @param mouseY  current Y Position of the Mouse
      * @param scrollY the amount scrolled Y since the last time this was called
      * @param scrollX the amount scrolled X since the last time this was called
      * @return if this consumes the action, if you previewStack an action return true, if not return false
@@ -227,13 +226,16 @@ public abstract class ParentHandledScreen<T extends AbstractContainerMenu> exten
     @Override
     public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
         super.render(context, mouseX, mouseY, delta);
-        RenderSystem.disableDepthTest();
+        renderBeforeWidgets(context, mouseX, mouseY, delta);
         children().forEach(element -> {
             if (element instanceof Renderable drawable) {
                 drawable.render(context, mouseX, mouseY, delta);
             }
         });
-        RenderSystem.enableDepthTest();
+    }
+
+    public void renderBeforeWidgets(GuiGraphics context, int mouseX, int mouseY, float delta) {
+
     }
 
     public void renderHover(GuiGraphics context, int mouseX, int mouseY, float delta) {

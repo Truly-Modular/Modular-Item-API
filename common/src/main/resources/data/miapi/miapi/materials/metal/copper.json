@@ -3,12 +3,12 @@
         "metal"
     ],
     "icon": "textures/item/copper_ingot.png",
-    "hardness": 3.8,
+    "hardness": 4.2,
     "density": 3.6,
     "flexibility": 1,
     "durability": 200,
     "enchantability": 13,
-    "tier": 2,
+    "tier": 3,
     "color": "E47B55",
     "color_palette": {
         "type": "grayscale_map",

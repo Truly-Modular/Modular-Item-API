@@ -1,5 +1,7 @@
-## v2.0.8 (1.21)
-- fixed armor slot behaviour in workbench
-- fixes to armor-rendering 
-- fixed crash with Enchantment Infuser
-- added durability loss event
+## v2.0.9 (1.21)
+- fixed workbench background
+- reduced obsidians attackspeed penalty
+- increased crying obsidians enchantablity
+- buffed copper
+- fixed material hover keeping a material even when nolonger hovered
+- fixed ui background being rendered twice
