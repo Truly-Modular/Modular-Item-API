@@ -5,3 +5,4 @@
 - buffed copper
 - fixed material hover keeping a material even when nolonger hovered
 - fixed ui background being rendered twice
+- fixed sandstone giving durability instead of decreasing it

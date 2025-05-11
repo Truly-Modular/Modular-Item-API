@@ -34,7 +34,7 @@
         "default": {
             "durability": {
                 "operation": "**",
-                "value": "0.85"
+                "value": "-0.15"
             },
             "fracturing": "5"
         }

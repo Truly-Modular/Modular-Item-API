@@ -7,6 +7,7 @@ import smartin.miapi.Environment;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.material.MaterialProperty;
 import smartin.miapi.material.base.Material;
+import smartin.miapi.modules.edit_options.CreateItemOption.CreateItemOption;
 import smartin.miapi.modules.edit_options.ReplaceOption;
 
 public class PreviewManager {
@@ -75,10 +76,11 @@ public class PreviewManager {
                     CraftingScreen craftingScreen = CraftingScreen.getInstance();
                     if (craftingScreen != null) {
                         ItemStack currentStack = craftingScreen.getItem();
-                        if (currentStack.isEmpty()) {
+                        if (currentStack.isEmpty() && !(craftingScreen.getEditOption() instanceof CreateItemOption)) {
                             craftingScreen.updatePreviewItemStack(ItemStack.EMPTY);
-                        }else{
+                        } else {
                             ReplaceOption.tryPreview();
+                            currentPreviewMaterial = null;
                         }
                     }
                 }
