@@ -14,6 +14,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
@@ -114,6 +115,7 @@ public class CodecMaterial implements Material {
                     .optionalFieldOf("hidden_properties", new HashMap<>()).forGetter(m -> PropertyController.toJsonMap(m.getHiddenProperty())),
             Codec.STRING.listOf().optionalFieldOf("textures", List.of("default")).forGetter(CodecMaterial::getTextureKeys),
             ResourceLocation.CODEC.optionalFieldOf("mining_level").forGetter(material -> Optional.of(material.getIncorrectBlocksForDrops().location())),
+            ComponentSerialization.CODEC.optionalFieldOf("translation").forGetter(material -> material.translation),
             Codec.STRING.optionalFieldOf("color").forGetter(m -> Optional.of(Long.toHexString(m.getColor(new ModuleInstance(ItemModule.empty))))),
             IngredientWithCount.CODEC.listOf().optionalFieldOf("items", new ArrayList<>()).forGetter(material -> material.items),
             Miapi.FIXED_BOOL_CODEC.optionalFieldOf("generate_converters").forGetter(m -> Optional.of(m.generateConverters()))
@@ -130,6 +132,7 @@ public class CodecMaterial implements Material {
                          Map<String, JsonElement> hiddenProperty,
                          List<String> textureKeys,
                          Optional<ResourceLocation> incorrectForToolId,
+                         Optional<Component> translation,
                          Optional<String> color,
                          List<IngredientWithCount> items,
                          Optional<Boolean> generateConverters) {
@@ -141,7 +144,8 @@ public class CodecMaterial implements Material {
         this.guiGroups.addAll(groups);
         this.groups.addAll(hiddenGroups);
         this.textureKeys = textureKeys;
-        if(incorrectForToolId.isPresent()){
+        this.translation = translation;
+        if (incorrectForToolId.isPresent()) {
             var found = BuiltInRegistries.BLOCK.getTags().filter(pair -> pair.getFirst().location().equals(incorrectForToolId.get())).findAny();
             found.ifPresent(tagKeyNamedPair -> incorrectForTool = Optional.of(tagKeyNamedPair.getFirst()));
         }
@@ -201,6 +205,7 @@ public class CodecMaterial implements Material {
                 PropertyController.toJsonMap(this.getHiddenProperty()),
                 new ArrayList<>(this.textureKeys),
                 this.incorrectForTool.map(TagKey::location),
+                this.translation,
                 this.color.map(Integer::toHexString),
                 new ArrayList<>(this.items),
                 this.generateConverters

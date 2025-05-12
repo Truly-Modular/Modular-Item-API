@@ -45,6 +45,7 @@ public class CodecMaterialEditorInterface implements EditorInterface {
                             List.of("default"),
                             Optional.empty(),
                             Optional.empty(),
+                            Optional.empty(),
                             new ArrayList<>(),
                             Optional.empty()
                     )).getOrThrow()).result();
