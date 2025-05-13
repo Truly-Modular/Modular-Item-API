@@ -23,7 +23,7 @@ import org.lwjgl.system.NonnullDefault;
 import smartin.miapi.Miapi;
 import smartin.miapi.entity.ItemProjectileEntity;
 import smartin.miapi.events.ModularAttackEvents;
-import smartin.miapi.item.FakeItemstackReferenceProvider;
+import smartin.miapi.item.FakeItemManager;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.PlatformModularItemMethods;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;
@@ -44,6 +44,11 @@ public class ModularWeapon extends Item implements PlatformModularItemMethods, M
 
     public ModularWeapon(Properties settings, boolean withDefaultSettings) {
         super(withDefaultSettings ? settings.stacksTo(1).durability(500) : settings);
+    }
+
+    @Override
+    public ItemStack getDefaultInstance() {
+        return FakeItemManager.getDefaultInstance(this);
     }
 
     @Override
@@ -108,7 +113,7 @@ public class ModularWeapon extends Item implements PlatformModularItemMethods, M
 
     @Override
     public int getEnchantmentValue() {
-        ItemStack itemStack = FakeItemstackReferenceProvider.getFakeReference(this);
+        ItemStack itemStack = FakeItemManager.getLastInstance(this);
         if (itemStack != null) {
             return (int) EnchantAbilityProperty.getEnchantAbility(itemStack);
         }

@@ -21,7 +21,7 @@ import org.lwjgl.system.NonnullDefault;
 import smartin.miapi.Miapi;
 import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.client.model.ModularModelPredicateProvider;
-import smartin.miapi.item.FakeItemstackReferenceProvider;
+import smartin.miapi.item.FakeItemManager;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.PlatformModularItemMethods;
 import smartin.miapi.modules.properties.DisplayNameProperty;
@@ -47,13 +47,18 @@ public class ModularBow extends BowItem implements PlatformModularItemMethods, M
     }
 
     @Override
+    public ItemStack getDefaultInstance() {
+        return FakeItemManager.getDefaultInstance(this);
+    }
+
+    @Override
     public void verifyComponentsAfterLoad(ItemStack stack) {
         ComponentApplyProperty.initializeItemStack(stack, Miapi.registryAccess);
     }
 
     @Override
     public int getEnchantmentValue() {
-        ItemStack itemStack = FakeItemstackReferenceProvider.getFakeReference(this);
+        ItemStack itemStack = FakeItemManager.getLastInstance(this);
         if (itemStack != null) {
             return (int) EnchantAbilityProperty.getEnchantAbility(itemStack);
         }

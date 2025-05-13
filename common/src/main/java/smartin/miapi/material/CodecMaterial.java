@@ -20,11 +20,13 @@ import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.blueprint.IngredientWithCount;
 import smartin.miapi.item.modular.StatResolver;
+import smartin.miapi.material.base.IngredientController;
 import smartin.miapi.material.base.Material;
 import smartin.miapi.material.base.PropertyController;
 import smartin.miapi.material.palette.FallbackColorer;
@@ -478,6 +480,10 @@ public class CodecMaterial implements Material {
         return null;
     }
 
+    public Ingredient getRepairIngredient() {
+        return IngredientController.mergeIngredients(items.stream().map(ingredientWithCount -> ingredientWithCount.ingredient));
+    }
+
     @Override
     public JsonObject getDebugJson() {
         return CODEC.encodeStart(JsonOps.INSTANCE, this).getOrThrow().getAsJsonObject();
@@ -491,5 +497,9 @@ public class CodecMaterial implements Material {
     @Override
     public int hashCode() {
         return getID().hashCode();
+    }
+
+    public Component getTranslation() {
+        return translation.orElseGet(()->Component.translatable("miapi.material." + getStringID()));
     }
 }

@@ -19,7 +19,7 @@ import org.lwjgl.system.NonnullDefault;
 import smartin.miapi.Miapi;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.events.ModularAttackEvents;
-import smartin.miapi.item.FakeItemstackReferenceProvider;
+import smartin.miapi.item.FakeItemManager;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.PlatformModularItemMethods;
 import smartin.miapi.item.modular.items.ModularToolMaterial;
@@ -35,7 +35,6 @@ import java.util.List;
 
 @NonnullDefault
 public class ModularAxe extends AxeItem implements PlatformModularItemMethods, ModularItem {
-    public Tier currentFakeToolmaterial = ModularToolMaterial.toolMaterial;
 
     public ModularAxe(Properties settings) {
         super(new ModularToolMaterial(), settings.stacksTo(1).durability(500));
@@ -46,14 +45,20 @@ public class ModularAxe extends AxeItem implements PlatformModularItemMethods, M
     }
 
     @Override
+    public ItemStack getDefaultInstance() {
+        return FakeItemManager.getDefaultInstance(this);
+    }
+
+    @Override
     public void verifyComponentsAfterLoad(ItemStack stack) {
         ComponentApplyProperty.initializeItemStack(stack, Miapi.registryAccess);
     }
 
     @Override
     public Tier getTier() {
-        if (MiapiConfig.getServerConfig().other.looseToolMaterial) {
-            return currentFakeToolmaterial;
+        ItemStack itemStack = FakeItemManager.getDefaultInstance(this);
+        if (MiapiConfig.getServerConfig().other.looseToolMaterial && itemStack != null) {
+            return ModularToolMaterial.forItemStack(itemStack);
         }
         return super.getTier();
     }
@@ -105,7 +110,7 @@ public class ModularAxe extends AxeItem implements PlatformModularItemMethods, M
 
     @Override
     public int getEnchantmentValue() {
-        ItemStack itemStack = FakeItemstackReferenceProvider.getFakeReference(this);
+        ItemStack itemStack = FakeItemManager.getLastInstance(this);
         if (itemStack != null) {
             return (int) EnchantAbilityProperty.getEnchantAbility(itemStack);
         }

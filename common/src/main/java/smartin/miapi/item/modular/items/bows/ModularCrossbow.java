@@ -26,7 +26,7 @@ import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.client.model.ModularModelPredicateProvider;
 import smartin.miapi.entity.ItemProjectileEntity;
 import smartin.miapi.events.MiapiProjectileEvents;
-import smartin.miapi.item.FakeItemstackReferenceProvider;
+import smartin.miapi.item.FakeItemManager;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.PlatformModularItemMethods;
 import smartin.miapi.mixin.item.CrossbowItemAccessor;
@@ -58,6 +58,11 @@ public class ModularCrossbow extends CrossbowItem implements PlatformModularItem
         if (smartin.miapi.Environment.isClient()) {
             registerAnimations();
         }
+    }
+
+    @Override
+    public ItemStack getDefaultInstance() {
+        return FakeItemManager.getDefaultInstance(this);
     }
 
     @Override
@@ -111,7 +116,7 @@ public class ModularCrossbow extends CrossbowItem implements PlatformModularItem
 
     @Override
     public int getEnchantmentValue() {
-        ItemStack itemStack = FakeItemstackReferenceProvider.getFakeReference(this);
+        ItemStack itemStack = FakeItemManager.getLastInstance(this);
         if (itemStack != null) {
             return (int) EnchantAbilityProperty.getEnchantAbility(itemStack);
         }

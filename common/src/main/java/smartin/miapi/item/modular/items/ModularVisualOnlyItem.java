@@ -6,6 +6,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import org.lwjgl.system.NonnullDefault;
+import smartin.miapi.item.FakeItemManager;
 import smartin.miapi.item.modular.PlatformModularItemMethods;
 import smartin.miapi.item.modular.VisualModularItem;
 import smartin.miapi.modules.properties.DisplayNameProperty;
@@ -23,6 +24,11 @@ public class ModularVisualOnlyItem extends Item implements PlatformModularItemMe
     @Override
     public boolean isValidRepairItem(ItemStack stack, ItemStack ingredient) {
         return RepairPriority.getRepairValue(stack, ingredient) > 0;
+    }
+
+    @Override
+    public ItemStack getDefaultInstance() {
+        return FakeItemManager.getDefaultInstance(this);
     }
 
     @Override

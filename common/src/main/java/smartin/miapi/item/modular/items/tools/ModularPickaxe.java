@@ -19,10 +19,9 @@ import org.lwjgl.system.NonnullDefault;
 import smartin.miapi.Miapi;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.events.ModularAttackEvents;
-import smartin.miapi.item.FakeItemstackReferenceProvider;
+import smartin.miapi.item.FakeItemManager;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.PlatformModularItemMethods;
-import smartin.miapi.item.modular.items.ModularSetableToolMaterial;
 import smartin.miapi.item.modular.items.ModularToolMaterial;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;
 import smartin.miapi.modules.properties.DisplayNameProperty;
@@ -35,7 +34,7 @@ import smartin.miapi.modules.properties.util.ComponentApplyProperty;
 import java.util.List;
 
 @NonnullDefault
-public class ModularPickaxe extends PickaxeItem implements PlatformModularItemMethods, ModularItem, ModularSetableToolMaterial {
+public class ModularPickaxe extends PickaxeItem implements PlatformModularItemMethods, ModularItem {
     public Tier currentFakeToolMaterial = ModularToolMaterial.toolMaterial;
     public ModularPickaxe(Properties settings) {
         super(new ModularToolMaterial(), settings.stacksTo(1).durability(500));
@@ -43,6 +42,11 @@ public class ModularPickaxe extends PickaxeItem implements PlatformModularItemMe
 
     public ModularPickaxe() {
         super(new ModularToolMaterial(), new Properties().stacksTo(1).durability(500).rarity(Rarity.COMMON));
+    }
+
+    @Override
+    public ItemStack getDefaultInstance() {
+        return FakeItemManager.getDefaultInstance(this);
     }
 
     @Override
@@ -76,15 +80,11 @@ public class ModularPickaxe extends PickaxeItem implements PlatformModularItemMe
 
     @Override
     public Tier getTier() {
-        if(MiapiConfig.getServerConfig().other.looseToolMaterial){
-            return currentFakeToolMaterial;
+        ItemStack itemStack = FakeItemManager.getDefaultInstance(this);
+        if (MiapiConfig.getServerConfig().other.looseToolMaterial && itemStack != null) {
+            return ModularToolMaterial.forItemStack(itemStack);
         }
         return super.getTier();
-    }
-
-    @Override
-    public void setToolMaterial(Tier toolMaterial){
-        this.currentFakeToolMaterial = toolMaterial;
     }
 
     @Override
@@ -110,7 +110,7 @@ public class ModularPickaxe extends PickaxeItem implements PlatformModularItemMe
 
     @Override
     public int getEnchantmentValue() {
-        ItemStack itemStack = FakeItemstackReferenceProvider.getFakeReference(this);
+        ItemStack itemStack = FakeItemManager.getLastInstance(this);
         if (itemStack != null) {
             return (int) EnchantAbilityProperty.getEnchantAbility(itemStack);
         }

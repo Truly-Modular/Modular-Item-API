@@ -23,7 +23,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import smartin.miapi.client.gui.crafting.PreviewManager;
 import smartin.miapi.config.MiapiConfig;
-import smartin.miapi.item.FakeItemstackReferenceProvider;
+import smartin.miapi.item.FakeItemManager;
 import smartin.miapi.item.ModularItemStackConverter;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.VisualModularItem;
@@ -62,7 +62,7 @@ public abstract class MiapiItemStackMixin {
     public void miapi$capturePotentialItemstack(CallbackInfoReturnable<Item> cir) {
         ItemStack stack = (ItemStack) (Object) this;
         if (ModularItem.isModularItem(stack, cir.getReturnValue())) {
-            FakeItemstackReferenceProvider.setReference(cir.getReturnValue(), stack);
+            FakeItemManager.getItemCall(stack, cir.getReturnValue());
         }
     }
 

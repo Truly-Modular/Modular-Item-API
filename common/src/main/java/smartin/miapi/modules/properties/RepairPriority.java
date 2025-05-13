@@ -2,7 +2,9 @@ package smartin.miapi.modules.properties;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
 import smartin.miapi.Miapi;
+import smartin.miapi.material.base.IngredientController;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.cache.ModularItemCache;
@@ -17,14 +19,12 @@ import java.util.Optional;
 /**
  * @header Repair Priority Property
  * @path /data_types/properties/repair_priority
- * @description_start
- * The RepairPriority property controls the materials used to repair an item and assigns a priority value to these
+ * @description_start The RepairPriority property controls the materials used to repair an item and assigns a priority value to these
  * materials. This value determines how effectively the item can be repaired using different materials.
- *
+ * <p>
  * The priority value is a double, where a higher value represents a more effective repair material. The system
  * maintains a list of materials that can be used for repair, and the highest priority material is used when
  * repairing an item. If multiple materials have the same priority, all of them can be used interchangeably.
- *
  * @description_end
  * @data repair_priority: A double value that determines the priority of repair materials for the item.
  */
@@ -50,6 +50,10 @@ public class RepairPriority extends DoubleProperty {
             highestValue = Math.max(highestValue, material1.getRepairValueOfItem(material));
         }
         return highestValue;
+    }
+
+    public static Ingredient getRepairIngredient(ItemStack itemStack) {
+        return IngredientController.mergeIngredients(property.getRepairMaterials(itemStack).stream().map(IngredientController::getRepairIngredient));
     }
 
 

@@ -1,8 +1,12 @@
 package smartin.miapi.material.base;
 
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.modules.ModuleInstance;
+
+import java.util.Arrays;
+import java.util.stream.Stream;
 
 /**
  * controls most of the Crafting logic of {@link Material}
@@ -27,6 +31,25 @@ public interface IngredientController {
     default double getRepairValueOfItem(ItemStack ingredient) {
         return getValueOfItem(ingredient);
     }
+
+    /**
+     * This should be implemented as well.
+     * while the api internals do not use this, previews via JEI or similar utilize Ingredient logic
+     * @return
+     */
+    default Ingredient getRepairIngredient() {
+        return Ingredient.EMPTY;
+    }
+
+
+    static Ingredient mergeIngredients(Stream<Ingredient> ingredients) {
+        return Ingredient.of(
+                ingredients
+                        .flatMap(ingredient -> Arrays.stream(ingredient.getItems()))
+                        .filter(stack -> !stack.isEmpty())
+        );
+    }
+
 
     /**
      * return null if itemstack is not assosiated with the material
