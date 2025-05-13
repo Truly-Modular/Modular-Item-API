@@ -8,3 +8,4 @@
 - fixed sandstone giving durability instead of decreasing it
 - fixing translation field for materials
 - added better faking of tools repair and enchantments.
+- the Material Helper was also updated so it should work now
