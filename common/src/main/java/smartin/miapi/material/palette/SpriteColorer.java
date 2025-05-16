@@ -1,5 +1,7 @@
 package smartin.miapi.material.palette;
 
+import com.mojang.blaze3d.platform.NativeImage;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -13,10 +15,9 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import smartin.miapi.client.atlas.MaterialSpriteManager;
 import smartin.miapi.client.renderer.RescaledVertexConsumer;
-import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.material.base.Material;
-import com.mojang.blaze3d.platform.NativeImage;
-import com.mojang.blaze3d.vertex.VertexConsumer;
+import smartin.miapi.modules.ModuleInstance;
+
 import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.function.Consumer;
@@ -69,12 +70,8 @@ public abstract class SpriteColorer implements MaterialRenderController {
         ResourceLocation replaceId = MaterialSpriteManager.getMaterialSprite(originalSprite, material, this);
         RenderType atlasRenderLayer = RenderType.entityTranslucentCull(replaceId);
         VertexConsumer atlasConsumer = ItemRenderer.getFoilBufferDirect(vertexConsumers, atlasRenderLayer, true, false);
-        return getVertexConsumer(atlasConsumer, originalSprite);
-    }
-
-    public static RescaledVertexConsumer getVertexConsumer(VertexConsumer vertexConsumer, TextureAtlasSprite sprite) {
-        RescaledVertexConsumer rescaled = lookupMap.computeIfAbsent(sprite, (s) -> new RescaledVertexConsumer(vertexConsumer, sprite));
-        rescaled.delegate = vertexConsumer;
+        RescaledVertexConsumer rescaled = lookupMap.computeIfAbsent(originalSprite, (s) -> new RescaledVertexConsumer(atlasConsumer, originalSprite));
+        rescaled.delegate = atlasConsumer;
         return rescaled;
     }
 

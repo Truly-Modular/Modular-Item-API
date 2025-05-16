@@ -1,11 +1,5 @@
-## v2.0.9 (1.21)
-- fixed workbench background
-- reduced obsidians attackspeed penalty
-- increased crying obsidians enchantablity
-- buffed copper
-- fixed material hover keeping a material even when nolonger hovered
-- fixed ui background being rendered twice
-- fixed sandstone giving durability instead of decreasing it
-- fixing translation field for materials
-- added better faking of tools repair and enchantments.
-- the Material Helper was also updated so it should work now
+## v2.0.10 (1.21)
+- fixed crash with Enchancement Mod
+- fixed duplicating throwing knifes when multishot
+- fixed sword sweeping on neoforge
+- strongly improved rendering performance 

@@ -15,11 +15,13 @@ import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.component.ChargedProjectiles;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.Nullable;
 import org.lwjgl.system.NonnullDefault;
 import smartin.miapi.Miapi;
 import smartin.miapi.attributes.AttributeRegistry;
@@ -126,12 +128,19 @@ public class ModularCrossbow extends CrossbowItem implements PlatformModularItem
     protected Projectile createProjectile(Level level, LivingEntity shooter, ItemStack weapon, ItemStack ammo, boolean isCrit) {
         if (IsCrossbowShootAble.canCrossbowShoot(ammo) && ammo.getItem() instanceof ProjectileItem projectileItem) {
             Projectile projectile = projectileItem.asProjectile(level, shooter.getEyePosition(), ammo, shooter.getDirection());
-            if(projectile instanceof ItemProjectileEntity projectileEntity){
+            if (projectile instanceof ItemProjectileEntity projectileEntity) {
                 projectileEntity.setCritArrow(isCrit);
             }
             return projectile;
         }
         return super.createProjectile(level, shooter, weapon, ammo, isCrit);
+    }
+
+    protected void shootProjectile(LivingEntity shooter, Projectile projectile, int index, float velocity, float inaccuracy, float angle, @Nullable LivingEntity target) {
+        if(index!=0 && projectile instanceof ItemProjectileEntity entity){
+            entity.pickup = AbstractArrow.Pickup.CREATIVE_ONLY;
+        }
+        super.shootProjectile(shooter, projectile, index, velocity, inaccuracy, angle, target);
     }
 
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand usedHand) {

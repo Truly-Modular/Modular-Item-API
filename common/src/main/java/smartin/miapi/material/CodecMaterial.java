@@ -11,6 +11,7 @@ import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
@@ -439,9 +440,8 @@ public class CodecMaterial implements Material {
     @Environment(EnvType.CLIENT)
     @Override
     public MaterialRenderController getRenderController(ModuleInstance context, ItemDisplayContext mode) {
-        if (context.contextStack != null &&
-            ColorProperty.hasColor(context.contextStack, context) &&
-            dyeAblePalette != null) {
+        if (context.contextStack != null && dyeAblePalette != null &&
+            ColorProperty.hasColor(context.contextStack, context)) {
             return dyeAblePalette;
         }
         if (palette == null) {

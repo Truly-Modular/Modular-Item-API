@@ -12,6 +12,7 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import smartin.miapi.material.MaterialProperty;
 import smartin.miapi.material.base.Material;
+import smartin.miapi.material.palette.MaterialRenderController;
 import smartin.miapi.modules.ModuleInstance;
 
 import java.util.HashMap;
@@ -68,10 +69,8 @@ public interface ColorProvider {
                                           ItemStack stack,
                                           ModuleInstance moduleInstance,
                                           ItemDisplayContext mode) {
-            if (material == null) {
-                return vertexConsumers.getBuffer(ItemBlockRenderTypes.getRenderType(stack, true));
-            }
-            return material.getRenderController(moduleInstance, mode).getVertexConsumer(vertexConsumers, sprite, stack, moduleInstance, mode);
+            MaterialRenderController controller = material.getRenderController(moduleInstance, mode);
+            return controller.getVertexConsumer(vertexConsumers, sprite, stack, moduleInstance, mode);
         }
 
         @Override
@@ -108,7 +107,7 @@ public interface ColorProvider {
         public ColorProvider getInstance(ItemStack stack, ModuleInstance instance) {
             Material material1 = MaterialProperty.getMaterial(instance);
             if (material1 != null) {
-                return new ItemMaterialColorProvider(material1);
+                return new MaterialColorProvider(material1);
             }
             return new ModelColorProvider();
         }
@@ -124,6 +123,7 @@ public interface ColorProvider {
     class ItemMaterialColorProvider extends MaterialColorProvider {
         public Material material;
         public Material actualMaterial;
+        public boolean needCheck = true;
 
         public ItemMaterialColorProvider() {
         }
@@ -139,8 +139,9 @@ public interface ColorProvider {
                                           ItemStack stack,
                                           ModuleInstance moduleInstance,
                                           ItemDisplayContext mode) {
-            if (actualMaterial == null) {
+            if (actualMaterial == null && needCheck) {
                 actualMaterial = MaterialProperty.getMaterialFromIngredient(stack);
+                needCheck = false;
             }
             if (actualMaterial != null) {
                 return actualMaterial.getRenderController(moduleInstance, mode).getVertexConsumer(vertexConsumers, sprite, stack, moduleInstance, mode);

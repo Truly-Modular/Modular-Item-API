@@ -8,7 +8,9 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.ItemOverrides;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
@@ -31,7 +33,10 @@ import smartin.miapi.modules.properties.GlintProperty;
 import smartin.miapi.modules.properties.render.AlphaOverwriteProperty;
 import smartin.miapi.modules.properties.render.ColorProperty;
 import smartin.miapi.modules.properties.render.EmissivityProperty;
+import smartin.miapi.modules.properties.render.colorproviders.ColorProvider;
 import smartin.miapi.modules.properties.util.DoubleOperationResolvable;
+
+import java.util.List;
 
 @Environment(EnvType.CLIENT)
 public class BakedMiapiModel implements MiapiModel {
@@ -95,12 +100,20 @@ public class BakedMiapiModel implements MiapiModel {
 
         //render normally
         try {
+            VertexConsumer consumer = null;
             for (Direction dir : Direction.values()) {
-                currentModel.getQuads(null, dir, RandomSource.create()).forEach(quad -> {
-                    VertexConsumer vertexConsumer = modelHolder.colorProvider().getConsumer(vertexConsumers, quad.getSprite(), stack, instance, transformationMode);
-
-                    vertexConsumer.putBulkData(matrices.last(), quad, colors[0], colors[1], colors[2], alpha, light, overlay);
-                });
+                List<BakedQuad> quads = currentModel.getQuads(null, dir, RandomSource.create());
+                if (consumer == null && !quads.isEmpty()) {
+                    Minecraft.getInstance().getProfiler().push("BakedModel - get VC");
+                    TextureAtlasSprite first = quads.getFirst().getSprite();
+                    ColorProvider provider = modelHolder.colorProvider();
+                    consumer = provider.getConsumer(vertexConsumers, first, stack, instance, transformationMode);
+                    Minecraft.getInstance().getProfiler().pop();
+                    Minecraft.getInstance().getProfiler().push("BakedModel - quads");
+                }
+                for (BakedQuad quad : currentModel.getQuads(null, dir, RandomSource.create())) {
+                    consumer.putBulkData(matrices.last(), quad, colors[0], colors[1], colors[2], alpha, light, overlay);
+                }
             }
         } catch (RuntimeException e) {
             Miapi.LOGGER.error("rendering error in module " + instance.moduleID + " " + MaterialProperty.getMaterial(instance), e);

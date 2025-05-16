@@ -9,6 +9,7 @@ import net.minecraft.world.item.Tier;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.block.Block;
 import org.lwjgl.system.NonnullDefault;
+import smartin.miapi.item.modular.VisualModularItem;
 import smartin.miapi.modules.properties.DurabilityProperty;
 import smartin.miapi.modules.properties.RepairPriority;
 import smartin.miapi.modules.properties.attributes.AttributeUtil;
@@ -52,6 +53,9 @@ public class ModularToolMaterial implements Tier {
     }
 
     public static Tier forItemStack(ItemStack itemStack) {
+        if (itemStack == null || itemStack.isEmpty() || itemStack.getItem() == null || VisualModularItem.isVisualModularItem(itemStack)) {
+            return new ModularToolMaterial();
+        }
         AtomicReference<TagKey<Block>> getIncorrectBlocksForDrops = new AtomicReference<>(BlockTags.INCORRECT_FOR_WOODEN_TOOL);
         double maxSpeed = MiningLevelProperty.property.getData(itemStack).map(data -> {
             double max = 0;

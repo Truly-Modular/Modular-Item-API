@@ -139,6 +139,7 @@ public class MiapiClient {
 
         ClientReloadShadersEvent.EVENT.register((resourceFactory, shadersSink) -> {
             ModularItemCache.discardCache();
+            MaterialSpriteManager.clear();
             if (Minecraft.getInstance().level != null) {
                 Minecraft.getInstance().execute(() -> {
                     Map<ResourceLocation, String> cacheDatapack = new LinkedHashMap<>(ReloadEvents.DATA_PACKS);

@@ -88,12 +88,12 @@ public class StatListWidget extends InteractAbleWidget {
         addStatDisplay(AttributeSingleDisplay
                 .builder(Attributes.ATTACK_DAMAGE)
                 .setTranslationKey("minecraft.damage")
-                .setDefault(1)
+                .setDefault(0)
                 .setMax(13.0).build());
         addStatDisplay(AttributeSingleDisplay
                 .builder(Attributes.ATTACK_SPEED)
                 .setTranslationKey("minecraft.attack_speed")
-                .setDefault(4)
+                .setDefault(0)
                 .setMax(4.0).build());
         addStatDisplay(new DpsStatDisplay());
         addStatDisplay(AttributeSingleDisplay
@@ -189,7 +189,7 @@ public class StatListWidget extends InteractAbleWidget {
                 .setMax(2000)
                 .setFormat("##")
                 .setHoverFormat("##.##")
-                .setCondition((old, current) -> old.isDamageableItem() &&
+                .setCondition((old, current) -> old.isDamageableItem() ||
                                                 current.isDamageableItem())
                 .setTranslationKey(DurabilityProperty.KEY).build());
         addStatDisplay(SinglePropertyStatDisplay

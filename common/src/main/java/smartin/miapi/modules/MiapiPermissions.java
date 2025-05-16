@@ -1,5 +1,6 @@
 package smartin.miapi.modules;
 
+import net.minecraft.world.entity.player.Player;
 import smartin.miapi.Miapi;
 import smartin.miapi.config.MiapiConfig;
 
@@ -7,29 +8,24 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-import java.util.WeakHashMap;
-import net.minecraft.world.entity.player.Player;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class MiapiPermissions {
     static HttpClient httpClient = HttpClient.newHttpClient();
-    static WeakHashMap<Player, List<String>> playerPerms = new WeakHashMap<>();
+    static Map<UUID, List<String>> playerPerms = new ConcurrentHashMap<>();
+    static Set<UUID> loadingPerms = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
     public static boolean hasPerm(Player player, String perm) {
         if (MiapiConfig.getServerConfig().other.developmentMode) {
             return true;
         }
-        if(perm.equals(player.getUUID().toString())){
+        if (perm.equals(player.getUUID().toString())) {
             return true;
         }
-        try {
-            List<String> perms = MiapiPermissions.getPerms(player);
-            return perms.contains(perm) || perms.contains("broken");
-        } catch (Exception e) {
-            return true;
-        }
+
+        List<String> perms = getPerms(player);
+        return perms.contains(perm) || perms.contains("broken");
     }
 
     public static boolean hasPerm(Player player, List<String> perms) {
@@ -42,29 +38,53 @@ public class MiapiPermissions {
     }
 
     public static List<String> getPerms(Player player) {
-        if (playerPerms.containsKey(player)) {
-            return playerPerms.get(player);
+        UUID uuid = player.getUUID();
+        if (playerPerms.containsKey(uuid)) {
+            return playerPerms.get(uuid);
         }
-        List<String> perms = getPerms(player.getUUID());
-        perms.add("user");
-        playerPerms.put(player, perms);
-        return perms;
+
+        // Temporary permission until fetched
+        List<String> defaultPerms = new ArrayList<>(List.of("user"));
+        playerPerms.put(uuid, defaultPerms);
+
+        if (!loadingPerms.contains(uuid)) {
+            loadingPerms.add(uuid);
+            fetchPermissionsAsync(uuid);
+        }
+
+        return defaultPerms;
     }
 
-    public static List<String> getPerms(UUID playerUUID) {
-        HttpRequest.Builder builder = HttpRequest.newBuilder(URI.create("http://trulymodular.dedyn.io:3000/perms/" + playerUUID.toString()));
-        builder.GET();
-        URI uri = URI.create("http://trulymodular.dedyn.io:3000/perms/" + playerUUID);
-        builder.uri(uri);
-        HttpRequest request = builder.build();
-        try {
-            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-            PermissionJson perms = Miapi.gson.fromJson(response.body(), PermissionJson.class);
-            return perms.permissions;
-        } catch (Exception suppressed) {
-            Miapi.LOGGER.warn("Couldnt retrieve Miapi Permissions");
-            return new ArrayList<>(List.of("broken"));
-        }
+    private static void fetchPermissionsAsync(UUID playerUUID) {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("http://trulymodular.dedyn.io:3000/perms/" + playerUUID))
+                .GET()
+                .build();
+
+        httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                .thenApply(HttpResponse::body)
+                .thenAccept(responseBody -> {
+                    try {
+                        PermissionJson perms = Miapi.gson.fromJson(responseBody, PermissionJson.class);
+                        if (perms != null && perms.permissions != null) {
+                            perms.permissions.add("user");
+                            playerPerms.put(playerUUID, perms.permissions);
+                        } else {
+                            playerPerms.put(playerUUID, new ArrayList<>(List.of("broken", "user")));
+                        }
+                    } catch (Exception e) {
+                        Miapi.LOGGER.warn("Failed to parse Miapi Permissions for UUID " + playerUUID, e);
+                        playerPerms.put(playerUUID, new ArrayList<>(List.of("broken", "user")));
+                    } finally {
+                        loadingPerms.remove(playerUUID);
+                    }
+                })
+                .exceptionally(e -> {
+                    Miapi.LOGGER.warn("Could not retrieve Miapi Permissions for UUID " + playerUUID, e);
+                    playerPerms.put(playerUUID, new ArrayList<>(List.of("broken", "user")));
+                    loadingPerms.remove(playerUUID);
+                    return null;
+                });
     }
 
     private static class PermissionJson {

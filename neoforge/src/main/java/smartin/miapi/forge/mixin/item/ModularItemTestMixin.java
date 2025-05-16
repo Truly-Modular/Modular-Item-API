@@ -3,6 +3,7 @@ package smartin.miapi.forge.mixin.item;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.SwordItem;
 import net.neoforged.neoforge.common.ItemAbilities;
 import net.neoforged.neoforge.common.ItemAbility;
 import org.spongepowered.asm.mixin.Mixin;
@@ -87,6 +88,9 @@ public abstract class ModularItemTestMixin {
             }
             if (toolAction.equals(ItemAbilities.SWORD_DIG)) {
                 return canMine(stack, "sword");
+            }
+            if (toolAction.equals(ItemAbilities.SWORD_SWEEP)) {
+                return stack.getItem() instanceof SwordItem;
             }
             if (ItemAbilities.DEFAULT_AXE_ACTIONS.contains(toolAction)) {
                 return hasRightClickBehaviour(stack, AxeAbility.class::isInstance);

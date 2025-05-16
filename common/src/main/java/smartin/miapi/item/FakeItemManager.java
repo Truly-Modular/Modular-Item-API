@@ -26,11 +26,17 @@ public class FakeItemManager {
     }
 
     public static ItemStack getDefaultInstance(Item item) {
-        return SHORT_CACHE.get().getOrDefault(item, LONG_CACHE.getOrDefault(item, new ItemStack(item))).copy();
+        ItemStack itemStack = SHORT_CACHE.get().getOrDefault(item, LONG_CACHE.getOrDefault(item, new ItemStack(item))).copy();
+        //Miapi.LOGGER.info("faking " + itemStack.getDisplayName().getString());
+        return itemStack;
     }
 
     @Nullable
     public static ItemStack getLastInstance(Item item) {
-        return SHORT_CACHE.get().getOrDefault(item, LONG_CACHE.get(item));
+        ItemStack itemStack = SHORT_CACHE.get().getOrDefault(item, LONG_CACHE.get(item));
+        if(itemStack!=null){
+            //Miapi.LOGGER.info("faking " + itemStack.getDisplayName().getString());
+        }
+        return itemStack;
     }
 }
