@@ -32,4 +32,4 @@ This is a web app that lets anybody make compat materials for Truly Modular, eve
 ## Issues
 If you encounter any issues, be sure to report them to https://github.com/Truly-Modular/Modular-Item-API/issues
 - **Embeddium** turning "Animate Only Visible Textures" off is required for animated truly modular textures
-- **3D Skin** turning compat mode is required to fix animated armor textures
+- **3D Skin** turning compat mode ON is required to fix animated armor textures
