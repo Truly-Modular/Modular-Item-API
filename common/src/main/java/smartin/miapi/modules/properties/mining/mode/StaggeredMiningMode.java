@@ -56,6 +56,9 @@ public class StaggeredMiningMode implements MiningMode {
             int success = 0;
             do {
                 pos = reducedList.remove(0);
+                if (itemStack.getMaxDamage() - itemStack.getDamageValue() < 2) {
+                    return;
+                }
                 if (tryBreakBlock(player, pos)) {
                     success++;
                     if (!player.isCreative()) {

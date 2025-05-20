@@ -8,12 +8,11 @@ import net.minecraft.world.item.ItemStack;
 import smartin.miapi.Miapi;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
 import smartin.miapi.craft.CraftAction;
+import smartin.miapi.datapack.ReloadEvents;
+import smartin.miapi.item.modular.VisualModularItem;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
-import smartin.miapi.modules.properties.util.CodecProperty;
-import smartin.miapi.modules.properties.util.CraftingProperty;
-import smartin.miapi.modules.properties.util.EditorError;
-import smartin.miapi.modules.properties.util.MergeType;
+import smartin.miapi.modules.properties.util.*;
 import smartin.miapi.registries.RegistryInventory;
 
 import java.util.List;
@@ -84,5 +83,22 @@ public class ItemIdProperty extends CodecProperty<ResourceLocation> implements C
     @Override
     public ResourceLocation merge(ResourceLocation left, ResourceLocation right, MergeType mergeType) {
         return right;
+    }
+
+    public Optional<ResourceLocation> getData(ItemStack itemStack) {
+        if (itemStack == null) {
+            return Optional.empty();
+        }
+        if (!VisualModularItem.isVisualModularItem(itemStack)) {
+            return Optional.empty();
+        }
+        if (ReloadEvents.isInReload()) {
+            return Optional.empty();
+        }
+        ModuleInstance baseModule = ItemModule.getModules(itemStack);
+        if (baseModule == null || baseModule.module == ItemModule.empty) {
+            return Optional.empty();
+        }
+        return Optional.ofNullable(baseModule.getPropertyItemStack(this));
     }
 }

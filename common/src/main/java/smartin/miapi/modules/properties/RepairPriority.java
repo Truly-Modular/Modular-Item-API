@@ -4,12 +4,15 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import smartin.miapi.Miapi;
+import smartin.miapi.datapack.ReloadEvents;
+import smartin.miapi.item.modular.VisualModularItem;
+import smartin.miapi.material.MaterialProperty;
 import smartin.miapi.material.base.IngredientController;
+import smartin.miapi.material.base.Material;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.cache.ModularItemCache;
-import smartin.miapi.material.base.Material;
-import smartin.miapi.material.MaterialProperty;
+import smartin.miapi.modules.properties.util.DoubleOperationResolvable;
 import smartin.miapi.modules.properties.util.DoubleProperty;
 
 import java.util.ArrayList;
@@ -79,5 +82,22 @@ public class RepairPriority extends DoubleProperty {
             }
         }
         return materials;
+    }
+
+    public Optional<DoubleOperationResolvable> getData(ItemStack itemStack) {
+        if (itemStack == null) {
+            return Optional.empty();
+        }
+        if (!VisualModularItem.isVisualModularItem(itemStack)) {
+            return Optional.empty();
+        }
+        if (ReloadEvents.isInReload()) {
+            return Optional.empty();
+        }
+        ModuleInstance baseModule = ItemModule.getModules(itemStack);
+        if (baseModule == null || baseModule.module == ItemModule.empty) {
+            return Optional.empty();
+        }
+        return Optional.ofNullable(baseModule.getPropertyItemStack(this));
     }
 }

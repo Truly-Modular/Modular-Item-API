@@ -122,7 +122,7 @@ public abstract class MiapiItemStackMixin {
                 if (damage + current.getDamageValue() >= current.getMaxDamage()) {
                     for (EquipmentSlot slot : EquipmentSlot.values()) {
                         if (player.getItemBySlot(slot).equals(current)) {
-                            ItemStack broken = new ItemStack(RegistryInventory.visualOnlymodularItem);
+                            ItemStack broken = new ItemStack(RegistryInventory.brokenModualrItem);
                             ItemModule.getModules(current).writeToItem(broken);
                             broken.set(DataComponents.DAMAGE, current.get(DataComponents.DAMAGE));
                             broken.set(DataComponents.MAX_DAMAGE, current.get(DataComponents.MAX_DAMAGE));
@@ -144,7 +144,7 @@ public abstract class MiapiItemStackMixin {
         if (ModularItem.isModularItem(current) && current.isDamageableItem() && !MiapiConfig.getServerConfig().other.fullBreakModularItems) {
             if (entity != null && !entity.hasInfiniteMaterials()) {
                 if (amount + current.getDamageValue() >= current.getMaxDamage()) {
-                    ItemStack broken = new ItemStack(RegistryInventory.visualOnlymodularItem);
+                    ItemStack broken = new ItemStack(RegistryInventory.brokenModualrItem);
                     ItemModule.getModules(current).writeToItem(broken);
                     broken.set(DataComponents.DAMAGE, current.get(DataComponents.DAMAGE));
                     broken.set(DataComponents.MAX_DAMAGE, current.get(DataComponents.MAX_DAMAGE));

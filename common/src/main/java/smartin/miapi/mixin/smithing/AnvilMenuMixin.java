@@ -18,11 +18,11 @@ public class AnvilMenuMixin {
             at = @At("TAIL")
     )
     public void miapi$preventFullBreak(CallbackInfo ci) {
-        ItemStack current =  (
+        ItemStack current = (
                 (ForgingScreenHandlerAccessor) this)
                 .getResultSlots()
                 .getItem(0);
-        if (VisualModularItem.isVisualModularItem(current) && current.isDamageableItem() && !MiapiConfig.getServerConfig().other.fullBreakModularItems) {
+        if (VisualModularItem.isVisualModularItem(current) && current.isDamageableItem() && !MiapiConfig.getServerConfig().other.fullBreakModularItems && false) {
             ((ForgingScreenHandlerAccessor) this)
                     .getResultSlots()
                     .setItem(

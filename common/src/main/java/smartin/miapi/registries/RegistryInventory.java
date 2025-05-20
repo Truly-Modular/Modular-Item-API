@@ -218,6 +218,7 @@ public class RegistryInventory {
     public static Item modularItem;
     public static Item modularStackableItem;
     public static Item visualOnlymodularItem;
+    public static Item brokenModualrItem;
     public static Item modularAxe;
     public static Item modularMattock;
     public static Holder<MobEffect> cryoStatusEffect;
@@ -355,7 +356,7 @@ public class RegistryInventory {
                 }));
 
         //ITEM
-        register(MODULAR_ITEMS, "modular_broken_item", BrokenModularVisualOnlyItem::new, i -> visualOnlymodularItem = i);
+        register(MODULAR_ITEMS, "modular_broken_item", BrokenModularVisualOnlyItem::new, i -> brokenModualrItem = i);
         register(MODULAR_ITEMS, "modular_part_visual", ModularVisualOnlyItem::new, i -> visualOnlymodularItem = i);
 
         register(MODULAR_ITEMS, "modular_item", ExampleModularItem::new, i -> modularItem = i);

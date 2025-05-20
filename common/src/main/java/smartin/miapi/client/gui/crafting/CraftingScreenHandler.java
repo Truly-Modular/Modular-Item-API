@@ -6,6 +6,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
+import net.minecraft.world.ContainerListener;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Inventory;
@@ -214,9 +215,23 @@ public class CraftingScreenHandler extends AbstractContainerMenu {
             @Override
             public void setChanged() {
                 super.setChanged();
-                CraftingScreenHandler.this.slotsChanged(this);
             }
         };
+        ((SimpleContainer)inventory).addListener(new ContainerListener() {
+            @Override
+            public void containerChanged(Container container) {
+                CraftingScreenHandler.this.slotsChanged(container);
+                if(notClient()){
+                    ItemStack block = blockEntity.getItem();
+                    ItemStack inv = inventory.getItem(0);
+                    if (!ItemStack.matches(block, inv)) {
+                        blockEntity.setItem(inventory.getItem(0));
+                        blockEntity.saveAndSync();
+                        updateBE();
+                    }
+                }
+            }
+        });
         if (blockEntity != null) {
             this.setItem(blockEntity.getItem());
         }
@@ -287,13 +302,6 @@ public class CraftingScreenHandler extends AbstractContainerMenu {
     public void broadcastChanges() {
         super.broadcastChanges();
         if (notClient()) {
-            ItemStack block = blockEntity.getItem();
-            ItemStack inv = inventory.getItem(0);
-            if (!ItemStack.isSameItem(block, inv)) {
-                blockEntity.setItem(inventory.getItem(0));
-                blockEntity.saveAndSync();
-                updateBE();
-            }
         }
         if (blockEntity == null && delegate.get(0) == 1) {
             short xsh = (short) delegate.get(1);

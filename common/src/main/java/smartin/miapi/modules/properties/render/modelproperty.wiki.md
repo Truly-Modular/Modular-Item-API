@@ -1,0 +1,142 @@
+@header Module Extension
+@path /data_types/properties/render/model
+
+The `ModelProperty` allows you to define **custom models** for modular items using JSON. This system supports different transformations, material textures, and even special render settings for entities or armor trims.
+
+---
+
+## 🔧 Basic JSON Structure
+
+You define models using a list of **ModelData** objects:
+
+```json
+[
+  {
+    "path": "modid:path/to/model",
+    "transform": {
+      "rotation": [0, 0, 0],
+      "translation": [0, 0, 0],
+      "scale": [1, 1, 1],
+      "origin": "item"
+    },
+    "color_provider": "material",
+    "trim_mode": "none",
+    "entity_render": false,
+    "id": "optional_identifier"
+  }
+]
+```
+
+---
+
+## 📄 Field Breakdown
+
+| Field            | Type     | Description |
+|------------------|----------|-------------|
+| `path`           | `string` | Path to the model. Use `[material.texture]` to insert texture variants automatically. |
+| `transform`      | `object` | (Optional) Object controlling rotation, translation, and scale. Uses Miapi's `Transform`. |
+| `color_provider` | `string` | (Optional) Determines how this model is colored. Common: `"material"`. |
+| `trim_mode`      | `string` | (Optional) `"none"`, `"item"`, `"armor_layer_one"`, `"armor_layer_two"` |
+| `entity_render`  | `bool`   | (Optional) Whether this model renders when the item is on an entity (e.g., armor). |
+| `id`             | `string` | (Optional) Unique identifier for this model entry. |
+
+---
+
+## 🧪 Example
+
+```json
+[
+    {
+        "path": "miapi:models/item/sword/blade/sword/[material.texture].json",
+        "transform": {
+            "rotation": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "translation": {
+                "x": -1.0,
+                "y": -1.0,
+                "z": -0.001
+            },
+            "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+            }
+        },
+        "color_provider": "material",
+        "trim_mode": "item",
+        "entity_render": false
+    }
+]
+```
+
+This would render a model only if the module uses `"steel"` as its material. The texture placeholder will be replaced with `"steel"` and transformed appropriately.
+
+---
+
+## 🪞 Transform Object
+
+You can define transforms like so:
+
+```json
+    "transform": {
+        "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "translation": {
+            "x": -1.0,
+            "y": -1.0,
+            "z": -0.001
+        },
+        "scale": {
+            "x": 1,
+            "y": 1,
+            "z": 1
+        }
+        "origin": "item"
+    }
+```
+
+- `origin`: The rendering context. Can be left out except for armors or other complex items having multiple models for different uses.
+generally speaking this allows you to store different modules under different paths.
+by default the paths for `item` or `default` are used for items, and `left_arm`,`right_arm`,`body`,`left_leg`,`right_leg`,`head`,`left_wing` and `right_wing` are used for different armor anchors
+- `rotation`, `translation`, `scale`: 3D vectors affecting how the model appears.
+
+---
+
+## 🎨 Color Providers
+
+The `color_provider` decides how the model is colored. Common options:
+- `"material"`: Uses the material's default color.
+- `"model"`: Does not recolor the model
+- `"potion"`: Colors the same way a potion would
+
+---
+
+## 🐛 Troubleshooting
+
+- ✅ Make sure the `path` is valid and points to a `.json` model.
+- 🔁 Use `[material.texture]` in the path for dynamic material support.
+- ⚠️ If nothing renders -> path is wrong, check the logs for more details
+- if something renders and its black, its likely a missing texture and your only seeing part of it
+
+---
+
+## 🗂 Model Metadata Support
+
+Inside the model `.json` file, you can optionally define a metadata section:
+
+```json
+"miapi_model_data": {
+  "modelProvider": "material",
+  "lightValues": [15, 15]
+}
+```
+
+This lets you override color providers or define emissive light levels for models.
+
+---

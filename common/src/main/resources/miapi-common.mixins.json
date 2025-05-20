@@ -48,6 +48,7 @@
         "smithing.AnvilMenuMixin",
         "smithing.ForgingScreenHandlerAccessor",
         "smithing.ItemCombinerMenuMixin",
+        "smithing.ResultContainerMixin",
         "smithing.SmithingMenuMixin",
         "smithing.SmithingScreenHandlerAccessor",
         "smithing.SmithingTransformRecipeAccessor"

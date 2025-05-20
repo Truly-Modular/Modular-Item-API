@@ -2,10 +2,9 @@ package smartin.miapi.item.modular.items;
 
 import com.redpxnda.nucleus.util.Color;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.*;
 import org.lwjgl.system.NonnullDefault;
+import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.item.FakeItemManager;
 import smartin.miapi.item.modular.PlatformModularItemMethods;
 import smartin.miapi.item.modular.VisualModularItem;
@@ -16,9 +15,18 @@ import smartin.miapi.modules.properties.RepairPriority;
 import java.util.List;
 
 @NonnullDefault
-public class BrokenModularVisualOnlyItem extends Item implements PlatformModularItemMethods, VisualModularItem {
+public class BrokenModularVisualOnlyItem extends TieredItem implements PlatformModularItemMethods, VisualModularItem {
     public BrokenModularVisualOnlyItem() {
-        super(new Properties().stacksTo(1).durability(1000));
+        super(new ModularToolMaterial(), new Properties().stacksTo(1).durability(1000));
+    }
+
+    @Override
+    public Tier getTier() {
+        ItemStack itemStack = FakeItemManager.getDefaultInstance(this);
+        if (MiapiConfig.getServerConfig().other.looseToolMaterial && itemStack != null) {
+            return ModularToolMaterial.forItemStack(itemStack);
+        }
+        return super.getTier();
     }
 
     @Override
