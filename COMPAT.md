@@ -1,5 +1,11 @@
 # Compatibility information
 
+## Issues
+If you encounter any issues, be sure to report them to https://github.com/Truly-Modular/Modular-Item-API/issues
+- **Embeddium** turning "Animate Only Visible Textures" off is required for animated truly modular textures
+- **3D Skin** turning compat mode ON is required to fix animated armor textures
+- **Axiom** causes a startup crash due to improperly shipped depenendencies
+
 ## Dedicated Compatibility
 - **[Better Combat](https://modrinth.com/mod/better-combat)** has dedicated and integrated support within MIAPI.
 That being said, Better Combat also sadly has a bug with NBT based compatibility. We recommend using **[Better Combat NBT Fix](https://modrinth.com/mod/better-combat-nbt-fix)** for multiplayer.
@@ -28,6 +34,3 @@ Sometimes the texturing or naming of the generated material may be odd, this is 
 ## Make Your Own Compatibility  
 If some compatibility is still missing, you can try your own hand at it with the **[Truly Modular Material Helper](https://truly-modular.github.io/Material-Helper/)**.
 This is a web app that lets anybody make compat materials for Truly Modular, even without any coding knowledge.
-
-## Issues
-If you encounter any issues, be sure to report them to https://github.com/Truly-Modular/Modular-Item-API/issues
