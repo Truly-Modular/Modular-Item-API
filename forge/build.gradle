@@ -67,7 +67,7 @@ dependencies {
     if ("${rootProject.run_with_efm}" == "true") {
         modImplementation "curse.maven:epic-fight-mod-405076:5922122"
     } else {
-        modCompileOnly "curse.maven:epic-fight-mod-405076:5922122"
+        modCompileOnly "curse.maven:epic-fight-mod-405076:6552792"
     }
     modCompileOnly ("curse.maven:project-mmo-353935:5944388")
 

@@ -26,7 +26,7 @@ import smartin.miapi.mixin.client.ElytraEntityModelAccessor;
 import smartin.miapi.mixin.client.ElytraFeatureRendererAccessor;
 import smartin.miapi.mixin.client.LivingEntityRendererAccessor;
 import yesman.epicfight.api.animation.Joint;
-import yesman.epicfight.api.client.model.MeshProvider;
+import yesman.epicfight.api.asset.AssetAccessor;
 import yesman.epicfight.api.model.Armature;
 import yesman.epicfight.api.utils.math.OpenMatrix4f;
 import yesman.epicfight.client.mesh.HumanoidMesh;
@@ -38,8 +38,8 @@ import java.util.List;
 import java.util.Optional;
 
 @OnlyIn(Dist.CLIENT)
-public class CustomLivingArmorRenderer<E extends LivingEntity, T extends LivingEntityPatch<E>, M extends BipedEntityModel<E>, AM extends HumanoidMesh> extends ModelRenderLayer<E, T, M, ArmorFeatureRenderer<E, M, M>, AM> {
-    public CustomLivingArmorRenderer(MeshProvider mesh) {
+public class CustomModularArmorRenderer<E extends LivingEntity, T extends LivingEntityPatch<E>, M extends BipedEntityModel<E>, AM extends HumanoidMesh> extends ModelRenderLayer<E, T, M, ArmorFeatureRenderer<E, M, M>, AM> {
+    public CustomModularArmorRenderer(AssetAccessor<AM> mesh) {
         super(mesh);
         addEFModelProvider(new String[]{"Root", "Torso", "Chest", "Shoulder_R", "Arm_R"}, "right_arm");
         addEFModelProvider(new String[]{"Root", "Torso", "Chest", "Shoulder_L", "Arm_L"}, "left_arm");

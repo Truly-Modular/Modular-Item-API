@@ -108,6 +108,10 @@ public class Miapi {
                                 "Found a non JSON object PropertyInjector. PropertyInjectors should be JSON objects.");
                     }
                 }, 1f);
+        ReloadEvents.START.subscribe(isClient -> {
+            RegistryInventory.modules.clear();
+            MaterialProperty.materials.clear();
+        });
         ReloadEvents.END.subscribe(isClient -> {
             RegistryInventory.modules.register(ItemModule.empty.getName(), ItemModule.empty);
             RegistryInventory.modules.register(ItemModule.internal.getName(), ItemModule.internal);

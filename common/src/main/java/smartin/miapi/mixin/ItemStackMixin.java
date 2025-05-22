@@ -54,7 +54,7 @@ abstract class ItemStackMixin {
             at = @At("RETURN"))
     private boolean miapi$adjustIsOF(boolean original, Item item) {
         ItemStack stack = (ItemStack) (Object) this;
-        if (!original && item.equals(Items.CROSSBOW) && stack.getItem() instanceof ModularItem && stack.getItem() instanceof CrossbowItem) {
+        if (item != null && !original && item.equals(Items.CROSSBOW) && stack.getItem() instanceof ModularItem && stack.getItem() instanceof CrossbowItem) {
             return true;
         }
         return original;

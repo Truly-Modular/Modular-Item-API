@@ -55,7 +55,7 @@ public class ItemToModularConverter implements ModularItemStackConverter.Modular
     @Override
     public ItemStack convert(ItemStack stack) {
         if(preventConvert(stack)){
-            return stack.copy();
+            return stack;
         }
         for (Map.Entry<String, ItemStack> entry : regexes.entrySet()) {
             if (Registries.ITEM.getId(stack.getItem()).toString().matches(entry.getKey())) {
@@ -66,7 +66,7 @@ public class ItemToModularConverter implements ModularItemStackConverter.Modular
                     if (EnchantmentProperty.isAllowed(nextStack, enchantment)) {
                         nextStack.addEnchantment(enchantment, integer);
                     } else {
-                        Miapi.LOGGER.info("enchantment is not allowed");
+                        //Miapi.LOGGER.info("enchantment is not allowed");
                     }
                 });
                 nextStack.setCount(stack.getCount());
