@@ -1,5 +1,5 @@
 @header Copy Item Ability  
-@path /data_types/ability/copy_item
+@path /data_types/abilities/copy_item
 
 The **Copy Item Ability** allows a modular item to behave exactly like another item. When activated, it mimics the right-click behavior, animations, and usage duration of the target item.
 

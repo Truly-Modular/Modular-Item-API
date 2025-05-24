@@ -1,5 +1,5 @@
 @header CastLightingAbility  
-@path /data_types/ability/cast_lightning
+@path /data_types/abilities/cast_lightning
 
 ## CastLightingAbility
 

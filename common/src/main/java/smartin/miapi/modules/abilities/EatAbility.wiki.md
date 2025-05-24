@@ -1,5 +1,5 @@
 @header Eat Ability  
-@path /data_types/ability/eat
+@path /data_types/abilities/eat
 
 The **Eat Ability** allows modular items to function as consumable food. When right-clicked and held, the item restores hunger and saturation, plays eating sounds, and can apply effects similar to vanilla food items.
 

@@ -1,5 +1,5 @@
 @header SpecialAttackAbility  
-@path /data_types/ability/special_attack
+@path /data_types/abilities/special_attack
 
 ## SpecialAttackAbility
 

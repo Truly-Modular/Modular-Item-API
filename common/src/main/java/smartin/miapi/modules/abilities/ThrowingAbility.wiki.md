@@ -1,5 +1,5 @@
 @header ThrowingAbility  
-@path /data_types/ability/throwing_ability
+@path /data_types/abilities/throwing_ability
 
 ## ThrowingAbility
 
