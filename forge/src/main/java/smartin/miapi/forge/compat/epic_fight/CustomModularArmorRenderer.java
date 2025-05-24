@@ -44,13 +44,13 @@ public class CustomModularArmorRenderer<E extends LivingEntity, T extends Living
         addEFModelProvider(new String[]{"Root", "Torso", "Chest", "Shoulder_R", "Arm_R"}, "right_arm",
                 new Transform(
                         new Vector3f(0f, 0f, 0f),
-                        new Vector3f(1/16f, 1/16f, 0f),
-                        new Vector3f(1f, 1f, 1f)).toMatrix());
+                        new Vector3f(-1/16f, 1/16f, 0f),
+                        new Vector3f(-1f, 1f, 1f)).toMatrix());
         addEFModelProvider(new String[]{"Root", "Torso", "Chest", "Shoulder_L", "Arm_L"}, "left_arm",
                 new Transform(
                         new Vector3f(0f, 0f, 0f),
-                        new Vector3f(-1/16f, 1/16f, 0f),
-                        new Vector3f(1f, 1f, 1f)).toMatrix());
+                        new Vector3f(1/16f, 1/16f, 0f),
+                        new Vector3f(-1f, 1f, 1f)).toMatrix());
         addEFModelProvider(new String[]{"Root", "Thigh_R"}, "right_leg", null, EquipmentSlot.FEET, true);
         addEFModelProvider(new String[]{"Root", "Thigh_L"}, "left_leg", null, EquipmentSlot.FEET, true);
         addEFModelProvider(new String[]{"Root", "Thigh_R", "Leg_R"}, "right_leg", new Transform(
