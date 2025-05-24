@@ -1,4 +1,4 @@
-@header Module Extension
+@header Model Property
 @path /data_types/properties/render/model
 
 The `ModelProperty` allows you to define **custom models** for modular items using JSON. This system supports different transformations, material textures, and even special render settings for entities or armor trims.
