@@ -69,6 +69,7 @@ import smartin.miapi.item.modular.items.shield.ModularNonVanillaShield;
 import smartin.miapi.item.modular.items.shield.ModularVanillaShield;
 import smartin.miapi.item.modular.items.shield.TowerShieldComponent;
 import smartin.miapi.item.modular.items.tools.*;
+import smartin.miapi.loot.AutoSmeltFunction;
 import smartin.miapi.loot.LootHelper;
 import smartin.miapi.loot.MaterialSwapLootFunction;
 import smartin.miapi.loot.ModuleSwapLootFunction;
@@ -236,6 +237,7 @@ public class RegistryInventory {
     public static EntityType<ItemProjectileEntity> registeredItemProjectileType;
     public static LootItemFunctionType<ModuleSwapLootFunction> moduleSwapLootFunctionLootItemFunctionType = new LootItemFunctionType<>(ModuleSwapLootFunction.CODEC);
     public static LootItemFunctionType<MaterialSwapLootFunction> materialSwapLootFunctionLootItemFunctionType = new LootItemFunctionType<>(MaterialSwapLootFunction.CODEC);
+    public static LootItemFunctionType<AutoSmeltFunction> autoSmeltFunctionLootItemFunctionType = new LootItemFunctionType<>(AutoSmeltFunction.CODEC);
 
 
     static {
@@ -290,6 +292,8 @@ public class RegistryInventory {
 
         RegistryInventory.LOOT_ITEM_FUNCTION_TYPE_REGISTRAR.register(
                 Miapi.id("material_swap"), () -> materialSwapLootFunctionLootItemFunctionType);
+        RegistryInventory.LOOT_ITEM_FUNCTION_TYPE_REGISTRAR.register(
+                Miapi.id("auto_smelt"), () -> autoSmeltFunctionLootItemFunctionType);
 
         register(ARMOR_MATERIAL_REGISTRAR, "modular_armor_material", () ->
                 new ArmorMaterial(
@@ -593,6 +597,7 @@ public class RegistryInventory {
             registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, IconRenderProperty.KEY, new IconRenderProperty());
             registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, AssumeItemIdentityProperty.KEY, new AssumeItemIdentityProperty());
             registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, TreechopProperty.KEY, new TreechopProperty());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, AutoSmeltProperty.KEY, new AutoSmeltProperty());
             //compat
             //registerMiapi(moduleProperties, BetterCombatProperty.KEY, new BetterCombatProperty());
             BetterCombatHelper.setup();

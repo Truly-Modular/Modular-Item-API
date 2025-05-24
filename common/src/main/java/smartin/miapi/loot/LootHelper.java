@@ -1,5 +1,6 @@
 package smartin.miapi.loot;
 
+import dev.architectury.event.EventResult;
 import dev.architectury.event.events.common.LootEvent;
 import dev.architectury.registry.ReloadListenerRegistry;
 import net.minecraft.resources.ResourceLocation;
@@ -11,6 +12,7 @@ import net.minecraft.world.level.storage.loot.functions.LootItemFunction;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParam;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import smartin.miapi.Miapi;
+import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.mixin.loot.LootTableAccessor;
 
 import java.util.List;
@@ -28,18 +30,23 @@ public class LootHelper {
                     1.0,
                     1.0,
                     Optional.empty(),
-                    Optional.empty(),false),
+                    Optional.empty(), false),
             new ModuleSwapLootFunction(
                     Miapi.id("empty"),
                     1.0,
                     Optional.empty(),
-                    Optional.empty(),false));
+                    Optional.empty(), false));
 
     public static final ResourceLocation LOOT_TABLE_ID = Miapi.id("loot_table_id");
     public static final LootContextParam<ResourceLocation> LOOT_TABLE_PARAM = new LootContextParam<>(LOOT_TABLE_ID);
 
     public static void setup() {
-        if(true){
+        MiapiEvents.DEFAULT_LOOT_FUNCTIONS.register(list -> {
+            list.addAll(adjusted);
+            list.add(new AutoSmeltFunction());
+            return EventResult.pass();
+        });
+        if (true) {
             return;
         }
         ReloadListenerRegistry.register(PackType.SERVER_DATA, new LootModifierManager(), Miapi.id("global_loot"));

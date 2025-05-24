@@ -6,6 +6,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import smartin.miapi.Miapi;
+import smartin.miapi.entity.ItemProjectileEntity;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.LoreProperty;
@@ -38,7 +39,11 @@ public class OnHitTargetEffects extends CodecProperty<List<PossibleEffect>> {
         MiapiEvents.LIVING_HURT.register((listener) -> {
             if (listener.damageSource.getEntity() instanceof LivingEntity attacker && !attacker.level().isClientSide()) {
                 LivingEntity defender = listener.defender;
-                PossibleEffect.applyEffects(attacker, defender, defender, i -> getData(i).orElse(new ArrayList<>()));
+                if (listener.damageSource.getDirectEntity() instanceof ItemProjectileEntity projectile) {
+                    PossibleEffect.applyEffectsArrow(attacker, defender, defender, projectile, i -> getData(i).orElse(new ArrayList<>()));
+                } else {
+                    PossibleEffect.applyEffects(attacker, defender, defender, i -> getData(i).orElse(new ArrayList<>()));
+                }
             }
             return EventResult.pass();
         });
@@ -62,6 +67,6 @@ public class OnHitTargetEffects extends CodecProperty<List<PossibleEffect>> {
 
     @Override
     public List<PossibleEffect> initialize(List<PossibleEffect> effects, ModuleInstance module) {
-        return effects.stream().map(e -> e.initialize(e,module)).toList();
+        return effects.stream().map(e -> e.initialize(e, module)).toList();
     }
 }

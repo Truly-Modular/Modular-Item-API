@@ -1,9 +1,12 @@
 package smartin.miapi.forge.mixin.item;
 
+import net.minecraft.core.Holder;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.SwordItem;
+import net.minecraft.world.item.enchantment.Enchantment;
 import net.neoforged.neoforge.common.ItemAbilities;
 import net.neoforged.neoforge.common.ItemAbility;
 import org.spongepowered.asm.mixin.Mixin;
@@ -27,6 +30,7 @@ import smartin.miapi.modules.abilities.util.ItemUseAbility;
 import smartin.miapi.modules.properties.armor.CanWalkOnSnow;
 import smartin.miapi.modules.properties.armor.EquipmentSlotProperty;
 import smartin.miapi.modules.properties.armor.IsPiglinGold;
+import smartin.miapi.modules.properties.enchanment.AllowedEnchantments;
 import smartin.miapi.modules.properties.enchanment.EnchantAbilityProperty;
 import smartin.miapi.modules.properties.mining.MiningLevelProperty;
 
@@ -125,5 +129,9 @@ public abstract class ModularItemTestMixin {
 
     public boolean canWalkOnPowderedSnow(ItemStack stack, LivingEntity wearer) {
         return CanWalkOnSnow.canSnowWalk(stack);
+    }
+
+    public boolean isPrimaryItemFor(ItemStack stack, Holder<Enchantment> enchantment) {
+        return AllowedEnchantments.canEnchant(stack, enchantment, stack.getItem() == Items.BOOK || enchantment.value().isPrimaryItem(stack));
     }
 }

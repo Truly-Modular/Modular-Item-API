@@ -22,9 +22,22 @@ public abstract class EnchantmentMixin {
 
     @ModifyReturnValue(method = "isPrimaryItem(Lnet/minecraft/world/item/ItemStack;)Z", at = @At(value = "RETURN"))
     private boolean miapi$adjustPrimaryItem(boolean original, ItemStack itemStack) {
+        if (MixinContextFlags.CALLED_FROM_MUTABLE.get()) {
+            return original;
+        }
+
         if (ModularItem.isModularItem(itemStack)) {
             Enchantment enchantment = (Enchantment) (Object) (this);
-            //return AllowedEnchantments.isPrimaryAllowed(itemStack, enchantment, original);
+            ModuleInstance moduleInstance = ItemModule.getModules(itemStack);
+            if (moduleInstance != null && moduleInstance.registryAccess != null) {
+                Holder<Enchantment> holder = moduleInstance.registryAccess.registry(Registries.ENCHANTMENT).get().wrapAsHolder(enchantment);
+                if (Environment.isClient() && holder instanceof Holder.Direct<Enchantment>) {
+                    holder = getClient(enchantment);
+                }
+                if (holder != null) {
+                    return AllowedEnchantments.canEnchant(itemStack, holder, original);
+                }
+            }
         }
         return original;
     }

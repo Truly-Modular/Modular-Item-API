@@ -8,6 +8,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
@@ -103,7 +104,14 @@ public class LoreProperty extends CodecProperty<List<LoreProperty.Holder>> {
     }
 
     public static Component format(Component text, ChatFormatting... formatting) {
-        return text.toFlatList(Style.EMPTY.applyFormats(formatting)).get(0);
+        if (text instanceof MutableComponent) {
+            return ((MutableComponent) text).withStyle(Style.EMPTY.applyFormats(formatting));
+        }
+        List<Component> components = text.toFlatList(Style.EMPTY.applyFormats(formatting));
+        if(components.size()>0){
+            return components.getFirst();
+        }
+        return Component.literal(text.getString()).withStyle(Style.EMPTY.applyFormats(formatting));
     }
 
     public void injectTooltipOnNonModularItems(List<Component> tooltip, ItemStack itemStack) {

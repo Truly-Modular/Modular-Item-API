@@ -7,6 +7,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import smartin.miapi.Miapi;
+import smartin.miapi.entity.ItemProjectileEntity;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.LoreProperty;
 import smartin.miapi.modules.properties.util.CodecProperty;
@@ -18,8 +19,7 @@ import java.util.List;
 /**
  * @header On Kill Effects Property
  * @path /data_types/properties/potion/on_kill_effects
- * @description_start
- * This property triggers specific potion effects on the attacker when a living entity they have hit is killed.
+ * @description_start This property triggers specific potion effects on the attacker when a living entity they have hit is killed.
  * The effects are defined by `PossibleEffect` instances, which include parameters such as probability, duration,
  * and amplifier. These effects are applied to the attacker upon the death of the target entity.
  * The tooltip will display relevant information about these effects when the property is used in-game.
@@ -38,7 +38,11 @@ public class OnKillEffects extends CodecProperty<List<PossibleEffect>> {
         EntityEvent.LIVING_DEATH.register(((entity, source) -> {
             if (!entity.level().isClientSide()) {
                 if (source.getEntity() instanceof LivingEntity livingEntity) {
-                    PossibleEffect.applyEffects(livingEntity, livingEntity, i -> getData(i).orElse(new ArrayList<>()));
+                    if (source.getDirectEntity() instanceof ItemProjectileEntity projectile) {
+                        PossibleEffect.applyEffectsArrow(livingEntity, livingEntity, livingEntity, projectile, i -> getData(i).orElse(new ArrayList<>()));
+                    } else {
+                        PossibleEffect.applyEffects(livingEntity, livingEntity, i -> getData(i).orElse(new ArrayList<>()));
+                    }
                 }
             }
             return EventResult.pass();
@@ -64,6 +68,6 @@ public class OnKillEffects extends CodecProperty<List<PossibleEffect>> {
 
     @Override
     public List<PossibleEffect> initialize(List<PossibleEffect> effects, ModuleInstance module) {
-        return effects.stream().map(e -> e.initialize(e,module)).toList();
+        return effects.stream().map(e -> e.initialize(e, module)).toList();
     }
 }

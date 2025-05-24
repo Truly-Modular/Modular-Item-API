@@ -22,6 +22,8 @@ import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TieredItem;
+import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.functions.LootItemFunction;
 import org.apache.commons.lang3.mutable.Mutable;
 import org.apache.commons.lang3.mutable.MutableFloat;
 import org.jetbrains.annotations.Nullable;
@@ -64,6 +66,7 @@ public class MiapiEvents {
     public static final PrioritizedEvent<SmithingEvent> SMITHING_EVENT = PrioritizedEvent.createLoop();
     public static final PrioritizedEvent<LivingEntityAttributeBuild> LIVING_ENTITY_ATTRIBUTE_BUILD_EVENT = PrioritizedEvent.createLoop();
     public static final PrioritizedEvent<PlayerEquip> PLAYER_EQUIP_EVENT = PrioritizedEvent.createLoop();
+    public static final PrioritizedEvent<DefaultLootFunctions> DEFAULT_LOOT_FUNCTIONS = PrioritizedEvent.createEventResult();
     /**
      * This gives the pre-enchantment adjusted values.
      * This call is extracted from the Enchantment logic, if a mod wishes to adjust durability
@@ -84,6 +87,11 @@ public class MiapiEvents {
     public interface DurabilityEvent {
         void durability(int damage, ItemStack itemStack, ServerLevel level);
     }
+
+    public interface DefaultLootFunctions {
+        EventResult adjust(List<LootItemFunction> functions);
+    }
+
 
     public interface ReloadEventPost {
         EventResult onReload();

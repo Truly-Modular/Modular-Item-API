@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import dev.architectury.event.EventResult;
 import net.minecraft.resources.ResourceLocation;
 import smartin.miapi.Miapi;
+import smartin.miapi.entity.ItemProjectileEntity;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.LoreProperty;
@@ -21,8 +22,7 @@ import net.minecraft.world.entity.LivingEntity;
  *
  * @header On Damaged Effects Property
  * @path /data_types/properties/potion/on_damaged_effects
- * @description_start
- * This property triggers specific potion effects on an entity when it is damaged. The effects and their
+ * @description_start This property triggers specific potion effects on an entity when it is damaged. The effects and their
  * properties (such as duration, amplifier, probability) are defined by `PossibleEffect` instances. The effects
  * can be configured to apply to either the attacker or the target entity, based on the `targetSelf` parameter.
  * @description_end
@@ -41,7 +41,11 @@ public class OnDamagedEffects extends CodecProperty<List<PossibleEffect>> {
         MiapiEvents.LIVING_HURT.register((listener) -> {
             if (listener.damageSource.getEntity() instanceof LivingEntity attacker && !attacker.level().isClientSide()) {
                 LivingEntity defender = listener.defender;
-                PossibleEffect.applyEffects(defender, attacker, attacker, i -> getData(i).orElse(new ArrayList<>()));
+                if (listener.damageSource.getDirectEntity() instanceof ItemProjectileEntity projectile) {
+                    PossibleEffect.applyEffectsArrow(defender, attacker, attacker, projectile, i -> getData(i).orElse(new ArrayList<>()));
+                } else {
+                    PossibleEffect.applyEffects(defender, attacker, attacker, i -> getData(i).orElse(new ArrayList<>()));
+                }
             }
             return EventResult.pass();
         });
@@ -65,6 +69,6 @@ public class OnDamagedEffects extends CodecProperty<List<PossibleEffect>> {
 
     @Override
     public List<PossibleEffect> initialize(List<PossibleEffect> effects, ModuleInstance module) {
-        return effects.stream().map(e -> e.initialize(e,module)).toList();
+        return effects.stream().map(e -> e.initialize(e, module)).toList();
     }
 }

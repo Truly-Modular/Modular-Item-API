@@ -24,7 +24,6 @@
     ],
     "properties": {
         "default": {
-            "immolate": "3",
             "emissive": {
                 "sky": 11,
                 "block": 10

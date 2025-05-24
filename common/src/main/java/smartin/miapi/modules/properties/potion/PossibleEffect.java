@@ -14,6 +14,7 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
+import smartin.miapi.entity.ItemProjectileEntity;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.util.DoubleOperationResolvable;
 import smartin.miapi.modules.properties.util.InitializeAble;
@@ -129,6 +130,28 @@ public record PossibleEffect(Holder<MobEffect> potion,
             effectGetter.apply(itemsFromEntity.getItemBySlot(slot)).forEach(possibleEffect -> {
                 possibleEffect.apply(itemsFromEntity, itemsFromEntity.level().getRandom(), slot, target, selfTarget);
             });
+        }
+    }
+
+    public static void applyEffectsArrow(LivingEntity target, LivingEntity selfTarget, LivingEntity itemsFromEntity, ItemProjectileEntity projectile, Function<ItemStack, List<PossibleEffect>> effectGetter) {
+        projectile.getBowItem();
+        ItemStack blackListed = projectile.getBowItem();
+        if (blackListed != null && !blackListed.isEmpty()) {
+            effectGetter.apply(blackListed).forEach(possibleEffect -> {
+                possibleEffect.apply(itemsFromEntity, itemsFromEntity.level().getRandom(), EquipmentSlot.MAINHAND, target, selfTarget);
+            });
+        }
+        if (projectile.thrownStack != null && !projectile.thrownStack.isEmpty()) {
+            effectGetter.apply(projectile.thrownStack).forEach(possibleEffect -> {
+                possibleEffect.apply(itemsFromEntity, itemsFromEntity.level().getRandom(), EquipmentSlot.MAINHAND, target, selfTarget);
+            });
+        }
+        for (EquipmentSlot slot : EquipmentSlot.values()) {
+            if(blackListed!=itemsFromEntity.getItemBySlot(slot)){
+                effectGetter.apply(itemsFromEntity.getItemBySlot(slot)).forEach(possibleEffect -> {
+                    possibleEffect.apply(itemsFromEntity, itemsFromEntity.level().getRandom(), slot, target, selfTarget);
+                });
+            }
         }
     }
 

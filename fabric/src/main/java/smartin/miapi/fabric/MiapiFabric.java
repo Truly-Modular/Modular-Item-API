@@ -12,14 +12,15 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.world.entity.ai.attributes.RangedAttribute;
+import net.minecraft.world.level.storage.loot.functions.LootItemFunction;
 import smartin.miapi.Environment;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.MiapiClient;
 import smartin.miapi.datapack.ReloadEvents;
+import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.item.modular.ModularItem;
-import smartin.miapi.loot.LootHelper;
-import smartin.miapi.mixin.client.KeyMappingAccessor;
 import smartin.miapi.mixin.OptionsAccessor;
+import smartin.miapi.mixin.client.KeyMappingAccessor;
 import smartin.miapi.modules.properties.attributes.AttributeProperty;
 import smartin.miapi.modules.properties.enchanment.AllowedEnchantments;
 import smartin.miapi.registries.RegistryInventory;
@@ -34,7 +35,9 @@ public class MiapiFabric implements ModInitializer {
     public void onInitialize() {
         Miapi.init();
         LootTableEvents.MODIFY.register((key, tableBuilder, source, registries) -> {
-            LootHelper.adjusted.forEach(tableBuilder::apply);
+            List<LootItemFunction> functions = new ArrayList<>();
+            MiapiEvents.DEFAULT_LOOT_FUNCTIONS.invoker().adjust(functions);
+            functions.forEach(tableBuilder::apply);
         });
 
         //DATA
