@@ -13,7 +13,7 @@ import java.util.List;
 
 /**
  * @header Copy Item Lore
- * @path /data_types/properties/lore/copy_from_item
+ * @path /data_types/properties/copy_item_lore
  * @description_start Copies lore properties from a specified item. This property enables the lore text to be duplicated
  * from the referenced item, allowing for a consistent narrative or flavor across items. Intended for items that share lore
  * changing lore.
