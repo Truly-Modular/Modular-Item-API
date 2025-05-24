@@ -65,7 +65,7 @@ dependencies {
     modLocalRuntime files('libs/armory-local.jar')
 
     if ("${rootProject.run_with_efm}" == "true") {
-        modImplementation "curse.maven:epic-fight-mod-405076:5922122"
+        modImplementation "curse.maven:epic-fight-mod-405076:6552792"
     } else {
         modCompileOnly "curse.maven:epic-fight-mod-405076:6552792"
     }

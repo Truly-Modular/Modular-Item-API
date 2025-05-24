@@ -53,6 +53,7 @@ public class TrulyModularForge {
 
     public TrulyModularForge() {
         // Submit our event bus to let architectury register our content on the right time
+
         trulyModularEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         EventBuses.registerModEventBus(MOD_ID, trulyModularEventBus);
         if (Environment.isClient()) {

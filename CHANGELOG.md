@@ -2,3 +2,4 @@
 - made UI more responsive
 - fixed compat crash
 - moved Epic Fight Compat to 20.10.6
+- fixed Epic armor arm alignment

@@ -41,8 +41,16 @@ import java.util.Optional;
 public class CustomModularArmorRenderer<E extends LivingEntity, T extends LivingEntityPatch<E>, M extends BipedEntityModel<E>, AM extends HumanoidMesh> extends ModelRenderLayer<E, T, M, ArmorFeatureRenderer<E, M, M>, AM> {
     public CustomModularArmorRenderer(AssetAccessor<AM> mesh) {
         super(mesh);
-        addEFModelProvider(new String[]{"Root", "Torso", "Chest", "Shoulder_R", "Arm_R"}, "right_arm");
-        addEFModelProvider(new String[]{"Root", "Torso", "Chest", "Shoulder_L", "Arm_L"}, "left_arm");
+        addEFModelProvider(new String[]{"Root", "Torso", "Chest", "Shoulder_R", "Arm_R"}, "right_arm",
+                new Transform(
+                        new Vector3f(0f, 0f, 0f),
+                        new Vector3f(1/16f, 1/16f, 0f),
+                        new Vector3f(1f, 1f, 1f)).toMatrix());
+        addEFModelProvider(new String[]{"Root", "Torso", "Chest", "Shoulder_L", "Arm_L"}, "left_arm",
+                new Transform(
+                        new Vector3f(0f, 0f, 0f),
+                        new Vector3f(-1/16f, 1/16f, 0f),
+                        new Vector3f(1f, 1f, 1f)).toMatrix());
         addEFModelProvider(new String[]{"Root", "Thigh_R"}, "right_leg", null, EquipmentSlot.FEET, true);
         addEFModelProvider(new String[]{"Root", "Thigh_L"}, "left_leg", null, EquipmentSlot.FEET, true);
         addEFModelProvider(new String[]{"Root", "Thigh_R", "Leg_R"}, "right_leg", new Transform(
