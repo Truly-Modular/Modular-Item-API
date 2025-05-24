@@ -97,6 +97,8 @@ function processJavaFile(filePath, jsonData) {
 				in_description = true
 			} else if (in_description && !trimmed.startsWith('@')) {
 				description += unmodifiedLine.replace(' * ', '')
+				const input = description
+				description = input.replace(/\r(?!\n)/g, '\n')
 			} else if (trimmed.startsWith('@description_end')) {
 				in_description = false
 			} else if (trimmed.startsWith('@path')) {
@@ -250,7 +252,10 @@ function clearDocsFolder(baseDir = '../docs') {
 	}
 
 	// Write data to the JSON file
-	fs.writeFileSync(filePath, JSON.stringify(data, null, 2))
+	const input = JSON.stringify(data, null, 2)
+	const output = input.replace(/\r(?!\n)/g, '\n')
+
+	fs.writeFileSync(filePath, output)
 }
 
 function createMarkdownContent(pageData) {

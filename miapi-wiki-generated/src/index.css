@@ -78,5 +78,20 @@ pre {
 code {
 	background-color: black;
 	padding: 4px;
+	white-space: pre-wrap; /* Allow inline wrapping if needed */
+}
+
+code.line {
+	white-space: pre-wrap; /* Allow inline wrapping if needed */
+}
+
+/* For multiline blocks: */
+pre {
+	white-space: pre-wrap; /* Allow line breaks */
+	word-wrap: break-word; /* Wrap long lines */
+	overflow-x: auto; /* Scroll horizontally if needed */
+	background-color: #2d2d2d; /* Your dark background */
+	padding: 16px;
+	border-radius: 6px;
 }
 

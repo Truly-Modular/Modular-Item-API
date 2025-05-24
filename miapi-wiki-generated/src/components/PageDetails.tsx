@@ -15,6 +15,7 @@ interface PageDetailsProps {
 
 const PageDetails: React.FC<PageDetailsProps> = ({ page, isSubPage = false }) => {
 	const desc: string = page.getDescription()
+	const normalizedDesc = desc.replace(/\r\n?/g, '\n')
 
 	return (
 		<div
@@ -55,7 +56,7 @@ const PageDetails: React.FC<PageDetailsProps> = ({ page, isSubPage = false }) =>
 			>
 				<div className="markdown-body">
 					<ReactMarkdown
-						children={desc}
+						children={normalizedDesc}
 						remarkPlugins={[remarkGfm]} // Enable GitHub-flavored markdown
 						rehypePlugins={[rehypePrismPlus]} // Enable syntax highlighting
 					/>
