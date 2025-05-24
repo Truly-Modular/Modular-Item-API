@@ -10,27 +10,6 @@ import smartin.miapi.modules.properties.util.CodecProperty;
 import smartin.miapi.modules.properties.util.DoubleOperationResolvable;
 import smartin.miapi.modules.properties.util.MergeType;
 
-/**
- * This property defines core gun attributes such as fire rate, damage, magazine size, and range.
- * It enables dynamic modification based on modules and supports merging strategies.
- *
- * @header Gun Context Property
- * @path /data_types/properties/gun/gun_context
- * @description_start
- * The Gun Context Property is used to define fundamental shooting mechanics in modular weapons.
- * It controls attributes such as:
- * - **Fire Rate**: Determines how quickly the gun fires.
- * - **Base Damage**: The default damage output per shot.
- * - **Magazine Size**: The total number of bullets before needing a reload.
- * - **Range**: Maximum effective shooting distance.
- * @description_end
- *
- * @data fire_rate: Fire rate of the weapon (Default: 1.0).
- * @data base_damage: Base damage per shot (Default: 5.0).
- * @data magazine_size: Number of shots before reloading (Default: 10).
- * @data range: Maximum hit detection range (Default: 100).
- */
-
 public class GunContextProperty extends CodecProperty<GunContextProperty.GunContext> {
     public static final ResourceLocation KEY = Miapi.id("gun_context");
     public static GunContextProperty property;

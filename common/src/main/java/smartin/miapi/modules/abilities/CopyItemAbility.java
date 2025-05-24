@@ -19,16 +19,10 @@ import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;
 import smartin.miapi.modules.abilities.util.ItemUseAbility;
 
-/**
- * @header Copy Item Ability
- * @description_start This ability aims to be able to copy any other items right click ability.
- * This might not work with some items/mods, as if they check for the executing item this will fail
- * @desciption_end
- * @path /data_types/abilities/copy_item
- * @data id:the id of the item to copy from
- */
+
 public class CopyItemAbility implements ItemUseAbility<CopyItemAbility.ItemContext> {
     public static CopyItemAbility ability;
+    public static String KEY = "copy_item";
 
     public CopyItemAbility() {
         ability = this;

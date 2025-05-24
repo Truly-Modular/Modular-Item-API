@@ -612,8 +612,8 @@ public class RegistryInventory {
             registerMiapi(useAbilityRegistry, "sword_block", new BlockAbility());
             registerMiapi(useAbilityRegistry, "block", new BlockAbility());
             registerMiapi(useAbilityRegistry, "tower_block", new TowerShieldBlock());
-            registerMiapi(useAbilityRegistry, "copy_item", new CopyItemAbility());
-            registerMiapi(useAbilityRegistry, "riptide", new RiptideAbility());
+            registerMiapi(useAbilityRegistry, CopyItemAbility.KEY, new CopyItemAbility());
+            registerMiapi(useAbilityRegistry, RiptideAbility.KEY, new RiptideAbility());
             registerMiapi(useAbilityRegistry, "heavy_attack", new SpecialAttackAbility());
             registerMiapi(useAbilityRegistry, AxeAbility.KEY, new AxeAbility());
             registerMiapi(useAbilityRegistry, HoeAbility.KEY, new HoeAbility());

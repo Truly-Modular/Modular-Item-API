@@ -11,7 +11,6 @@ import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LightningBolt;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.ai.behavior.warden.SonicBoom;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.UseAnim;
@@ -35,7 +34,6 @@ public class CastLightingAbility implements ItemUseDefaultCooldownAbility<CastLi
 
     @Override
     public int getMinHoldTime(ItemStack itemStack) {
-        SonicBoom sonicBoom;
         return (int) getSpecialContext(itemStack).minHold().getValue();
     }
 

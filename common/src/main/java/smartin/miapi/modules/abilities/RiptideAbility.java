@@ -35,6 +35,7 @@ import smartin.miapi.modules.properties.util.MergeType;
 //TODO:rework this again
 public class RiptideAbility implements ItemUseDefaultCooldownAbility<RiptideAbility.RiptideContextJson>, ItemUseMinHoldAbility<RiptideAbility.RiptideContextJson> {
     public static Codec<RiptideContextJson> CODEC = AutoCodec.of(RiptideContextJson.class).codec();
+    public static String KEY = "riptide";
 
     @Override
     public boolean allowedOnItem(ItemStack itemStack, Level world, Player player, InteractionHand hand, ItemAbilityManager.AbilityHitContext abilityHitContext) {

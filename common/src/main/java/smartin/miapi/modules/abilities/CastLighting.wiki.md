@@ -1,0 +1,34 @@
+@header CastLightingAbility  
+@path /data_types/ability/cast_lightning
+
+## CastLightingAbility
+
+This ability allows the player to **summon lightning bolts** at a targeted location within a configurable range, by using and holding the item.
+
+### Features
+
+- Requires a minimum hold time before activation.
+- Can only be used within a maximum range from the player to the targeted block.
+- Spawns a configurable number of lightning bolt entities on the targeted position.
+- Plays a configurable sound event on use (default is empty).
+- Applies a cooldown after use.
+- Only works on the server side (requires `ServerPlayer`).
+- Uses a custom `UseAnim.SPEAR` animation while holding the item.
+- Supports merging and initialization of all configurable parameters.
+
+### Context Fields (CastLightingContext)
+
+| Field       | Type                   | Description                                                   | Default Value         |
+|-------------|------------------------|---------------------------------------------------------------|----------------------|
+| onThrow     | `SoundEvent`           | Sound played when lightning is cast                           | `SoundEvents.EMPTY`  |
+| minHold     | `DoubleOperationResolvable` | Minimum ticks the item must be held before activation         | 10                   |
+| lighting    | `DoubleOperationResolvable` | Number of lightning bolts to summon                           | 1                    |
+| cooldown    | `DoubleOperationResolvable` | Cooldown duration in ticks after use                          | 40                   |
+| maxRange    | `DoubleOperationResolvable` | Maximum allowed distance from player to cast lightning        | 6                    |
+
+### Usage
+
+- Player holds the item (right-click and hold).
+- On release after the minimum hold time, if within range of the targeted block, the ability summons lightning bolts.
+- The number of lightning bolts and cooldown are determined by the context values.
+- The ability checks the squared distance between player and target to ensure it's within `maxRange`.

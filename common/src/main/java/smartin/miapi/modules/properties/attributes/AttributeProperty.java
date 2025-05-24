@@ -26,20 +26,6 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
 
-/**
- * This property allows modules to define and modify attributes of items.
- *
- * @header Attribute Property
- * @description_start The Attribute Property is used to modify various attributes for items
- * It can set basic, multiply and resolve complex attributes. This is a core part of the api
- * @path /data_types/properties/attributes/item_attributes
- * @data attributes:a list of item attributes, allowing each for the following fields
- * @data attribute: the ID of the attribute
- * @data value: double resolvable
- * @data operation: the operation to execute, + * ** are allowed
- * @data slot: the target slot group
- * @data targetOperation : optional, the operation to be merged to
- */
 public class AttributeProperty extends
         CodecProperty<Map<ResourceLocation, Map<AttributeModifier.Operation, Map<Either<EquipmentSlotGroup, Boolean>, DoubleOperationResolvable>>>>
         implements ComponentApplyProperty, SourceSetter<Map<ResourceLocation, Map<AttributeModifier.Operation, Map<Either<EquipmentSlotGroup, Boolean>, DoubleOperationResolvable>>>> {
