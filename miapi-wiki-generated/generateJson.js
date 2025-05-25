@@ -97,8 +97,6 @@ function processJavaFile(filePath, jsonData) {
 				in_description = true
 			} else if (in_description && !trimmed.startsWith('@')) {
 				description += unmodifiedLine.replace(' * ', '')
-				const input = description
-				description = input.replace(/\r(?!\n)/g, '\n')
 			} else if (trimmed.startsWith('@description_end')) {
 				in_description = false
 			} else if (trimmed.startsWith('@path')) {

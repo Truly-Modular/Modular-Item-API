@@ -1,5 +1,6 @@
 @header DoubleResolveable
 @path  /data_types/double_resolvable
+@keywords Double Resolvable, Doubleresolveable, DoubleResolvable
 
 The `DoubleResolvable` system allows defining numeric values in multiple flexible ways, supporting both static values and dynamically computed results through math expressions and stat resolution.
 
