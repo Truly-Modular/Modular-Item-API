@@ -16,10 +16,10 @@ import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+
 /**
  * @header Conditions
- * @description_start
- * Conditions! what is there to describe
+ * @description_start Conditions! what is there to describe
  * @desciption_end
  * @keywords Condition
  * @path /data_types/condition
@@ -40,7 +40,7 @@ public class ConditionManager {
             }
             Pair<String, T> id = idRestult.getOrThrow();
             Codec<? extends ModuleCondition> conditionCodec = CONDITION_REGISTRY.get(Miapi.id(id.getFirst()));
-            if(conditionCodec==null){
+            if (conditionCodec == null) {
                 return DataResult.error(() -> "failed to decode condition - type is not a condition:" + Miapi.id(id.getFirst()));
             }
             var result = conditionCodec.decode(ops, input);
@@ -76,7 +76,7 @@ public class ConditionManager {
         public <T> DataResult<Pair<ModuleCondition, T>> decode(DynamicOps<T> ops, T input) {
             DataResult<? extends Pair<? extends ModuleCondition, T>> firstResult = CONDITION_CODEC.decode(ops, input);
             if (firstResult.isError()) {
-                return DataResult.error(() -> firstResult.error().get().message());
+                return DataResult.error(() -> "failed condition decode with error:" + firstResult.error().get().message());
             }
             var pair = firstResult.getOrThrow();
             return DataResult.success(new Pair<>((ModuleCondition) pair.getFirst(), pair.getSecond()));

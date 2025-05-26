@@ -477,6 +477,8 @@
     "miapi.material_property.category.pants.description": "Pants Modules are all modules for pants armor.",
     "miapi.material_property.category.boot": "Boots Modules",
     "miapi.material_property.category.boot.description": "Boots Modules are all modules for boots armor.",
+    "miapi.arsenal.compat.ht_treechop": "Axe Chops",
+    "miapi.arsenal.compat.ht_treechop.description": "How many cuts the axe does to a tree",
     "miapi.gui.helper.header": "How to:",
     "miapi.gui.helper.create_new_item": "Create New Items",
     "miapi.gui.helper.modify_item": "Modify Modular Items",

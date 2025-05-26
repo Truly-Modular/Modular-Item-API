@@ -3,3 +3,6 @@
 - fixed breeze rod giving immolate
 - fixed on-hit-potions for modular arrows
 - fixed language related crash
+- fixed enchantments not applying on area harvest
+- fixed ht treechop issues on neoforge
+- fixed issues with Refined Storage

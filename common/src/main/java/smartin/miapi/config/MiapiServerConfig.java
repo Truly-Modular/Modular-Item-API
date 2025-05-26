@@ -108,6 +108,13 @@ public class MiapiServerConfig {
         public boolean looseToolMaterial = true;
 
         @Comment("""
+                    Whether Miapi should fake the defaultInstance() call for increased compatibility.
+                    This has a chance of breaking with some mods, but all tested so far cause no issue.
+                """)
+        @AutoCodec.Name("fake_item_stack")
+        public boolean fakeItemStack = true;
+
+        @Comment("""
                 If this is true modular items will fully break.
                 If set to false Modular Item will instead to go into a Broken state
                 In this broken state they cant do anything but repaired.

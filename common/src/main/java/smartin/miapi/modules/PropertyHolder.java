@@ -18,22 +18,53 @@ import java.util.*;
 public class PropertyHolder {
     public static final Codec<ModuleProperty<?>> PROPERTY_CODEC =
             Miapi.ID_CODEC.xmap(
-                    (r) -> {
-                        var p = RegistryInventory.MODULE_PROPERTY_MIAPI_REGISTRY.get(r);
+                    r -> {
+                        ModuleProperty<?> p = RegistryInventory.MODULE_PROPERTY_MIAPI_REGISTRY.get(r);
                         if (p == null) {
-                            try {
-                                throw new DecoderException("could not find property " + r);
-                            } catch (DecoderException e) {
-                                throw new RuntimeException(e);
-                            }
+                            throw new RuntimeException(new DecoderException("Could not find property for key: " + r));
                         }
                         return p;
                     },
-                    RegistryInventory.MODULE_PROPERTY_MIAPI_REGISTRY::findKey);
+                    property -> {
+                        var key = RegistryInventory.MODULE_PROPERTY_MIAPI_REGISTRY.findKey(property);
+                        if (key == null) {
+                            throw new RuntimeException("Could not find registry key for property: " + property);
+                        }
+                        return key;
+                    }
+            );
+
     private static final Codec<Map<ModuleProperty<?>, Object>> PROPERTY_MAP_CODEC = Codec.dispatchedMap(
             PROPERTY_CODEC,
-            a -> StatResolver.Codecs.JSONELEMENT_CODEC.xmap(a::decodeAndLoad,
-                    a::encodeCast));
+            a -> {
+                if (a == null) {
+                    throw new IllegalArgumentException("ModuleProperty codec (a) must not be null");
+                }
+                return StatResolver.Codecs.JSONELEMENT_CODEC.xmap(
+                        json -> {
+                            try {
+                                if (json == null) {
+                                    throw new IllegalArgumentException("JSON element to decode is null");
+                                }
+                                return a.decodeAndLoad(json);
+                            } catch (RuntimeException e) {
+                                throw new RuntimeException("Failed to decode and load JSON for property: " + a, e);
+                            }
+                        },
+                        obj -> {
+                            try {
+                                if (obj == null) {
+                                    throw new IllegalArgumentException("Object to encode is null");
+                                }
+                                return a.encodeCast(obj);
+                            } catch (RuntimeException e) {
+                                throw new RuntimeException("Failed to encode object for property: " + a, e);
+                            }
+                        }
+                );
+            }
+    );
+
 
     public static final MapCodec<PropertyHolder> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             PROPERTY_MAP_CODEC.optionalFieldOf("replace", new HashMap<>()).forGetter(PropertyHolder::getReplace),

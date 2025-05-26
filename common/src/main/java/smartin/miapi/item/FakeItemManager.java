@@ -3,6 +3,7 @@ package smartin.miapi.item;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
+import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.datapack.ReloadEvents;
 
 import java.util.HashMap;
@@ -26,15 +27,19 @@ public class FakeItemManager {
     }
 
     public static ItemStack getDefaultInstance(Item item) {
-        ItemStack itemStack = SHORT_CACHE.get().getOrDefault(item, LONG_CACHE.getOrDefault(item, new ItemStack(item))).copy();
-        //Miapi.LOGGER.info("faking " + itemStack.getDisplayName().getString());
-        return itemStack;
+        if (MiapiConfig.getServerConfig().other.fakeItemStack) {
+            ItemStack itemStack = SHORT_CACHE.get().getOrDefault(item, LONG_CACHE.getOrDefault(item, new ItemStack(item))).copy();
+            //Miapi.LOGGER.info("faking " + itemStack.getDisplayName().getString());
+            return itemStack;
+        } else {
+            return new ItemStack(item);
+        }
     }
 
     @Nullable
     public static ItemStack getLastInstance(Item item) {
         ItemStack itemStack = SHORT_CACHE.get().getOrDefault(item, LONG_CACHE.get(item));
-        if(itemStack!=null){
+        if (itemStack != null) {
             //Miapi.LOGGER.info("faking " + itemStack.getDisplayName().getString());
         }
         return itemStack;

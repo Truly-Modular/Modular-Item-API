@@ -684,6 +684,6 @@ public class ModuleInstance {
 
     @Override
     public int hashCode() {
-        return super.hashCode();
+        return this.moduleID.hashCode() + subModules.size() * 13;
     }
 }

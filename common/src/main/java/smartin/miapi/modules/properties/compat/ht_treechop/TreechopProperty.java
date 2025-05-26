@@ -17,7 +17,7 @@ public class TreechopProperty extends DoubleProperty {
     }
 
     public boolean load(ResourceLocation id, JsonElement element, boolean isClient) throws Exception {
-        if (Platform.isModLoaded("treechop")) {
+        if (!Platform.isModLoaded("treechop")) {
             return false;
         }
         return super.load(id, element, isClient);

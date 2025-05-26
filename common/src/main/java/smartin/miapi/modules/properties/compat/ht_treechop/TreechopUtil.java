@@ -8,6 +8,7 @@ import net.minecraft.world.item.AxeItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import smartin.miapi.Miapi;
 import smartin.miapi.registries.RegistryInventory;
 
 public class TreechopUtil {
@@ -19,6 +20,7 @@ public class TreechopUtil {
             api.registerChoppingItemBehavior(item, new IChoppingItem() {
                 @Override
                 public boolean canChop(Player playerEntity, ItemStack itemStack, Level world, BlockPos blockPos, BlockState blockState) {
+                    Miapi.LOGGER.info("chop check "+TreechopProperty.property.getValue(itemStack).orElse(0.0).intValue());
                     return item instanceof AxeItem || TreechopProperty.property.getValue(itemStack).orElse(0.0).intValue() > 0;
                 }
 

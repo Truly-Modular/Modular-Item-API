@@ -80,7 +80,7 @@ public class AreaHarvestReplant extends MinMaxCDAbility<AreaHarvestReplant.AreaH
                             //cropBlock.
 
                             BlockEntity blockEntity = blockState.hasBlockEntity() ? context.getLevel().getBlockEntity(currentPos) : null;
-                            List<ItemStack> stacks = Block.getDrops(blockState, serverWorld, currentPos, blockEntity, serverPlayer, ItemStack.EMPTY);
+                            List<ItemStack> stacks = Block.getDrops(blockState, serverWorld, currentPos, blockEntity, serverPlayer, itemStack);
                             serverWorld.setBlockAndUpdate(currentPos, cropBlock.getStateForAge(0));
                             stacks.forEach(serverPlayer::spawnAtLocation);
                             blocksHarvested++;
