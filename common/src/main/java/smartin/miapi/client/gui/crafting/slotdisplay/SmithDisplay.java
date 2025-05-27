@@ -13,6 +13,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Quaternionf;
+import org.joml.Vector3f;
 import smartin.miapi.client.gui.InteractAbleWidget;
 
 @Environment(EnvType.CLIENT)
@@ -58,16 +59,28 @@ public class SmithDisplay extends InteractAbleWidget {
     @Override
     public void renderWidget(GuiGraphics context, int mouseX, int mouseY, float delta) {
         //context.enableScissor(getX(),getY(),getX()+getWidth(),getY()+getHeight());
+        /*
         InventoryScreen.renderEntityInInventoryFollowsMouse(
                 context,
                 this.getX() + getWidth() / 2 + 3,
                 this.getY() + this.height - 10,
                 30,
                 50,
-                2,
+                30,
                 0,
                 mouseX,
                 mouseY,
+                this.armorStand);
+
+         */
+        InventoryScreen.renderEntityInInventory(
+                context,
+                this.getX() + getWidth() / 2 + 3,
+                this.getY() + this.height - 10,
+                30,
+                new Vector3f(),
+                ARMOR_STAND_ROTATION,
+                null,
                 this.armorStand);
         //context.disableScissor();
         super.renderWidget(context, mouseX, mouseY, delta);

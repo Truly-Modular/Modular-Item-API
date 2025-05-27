@@ -184,23 +184,22 @@ public class MiningLevelProperty extends CodecProperty<Map<String, MiningLevelPr
                 }
                 List<Holder<Block>> blocksWithMiningSpeed = new ArrayList<>(canDropBlocks);
                 List<Holder<Block>> toRemoveFromMaterial = new ArrayList<>();
+
                 respectMaterialBlacklists().forEach(material -> {
+                    Optional<HolderSet.Named<Block>> maybeTag = BuiltInRegistries.BLOCK.getTag(material.getIncorrectBlocksForDrops());
+                    if (maybeTag.isEmpty()) return;
+
+                    List<Holder<Block>> currentList = maybeTag.get().stream().distinct().toList();
+
                     if (toRemoveFromMaterial.isEmpty()) {
-                        BuiltInRegistries.BLOCK.getTag(
-                                material.getIncorrectBlocksForDrops()
-                        ).ifPresent(named -> {
-                            named.stream().distinct().forEach(toRemoveFromMaterial::add);
-                        });
+                        toRemoveFromMaterial.addAll(currentList);
                     } else {
-                        List<Holder<Block>> notShared = new ArrayList<>(toRemoveFromMaterial);
-                        BuiltInRegistries.BLOCK.getTag(
-                                material.getIncorrectBlocksForDrops()
-                        ).ifPresent(named -> {
-                            toList(named).stream().map(Holder::value).distinct().forEach(notShared::remove);
-                        });
-                        notShared.forEach(toRemoveFromMaterial::remove);
+                        toRemoveFromMaterial.retainAll(currentList);
                     }
                 });
+
+                toRemoveFromMaterial.forEach(canDropBlocks::remove);
+
                 toRemoveFromMaterial.forEach(canDropBlocks::remove);
                 List<Block> rawBlocks = new HashSet<>(canDropBlocks).stream().distinct().map(Holder::value).toList();
                 Tool.Rule mineAndDrop = Tool.Rule.minesAndDrops(rawBlocks, speedEvaluated);
