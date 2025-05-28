@@ -3,6 +3,7 @@ package smartin.miapi.client.gui.crafting.statdisplay;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
+import smartin.miapi.modules.properties.LoreProperty;
 import smartin.miapi.modules.properties.mining.MiningLevelProperty;
 import smartin.miapi.modules.properties.util.DoubleOperationResolvable;
 
@@ -58,6 +59,10 @@ public class MiningPropertyStatDisplay extends SingleStatDisplayDouble {
                                         "miapi.stat.miapi.mining.level.material.source",
                                         m.getTranslation())
                                 .withStyle(ChatFormatting.GRAY));
+
+                m.getMiningLevelToolTip().forEach(c -> {
+                    lines.add(LoreProperty.format(c,ChatFormatting.DARK_GRAY));
+                });
             });
         }
         return lines;

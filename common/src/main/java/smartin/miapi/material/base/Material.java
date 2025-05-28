@@ -6,8 +6,10 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.PickaxeItem;
 import net.minecraft.world.level.block.Block;
 import smartin.miapi.client.gui.crafting.crafter.replace.hover.HoverMaterialList;
+import smartin.miapi.material.generated.TierManager;
 import smartin.miapi.modules.ModuleInstance;
 
 import java.util.ArrayList;
@@ -114,5 +116,28 @@ public interface Material extends PropertyController, ColorController, StatContr
             }
         }
         return lines;
+    }
+
+    default List<Component> getMiningLevelToolTip() {
+        Optional<PickaxeItem> pickaxeItem = Optional.ofNullable(TierManager.TAG_LOOK_UP.get(this.getIncorrectBlocksForDrops()));
+        return pickaxeItem.map(item -> List.of(
+                Component
+                        .translatable(
+                                "miapi.material.mining_level.pickaxe.description"
+                        ),
+                item.getName(item.getDefaultInstance()))).orElseGet(() -> List.of(
+                Component
+                        .translatable(
+                                "miapi.material.mining_level.description"
+                        ),
+                Component
+                        .translatable(
+                                "tag.block." + this
+                                        .getIncorrectBlocksForDrops()
+                                        .location()
+                                        .toString()
+                                        .replace(":", ".")
+                                        .replace("/", ".")
+                        )));
     }
 }

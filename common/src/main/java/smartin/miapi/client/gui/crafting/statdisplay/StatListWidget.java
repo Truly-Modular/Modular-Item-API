@@ -93,7 +93,8 @@ public class StatListWidget extends InteractAbleWidget {
         addStatDisplay(AttributeSingleDisplay
                 .builder(Attributes.ATTACK_SPEED)
                 .setTranslationKey("minecraft.attack_speed")
-                .setDefault(0)
+                .setFallback(0.0)
+                .setDefault(4)
                 .setMax(4.0).build());
         addStatDisplay(new DpsStatDisplay());
         addStatDisplay(AttributeSingleDisplay

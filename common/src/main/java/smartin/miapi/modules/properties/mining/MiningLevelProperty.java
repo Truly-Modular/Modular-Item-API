@@ -183,20 +183,25 @@ public class MiningLevelProperty extends CodecProperty<Map<String, MiningLevelPr
                             .forEach(canDropBlocks::remove);
                 }
                 List<Holder<Block>> blocksWithMiningSpeed = new ArrayList<>(canDropBlocks);
-                List<Holder<Block>> toRemoveFromMaterial = new ArrayList<>();
+                List<Holder<Block>> toRemoveFromMaterial = null;
 
-                respectMaterialBlacklists().forEach(material -> {
+                for (var material : respectMaterialBlacklists()) {
                     Optional<HolderSet.Named<Block>> maybeTag = BuiltInRegistries.BLOCK.getTag(material.getIncorrectBlocksForDrops());
-                    if (maybeTag.isEmpty()) return;
+                    if (maybeTag.isEmpty()) continue;
 
                     List<Holder<Block>> currentList = maybeTag.get().stream().distinct().toList();
 
-                    if (toRemoveFromMaterial.isEmpty()) {
-                        toRemoveFromMaterial.addAll(currentList);
+                    if (toRemoveFromMaterial == null) {
+                        toRemoveFromMaterial = new ArrayList<>(currentList);
                     } else {
                         toRemoveFromMaterial.retainAll(currentList);
                     }
-                });
+                }
+
+                if (toRemoveFromMaterial == null) {
+                    toRemoveFromMaterial = new ArrayList<>();
+                }
+
 
                 toRemoveFromMaterial.forEach(canDropBlocks::remove);
 

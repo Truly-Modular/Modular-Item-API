@@ -48,9 +48,6 @@ public class MaterialDetailView extends InteractAbleWidget {
         registerBuilder(
                 new Builder("mining_speed")
         );
-        registerBuilder(
-                new Builder("mining_level").setMax(4).setFormat("##")
-        );
     }
 
     public MaterialDetailView(int x, int y, int width, int height, ItemStack stack, Consumer<Object> back) {
@@ -68,6 +65,15 @@ public class MaterialDetailView extends InteractAbleWidget {
         for (Builder builder : infoBarBuilders) {
             widgets.add(builder.build(x, y, width, spacer, material));
         }
+        material.getMiningLevelToolTip().forEach(c->{
+            widgets.add(
+                    new ScrollingTextWidget(
+                            (int) ((x + 5) * (1 / scale)),
+                            (int) ((y + 5) * (1 / scale)),
+                            width,
+                            c,
+                            FastColor.ARGB32.color(255, 255, 255, 255)));
+        });
         ScrollList list = new ScrollList(x + 10, y + 27, width - 10, this.getHeight() - 27, widgets);
         this.addChild(list);
     }

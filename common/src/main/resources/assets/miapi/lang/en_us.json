@@ -1,4 +1,31 @@
 {
+    "tag.block.minecraft.incorrect_for_wooden_tool": "Incorrect for Wooden Tools",
+    "tag.block.minecraft.incorrect_for_stone_tool": "Incorrect for Stone Tools",
+    "tag.block.minecraft.incorrect_for_gold_tool": "Incorrect for Gold Tools",
+    "tag.block.minecraft.incorrect_for_iron_tool": "Incorrect for Iron Tools",
+    "tag.block.minecraft.incorrect_for_diamond_tool": "Incorrect for Diamond Tools",
+    "tag.block.minecraft.incorrect_for_netherite_tool": "Incorrect for Netherite Tools",
+    "miapi.material.mining_level.description": "Blacklisted Blocks:",
+    "miapi.material.mining_level.pickaxe.description": "Same Mining Level as:",
+
+    "tag.item.miapi.armor": "Modular Armor",
+    "tag.item.miapi.helmets": "Modular Helmets",
+    "tag.item.miapi.chestplates": "Modular Chestplates",
+    "tag.item.miapi.leggings": "Modular Leggings",
+    "tag.item.miapi.boots": "Modular Boots",
+
+    "tag.item.miapi.bows": "Modular Bows",
+    "tag.item.miapi.crossbows": "Modular Crossbows",
+    "tag.item.miapi.arrows": "Modular Arrows",
+
+    "tag.item.miapi.swords": "Modular Swords",
+    "tag.item.miapi.pickaxes": "Modular Pickaxes",
+    "tag.item.miapi.axes": "Modular Axes",
+    "tag.item.miapi.shovels": "Modular Shovels",
+    "tag.item.miapi.hoes": "Modular Hoes",
+    "tag.item.miapi.tools": "Modular Tools",
+    "tag.item.miapi.knifes": "Modular Knifes",
+
     "miapi.config_screen.title": "Miapi Config",
     "miapi.config_screen.client": "Client Config",
     "miapi.config_screen.server": "Server Config",

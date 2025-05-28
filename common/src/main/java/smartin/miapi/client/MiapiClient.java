@@ -47,6 +47,7 @@ import smartin.miapi.material.MaterialCommand;
 import smartin.miapi.material.MaterialIcons;
 import smartin.miapi.material.MaterialProperty;
 import smartin.miapi.material.base.Material;
+import smartin.miapi.material.generated.TierManager;
 import smartin.miapi.material.palette.MaterialRenderControllers;
 import smartin.miapi.modules.MiapiPermissions;
 import smartin.miapi.modules.abilities.key.ClientKeybinding;
@@ -290,6 +291,7 @@ public class MiapiClient {
 
     protected static void clientStart(Minecraft client) {
         CryoStatusEffect.setupOnClient();
+        TierManager.setup();
     }
 
     protected static void clientLevelLoad(ClientLevel clientWorld) {

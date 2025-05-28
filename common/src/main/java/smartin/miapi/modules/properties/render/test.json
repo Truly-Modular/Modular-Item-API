@@ -1,4 +1,45 @@
 {
-    "material": "miapi:fabric/leather",
-    "color": "00FF04"
+    "block_model": [
+        {
+            "id": "minecraft:nether_portal",
+            "transform": {
+                "rotation": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "translation": {
+                    "x": 0.4375,
+                    "y": 0.4375,
+                    "z": 0.45
+                },
+                "scale": {
+                    "x": 0.125,
+                    "y": 0.125,
+                    "z": 0.125
+                }
+            }
+        },
+        {
+            "id": "minecraft:enchanting_table",
+            "transform": {
+                "rotation": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "translation": {
+                    "x": 0.4375,
+                    "y": 0.4375,
+                    "z": 0.6
+                },
+                "scale": {
+                    "x": 0.125,
+                    "y": 0.125,
+                    "z": 0.125
+                }
+            }
+        }
+    ],
+    "model":[]
 }

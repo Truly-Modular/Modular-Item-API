@@ -37,6 +37,7 @@ public class AttributeSingleDisplay extends SingleStatDisplayDouble {
     final Attribute attribute;
     final EquipmentSlot slot;
     double defaultValue;
+    double fallbackValue;
     public StatReaderHelper valueReader = new StatReaderHelper() {
         @Override
         public double getValue(ItemStack itemStack) {
@@ -106,9 +107,9 @@ public class AttributeSingleDisplay extends SingleStatDisplayDouble {
                     }
                 }
             }
-            return defaultValue;
+            return fallbackValue;
         }
-        return AttributeUtil.getActualValue(attributeCache.get(slot), attribute, defaultValue);
+        return AttributeUtil.getActualValue(attributeCache.get(slot), attribute, fallbackValue);
     }
 
     @Override
@@ -184,6 +185,7 @@ public class AttributeSingleDisplay extends SingleStatDisplayDouble {
         Holder<Attribute> attribute;
         public EquipmentSlot slot;
         public double defaultValue = 1;
+        public double fallbackValue;
         public StatListWidget.TextGetter name;
         public StatListWidget.TextGetter hoverDescription = (stack) -> Component.empty();
         public String translationKey = "";
@@ -203,6 +205,7 @@ public class AttributeSingleDisplay extends SingleStatDisplayDouble {
                 decimalFormat.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ROOT));
             });
             defaultValue = attribute.value().getDefaultValue();
+            fallbackValue = attribute.value().getDefaultValue();
             max = Math.min(2048, attribute.value().sanitizeValue(Double.MAX_VALUE));
             min = Math.max(-2048, attribute.value().sanitizeValue(Double.MIN_VALUE));
         }
@@ -219,6 +222,11 @@ public class AttributeSingleDisplay extends SingleStatDisplayDouble {
 
         public Builder setDefault(double defaultValue) {
             this.defaultValue = defaultValue;
+            return this;
+        }
+
+        public Builder setFallback(double defaultValue) {
+            this.fallbackValue = defaultValue;
             return this;
         }
 
@@ -290,6 +298,7 @@ public class AttributeSingleDisplay extends SingleStatDisplayDouble {
             AttributeSingleDisplay display = new AttributeSingleDisplay(attribute.value(), slot, name, hoverDescription, defaultValue, modifierFormat);
             display.minValue = min;
             display.maxValue = max;
+            display.fallbackValue = fallbackValue;
             display.setInverse(inverse);
             if (valueGetter != null) {
                 display.valueReader = new StatReaderHelper() {
