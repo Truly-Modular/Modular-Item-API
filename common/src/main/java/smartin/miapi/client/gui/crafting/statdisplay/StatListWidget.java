@@ -107,18 +107,22 @@ public class StatListWidget extends InteractAbleWidget {
                 .setDefault(0)
                 .setFormat("##.#")
                 .setMax(5).build());
-        addStatDisplay(AttributeSingleDisplay
-                .builder(AttributeRegistry.REACH)
-                .setTranslationKey("reach")
-                .setDefault(0)
-                .setFormat("##.##")
-                .setMax(2).build());
-        addStatDisplay(AttributeSingleDisplay
-                .builder(AttributeRegistry.ATTACK_RANGE)
-                .setTranslationKey("attack_range")
-                .setDefault(0)
-                .setFormat("##.##")
-                .setMax(2).build());
+        if (AttributeRegistry.REACH != null) {
+            addStatDisplay(AttributeSingleDisplay
+                    .builder(AttributeRegistry.REACH)
+                    .setTranslationKey("reach")
+                    .setDefault(0)
+                    .setFormat("##.##")
+                    .setMax(2).build());
+        }
+        if (AttributeRegistry.ATTACK_RANGE != null) {
+            addStatDisplay(AttributeSingleDisplay
+                    .builder(AttributeRegistry.ATTACK_RANGE)
+                    .setTranslationKey("attack_range")
+                    .setDefault(0)
+                    .setFormat("##.##")
+                    .setMax(2).build());
+        }
         addStatDisplay(AttributeSingleDisplay
                 .builder(AttributeRegistry.PROJECTILE_DAMAGE)
                 .setTranslationKey("projectile_damage")
@@ -261,12 +265,14 @@ public class StatListWidget extends InteractAbleWidget {
                 .builder(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE)
                 .setTranslationKey("knockback_resistance")
                 .setMax(1).build());
-        addStatDisplay(AttributeSingleDisplay
-                .builder(AttributeRegistry.SWIM_SPEED)
-                .setTranslationKey("swim_speed")
-                .setMax(1.5)
-                .setDefault(1)
-                .setMin(0).build());
+        if (AttributeRegistry.SWIM_SPEED != null) {
+            addStatDisplay(AttributeSingleDisplay
+                    .builder(AttributeRegistry.SWIM_SPEED)
+                    .setTranslationKey("swim_speed")
+                    .setMax(1.5)
+                    .setDefault(1)
+                    .setMin(0).build());
+        }
         addStatDisplay(AttributeSingleDisplay
                 .builder(AttributeRegistry.ELYTRA_GLIDE_EFFICIENCY)
                 .setTranslationKey("elytra_glide")
@@ -326,19 +332,19 @@ public class StatListWidget extends InteractAbleWidget {
                 .builder(BlockSelfCooldownProperty.property)
                 .setMax(100)
                 .setFormat("##.##")
-                .setFunction((a)->a/20)
+                .setFunction((a) -> a / 20)
                 .setTranslationKey(BlockSelfCooldownProperty.KEY).build());
         addStatDisplay(SinglePropertyStatDisplay
                 .builder(InflictCooldownBlockingProperty.property)
                 .setMax(100)
                 .setFormat("##.##")
-                .setFunction((a)->a/20)
+                .setFunction((a) -> a / 20)
                 .setTranslationKey(InflictCooldownBlockingProperty.KEY).build());
         addStatDisplay(SinglePropertyStatDisplay
                 .builder(MaxHoldBlockingProperty.property)
                 .setMax(100)
                 .setFormat("##.##")
-                .setFunction((a)->a/20)
+                .setFunction((a) -> a / 20)
                 .setTranslationKey(MaxHoldBlockingProperty.KEY).build());
         addStatDisplay(SinglePropertyStatDisplay
                 .builder(ReflectDamageBlockingProperty.property)
@@ -401,7 +407,10 @@ public class StatListWidget extends InteractAbleWidget {
 
     public static void reloadEnd() {
         Registries.ATTRIBUTE.forEach(entityAttribute -> {
-            if (!AttributeSingleDisplay.attributesWithDisplay.contains(entityAttribute)) {
+            if (
+                    entityAttribute != null &&
+                    entityAttribute.getTranslationKey() != null &&
+                    !AttributeSingleDisplay.attributesWithDisplay.contains(entityAttribute)) {
                 try {
                     addStatDisplay(AttributeSingleDisplay
                             .builder(entityAttribute).build());
