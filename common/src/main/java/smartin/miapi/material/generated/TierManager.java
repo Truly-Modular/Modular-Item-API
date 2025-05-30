@@ -15,6 +15,7 @@ public class TierManager {
     public static final Map<TagKey<Block>, PickaxeItem> TAG_LOOK_UP = new HashMap<>();
 
     public static void setup() {
+        TAG_LOOK_UP.clear();
         List<PickaxeItem> pickaxeItems = GeneratedMaterialManager.getRegistry().stream()
                 .filter(PickaxeItem.class::isInstance)
                 .map(PickaxeItem.class::cast)

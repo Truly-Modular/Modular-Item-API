@@ -3,7 +3,6 @@ package smartin.miapi.mixin.loot;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.commands.LootCommand;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
@@ -19,8 +18,6 @@ import smartin.miapi.Miapi;
 
 import java.util.Optional;
 import java.util.function.Consumer;
-
-import static smartin.miapi.loot.LootHelper.LOOT_TABLE_PARAM;
 
 @Mixin(LootTable.class)
 public class LootTableMixin {
@@ -54,28 +51,36 @@ public class LootTableMixin {
 
     @Inject(method = "Lnet/minecraft/world/level/storage/loot/LootTable;fill(Lnet/minecraft/world/Container;Lnet/minecraft/world/level/storage/loot/LootParams;J)V", at = @At("HEAD"))
     public void miapi$captureLootTableParamBlock(Container container, LootParams params, long seed, CallbackInfo ci) {
+        /*
         LootTable lootTable = (LootTable) (Object) this;
         miapiTryGetLootTableID(params.getLevel(), lootTable).ifPresent(id -> {
             ((LootParamsAccessor) params).getParams().put(LOOT_TABLE_PARAM, id);
         });
+
+         */
     }
 
     @Inject(method = "Lnet/minecraft/world/level/storage/loot/LootTable;getRandomItems(Lnet/minecraft/world/level/storage/loot/LootContext;)Lit/unimi/dsi/fastutil/objects/ObjectArrayList;", at = @At("HEAD"))
     public void miapi$captureLootTableParamListDirect(LootContext context, CallbackInfoReturnable<ObjectArrayList<ItemStack>> cir) {
+                /*
         LootParams params = ((LootContextAccessor) context).getParams();
         LootTable lootTable = (LootTable) (Object) this;
         miapiTryGetLootTableID(params.getLevel(), lootTable).ifPresent(id -> {
             ((LootParamsAccessor) params).getParams().put(LOOT_TABLE_PARAM, id);
         });
+        */
     }
 
     @Inject(method = "Lnet/minecraft/world/level/storage/loot/LootTable;getRandomItemsRaw(Lnet/minecraft/world/level/storage/loot/LootContext;Ljava/util/function/Consumer;)V", at = @At("HEAD"))
     public void miapi$captureLootTableParamListRaw(LootContext context, Consumer<ItemStack> output, CallbackInfo ci) {
+        /*
         LootParams params = ((LootContextAccessor) context).getParams();
         LootTable lootTable = (LootTable) (Object) this;
         miapiTryGetLootTableID(params.getLevel(), lootTable).ifPresent(id -> {
             ((LootParamsAccessor) params).getParams().put(LOOT_TABLE_PARAM, id);
         });
+
+         */
     }
 
     private static Optional<ResourceLocation> miapiTryGetLootTableID(ServerLevel level, LootTable lootTable) {
@@ -84,7 +89,6 @@ public class LootTableMixin {
             return Optional.ofNullable(reg.get().getKey(lootTable));
         } catch (RuntimeException e) {
             Miapi.LOGGER.info("could not lookup loot table", e);
-            LootCommand command;
         }
         try {
         } catch (RuntimeException e) {

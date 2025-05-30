@@ -184,6 +184,7 @@ public class MiapiClient {
         });
         ClientReloadShadersEvent.EVENT.register((resourceFactory, asd) -> {
             ModularItemCache.discardCache();
+            TierManager.setup();
         });
         RegistryInventory.MODULAR_ITEMS.addCallback((item -> {
             ModularModelPredicateProvider.registerModelOverride(item, Miapi.id("damage"), (stack, world, entity, seed) -> stack.isDamageableItem() && stack.getDamageValue() > 0 ? ((float) stack.getDamageValue() / stack.getMaxDamage()) : 0.0f);
@@ -291,7 +292,6 @@ public class MiapiClient {
 
     protected static void clientStart(Minecraft client) {
         CryoStatusEffect.setupOnClient();
-        TierManager.setup();
     }
 
     protected static void clientLevelLoad(ClientLevel clientWorld) {
