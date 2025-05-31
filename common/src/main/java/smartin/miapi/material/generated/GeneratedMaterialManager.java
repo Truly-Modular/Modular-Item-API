@@ -28,16 +28,39 @@ import static smartin.miapi.material.MaterialProperty.MATERIAL_REGISTRY;
 public class GeneratedMaterialManager {
     public static final List<GeneratedMaterial> generatedMaterials = new ArrayList<>();
     public static final List<GeneratedMaterialFromCopy> basicGeneratedMaterials = new ArrayList<>();
+    public static List<GeneratedMaterialFromCopy.GeneratedMaterialCopy> TO_GENERATE = new ArrayList<>();
 
     public static void setup() {
         ReloadEvents.MAIN.subscribe((isClient, registryAccess) -> {
             if (!isClient) {
                 onReloadServer(registryAccess);
             } else {
-                basicGeneratedMaterials.forEach(generatedMaterial -> MATERIAL_REGISTRY.register(generatedMaterial.getID(), generatedMaterial));
-                SmithingRecipeUtil.setupSmithingRecipe(generatedMaterials, true, (material) -> {
-                    MATERIAL_REGISTRY.register(material.getID(), material);
-                }, registryAccess, null);
+                try {
+                    basicGeneratedMaterials.forEach(generatedMaterial -> MATERIAL_REGISTRY.register(generatedMaterial.getID(), generatedMaterial));
+                    SmithingRecipeUtil.setupSmithingRecipe(generatedMaterials, true, (material) -> {
+                        MATERIAL_REGISTRY.register(material.getID(), material);
+                    }, registryAccess, null);
+                } catch (RuntimeException e) {
+                    Miapi.LOGGER.info("could not set up generated Materials on client!", e);
+                }
+                try {
+                    basicGeneratedMaterials.clear();
+                    for (GeneratedMaterialFromCopy.GeneratedMaterialCopy copy : TO_GENERATE) {
+                        Material baseMaterial = MaterialProperty.MATERIAL_REGISTRY.get(copy.fromMaterial());
+                        if (baseMaterial == null) {
+                            Miapi.LOGGER.info("Cannot generate copy material based on missing base " + copy.fromMaterial());
+                        } else {
+                            GeneratedMaterialFromCopy material = new GeneratedMaterialFromCopy(copy.ingredient(), baseMaterial);
+                            material.setupClient();
+                            if (verboseLogging()) {
+                                Miapi.LOGGER.info("wood/stone " + material.getTranslation().getString());
+                            }
+                            basicGeneratedMaterials.add(material);
+                        }
+                    }
+                } catch (RuntimeException e) {
+                    Miapi.LOGGER.info("could not set up generated copy Materials on client!", e);
+                }
             }
         }, -1);
         ReloadEvents.dataSyncerRegistry.register(Miapi.id("generated_materials"),
@@ -65,24 +88,16 @@ public class GeneratedMaterialManager {
         ReloadEvents.dataSyncerRegistry.register(Miapi.id("generated_simple_materials"),
                 new ReloadEvents.SimpleSyncer<>(ByteBufCodecs.fromCodec(Codec.list(GeneratedMaterialFromCopy.CODEC))) {
                     @Override
-                    public List<GeneratedMaterialFromCopy> getDataServer() {
-                        return basicGeneratedMaterials;
+                    public List<GeneratedMaterialFromCopy.GeneratedMaterialCopy> getDataServer() {
+                        return basicGeneratedMaterials.stream().map(a -> new GeneratedMaterialFromCopy.GeneratedMaterialCopy(a.mainIngredient, a.source.getID())).toList();
                     }
 
                     @Override
-                    public void interpretData(List<GeneratedMaterialFromCopy> data) {
+                    public void interpretData(List<GeneratedMaterialFromCopy.GeneratedMaterialCopy> data) {
                         if (verboseLogging()) {
                             Miapi.LOGGER.info("Client received " + data.size() + " wood/stone materials");
                         }
-                        for (GeneratedMaterialFromCopy copy : data) {
-                            copy.setupClient();
-                            if (verboseLogging()) {
-                                Miapi.LOGGER.info("wood/stone " + copy.getTranslation().getString());
-                            }
-                        }
-                        basicGeneratedMaterials.clear();
-
-                        basicGeneratedMaterials.addAll(data);
+                        TO_GENERATE = data;
                     }
                 });
     }
@@ -299,7 +314,7 @@ public class GeneratedMaterialManager {
             if (percentDif(first.getSpeed(), second.getSpeed()) > 0.1) {
                 return false;
             }
-            if (percentDif(first.getUses(), second.getUses()) >0.1) {
+            if (percentDif(first.getUses(), second.getUses()) > 0.1) {
                 return false;
             }
             if (percentDif(first.getEnchantmentValue(), second.getEnchantmentValue()) > 0.1) {

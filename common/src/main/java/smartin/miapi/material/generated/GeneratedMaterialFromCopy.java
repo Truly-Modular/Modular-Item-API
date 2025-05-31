@@ -21,9 +21,8 @@ import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.events.MiapiEvents;
-import smartin.miapi.material.base.Material;
 import smartin.miapi.material.MaterialIcons;
-import smartin.miapi.material.MaterialProperty;
+import smartin.miapi.material.base.Material;
 import smartin.miapi.material.palette.FallbackColorer;
 import smartin.miapi.material.palette.GrayscalePaletteColorer;
 import smartin.miapi.material.palette.MaterialRenderController;
@@ -47,17 +46,15 @@ public class GeneratedMaterialFromCopy implements Material {
     MaterialIcons.MaterialIcon icon;
     Material source;
 
-    public static Codec<GeneratedMaterialFromCopy> CODEC = RecordCodecBuilder.create((instance) ->
+    public static Codec<GeneratedMaterialCopy> CODEC = RecordCodecBuilder.create((instance) ->
             instance.group(
                     ItemStack.CODEC
                             .fieldOf("ingredient")
-                            .forGetter(m -> m.mainIngredient),
+                            .forGetter(GeneratedMaterialCopy::ingredient),
                     ResourceLocation.CODEC
                             .fieldOf("material").
-                            forGetter(m -> m.source.getID())
-            ).apply(instance, (itemstack, material) -> {
-                return new GeneratedMaterialFromCopy(itemstack, MaterialProperty.MATERIAL_REGISTRY.get(material));
-            }));
+                            forGetter(GeneratedMaterialCopy::fromMaterial)
+            ).apply(instance, GeneratedMaterialCopy::new));
 
 
     /**
@@ -241,6 +238,10 @@ public class GeneratedMaterialFromCopy implements Material {
         ingredients.add(otherIngredient);
         object.add("items", ingredients);
         return object;
+    }
+
+    public static record GeneratedMaterialCopy(ItemStack ingredient, ResourceLocation fromMaterial){
+
     }
 
     @Override
