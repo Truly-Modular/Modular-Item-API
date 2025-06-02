@@ -1,5 +1,6 @@
 package smartin.miapi.client.model;
 
+import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.redpxnda.nucleus.util.Color;
@@ -24,10 +25,12 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.GlintShader;
+import smartin.miapi.client.renderer.RescaledVertexConsumer;
 import smartin.miapi.client.renderer.TrimRenderer;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.item.modular.Transform;
 import smartin.miapi.material.MaterialProperty;
+import smartin.miapi.mixin.BufferBuilderAccessor;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.GlintProperty;
 import smartin.miapi.modules.properties.render.AlphaOverwriteProperty;
@@ -36,7 +39,8 @@ import smartin.miapi.modules.properties.render.EmissivityProperty;
 import smartin.miapi.modules.properties.render.colorproviders.ColorProvider;
 import smartin.miapi.modules.properties.util.DoubleOperationResolvable;
 
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 @Environment(EnvType.CLIENT)
 public class BakedMiapiModel implements MiapiModel {
@@ -50,6 +54,9 @@ public class BakedMiapiModel implements MiapiModel {
     int skyLight;
     int blockLight;
     float alpha;
+    static VertexConsumer lastVC;
+    static ColorProvider lastColor;
+    static TextureAtlasSprite textureAtlasSprite;
 
 
     public BakedMiapiModel(ModelHolder holder, ModuleInstance moduleInstance, ItemStack stack) {
@@ -81,6 +88,7 @@ public class BakedMiapiModel implements MiapiModel {
     @Override
     public void render(PoseStack matrices, ItemStack stack, ItemDisplayContext transformationMode, float tickDelta, MultiBufferSource vertexConsumers, LivingEntity entity, int packedLight, int overlay) {
         assert Minecraft.getInstance().level != null;
+        Map<TextureAtlasSprite, VertexConsumer> lookup = new HashMap<>();
         Minecraft.getInstance().getProfiler().push("BakedModel");
         Minecraft.getInstance().getProfiler().push("BakedModel-logic");
         matrices.pushPose();
@@ -100,18 +108,15 @@ public class BakedMiapiModel implements MiapiModel {
 
         //render normally
         try {
-            VertexConsumer consumer = null;
             for (Direction dir : Direction.values()) {
-                List<BakedQuad> quads = currentModel.getQuads(null, dir, RandomSource.create());
-                if (consumer == null && !quads.isEmpty()) {
-                    Minecraft.getInstance().getProfiler().push("BakedModel - get VC");
-                    TextureAtlasSprite first = quads.getFirst().getSprite();
-                    ColorProvider provider = modelHolder.colorProvider();
-                    consumer = provider.getConsumer(vertexConsumers, first, stack, instance, transformationMode);
-                    Minecraft.getInstance().getProfiler().pop();
-                    Minecraft.getInstance().getProfiler().push("BakedModel - quads");
-                }
                 for (BakedQuad quad : currentModel.getQuads(null, dir, RandomSource.create())) {
+                    VertexConsumer consumer = getConsumer(modelHolder.colorProvider(), quad.getSprite(), vertexConsumers, stack, instance, transformationMode);
+
+                    //VertexConsumer consumer = getConsumer(
+                    //        modelHolder.colorProvider(), quad.getSprite(), vertexConsumers, stack,
+                    //        instance, transformationMode);
+
+
                     consumer.putBulkData(matrices.last(), quad, colors[0], colors[1], colors[2], alpha, light, overlay);
                 }
             }
@@ -150,17 +155,44 @@ public class BakedMiapiModel implements MiapiModel {
         }
         Minecraft.getInstance().getProfiler().pop();
 
+        lookup.clear();
         //render from both sides if requested
         if (modelHolder.entityRendering()) {
             Minecraft.getInstance().getProfiler().push("EntityModel");
             ModelTransformer.getInverse(currentModel, random).forEach(quad -> {
-                VertexConsumer vertexConsumer = modelHolder.colorProvider().getConsumer(vertexConsumers, quad.getSprite(), stack, instance, transformationMode);
-                vertexConsumer.putBulkData(matrices.last(), quad, colors[0], colors[1], colors[2], alpha, light, overlay);
+                VertexConsumer vertexConsumer = getConsumer(
+                        modelHolder.colorProvider(),
+                        quad.getSprite(),
+                        vertexConsumers, stack,
+                        instance, transformationMode);
+                vertexConsumer.putBulkData(
+                        matrices.last(), quad,
+                        colors[0], colors[1], colors[2],
+                        alpha, light, overlay);
             });
             Minecraft.getInstance().getProfiler().pop();
         }
         matrices.popPose();
         Minecraft.getInstance().getProfiler().pop();
+    }
+
+    public boolean isStillValid(VertexConsumer vertexConsumer) {
+        if (vertexConsumer instanceof RescaledVertexConsumer rescaledVertexConsumer) {
+            return isStillValid(rescaledVertexConsumer.delegate);
+        } else if (vertexConsumer instanceof BufferBuilder buffer) {
+            return ((BufferBuilderAccessor) buffer).isBuilding();
+        }
+        return false;
+    }
+
+    public VertexConsumer getConsumer(ColorProvider provider, TextureAtlasSprite sprite, MultiBufferSource source, ItemStack itemStack, ModuleInstance instance, ItemDisplayContext context) {
+        if (provider.equals(lastColor) && sprite.equals(textureAtlasSprite) && isStillValid(lastVC)) {
+            return lastVC;
+        }
+        lastVC = provider.getConsumer(source, sprite, itemStack, instance, context);
+        lastColor = provider;
+        textureAtlasSprite = sprite;
+        return lastVC;
     }
 
     public BakedModel resolve(BakedModel model, ItemStack stack, @Nullable LivingEntity entity, int light) {

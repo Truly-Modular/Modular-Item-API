@@ -81,6 +81,20 @@ public interface ColorProvider {
             }
             return new ModelColorProvider();
         }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) return true;
+            if (obj == null || getClass() != obj.getClass()) return false;
+            MaterialColorProvider that = (MaterialColorProvider) obj;
+            return java.util.Objects.equals(material, that.material);
+        }
+
+        @Override
+        public int hashCode() {
+            return java.util.Objects.hash(material);
+        }
+
     }
 
     class ParentColorProvider extends MaterialColorProvider {
@@ -118,6 +132,20 @@ public interface ColorProvider {
             }
             return moduleInstance;
         }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) return true;
+            if (obj == null || getClass() != obj.getClass()) return false;
+            ParentColorProvider that = (ParentColorProvider) obj;
+            return java.util.Objects.equals(material, that.material);
+        }
+
+        @Override
+        public int hashCode() {
+            return java.util.Objects.hash(material);
+        }
+
     }
 
     class ItemMaterialColorProvider extends MaterialColorProvider {
@@ -157,6 +185,20 @@ public interface ColorProvider {
             }
             return new ModelColorProvider();
         }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) return true;
+            if (obj == null || getClass() != obj.getClass()) return false;
+            ItemMaterialColorProvider that = (ItemMaterialColorProvider) obj;
+            return java.util.Objects.equals(material, that.material);
+        }
+
+        @Override
+        public int hashCode() {
+            return java.util.Objects.hash(material);
+        }
+
     }
 
     class ModelColorProvider implements ColorProvider {
@@ -179,6 +221,17 @@ public interface ColorProvider {
         public ColorProvider getInstance(ItemStack stack, ModuleInstance instance) {
             return new ModelColorProvider(stack);
         }
+
+        @Override
+        public boolean equals(Object obj) {
+            return obj != null && getClass() == obj.getClass();
+        }
+
+        @Override
+        public int hashCode() {
+            return getClass().hashCode();
+        }
+
     }
 
     class PotionColorProvider implements ColorProvider {
@@ -211,5 +264,19 @@ public interface ColorProvider {
         public ColorProvider getInstance(ItemStack stack, ModuleInstance instance) {
             return new PotionColorProvider(stack);
         }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) return true;
+            if (obj == null || getClass() != obj.getClass()) return false;
+            PotionColorProvider that = (PotionColorProvider) obj;
+            return java.util.Objects.equals(potioncolor, that.potioncolor);
+        }
+
+        @Override
+        public int hashCode() {
+            return java.util.Objects.hash(potioncolor);
+        }
+
     }
 }
