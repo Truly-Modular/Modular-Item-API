@@ -4,14 +4,12 @@ import com.mojang.datafixers.util.Pair;
 import com.redpxnda.nucleus.util.Color;
 import net.minecraft.block.entity.BannerPattern;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.LightmapTextureManager;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.*;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.BakedQuad;
 import net.minecraft.client.render.model.json.ModelOverrideList;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
+import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ArmorItem;
@@ -25,13 +23,16 @@ import net.minecraft.util.math.random.Random;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import smartin.miapi.client.ShaderRegistry;
+import smartin.miapi.client.renderer.RescaledVertexConsumer;
 import smartin.miapi.client.renderer.TrimRenderer;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.item.modular.Transform;
+import smartin.miapi.mixin.BufferBuilderAccessor;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.material.MaterialInscribeDataProperty;
 import smartin.miapi.modules.properties.EmissiveProperty;
 import smartin.miapi.modules.properties.GlintProperty;
+import smartin.miapi.modules.properties.render.colorproviders.ColorProvider;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,6 +55,9 @@ public class BakedMiapiModel implements MiapiModel {
     ItemStack bannerItem = null;
     public static Supplier<RenderLayer> fallbackGlintRenderLayer = RenderLayer::getDirectGlint;
     public static Function<ItemStack, Boolean> useGlintColor = (s) -> false;
+    static VertexConsumer lastVC;
+    static ColorProvider lastColor;
+    static Sprite textureAtlasSprite;
 
     public BakedMiapiModel(ModelHolder holder, ItemModule.ModuleInstance moduleInstance, ItemStack stack) {
         this.modelHolder = holder;
@@ -112,7 +116,7 @@ public class BakedMiapiModel implements MiapiModel {
         //render normally
         for (Direction dir : Direction.values()) {
             currentModel.getQuads(null, dir, Random.create()).forEach(quad -> {
-                VertexConsumer vertexConsumer = modelHolder.colorProvider().getConsumer(vertexConsumers, quad.getSprite(), stack, instance, transformationMode);
+                VertexConsumer vertexConsumer = getConsumer(modelHolder.colorProvider(), quad.getSprite(), vertexConsumers, stack, instance, transformationMode);
                 vertexConsumer.quad(matrices.peek(), quad, colors[0], colors[1], colors[2], light, overlay);
                 if (stack.hasGlint()) {
                     if (MiapiConfig.INSTANCE.client.other.enchantingGlint) {
@@ -158,7 +162,7 @@ public class BakedMiapiModel implements MiapiModel {
         //render from both sides if requested
         if (modelHolder.entityRendering()) {
             ModelTransformer.getInverse(currentModel, random).forEach(quad -> {
-                VertexConsumer vertexConsumer = modelHolder.colorProvider().getConsumer(vertexConsumers, quad.getSprite(), stack, instance, transformationMode);
+                VertexConsumer vertexConsumer = getConsumer(modelHolder.colorProvider(), quad.getSprite(), vertexConsumers, stack, instance, transformationMode);
                 vertexConsumer.quad(matrices.peek(), quad, colors[0], colors[1], colors[2], light, overlay);
                 if (stack.hasGlint()) {
                     if (MiapiConfig.INSTANCE.client.other.enchantingGlint) {
@@ -172,6 +176,25 @@ public class BakedMiapiModel implements MiapiModel {
 
         MinecraftClient.getInstance().world.getProfiler().pop();
         matrices.pop();
+    }
+
+    public boolean isStillValid(VertexConsumer vertexConsumer) {
+        if (vertexConsumer instanceof RescaledVertexConsumer rescaledVertexConsumer) {
+            return isStillValid(rescaledVertexConsumer.delegate);
+        } else if (vertexConsumer instanceof BufferBuilder buffer) {
+            return ((BufferBuilderAccessor) buffer).isBuilding();
+        }
+        return false;
+    }
+
+    public VertexConsumer getConsumer(ColorProvider provider, Sprite sprite, VertexConsumerProvider source, ItemStack itemStack, ItemModule.ModuleInstance instance, ModelTransformationMode context) {
+        if (provider.equals(lastColor) && sprite.equals(textureAtlasSprite) && isStillValid(lastVC)) {
+            return lastVC;
+        }
+        lastVC = provider.getConsumer(source, sprite, itemStack, instance, context);
+        lastColor = provider;
+        textureAtlasSprite = sprite;
+        return lastVC;
     }
 
     public BakedModel resolve(BakedModel model, ItemStack stack, @Nullable LivingEntity entity, int light) {
