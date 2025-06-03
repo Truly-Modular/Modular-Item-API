@@ -3,3 +3,4 @@
 - improved mining level feedback
 - fixed crash with Snow! Real Magic!
 - further performance improvements
+- fixed Purpur block material naming
