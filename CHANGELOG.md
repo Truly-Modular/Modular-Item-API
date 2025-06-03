@@ -2,3 +2,4 @@
 - fixed mining level logic edge cases with diamond
 - improved mining level feedback
 - fixed crash with Snow! Real Magic!
+- further performance improvements

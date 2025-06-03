@@ -28,6 +28,8 @@ import smartin.miapi.client.gui.crafting.slotdisplay.SmithDisplay;
 import smartin.miapi.client.gui.crafting.statdisplay.material.MaterialStatWidget;
 import smartin.miapi.client.gui.crafting.statdisplay.material.StatDisplayWidget;
 import smartin.miapi.item.ModularItemStackConverter;
+import smartin.miapi.item.modular.VisualModularItem;
+import smartin.miapi.material.MaterialProperty;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.edit_options.EditOption;
@@ -65,6 +67,8 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
     public int overwriteMouseY = 0;
     public int overwriteMouseX = 0;
     public ItemStack currentStack = ItemStack.EMPTY;
+    public boolean trueMinState = false;
+    public boolean currentMinState = false;
 
     List<InteractAbleWidget> editOptionIcons = new ArrayList<>();
 
@@ -138,7 +142,7 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
         statDisplay = new StatDisplayWidget(centerX + 213 - 15, centerY + 30 - 14, 161, 95);
         this.addChild(statDisplay);
 
-        minimizer = new MinimizeButton(centerX + 178 - 15, centerY + 188 - 14, 18, 18, this::minimizeView, this::maximizeView);
+        minimizer = new MinimizeButton(centerX + 178 - 15, centerY + 188 - 14, 18, 18, this::minimizeViewButton, this::maximizeViewButton);
         this.addChild(minimizer);
 
         super.init();
@@ -177,8 +181,13 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
         return this.imageWidth;
     }
 
-    //could be the same as maximizeView()
+    public void minimizeViewButton() {
+        minimizeView();
+        trueMinState = true;
+    }
+
     public void minimizeView() {
+        currentMinState = true;
         EditOption op = getEditOption();
         removeWidget(moduleCrafter);
         SlotProperty.ModuleSlot slot1 = moduleCrafter.slot;
@@ -201,6 +210,7 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
     }
 
     public void maximizeView() {
+        currentMinState = false;
         EditOption op = getEditOption();
         removeWidget(moduleCrafter);
         SlotProperty.ModuleSlot slot1 = moduleCrafter.slot;
@@ -222,6 +232,10 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
         }
     }
 
+    public void maximizeViewButton() {
+        maximizeView();
+        trueMinState = false;
+    }
 
     public ItemStack getItem() {
         return menu.inventory.getItem(0);
@@ -251,6 +265,19 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
         if (baseSlot.inSlot.module.equals(ItemModule.empty)) {
             current = null;
         }
+
+
+        if (trueMinState && !currentMinState) {
+            if (
+                    !VisualModularItem.isVisualModularItem(stack) &&
+                    MaterialProperty.getMaterialFromIngredient(stack) != null
+            ) {
+                //maximizeView();
+                //updatePreviewItemStack(stack);
+                //return;
+            }
+        }
+
         if (moduleCrafter != null) {
             moduleCrafter.setItem(converted);
             moduleCrafter.setBaseSlot(current);
