@@ -43,7 +43,7 @@ public class ModuleCrafter extends InteractAbleWidget {
     EditOption editOption;
     Consumer<SlotProperty.ModuleSlot> selected;
     public EditOption.EditContext editContext;
-    Mode currentMode = Mode.DETAIL;
+    public Mode currentMode = Mode.DETAIL;
     CraftOption craftOption;
     public String moduleType = "default";
 

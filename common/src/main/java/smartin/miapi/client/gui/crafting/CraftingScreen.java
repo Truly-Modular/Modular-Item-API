@@ -64,6 +64,8 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
     ItemStack nextItemStack = ItemStack.EMPTY;
     public int overwriteMouseX = 0;
     public int overwriteMouseY = 0;
+    public boolean trueMinState = false;
+    public boolean currentMinState = false;
 
     List<InteractAbleWidget> editOptionIcons = new ArrayList<>();
 
@@ -137,7 +139,7 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
         statDisplay = new StatDisplayWidget(centerX + 213 - 15, centerY + 30 - 14, 161, 95);
         this.addChild(statDisplay);
 
-        minimizer = new MinimizeButton(centerX + 178 - 15, centerY + 188 - 14, 18, 18, this::minimizeView, this::maximizeView);
+        minimizer = new MinimizeButton(centerX + 178 - 15, centerY + 188 - 14, 18, 18, this::minimizeViewButton, this::maximizeViewButton);
         this.addChild(minimizer);
 
         super.init();
@@ -173,7 +175,11 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
         return this.backgroundWidth;
     }
 
-    //could be the same as maximizeView()
+    public void minimizeViewButton() {
+        minimizeView();
+        trueMinState = true;
+    }
+
     public void minimizeView() {
         EditOption op = getEditOption();
         remove(moduleCrafter);
@@ -194,6 +200,12 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
         updateEditOptions();
         selectEditOption(op);
         this.handler.clearSlots();
+        currentMinState = true;
+    }
+
+    public void maximizeViewButton() {
+        maximizeView();
+        trueMinState = false;
     }
 
     public void maximizeView() {
@@ -216,6 +228,7 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
         updateEditOptions();
         selectEditOption(op);
         this.handler.clearSlots();
+        currentMinState = false;
     }
 
     public ItemStack getItem() {

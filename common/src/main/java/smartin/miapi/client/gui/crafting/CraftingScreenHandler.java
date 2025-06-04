@@ -281,8 +281,10 @@ public class CraftingScreenHandler extends ScreenHandler {
     public void sendContentUpdates() {
         super.sendContentUpdates();
         if (notClient()) {
-            blockEntity.setItem(inventory.getStack(0));
-            blockEntity.saveAndSync();
+            if(!ItemStack.areEqual(inventory.getStack(0),blockEntity.getItem())){
+                blockEntity.setItem(inventory.getStack(0));
+                blockEntity.saveAndSync();
+            }
         }
         if (blockEntity == null && delegate.get(0) == 1) {
             short xsh = (short) delegate.get(1);
