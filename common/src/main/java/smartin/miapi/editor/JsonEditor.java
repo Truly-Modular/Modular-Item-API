@@ -187,7 +187,10 @@ public class JsonEditor implements MiapiEditor {
 
     @Override
     public void render(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
-        if (!show.get()) return;
+        if (!show.get()) {
+            MiapiEditor.editors.remove(this);
+            return;
+        }
         boolean hasErrors = false;
 
         // Check for file changes

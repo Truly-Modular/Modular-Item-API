@@ -1,5 +1,6 @@
 package smartin.miapi.modules.cache;
 
+import dev.architectury.event.EventResult;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.datapack.ReloadEvents;
@@ -20,6 +21,16 @@ public class ModularItemCache {
 
     public static void setSupplier(String key, CacheObjectSupplier supplier) {
         supplierMap.put(key, supplier);
+    }
+
+    static {
+        MiapiEvents.CLEAR_CACHE.register(new MiapiEvents.EmptyEvent() {
+            @Override
+            public EventResult onReload() {
+                discardCache();
+                return EventResult.pass();
+            }
+        });
     }
 
     @Nullable

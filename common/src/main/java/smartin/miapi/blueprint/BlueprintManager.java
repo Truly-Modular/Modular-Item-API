@@ -10,26 +10,29 @@ import smartin.miapi.client.gui.crafting.crafter.replace.CraftOption;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.datapack.ReloadHelpers;
 import smartin.miapi.material.AllowedMaterial;
+import smartin.miapi.registries.MiapiRegistry;
 
-import java.util.HashMap;
 import java.util.Map;
 
 public class BlueprintManager {
-    public static Map<ResourceLocation, BlueprintComponent> reloadedBlueprints = new HashMap<>();
+    public static MiapiRegistry<BlueprintComponent> RELOADED_BLUEPRINTS = MiapiRegistry.getInstance(BlueprintComponent.class);
     public static ResourceLocation ID = Miapi.id("reloaded_blueprint");
 
     public static void setup() {
-        ReloadHelpers.registerReloadHandler(ReloadEvents.MAIN, "miapi/blueprint", reloadedBlueprints, (isClient, id, data, registryAccess) -> {
-            Miapi.LOGGER.info("loaded Blueprint " + id);
-            JsonElement element = Miapi.gson.fromJson(data, JsonElement.class);
-            BlueprintComponent component = BlueprintComponent.CODEC.decode(JsonOps.INSTANCE, element).getOrThrow().getFirst();
-            if (component.ingredient.left().isPresent() && component.ingredient.left().get()) {
-                Miapi.LOGGER.warn("Datapack Blueprints cannot set the Ingredient to True!, either use false ur a Ingredient with count");
-            } else {
-                reloadedBlueprints.put(id, BlueprintComponent.CODEC.decode(JsonOps.INSTANCE, element).getOrThrow().getFirst());
-            }
-        }, 5.0f);
-        ReloadEvents.END.subscribe((isClient, registryAccess) -> Miapi.LOGGER.info("Loaded " + reloadedBlueprints.size() + " Blueprints"));
+        ReloadHelpers.registerReloadHandler(
+                "miapi/blueprint",
+                () -> RELOADED_BLUEPRINTS.clear(),
+                (id, blueprint) -> {
+                    if (blueprint.ingredient.left().isPresent() && blueprint.ingredient.left().get()) {
+                        Miapi.LOGGER.warn("Datapack Blueprints cannot set the Ingredient to True!, either use false ur a Ingredient with count");
+                    } else {
+                        RELOADED_BLUEPRINTS.register(id, blueprint);
+                    }
+                },
+                BlueprintComponent.CODEC,
+                5.0f
+        );
+        ReloadEvents.END.subscribe((isClient, registryAccess) -> Miapi.LOGGER.info("Loaded " + RELOADED_BLUEPRINTS.getFlatMap().size() + " Blueprints"));
     }
 
     public static CraftOption asCraftOption(CraftingScreenHandler screenHandler, ResourceLocation location, BlueprintComponent blueprint) {
@@ -51,8 +54,8 @@ public class BlueprintManager {
         JsonElement json = dataMap.get(ID);
         if (json != null) {
             var decodeResult = ResourceLocation.CODEC.decode(JsonOps.INSTANCE, json).getOrThrow().getFirst();
-            if (reloadedBlueprints.containsKey(decodeResult)) {
-                return reloadedBlueprints.get(decodeResult);
+            if (RELOADED_BLUEPRINTS.containsKey(decodeResult)) {
+                return RELOADED_BLUEPRINTS.get(decodeResult);
             }
         }
         return null;

@@ -8,7 +8,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
 import smartin.miapi.Miapi;
 import smartin.miapi.datapack.ReloadEvents;
-import smartin.miapi.modules.cache.ModularItemCache;
+import smartin.miapi.events.MiapiEvents;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +22,7 @@ public class SpriteLoader {
     public static List<ResourceLocation> miapiModels = new ArrayList<>();
 
     public static void setup() {
-        ReloadEvents.START.subscribe((isClient, registryAccess) -> ModularItemCache.discardCache());
+        ReloadEvents.START.subscribe((isClient, registryAccess) -> MiapiEvents.CLEAR_CACHE.invoker().onReload());
     }
 
     public static void clientStart() {

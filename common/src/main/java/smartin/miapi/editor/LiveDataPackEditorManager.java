@@ -7,6 +7,7 @@ import imgui.type.ImBoolean;
 import imgui.type.ImString;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.GuiGraphics;
+import smartin.miapi.editor.material.MaterialListViewer;
 import smartin.miapi.modules.cache.CacheCommands;
 
 import java.io.File;
@@ -45,7 +46,10 @@ public class LiveDataPackEditorManager implements MiapiEditor {
 
     @Override
     public void render(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
-        if (!show.get()) return;
+        if (!show.get()) {
+            MiapiEditor.editors.remove(this);
+            return;
+        }
 
         ImGui.setNextWindowSize(400, 600, ImGuiCond.FirstUseEver);
         if (ImGui.begin("LivePack Manager", show)) {
@@ -149,6 +153,13 @@ public class LiveDataPackEditorManager implements MiapiEditor {
                             fileSystemViewer = null;
                         }
                     }
+                    File dataDir = new File(pack.directory, pack.dataPath);
+                    if (ImGui.button("Materials")) {
+                        MiapiEditor.editors.add(new MaterialListViewer(
+                                dataDir,
+                                this::reload
+                        ));
+                    }
 
                     ImGui.treePop();
                 }
@@ -199,7 +210,7 @@ public class LiveDataPackEditorManager implements MiapiEditor {
         }
     }
 
-    public void reload(){
+    public void reload() {
         CacheCommands.triggerServerReload();
     }
 }

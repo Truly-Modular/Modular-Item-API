@@ -70,7 +70,7 @@ public class ModuleInstance {
                                         .forGetter((moduleInstance) -> moduleInstance.moduleID),
                                 Codec.unboundedMap(Codec.STRING, selfCodec).xmap((i) -> i, Function.identity())
                                         .optionalFieldOf("child", new LinkedHashMap<>())
-                                        .forGetter((moduleInstance) -> moduleInstance.subModules),
+                                        .forGetter(ModuleInstance::getSubModuleMapForSave),
                                 dataJsonCodec
                                         .optionalFieldOf("data", new HashMap<>())
                                         .forGetter(ModuleInstance::getSaveData)
@@ -235,6 +235,13 @@ public class ModuleInstance {
     }
 
     public Map<String, ModuleInstance> getSubModuleMap() {
+        return new LinkedHashMap<>(subModules);
+    }
+
+    private Map<String, ModuleInstance> getSubModuleMapForSave() {
+        if (this.parent == null && subModules.isEmpty()) {
+            //Miapi.LOGGER.warn("potential encoding issue!");
+        }
         return new LinkedHashMap<>(subModules);
     }
 

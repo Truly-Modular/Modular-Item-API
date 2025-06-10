@@ -9,8 +9,6 @@ import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceLocation;
 import smartin.miapi.Miapi;
-import smartin.miapi.blueprint.BlueprintComponent;
-import smartin.miapi.blueprint.BlueprintManager;
 import smartin.miapi.editor.DocPage;
 import smartin.miapi.item.ItemToModularConverter;
 import smartin.miapi.material.CodecMaterial;
@@ -98,16 +96,6 @@ public class ReloadHelpers {
         ReloadHelpers.registerReloadHandler(ReloadEvents.MAIN, "miapi/modular_converter", ItemToModularConverter.regexes, (isClient, path, data, registryAccess) -> {
             ItemToModularConverter.setupModularConverter(path, data);
         }, 1);
-        ReloadHelpers.registerReloadHandler(ReloadEvents.MAIN, "miapi/blueprint", BlueprintManager.reloadedBlueprints, (isClient, id, data, registryAccess) -> {
-            Miapi.LOGGER.info("loaded Blueprint " + id);
-            JsonElement element = Miapi.gson.fromJson(data, JsonElement.class);
-            BlueprintComponent component = BlueprintComponent.CODEC.decode(JsonOps.INSTANCE, element).getOrThrow().getFirst();
-            if (component.ingredient.left().isPresent() && component.ingredient.left().get()) {
-                Miapi.LOGGER.warn("Datapack Blueprints cannot set the Ingredient to True!, either use false ur a Ingredient with count");
-            } else {
-                BlueprintManager.reloadedBlueprints.put(id, BlueprintComponent.CODEC.decode(JsonOps.INSTANCE, element).getOrThrow().getFirst());
-            }
-        });
     }
 
     public static void registerReloadHandler(

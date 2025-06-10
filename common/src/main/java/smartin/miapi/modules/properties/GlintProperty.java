@@ -12,10 +12,10 @@ import net.minecraft.world.item.ItemStack;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.GlintShader;
 import smartin.miapi.config.MiapiConfig;
+import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.material.MaterialProperty;
 import smartin.miapi.material.base.Material;
 import smartin.miapi.modules.ModuleInstance;
-import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.util.CodecProperty;
 import smartin.miapi.modules.properties.util.MergeType;
 
@@ -102,7 +102,7 @@ public class GlintProperty extends CodecProperty<GlintProperty.RainbowGlintSetti
         glintSettings.colors = newColors;
         glintSettings.rainbowSpeed = MiapiConfig.getClientConfig().enchantingGlint.enchantingGlintSpeed;
         defaultSettings = glintSettings;
-        ModularItemCache.discardCache();
+        MiapiEvents.CLEAR_CACHE.invoker().onReload();
     }
 
     @Override

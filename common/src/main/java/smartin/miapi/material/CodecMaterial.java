@@ -11,7 +11,6 @@ import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
@@ -119,7 +118,8 @@ public class CodecMaterial implements Material {
             Codec.STRING.listOf().optionalFieldOf("textures", List.of("default")).forGetter(CodecMaterial::getTextureKeys),
             ResourceLocation.CODEC.optionalFieldOf("mining_level").forGetter(material -> Optional.of(material.getIncorrectBlocksForDrops().location())),
             ComponentSerialization.CODEC.optionalFieldOf("translation").forGetter(material -> material.translation),
-            Codec.STRING.optionalFieldOf("color").forGetter(m -> Optional.of(Long.toHexString(m.getColor(new ModuleInstance(ItemModule.empty))))),
+            Codec.STRING.optionalFieldOf("color")
+                    .forGetter(m -> Optional.of(Long.toHexString(((long) m.getColor(new ModuleInstance(ItemModule.empty))) & 0xFFFFFFFF))),
             IngredientWithCount.CODEC.listOf().optionalFieldOf("items", new ArrayList<>()).forGetter(material -> material.items),
             Miapi.FIXED_BOOL_CODEC.optionalFieldOf("generate_converters").forGetter(m -> Optional.of(m.generateConverters()))
     ).apply(instance, CodecMaterial::new));
@@ -153,8 +153,12 @@ public class CodecMaterial implements Material {
             found.ifPresent(tagKeyNamedPair -> incorrectForTool = Optional.of(tagKeyNamedPair.getFirst()));
         }
         if (color.isPresent()) {
-            long longValue = Long.parseLong(color.get(), 16);
-            this.color = Optional.of((int) (longValue & 0xffffffffL));
+            try {
+                long longValue = Long.parseLong(color.get(), 16);
+                this.color = Optional.of((int) (longValue & 0xffffffffL));
+            } catch (RuntimeException e) {
+                Miapi.LOGGER.info("failed color decoding");
+            }
         }
         this.items = items;
         this.generateConverters = generateConverters;
@@ -500,6 +504,6 @@ public class CodecMaterial implements Material {
     }
 
     public Component getTranslation() {
-        return translation.orElseGet(()->Component.translatable("miapi.material." + getStringID()));
+        return translation.orElseGet(() -> Component.translatable("miapi.material." + getStringID()));
     }
 }

@@ -1,6 +1,5 @@
 package smartin.miapi.mixin;
 
-import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -32,13 +31,12 @@ abstract class LivingEntityMixin {
         }
     }
 
-    @ModifyReturnValue(method = "randomTeleport", at = @At("RETURN"))
-    private boolean miapi$optionalTeleportBlockEffect(boolean original, double x, double y, double z, boolean particleEffects) {
+    @Inject(method = "randomTeleport", at = @At("HEAD"))
+    private void miapi$optionalTeleportBlockEffect(double x, double y, double z, boolean broadcastTeleport, CallbackInfoReturnable<Boolean> cir) {
         LivingEntity entity = (LivingEntity) (Object) this;
-        if (particleEffects && MiapiConfig.getServerConfig().other.blockAllTeleportsEffect && entity.hasEffect(RegistryInventory.teleportBlockEffect)) {
-            return false;
+        if (broadcastTeleport && MiapiConfig.getServerConfig().other.blockAllTeleportsEffect && entity.hasEffect(RegistryInventory.teleportBlockEffect)) {
+            cir.setReturnValue(false);
         }
-        return original;
     }
 
 

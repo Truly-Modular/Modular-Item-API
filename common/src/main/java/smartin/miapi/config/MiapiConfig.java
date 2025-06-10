@@ -8,9 +8,9 @@ import com.redpxnda.nucleus.config.ConfigType;
 import net.fabricmc.api.EnvType;
 import smartin.miapi.Environment;
 import smartin.miapi.Miapi;
+import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.loot.LootHelper;
 import smartin.miapi.modules.abilities.key.KeyBindManager;
-import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.GlintProperty;
 
 import java.util.ArrayList;
@@ -52,7 +52,7 @@ public class MiapiConfig {
                 .updateListener(c -> {
                     MiapiServerConfig.INSTANCE = c;
                     INSTANCE.server = c;
-                    ModularItemCache.discardCache();
+                    MiapiEvents.CLEAR_CACHE.invoker().onReload();
                     if (Miapi.server != null && Miapi.server.getConnection() != null) {
                         //CacheCommands.clearCacheAllClients(Miapi.server);
                     }
@@ -83,7 +83,7 @@ public class MiapiConfig {
                         GlintProperty.updateConfig();
                     }
                     KeyBindManager.configLoad(MiapiConfig.getClientConfig().other.bindings);
-                    ModularItemCache.discardCache();
+                    MiapiEvents.CLEAR_CACHE.invoker().onReload();
                 }));
     }
 }

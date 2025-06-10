@@ -176,7 +176,7 @@ public class Miapi {
             RegistryInventory.ITEM_MODULE_MIAPI_REGISTRY.register(ItemModule.empty.id(), ItemModule.empty);
             RegistryInventory.ITEM_MODULE_MIAPI_REGISTRY.register(ItemModule.internal.id(), ItemModule.internal);
             Miapi.LOGGER.info("Loaded " + RegistryInventory.ITEM_MODULE_MIAPI_REGISTRY.getFlatMap().size() + " Modules");
-            ModularItemCache.discardCache();
+            MiapiEvents.CLEAR_CACHE.invoker().onReload();
         });
         PropertyResolver.register(ResourceLocation.fromNamespaceAndPath(Miapi.MOD_ID, "miapi/module"), (moduleInstance, oldMap) -> {
             Map<ModuleProperty<?>, Object> map = moduleInstance.module.properties();

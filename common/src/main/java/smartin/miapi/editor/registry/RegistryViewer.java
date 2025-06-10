@@ -42,7 +42,10 @@ public class RegistryViewer<T> implements MiapiEditor {
 
     @Override
     public void render(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
-        if (!show.get()) return;
+        if (!show.get()) {
+            MiapiEditor.editors.remove(this);
+            return;
+        }
 
         ImGui.setNextWindowSize(800, 600, ImGuiCond.FirstUseEver);
         if (ImGui.begin(getWindowTitle(), show)) {

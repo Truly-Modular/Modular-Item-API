@@ -1,15 +1,22 @@
 package smartin.miapi.mixin;
 
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.RelativeMovement;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.modules.properties.armor.ExhaustionProperty;
 import smartin.miapi.modules.properties.armor.StepCancelingProperty;
+import smartin.miapi.registries.RegistryInventory;
+
+import java.util.Set;
 
 @Mixin(Entity.class)
 public abstract class EntityMixin {
@@ -26,6 +33,27 @@ public abstract class EntityMixin {
         Entity entity = (Entity) (Object) this;
         MiapiEvents.STOP_RIDING.invoker().ride(entity, entity.getVehicle());
     }
+
+    @Inject(method = "Lnet/minecraft/world/entity/Entity;teleportTo(DDD)V", at = @At("HEAD"))
+    private void miapi$stopTeleport(CallbackInfo ci) {
+        Entity entity = (Entity) (Object) this;
+        if (entity instanceof LivingEntity livingEntity &&
+            MiapiConfig.getServerConfig().other.blockAllTeleportsEffect &&
+            livingEntity.hasEffect(RegistryInventory.teleportBlockEffect)) {
+            ci.cancel();
+        }
+    }
+
+    @Inject(method = "Lnet/minecraft/world/entity/Entity;teleportTo(Lnet/minecraft/server/level/ServerLevel;DDDLjava/util/Set;FF)Z", at = @At("HEAD"))
+    private void miapi$stopTeleportWorld(ServerLevel level, double x, double y, double z, Set<RelativeMovement> relativeMovements, float yRot, float xRot, CallbackInfoReturnable<Boolean> cir) {
+        Entity entity = (Entity) (Object) this;
+        if (entity instanceof LivingEntity livingEntity &&
+            MiapiConfig.getServerConfig().other.blockAllTeleportsEffect &&
+            livingEntity.hasEffect(RegistryInventory.teleportBlockEffect)) {
+            cir.setReturnValue(false);
+        }
+    }
+
 
     @ModifyVariable(
             method = "vibrationAndSoundEffectsFromBlock",

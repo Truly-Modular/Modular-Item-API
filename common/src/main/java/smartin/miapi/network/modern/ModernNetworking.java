@@ -1,13 +1,11 @@
 package smartin.miapi.network.modern;
 
-import com.mojang.authlib.minecraft.client.MinecraftClient;
 import dev.architectury.networking.NetworkManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import org.apache.commons.lang3.function.TriConsumer;
@@ -22,7 +20,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static smartin.miapi.network.modern.payload.C2SMiapiPayload.getClientUUID;
-import static smartin.miapi.network.modern.payload.C2SMiapiPayload.noPlayerUUID;
 
 public class ModernNetworking {
     public static final Map<ResourceLocation, Receiver<?>> s2cReceivers = new HashMap<>();
@@ -96,7 +93,8 @@ public class ModernNetworking {
                 location.toString(),
                 player.getUUID(),
                 buf.array());
-        NetworkManager.sendToServer(new S2CMiapiPayload(data1));
+        S2CMiapiPayload miapiOLDPayload = new S2CMiapiPayload(data1);
+        NetworkManager.sendToPlayer((ServerPlayer) player, miapiOLDPayload);
     }
 
     public record Receiver<T>(StreamCodec<RegistryFriendlyByteBuf, T> codec,

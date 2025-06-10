@@ -121,7 +121,10 @@ public class ModuleEditor implements MiapiEditor {
 
     @Override
     public void render(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
-        if (!show.get()) return;
+        if (!show.get()) {
+            MiapiEditor.editors.remove(this);
+            return;
+        }
 
         ImGui.setNextWindowSize(400, 300, ImGuiCond.FirstUseEver);
         if (ImGui.begin("Module Editor", show)) {

@@ -4,6 +4,7 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import dev.architectury.event.EventResult;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
@@ -17,6 +18,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import smartin.miapi.client.MiapiClient;
 import smartin.miapi.datapack.ReloadEvents;
+import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.material.base.Material;
 import smartin.miapi.material.palette.SpriteColorer;
 
@@ -64,6 +66,13 @@ public class MaterialSpriteManager {
                     return getMaterialSprite(key);
                 }
             });
+
+    static {
+        MiapiEvents.CLEAR_CACHE.register(() -> {
+            clear();
+            return EventResult.pass();
+        });
+    }
 
     public static ResourceLocation getMaterialSprite(TextureAtlasSprite oldSprite, Material material, SpriteColorer materialSpriteColorer) {
         Holder holder = new Holder(oldSprite, material, materialSpriteColorer);

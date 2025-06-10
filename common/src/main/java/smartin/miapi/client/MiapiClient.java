@@ -43,6 +43,7 @@ import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.effects.CryoStatusEffect;
 import smartin.miapi.entity.ItemProjectileRenderer;
 import smartin.miapi.events.ClientEvents;
+import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.material.MaterialCommand;
 import smartin.miapi.material.MaterialIcons;
 import smartin.miapi.material.MaterialProperty;
@@ -52,7 +53,6 @@ import smartin.miapi.material.palette.MaterialRenderControllers;
 import smartin.miapi.modules.MiapiPermissions;
 import smartin.miapi.modules.abilities.key.ClientKeybinding;
 import smartin.miapi.modules.cache.CacheCommands;
-import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.render.colorproviders.ColorProvider;
 import smartin.miapi.modules.properties.slot.AllowedSlots;
 import smartin.miapi.network.Networking;
@@ -135,12 +135,11 @@ public class MiapiClient {
             });
         }));
         Networking.registerS2CPacket(CacheCommands.SEND_MATERIAL_CLIENT, (buf -> {
-            Minecraft.getInstance().execute(ModularItemCache::discardCache);
+            Minecraft.getInstance().execute(() -> MiapiEvents.CLEAR_CACHE.invoker().onReload());
         }));
 
         ClientReloadShadersEvent.EVENT.register((resourceFactory, shadersSink) -> {
-            ModularItemCache.discardCache();
-            MaterialSpriteManager.clear();
+            MiapiEvents.CLEAR_CACHE.invoker().onReload();
             if (Minecraft.getInstance().level != null) {
                 Minecraft.getInstance().execute(() -> {
                     Map<ResourceLocation, String> cacheDatapack = new LinkedHashMap<>(ReloadEvents.DATA_PACKS);
@@ -150,7 +149,7 @@ public class MiapiClient {
                     ReloadEvents.MAIN.fireEvent(true, Minecraft.getInstance().level.registryAccess());
                     ReloadEvents.END.fireEvent(true, Minecraft.getInstance().level.registryAccess());
                     ReloadEvents.reloadCounter--;
-                    ModularItemCache.discardCache();
+                    MiapiEvents.CLEAR_CACHE.invoker().onReload();
                 });
             }
         });
@@ -170,7 +169,7 @@ public class MiapiClient {
 
         ClientPlayerEvent.CLIENT_PLAYER_JOIN.register(player -> new Thread(() -> MiapiPermissions.getPerms(player)).start());
         ClientPlayerEvent.CLIENT_PLAYER_JOIN.register(player -> {
-            ModularItemCache.discardCache();
+            MiapiEvents.CLEAR_CACHE.invoker().onReload();
             if (jerLoaded && Miapi.server == null) {
                 String version = Platform.getMod("jeresources").getVersion();
                 if (version.equals("1.4.0.238") || version.equals("1.4.0.246") || version.equals("1.4.0.247")) {
@@ -183,7 +182,7 @@ public class MiapiClient {
             }
         });
         ClientReloadShadersEvent.EVENT.register((resourceFactory, asd) -> {
-            ModularItemCache.discardCache();
+            MiapiEvents.CLEAR_CACHE.invoker().onReload();
             TierManager.setup();
         });
         RegistryInventory.MODULAR_ITEMS.addCallback((item -> {
@@ -222,7 +221,7 @@ public class MiapiClient {
                         .map(a -> a.asCraftOption(option.getScreenHandler())).toList());
         ReplaceView.optionSuppliers.add(option -> {
             List<CraftOption> options = new ArrayList<>();
-            BlueprintManager.reloadedBlueprints.forEach((id, blueprint) -> {
+            BlueprintManager.RELOADED_BLUEPRINTS.getFlatMap().forEach((id, blueprint) -> {
                 boolean isAllowed = false;
                 for (String slotID : AllowedSlots.getAllowedSlots(blueprint.toMerge)) {
                     if (option.getSlot().allowed.contains(slotID)) {
@@ -296,7 +295,7 @@ public class MiapiClient {
 
     protected static void clientLevelLoad(ClientLevel clientWorld) {
         SpriteLoader.clientStart();
-        ModularItemCache.discardCache();
+        MiapiEvents.CLEAR_CACHE.invoker().onReload();
     }
 
     public static void registerScreenHandler() {

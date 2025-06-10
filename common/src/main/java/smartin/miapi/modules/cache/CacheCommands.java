@@ -41,17 +41,17 @@ public class CacheCommands {
         dispatcher.register(literal);
         dispatcher.register(reloadCommand);
         ModernNetworking.registerC2SReceiver(CLEAR_CACHE_PACKET_ID, ByteBufCodecs.fromCodecWithRegistries(Miapi.FIXED_BOOL_CODEC), (data, player, registryAccess) -> {
-            ModularItemCache.discardCache();
+            MiapiEvents.CLEAR_CACHE.invoker().onReload();
         });
         ModernNetworking.registerS2CReceiver(CLEAR_CACHE_PACKET_ID, ByteBufCodecs.fromCodecWithRegistries(Miapi.FIXED_BOOL_CODEC), (data, player, registryAccess) -> {
-            ModularItemCache.discardCache();
+            MiapiEvents.CLEAR_CACHE.invoker().onReload();
         });
     }
 
     private static int executeCacheClear(CommandContext<CommandSourceStack> context) {
         context.getSource().sendSuccess(() -> Component.literal("Clearing all miapi Caches"), false);
         clearCacheAllClients(context.getSource().getServer());
-        ModularItemCache.discardCache();
+        MiapiEvents.CLEAR_CACHE.invoker().onReload();
         return 1; // Return success
     }
 

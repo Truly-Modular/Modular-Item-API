@@ -4,3 +4,5 @@
 - fixed crash with Snow! Real Magic!
 - further performance improvements
 - fixed Purpur block material naming
+- fixed miapireload command
+- fixed not clearing texturecache correctly

@@ -22,20 +22,18 @@ import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TieredItem;
-import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunction;
 import org.apache.commons.lang3.mutable.Mutable;
 import org.apache.commons.lang3.mutable.MutableFloat;
 import org.jetbrains.annotations.Nullable;
-import org.spongepowered.asm.mixin.Mixin;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
 import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
 import smartin.miapi.craft.CraftAction;
 import smartin.miapi.craft.stat.StatProvidersMap;
 import smartin.miapi.entity.ItemProjectileEntity;
-import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.material.base.Material;
 import smartin.miapi.material.generated.GeneratedMaterial;
+import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.util.ComponentApplyProperty;
 
 import java.util.ArrayList;
@@ -75,7 +73,8 @@ public class MiapiEvents {
     public static final PrioritizedEvent<DurabilityEvent> MODULAR_ITEM_DAMAGE = PrioritizedEvent.createLoop();
 
     public static final PrioritizedEvent<ReloadEvent> ADJUST_RAW_DATA = PrioritizedEvent.createLoop();
-    public static final PrioritizedEvent<ReloadEventPost> POST_HOT_RELOAD = PrioritizedEvent.createLoop();
+    public static final PrioritizedEvent<EmptyEvent> POST_HOT_RELOAD = PrioritizedEvent.createLoop();
+    public static final PrioritizedEvent<EmptyEvent> CLEAR_CACHE = PrioritizedEvent.createLoop();
 
     static {
         MiapiEvents.SMITHING_EVENT.register((listener) -> {
@@ -92,8 +91,7 @@ public class MiapiEvents {
         EventResult adjust(List<LootItemFunction> functions);
     }
 
-
-    public interface ReloadEventPost {
+    public interface EmptyEvent {
         EventResult onReload();
     }
 
