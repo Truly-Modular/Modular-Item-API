@@ -18,7 +18,6 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
-import smartin.miapi.entity.ShieldingArmorFacet;
 import smartin.miapi.modules.abilities.key.KeyBindAbilityManagerProperty;
 import smartin.miapi.modules.abilities.key.KeyBindFacet;
 import smartin.miapi.modules.cache.ModularItemCache;
@@ -78,6 +77,28 @@ public class ItemAbilityManager {
         return useAbility == null ? emptyAbility : useAbility;
     }
 
+    public static List<AbilityHolder<?>> getAbilities(ItemStack itemStack) {
+        List<AbilityHolder<?>> result = new ArrayList<>();
+
+        // Abilities without keybinds
+        Map<ItemUseAbility<?>, Object> baseAbilities = AbilityMangerProperty.property.getData(itemStack).orElse(new HashMap<>());
+        for (Map.Entry<ItemUseAbility<?>, Object> entry : baseAbilities.entrySet()) {
+            result.add(entry.getKey().getAsHolder(entry.getValue()));
+        }
+
+        // Abilities with keybinds
+        Map<ResourceLocation, Map<ItemUseAbility<?>, Object>> keyboundAbilities =
+                KeyBindAbilityManagerProperty.property.getData(itemStack).orElse(new HashMap<>());
+        for (Map<ItemUseAbility<?>, Object> abilityMap : keyboundAbilities.values()) {
+            for (Map.Entry<ItemUseAbility<?>, Object> entry : abilityMap.entrySet()) {
+                result.add(entry.getKey().getAsHolder(entry.getValue()));
+            }
+        }
+
+        return result;
+    }
+
+
     private static AbilityHolder<?> getAbility(ItemStack itemStack, Level world, Player player, InteractionHand hand, AbilityHitContext abilityHitContext) {
         ResourceLocation keybindID = null;
         if (player.level().isClientSide) {
@@ -104,7 +125,6 @@ public class ItemAbilityManager {
                         //return new Pair<>(entry.getKey(), entry.getValue());
                         if (player instanceof ServerPlayer serverPlayer) {
                             if (KeyBindFacet.get(serverPlayer) != null) {
-                                ShieldingArmorFacet facet;
                                 KeyBindFacet.get(serverPlayer).set(keybindID, serverPlayer);
                             }
                         }
@@ -277,7 +297,7 @@ public class ItemAbilityManager {
         }
     }
 
-    public record AbilityHolder<T>(ItemUseAbility<T> ability, T context) {
+    public static record AbilityHolder<T>(ItemUseAbility<T> ability, T context) {
 
         public AbilityHolder(Object context, ItemUseAbility<T> ability) {
             this(ability, ability.castTo(context));

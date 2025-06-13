@@ -40,6 +40,7 @@ import smartin.miapi.modules.properties.render.colorproviders.ColorProvider;
 import smartin.miapi.modules.properties.util.DoubleOperationResolvable;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Environment(EnvType.CLIENT)
@@ -109,15 +110,20 @@ public class BakedMiapiModel implements MiapiModel {
         //render normally
         try {
             for (Direction dir : Direction.values()) {
-                for (BakedQuad quad : currentModel.getQuads(null, dir, RandomSource.create())) {
+                //Minecraft.getInstance().getProfiler().push("BakedModel - get quads");
+                List<BakedQuad> quads = currentModel.getQuads(null, dir, RandomSource.create());
+                //Minecraft.getInstance().getProfiler().pop();
+                for (BakedQuad quad : quads) {
+                    //Minecraft.getInstance().getProfiler().push("getvc");
                     VertexConsumer consumer = getConsumer(modelHolder.colorProvider(), quad.getSprite(), vertexConsumers, stack, instance, transformationMode);
-
+                    // Minecraft.getInstance().getProfiler().pop();
                     //VertexConsumer consumer = getConsumer(
                     //        modelHolder.colorProvider(), quad.getSprite(), vertexConsumers, stack,
                     //        instance, transformationMode);
 
-
+                    //Minecraft.getInstance().getProfiler().push("pushquad");
                     consumer.putBulkData(matrices.last(), quad, colors[0], colors[1], colors[2], alpha, light, overlay);
+                    //Minecraft.getInstance().getProfiler().pop();
                 }
             }
         } catch (RuntimeException e) {
@@ -189,9 +195,11 @@ public class BakedMiapiModel implements MiapiModel {
         if (provider.equals(lastColor) && sprite.equals(textureAtlasSprite) && isStillValid(lastVC)) {
             return lastVC;
         }
+        //Minecraft.getInstance().getProfiler().push("Building VC");
         lastVC = provider.getConsumer(source, sprite, itemStack, instance, context);
         lastColor = provider;
         textureAtlasSprite = sprite;
+        //Minecraft.getInstance().getProfiler().pop();
         return lastVC;
     }
 

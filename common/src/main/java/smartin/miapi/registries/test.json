@@ -1,75 +1,11 @@
 {
-    "model": [
+    "nemesis": 20,
+    "on_attack_potion": [
         {
-            "path": "miapi:skin/star_wars/lightsaber_hilt/anakin.json",
-            "transform": {
-                "rotation": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": -45.0
-                },
-                "translation": {
-                    "x": -10.0,
-                    "y": 12.5,
-                    "z": -8.0
-                },
-                "scale": {
-                    "x": 2.0,
-                    "y": 2.0,
-                    "z": 2.0
-                }
-            }
+            "potion": "minecraft:resistance",
+            "amplifier": 0,
+            "duration": "([module.gem_power]+1)*60",
+            "target_self": "1"
         }
-    ],
-    "slots": {
-        "guard": {
-            "allowed": [
-                "sword_guard",
-                "sword_blade_small"
-            ],
-            "translationKey": "miapi.slot.guard.name",
-            "priority": 0,
-            "transform": {
-                "rotation": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 0.0
-                },
-                "translation": {
-                    "x": 3.75,
-                    "y": 3.75,
-                    "z": 0.0
-                },
-                "scale": {
-                    "x": 1.0,
-                    "y": 1.0,
-                    "z": 1.0
-                }
-            }
-        },
-        "pommel": {
-            "allowed": [
-                "sword_pommel"
-            ],
-            "translationKey": "miapi.slot.pommel.name",
-            "priority": -1,
-            "transform": {
-                "rotation": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 0.0
-                },
-                "translation": {
-                    "x": -2.0,
-                    "y": -2.0,
-                    "z": 0.0
-                },
-                "scale": {
-                    "x": 1.0,
-                    "y": 1.0,
-                    "z": 1.0
-                }
-            }
-        }
-    }
+    ]
 }

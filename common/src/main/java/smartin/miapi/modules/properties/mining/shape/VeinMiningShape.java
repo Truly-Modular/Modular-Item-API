@@ -44,24 +44,32 @@ public class VeinMiningShape implements MiningShape {
             BlockPos currentPos = queue.poll();
             miningBlocks.add(currentPos);
 
-            for (Direction direction : Direction.values()) {
-                BlockPos neighborPos = currentPos.relative(direction);
+            for (int dx = -1; dx <= 1; dx++) {
+                for (int dy = -1; dy <= 1; dy++) {
+                    for (int dz = -1; dz <= 1; dz++) {
+                        if (dx == 0 && dy == 0 && dz == 0) continue; // Skip the center block itself
 
-                // Check if neighbor position is within the size limit and hasn't been visited
-                int dx1 = neighborPos.getX() - pos.getX() + size;
-                int dy1 = neighborPos.getY() - pos.getY() + size;
-                int dz1 = neighborPos.getZ() - pos.getZ() + size;
-                if (Math.abs(dx1 - size) <= size && Math.abs(dy1 - size) <= size && Math.abs(dz1 - size) <= size
-                    && !visited.contains(neighborPos)) {
+                        BlockPos neighborPos = currentPos.offset(dx, dy, dz);
 
-                    visited.add(neighborPos);
+                        // Same bounds and visited checks
+                        int dx1 = neighborPos.getX() - pos.getX() + size;
+                        int dy1 = neighborPos.getY() - pos.getY() + size;
+                        int dz1 = neighborPos.getZ() - pos.getZ() + size;
 
-                    BlockState neighborState = world.getBlockState(neighborPos);
-                    if (neighborState.getBlock().equals(centerState.getBlock())) {
-                        queue.add(neighborPos);
+                        if (Math.abs(dx1 - size) <= size && Math.abs(dy1 - size) <= size && Math.abs(dz1 - size) <= size
+                            && !visited.contains(neighborPos)) {
+
+                            visited.add(neighborPos);
+
+                            BlockState neighborState = world.getBlockState(neighborPos);
+                            if (neighborState.getBlock().equals(centerState.getBlock())) {
+                                queue.add(neighborPos);
+                            }
+                        }
                     }
                 }
             }
+
         }
 
         return miningBlocks;

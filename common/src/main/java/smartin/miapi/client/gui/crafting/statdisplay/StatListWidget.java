@@ -23,6 +23,9 @@ import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.ScrollList;
 import smartin.miapi.client.gui.TransformableWidget;
 import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.abilities.shield.BlockAbility;
+import smartin.miapi.modules.abilities.shield.BlockData;
+import smartin.miapi.modules.abilities.util.ItemAbilityManager;
 import smartin.miapi.modules.properties.DurabilityProperty;
 import smartin.miapi.modules.properties.FireProof;
 import smartin.miapi.modules.properties.LuminousLearningProperty;
@@ -320,6 +323,43 @@ public class StatListWidget extends InteractAbleWidget {
         addStatDisplay(ComplexBooleanStatDisplay
                 .builder(MakesImpactSoundProperty.property)
                 .setTranslationKey(MakesImpactSoundProperty.KEY).build());
+
+        addStatDisplay(
+                DoubleResolvableStatDisplay
+                        .builder(
+                                (s -> ItemAbilityManager.getAbilities(s)
+                                        .stream()
+                                        .filter(a -> a.ability() instanceof BlockAbility)
+                                        .findAny().map(a -> ((BlockData) a.context()).blocking)
+                                ))
+                        .build());
+        addStatDisplay(
+                DoubleResolvableStatDisplay
+                        .builder(
+                                (s -> ItemAbilityManager.getAbilities(s)
+                                        .stream()
+                                        .filter(a -> a.ability() instanceof BlockAbility)
+                                        .findAny().map(a -> ((BlockData) a.context()).angle)
+                                ))
+                        .build());
+        addStatDisplay(
+                DoubleResolvableStatDisplay
+                        .builder(
+                                (s -> ItemAbilityManager.getAbilities(s)
+                                        .stream()
+                                        .filter(a -> a.ability() instanceof BlockAbility)
+                                        .findAny().map(a -> ((BlockData) a.context()).cooldownAttackerWeapon)
+                                ))
+                        .build());
+        addStatDisplay(
+                DoubleResolvableStatDisplay
+                        .builder(
+                                (s -> ItemAbilityManager.getAbilities(s)
+                                        .stream()
+                                        .filter(a -> a.ability() instanceof BlockAbility)
+                                        .findAny().map(a -> ((BlockData) a.context()).damageReturnPercent)
+                                ))
+                        .build());
 
         addStatDisplay(SinglePropertyStatDisplay
                 .builder(PillagesGuard.property)

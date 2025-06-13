@@ -121,6 +121,7 @@ public class TrulyModularForge {
                     attributeModificationEvent.add(entityType, attribute);
                 });
             });
+
         }
     }
 

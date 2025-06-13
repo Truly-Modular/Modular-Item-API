@@ -92,7 +92,6 @@ public class ThrowingAbility implements ItemUseDefaultCooldownAbility<ThrowingAb
                     }
                     projectileEntity.shootFromRotation(playerEntity, playerEntity.getXRot(), playerEntity.getYRot(), 0.0F, speed, divergence);
                     projectileEntity.setBaseDamage(damage);
-                    projectileEntity.setBowItem(ItemStack.EMPTY);
                     //TODO:figure out a way to control piercing level again
                     //projectileEntity.setPierceLevel((byte) (int) AttributeUtil.getActualValue(stack, EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_PIERCING));
                     projectileEntity.setSpeedDamage(true);

@@ -1,4 +1,4 @@
-package smartin.miapi.mixin;
+package smartin.miapi.mixin.projectile;
 
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.projectile.AbstractArrow;

@@ -18,10 +18,7 @@ import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
-import net.minecraft.world.item.ArmorItem;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.TieredItem;
+import net.minecraft.world.item.*;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunction;
 import org.apache.commons.lang3.mutable.Mutable;
 import org.apache.commons.lang3.mutable.MutableFloat;
@@ -31,6 +28,7 @@ import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
 import smartin.miapi.craft.CraftAction;
 import smartin.miapi.craft.stat.StatProvidersMap;
 import smartin.miapi.entity.ItemProjectileEntity;
+import smartin.miapi.entity.ProjectileWithBow;
 import smartin.miapi.material.base.Material;
 import smartin.miapi.material.generated.GeneratedMaterial;
 import smartin.miapi.modules.ModuleInstance;
@@ -43,8 +41,8 @@ import java.util.Map;
 
 public class MiapiEvents {
     /**
-     * make sure {@link ModularAttackEvents} arent what you are looking for.
-     * Generally any kind of modular onhit effect should be implemented in {@link ModularAttackEvents}
+     * make sure {@link MeleeModularAttackEvents} arent what you are looking for.
+     * Generally any kind of modular onhit effect should be implemented in {@link MeleeModularAttackEvents}
      * While Attribute based stuff should be implemented using these, since they are called regardless of weapon
      */
     public static final PrioritizedEvent<LivingHurt> LIVING_HURT = PrioritizedEvent.createEventResult();
@@ -126,19 +124,33 @@ public class MiapiEvents {
 
         }
 
-        public static ItemStack getCausingItemStack(DamageSource damageSource) {
-            if (damageSource.getDirectEntity() instanceof Projectile projectile && (projectile instanceof ItemProjectileEntity itemProjectile)) {
-                return itemProjectile.getPickupItem();
-
-            }
-            if (damageSource.getEntity() instanceof LivingEntity attacker) {
+        public static ItemStack getMainCausingStack(DamageSource damageSource) {
+            if (damageSource.getDirectEntity() instanceof Projectile projectile) {
+                ItemStack bow = ((ProjectileWithBow) projectile).getBowItem();
+                if (bow != null && !bow.isEmpty()) {
+                    return bow;
+                }
+                if (projectile instanceof ItemProjectileEntity itemProjectile) {
+                    return itemProjectile.getPickupItem();
+                }
+            } else if (damageSource.getEntity() instanceof LivingEntity attacker) {
                 return attacker.getMainHandItem();
             }
             return ItemStack.EMPTY;
         }
 
-        public ItemStack getCausingItemStack() {
-            return getCausingItemStack(this.damageSource);
+        public static ItemStack getBowItemStack(DamageSource damageSource) {
+            if (damageSource.getDirectEntity() instanceof Projectile projectile) {
+                ItemStack bow = ((ProjectileWithBow) projectile).getBowItem();
+                if (bow != null && !bow.isEmpty()) {
+                    return bow;
+                }
+            }
+            return ItemStack.EMPTY;
+        }
+
+        public ItemStack getMainCausingStack() {
+            return getMainCausingStack(this.damageSource);
         }
 
         public Iterable<ItemStack> getCausingItemStackAndArmorOfAttacker() {
@@ -147,15 +159,18 @@ public class MiapiEvents {
 
         public static Iterable<ItemStack> getCausingItemStackAndArmorOfAttacker(DamageSource damageSource) {
             List<ItemStack> itemStacks = new ArrayList<>();
-            if (damageSource.getDirectEntity() instanceof Projectile projectile && (projectile instanceof ItemProjectileEntity itemProjectile)) {
-                itemStacks.add(itemProjectile.getPickupItem());
-                if (itemProjectile.getOwner() instanceof LivingEntity attacker) {
-                    attacker.getArmorSlots().forEach(itemStacks::add);
+            if (damageSource.getDirectEntity() instanceof Projectile projectile) {
+                ItemStack bow = ((ProjectileWithBow) projectile).getBowItem();
+                if (bow != null && !bow.isEmpty()) {
+                    itemStacks.add(bow);
                 }
-
-            }
+                if (projectile instanceof ItemProjectileEntity itemProjectile) {
+                    itemStacks.add(itemProjectile.getPickupItem());
+                }
+                }
             if (damageSource.getEntity() instanceof LivingEntity attacker) {
                 attacker.getArmorSlots().forEach(itemStacks::add);
+                itemStacks.add(attacker.getMainHandItem());
             }
             return itemStacks;
         }

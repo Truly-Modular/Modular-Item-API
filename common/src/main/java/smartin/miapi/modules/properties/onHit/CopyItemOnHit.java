@@ -6,7 +6,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import smartin.miapi.Miapi;
-import smartin.miapi.events.ModularAttackEvents;
+import smartin.miapi.events.MeleeModularAttackEvents;
 import smartin.miapi.modules.properties.util.CodecProperty;
 import smartin.miapi.modules.properties.util.MergeAble;
 import smartin.miapi.modules.properties.util.MergeType;
@@ -27,7 +27,7 @@ public class CopyItemOnHit extends CodecProperty<List<Holder<Item>>> {
     public CopyItemOnHit() {
         super(Miapi.toListOrSimple(BuiltInRegistries.ITEM.holderByNameCodec()));
         property = this;
-        ModularAttackEvents.ATTACK_DAMAGE_BONUS.register((target, itemStack, baseDamage, damageSource, bonusDamage) -> {
+        MeleeModularAttackEvents.ATTACK_DAMAGE_BONUS.register((target, itemStack, baseDamage, damageSource, bonusDamage) -> {
             getData(itemStack).ifPresent(list -> {
                 list.forEach(item -> {
                     bonusDamage.add(item.value().getAttackDamageBonus(target, baseDamage, damageSource));
@@ -35,7 +35,7 @@ public class CopyItemOnHit extends CodecProperty<List<Holder<Item>>> {
             });
             return EventResult.pass();
         });
-        ModularAttackEvents.HURT_ENEMY.register((stack, target, attacker) -> {
+        MeleeModularAttackEvents.HURT_ENEMY.register((stack, target, attacker) -> {
             var optional = getData(stack);
             if (
                     optional.isPresent()) {
@@ -48,7 +48,7 @@ public class CopyItemOnHit extends CodecProperty<List<Holder<Item>>> {
             }
             return EventResult.pass();
         });
-        ModularAttackEvents.HURT_ENEMY_POST.register((stack, target, attacker) -> {
+        MeleeModularAttackEvents.HURT_ENEMY_POST.register((stack, target, attacker) -> {
             var optional = getData(stack);
             if (
                     optional.isPresent()) {

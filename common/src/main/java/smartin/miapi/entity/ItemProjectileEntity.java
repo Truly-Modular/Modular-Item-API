@@ -35,7 +35,7 @@ import smartin.miapi.entity.arrowhitbehaviours.EntityBounceBehaviour;
 import smartin.miapi.entity.arrowhitbehaviours.EntityPierceBehaviour;
 import smartin.miapi.entity.arrowhitbehaviours.ProjectileHitBehaviour;
 import smartin.miapi.events.MiapiProjectileEvents;
-import smartin.miapi.mixin.AbstractArrowAccessor;
+import smartin.miapi.mixin.projectile.AbstractArrowAccessor;
 import smartin.miapi.modules.abilities.util.WrappedSoundEvent;
 import smartin.miapi.modules.properties.attributes.AttributeUtil;
 import smartin.miapi.modules.properties.projectile.AirDragProperty;
@@ -48,7 +48,6 @@ public class ItemProjectileEntity extends AbstractArrow {
     public static final EntityDataAccessor<Boolean> ENCHANTED = SynchedEntityData.defineId(ItemProjectileEntity.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Boolean> SPEED_DAMAGE = SynchedEntityData.defineId(ItemProjectileEntity.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<ItemStack> THROWING_STACK = SynchedEntityData.defineId(ItemProjectileEntity.class, EntityDataSerializers.ITEM_STACK);
-    public static final EntityDataAccessor<ItemStack> BOW_ITEM_STACK = SynchedEntityData.defineId(ItemProjectileEntity.class, EntityDataSerializers.ITEM_STACK);
     public static final EntityDataAccessor<Float> WATER_DRAG = SynchedEntityData.defineId(ItemProjectileEntity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Integer> PREFERRED_SLOT = SynchedEntityData.defineId(ItemProjectileEntity.class, EntityDataSerializers.INT);
     public ItemStack thrownStack = ItemStack.EMPTY;
@@ -83,13 +82,9 @@ public class ItemProjectileEntity extends AbstractArrow {
         this.entityData.set(LOYALTY, this.getLoyaltyFromItem(stack));
         this.entityData.set(ENCHANTED, stack.hasFoil());
         this.entityData.set(THROWING_STACK, thrownStack);
-        this.entityData.set(BOW_ITEM_STACK, weapon);
         this.entityData.set(WATER_DRAG, waterDrag);
         this.entityData.set(SPEED_DAMAGE, true);
         this.entityData.set(PREFERRED_SLOT, -1);
-        if (getBowItem().isEmpty() && owner != null) {
-            setBowItem(owner.getUseItem());
-        }
         setup();
         MiapiProjectileEvents.MODULAR_PROJECTILE_DATA_TRACKER_SET.invoker().dataTracker(this, this.getEntityData());
     }
@@ -115,13 +110,6 @@ public class ItemProjectileEntity extends AbstractArrow {
         this.entityData.set(PREFERRED_SLOT, slotID);
     }
 
-    public void setBowItem(ItemStack bowItem) {
-        this.entityData.set(BOW_ITEM_STACK, bowItem.copy());
-    }
-
-    public ItemStack getBowItem() {
-        return this.entityData.get(BOW_ITEM_STACK);
-    }
 
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
@@ -129,7 +117,6 @@ public class ItemProjectileEntity extends AbstractArrow {
         builder.define(LOYALTY, (byte) 0);
         builder.define(ENCHANTED, false);
         builder.define(THROWING_STACK, ItemStack.EMPTY);
-        builder.define(BOW_ITEM_STACK, ItemStack.EMPTY);
         builder.define(WATER_DRAG, 0.99f);
         builder.define(SPEED_DAMAGE, true);
         builder.define(PREFERRED_SLOT, 0);
@@ -441,12 +428,6 @@ public class ItemProjectileEntity extends AbstractArrow {
             this.thrownStack = ItemStack.EMPTY;
             this.entityData.set(THROWING_STACK, ItemStack.EMPTY);
         }
-        if (nbt.contains("BowItem", 10)) {
-            ItemStack bowItem = ItemStack.parse(registryAccess(), nbt.getCompound("BowItem")).get();
-            this.entityData.set(BOW_ITEM_STACK, bowItem);
-        } else {
-            this.entityData.set(BOW_ITEM_STACK, ItemStack.EMPTY);
-        }
         if (nbt.contains("WaterDrag")) {
             this.entityData.set(WATER_DRAG, nbt.getFloat("WaterDrag"));
         }
@@ -467,10 +448,6 @@ public class ItemProjectileEntity extends AbstractArrow {
         super.addAdditionalSaveData(nbt);
         if (!thrownStack.isEmpty()) {
             nbt.put("ThrownItem", this.thrownStack.save(this.registryAccess(), new CompoundTag()));
-        }
-        if (!this.getBowItem().isEmpty()) {
-
-            nbt.put("BowItem", this.getBowItem().save(this.registryAccess(), new CompoundTag()));
         }
         nbt.putBoolean("DealtDamage", this.dealtDamage);
         nbt.putFloat("WaterDrag", this.entityData.get(WATER_DRAG));

@@ -25,14 +25,16 @@ This ability uses the **default fields** (`cooldown`, `min_hold`, `max_hold`) an
 ---
 
 #### Example
-
 ```json
 {
-    "ability": "area_harvest_ability",
-    "cooldown": 20,
-    "min_hold": 0,
-    "max_hold": 72000,
-    "range": 2
+  "ability_context": {
+    "area_harvest_ability": {
+      "cooldown": 20,
+      "min_hold": 0,
+      "max_hold": 72000,
+      "range": 2
+    }
+  }
 }
 ```
 

@@ -14,7 +14,7 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
-import smartin.miapi.entity.ItemProjectileEntity;
+import org.jetbrains.annotations.Nullable;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.util.DoubleOperationResolvable;
 import smartin.miapi.modules.properties.util.InitializeAble;
@@ -80,8 +80,8 @@ public record PossibleEffect(Holder<MobEffect> potion,
         return new MobEffectInstance(potion(), (int) duration().getValue(), (int) amplifier().getValue(), ambient().isTrue(), showParticle().isTrue(), showIcon().isTrue());
     }
 
-    public void apply(LivingEntity wielder, RandomSource random, EquipmentSlot equipmentSlot, LivingEntity target, LivingEntity selfTarget) {
-        if (this.group().test(equipmentSlot)) {
+    public void apply(LivingEntity wielder, RandomSource random, @Nullable EquipmentSlot equipmentSlot, LivingEntity target, LivingEntity selfTarget) {
+        if (equipmentSlot == null || this.group().test(equipmentSlot)) {
             if (targetSelf().isTrue()) {
                 target = selfTarget;
             }
@@ -100,7 +100,7 @@ public record PossibleEffect(Holder<MobEffect> potion,
     }
 
     public Component getTooltip(String key, String showTargetSelf) {
-        return Component.translatable(targetSelf().isTrue() ? key : showTargetSelf,
+        return Component.translatable(targetSelf().isTrue() ? showTargetSelf : key,
                 potion().value().getDisplayName(),
                 (int) duration().getValue() / 20,
                 (int) amplifier().getValue() + 1,
@@ -120,38 +120,11 @@ public record PossibleEffect(Holder<MobEffect> potion,
         return components;
     }
 
-    public static void applyEffects(LivingEntity target, LivingEntity itemsFromEntity, Function<ItemStack, List<PossibleEffect>> effectGetter) {
-        applyEffects(target, target, itemsFromEntity, effectGetter);
-    }
-
-    public static void applyEffects(LivingEntity target, LivingEntity selfTarget, LivingEntity itemsFromEntity, Function<ItemStack, List<PossibleEffect>> effectGetter) {
-        for (EquipmentSlot slot : EquipmentSlot.values()) {
-            itemsFromEntity.getItemBySlot(slot);
-            effectGetter.apply(itemsFromEntity.getItemBySlot(slot)).forEach(possibleEffect -> {
-                possibleEffect.apply(itemsFromEntity, itemsFromEntity.level().getRandom(), slot, target, selfTarget);
+    public static void applyEffects(LivingEntity target, LivingEntity selfTarget, Iterable<ItemStack> items, LivingEntity causer, Function<ItemStack, List<PossibleEffect>> effectGetter) {
+        for (ItemStack item : items) {
+            effectGetter.apply(item).forEach(possibleEffect -> {
+                possibleEffect.apply(causer, causer.level().getRandom(), null, target, selfTarget);
             });
-        }
-    }
-
-    public static void applyEffectsArrow(LivingEntity target, LivingEntity selfTarget, LivingEntity itemsFromEntity, ItemProjectileEntity projectile, Function<ItemStack, List<PossibleEffect>> effectGetter) {
-        projectile.getBowItem();
-        ItemStack blackListed = projectile.getBowItem();
-        if (blackListed != null && !blackListed.isEmpty()) {
-            effectGetter.apply(blackListed).forEach(possibleEffect -> {
-                possibleEffect.apply(itemsFromEntity, itemsFromEntity.level().getRandom(), EquipmentSlot.MAINHAND, target, selfTarget);
-            });
-        }
-        if (projectile.thrownStack != null && !projectile.thrownStack.isEmpty()) {
-            effectGetter.apply(projectile.thrownStack).forEach(possibleEffect -> {
-                possibleEffect.apply(itemsFromEntity, itemsFromEntity.level().getRandom(), EquipmentSlot.MAINHAND, target, selfTarget);
-            });
-        }
-        for (EquipmentSlot slot : EquipmentSlot.values()) {
-            if(blackListed!=itemsFromEntity.getItemBySlot(slot)){
-                effectGetter.apply(itemsFromEntity.getItemBySlot(slot)).forEach(possibleEffect -> {
-                    possibleEffect.apply(itemsFromEntity, itemsFromEntity.level().getRandom(), slot, target, selfTarget);
-                });
-            }
         }
     }
 

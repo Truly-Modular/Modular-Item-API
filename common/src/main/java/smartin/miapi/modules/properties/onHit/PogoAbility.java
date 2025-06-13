@@ -12,7 +12,7 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.item.MaceItem;
 import smartin.miapi.Miapi;
-import smartin.miapi.events.ModularAttackEvents;
+import smartin.miapi.events.MeleeModularAttackEvents;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.util.*;
 
@@ -24,7 +24,7 @@ public class PogoAbility extends CodecProperty<PogoAbility.PogoData> {
         super(PogoData.CODEC);
         property = this;
         MaceItem.createAttributes();
-        ModularAttackEvents.HURT_ENEMY.register((stack, target, attacker) -> {
+        MeleeModularAttackEvents.HURT_ENEMY.register((stack, target, attacker) -> {
             var optional = getData(stack);
             if (attacker instanceof ServerPlayer serverPlayer && !serverPlayer.onGround()) {
                 if (optional.isPresent()) {

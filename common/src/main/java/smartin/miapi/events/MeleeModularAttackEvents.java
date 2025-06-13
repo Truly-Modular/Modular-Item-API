@@ -11,7 +11,7 @@ import org.apache.commons.lang3.mutable.MutableFloat;
 /**
  * These events are only called when a modular weapon performs a melee attack
  */
-public class ModularAttackEvents {
+public class MeleeModularAttackEvents {
     /**
      * if interrupted cancels the attack like creative with a sword in the hand
      * This is called via {@link net.minecraft.world.item.Item#hurtEnemy(ItemStack, LivingEntity, LivingEntity)}

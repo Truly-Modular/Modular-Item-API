@@ -21,7 +21,7 @@ import smartin.miapi.Miapi;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
 import smartin.miapi.craft.CraftAction;
 import smartin.miapi.events.MiapiEvents;
-import smartin.miapi.events.ModularAttackEvents;
+import smartin.miapi.events.MeleeModularAttackEvents;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.LoreProperty;
@@ -59,13 +59,13 @@ public class NemesisProperty extends DoubleProperty implements CraftingProperty 
         setupLore();
         property = this;
         EntityEvent.LIVING_DEATH.register((livingEntity, damageSource) -> {
-            ItemStack weapon = MiapiEvents.LivingHurtEvent.getCausingItemStack(damageSource);
+            ItemStack weapon = MiapiEvents.LivingHurtEvent.getMainCausingStack(damageSource);
             if (ModularItem.isModularItem(weapon) && !livingEntity.level().isClientSide()) {
                 double nemesisScale = getValue(weapon).orElse(0.0);
                 if (nemesisScale == 0) {
                     return EventResult.pass();
                 }
-                NemesisData data = weapon.get(NEMESIS_COMPONENT);
+                NemesisData data = weapon.getOrDefault(NEMESIS_COMPONENT, new NemesisData("",0));
                 EntityType attackedType = livingEntity.getType();
                 if (data != null && nemesisScale > 0) {
                     data = data.clone();
@@ -102,7 +102,7 @@ public class NemesisProperty extends DoubleProperty implements CraftingProperty 
             return EventResult.pass();
         });
         MiapiEvents.LIVING_HURT.register((listener) -> {
-            ItemStack weapon = listener.getCausingItemStack();
+            ItemStack weapon = listener.getMainCausingStack();
             if (ModularItem.isModularItem(weapon)) {
                 double nemesisScale = getValue(weapon).orElse(0.0);
                 NemesisData data = weapon.get(NEMESIS_COMPONENT);
@@ -127,7 +127,7 @@ public class NemesisProperty extends DoubleProperty implements CraftingProperty 
             return EventResult.pass();
         });
 
-        ModularAttackEvents.ATTACK_DAMAGE_BONUS.register((target, weapon, baseDamage, damageSource, bonusDamage) -> {
+        MeleeModularAttackEvents.ATTACK_DAMAGE_BONUS.register((target, weapon, baseDamage, damageSource, bonusDamage) -> {
             if (ModularItem.isModularItem(weapon)) {
                 double nemesisScale = getValue(weapon).orElse(0.0);
                 NemesisData data = weapon.get(NEMESIS_COMPONENT);

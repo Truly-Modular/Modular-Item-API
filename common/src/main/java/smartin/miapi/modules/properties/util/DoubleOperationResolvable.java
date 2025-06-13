@@ -51,7 +51,11 @@ public class DoubleOperationResolvable implements SourceSetter<DoubleOperationRe
     public static Codec<DoubleOperationResolvable> CODEC = Codec.withAlternative(new Codec<>() {
         @Override
         public <T> DataResult<T> encode(DoubleOperationResolvable input, DynamicOps<T> ops, T prefix) {
-            return listCodec.encode(input.operations, ops, prefix);
+            List<Operation> opsToEncode = input.operations.isEmpty()
+                    ? List.of(new Operation("" + input.fallback)) // Replace with your default
+                    : input.operations;
+
+            return listCodec.encode(opsToEncode, ops, prefix);
         }
 
         @Override
@@ -66,7 +70,11 @@ public class DoubleOperationResolvable implements SourceSetter<DoubleOperationRe
     }, new Codec<>() {
         @Override
         public <T> DataResult<T> encode(DoubleOperationResolvable input, DynamicOps<T> ops, T prefix) {
-            return listCodec.encode(input.operations, ops, prefix);
+            List<Operation> opsToEncode = input.operations.isEmpty()
+                    ? List.of(new Operation("" + input.fallback)) // Replace with your default
+                    : input.operations;
+
+            return listCodec.encode(opsToEncode, ops, prefix);
         }
 
         @Override

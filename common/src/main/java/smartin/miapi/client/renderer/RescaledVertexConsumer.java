@@ -29,12 +29,14 @@ public class RescaledVertexConsumer implements VertexConsumer {
     public void addVertex(float x, float y, float z, int color, float u, float v, int packedOverlay, int packedLight, float normalX, float normalY, float normalZ) {
         u = ((u - uStart) * uScale);
         v = ((v - vStart) * vScale);
+        //Minecraft.getInstance().getProfiler().push("Actual Vertex");
         this.addVertex(x, y, z);
         this.setColor(color);
         this.setUv(u, v);
         this.setOverlay(packedOverlay);
         this.setLight(packedLight);
         this.setNormal(normalX, normalY, normalZ);
+        //Minecraft.getInstance().getProfiler().pop();
     }
 
     @Override

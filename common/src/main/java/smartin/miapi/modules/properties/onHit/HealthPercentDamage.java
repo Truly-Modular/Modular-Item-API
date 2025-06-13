@@ -5,7 +5,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import smartin.miapi.Miapi;
-import smartin.miapi.events.ModularAttackEvents;
+import smartin.miapi.events.MeleeModularAttackEvents;
 import smartin.miapi.modules.properties.util.DoubleProperty;
 
 /**
@@ -28,7 +28,7 @@ public class HealthPercentDamage extends DoubleProperty {
     public HealthPercentDamage() {
         super(KEY);
         property = this;
-        ModularAttackEvents.ATTACK_DAMAGE_BONUS.register((target, itemStack, baseDamage, damageSource, bonusDamage) -> {
+        MeleeModularAttackEvents.ATTACK_DAMAGE_BONUS.register((target, itemStack, baseDamage, damageSource, bonusDamage) -> {
             if (damageSource.getEntity() instanceof LivingEntity livingAttacker && target instanceof LivingEntity livingTarget) {
                 if (livingAttacker instanceof Player player) {
                     if (player.oAttackAnim != 0.0) {

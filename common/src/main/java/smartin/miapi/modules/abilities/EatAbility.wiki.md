@@ -1,7 +1,8 @@
 @header Eat Ability  
 @path /data_types/abilities/eat
 
-The **Eat Ability** allows modular items to function as consumable food. When right-clicked and held, the item restores hunger and saturation, plays eating sounds, and can apply effects similar to vanilla food items.
+The **Eat Ability** allows modular items to function as consumable food. When right-clicked and held, the item restores
+hunger and saturation, plays eating sounds, and can apply effects similar to vanilla food items.
 
 ---
 
@@ -18,6 +19,7 @@ The **Eat Ability** allows modular items to function as consumable food. When ri
 ### Default Fields
 
 This ability uses the default ability fields:
+
 - **`cooldown`**: Sets the cooldown (in ticks) after the item is eaten.
 - **`min_hold`**: Automatically derived from `eat_ticks`.
 - **`max_hold`**: Not directly used.
@@ -26,15 +28,16 @@ This ability uses the default ability fields:
 
 ### Fields
 
-| Field         | Type                            | Description |
-|---------------|----------------------------------|-------------|
-| `nutrition`   | `DoubleOperationResolvable`      | Amount of hunger restored. |
-| `saturation`  | `DoubleOperationResolvable`      | Saturation modifier applied. |
-| `eat_ticks`   | `DoubleOperationResolvable` *(default: 32)* | Number of ticks the item must be held to consume. |
-| `cooldown`    | `DoubleOperationResolvable` *(default: 0)* | Cooldown applied after usage. |
-| `durability`  | `DoubleOperationResolvable` *(optional)* | Damage applied to item instead of consuming it. |
-| `alwaysEdible`| `boolean` *(optional)*           | If true, the item can be eaten even when the player is full. |
-| `effects`     | `List<FoodProperties.PossibleEffect>` *(optional)* | List of possible effects applied when consumed. Each effect has:  
+| Field          | Type                                               | Description                                                      |
+|----------------|----------------------------------------------------|------------------------------------------------------------------|
+| `nutrition`    | `DoubleOperationResolvable`                        | Amount of hunger restored.                                       |
+| `saturation`   | `DoubleOperationResolvable`                        | Saturation modifier applied.                                     |
+| `eat_ticks`    | `DoubleOperationResolvable` *(default: 32)*        | Number of ticks the item must be held to consume.                |
+| `cooldown`     | `DoubleOperationResolvable` *(default: 0)*         | Cooldown applied after usage.                                    |
+| `durability`   | `DoubleOperationResolvable` *(optional)*           | Damage applied to item instead of consuming it.                  |
+| `alwaysEdible` | `boolean` *(optional)*                             | If true, the item can be eaten even when the player is full.     |
+| `effects`      | `List<FoodProperties.PossibleEffect>` *(optional)* | List of possible effects applied when consumed. Each effect has: 
+
 - `effect`: the mob effect
 - `probability`: the chance it is applied |
 
@@ -44,26 +47,30 @@ This ability uses the default ability fields:
 
 ```json
 {
-  "ability": "eat",
-  "nutrition": 4,
-  "saturation": 0.6,
-  "cooldown": 60,
-  "eat_ticks": 32,
-  "alwaysEdible": true,
-  "effects": [
-    {
-      "effect": "minecraft:regeneration",
-      "probability": 0.25
-    },
-    {
-      "effect": "minecraft:speed",
-      "probability": 0.1
+    "ability_context": {
+        "eat": {
+            "nutrition": 4,
+            "saturation": 0.6,
+            "cooldown": 60,
+            "eat_ticks": 32,
+            "alwaysEdible": true,
+            "effects": [
+                {
+                    "effect": "minecraft:regeneration",
+                    "probability": 0.25
+                },
+                {
+                    "effect": "minecraft:speed",
+                    "probability": 0.1
+                }
+            ]
+        }
     }
-  ]
 }
 ```
 
 This configuration:
+
 - Restores 4 hunger and 0.6 saturation,
 - Plays the eating animation for 32 ticks,
 - Has a cooldown of 60 ticks,

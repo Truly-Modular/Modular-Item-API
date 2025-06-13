@@ -5,7 +5,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
 import smartin.miapi.Miapi;
-import smartin.miapi.events.ModularAttackEvents;
+import smartin.miapi.events.MeleeModularAttackEvents;
 import smartin.miapi.modules.properties.util.ComplexBooleanProperty;
 
 /**
@@ -27,7 +27,7 @@ public class ToolOrWeaponProperty extends ComplexBooleanProperty {
     public ToolOrWeaponProperty() {
         super(KEY, false);
         property = this;
-        ModularAttackEvents.HURT_ENEMY_POST.register((stack, target, attacker) -> {
+        MeleeModularAttackEvents.HURT_ENEMY_POST.register((stack, target, attacker) -> {
             if (ToolOrWeaponProperty.isWeapon(stack)) {
                 stack.hurtAndBreak(1, attacker, EquipmentSlot.MAINHAND);
             } else {

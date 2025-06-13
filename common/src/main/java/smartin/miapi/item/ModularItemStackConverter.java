@@ -39,7 +39,7 @@ public class ModularItemStackConverter {
         if (original.is(RegistryInventory.MIAPI_FORBIDDEN_TAG)) {
             return original;
         }
-        if (ReloadEvents.isInReload() || true) {
+        if (ReloadEvents.isInReload()) {
             return original;
         }
         ItemStack converted = original.copy();

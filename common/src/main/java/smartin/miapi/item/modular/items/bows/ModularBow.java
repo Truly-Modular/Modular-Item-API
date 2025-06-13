@@ -12,6 +12,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.BowItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -21,6 +22,7 @@ import org.lwjgl.system.NonnullDefault;
 import smartin.miapi.Miapi;
 import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.client.model.ModularModelPredicateProvider;
+import smartin.miapi.entity.ProjectileWithBow;
 import smartin.miapi.item.FakeItemManager;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.PlatformModularItemMethods;
@@ -125,14 +127,18 @@ public class ModularBow extends BowItem implements PlatformModularItemMethods, M
         }
     }
 
+    protected Projectile createProjectile(Level level, LivingEntity shooter, ItemStack weapon, ItemStack ammo, boolean isCrit) {
+        Projectile projectile1 = super.createProjectile(level, shooter, weapon, ammo, isCrit);
+        ((ProjectileWithBow) projectile1).setBowItem(weapon);
+        return projectile1;
+    }
+
     @Environment(EnvType.CLIENT)
     public void registerAnimations() {
         ModularModelPredicateProvider.registerModelOverride(this, ResourceLocation.parse("pull"), (stack, world, entity, seed) -> {
             if (entity == null) {
                 return 0.0F;
             } else {
-                int a = stack.getUseDuration(entity);
-                int b = entity.getTicksUsingItem();
                 float power = getPowerForTime(entity.getTicksUsingItem(), stack, entity);
                 return entity.getUseItem() != stack ? 0.0F : power;
             }

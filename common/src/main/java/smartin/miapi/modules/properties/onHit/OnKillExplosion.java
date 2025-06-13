@@ -30,7 +30,7 @@ public class OnKillExplosion extends CodecProperty<ExplosionProperty.ExplosionIn
         property = this;
         EntityEvent.LIVING_DEATH.register(((entity, source) -> {
             if (source.getEntity() instanceof LivingEntity attacker) {
-                Optional<ExplosionProperty.ExplosionInfo> info = getData(MiapiEvents.LivingHurtEvent.getCausingItemStack(source));
+                Optional<ExplosionProperty.ExplosionInfo> info = getData(MiapiEvents.LivingHurtEvent.getMainCausingStack(source));
                 info.ifPresent(explosionInfo -> explosionInfo.explode(attacker.level(), attacker, entity.position()));
             }
             return EventResult.pass();

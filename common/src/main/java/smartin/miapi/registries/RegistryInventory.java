@@ -53,7 +53,7 @@ import smartin.miapi.effects.StunResistanceStatusEffect;
 import smartin.miapi.effects.StunStatusEffect;
 import smartin.miapi.effects.TeleportBlockEffect;
 import smartin.miapi.entity.ItemProjectileEntity;
-import smartin.miapi.events.ModularAttackEvents;
+import smartin.miapi.events.MeleeModularAttackEvents;
 import smartin.miapi.item.MaterialSmithingRecipe;
 import smartin.miapi.item.modular.ModularItemPart;
 import smartin.miapi.item.modular.PropertyResolver;
@@ -110,8 +110,8 @@ import smartin.miapi.modules.properties.onHit.entity.AquaticDamage;
 import smartin.miapi.modules.properties.onHit.entity.IllagerBane;
 import smartin.miapi.modules.properties.onHit.entity.SmiteDamage;
 import smartin.miapi.modules.properties.onHit.entity.SpiderDamage;
-import smartin.miapi.modules.properties.potion.OnDamagedEffects;
-import smartin.miapi.modules.properties.potion.OnHitTargetEffects;
+import smartin.miapi.modules.properties.potion.OnHitOffensiveEffects;
+import smartin.miapi.modules.properties.potion.OnHitDefensiveEffects;
 import smartin.miapi.modules.properties.potion.OnKillEffects;
 import smartin.miapi.modules.properties.projectile.*;
 import smartin.miapi.modules.properties.render.*;
@@ -434,7 +434,7 @@ public class RegistryInventory {
 
         smartin.miapi.registries.AttributeRegistry.registerAttributes();
 
-        ModularAttackEvents.HURT_ENEMY_POST.register((stack, target, attacker) -> {
+        MeleeModularAttackEvents.HURT_ENEMY_POST.register((stack, target, attacker) -> {
             if (stack.getItem() instanceof SwordItem || stack.getItem() instanceof TieredItem) {
                 stack.hurtAndBreak(1, attacker, EquipmentSlot.MAINHAND);
             }
@@ -562,8 +562,8 @@ public class RegistryInventory {
             registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, LightningOnHit.KEY, new LightningOnHit());
             registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, GuiStatProperty.KEY, new GuiStatProperty());
             registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, AbilityMangerProperty.KEY, new AbilityMangerProperty());
-            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, OnHitTargetEffects.KEY, new OnHitTargetEffects());
-            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, OnDamagedEffects.KEY, new OnDamagedEffects());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, OnHitDefensiveEffects.KEY, new OnHitDefensiveEffects());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, OnHitOffensiveEffects.KEY, new OnHitOffensiveEffects());
             registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, OnKillEffects.KEY, new OnKillEffects());
             registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, OnKillExplosion.KEY, new OnKillExplosion());
             registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, CanChangeParentModule.KEY, new CanChangeParentModule());

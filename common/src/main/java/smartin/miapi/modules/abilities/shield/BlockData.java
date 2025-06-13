@@ -41,6 +41,10 @@ public class BlockData implements MergeAble<BlockData>, InitializeAble<BlockData
     @AutoCodec.Name("cooldown_miss_time")
     public DoubleOperationResolvable cooldownMissTime = new DoubleOperationResolvable(40);
 
+    @CodecBehavior.Optional
+    @AutoCodec.Name("angle")
+    public DoubleOperationResolvable angle = new DoubleOperationResolvable(45);
+
     @Override
     public BlockData merge(BlockData left, BlockData right, MergeType mergeType) {
         BlockData merged = new BlockData();

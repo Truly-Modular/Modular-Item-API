@@ -15,6 +15,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
@@ -37,7 +38,30 @@ public class ParryBlock extends MinMaxCDAbility<BlockData> {
 
             ModuleInstance moduleInstance = ItemModule.getModules(stack);
             BlockData data = getData(stack).orElse(null);
-            if (data == null || moduleInstance == null) return EventResult.pass();
+            if (data == null || moduleInstance == null || event.attacker == null) return EventResult.pass();
+
+            double allowedAngle = data.angle.getValue();
+
+            // Player look direction
+            Vec3 playerLook = player.getLookAngle().normalize();
+
+            // Direction from player to attacker
+            Vec3 toAttacker = event.attacker.position().subtract(player.position()).normalize();
+
+            // Calculate angle between the vectors (in degrees)
+            double angle = Math.toDegrees(Math.acos(playerLook.dot(toAttacker)));
+
+            if (angle <= allowedAngle) {
+                // Direction from player to attacker
+                toAttacker = event.attacker.getEyePosition().subtract(player.position()).normalize();
+
+                // Calculate angle between the vectors (in degrees)
+                angle = Math.toDegrees(Math.acos(playerLook.dot(toAttacker)));
+                if (angle <= allowedAngle) {
+                    return EventResult.interruptTrue();
+                }
+            }
+
 
             player.getCooldowns().addCooldown(stack.getItem(), getCooldown(stack));
 
@@ -65,8 +89,16 @@ public class ParryBlock extends MinMaxCDAbility<BlockData> {
                 Holder<SoundEvent> holder = Holder.direct(SoundEvent.createVariableRangeEvent(data.sound));
                 player.playSound(holder.value(), (float) data.volume.getValue(), (float) data.pitch.getValue());
             }
-
-            return EventResult.interruptDefault();
+            double blocking = data.blocking.getValue();
+            if (blocking >= 100) {
+                return EventResult.interruptDefault();
+            }
+            if (blocking > 0) {
+                float blockPercent = (float) blocking / 100f;
+                event.amount = event.amount / blockPercent;
+                return EventResult.pass();
+            }
+            return EventResult.pass();
         });
     }
 

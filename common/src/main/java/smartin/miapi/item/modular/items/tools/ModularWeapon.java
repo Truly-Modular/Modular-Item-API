@@ -22,7 +22,7 @@ import org.apache.commons.lang3.mutable.MutableFloat;
 import org.lwjgl.system.NonnullDefault;
 import smartin.miapi.Miapi;
 import smartin.miapi.entity.ItemProjectileEntity;
-import smartin.miapi.events.ModularAttackEvents;
+import smartin.miapi.events.MeleeModularAttackEvents;
 import smartin.miapi.item.FakeItemManager;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.PlatformModularItemMethods;
@@ -55,7 +55,7 @@ public class ModularWeapon extends Item implements PlatformModularItemMethods, M
     public float getAttackDamageBonus(Entity target, float damage, DamageSource damageSource) {
         MutableFloat mutableFloat = new MutableFloat(0);
         if (damageSource.getWeaponItem() != null) {
-            ModularAttackEvents.ATTACK_DAMAGE_BONUS.invoker().getAttackDamageBonus(target, damageSource.getWeaponItem(), damage, damageSource, mutableFloat);
+            MeleeModularAttackEvents.ATTACK_DAMAGE_BONUS.invoker().getAttackDamageBonus(target, damageSource.getWeaponItem(), damage, damageSource, mutableFloat);
         }
         return mutableFloat.floatValue();
     }
@@ -77,12 +77,12 @@ public class ModularWeapon extends Item implements PlatformModularItemMethods, M
 
     @Override
     public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
-        return !ModularAttackEvents.HURT_ENEMY.invoker().hurtEnemy(stack, target, attacker).interruptsFurtherEvaluation();
+        return !MeleeModularAttackEvents.HURT_ENEMY.invoker().hurtEnemy(stack, target, attacker).interruptsFurtherEvaluation();
     }
 
     @Override
     public void postHurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
-        ModularAttackEvents.HURT_ENEMY_POST.invoker().hurtEnemy(stack, target, attacker);
+        MeleeModularAttackEvents.HURT_ENEMY_POST.invoker().hurtEnemy(stack, target, attacker);
     }
 
     @Override

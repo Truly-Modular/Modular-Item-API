@@ -98,13 +98,8 @@ public interface ColorProvider {
     }
 
     class ParentColorProvider extends MaterialColorProvider {
-        public Material material;
 
         public ParentColorProvider() {
-        }
-
-        public ParentColorProvider(Material material) {
-            this.material = material;
         }
 
         @Environment(EnvType.CLIENT)

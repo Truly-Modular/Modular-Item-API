@@ -33,6 +33,7 @@ import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.datapack.ReloadHelpers;
 import smartin.miapi.editor.EditorCommands;
 import smartin.miapi.editor.LiveDataPackManager;
+import smartin.miapi.entity.ProjectileWithBow;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.item.ItemToModularConverter;
 import smartin.miapi.item.ModularItemStackConverter;
@@ -64,7 +65,6 @@ import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.network.Networking;
 import smartin.miapi.network.NetworkingImplCommon;
 import smartin.miapi.registries.RegistryInventory;
-import smartin.miapi.upgrade.Upgrade;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -229,9 +229,7 @@ public class Miapi {
             }
             return EventResult.pass();
         });
-        if (false) {
-            Upgrade.setup();
-        }
+        ProjectileWithBow.get();
     }
 
 

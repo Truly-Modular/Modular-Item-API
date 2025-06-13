@@ -14,3 +14,21 @@ Many Abilities share common fields:
 - ``min_hold`` how long the minimum hold time is before activation (often defaults to 0)
 - ``max_hold`` how long right click can be held. (often defaults to an hour)
 
+Currently, abilities utilize the Ability Manager Property.
+  
+this means in the json it looks like this:
+```json
+{
+    "ability_context": {
+        "ability-1": {
+            "cooldown": 20
+        },
+        "ability-2": {
+            "special_field": "minecraft:creeper"
+        }
+    }
+}
+```
+**Headsup**
+we are planning on reworking this system.
+

@@ -5,7 +5,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import smartin.miapi.Miapi;
-import smartin.miapi.events.ModularAttackEvents;
+import smartin.miapi.events.MeleeModularAttackEvents;
 import smartin.miapi.modules.properties.util.DoubleProperty;
 
 /**
@@ -32,7 +32,7 @@ public class SlashingProperty extends DoubleProperty {
     public SlashingProperty() {
         super(KEY);
         property = this;
-        ModularAttackEvents.ATTACK_DAMAGE_BONUS.register((target, itemStack, baseDamage, damageSource, bonusDamage) -> {
+        MeleeModularAttackEvents.ATTACK_DAMAGE_BONUS.register((target, itemStack, baseDamage, damageSource, bonusDamage) -> {
             double slashing = getValue(itemStack).orElse(0.0);
             if(target instanceof LivingEntity livingEntity){
                 slashing -= livingEntity.getAttributeValue(Attributes.ARMOR_TOUGHNESS);

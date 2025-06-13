@@ -6,3 +6,6 @@
 - fixed Purpur block material naming
 - fixed miapireload command
 - fixed not clearing texturecache correctly
+- fixed on-hit-potion not showing self correctly
+- on-hit effects now work on bows and armor reliably
+- changed vein mining(cutter axe) to also work on diagonals

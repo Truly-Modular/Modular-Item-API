@@ -3,7 +3,7 @@ package smartin.miapi.modules.properties.onHit;
 import dev.architectury.event.EventResult;
 import net.minecraft.resources.ResourceLocation;
 import smartin.miapi.Miapi;
-import smartin.miapi.events.ModularAttackEvents;
+import smartin.miapi.events.MeleeModularAttackEvents;
 import smartin.miapi.modules.properties.util.DoubleProperty;
 
 import java.util.Optional;
@@ -29,7 +29,7 @@ public class FracturingProperty extends DoubleProperty {
     public FracturingProperty() {
         super(KEY);
         property = this;
-        ModularAttackEvents.ATTACK_DAMAGE_BONUS.register((target, itemStack, baseDamage, damageSource, bonusDamage) -> {
+        MeleeModularAttackEvents.ATTACK_DAMAGE_BONUS.register((target, itemStack, baseDamage, damageSource, bonusDamage) -> {
             Optional<Double> optionalStrength = getValue(itemStack);
             if (optionalStrength.isPresent() && itemStack.getMaxDamage() > 0) {
                 double percentageIncrease = (optionalStrength.get() / 100) * ((double) itemStack.getDamageValue() / itemStack.getMaxDamage());

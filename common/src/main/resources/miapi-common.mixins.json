@@ -4,7 +4,6 @@
     "package": "smartin.miapi.mixin",
     "compatibilityLevel": "JAVA_17",
     "mixins": [
-        "AbstractArrowAccessor",
         "ApoliStackPowerMixin",
         "ArcheryHookMixin",
         "BufferBuilderAccessor",
@@ -46,6 +45,9 @@
         "loot.LootPoolMixin",
         "loot.LootTableAccessor",
         "loot.LootTableMixin",
+        "projectile.AbstractArrowAccessor",
+        "projectile.ProjectileMixin",
+        "projectile.SynchedEntityDataMixin",
         "smithing.AnvilMenuMixin",
         "smithing.ForgingScreenHandlerAccessor",
         "smithing.ItemCombinerMenuMixin",

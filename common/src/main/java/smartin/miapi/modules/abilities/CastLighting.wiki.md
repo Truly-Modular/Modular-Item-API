@@ -26,6 +26,18 @@ This ability allows the player to **summon lightning bolts** at a targeted locat
 | cooldown    | `DoubleOperationResolvable` | Cooldown duration in ticks after use                          | 40                   |
 | maxRange    | `DoubleOperationResolvable` | Maximum allowed distance from player to cast lightning        | 6                    |
 
+### Example
+```json
+{
+  "ability_context": {
+    "cast_lighting": {
+        "lighting": "[material.tier]",
+        "cooldown": "[material.density]*20"
+    }
+  }
+}
+```
+
 ### Usage
 
 - Player holds the item (right-click and hold).

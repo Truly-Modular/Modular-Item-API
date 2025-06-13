@@ -27,6 +27,7 @@ import smartin.miapi.Miapi;
 import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.client.model.ModularModelPredicateProvider;
 import smartin.miapi.entity.ItemProjectileEntity;
+import smartin.miapi.entity.ProjectileWithBow;
 import smartin.miapi.events.MiapiProjectileEvents;
 import smartin.miapi.item.FakeItemManager;
 import smartin.miapi.item.modular.ModularItem;
@@ -127,20 +128,22 @@ public class ModularCrossbow extends CrossbowItem implements PlatformModularItem
 
     protected Projectile createProjectile(Level level, LivingEntity shooter, ItemStack weapon, ItemStack ammo, boolean isCrit) {
         if (IsCrossbowShootAble.canCrossbowShoot(ammo) && ammo.getItem() instanceof ProjectileItem projectileItem) {
-            Projectile projectile = projectileItem.asProjectile(level, shooter.getEyePosition(), ammo, shooter.getDirection());
+            Projectile projectile = super.createProjectile(level, shooter, weapon, ammo, isCrit);
             if (projectile instanceof ItemProjectileEntity projectileEntity) {
                 projectileEntity.setCritArrow(isCrit);
             }
+            ((ProjectileWithBow) projectile).setBowItem(weapon);
             return projectile;
         }
-        return super.createProjectile(level, shooter, weapon, ammo, isCrit);
+        Projectile projectile1 = super.createProjectile(level, shooter, weapon, ammo, isCrit);
+        ((ProjectileWithBow) projectile1).setBowItem(weapon);
+        return projectile1;
     }
 
     protected void shootProjectile(LivingEntity shooter, Projectile projectile, int index, float velocity, float inaccuracy, float angle, @Nullable LivingEntity target) {
         if(index!=0 && projectile instanceof ItemProjectileEntity entity){
             entity.pickup = AbstractArrow.Pickup.CREATIVE_ONLY;
         }
-        super.shootProjectile(shooter, projectile, index, velocity, inaccuracy, angle, target);
     }
 
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand usedHand) {
@@ -186,6 +189,7 @@ public class ModularCrossbow extends CrossbowItem implements PlatformModularItem
             });
         }
     }
+
 
     public Predicate<ItemStack> getAllSupportedProjectiles() {
         return super.getAllSupportedProjectiles().or(IsCrossbowShootAble::canCrossbowShoot);
