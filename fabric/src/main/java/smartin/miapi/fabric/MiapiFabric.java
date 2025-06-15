@@ -12,6 +12,7 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.world.entity.ai.attributes.RangedAttribute;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunction;
 import smartin.miapi.Environment;
 import smartin.miapi.Miapi;
@@ -39,6 +40,7 @@ public class MiapiFabric implements ModInitializer {
             MiapiEvents.DEFAULT_LOOT_FUNCTIONS.invoker().adjust(functions);
             functions.forEach(tableBuilder::apply);
         });
+        Block block;
 
         //DATA
         if (Environment.isClient()) {

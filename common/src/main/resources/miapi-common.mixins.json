@@ -39,6 +39,7 @@
         "item.MiapiItemStackMixin",
         "item.ShovelItemAccessor",
         "item.ThrowablePotionItemAccessor",
+        "loot.BlockMixin",
         "loot.LootContextAccessor",
         "loot.LootContextTypesAccessor",
         "loot.LootParamsAccessor",

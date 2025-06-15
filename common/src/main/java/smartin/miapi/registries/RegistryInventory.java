@@ -105,6 +105,7 @@ import smartin.miapi.modules.properties.compat.ht_treechop.TreechopProperty;
 import smartin.miapi.modules.properties.enchanment.*;
 import smartin.miapi.modules.properties.mining.MiningLevelProperty;
 import smartin.miapi.modules.properties.mining.MiningShapeProperty;
+import smartin.miapi.modules.properties.mining.MiningTelekinesisProperty;
 import smartin.miapi.modules.properties.onHit.*;
 import smartin.miapi.modules.properties.onHit.entity.AquaticDamage;
 import smartin.miapi.modules.properties.onHit.entity.IllagerBane;
@@ -598,6 +599,7 @@ public class RegistryInventory {
             registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, AssumeItemIdentityProperty.KEY, new AssumeItemIdentityProperty());
             registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, TreechopProperty.KEY, new TreechopProperty());
             registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, AutoSmeltProperty.KEY, new AutoSmeltProperty());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, MiningTelekinesisProperty.KEY, new MiningTelekinesisProperty());
             //compat
             //registerMiapi(moduleProperties, BetterCombatProperty.KEY, new BetterCombatProperty());
             BetterCombatHelper.setup();

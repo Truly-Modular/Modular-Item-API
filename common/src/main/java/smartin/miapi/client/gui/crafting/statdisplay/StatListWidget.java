@@ -31,6 +31,7 @@ import smartin.miapi.modules.properties.FireProof;
 import smartin.miapi.modules.properties.LuminousLearningProperty;
 import smartin.miapi.modules.properties.armor.*;
 import smartin.miapi.modules.properties.attributes.AttributeUtil;
+import smartin.miapi.modules.properties.mining.MiningTelekinesisProperty;
 import smartin.miapi.modules.properties.onHit.*;
 import smartin.miapi.modules.properties.onHit.entity.AquaticDamage;
 import smartin.miapi.modules.properties.onHit.entity.IllagerBane;
@@ -323,6 +324,9 @@ public class StatListWidget extends InteractAbleWidget {
         addStatDisplay(ComplexBooleanStatDisplay
                 .builder(MakesImpactSoundProperty.property)
                 .setTranslationKey(MakesImpactSoundProperty.KEY).build());
+        addStatDisplay(ComplexBooleanStatDisplay
+                .builder(MiningTelekinesisProperty.property)
+                .setTranslationKey(MiningTelekinesisProperty.KEY).build());
 
         addStatDisplay(
                 DoubleResolvableStatDisplay
