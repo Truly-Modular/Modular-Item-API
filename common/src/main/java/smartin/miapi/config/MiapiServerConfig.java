@@ -235,6 +235,14 @@ public class MiapiServerConfig {
             @Comment("Whether Custom Components should be added to the generated Materials")
             @AutoCodec.Name("component_property")
             public GeneratePropertyOption componentProperty = new GeneratePropertyOption();
+
+            @Comment("Whether the material can turn into a smithing material")
+            @AutoCodec.Name("smithing")
+            public GeneratePropertyOption smithingOption = new GeneratePropertyOption();
+
+            @Comment("An allow list since truly modular normally ignores smithing recipes that convert multiple items, as wrong detections become likely there.")
+            @AutoCodec.Name("allow_smithing_multi_ingredient_recipes")
+            public GeneratePropertyOption allowMultiSmithing = new GeneratePropertyOption();
         }
 
         @ConfigAutoCodec.ConfigClassMarker

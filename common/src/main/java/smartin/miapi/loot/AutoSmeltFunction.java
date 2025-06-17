@@ -11,7 +11,7 @@ import net.minecraft.world.level.storage.loot.functions.LootItemFunction;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import smartin.miapi.Miapi;
-import smartin.miapi.modules.properties.AutoSmeltProperty;
+import smartin.miapi.modules.properties.mining.AutoSmeltProperty;
 import smartin.miapi.registries.RegistryInventory;
 
 import java.util.Optional;

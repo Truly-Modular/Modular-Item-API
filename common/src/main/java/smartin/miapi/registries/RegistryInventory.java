@@ -103,6 +103,7 @@ import smartin.miapi.modules.properties.attributes.AttributeSplitProperty;
 import smartin.miapi.modules.properties.compat.better_combat.BetterCombatHelper;
 import smartin.miapi.modules.properties.compat.ht_treechop.TreechopProperty;
 import smartin.miapi.modules.properties.enchanment.*;
+import smartin.miapi.modules.properties.mining.AutoSmeltProperty;
 import smartin.miapi.modules.properties.mining.MiningLevelProperty;
 import smartin.miapi.modules.properties.mining.MiningShapeProperty;
 import smartin.miapi.modules.properties.mining.MiningTelekinesisProperty;

@@ -9,6 +9,7 @@ import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.item.TieredItem;
 import net.minecraft.world.item.crafting.*;
 import smartin.miapi.Miapi;
+import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.item.MaterialSmithingRecipe;
 import smartin.miapi.material.MaterialProperty;
 import smartin.miapi.material.base.Material;
@@ -31,7 +32,7 @@ public class SmithingRecipeUtil {
     public static RecipeManager manager = null;
 
     public static void setupSmithingRecipes(boolean isClient, RegistryAccess registryAccess, RecipeManager manager) {
-        List<GeneratedMaterial> materials = MaterialProperty.MATERIAL_REGISTRY.getFlatMap() .values().stream().filter(GeneratedMaterial.class::isInstance).map(m -> (GeneratedMaterial) m).toList();
+        List<GeneratedMaterial> materials = MaterialProperty.MATERIAL_REGISTRY.getFlatMap().values().stream().filter(GeneratedMaterial.class::isInstance).map(m -> (GeneratedMaterial) m).toList();
         materials.forEach(m -> MaterialProperty.MATERIAL_REGISTRY.remove(m.key));
         setupSmithingRecipe(materials, isClient, m -> MaterialProperty.MATERIAL_REGISTRY.register(m.key, m), registryAccess, null);
     }
@@ -85,6 +86,10 @@ public class SmithingRecipeUtil {
             registryManager,
             GeneratedMaterial material, Consumer<GeneratedMaterial> smithingMaterial, Consumer<GeneratedMaterial> normal) {
         try {
+            if (!GeneratedMaterialPropertyManager.shouldApplyProperty(MiapiConfig.getServerConfig().generatedMaterials.properties.smithingOption, material.getID().toString())) {
+                normal.accept(material);
+                return false;
+            }
             var optionalRecipe = manager.getAllRecipesFor(RecipeType.SMITHING).stream()
                     .map(RecipeHolder::value)
                     .filter(SmithingTransformRecipe.class::isInstance)
@@ -105,6 +110,12 @@ public class SmithingRecipeUtil {
                         .orElse(ItemStack.EMPTY);
                 if (templateItem.isEmpty()) {
                     //is not a smithing material
+                    normal.accept(material);
+                    return;
+                }
+                var baseItems = ((SmithingTransformRecipeAccessor) smithingTransformRecipe).getBase().getItems();
+                if (baseItems.length > 1 &&
+                    GeneratedMaterialPropertyManager.shouldApplyProperty(MiapiConfig.getServerConfig().generatedMaterials.properties.allowMultiSmithing, material.getID().toString())) {
                     normal.accept(material);
                     return;
                 }
