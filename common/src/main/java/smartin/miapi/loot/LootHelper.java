@@ -42,7 +42,6 @@ public class LootHelper {
 
     public static void setup() {
         MiapiEvents.DEFAULT_LOOT_FUNCTIONS.register(list -> {
-            list.addAll(adjusted);
             list.add(new AutoSmeltFunction());
             return EventResult.pass();
         });

@@ -85,6 +85,7 @@ public class ModuleInstance {
                 sub.lookup = moduleInstance.lookup;
             });
         }));
+        CODEC = ModuleInstanceCodec.createWrappedCodec();
         MODULE_INSTANCE_COMPONENT = DataComponentType.<ModuleInstance>builder().persistent(CODEC).networkSynchronized(ByteBufCodecs.fromCodec(CODEC)).build();
     }
 
@@ -169,7 +170,7 @@ public class ModuleInstance {
     @Nullable
     public ItemStack contextStack = null;
 
-    private boolean mutable = true;
+    protected boolean mutable = true;
 
     /**
      * Constructs a new module instance with the given item module.
@@ -238,7 +239,7 @@ public class ModuleInstance {
         return new LinkedHashMap<>(subModules);
     }
 
-    private Map<String, ModuleInstance> getSubModuleMapForSave() {
+    protected Map<String, ModuleInstance> getSubModuleMapForSave() {
         if (this.parent == null && subModules.isEmpty()) {
             //Miapi.LOGGER.warn("potential encoding issue!");
         }

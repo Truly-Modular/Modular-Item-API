@@ -22,10 +22,10 @@ import org.lwjgl.system.NonnullDefault;
 import smartin.miapi.Miapi;
 import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.client.model.ModularModelPredicateProvider;
-import smartin.miapi.entity.ProjectileWithBow;
 import smartin.miapi.item.FakeItemManager;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.PlatformModularItemMethods;
+import smartin.miapi.modules.ModuleInstanceCodec;
 import smartin.miapi.modules.properties.DisplayNameProperty;
 import smartin.miapi.modules.properties.LoreProperty;
 import smartin.miapi.modules.properties.RepairPriority;
@@ -129,7 +129,9 @@ public class ModularBow extends BowItem implements PlatformModularItemMethods, M
 
     protected Projectile createProjectile(Level level, LivingEntity shooter, ItemStack weapon, ItemStack ammo, boolean isCrit) {
         Projectile projectile1 = super.createProjectile(level, shooter, weapon, ammo, isCrit);
-        ((ProjectileWithBow) projectile1).setBowItem(weapon);
+
+        ModuleInstanceCodec.performanceTest(ammo);
+
         return projectile1;
     }
 

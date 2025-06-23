@@ -74,17 +74,17 @@ public class ModularItemCache {
 
     public static class WeakInstanceTracker<T> {
         private Object threadLock = new Object();
-        private final Set<T> instances = Collections.newSetFromMap(new WeakHashMap<>());
+        private final WeakHashMap<T, Integer> instances = new WeakHashMap<>();
 
         public void addInstance(T instance) {
             synchronized (threadLock) {
-                instances.add(instance);
+                instances.put(instance, 0);
             }
         }
 
         public Set<T> getInstances() {
             synchronized (threadLock) {
-                return new HashSet<>(instances);
+                return new HashSet<>(instances.keySet());
             }
         }
     }

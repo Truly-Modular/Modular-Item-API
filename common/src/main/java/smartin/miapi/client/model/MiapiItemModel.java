@@ -2,6 +2,7 @@ package smartin.miapi.client.model;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.datafixers.util.Pair;
+import dev.architectury.event.EventResult;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
@@ -15,6 +16,7 @@ import org.joml.Matrix4f;
 import smartin.miapi.client.GlintShader;
 import smartin.miapi.client.model.item.DualKeyCache;
 import smartin.miapi.datapack.ReloadEvents;
+import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.item.modular.VisualModularItem;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
@@ -41,6 +43,10 @@ public class MiapiItemModel implements MiapiModel {
             MiapiItemModel model = new MiapiItemModel(s);
             fallbackLookup.put(s, model);
             return model;
+        });
+        MiapiEvents.CLEAR_CACHE.register(() -> {
+            MiapiItemModel.fallbackLookup.clear();
+            return EventResult.pass();
         });
     }
 

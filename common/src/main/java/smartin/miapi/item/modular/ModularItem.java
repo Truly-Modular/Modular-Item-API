@@ -6,8 +6,6 @@ import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.DurabilityProperty;
 
-import java.util.Objects;
-
 /**
  * Empty Interface to identify Modular Item
  */
@@ -25,8 +23,10 @@ public interface ModularItem extends VisualModularItem {
     }
 
     static boolean isModularItem(ItemStack itemStack, Item item) {
-        return itemStack.has(ModuleInstance.MODULE_INSTANCE_COMPONENT) &&
-               Objects.requireNonNull(itemStack.get(ModuleInstance.MODULE_INSTANCE_COMPONENT)).module != ItemModule.empty &&
-               item instanceof ModularItem;
+        if (item instanceof ModularItem) {
+            ModuleInstance moduleInstance = itemStack.get(ModuleInstance.MODULE_INSTANCE_COMPONENT);
+            return moduleInstance != null && moduleInstance.module != ItemModule.empty;
+        }
+        return false;
     }
 }

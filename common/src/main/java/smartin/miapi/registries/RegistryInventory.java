@@ -69,10 +69,7 @@ import smartin.miapi.item.modular.items.shield.ModularNonVanillaShield;
 import smartin.miapi.item.modular.items.shield.ModularVanillaShield;
 import smartin.miapi.item.modular.items.shield.TowerShieldComponent;
 import smartin.miapi.item.modular.items.tools.*;
-import smartin.miapi.loot.AutoSmeltFunction;
-import smartin.miapi.loot.LootHelper;
-import smartin.miapi.loot.MaterialSwapLootFunction;
-import smartin.miapi.loot.ModuleSwapLootFunction;
+import smartin.miapi.loot.*;
 import smartin.miapi.loot.condition.LootTableCondition;
 import smartin.miapi.material.*;
 import smartin.miapi.material.base.Material;
@@ -240,6 +237,7 @@ public class RegistryInventory {
     public static LootItemFunctionType<ModuleSwapLootFunction> moduleSwapLootFunctionLootItemFunctionType = new LootItemFunctionType<>(ModuleSwapLootFunction.CODEC);
     public static LootItemFunctionType<MaterialSwapLootFunction> materialSwapLootFunctionLootItemFunctionType = new LootItemFunctionType<>(MaterialSwapLootFunction.CODEC);
     public static LootItemFunctionType<AutoSmeltFunction> autoSmeltFunctionLootItemFunctionType = new LootItemFunctionType<>(AutoSmeltFunction.CODEC);
+    public static LootItemFunctionType<GlobalLootModularisationFunction> globalLootItemFunctionType = new LootItemFunctionType<>(GlobalLootModularisationFunction.CODEC);
 
 
     static {
@@ -296,6 +294,8 @@ public class RegistryInventory {
                 Miapi.id("material_swap"), () -> materialSwapLootFunctionLootItemFunctionType);
         RegistryInventory.LOOT_ITEM_FUNCTION_TYPE_REGISTRAR.register(
                 Miapi.id("auto_smelt"), () -> autoSmeltFunctionLootItemFunctionType);
+        RegistryInventory.LOOT_ITEM_FUNCTION_TYPE_REGISTRAR.register(
+                Miapi.id("global_loot_adjuster"), () -> autoSmeltFunctionLootItemFunctionType);
 
         register(ARMOR_MATERIAL_REGISTRAR, "modular_armor_material", () ->
                 new ArmorMaterial(

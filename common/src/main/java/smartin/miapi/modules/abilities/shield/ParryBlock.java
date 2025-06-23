@@ -5,6 +5,7 @@ import com.redpxnda.nucleus.codec.auto.AutoCodec;
 import com.redpxnda.nucleus.pose.server.ServerPoseFacet;
 import dev.architectury.event.EventResult;
 import net.minecraft.core.Holder;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.InteractionHand;
@@ -137,9 +138,8 @@ public class ParryBlock extends MinMaxCDAbility<BlockData> {
                     BlockData data = getData(user.getItemInHand(hand)).orElse(null);
                     if (data != null) {
                         // Pose animation setup
-                        ServerPoseFacet facet = ServerPoseFacet.KEY.get(serverPlayer);
-                        if (facet != null && data.pose != null) {
-                            facet.set(data.pose.toString(), serverPlayer, hand);
+                        if (data.pose != null) {
+                            setAnimation(serverPlayer, data.pose, hand);
                         }
                     }
                 }
@@ -150,5 +150,48 @@ public class ParryBlock extends MinMaxCDAbility<BlockData> {
         return InteractionResultHolder.consume(user.getItemInHand(hand));
     }
 
+    @Override
+    public ItemStack finishUsing(ItemStack stack, Level world, LivingEntity user) {
+        resetAnimation(user);
+        applyCooldownMissTime(stack, user);
+        return super.finishUsing(stack, world, user);
+    }
 
+    @Override
+    public void onStoppedUsingAfter(ItemStack stack, Level world, LivingEntity user, int remainingUseTicks) {
+        resetAnimation(user);
+        super.onStoppedUsingAfter(stack, world, user, remainingUseTicks);
+        applyCooldownMissTime(stack, user);
+    }
+
+    @Override
+    public void onStoppedHolding(ItemStack stack, Level world, LivingEntity user) {
+        resetAnimation(user);
+        super.onStoppedHolding(stack, world, user);
+        applyCooldownMissTime(stack, user);
+    }
+
+    public void applyCooldownMissTime(ItemStack itemStack, LivingEntity livingEntity) {
+        BlockData data = getData(itemStack).orElse(null);
+        if (livingEntity instanceof ServerPlayer serverPlayer && data != null) {
+            serverPlayer.getCooldowns().addCooldown(itemStack.getItem(), (int) data.cooldownMissTime.getValue());
+        }
+    }
+
+    public void setAnimation(Player p, ResourceLocation id, InteractionHand hand) {
+        if (p instanceof ServerPlayer player) {
+            ServerPoseFacet facet = ServerPoseFacet.KEY.get(player);
+            if (facet != null) {
+                facet.set(id.toString(), player, hand);
+            }
+        }
+    }
+
+    public void resetAnimation(LivingEntity entity) {
+        if (entity instanceof ServerPlayer player) {
+            ServerPoseFacet facet = ServerPoseFacet.KEY.get(player);
+            if (facet != null)
+                facet.reset(player);
+        }
+    }
 }
