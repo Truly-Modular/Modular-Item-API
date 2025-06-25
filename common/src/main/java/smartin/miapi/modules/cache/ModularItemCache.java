@@ -9,7 +9,11 @@ import smartin.miapi.item.modular.VisualModularItem;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
 
-import java.util.*;
+import java.lang.ref.ReferenceQueue;
+import java.lang.ref.WeakReference;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -17,7 +21,8 @@ import java.util.function.Supplier;
 public class ModularItemCache {
     protected static Map<String, CacheObjectSupplier> supplierMap = new ConcurrentHashMap<>();
     public static Map<String, DataCache.ModuleCacheSupplier> MODULE_CACHE_SUPPLIER = new ConcurrentHashMap<>();
-    public static WeakInstanceTracker<ModuleInstance> modules = new WeakInstanceTracker<>();
+    public static ConcurrentWeakInstanceTracker<ModuleInstance> modules = new ConcurrentWeakInstanceTracker<>();
+
 
     public static void setSupplier(String key, CacheObjectSupplier supplier) {
         supplierMap.put(key, supplier);
@@ -72,19 +77,33 @@ public class ModularItemCache {
     }
 
 
-    public static class WeakInstanceTracker<T> {
-        private Object threadLock = new Object();
-        private final WeakHashMap<T, Integer> instances = new WeakHashMap<>();
+
+    public static class ConcurrentWeakInstanceTracker<T> {
+        private final ReferenceQueue<T> refQueue = new ReferenceQueue<>();
+        private final ConcurrentHashMap<WeakReference<T>, Boolean> instanceMap = new ConcurrentHashMap<>();
 
         public void addInstance(T instance) {
-            synchronized (threadLock) {
-                instances.put(instance, 0);
-            }
+            cleanup(); // periodically clean stale references
+            WeakReference<T> ref = new WeakReference<>(instance, refQueue);
+            instanceMap.put(ref, Boolean.TRUE);
         }
 
         public Set<T> getInstances() {
-            synchronized (threadLock) {
-                return new HashSet<>(instances.keySet());
+            cleanup();
+            Set<T> result = new HashSet<>();
+            for (WeakReference<T> ref : instanceMap.keySet()) {
+                T obj = ref.get();
+                if (obj != null) {
+                    result.add(obj);
+                }
+            }
+            return result;
+        }
+
+        private void cleanup() {
+            WeakReference<? extends T> ref;
+            while ((ref = (WeakReference<? extends T>) refQueue.poll()) != null) {
+                instanceMap.remove(ref);
             }
         }
     }

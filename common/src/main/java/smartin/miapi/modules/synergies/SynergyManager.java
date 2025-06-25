@@ -35,7 +35,7 @@ public class SynergyManager {
         SYNERGY_TYPE_REGISTRY.put(Miapi.id("tag"), TagSynergy.CODEC);
         PropertyResolver.register("synergies", (moduleInstance, oldMap) -> {
             if (moduleInstance != null) {
-                var synergies = moduleSynergies.get(moduleInstance.module.id());
+                var synergies = moduleSynergies.get(moduleInstance.getModule().id());
                 if (synergies != null) {
                     for (Synergy synergy : synergies) {
                         oldMap = synergy.apply(moduleInstance, oldMap);

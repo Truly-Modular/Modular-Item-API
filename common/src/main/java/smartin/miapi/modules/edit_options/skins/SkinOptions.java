@@ -17,10 +17,7 @@ import smartin.miapi.modules.edit_options.EditOption;
 import smartin.miapi.modules.edit_options.EditOptionIcon;
 import smartin.miapi.modules.edit_options.skins.gui.SkinGui;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -34,13 +31,13 @@ public class SkinOptions implements EditOption {
         defaultTab = SkinTab.fromJson(null);
         PropertyResolver.register(Miapi.id("skin"), (moduleInstance, oldMap) -> {
             if (moduleInstance != null) {
-                Optional<Skin> foundSkin = Skin.getSkin(moduleInstance);
-                if (foundSkin.isPresent()) {
-                    String[] parts = foundSkin.get().path.split("/");
-                    oldMap = foundSkin.get().propertyHolder.applyHolder(oldMap,
+                List<Skin> skins = Skin.getSkins(moduleInstance);
+                for (Skin skin : skins) {
+                    String[] parts = skin.path.split("/");
+                    oldMap = skin.propertyHolder.applyHolder(oldMap,
                             Optional.of(
                                     Component.translatable("miapi.property.source.skin",
-                                            Component.translatable(Miapi.MOD_ID + ".skin." + foundSkin.get().modID + ".name." + parts[parts.length - 1]))));
+                                            Component.translatable(Miapi.MOD_ID + ".skin." + skin.modID + ".name." + parts[parts.length - 1]))));
                 }
             }
             return oldMap;
@@ -75,16 +72,38 @@ public class SkinOptions implements EditOption {
 
     @Override
     public ItemStack preview(FriendlyByteBuf buffer, EditContext context) {
-        String skin = buffer.readUtf();
-        if (context.getInstance() != null) {
-            Skin.writeSkin(context.getInstance(), skin);
-            ItemStack stack = context.getItemstack().copy();
+        String skinString = buffer.readUtf();
+        Map<String, Skin> moduleSkins = SkinOptions.skins.get(context.getInstance().getModule().id());
+        if (moduleSkins != null) {
+            Skin skin = moduleSkins.get(skinString);
+            if (context.getInstance() != null) {
+                if (skin == null || skin.type == null) {
+                    Skin.writeSkins(context.getInstance(), List.of());
+                }
+                List<Skin> skins = new ArrayList<>(
+                        Skin.getSkins(
+                                        context
+                                                .getInstance())
+                                .stream()
+                                .filter(s -> skin.type.equals("attachment") ||
+                                             s != null &&
+                                             !Objects.equals(s.type, skin.type)).toList());
 
-            context.getInstance().getRoot().writeToItem(stack);
-            context.getInstance().clearCaches();
-            return stack;
-        } else {
-            Miapi.LOGGER.error("could not set skin, no module found");
+                if (skins.contains(skin)) {
+                    skins.remove(skin);
+                    Skin.writeSkins(context.getInstance(), skins);
+                } else {
+                    skins.add(skin);
+                    Skin.writeSkins(context.getInstance(), skins);
+                }
+                ItemStack stack = context.getItemstack().copy();
+
+                context.getInstance().getRoot().writeToItem(stack);
+                context.getInstance().clearCaches();
+                return stack;
+            } else {
+                Miapi.LOGGER.error("could not set skin, no module found");
+            }
         }
         return context.getItemstack();
     }
@@ -92,7 +111,7 @@ public class SkinOptions implements EditOption {
     @Override
     public boolean isVisible(EditContext context) {
         if (context.getInstance() != null) {
-            ItemModule module = context.getInstance().module;
+            ItemModule module = context.getInstance().getModule();
             if (module != null) {
                 var foundSkins = skins
                         .get(module.id());

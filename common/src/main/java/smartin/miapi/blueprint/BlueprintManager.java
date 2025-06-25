@@ -37,7 +37,7 @@ public class BlueprintManager {
 
     public static CraftOption asCraftOption(CraftingScreenHandler screenHandler, ResourceLocation location, BlueprintComponent blueprint) {
         return new CraftOption(
-                blueprint.toMerge.module,
+                blueprint.toMerge.getModule(),
                 () -> {
                     var decodeResult = ResourceLocation.CODEC.encodeStart(JsonOps.INSTANCE, location).getOrThrow();
                     JsonElement booleanElement = Miapi.FIXED_BOOL_CODEC.encodeStart(JsonOps.INSTANCE, blueprint.useMaterialCrafting()).getOrThrow();

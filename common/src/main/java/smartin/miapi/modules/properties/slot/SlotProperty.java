@@ -262,7 +262,7 @@ public class SlotProperty extends CodecProperty<Map<String, SlotProperty.ModuleS
         }
 
         public boolean allowedIn(ModuleInstance instance) {
-            List<String> allowedSlots = AllowedSlots.getAllowedSlots(instance.module);
+            List<String> allowedSlots = AllowedSlots.getAllowedSlots(instance.getModule());
             for (String key : allowed) {
                 if (allowedSlots.contains(key)) {
                     return true;

@@ -16,6 +16,7 @@ import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.enchanment.AllowedEnchantments;
+import smartin.miapi.modules.properties.util.ComponentApplyProperty;
 
 @Mixin(Enchantment.class)
 public abstract class EnchantmentMixin {
@@ -51,6 +52,7 @@ public abstract class EnchantmentMixin {
         if (ModularItem.isModularItem(itemStack)) {
             Enchantment enchantment = (Enchantment) (Object) (this);
             ModuleInstance moduleInstance = ItemModule.getModules(itemStack);
+            ComponentApplyProperty.trySetup(moduleInstance);
             if (moduleInstance != null && moduleInstance.registryAccess != null) {
                 Holder<Enchantment> holder = moduleInstance.registryAccess.registry(Registries.ENCHANTMENT).get().wrapAsHolder(enchantment);
                 if (Environment.isClient() && holder instanceof Holder.Direct<Enchantment>) {
@@ -65,10 +67,10 @@ public abstract class EnchantmentMixin {
     }
 
     @net.fabricmc.api.Environment(EnvType.CLIENT)
-     @Unique
-     public Holder<Enchantment> getClient(Enchantment enchantment){
+    @Unique
+    public Holder<Enchantment> getClient(Enchantment enchantment) {
         return Minecraft.getInstance().level.registryAccess().registry(Registries.ENCHANTMENT).get().wrapAsHolder(enchantment);
-     }
+    }
 
     @ModifyReturnValue(method = "canEnchant(Lnet/minecraft/world/item/ItemStack;)Z", at = @At(value = "RETURN"))
     private boolean miapi$adjustcanEnchant(boolean original, ItemStack itemStack) {

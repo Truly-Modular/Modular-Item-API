@@ -1,5 +1,6 @@
 package smartin.miapi.modules.edit_options.skins;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
@@ -21,11 +22,11 @@ import smartin.miapi.registries.RegistryInventory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 public class Skin {
     public String path;
     public String modID;
+    public String type;
     public ItemModule module;
     public ModuleCondition condition;
     public PropertyHolder propertyHolder;
@@ -49,27 +50,66 @@ public class Skin {
                         JsonOps.INSTANCE,
                         jsonObject.getAsJsonObject("hover")).result().orElse(Component.empty());
             }
+            if (jsonObject.has("type")) {
+                skin.type = jsonObject.get("type").getAsString();
+            } else {
+                skin.type = "model";
+            }
             skins.add(skin);
         });
         return skins;
     }
 
-    public static Optional<Skin> getSkin(ModuleInstance moduleInstance) {
+    public static List<Skin> getSkins(ModuleInstance moduleInstance) {
         JsonElement element = moduleInstance.moduleData.get(Miapi.id("skin"));
+        List<Skin> result = new ArrayList<>();
+
         if (element != null) {
-            String key = element.getAsString();
-            Map<String, Skin> moduleSkins = SkinOptions.skins.get(moduleInstance.module.id());
-            if (moduleSkins != null) {
-                Skin skin = moduleSkins.get(key);
-                return Optional.ofNullable(skin);
+            Map<String, Skin> moduleSkins = SkinOptions.skins.get(moduleInstance.getModule().id());
+            if (moduleSkins == null) {
+                return result;
+            }
+
+            if (element.isJsonPrimitive() && element.getAsJsonPrimitive().isString()) {
+                // Backwards compatibility: single skin
+                Skin skin = moduleSkins.get(element.getAsString());
+                if (skin != null) {
+                    result.add(skin);
+                }
+            } else if (element.isJsonArray()) {
+                for (JsonElement item : element.getAsJsonArray()) {
+                    if (item.isJsonPrimitive() && item.getAsJsonPrimitive().isString()) {
+                        Skin skin = moduleSkins.get(item.getAsString());
+                        if (skin != null) {
+                            result.add(skin);
+                        }
+                    }
+                }
             }
         }
-        return Optional.empty();
+
+        return result;
     }
 
-    public static void writeSkin(ModuleInstance moduleInstance, String skinKey) {
-        moduleInstance.moduleData.put(Miapi.id("skin"), new JsonPrimitive(skinKey));
+
+    public static void writeSkins(ModuleInstance moduleInstance, List<Skin> skinKeys) {
+        JsonArray array = new JsonArray();
+        for (Skin key : skinKeys) {
+            if (key != null && key.path != null) {
+                array.add(new JsonPrimitive(key.path));
+            }
+        }
+        moduleInstance.moduleData.put(Miapi.id("skin"), array);
     }
+
+    public static void writeSkinsKeys(ModuleInstance moduleInstance, List<String> skinKeys) {
+        JsonArray array = new JsonArray();
+        for (String key : skinKeys) {
+            array.add(new JsonPrimitive(key));
+        }
+        moduleInstance.moduleData.put(Miapi.id("skin"), array);
+    }
+
 
     public static List<ItemModule> getModules(JsonElement element) {
         JsonObject jsonObject = element.getAsJsonObject();

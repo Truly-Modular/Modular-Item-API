@@ -8,7 +8,6 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.JsonOps;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.core.RegistryAccess;
@@ -30,13 +29,11 @@ import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.slot.SlotProperty;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
-import smartin.miapi.registries.RegistryHelper;
 import smartin.miapi.registries.RegistryInventory;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -61,30 +58,6 @@ public class ModuleInstance {
             .networkSynchronized(ByteBufCodecs.fromCodec(StatResolver.Codecs.JSONELEMENT_CODEC)).build();
 
     static {
-        Codec<Map<ResourceLocation, JsonElement>> dataJsonCodec = Codec.unboundedMap(Miapi.ID_CODEC, StatResolver.Codecs.JSONELEMENT_CODEC).xmap((i) -> i, Function.identity());
-        Codec<ModuleInstance> basicCodec = Codec.recursive(
-                "module_instance",
-                selfCodec -> RecordCodecBuilder.create((instance) ->
-                        instance.group(
-                                ResourceLocation.CODEC.fieldOf("key")
-                                        .forGetter((moduleInstance) -> moduleInstance.moduleID),
-                                Codec.unboundedMap(Codec.STRING, selfCodec).xmap((i) -> i, Function.identity())
-                                        .optionalFieldOf("child", new LinkedHashMap<>())
-                                        .forGetter(ModuleInstance::getSubModuleMapForSave),
-                                dataJsonCodec
-                                        .optionalFieldOf("data", new HashMap<>())
-                                        .forGetter(ModuleInstance::getSaveData)
-                        ).apply(instance, ModuleInstance::new))
-        );
-        CODEC = registrySavingCodec(basicCodec, (m, l) -> m.allSubModules().forEach(moduleInstance -> {
-            moduleInstance.lookup = l;
-            moduleInstance.mutable = false;
-            moduleInstance.registryAccess = RegistryHelper.tryFind(l);
-            moduleInstance.allSubModules().forEach(sub -> {
-                sub.registryAccess = moduleInstance.registryAccess;
-                sub.lookup = moduleInstance.lookup;
-            });
-        }));
         CODEC = ModuleInstanceCodec.createWrappedCodec();
         MODULE_INSTANCE_COMPONENT = DataComponentType.<ModuleInstance>builder().persistent(CODEC).networkSynchronized(ByteBufCodecs.fromCodec(CODEC)).build();
     }
@@ -124,7 +97,7 @@ public class ModuleInstance {
     /**
      * The item module represented by this module instance.
      */
-    public ItemModule module;
+    private ItemModule module;
     /**
      * The parent module instance of this module instance, if any.
      */
@@ -171,6 +144,7 @@ public class ModuleInstance {
     public ItemStack contextStack = null;
 
     protected boolean mutable = true;
+    protected boolean sortedSubmodules = false;
 
     /**
      * Constructs a new module instance with the given item module.
@@ -193,13 +167,22 @@ public class ModuleInstance {
         this.subModules = subModules;
         this.moduleData = new HashMap<>(data);
         subModules.values().forEach(subModule -> subModule.parent = this);
-        this.module = RegistryInventory.ITEM_MODULE_MIAPI_REGISTRY.get(module.toString());
-        if (this.module == null) {
-            this.module = ItemModule.empty;
-            Miapi.LOGGER.warn("could not find module " + module + " substituting with empty module");
-        }
-        sortSubModule();
         ModularItemCache.modules.addInstance(this);
+    }
+
+    public ItemModule getModule() {
+        if (module == null) {
+            this.module = RegistryInventory.ITEM_MODULE_MIAPI_REGISTRY.get(moduleID);
+            if (this.module == null) {
+                this.module = ItemModule.empty;
+                Miapi.LOGGER.warn("could not find module " + moduleID + " substituting with empty module");
+            }
+        }
+        return module;
+    }
+
+    public void setModule(ItemModule module){
+        this.module = module;
     }
 
     /**
@@ -236,6 +219,10 @@ public class ModuleInstance {
     }
 
     public Map<String, ModuleInstance> getSubModuleMap() {
+        if (!sortedSubmodules) {
+            sortSubModule();
+            sortedSubmodules = true;
+        }
         return new LinkedHashMap<>(subModules);
     }
 
@@ -391,9 +378,9 @@ public class ModuleInstance {
     }
 
     public void sortSubModule() {
-        SlotProperty.getInstance().getData(this.module);
+        SlotProperty.getInstance().getData(this.getModule());
         Map<String, ModuleInstance> sortedMap = new LinkedHashMap<>();
-        SlotProperty.asSortedList(SlotProperty.getInstance().getData(this.module).orElse(new LinkedHashMap<>())).forEach(slot -> {
+        SlotProperty.asSortedList(SlotProperty.getInstance().getData(this.getModule()).orElse(new LinkedHashMap<>())).forEach(slot -> {
             ModuleInstance moduleInstance = subModules.get(slot.id);
             if (moduleInstance != null) {
                 moduleInstance.parent = this;
@@ -410,7 +397,7 @@ public class ModuleInstance {
      * @return The copied module instance.
      */
     private ModuleInstance deepCopy() {
-        ModuleInstance copy = new ModuleInstance(this.module);
+        ModuleInstance copy = new ModuleInstance(this.getModule());
         copy.moduleID = moduleID;
         copy.registryAccess = this.registryAccess;
         copy.moduleData = new HashMap<>(this.moduleData);
@@ -483,7 +470,7 @@ public class ModuleInstance {
 
     @Environment(EnvType.CLIENT)
     public Component getModuleName() {
-        String moduleName = module.id().toString();
+        String moduleName = getModule().id().toString();
         moduleName = moduleName.replace(":", ".");
         moduleName = moduleName.replaceAll("/", ".");
         Material material = MaterialProperty.getMaterial(this);
@@ -495,7 +482,7 @@ public class ModuleInstance {
 
     @Environment(EnvType.CLIENT)
     public Component getModuleDescription() {
-        String moduleName = module.id().toString();
+        String moduleName = getModule().id().toString();
         moduleName = moduleName.replace(":", ".");
         moduleName = moduleName.replaceAll("/", ".");
         Material material = MaterialProperty.getMaterial(this);
@@ -671,7 +658,7 @@ public class ModuleInstance {
         ModuleInstance other = (ModuleInstance) object;
 
         // Compare the 'module' field
-        if (!this.module.equals(other.module)) return false;
+        if (!this.moduleID.equals(other.moduleID)) return false;
 
         // Compare the 'moduleData' map deeply
         if (!this.moduleData.equals(other.moduleData)) return false;

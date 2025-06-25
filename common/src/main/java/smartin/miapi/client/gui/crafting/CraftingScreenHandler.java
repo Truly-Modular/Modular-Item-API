@@ -140,8 +140,8 @@ public class CraftingScreenHandler extends AbstractContainerMenu {
                 ModuleInstance current = root.getPosition(position).copy();
 
                 SlotProperty.ModuleSlot slot = SlotProperty.getSlotIn(current);
-                if (slot == null && current != null && current.module != null) {
-                    slot = new SlotProperty.ModuleSlot(AllowedSlots.getAllowedSlots(current.module));
+                if (slot == null && current != null && current.getModule() != null) {
+                    slot = new SlotProperty.ModuleSlot(AllowedSlots.getAllowedSlots(current.getModule()));
                 }
 
                 assert option != null;

@@ -2,7 +2,6 @@ package smartin.miapi.item.modular;
 
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.DurabilityProperty;
 
@@ -25,7 +24,7 @@ public interface ModularItem extends VisualModularItem {
     static boolean isModularItem(ItemStack itemStack, Item item) {
         if (item instanceof ModularItem) {
             ModuleInstance moduleInstance = itemStack.get(ModuleInstance.MODULE_INSTANCE_COMPONENT);
-            return moduleInstance != null && moduleInstance.module != ItemModule.empty;
+            return moduleInstance != null;
         }
         return false;
     }

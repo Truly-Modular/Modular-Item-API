@@ -36,7 +36,7 @@ public class SkinGui extends InteractAbleWidget {
         this.craft = craft;
         this.preview = preview;
         this.instance = instance;
-        Map<String, Skin> maps = SkinOptions.skins.get(instance.module.id());
+        Map<String, Skin> maps = SkinOptions.skins.get(instance.getModule().id());
         if (maps == null) {
             maps = new HashMap<>();
         }
@@ -45,7 +45,7 @@ public class SkinGui extends InteractAbleWidget {
         widgets.add(parentSkinTab);
         ScrollList list = new ScrollList(x, y + 30, width, height - 30, widgets);
         this.addChild(list);
-        EditBox textFieldWidget = new ClickAbleTextWidget(Minecraft.getInstance().font, x + 2, y + 2, this.width - 4, 18, Component.literal("TITLE"));
+        EditBox textFieldWidget = new ClickAbleTextWidget(Minecraft.getInstance().font, x + 2, y + 2, this.width - 4, 18, Component.literal("Skins"));
         textFieldWidget.setMaxLength(Integer.MAX_VALUE);
         textFieldWidget.setEditable(true);
         textFieldWidget.setVisible(true);

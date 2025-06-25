@@ -358,6 +358,9 @@ public class GeneratedMaterialManager {
     }
 
     public static boolean isValidItem(Item item) {
+        if (item.equals(Items.BARRIER)) {
+            return false;
+        }
         ResourceLocation identifier = BuiltInRegistries.ITEM.getKey(item);
         Pattern pattern = Pattern.compile(MiapiConfig.getServerConfig().generatedMaterials.blockRegex);
         return !pattern.matcher(identifier.toString()).find() &&

@@ -35,7 +35,7 @@ public class ModuleStats extends CodecProperty<Map<String, DoubleOperationResolv
         super(CODEC);
         property = this;
         StatResolver.registerResolver("module", (data, instance) -> {
-            if (instance.module.equals(ItemModule.internal)) {
+            if (instance.getModule().equals(ItemModule.internal)) {
                 return 1.0;
             }
             if ("cost".equals(data)) {

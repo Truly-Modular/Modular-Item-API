@@ -259,10 +259,10 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
         slotDisplay.setItem(stack);
         ItemStack converted = ModularItemStackConverter.getModularVersion(stack).copy();
         baseSlot.inSlot = ItemModule.getModules(converted);
-        baseSlot.allowed = AllowedSlots.getAllowedSlots(baseSlot.inSlot.module);
+        baseSlot.allowed = AllowedSlots.getAllowedSlots(baseSlot.inSlot.getModule());
         SlotProperty.ModuleSlot current = baseSlot;
         slot = null;
-        if (baseSlot.inSlot.module.equals(ItemModule.empty)) {
+        if (baseSlot.inSlot.getModule().equals(ItemModule.empty)) {
             current = null;
         }
 

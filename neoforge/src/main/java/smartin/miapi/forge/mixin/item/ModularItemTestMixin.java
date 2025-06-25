@@ -9,6 +9,7 @@ import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.neoforged.neoforge.common.ItemAbilities;
 import net.neoforged.neoforge.common.ItemAbility;
+import net.neoforged.neoforge.common.extensions.IItemExtension;
 import org.spongepowered.asm.mixin.Mixin;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.items.BrokenModularVisualOnlyItem;
@@ -110,6 +111,7 @@ public abstract class ModularItemTestMixin {
     }
 
     private static boolean canMine(ItemStack stack, String type) {
+        IItemExtension extension;
         var optional = MiningLevelProperty.property.getData(stack);
         return optional.map(stringMiningRuleMap -> stringMiningRuleMap.containsKey(type) && stringMiningRuleMap.get(type).speed().getValue() > 1.0).orElse(false);
     }

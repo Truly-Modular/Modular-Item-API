@@ -13,7 +13,7 @@ import smartin.miapi.Miapi;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.mixin.RegistryOpsAccessor;
-import smartin.miapi.registries.RegistryHelper;
+import smartin.miapi.modules.properties.util.ComponentApplyProperty;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -32,11 +32,12 @@ public class ModuleInstanceCodec implements Codec<ModuleInstance> {
 
     @Override
     public <T> DataResult<Pair<ModuleInstance, T>> decode(DynamicOps<T> ops, T input) {
+
         return ops.getMap(input).flatMap(map -> {
+
             DataResult<ResourceLocation> keyResult = Miapi.ID_CODEC.parse(ops, map.get("key"));
 
             DataResult<Map<String, ModuleInstance>> childResult;
-
             T childData = map.get("child");
             if (childData != null) {
                 childResult = subModulesCodec.parse(ops, childData);
@@ -45,14 +46,12 @@ public class ModuleInstanceCodec implements Codec<ModuleInstance> {
             }
 
             DataResult<Map<ResourceLocation, JsonElement>> dataResult;
-
             T data = map.get("data");
             if (data != null) {
                 dataResult = dataJsonCodec.parse(ops, data);
             } else {
                 dataResult = DataResult.success(new HashMap<>());
             }
-
             return keyResult.flatMap(key ->
                     childResult.flatMap(children ->
                             dataResult.map(subData -> {
@@ -63,6 +62,7 @@ public class ModuleInstanceCodec implements Codec<ModuleInstance> {
             );
         });
     }
+
 
     @Override
     public <T> DataResult<T> encode(ModuleInstance input, DynamicOps<T> ops, T prefix) {
@@ -90,7 +90,7 @@ public class ModuleInstanceCodec implements Codec<ModuleInstance> {
         return DataResult.success(ops.createMap(values));
     }
 
-    public static void performanceTest(ItemStack ammo){
+    public static void performanceTest(ItemStack ammo) {
 
         long totalModularCheckTime = 0;
         long totalEncodeTime = 0;
@@ -128,18 +128,20 @@ public class ModuleInstanceCodec implements Codec<ModuleInstance> {
         Miapi.LOGGER.warn("Decoding time (ms): " + (totalDecodeTime / 1_000_000.0));
     }
 
+
     public static Codec<ModuleInstance> createWrappedCodec() {
         Codec<ModuleInstance> base = new ModuleInstanceCodec();
         return registrySavingCodec(base, (m, l) -> {
-            m.allSubModules().forEach(moduleInstance -> {
-                moduleInstance.lookup = l;
-                moduleInstance.mutable = false;
-                moduleInstance.registryAccess = RegistryHelper.tryFind(l);
-                moduleInstance.allSubModules().forEach(sub -> {
-                    sub.registryAccess = moduleInstance.registryAccess;
-                    sub.lookup = moduleInstance.lookup;
-                });
-            });
+            setupModule(m, l);
+            ComponentApplyProperty.trySetup(m);
+        });
+    }
+
+    private static void setupModule(ModuleInstance moduleInstance, RegistryOps.RegistryInfoLookup lookup) {
+        moduleInstance.lookup = lookup;
+        moduleInstance.mutable = false;
+        moduleInstance.getSubModuleMapForSave().values().forEach(m -> {
+            setupModule(m, lookup);
         });
     }
 

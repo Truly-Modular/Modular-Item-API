@@ -45,7 +45,7 @@ public class ModuleTypeCondition implements ModuleCondition {
         Optional<ModuleInstance> optional = conditionContext.getContext(ConditionManager.MODULE_CONDITION_CONTEXT);
         if (optional.isPresent() && module != null) {
             ModuleInstance moduleInstance = optional.get();
-            return moduleInstance.module.equals(module);
+            return moduleInstance.getModule().equals(module);
         }
         return false;
     }

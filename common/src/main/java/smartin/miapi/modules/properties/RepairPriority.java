@@ -95,7 +95,7 @@ public class RepairPriority extends DoubleProperty {
             return Optional.empty();
         }
         ModuleInstance baseModule = ItemModule.getModules(itemStack);
-        if (baseModule == null || baseModule.module == ItemModule.empty) {
+        if (baseModule == null || baseModule.getModule() == ItemModule.empty) {
             return Optional.empty();
         }
         return Optional.ofNullable(baseModule.getPropertyItemStack(this));

@@ -8,6 +8,7 @@ import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
+import smartin.miapi.registries.RegistryHelper;
 import smartin.miapi.registries.RegistryInventory;
 
 /**
@@ -25,7 +26,7 @@ public interface ComponentApplyProperty {
      * @param toUpdate the Itemstack to be updated
      */
     static void initializeItemStack(ItemStack toUpdate, @Nullable RegistryAccess registryAccess) {
-        if(MiapiConfig.getServerConfig().other.liveUpdate){
+        if (MiapiConfig.getServerConfig().other.liveUpdate) {
             updateItemStack(toUpdate, registryAccess);
         }
     }
@@ -45,6 +46,9 @@ public interface ComponentApplyProperty {
         }
         toUpdate.getItemHolder();
         if (registryAccess == null) {
+            if (module.lookup != null) {
+                module.registryAccess = RegistryHelper.tryFind(module.lookup);
+            }
             registryAccess = Miapi.registryAccess;
         }
         if (module.registryAccess == null) {
@@ -58,6 +62,12 @@ public interface ComponentApplyProperty {
                 .map(ComponentApplyProperty.class::cast)
                 .forEach(componentApplyProperty ->
                         componentApplyProperty.updateComponent(toUpdate, module.registryAccess));
+    }
+
+    static void trySetup(ModuleInstance moduleInstance) {
+        if (moduleInstance.registryAccess == null && moduleInstance.lookup != null) {
+            moduleInstance.registryAccess = RegistryHelper.tryFind(moduleInstance.lookup);
+        }
     }
 
     /**

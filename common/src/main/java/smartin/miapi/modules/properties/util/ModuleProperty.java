@@ -79,7 +79,7 @@ public interface ModuleProperty<T> extends MergeAble<T>, InitializeAble<T> {
         if (ReloadEvents.isInReload()) {
             return Optional.empty();
         }
-        if (moduleInstance == null || moduleInstance.module == ItemModule.empty) {
+        if (moduleInstance == null || moduleInstance.getModule() == ItemModule.empty) {
             return Optional.empty();
         }
         return Optional.ofNullable(moduleInstance.getProperty(this));
@@ -96,7 +96,7 @@ public interface ModuleProperty<T> extends MergeAble<T>, InitializeAble<T> {
             return Optional.empty();
         }
         ModuleInstance baseModule = ItemModule.getModules(itemStack);
-        if (baseModule == null || baseModule.module == ItemModule.empty) {
+        if (baseModule == null || baseModule.getModule() == ItemModule.empty) {
             return Optional.empty();
         }
         return Optional.ofNullable(baseModule.getPropertyItemStack(this));

@@ -206,8 +206,11 @@ public class GeneratedMaterialPropertyManager {
 
     private static boolean isRelevantAttribute(ItemAttributeModifiers.Entry a) {
         boolean att = IGNORED_ATTRIBUTES.contains(a.attribute());
-        if (!att) {
+        if (!att && GeneratedMaterialManager.verboseLogging()) {
             Miapi.LOGGER.info("valid attribute!" + a.attribute().getRegisteredName());
+        }
+        if (att && a.modifier().id().getNamespace().equals("minecraft")) {
+            return false;
         }
         return !att;
     }

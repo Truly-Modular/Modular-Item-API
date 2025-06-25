@@ -54,7 +54,7 @@ public class ModuleEditor implements MiapiEditor {
             ResourceLocation id = Miapi.id(itemModuleName.get());
             ItemModule module1 = RegistryInventory.ITEM_MODULE_MIAPI_REGISTRY.get(Miapi.id(itemModuleName.get()));
             if (module1 != null) {
-                module.module = module1;
+                module.setModule(module1);
                 module.moduleID = id;
             } else {
                 ImGui.text("invalid ID");

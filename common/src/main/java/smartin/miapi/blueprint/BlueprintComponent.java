@@ -116,7 +116,7 @@ public class BlueprintComponent {
     }
 
     public void apply(ModuleInstance old) {
-        old.module = this.toMerge.module;
+        old.setModule(this.toMerge.getModule());
         old.moduleID = this.toMerge.moduleID;
         old.moduleData = new HashMap<>(this.toMerge.moduleData);
         this.toMerge.getSubModuleMap().forEach(old::setSubModule);
@@ -174,7 +174,7 @@ public class BlueprintComponent {
 
     public CraftOption asCraftOption(CraftingScreenHandler screenHandler) {
         return new CraftOption(
-                toMerge.module,
+                toMerge.getModule(),
                 () -> {
                     int i = -1;
                     var optional = screenHandler.slots.stream()

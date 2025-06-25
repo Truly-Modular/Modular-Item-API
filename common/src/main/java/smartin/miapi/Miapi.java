@@ -179,7 +179,7 @@ public class Miapi {
             MiapiEvents.CLEAR_CACHE.invoker().onReload();
         });
         PropertyResolver.register(ResourceLocation.fromNamespaceAndPath(Miapi.MOD_ID, "miapi/module"), (moduleInstance, oldMap) -> {
-            Map<ModuleProperty<?>, Object> map = moduleInstance.module.properties();
+            Map<ModuleProperty<?>, Object> map = moduleInstance.getModule().properties();
             if (map == null) {
                 map = new HashMap<>();
                 Miapi.LOGGER.warn("Item Modules has no properties. this is a api issue. please report this. this should not happen");
