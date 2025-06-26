@@ -9,6 +9,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.entity.ItemRenderer;
@@ -17,6 +18,7 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import smartin.miapi.client.MiapiClient;
+import smartin.miapi.client.renderer.RescaledVertexConsumer;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.material.base.Material;
@@ -36,6 +38,7 @@ public class MaterialSpriteManager {
     public static final TimeUnit CACHE_LIFETIME_UNIT = TimeUnit.SECONDS;
     protected static Map<ResourceLocation, DynamicTexture> nativeImageBackedTextureMap = new HashMap<>();
     public static Set<TextureAtlasSprite> animated = new HashSet<>();
+    protected static Map<TextureAtlasSprite, RescaledVertexConsumer> lookupMap = new WeakHashMap<>();
     //WARNING!! only access anything related to colorer ONLY from the RENDER THREAD!
     protected static final Cache<Holder, ResourceLocation> materialSpriteCache = CacheBuilder.newBuilder()
             .maximumSize(CACHE_SIZE)
@@ -125,6 +128,13 @@ public class MaterialSpriteManager {
         if (MiapiClient.isSodiumLoaded()) {
             animated.add(sprite);
         }
+    }
+
+    public static VertexConsumer getVertexConsumer(MultiBufferSource vertexConsumers, TextureAtlasSprite originalSprite, Material material, SpriteColorer materialSpriteColorer) {
+        ResourceLocation replaceId = MaterialSpriteManager.getMaterialSprite(originalSprite, material, materialSpriteColorer);
+        RenderType atlasRenderLayer = RenderType.entityTranslucentCull(replaceId);
+        VertexConsumer atlasConsumer = ItemRenderer.getFoilBufferDirect(vertexConsumers, atlasRenderLayer, true, false);
+        return lookupMap.computeIfAbsent(originalSprite, (s) -> new RescaledVertexConsumer(atlasConsumer, originalSprite));
     }
 
     public static void onHudRender(GuiGraphics drawContext) {

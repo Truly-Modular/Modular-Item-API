@@ -5,21 +5,15 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.texture.SpriteContents;
 import net.minecraft.client.renderer.texture.SpriteTicker;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import smartin.miapi.client.atlas.MaterialSpriteManager;
-import smartin.miapi.client.renderer.RescaledVertexConsumer;
 import smartin.miapi.material.base.Material;
 import smartin.miapi.modules.ModuleInstance;
 
-import java.util.Map;
-import java.util.WeakHashMap;
 import java.util.function.Consumer;
 
 /**
@@ -28,7 +22,6 @@ import java.util.function.Consumer;
  */
 @Environment(EnvType.CLIENT)
 public abstract class SpriteColorer implements MaterialRenderController {
-    public static Map<TextureAtlasSprite, RescaledVertexConsumer> lookupMap = new WeakHashMap<>();
     public Material material;
 
     public SpriteColorer(Material material) {
@@ -67,12 +60,7 @@ public abstract class SpriteColorer implements MaterialRenderController {
 
     @Environment(EnvType.CLIENT)
     public VertexConsumer getVertexConsumer(MultiBufferSource vertexConsumers, TextureAtlasSprite originalSprite, ItemStack stack, ModuleInstance moduleInstance, ItemDisplayContext mode) {
-        ResourceLocation replaceId = MaterialSpriteManager.getMaterialSprite(originalSprite, material, this);
-        RenderType atlasRenderLayer = RenderType.entityTranslucentCull(replaceId);
-        VertexConsumer atlasConsumer = ItemRenderer.getFoilBufferDirect(vertexConsumers, atlasRenderLayer, true, false);
-        RescaledVertexConsumer rescaled = lookupMap.computeIfAbsent(originalSprite, (s) -> new RescaledVertexConsumer(atlasConsumer, originalSprite));
-        rescaled.delegate = atlasConsumer;
-        return rescaled;
+        return MaterialSpriteManager.getVertexConsumer(vertexConsumers, originalSprite, material, this);
     }
 
     public boolean isAnimatedSprite(SpriteContents spriteContents) {
