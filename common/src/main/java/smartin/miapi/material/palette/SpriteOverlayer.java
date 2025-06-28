@@ -8,8 +8,11 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.renderer.texture.SpriteContents;
 import net.minecraft.util.FastColor;
 import net.minecraft.util.Mth;
+import smartin.miapi.client.AnimatedTexturesManager;
 import smartin.miapi.client.renderer.NativeImageGetter;
 import smartin.miapi.material.base.Material;
+
+import java.util.function.Consumer;
 
 @Environment(EnvType.CLIENT)
 public class SpriteOverlayer extends SpritePixelReplacer {
@@ -19,8 +22,14 @@ public class SpriteOverlayer extends SpritePixelReplacer {
 
     public SpriteOverlayer(Material material, JsonElement json) {
         super(material);
-        delegate =SpriteFromJson.getFromJson(json);
+        delegate = SpriteFromJson.getFromJson(json);
         averageColor = delegate.getAverageColor();
+    }
+
+    @Override
+    public void tick(Consumer<NativeImage> nativeImageConsumer, SpriteContents spriteContents) {
+        super.tick(nativeImageConsumer, spriteContents);
+        AnimatedTexturesManager.markAnimated(delegate.rawSprite);
     }
 
     @Override
@@ -34,12 +43,12 @@ public class SpriteOverlayer extends SpritePixelReplacer {
         int alpha = FastColor.ABGR32.alpha(abgr);
 
         if (alpha != 255) {
-            float overlayA = alpha/255f;
+            float overlayA = alpha / 255f;
             int overlayR = FastColor.ABGR32.red(abgr);
             int overlayG = FastColor.ABGR32.green(abgr);
             int overlayB = FastColor.ABGR32.blue(abgr);
 
-            float baseA = FastColor.ABGR32.alpha(previousAbgr)/255f;
+            float baseA = FastColor.ABGR32.alpha(previousAbgr) / 255f;
             int baseR = FastColor.ABGR32.red(previousAbgr);
             int baseG = FastColor.ABGR32.green(previousAbgr);
             int baseB = FastColor.ABGR32.blue(previousAbgr);
@@ -47,7 +56,7 @@ public class SpriteOverlayer extends SpritePixelReplacer {
             int newR = Mth.lerpInt(overlayA, baseR, overlayR);
             int newG = Mth.lerpInt(overlayA, baseG, overlayG);
             int newB = Mth.lerpInt(overlayA, baseB, overlayB);
-            int newA = (int) (Mth.lerp(baseA, overlayA, 1)*255);
+            int newA = (int) (Mth.lerp(baseA, overlayA, 1) * 255);
 
             return FastColor.ABGR32.color(newA, newB, newG, newR);
         }

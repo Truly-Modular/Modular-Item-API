@@ -65,6 +65,14 @@ public class MiapiClientConfig {
         //        """)
         //@AutoCodec.Ignored
         public Map<ResourceLocation, MiapiBinding> bindings = new HashMap<>();
+
+        @AutoCodec.Name("cache_sprites")
+        public List<CacheSprites> cacheSprites = List.of(
+                new CacheSprites(16, 16, 30),
+                new CacheSprites(32, 32, 10),
+                new CacheSprites(64, 64, 10));
+
+        public boolean try_fast_render = false;
     }
 
     @ConfigAutoCodec.ConfigClassMarker
@@ -121,6 +129,24 @@ public class MiapiClientConfig {
                 """)
         @AutoCodec.Name("enchanting_material_ratio")
         public float materialRatioColor = 0.4f;
+    }
+
+
+    @ConfigAutoCodec.ConfigClassMarker
+    public static class CacheSprites {
+        public int x;
+        public int y;
+        public int count;
+
+        public CacheSprites() {
+
+        }
+
+        public CacheSprites(int x, int y, int count) {
+            this.x = x;
+            this.y = y;
+            this.count = count;
+        }
     }
 
     @ConfigAutoCodec.ConfigClassMarker

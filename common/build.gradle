@@ -75,6 +75,7 @@ dependencies {
     modCompileOnly "maven.modrinth:treechop:${rootProject.fabric_treechop_version}"
     modCompileOnly "maven.modrinth:treechop:${rootProject.fabric_treechop_version}"
     modImplementation("maven.modrinth:immediatelyfast:1.6.5+1.21.1-fabric")
+    modApi files("libs/sodium.jar")
 
     //modImplementation files('libs/arsenal-local.jar')
     //modImplementation files('libs/archery-local.jar')

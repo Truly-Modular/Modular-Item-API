@@ -25,6 +25,8 @@
         "RecipeManagerMixin",
         "RegistryOpsAccessor",
         "ReloadAbleServerRegistriesMixin",
+        "SpriteSourceListAccessor",
+        "SpriteSourcesAccessor",
         "TagManagerMixin",
         "enchant.EnchantmentHelperMixin",
         "enchant.EnchantmentMixin",
@@ -80,6 +82,7 @@
         "client.ModelPredicateProviderRegistryAccessor",
         "client.SpriteContentsAccessor",
         "client.SpriteContentsNativeImageGetter",
+        "client.SpriteSourceListMixin",
         "client.TextureAtlasAccessor",
         "client.TextureAtlasHolderAccessor"
     ],

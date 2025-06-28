@@ -14,6 +14,8 @@ import smartin.miapi.client.atlas.MaterialSpriteManager;
 import smartin.miapi.material.base.Material;
 import smartin.miapi.modules.ModuleInstance;
 
+import java.util.Map;
+import java.util.WeakHashMap;
 import java.util.function.Consumer;
 
 /**
@@ -22,6 +24,7 @@ import java.util.function.Consumer;
  */
 @Environment(EnvType.CLIENT)
 public abstract class SpriteColorer implements MaterialRenderController {
+    protected static Map<TextureAtlasSprite, VertexConsumer> lookupMap = new WeakHashMap<>();
     public Material material;
 
     public SpriteColorer(Material material) {

@@ -21,7 +21,6 @@ import smartin.miapi.client.model.BakedMiapiModel;
 import smartin.miapi.client.model.MiapiItemModel;
 import smartin.miapi.client.model.MiapiModel;
 import smartin.miapi.client.model.ModelHolder;
-import smartin.miapi.client.renderer.RescaledVertexConsumer;
 import smartin.miapi.material.MaterialProperty;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
@@ -135,7 +134,15 @@ public class OverlayModelProperty extends CodecProperty<List<OverlayModelPropert
                         new ColorProvider() {
                             @Override
                             public VertexConsumer getConsumer(MultiBufferSource vertexConsumers, TextureAtlasSprite sprite, ItemStack stack, ModuleInstance moduleInstance, ItemDisplayContext mode) {
-                                return new RescaledVertexConsumer(colorProvider.getConsumer(vertexConsumers, overWriteSprite == null ? sprite : overWriteSprite, stack, modelData.useThisModule() ? module : moduleInstance, mode), sprite);
+
+                                return
+                                        //new RescaledVertexConsumer(
+                                        colorProvider.getConsumer(vertexConsumers,
+                                                overWriteSprite == null ? sprite : overWriteSprite,
+                                                stack,
+                                                modelData.useThisModule() ? module :
+                                                        moduleInstance, mode);
+                                //                ,sprite);
                             }
 
                             @Override

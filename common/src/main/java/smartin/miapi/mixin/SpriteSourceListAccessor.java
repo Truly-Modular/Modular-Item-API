@@ -1,0 +1,20 @@
+package smartin.miapi.mixin;
+
+import net.minecraft.client.renderer.texture.atlas.SpriteSource;
+import net.minecraft.client.renderer.texture.atlas.SpriteSourceList;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.gen.Accessor;
+import org.spongepowered.asm.mixin.gen.Invoker;
+
+import java.util.List;
+
+@Mixin(SpriteSourceList.class)
+public interface SpriteSourceListAccessor {
+    @Invoker("<init>")
+    static SpriteSourceList createSpriteSourceList(List<SpriteSource> sources) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Accessor
+    List<SpriteSource> getSources();
+}
