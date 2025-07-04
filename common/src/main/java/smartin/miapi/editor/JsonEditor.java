@@ -26,7 +26,7 @@ import java.util.function.Consumer;
 
 public class JsonEditor implements MiapiEditor {
     private final ImBoolean show = new ImBoolean(true);
-    private final ImString content = new ImString(4096);
+    private final ImString content = new ImString(64000);
     private final Consumer<String> onChange;
     private JsonElement currentJson;
     private final Map<ResourceLocation, EditorInterface> interfaces = new HashMap<>();

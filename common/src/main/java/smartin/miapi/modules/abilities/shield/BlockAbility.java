@@ -39,7 +39,7 @@ import java.util.List;
  * This Ability is a lesser form of the Block of a Shield.
  * transforms the Value of {@link BlockAbility#calculate(double)} to the actual damage resistance and slowdown percentages
  */
-public class BlockAbility extends EntityAttributeAbility<BlockData> {
+public class BlockAbility extends EntityAttributeAbility<BlockDataOld> {
     ResourceLocation id = Miapi.id("block_ability_temporary_attribute");
 
     public BlockAbility() {
@@ -57,7 +57,7 @@ public class BlockAbility extends EntityAttributeAbility<BlockData> {
             if (stack == null || stack.isEmpty()) return EventResult.pass();
 
             ModuleInstance moduleInstance = ItemModule.getModules(stack);
-            BlockData data = getData(stack).orElse(null);
+            BlockDataOld data = getData(stack).orElse(null);
             if (data == null || moduleInstance == null) return EventResult.pass();
 
             player.getCooldowns().addCooldown(stack.getItem(), getCooldown(stack));
@@ -152,17 +152,17 @@ public class BlockAbility extends EntityAttributeAbility<BlockData> {
     }
 
     @Override
-    protected MapCodec<BlockData> getMapCodec() {
-        return BlockData.CODEC;
+    protected MapCodec<BlockDataOld> getMapCodec() {
+        return BlockDataOld.CODEC;
     }
 
     @Override
-    protected BlockData mergeData(BlockData left, BlockData right, MergeType mergeType) {
+    protected BlockDataOld mergeData(BlockDataOld left, BlockDataOld right, MergeType mergeType) {
         return left.merge(left, right, mergeType);
     }
 
     @Override
-    public BlockData initializeData(BlockData data, ModuleInstance moduleInstance) {
+    public BlockDataOld initializeData(BlockDataOld data, ModuleInstance moduleInstance) {
         return data.initialize(data, moduleInstance);
     }
 }

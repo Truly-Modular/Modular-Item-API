@@ -133,26 +133,26 @@ public record ItemModule(ResourceLocation id, Map<ModuleProperty<?>, Object> pro
                 for (ModuleInstance moduleInstance : root.allSubModules()) {
                     moduleInstance.contextStack = stack;
                 }
-            }
-            if (root != null && root.allSubModules().size() == 1) {
-                JsonElement compareToJson = stack.get(ModuleInstance.MODULE_BACKUP);
-                if (compareToJson != null) {
-                    ModuleInstance compareTo = ModuleInstance.CODEC.decode(JsonOps.INSTANCE, compareToJson).getOrThrow().getFirst();
-                    if (root.allSubModules().size() != compareTo.allSubModules().size()) {
-                        LOGGER.error("MODULE DECODE ISSUE!?! " + root);
-                        LOGGER.error("SHOULD HAVE BEEN" + compareTo);
-                        LOGGER.error("ATTEMPTING AUTO FIX");
-                        compareTo.clearCaches();
-                        for (ModuleInstance moduleInstance : compareTo.allSubModules()) {
-                            moduleInstance.lookup = root.lookup;
-                            moduleInstance.registryAccess = root.registryAccess;
+                if (root.allSubModules().size() == 1) {
+                    JsonElement compareToJson = stack.get(ModuleInstance.MODULE_BACKUP);
+                    if (compareToJson != null) {
+                        ModuleInstance compareTo = ModuleInstance.CODEC.decode(JsonOps.INSTANCE, compareToJson).getOrThrow().getFirst();
+                        if (root.allSubModules().size() != compareTo.allSubModules().size()) {
+                            LOGGER.error("MODULE DECODE ISSUE!?! " + root);
+                            LOGGER.error("SHOULD HAVE BEEN" + compareTo);
+                            LOGGER.error("ATTEMPTING AUTO FIX");
+                            compareTo.clearCaches();
+                            for (ModuleInstance moduleInstance : compareTo.allSubModules()) {
+                                moduleInstance.lookup = root.lookup;
+                                moduleInstance.registryAccess = root.registryAccess;
+                            }
+                            compareTo.writeToItem(stack);
+                            return getModules(stack);
                         }
-                        compareTo.writeToItem(stack);
-                        return getModules(stack);
                     }
                 }
+                return root;
             }
-            return root;
         }
         return new ModuleInstance(ItemModule.empty);
     }

@@ -15,14 +15,14 @@ architectury {
 }
 
 tasks.register('clean-builds') {
-    dependsOn(':fabric:clean',':neoforge:clean')
+    dependsOn(':fabric:clean', ':neoforge:clean')
     doLast {
         println "Cleaned previous build"
     }
 }
 
 tasks.register('buildBoth') {
-    dependsOn('clean-builds', ':fabric:build',':neoforge:build')
+    dependsOn('clean-builds', ':fabric:build', ':neoforge:build')
     group = '_tm_tasks'
     doLast {
         def modVersion = rootProject.mod_version
@@ -68,152 +68,158 @@ tasks.register('buildBoth') {
 }
 
 tasks.register('rebuildArsenal') {
-    ext.projectName = "arsenal"
-    def project = gradle.includedBuild("arsenal")
-    dependsOn project.task(":buildBoth")
-    group = '_tm_tasks'
-    doLast {
-        def mergedBuildDir = rootProject.file(ext.projectName + '/Merged')
-        println mergedBuildDir
-        def fabricJars = mergedBuildDir.listFiles().findAll { it.name.endsWith("fabric.jar") }
-        def forgeJars = mergedBuildDir.listFiles().findAll { it.name.endsWith("forge.jar") }
+    if (properties.run_addons) {
+        ext.projectName = "arsenal"
+        def project = gradle.includedBuild("arsenal")
+        dependsOn project.task(":buildBoth")
+        group = '_tm_tasks'
+        doLast {
+            def mergedBuildDir = rootProject.file(ext.projectName + '/Merged')
+            println mergedBuildDir
+            def fabricJars = mergedBuildDir.listFiles().findAll { it.name.endsWith("fabric.jar") }
+            def forgeJars = mergedBuildDir.listFiles().findAll { it.name.endsWith("forge.jar") }
 
-        def fabricJar = fabricJars.max { it.lastModified() }
-        def forgeJar = forgeJars.max { it.lastModified() }
+            def fabricJar = fabricJars.max { it.lastModified() }
+            def forgeJar = forgeJars.max { it.lastModified() }
 
-        if (forgeJar) {
-            copy {
-                from forgeJar
-                into rootProject.file('neoforge/libs')
-                rename { fileName -> projectName + "-local.jar" }
+            if (forgeJar) {
+                copy {
+                    from forgeJar
+                    into rootProject.file('neoforge/libs')
+                    rename { fileName -> projectName + "-local.jar" }
+                }
+                copy {
+                    from forgeJar
+                    into rootProject.file('Merged')
+                }
+                copy {
+                    from forgeJar
+                    into rootProject.file('common/libs')
+                    rename { fileName -> projectName + "-local.jar" }
+                }
             }
-            copy {
-                from forgeJar
-                into rootProject.file('Merged')
+            if (fabricJar) {
+                copy {
+                    from fabricJar
+                    into rootProject.file('fabric/libs')
+                    rename { fileName -> projectName + "-local.jar" }
+                }
+                copy {
+                    from fabricJar
+                    into rootProject.file('Merged')
+                }
+                copy {
+                    from fabricJar
+                    into rootProject.file('common/libs')
+                    rename { fileName -> projectName + "-local.jar" }
+                }
             }
-            copy {
-                from forgeJar
-                into rootProject.file('common/libs')
-                rename { fileName -> projectName + "-local.jar" }
-            }
+            println "Builds Copied"
         }
-        if (fabricJar) {
-            copy {
-                from fabricJar
-                into rootProject.file('fabric/libs')
-                rename { fileName -> projectName + "-local.jar" }
-            }
-            copy {
-                from fabricJar
-                into rootProject.file('Merged')
-            }
-            copy {
-                from fabricJar
-                into rootProject.file('common/libs')
-                rename { fileName -> projectName + "-local.jar" }
-            }
-        }
-        println "Builds Copied"
     }
 }
 
 tasks.register('rebuildArchery') {
-    ext.projectName = "archery"
-    def project = gradle.includedBuild("archery")
-    dependsOn project.task(":buildBoth")
-    group = '_tm_tasks'
-    doLast {
-        def mergedBuildDir = rootProject.file(ext.projectName + '/Merged')
-        println mergedBuildDir
-        def fabricJars = mergedBuildDir.listFiles().findAll { it.name.endsWith("fabric.jar") }
-        def forgeJars = mergedBuildDir.listFiles().findAll { it.name.endsWith("forge.jar") }
+    if (properties.run_addons) {
+        ext.projectName = "archery"
+        def project = gradle.includedBuild("archery")
+        dependsOn project.task(":buildBoth")
+        group = '_tm_tasks'
+        doLast {
+            def mergedBuildDir = rootProject.file(ext.projectName + '/Merged')
+            println mergedBuildDir
+            def fabricJars = mergedBuildDir.listFiles().findAll { it.name.endsWith("fabric.jar") }
+            def forgeJars = mergedBuildDir.listFiles().findAll { it.name.endsWith("forge.jar") }
 
-        def fabricJar = fabricJars.max { it.lastModified() }
-        def forgeJar = forgeJars.max { it.lastModified() }
+            def fabricJar = fabricJars.max { it.lastModified() }
+            def forgeJar = forgeJars.max { it.lastModified() }
 
-        if (forgeJar) {
-            copy {
-                from forgeJar
-                into rootProject.file('neoforge/libs')
-                rename { fileName -> projectName + "-local.jar" }
+            if (forgeJar) {
+                copy {
+                    from forgeJar
+                    into rootProject.file('neoforge/libs')
+                    rename { fileName -> projectName + "-local.jar" }
+                }
+                copy {
+                    from forgeJar
+                    into rootProject.file('Merged')
+                }
+                copy {
+                    from forgeJar
+                    into rootProject.file('common/libs')
+                    rename { fileName -> projectName + "-local.jar" }
+                }
             }
-            copy {
-                from forgeJar
-                into rootProject.file('Merged')
+            if (fabricJar) {
+                copy {
+                    from fabricJar
+                    into rootProject.file('fabric/libs')
+                    rename { fileName -> projectName + "-local.jar" }
+                }
+                copy {
+                    from fabricJar
+                    into rootProject.file('Merged')
+                }
+                copy {
+                    from fabricJar
+                    into rootProject.file('common/libs')
+                    rename { fileName -> projectName + "-local.jar" }
+                }
             }
-            copy {
-                from forgeJar
-                into rootProject.file('common/libs')
-                rename { fileName -> projectName + "-local.jar" }
-            }
+            println "Builds Copied"
         }
-        if (fabricJar) {
-            copy {
-                from fabricJar
-                into rootProject.file('fabric/libs')
-                rename { fileName -> projectName + "-local.jar" }
-            }
-            copy {
-                from fabricJar
-                into rootProject.file('Merged')
-            }
-            copy {
-                from fabricJar
-                into rootProject.file('common/libs')
-                rename { fileName -> projectName + "-local.jar" }
-            }
-        }
-        println "Builds Copied"
     }
 }
 
 tasks.register('rebuildArmory') {
-    ext.projectName = "armory"
-    def project = gradle.includedBuild("armory")
-    dependsOn project.task(":buildBoth")
-    group = '_tm_tasks'
-    doLast {
-        def mergedBuildDir = rootProject.file(ext.projectName + '/Merged')
-        println mergedBuildDir
-        def fabricJars = mergedBuildDir.listFiles().findAll { it.name.endsWith("fabric.jar") }
-        def forgeJars = mergedBuildDir.listFiles().findAll { it.name.endsWith("forge.jar") }
+    if(properties.run_addons) {
+        ext.projectName = "armory"
+        def project = gradle.includedBuild("armory")
+        dependsOn project.task(":buildBoth")
+        group = '_tm_tasks'
+        doLast {
+            def mergedBuildDir = rootProject.file(ext.projectName + '/Merged')
+            println mergedBuildDir
+            def fabricJars = mergedBuildDir.listFiles().findAll { it.name.endsWith("fabric.jar") }
+            def forgeJars = mergedBuildDir.listFiles().findAll { it.name.endsWith("forge.jar") }
 
-        def fabricJar = fabricJars.max { it.lastModified() }
-        def forgeJar = forgeJars.max { it.lastModified() }
+            def fabricJar = fabricJars.max { it.lastModified() }
+            def forgeJar = forgeJars.max { it.lastModified() }
 
-        if (forgeJar) {
-            copy {
-                from forgeJar
-                into rootProject.file('neoforge/libs')
-                rename { fileName -> projectName + "-local.jar" }
+            if (forgeJar) {
+                copy {
+                    from forgeJar
+                    into rootProject.file('neoforge/libs')
+                    rename { fileName -> projectName + "-local.jar" }
+                }
+                copy {
+                    from forgeJar
+                    into rootProject.file('Merged')
+                }
+                copy {
+                    from forgeJar
+                    into rootProject.file('common/libs')
+                    rename { fileName -> projectName + "-local.jar" }
+                }
             }
-            copy {
-                from forgeJar
-                into rootProject.file('Merged')
+            if (fabricJar) {
+                copy {
+                    from fabricJar
+                    into rootProject.file('fabric/libs')
+                    rename { fileName -> projectName + "-local.jar" }
+                }
+                copy {
+                    from fabricJar
+                    into rootProject.file('Merged')
+                }
+                copy {
+                    from fabricJar
+                    into rootProject.file('common/libs')
+                    rename { fileName -> projectName + "-local.jar" }
+                }
             }
-            copy {
-                from forgeJar
-                into rootProject.file('common/libs')
-                rename { fileName -> projectName + "-local.jar" }
-            }
+            println "Builds Copied"
         }
-        if (fabricJar) {
-            copy {
-                from fabricJar
-                into rootProject.file('fabric/libs')
-                rename { fileName -> projectName + "-local.jar" }
-            }
-            copy {
-                from fabricJar
-                into rootProject.file('Merged')
-            }
-            copy {
-                from fabricJar
-                into rootProject.file('common/libs')
-                rename { fileName -> projectName + "-local.jar" }
-            }
-        }
-        println "Builds Copied"
     }
 }
 
@@ -257,21 +263,21 @@ subprojects {
 
     processResources {
         def expandProps = [
-                "version"                       : mod_version,
-                "group"                         : project.group, //Else we target the task's group.
-                "minecraft_version"             : minecraft_version,
-                "architectury_version"          : architectury_version,
-                "neoforge_version"              : neoforge_version,
-                "neoforge_loader_version_range" : neoforge_loader_version_range,
-                "neoforge_version_range"        : neoforge_version_range,
-                "minecraft_version_range"       : minecraft_version,
-                "fabric_api_version"            : fabric_api_version,
-                "fabric_loader_version"         : fabric_loader_version,
-                "mod_name"                      : mod_name,
-                "mod_author"                    : mod_author,
-                "mod_id"                        : mod_id,
-                "mod_description"               : mod_description,
-                "credits"                       : credits
+                "version"                      : mod_version,
+                "group"                        : project.group, //Else we target the task's group.
+                "minecraft_version"            : minecraft_version,
+                "architectury_version"         : architectury_version,
+                "neoforge_version"             : neoforge_version,
+                "neoforge_loader_version_range": neoforge_loader_version_range,
+                "neoforge_version_range"       : neoforge_version_range,
+                "minecraft_version_range"      : minecraft_version,
+                "fabric_api_version"           : fabric_api_version,
+                "fabric_loader_version"        : fabric_loader_version,
+                "mod_name"                     : mod_name,
+                "mod_author"                   : mod_author,
+                "mod_id"                       : mod_id,
+                "mod_description"              : mod_description,
+                "credits"                      : credits
         ]
 
         filesMatching(['pack.mcmeta', 'fabric.mod.json', 'META-INF/neoforge.mods.toml', '*.mixins.json']) {

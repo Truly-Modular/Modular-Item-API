@@ -4,7 +4,10 @@ import com.google.gson.*;
 import dev.architectury.event.EventResult;
 import dev.architectury.platform.Platform;
 import net.fabricmc.api.EnvType;
+import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.editor.syntax.EditorInterface;
 import smartin.miapi.events.MiapiEvents;
@@ -245,6 +248,9 @@ public class LiveDataPackManager implements AutoCloseable {
 
     private void processDataPacks(MiapiEvents.ReloadEventData event) {
         for (DataPackContext context : loadedPacks) {
+            if (context.enabled && !context.passedValidation) {
+                Minecraft.getInstance().player.sendSystemMessage(Component.literal(context.name + " Could not load, it did not pass Validation"));
+            }
             if (!context.enabled || !context.passedValidation) continue;
 
             File dataDir = new File(context.directory, context.dataPath);
@@ -297,7 +303,8 @@ public class LiveDataPackManager implements AutoCloseable {
         if (!checkFileChanges()) {
             return;
         }
-        openedEditors.forEach(miapiEditor -> {
+        List<MiapiEditor> editors = new ArrayList<>(openedEditors);
+        editors.forEach(miapiEditor -> {
             if (miapiEditor instanceof Closeable closeable) {
                 try {
                     closeable.close();
@@ -325,26 +332,29 @@ public class LiveDataPackManager implements AutoCloseable {
                             String relativePath = dataDir.toPath().relativize(path).toString();
 
                             // Only process valid files
-                            if (!context.isFileValid(relativePath, file)) {
-                                try {
-                                    String pathWithoutExt = relativePath.replace(".json", "").replace("\\", "/");
-                                    pathWithoutExt = pathWithoutExt.replaceFirst("/", ":");
-                                    ResourceLocation resourceLocation = Miapi.id(pathWithoutExt);
-                                    String data = Files.readString(file.toPath());
-                                    if (shouldLoadJson(data)) {
-                                        var editor = new JsonEditor(Files.readString(file.toPath()), (f) -> {
-                                        }, path, resourceLocation);
-                                        editor.resourceLocation = resourceLocation;
-                                        editor.closeOnNoError = true;
-                                        MiapiEditor.editors.add(editor);
-                                        openedEditors.add(editor);
+                            ValidationCache cache = context.getValidationCache(relativePath, file);
+                            if(cache.shouldLoad()){
+                                if(cache.blockLoad()){
+                                    try {
+                                        String pathWithoutExt = relativePath.replace(".json", "").replace("\\", "/");
+                                        pathWithoutExt = pathWithoutExt.replaceFirst("/", ":");
+                                        ResourceLocation resourceLocation = Miapi.id(pathWithoutExt);
+                                        String data = Files.readString(file.toPath());
+                                        if (shouldLoadJson(data)) {
+                                            var editor = new JsonEditor(Files.readString(file.toPath()), (f) -> {
+                                            }, path, resourceLocation);
+                                            editor.resourceLocation = resourceLocation;
+                                            editor.closeOnNoError = true;
+                                            MiapiEditor.editors.add(editor);
+                                            openedEditors.add(editor);
+                                        }
+                                    } catch (RuntimeException e) {
+                                        Miapi.LOGGER.warn("", e);
+                                    } catch (IOException e) {
+                                        Miapi.LOGGER.warn("", e);
                                     }
-                                } catch (RuntimeException e) {
-                                    Miapi.LOGGER.warn("", e);
-                                } catch (IOException e) {
-                                    Miapi.LOGGER.warn("", e);
+                                    context.passedValidation = false;
                                 }
-                                context.passedValidation = false;
                             }
                         });
             } catch (IOException e) {
@@ -402,9 +412,10 @@ public class LiveDataPackManager implements AutoCloseable {
             }
         }
 
-        public boolean isFileValid(String relativePath, File file) {
+        @Nullable
+        public ValidationCache getValidationCache(String relativePath, File file) {
             ValidationCache cache = validatedFiles.get(relativePath);
-            if (cache == null || cache.lastModified != file.lastModified()) {
+            if (cache == null || cache.lastModified != file.lastModified() || !cache.blockLoad()) {
                 try {
                     // Convert relative path to ResourceLocation
                     // Remove .json extension and replace path separators with /
@@ -421,25 +432,39 @@ public class LiveDataPackManager implements AutoCloseable {
                     // Read and parse the file content
                     String content = Files.readString(file.toPath());
                     JsonElement json = JsonParser.parseString(content);
+                    boolean shouldLoad = true;
+
+                    if (json.isJsonObject()) {
+                        if (json.getAsJsonObject().has("load_condition")) {
+                            shouldLoad = ConditionManager.get(json.getAsJsonObject().get("load_condition")).isAllowed(new ConditionManager.ConditionContext() {
+                                @Override
+                                public ConditionManager.ConditionContext copy() {
+                                    return this;
+                                }
+                            });
+                        }
+                    }
 
                     // Validate using all interfaces
                     boolean isValid = true;
+                    List<EditorError> allErrors = new ArrayList<>();
                     for (EditorInterface iface : interfaces) {
                         List<EditorError> errors = iface.validateContent(json, content);
+                        allErrors.addAll(errors);
                         // File is invalid if there are any errors (not just warnings)
                         if (errors.stream().anyMatch(error -> error.severity() == EditorError.ErrorSeverity.ERROR)) {
                             isValid = false;
                             break;
                         }
                         if (errors.stream().anyMatch(error -> error.severity() == EditorError.ErrorSeverity.WARNING)) {
-                            isValid = false;
-                            break;
+                            //isValid = false;
+                            //break;
                         }
                     }
 
                     // Cache the result
                     long lastModified = Files.getLastModifiedTime(file.toPath()).toMillis();
-                    cache = new ValidationCache(lastModified, isValid);
+                    cache = new ValidationCache(lastModified, shouldLoad, shouldLoad && isValid, allErrors);
                     validatedFiles.put(relativePath, cache);
                 } catch (Exception e) {
                     // If any error occurs during validation, consider the file invalid
@@ -449,11 +474,24 @@ public class LiveDataPackManager implements AutoCloseable {
                     } catch (IOException ex) {
                         Miapi.LOGGER.warn("", ex);
                     }
-                    cache = new ValidationCache(lastModified, false);
+                    cache = new ValidationCache(lastModified, false, false, List.of(new EditorError(0, "Critical load issue," + e.getMessage(), EditorError.ErrorSeverity.ERROR)));
                     validatedFiles.put(relativePath, cache);
                 }
             }
-            return cache != null && cache.isValid;
+            boolean isValid = cache != null && cache.shouldLoad();
+            if (!isValid) {
+                Miapi.LOGGER.warn("fail");
+            }
+            return cache;
+        }
+
+        public boolean isFileValid(String relativePath, File file) {
+            ValidationCache cache = getValidationCache(relativePath, file);
+            boolean isValid = cache != null && cache.shouldLoad();
+            if (!isValid) {
+                Miapi.LOGGER.warn("fail");
+            }
+            return isValid;
         }
 
         private boolean validateFile(String relativePath, File file) {
@@ -468,6 +506,6 @@ public class LiveDataPackManager implements AutoCloseable {
         }
     }
 
-    private record ValidationCache(long lastModified, boolean isValid) {
+    private record ValidationCache(long lastModified, boolean shouldLoad, boolean blockLoad, List<EditorError> errors) {
     }
 } 

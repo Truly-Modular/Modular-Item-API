@@ -17,9 +17,9 @@ import java.util.stream.Collectors;
 /**
  * This property determines the enchantability of an item, which affects how good enchantments can be obtained from an enchanting table.
  * By default, enchantability is controlled by material values, but this property allows for custom enchantability values through module instances.
+ *
  * @header Enchantability Property
- * @description_start
- * The Enchantability Property defines how effective an item is for enchanting purposes.
+ * @description_start The Enchantability Property defines how effective an item is for enchanting purposes.
  * This value influences the quality of enchantments available through the enchanting table.
  * By default, enchantability is derived from the material properties of the item, but this property allows for modification through module instances.
  * If no specific value is set, a default enchantability of 15 is used.
@@ -40,7 +40,11 @@ public class EnchantAbilityProperty extends DoubleProperty {
     }
 
     public static double getEnchantAbility(ItemStack itemStack) {
-        List<ModuleInstance> moduleInstances = ItemModule.getModules(itemStack).allSubModules();
+        ModuleInstance moduleInstance = ItemModule.getModules(itemStack);
+        if (moduleInstance == null || moduleInstance.getModule().isEmpty()) {
+            return 15;
+        }
+        List<ModuleInstance> moduleInstances = moduleInstance.allSubModules();
         List<Double> enchantAbilities = moduleInstances.stream().map(EnchantAbilityProperty::getEnchantAbility).sorted().collect(Collectors.toList());
         if (enchantAbilities.isEmpty()) {
             return 15.0;

@@ -41,7 +41,7 @@ public class ParryBlock extends MinMaxCDAbility<BlockData> {
             BlockData data = getData(stack).orElse(null);
             if (data == null || moduleInstance == null || event.attacker == null) return EventResult.pass();
 
-            double allowedAngle = data.angle.getValue();
+            double allowedAngle = data.angle().getValue();
 
             // Player look direction
             Vec3 playerLook = player.getLookAngle().normalize();
@@ -67,11 +67,12 @@ public class ParryBlock extends MinMaxCDAbility<BlockData> {
             player.getCooldowns().addCooldown(stack.getItem(), getCooldown(stack));
 
             if (event.damageSource.getEntity() instanceof LivingEntity attacker) {
-                int attackerCD = (int) data.cooldownAttackerWeapon.getValue();
+                int attackerCD = (int) data.cooldownAttackerWeapon().getValue();
                 if (attacker instanceof Player p) {
                     ItemStack attackStack = p.getMainHandItem();
                     if (!attackStack.isEmpty()) {
                         p.getCooldowns().addCooldown(attackStack.getItem(), attackerCD);
+                        p.stopUsingItem();
                     }
                 } else {
                     // Apply a stun effect
@@ -79,19 +80,22 @@ public class ParryBlock extends MinMaxCDAbility<BlockData> {
                     attacker.addEffect(new MobEffectInstance(RegistryInventory.stunEffect, attackerCD));
                 }
 
-                float returnPercent = (float) data.damageReturnPercent.getValue() / 100f;
-                float reflected = event.amount * returnPercent;
-
-                attacker.hurt(player.damageSources().playerAttack(player), reflected);
+                float returnPercent = (float) data.damageReturnPercent().getValue() / 100f;
+                if (returnPercent > 1) {
+                    float reflected = event.amount * returnPercent;
+                    attacker.hurt(player.damageSources().playerAttack(player), reflected);
+                }
             }
 
             // Play sound
-            if (data.sound != null) {
-                Holder<SoundEvent> holder = Holder.direct(SoundEvent.createVariableRangeEvent(data.sound));
-                player.playSound(holder.value(), (float) data.volume.getValue(), (float) data.pitch.getValue());
+            if (data.sound() != null) {
+                Holder<SoundEvent> holder = Holder.direct(SoundEvent.createVariableRangeEvent(data.sound()));
+                player.playSound(holder.value(), (float) data.volume().getValue(), (float) data.pitch().getValue());
             }
-            double blocking = data.blocking.getValue();
+            double blocking = data.blocking().getValue();
             if (blocking >= 100) {
+                player.getCooldowns().addCooldown(stack.getItem(), getCooldown(stack));
+                player.stopUsingItem();
                 return EventResult.interruptDefault();
             }
             if (blocking > 0) {
@@ -138,8 +142,8 @@ public class ParryBlock extends MinMaxCDAbility<BlockData> {
                     BlockData data = getData(user.getItemInHand(hand)).orElse(null);
                     if (data != null) {
                         // Pose animation setup
-                        if (data.pose != null) {
-                            setAnimation(serverPlayer, data.pose, hand);
+                        if (data.pose() != null) {
+                            setAnimation(serverPlayer, data.pose(), hand);
                         }
                     }
                 }
@@ -174,7 +178,8 @@ public class ParryBlock extends MinMaxCDAbility<BlockData> {
     public void applyCooldownMissTime(ItemStack itemStack, LivingEntity livingEntity) {
         BlockData data = getData(itemStack).orElse(null);
         if (livingEntity instanceof ServerPlayer serverPlayer && data != null) {
-            serverPlayer.getCooldowns().addCooldown(itemStack.getItem(), (int) data.cooldownMissTime.getValue());
+            serverPlayer.getCooldowns().addCooldown(itemStack.getItem(), (int) data.cooldownMissTime().getValue());
+            serverPlayer.stopUsingItem();
         }
     }
 

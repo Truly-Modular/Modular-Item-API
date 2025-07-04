@@ -28,7 +28,7 @@ public abstract class LivingEntityMixin {
     private DamageSource storedDamageSource;
     private MiapiEvents.LivingHurtEvent lastEvent;
 
-    @Inject(method = "hurt", at = @At(value = "HEAD"))
+    @Inject(method = "hurt", at = @At(value = "HEAD"),cancellable = true)
     private void miapi$damageEvent(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
         MiapiEvents.LivingHurtEvent livingHurtEvent = new MiapiEvents.LivingHurtEvent((LivingEntity) (Object) this, source.getEntity(), source, amount);
         if (source.getEntity() instanceof Player entity) {

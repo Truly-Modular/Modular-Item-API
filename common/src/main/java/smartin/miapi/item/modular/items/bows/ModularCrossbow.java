@@ -144,6 +144,7 @@ public class ModularCrossbow extends CrossbowItem implements PlatformModularItem
         if(index!=0 && projectile instanceof ItemProjectileEntity entity){
             entity.pickup = AbstractArrow.Pickup.CREATIVE_ONLY;
         }
+        super.shootProjectile(shooter, projectile, index, velocity, inaccuracy, angle, target);
     }
 
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand usedHand) {

@@ -24,7 +24,7 @@ import smartin.miapi.client.gui.ScrollList;
 import smartin.miapi.client.gui.TransformableWidget;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.abilities.shield.BlockAbility;
-import smartin.miapi.modules.abilities.shield.BlockData;
+import smartin.miapi.modules.abilities.shield.BlockDataOld;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;
 import smartin.miapi.modules.properties.DurabilityProperty;
 import smartin.miapi.modules.properties.FireProof;
@@ -334,7 +334,7 @@ public class StatListWidget extends InteractAbleWidget {
                                 (s -> ItemAbilityManager.getAbilities(s)
                                         .stream()
                                         .filter(a -> a.ability() instanceof BlockAbility)
-                                        .findAny().map(a -> ((BlockData) a.context()).blocking)
+                                        .findAny().map(a -> ((BlockDataOld) a.context()).blocking)
                                 ))
                         .build());
         addStatDisplay(
@@ -343,7 +343,7 @@ public class StatListWidget extends InteractAbleWidget {
                                 (s -> ItemAbilityManager.getAbilities(s)
                                         .stream()
                                         .filter(a -> a.ability() instanceof BlockAbility)
-                                        .findAny().map(a -> ((BlockData) a.context()).angle)
+                                        .findAny().map(a -> ((BlockDataOld) a.context()).angle)
                                 ))
                         .build());
         addStatDisplay(
@@ -352,7 +352,7 @@ public class StatListWidget extends InteractAbleWidget {
                                 (s -> ItemAbilityManager.getAbilities(s)
                                         .stream()
                                         .filter(a -> a.ability() instanceof BlockAbility)
-                                        .findAny().map(a -> ((BlockData) a.context()).cooldownAttackerWeapon)
+                                        .findAny().map(a -> ((BlockDataOld) a.context()).cooldownAttackerWeapon)
                                 ))
                         .build());
         addStatDisplay(
@@ -361,7 +361,7 @@ public class StatListWidget extends InteractAbleWidget {
                                 (s -> ItemAbilityManager.getAbilities(s)
                                         .stream()
                                         .filter(a -> a.ability() instanceof BlockAbility)
-                                        .findAny().map(a -> ((BlockData) a.context()).damageReturnPercent)
+                                        .findAny().map(a -> ((BlockDataOld) a.context()).damageReturnPercent)
                                 ))
                         .build());
 

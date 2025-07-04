@@ -25,7 +25,6 @@ public class BufferSpriteAdder implements SpriteSource {
     public static MapCodec<? extends SpriteSource> CODEC = AutoCodec.of(BufferSpriteAdder.class);
     public static SpriteSourceType TYPE = SpriteSourcesAccessor.callRegister("miapi_runtime", CODEC);
 
-
     @Override
     public void run(ResourceManager resourceManager, Output output) {
         MaterialSpriteManager.ATLAS_SPRITE_POOL.clear();

@@ -1,45 +1,123 @@
 {
-    "block_model": [
-        {
-            "id": "minecraft:nether_portal",
-            "transform": {
-                "rotation": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 0.0
-                },
-                "translation": {
-                    "x": 0.4375,
-                    "y": 0.4375,
-                    "z": 0.45
-                },
-                "scale": {
-                    "x": 0.125,
-                    "y": 0.125,
-                    "z": 0.125
-                }
+    "model_transform": {
+        "thirdperson_righthand": {
+            "rotation": {
+                "x": 0,
+                "y": 270,
+                "z": 0
+            },
+            "translation": {
+                "x": 3,
+                "y": -4,
+                "z": 2.5
+            },
+            "scale": {
+                "x": 0.8,
+                "y": 0.8,
+                "z": 0.8
             }
         },
-        {
-            "id": "minecraft:enchanting_table",
-            "transform": {
-                "rotation": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 0.0
-                },
-                "translation": {
-                    "x": 0.4375,
-                    "y": 0.4375,
-                    "z": 0.6
-                },
-                "scale": {
-                    "x": 0.125,
-                    "y": 0.125,
-                    "z": 0.125
-                }
+        "thirdperson_lefthand": {
+            "rotation": {
+                "x": 0,
+                "y": 90,
+                "z": 0
+            },
+            "translation": {
+                "x": 3,
+                "y": -4,
+                "z": 2.5
+            },
+            "scale": {
+                "x": 0.8,
+                "y": 0.8,
+                "z": 0.8
+            }
+        },
+        "firstperson_righthand": {
+            "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "translation": {
+                "x": -0.5,
+                "y": -4,
+                "z": 2
+            },
+            "scale": {
+                "x": 0.4,
+                "y": 0.4,
+                "z": 0.4
+            }
+        },
+        "firstperson_lefthand": {
+            "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "translation": {
+                "x": -0.5,
+                "y": -4,
+                "z": 2
+            },
+            "scale": {
+                "x": 0.4,
+                "y": 0.4,
+                "z": 0.4
+            }
+        },
+        "ground": {
+            "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "translation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "scale": {
+                "x": 0.15,
+                "y": 0.15,
+                "z": 0.15
+            }
+        },
+        "fixed": {
+            "translation": {
+                "x": 0.0,
+                "y": -2.0,
+                "z": -1.0
+            },
+            "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "scale": {
+                "x": 0.375,
+                "y": 0.375,
+                "z": 0.375
+            }
+        },
+        "gui": {
+            "translation": {
+                "x": 0,
+                "y": -2,
+                "z": 0
+            },
+            "rotation": {
+                "x": 10,
+                "y": 150,
+                "z": 5
+            },
+            "scale": {
+                "x": 0.45,
+                "y": 0.45,
+                "z": 0.45
             }
         }
-    ],
-    "model":[]
+    }
 }

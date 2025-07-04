@@ -109,7 +109,14 @@ public class SpriteFromJson {
     public SpriteFromJson(String atlasKey, String texturePath, boolean forceTick) {
         ResourceLocation atlasId = atlasIdShortcuts.getOrDefault(atlasKey, ResourceLocation.parse(atlasKey));
         ResourceLocation textureId = ResourceLocation.parse(texturePath);
-        rawSprite = Minecraft.getInstance().getTextureAtlas(atlasId).apply(textureId);
+        TextureAtlas atlasSprite = Minecraft.getInstance().getModelManager().getAtlas(atlasId);
+        if (atlasSprite == null) {
+            throw new RuntimeException("could not find atlas" + atlasKey);
+        }
+        rawSprite = atlasSprite.getSprite(textureId);
+        if (atlasSprite == null) {
+            throw new RuntimeException("could not find atlas image" + textureId + " on atlas " + atlasKey);
+        }
         SpriteContents contents = rawSprite.contents();
         imageSupplier = () -> NativeImageGetter.get(contents);
         isAnimated = forceTick || SpriteColorer.isAnimatedSpriteStatic(contents);

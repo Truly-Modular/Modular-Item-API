@@ -56,7 +56,7 @@ public class MiapiClientConfig {
 
         @Comment("Can split into new lines on every character, not just space")
         @AutoCodec.Name("splt_new_line")
-        public boolean splitNewLineAlways = false;
+        public boolean splitNewLineAlways = true;
 
         //@AutoCodec.Name("keybinds")
         //@Comment("""

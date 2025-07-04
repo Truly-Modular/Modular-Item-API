@@ -66,6 +66,9 @@ public class ModularItemCache {
         modules.getInstances().forEach((m) -> {
             if (m != null) {
                 m.clearCaches();
+                if (m.parent == null && m.contextStack != null) {
+                    m.writeToItem(m.contextStack);
+                }
             }
         });
     }
@@ -75,7 +78,6 @@ public class ModularItemCache {
         @Override
         Object apply(ItemStack stack);
     }
-
 
 
     public static class ConcurrentWeakInstanceTracker<T> {

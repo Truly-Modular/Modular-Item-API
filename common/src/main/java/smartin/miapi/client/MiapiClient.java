@@ -114,6 +114,7 @@ public class MiapiClient {
         RegistryInventory.MODULAR_ITEMS.addCallback((MiapiClient::registerAnimations));
         //BoomerangClientRendering.setup();
         ClientTickEvent.CLIENT_PRE.register((instance -> {
+
             if (MiapiConfig.getClientConfig().other.animatedMaterials) {
                 Minecraft.getInstance().getProfiler().push("miapiMaterialAnimations");
                 MaterialSpriteManager.tick();

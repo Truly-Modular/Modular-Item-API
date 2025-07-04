@@ -13,6 +13,8 @@ include("common")
 include("fabric")
 include("neoforge")
 
-includeBuild("./archery")
-includeBuild("./armory")
-includeBuild("./arsenal")
+if (gradle.properties.run_addons) {
+    includeBuild("./archery")
+    includeBuild("./armory")
+    includeBuild("./arsenal")
+}

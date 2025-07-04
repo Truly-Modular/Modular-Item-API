@@ -210,7 +210,9 @@ public class ModularWorkBenchEntity extends BlockEntity implements MenuProvider,
 
     @Override
     public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
-        return new CompoundTag();
+        CompoundTag tag = new CompoundTag();
+        saveAdditional(tag , registries);
+        return tag;
     }
 
     @Override

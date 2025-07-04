@@ -132,29 +132,6 @@ public class ReloadHelpers {
 
     public static void registerReloadHandler(
             ReloadEvents.ReloadEvent event,
-            String location, MiapiRegistry<?> toClear,
-            SingleFileHandler handler) {
-        registerReloadHandler(event, location, true, bl -> toClear.clear(), handler, 0f);
-    }
-
-    public static void registerReloadHandler(
-            ReloadEvents.ReloadEvent event,
-            String location, MiapiRegistry<?> toClear,
-            SingleFileHandler handler,
-            float prio) {
-        registerReloadHandler(event, location, true, bl -> toClear.clear(), handler, prio);
-    }
-
-    public static void registerReloadHandler(
-            ReloadEvents.ReloadEvent event,
-            String location,
-            Map<?, ?> toClear,
-            SingleFileHandler handler) {
-        registerReloadHandler(event, location, true, bl -> toClear.clear(), handler, 0f);
-    }
-
-    public static void registerReloadHandler(
-            ReloadEvents.ReloadEvent event,
             String location, Map<?, ?> toClear,
             SingleFileHandler handler,
             float prio) {
@@ -227,12 +204,6 @@ public class ReloadHelpers {
         ReloadEvents.START.subscribe((isClient, registryAccess) -> clear.run());
     }
 
-
-    @FunctionalInterface
-    public interface SingleFileHandler {
-        void reloadFile(boolean isClient, ResourceLocation path, String data, RegistryAccess registryAccess);
-    }
-
     public record CodecOptimisedFileHandler<T>(
             Codec<T> codec,
             SingleDecodedFileHandler<T> handler,
@@ -253,10 +224,16 @@ public class ReloadHelpers {
     }
 
     @FunctionalInterface
+    public interface SingleFileHandler {
+        void reloadFile(boolean isClient, ResourceLocation path, String data, RegistryAccess registryAccess);
+    }
+
+    @FunctionalInterface
     public interface SingleDecodedFileHandler<T> {
         void reloadFile(boolean isClient, ResourceLocation path, T data, RegistryAccess registryAccess);
     }
 
+    @FunctionalInterface
     public interface SimpleDecoder<T> {
         T decode(boolean isClient, ResourceLocation path, JsonElement element, RegistryAccess registryAccess) throws DecoderException;
     }
