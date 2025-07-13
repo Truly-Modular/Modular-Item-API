@@ -10,7 +10,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import smartin.miapi.Environment;
 import smartin.miapi.Miapi;
-import smartin.miapi.client.model.ItemInModuleMiapiModel;
+import smartin.miapi.client.model.module.ItemInModuleMiapiModel;
 import smartin.miapi.client.model.MiapiItemModel;
 import smartin.miapi.client.model.MiapiModel;
 import smartin.miapi.material.MaterialInscribeDataProperty;

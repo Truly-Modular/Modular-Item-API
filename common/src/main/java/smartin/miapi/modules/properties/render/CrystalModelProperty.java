@@ -2,7 +2,7 @@ package smartin.miapi.modules.properties.render;
 
 import net.minecraft.resources.ResourceLocation;
 import smartin.miapi.Miapi;
-import smartin.miapi.client.model.CrystalModel;
+import smartin.miapi.client.model.module.CrystalModel;
 import smartin.miapi.client.model.MiapiItemModel;
 import smartin.miapi.client.model.MiapiModel;
 import smartin.miapi.modules.properties.util.ComplexBooleanProperty;

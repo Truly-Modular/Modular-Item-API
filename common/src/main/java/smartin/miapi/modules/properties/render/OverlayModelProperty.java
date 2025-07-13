@@ -17,7 +17,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import smartin.miapi.Miapi;
-import smartin.miapi.client.model.BakedMiapiModel;
+import smartin.miapi.client.model.module.BakedMiapiModel;
 import smartin.miapi.client.model.MiapiItemModel;
 import smartin.miapi.client.model.MiapiModel;
 import smartin.miapi.client.model.ModelHolder;

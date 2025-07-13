@@ -1,6 +1,6 @@
 package smartin.miapi.mixin.client;
 
-import com.mojang.blaze3d.systems.RenderSystem;
+import foundry.veil.VeilClient;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
@@ -14,12 +14,11 @@ import smartin.miapi.editor.MiapiEditor;
 @Mixin(Gui.class)
 public class GuiMixin {
 
-    @Inject(method = "Lnet/minecraft/client/gui/Gui;render(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/DeltaTracker;)V", at = @At("TAIL"), cancellable = true)
+    @Inject(method = "Lnet/minecraft/client/gui/Gui;render(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/DeltaTracker;)V", at = @At("HEAD"), cancellable = true)
     private void miapi$editorRenderCallback(GuiGraphics guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) {
-        if (MiapiConfig.getClientConfig().other.enableEditorMixin) {
-            RenderSystem.enableDepthTest();
+        if (MiapiConfig.getClientConfig().other.enableEditorMixin ) {
+            VeilClient veilClient;
             MiapiEditor.renderAll(guiGraphics, deltaTracker);
-            RenderSystem.disableDepthTest();
         }
     }
 }

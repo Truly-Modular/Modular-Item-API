@@ -45,6 +45,12 @@ public class MiapiItemModel implements MiapiModel {
             return model;
         });
         MiapiEvents.CLEAR_CACHE.register(() -> {
+            new ArrayList<>(MiapiItemModel.fallbackLookup.keySet()).forEach(i ->{
+                ModuleInstance moduleInstance = ItemModule.getModules(i);
+                if (moduleInstance != null) {
+                    moduleInstance.clearCaches();
+                }
+            });
             MiapiItemModel.fallbackLookup.clear();
             return EventResult.pass();
         });
@@ -84,7 +90,13 @@ public class MiapiItemModel implements MiapiModel {
             LivingEntity entity,
             int light,
             int overlay) {
-        if (ReloadEvents.isInReload()) return;
+        if (ReloadEvents.isInReload()) {
+            ModuleInstance instance = ItemModule.getModules(stack);
+            if (instance != null) {
+                instance.clearCaches();
+            }
+            return;
+        }
         assert Minecraft.getInstance().level != null;
         Minecraft.getInstance().getProfiler().push("modular_item");
         Minecraft.getInstance().getProfiler().push("root-logic");
@@ -108,6 +120,7 @@ public class MiapiItemModel implements MiapiModel {
         //IconRenderProperty.property.renderIcon(ItemModule.getModules(stack), matrices, tickDelta, vertexConsumers, entity, light, overlay);
         rootModel.render(modelType, stack, matrices, mode, tickDelta, vertexConsumers, entity, light, overlay);
         matrices.popPose();
+        matrices.last().pose().invert();
         Minecraft.getInstance().getProfiler().pop();
     }
 

@@ -14,3 +14,4 @@ and either create a GH issue or ping me on discord with the spark link and a des
 - fixed crash related to testing enchantability of invalid modular items
 - fixed bug where items sometimes would not render on the bench
 - fixed crossbow not shooting
+- removed ht treechop compat log spam

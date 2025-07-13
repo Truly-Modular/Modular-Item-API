@@ -7,7 +7,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import smartin.miapi.Miapi;
-import smartin.miapi.client.model.BannerMiapiModel;
+import smartin.miapi.client.model.module.BannerMiapiModel;
 import smartin.miapi.client.model.MiapiItemModel;
 import smartin.miapi.client.model.MiapiModel;
 import smartin.miapi.item.modular.Transform;

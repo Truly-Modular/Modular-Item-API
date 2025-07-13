@@ -50,6 +50,10 @@ repositories {
             includeGroup("com.eliotlash.mclib")
         }
     }
+    maven {
+        name = 'BlameJared Maven (CrT / Bookshelf)'
+        url = 'https://maven.blamejared.com'
+    }
 }
 
 loom {
@@ -70,6 +74,11 @@ dependencies {
     modApi "com.redpxnda.nucleus:nucleus-facet-common:${rootProject.minecraft_version}+${rootProject.nucleus_facet_version}"
     modApi "com.redpxnda.nucleus:nucleus-editor-common:${rootProject.minecraft_version}+${rootProject.nucleus_editor_version}"
 
+    modImplementation("foundry.veil:veil-common-1.21.1:${project.veil_version}") {
+        exclude group: "maven.modrinth"
+        exclude group: "me.fallenbreath"
+    }
+
     //https://modrinth.com/mod/treechop/version/tIdTnzkf
 
     modCompileOnly "maven.modrinth:treechop:${rootProject.fabric_treechop_version}"
@@ -86,6 +95,7 @@ dependencies {
     //modApi files('libs/nucleus-core-local.jar')
     //modApi files('libs/nucleus-facet-local.jar')
     //modApi files('libs/nucleus-pose-local.jar')
+    modApi files('libs/veil.jar')
 
     modCompileOnly("dev.onyxstudios.cardinal-components-api:cardinal-components-base:${cca_version}") {
         exclude(group: "net.fabricmc.fabric-api")

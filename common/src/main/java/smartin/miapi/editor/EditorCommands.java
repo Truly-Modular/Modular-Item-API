@@ -115,7 +115,9 @@ public class EditorCommands {
             }
             return EventResult.pass();
         });
-        if (Platform.isModLoaded("nucleus_editor")) {
+        if(Platform.isModLoaded("veil")){
+            VeilEditor.setup();
+        } else if (Platform.isModLoaded("nucleus_editor")) {
             NucleusEditor.setup();
         } else if (MiapiConfig.getClientConfig().other.allowEditorNoNucleus) {
 

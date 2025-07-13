@@ -49,15 +49,6 @@ public class DoubleResolvableStatDisplay extends SingleStatDisplayDouble {
         return resolvableGetter.apply(stack).orElse(null);
     }
 
-    public static String stringForOperation(DecimalFormat format, DoubleOperationResolvable.Operation resolvable) {
-        String number = format.format(resolvable.solve());
-        String operation = getStringName(resolvable.attributeOperation);
-        if (operation.equals("+") && number.startsWith("-")) {
-            return number + " " + resolvable.instance.getModuleName().getString();
-        }
-        return operation + number + " " + resolvable.instance.getModuleName().getString();
-    }
-
     public static String getStringName(AttributeModifier.Operation operation) {
         return switch (operation) {
             case AttributeModifier.Operation.ADD_VALUE -> "+";
@@ -79,7 +70,10 @@ public class DoubleResolvableStatDisplay extends SingleStatDisplayDouble {
         public double min = 0;
         public double max = 100;
         public boolean inverse = false;
-        public BiFunction<ItemStack, ItemStack, Boolean> condition = (old, compare) -> true;
+        public BiFunction<ItemStack, ItemStack, Boolean> condition = (old, compare) -> {
+            return getter.apply(old).isPresent() && !getter.apply(old).get().operations.isEmpty() ||
+                   getter.apply(compare).isPresent() && !getter.apply(compare).get().operations.isEmpty();
+        };
 
         private Builder(Function<ItemStack, Optional<DoubleOperationResolvable>> getter) {
             this.getter = getter;

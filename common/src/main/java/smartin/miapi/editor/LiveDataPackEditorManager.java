@@ -211,6 +211,7 @@ public class LiveDataPackEditorManager implements MiapiEditor {
     }
 
     public void reload() {
+        LiveDataPackManager.getInstance().checkAndValidateDatapacks(true);
         CacheCommands.triggerServerReload();
     }
 }

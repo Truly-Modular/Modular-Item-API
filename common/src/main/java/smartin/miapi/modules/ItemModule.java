@@ -125,6 +125,10 @@ public record ItemModule(ResourceLocation id, Map<ModuleProperty<?>, Object> pro
             if (MiapiConfig.getServerConfig().other.verboseLogging) {
                 LOGGER.info("Item cannot have modules during a reload.");
             }
+            ModuleInstance root = stack.get(ModuleInstance.MODULE_INSTANCE_COMPONENT);
+            if (root != null) {
+                root.clearCaches();
+            }
             return new ModuleInstance(ItemModule.empty);
         }
         if (stack.getItem() instanceof VisualModularItem && !ReloadEvents.isInReload()) {

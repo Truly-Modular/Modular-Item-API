@@ -100,7 +100,7 @@ public class ParryBlock extends MinMaxCDAbility<BlockData> {
             }
             if (blocking > 0) {
                 float blockPercent = (float) blocking / 100f;
-                event.amount = event.amount / blockPercent;
+                event.amount = Math.max(0, event.amount - blockPercent * event.amount);
                 return EventResult.pass();
             }
             return EventResult.pass();
@@ -130,6 +130,12 @@ public class ParryBlock extends MinMaxCDAbility<BlockData> {
 
     @Override
     public UseAnim getUseAction(ItemStack itemStack) {
+        if (getData(itemStack).isPresent()) {
+            var data = getData(itemStack).get();
+            if (data.pose().isEmpty()) {
+                return UseAnim.BLOCK;
+            }
+        }
         return UseAnim.NONE;
     }
 
@@ -142,8 +148,8 @@ public class ParryBlock extends MinMaxCDAbility<BlockData> {
                     BlockData data = getData(user.getItemInHand(hand)).orElse(null);
                     if (data != null) {
                         // Pose animation setup
-                        if (data.pose() != null) {
-                            setAnimation(serverPlayer, data.pose(), hand);
+                        if (data.pose() != null && data.pose().isPresent()) {
+                            setAnimation(serverPlayer, data.pose().get(), hand);
                         }
                     }
                 }

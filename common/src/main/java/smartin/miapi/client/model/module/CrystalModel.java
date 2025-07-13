@@ -1,4 +1,4 @@
-package smartin.miapi.client.model;
+package smartin.miapi.client.model.module;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -20,6 +20,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import org.joml.Quaternionf;
+import smartin.miapi.client.model.MiapiModel;
 
 @Environment(EnvType.CLIENT)
 public class CrystalModel implements MiapiModel {

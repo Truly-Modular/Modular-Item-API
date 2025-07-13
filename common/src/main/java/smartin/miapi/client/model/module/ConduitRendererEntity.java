@@ -1,4 +1,4 @@
-package smartin.miapi.client.model;
+package smartin.miapi.client.model.module;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -21,6 +21,7 @@ import net.minecraft.world.level.block.entity.ConduitBlockEntity;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
+import smartin.miapi.client.model.MiapiModel;
 import smartin.miapi.item.modular.Transform;
 
 import static net.minecraft.client.renderer.blockentity.ConduitRenderer.*;

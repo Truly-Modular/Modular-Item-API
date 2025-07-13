@@ -5,7 +5,7 @@ import com.redpxnda.nucleus.codec.auto.AutoCodec;
 import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
 import net.minecraft.resources.ResourceLocation;
 import smartin.miapi.Miapi;
-import smartin.miapi.client.model.ConduitRendererEntity;
+import smartin.miapi.client.model.module.ConduitRendererEntity;
 import smartin.miapi.client.model.MiapiItemModel;
 import smartin.miapi.client.model.MiapiModel;
 import smartin.miapi.item.modular.Transform;

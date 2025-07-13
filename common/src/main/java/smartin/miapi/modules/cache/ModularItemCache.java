@@ -23,7 +23,6 @@ public class ModularItemCache {
     public static Map<String, DataCache.ModuleCacheSupplier> MODULE_CACHE_SUPPLIER = new ConcurrentHashMap<>();
     public static ConcurrentWeakInstanceTracker<ModuleInstance> modules = new ConcurrentWeakInstanceTracker<>();
 
-
     public static void setSupplier(String key, CacheObjectSupplier supplier) {
         supplierMap.put(key, supplier);
     }

@@ -1,4 +1,4 @@
-package smartin.miapi.client.model;
+package smartin.miapi.client.model.module;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
@@ -11,6 +11,7 @@ import net.minecraft.world.item.FireworkRocketItem;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import org.joml.Matrix4f;
+import smartin.miapi.client.model.MiapiModel;
 
 import java.util.function.Supplier;
 

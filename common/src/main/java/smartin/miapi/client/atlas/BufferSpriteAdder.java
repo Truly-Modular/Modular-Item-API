@@ -21,6 +21,9 @@ import smartin.miapi.mixin.client.SpriteContentsAccessor;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Truly Modulars System to add and modify sprites on the main block/item atlas
+ */
 public class BufferSpriteAdder implements SpriteSource {
     public static MapCodec<? extends SpriteSource> CODEC = AutoCodec.of(BufferSpriteAdder.class);
     public static SpriteSourceType TYPE = SpriteSourcesAccessor.callRegister("miapi_runtime", CODEC);

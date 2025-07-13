@@ -13,7 +13,10 @@ include("common")
 include("fabric")
 include("neoforge")
 
-if (gradle.properties.run_addons) {
+//def enableAddons = settings.hasProperty('run_addons') && settings.property('run_addons') == 'true'
+
+
+if (true) {
     includeBuild("./archery")
     includeBuild("./armory")
     includeBuild("./arsenal")

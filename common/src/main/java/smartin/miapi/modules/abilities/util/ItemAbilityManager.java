@@ -62,8 +62,11 @@ public class ItemAbilityManager {
         useAbilityRegistry.addCallback(ability -> ModularItemCache.setSupplier(
                 AbilityMangerProperty.KEY + "_" + RegistryInventory.ITEM_USE_ABILITY_MIAPI_REGISTRY.findKey(ability),
                 (itemStack -> {
-                    Optional<AbilityHolder<?>> optional = abilityMap.values().stream().filter(e -> e.ability().equals(ability)).findFirst();
-                    return optional.<Object>map(AbilityHolder::context).orElse(null);
+                    AbilityHolder<?> optional = abilityMap.get(itemStack);
+                    if (optional != null && optional.ability().equals(ability)) {
+                        return optional.context();
+                    }
+                    return null;
                 })));
         useAbilityRegistry.register(Miapi.id("empty"), emptyAbility.ability());
     }
@@ -254,7 +257,7 @@ public class ItemAbilityManager {
         if (Platform.isForgeLike()) {
             //fuck you forge, implemented fallback for ItemAbility shit
             InteractionResult result = getAbility(context.getItemInHand()).ability().useOnBlock(context);
-            if(result.equals(InteractionResult.PASS)){
+            if (result.equals(InteractionResult.PASS)) {
                 return getItem.get();
             }
             return result;

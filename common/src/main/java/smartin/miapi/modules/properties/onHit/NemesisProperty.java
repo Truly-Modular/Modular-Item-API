@@ -206,6 +206,7 @@ public class NemesisProperty extends DoubleProperty implements CraftingProperty 
         public NemesisData() {
         }
 
+        @Override
         public NemesisData clone() {
             return new NemesisData(entityType, kills);
         }

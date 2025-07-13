@@ -9,17 +9,14 @@ import dev.architectury.event.EventResult;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.client.renderer.texture.SpriteContents;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -41,6 +38,11 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.IntUnaryOperator;
 
+/**
+ * This complex mess is responsible for using the result of a Colorer and make sure its renderable.
+ * it works via {@link MaterialSpriteManager#getVertexConsumer}. by providing the old sprite and the recolorer this class
+ * manages the caching and different rendering methods.
+ */
 @Environment(EnvType.CLIENT)
 public class MaterialSpriteManager {
     static Map<Holder, DynamicTexture> animated_Textures = new HashMap<>();
@@ -80,7 +82,7 @@ public class MaterialSpriteManager {
             })
             .build(new CacheLoader<>() {
                 @Override
-                public ResourceLocation load(Holder key) {
+                public @NotNull ResourceLocation load(@NotNull Holder key) {
                     return getMaterialSprite(key);
                 }
             });
@@ -110,11 +112,18 @@ public class MaterialSpriteManager {
         return identifier;
     }
 
+    /**
+     * destroyes all render caches, called on clear caches
+     */
     public static void clear() {
         materialSpriteCache.invalidateAll();
-
+        //TODO:free atlas sprites
     }
 
+    /**
+     * the tick function.
+     * responsible for animated textures and clearing unused caches
+     */
     public static void tick() {
         if (!ReloadEvents.isInReload()) {
             List<Holder> toRemove = new ArrayList<>();
@@ -124,7 +133,7 @@ public class MaterialSpriteManager {
                         //important!
                         //the MaskColorer is responsible for managing any NativeImage it creates.
                         //BUT the NativeBackedTexture removes its old uploaded NativeImage, so we need to upload a copy
-                        nativeImageBackedTexture.getPixels().copyFrom(nativeImage);
+                        Objects.requireNonNull(nativeImageBackedTexture.getPixels()).copyFrom(nativeImage);
                         nativeImageBackedTexture.upload();
                     }, holder.sprite().contents());
                 } catch (Exception e) {
@@ -163,6 +172,14 @@ public class MaterialSpriteManager {
         }
     }
 
+    /**
+     *
+     * @param vertexConsumers Buffer source to generate new Consumer
+     * @param originalSprite the non-recolored sprite
+     * @param material the material, mainly used for caching and optimised lookups
+     * @param materialSpriteColorer The colorer recoloring the sprite
+     * @return a vertexconsumer that can be talked to like it was the original sprite, but renders the recolored one.
+     */
     public static VertexConsumer getVertexConsumer(MultiBufferSource vertexConsumers, TextureAtlasSprite originalSprite, Material material, SpriteColorer materialSpriteColorer) {
         Holder holder = new Holder(originalSprite, material, materialSpriteColorer);
         if (MiapiConfig.getClientConfig().other.try_fast_render) {
@@ -210,20 +227,30 @@ public class MaterialSpriteManager {
         return new RescaledVertexConsumer(atlasConsumer, originalSprite);
     }
 
-    public static void onHudRender(GuiGraphics drawContext) {
-        VertexConsumer consumer =
-                ItemRenderer.getFoilBuffer(drawContext.bufferSource(), RenderType.gui(), false, false);
-        int[] quadData = new int[32];
-        for (TextureAtlasSprite sprite : animated) {
-            BakedQuad bakedQuad = new BakedQuad(quadData, 0, Direction.DOWN, sprite, false);
-            consumer.putBulkData(drawContext.pose().last(), bakedQuad, 0, 0, 0, 0, 0, 0);
-        }
-        animated.clear();
-    }
-
     public record Holder(TextureAtlasSprite sprite, Material material, SpriteColorer colorer) {
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            Holder holder = (Holder) o;
+            return Objects.equals(sprite, holder.sprite) &&
+                   Objects.equals(material, holder.material) &&
+                   Objects.equals(colorer, holder.colorer);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(sprite, material, colorer);
+        }
+
     }
 
+    /**
+     * will try to find a free SpriteSlot on the main BlockAtlas
+     * @param width the desired sprite width
+     * @param height the desired sprite height
+     * @return a sprite slot if avialible, null if none are available
+     */
     @Nullable
     public static SpriteSlot getFreeAtlasSlot(int width, int height) {
         int key = (width << 16) | height;
@@ -241,11 +268,18 @@ public class MaterialSpriteManager {
         return null;
     }
 
+    /**
+     * allows simple integer based keys for res, used for optimised lookups
+     * @param width the desired sprite width
+     * @param height the desired sprite height
+     */
     public static int resToKey(int width, int height) {
         return (width << 16) | height;
     }
 
-
+    /**
+     * a slot on the main block atlas for a sprite, manages its content and stuffs.
+     */
     public static class SpriteSlot {
         public int used = 0;
         public ResourceLocation internalID;

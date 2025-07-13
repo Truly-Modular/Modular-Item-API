@@ -9,11 +9,12 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
+import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.editor.syntax.EditorInterface;
 import smartin.miapi.events.MiapiEvents;
+import smartin.miapi.modules.cache.CacheCommands;
 import smartin.miapi.modules.conditions.ConditionManager;
 import smartin.miapi.modules.properties.util.EditorError;
-import smartin.miapi.modules.cache.CacheCommands;
 
 import java.io.Closeable;
 import java.io.File;
@@ -33,11 +34,14 @@ public class LiveDataPackManager implements AutoCloseable {
     private WatchService watchService;
     private final Map<WatchKey, DataPackContext> watchKeys = new HashMap<>();
     public List<MiapiEditor> openedEditors = new ArrayList<>();
+    boolean isValidating = false;
 
     public static void setup() {
         MiapiEvents.PLAYER_TICK_END.register(player -> {
             if (Platform.getEnv() == EnvType.CLIENT && Miapi.server != null && INSTANCE != null) {
-                INSTANCE.checkAndValidateDatapacks();
+                if (INSTANCE.checkAndValidateDatapacks(false)) {
+                    CacheCommands.triggerServerReload();
+                }
             }
             return EventResult.pass();
         });
@@ -299,10 +303,11 @@ public class LiveDataPackManager implements AutoCloseable {
         }
     }
 
-    private void checkAndValidateDatapacks() {
-        if (!checkFileChanges()) {
-            return;
+    public boolean checkAndValidateDatapacks(boolean forced) {
+        if (!forced && !isValidating && (!checkFileChanges() || ReloadEvents.isInReload())) {
+            return false;
         }
+        isValidating = true;
         List<MiapiEditor> editors = new ArrayList<>(openedEditors);
         editors.forEach(miapiEditor -> {
             if (miapiEditor instanceof Closeable closeable) {
@@ -318,6 +323,9 @@ public class LiveDataPackManager implements AutoCloseable {
         for (DataPackContext context : loadedPacks) {
             if (!context.enabled) continue;
             context.passedValidation = true;
+            if (forced) {
+                context.validatedFiles.clear();
+            }
             File dataDir = new File(context.directory, context.dataPath);
             if (!dataDir.exists() || !dataDir.isDirectory()) {
                 dataDir.mkdirs();
@@ -332,9 +340,9 @@ public class LiveDataPackManager implements AutoCloseable {
                             String relativePath = dataDir.toPath().relativize(path).toString();
 
                             // Only process valid files
-                            ValidationCache cache = context.getValidationCache(relativePath, file);
-                            if(cache.shouldLoad()){
-                                if(cache.blockLoad()){
+                            ValidationCache cache = context.getValidationCache(relativePath, file, forced);
+                            if (cache.shouldLoad()) {
+                                if (cache.blockLoad()) {
                                     try {
                                         String pathWithoutExt = relativePath.replace(".json", "").replace("\\", "/");
                                         pathWithoutExt = pathWithoutExt.replaceFirst("/", ":");
@@ -359,9 +367,18 @@ public class LiveDataPackManager implements AutoCloseable {
                         });
             } catch (IOException e) {
                 e.printStackTrace();
+                isValidating = false;
+                return false;
             }
         }
-        CacheCommands.triggerServerReload();
+        for (DataPackContext context : loadedPacks) {
+            if (!context.passedValidation) {
+                isValidating = false;
+                return false;
+            }
+        }
+        isValidating = false;
+        return true;
     }
 
     private ResourceLocation getResourceLocation(Path dataDir, Path filePath) {
@@ -413,9 +430,9 @@ public class LiveDataPackManager implements AutoCloseable {
         }
 
         @Nullable
-        public ValidationCache getValidationCache(String relativePath, File file) {
+        public ValidationCache getValidationCache(String relativePath, File file, boolean forced) {
             ValidationCache cache = validatedFiles.get(relativePath);
-            if (cache == null || cache.lastModified != file.lastModified() || !cache.blockLoad()) {
+            if (cache == null || cache.lastModified != file.lastModified() || !cache.blockLoad() && forced) {
                 try {
                     // Convert relative path to ResourceLocation
                     // Remove .json extension and replace path separators with /
@@ -444,28 +461,37 @@ public class LiveDataPackManager implements AutoCloseable {
                             });
                         }
                     }
+                    if (shouldLoad) {
+                        // Validate using all interfaces
+                        boolean isValid = true;
+                        List<EditorError> allErrors = new ArrayList<>();
+                        for (EditorInterface iface : interfaces) {
+                            List<EditorError> errors = iface.validateContent(json, content);
+                            allErrors.addAll(errors);
+                            // File is invalid if there are any errors (not just warnings)
+                            if (errors.stream().anyMatch(error -> error.severity() == EditorError.ErrorSeverity.ERROR)) {
+                                isValid = false;
+                                break;
+                            }
+                            if (errors.stream().anyMatch(error -> error.severity() == EditorError.ErrorSeverity.WARNING)) {
+                                //isValid = false;
+                                //break;
+                            }
+                        }
 
-                    // Validate using all interfaces
-                    boolean isValid = true;
-                    List<EditorError> allErrors = new ArrayList<>();
-                    for (EditorInterface iface : interfaces) {
-                        List<EditorError> errors = iface.validateContent(json, content);
-                        allErrors.addAll(errors);
-                        // File is invalid if there are any errors (not just warnings)
-                        if (errors.stream().anyMatch(error -> error.severity() == EditorError.ErrorSeverity.ERROR)) {
-                            isValid = false;
-                            break;
+                        // Cache the result
+                        long lastModified = Files.getLastModifiedTime(file.toPath()).toMillis();
+                        cache = new ValidationCache(lastModified, shouldLoad, !(shouldLoad && isValid), allErrors);
+                        if (cache.blockLoad()) {
+                            Miapi.LOGGER.warn("could not validate file " + file.toPath());
                         }
-                        if (errors.stream().anyMatch(error -> error.severity() == EditorError.ErrorSeverity.WARNING)) {
-                            //isValid = false;
-                            //break;
-                        }
+                        validatedFiles.put(relativePath, cache);
+                    } else {
+                        long lastModified = Files.getLastModifiedTime(file.toPath()).toMillis();
+                        cache = new ValidationCache(lastModified, shouldLoad, false, List.of());
+                        validatedFiles.put(relativePath, cache);
                     }
 
-                    // Cache the result
-                    long lastModified = Files.getLastModifiedTime(file.toPath()).toMillis();
-                    cache = new ValidationCache(lastModified, shouldLoad, shouldLoad && isValid, allErrors);
-                    validatedFiles.put(relativePath, cache);
                 } catch (Exception e) {
                     // If any error occurs during validation, consider the file invalid
                     long lastModified = 0;
@@ -486,7 +512,7 @@ public class LiveDataPackManager implements AutoCloseable {
         }
 
         public boolean isFileValid(String relativePath, File file) {
-            ValidationCache cache = getValidationCache(relativePath, file);
+            ValidationCache cache = getValidationCache(relativePath, file, false);
             boolean isValid = cache != null && cache.shouldLoad();
             if (!isValid) {
                 Miapi.LOGGER.warn("fail");

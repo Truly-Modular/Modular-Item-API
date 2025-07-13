@@ -23,9 +23,10 @@ import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.ScrollList;
 import smartin.miapi.client.gui.TransformableWidget;
 import smartin.miapi.modules.ItemModule;
-import smartin.miapi.modules.abilities.shield.BlockAbility;
-import smartin.miapi.modules.abilities.shield.BlockDataOld;
+import smartin.miapi.modules.abilities.shield.BlockData;
+import smartin.miapi.modules.abilities.shield.ParryBlock;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;
+import smartin.miapi.modules.abilities.util.MinMaxCDAbility;
 import smartin.miapi.modules.properties.DurabilityProperty;
 import smartin.miapi.modules.properties.FireProof;
 import smartin.miapi.modules.properties.LuminousLearningProperty;
@@ -333,36 +334,40 @@ public class StatListWidget extends InteractAbleWidget {
                         .builder(
                                 (s -> ItemAbilityManager.getAbilities(s)
                                         .stream()
-                                        .filter(a -> a.ability() instanceof BlockAbility)
-                                        .findAny().map(a -> ((BlockDataOld) a.context()).blocking)
+                                        .filter(a -> a.ability() instanceof ParryBlock)
+                                        .findAny().map(a -> ((BlockData)((MinMaxCDAbility.MinMaxCDData) a.context()).data()).blocking())
                                 ))
+                        .setName(Component.literal("Blocking %"))
                         .build());
         addStatDisplay(
                 DoubleResolvableStatDisplay
                         .builder(
                                 (s -> ItemAbilityManager.getAbilities(s)
                                         .stream()
-                                        .filter(a -> a.ability() instanceof BlockAbility)
-                                        .findAny().map(a -> ((BlockDataOld) a.context()).angle)
+                                        .filter(a -> a.ability() instanceof ParryBlock)
+                                        .findAny().map(a -> ((BlockData)((MinMaxCDAbility.MinMaxCDData) a.context()).data()).angle())
                                 ))
+                        .setName(Component.literal("Blocking Angle"))
                         .build());
         addStatDisplay(
                 DoubleResolvableStatDisplay
                         .builder(
                                 (s -> ItemAbilityManager.getAbilities(s)
                                         .stream()
-                                        .filter(a -> a.ability() instanceof BlockAbility)
-                                        .findAny().map(a -> ((BlockDataOld) a.context()).cooldownAttackerWeapon)
+                                        .filter(a -> a.ability() instanceof ParryBlock)
+                                        .findAny().map(a -> ((BlockData)((MinMaxCDAbility.MinMaxCDData) a.context()).data()).cooldownAttackerWeapon())
                                 ))
+                        .setName(Component.literal("Attacker Weapon Cooldown"))
                         .build());
         addStatDisplay(
                 DoubleResolvableStatDisplay
                         .builder(
                                 (s -> ItemAbilityManager.getAbilities(s)
                                         .stream()
-                                        .filter(a -> a.ability() instanceof BlockAbility)
-                                        .findAny().map(a -> ((BlockDataOld) a.context()).damageReturnPercent)
+                                        .filter(a -> a.ability() instanceof ParryBlock)
+                                        .findAny().map(a -> ((BlockData)((MinMaxCDAbility.MinMaxCDData) a.context()).data()).damageReturnPercent())
                                 ))
+                        .setName(Component.literal("Damage Return Percent"))
                         .build());
 
         addStatDisplay(SinglePropertyStatDisplay

@@ -1,4 +1,4 @@
-package smartin.miapi.client.model;
+package smartin.miapi.client.model.module;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
@@ -21,6 +21,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BannerPatternLayers;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
+import smartin.miapi.client.model.MiapiModel;
 
 @Environment(EnvType.CLIENT)
 public class BannerMiapiModel implements MiapiModel {

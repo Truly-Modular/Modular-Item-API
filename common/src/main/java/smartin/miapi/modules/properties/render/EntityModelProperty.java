@@ -9,7 +9,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import smartin.miapi.Miapi;
-import smartin.miapi.client.model.EntityMiapiModel;
+import smartin.miapi.client.model.module.EntityMiapiModel;
 import smartin.miapi.client.model.MiapiItemModel;
 import smartin.miapi.client.model.MiapiModel;
 import smartin.miapi.item.modular.Transform;

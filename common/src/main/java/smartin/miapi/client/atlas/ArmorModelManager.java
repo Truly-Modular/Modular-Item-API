@@ -25,6 +25,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Truly Modulars internal system to render item-models on different entity model parts for advanced 3D armor rendering
+ */
 @Environment(EnvType.CLIENT)
 public class ArmorModelManager {
     public static List<ArmorPartProvider> partProviders = new ArrayList<>();

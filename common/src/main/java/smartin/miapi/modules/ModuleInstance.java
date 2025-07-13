@@ -19,6 +19,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
+import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.item.modular.PropertyResolver;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.material.MaterialProperty;
@@ -145,6 +146,7 @@ public class ModuleInstance {
 
     protected boolean mutable = true;
     protected boolean sortedSubmodules = false;
+    protected boolean isAdded = false;
 
     /**
      * Constructs a new module instance with the given item module.
@@ -155,6 +157,7 @@ public class ModuleInstance {
         this.moduleID = module.id();
         this.module = module;
         ModularItemCache.modules.addInstance(this);
+        isAdded = true;
     }
 
     /**
@@ -168,6 +171,7 @@ public class ModuleInstance {
         this.moduleData = new HashMap<>(data);
         subModules.values().forEach(subModule -> subModule.parent = this);
         ModularItemCache.modules.addInstance(this);
+        isAdded = true;
     }
 
     public ItemModule getModule() {
@@ -181,7 +185,7 @@ public class ModuleInstance {
         return module;
     }
 
-    public void setModule(ItemModule module){
+    public void setModule(ItemModule module) {
         this.module = module;
     }
 
@@ -246,6 +250,11 @@ public class ModuleInstance {
     @Nullable
     @SuppressWarnings("unchecked")
     public <T> T getProperty(ModuleProperty<T> property) {
+        if (ReloadEvents.isInReload()) {
+            properties = null;
+            initializedProperties.clear();
+            return null;
+        }
         Object propertyData = initializedProperties.get(property);
         if (propertyData != null) {
             return (T) propertyData;
@@ -456,6 +465,7 @@ public class ModuleInstance {
         cachedData.clear();
         itemStackCache.clear();
         initializedProperties.clear();
+        module = null;
     }
 
     /**

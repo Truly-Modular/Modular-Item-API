@@ -5,6 +5,9 @@ import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
+import dev.architectury.platform.Platform;
+import net.fabricmc.api.EnvType;
+import net.minecraft.client.Minecraft;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
@@ -76,6 +79,12 @@ public class CacheCommands {
     }
 
     public static void triggerServerReload() {
+        if (Platform.getEnv() == EnvType.CLIENT) {
+            if(Minecraft.getInstance().isSameThread()){
+                ReloadEvents.requestClientSideDataReload(true);
+                return;
+            }
+        }
         ReloadEvents.reloadCounter++;
         MiapiEvents.ReloadEventData data = new MiapiEvents.ReloadEventData();
         data.data = new LinkedHashMap<>();
@@ -88,6 +97,7 @@ public class CacheCommands {
         ReloadEvents.reloadCounter = 0;
         Miapi.server.getPlayerList().getPlayers().forEach(ReloadEvents::triggerReloadOnClient);
         MiapiEvents.POST_HOT_RELOAD.invoker().onReload();
+        MiapiEvents.CLEAR_CACHE.invoker().onReload();
     }
 
     static ArgumentType<String> getArgumentType() {

@@ -8,7 +8,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import smartin.miapi.Miapi;
-import smartin.miapi.client.model.BlockRenderModel;
+import smartin.miapi.client.model.module.BlockRenderModel;
 import smartin.miapi.client.model.MiapiItemModel;
 import smartin.miapi.client.model.MiapiModel;
 import smartin.miapi.item.modular.Transform;

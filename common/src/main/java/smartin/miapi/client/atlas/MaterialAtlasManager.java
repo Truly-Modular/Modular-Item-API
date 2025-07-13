@@ -18,6 +18,12 @@ import java.util.function.Consumer;
 
 import static smartin.miapi.Miapi.MOD_ID;
 
+/**
+ * The Material Atlas class, directly tied to Atlas backed Materials.
+ * look at {@link smartin.miapi.material.palette.PaletteAtlasBackedColorer} for more context.
+ * TL;DR it uses a 1x256 texture to recolor where the x value is the original images brightness.
+ * This allows for animated Palettes like prismarine and magma blocks
+ */
 @Environment(EnvType.CLIENT)
 public class MaterialAtlasManager extends TextureAtlasHolder {
     public static final ResourceLocation MATERIAL_ID = ResourceLocation.fromNamespaceAndPath(MOD_ID, "miapi_materials");

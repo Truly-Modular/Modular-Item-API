@@ -42,7 +42,6 @@ import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.effects.CryoStatusEffect;
 import smartin.miapi.entity.ItemProjectileRenderer;
-import smartin.miapi.events.ClientEvents;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.material.MaterialCommand;
 import smartin.miapi.material.MaterialIcons;
@@ -73,6 +72,7 @@ public class MiapiClient {
             Platform.isModLoaded("optifine") ||
             Platform.isModLoaded("optifabric") ||
             Platform.isModLoaded("oculus");
+    public static boolean IS_VEIL_LOADED = Platform.isModLoaded("veil");
     public static boolean sodiumLoaded = isSodiumLoaded();
     public static boolean jerLoaded = Platform.isModLoaded("jeresources");
     public static final MiapiRegistry<KeyMapping> KEY_BINDINGS = MiapiRegistry.getInstance(KeyMapping.class);
@@ -202,9 +202,6 @@ public class MiapiClient {
                 StatListWidget.reloadEnd();
             }
         });
-        if (sodiumLoaded) {
-            ClientEvents.HUD_RENDER.register((drawContext, deltaTick) -> MaterialSpriteManager.onHudRender(drawContext));
-        }
 
         ReplaceView.optionSuppliers.add(option ->
                 option.getScreenHandler().slots

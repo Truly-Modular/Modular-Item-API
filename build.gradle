@@ -68,7 +68,7 @@ tasks.register('buildBoth') {
 }
 
 tasks.register('rebuildArsenal') {
-    if (properties.run_addons) {
+    if (rootProject.run_addons) {
         ext.projectName = "arsenal"
         def project = gradle.includedBuild("arsenal")
         dependsOn project.task(":buildBoth")
@@ -120,7 +120,7 @@ tasks.register('rebuildArsenal') {
 }
 
 tasks.register('rebuildArchery') {
-    if (properties.run_addons) {
+    if (rootProject.run_addons) {
         ext.projectName = "archery"
         def project = gradle.includedBuild("archery")
         dependsOn project.task(":buildBoth")
@@ -172,7 +172,7 @@ tasks.register('rebuildArchery') {
 }
 
 tasks.register('rebuildArmory') {
-    if(properties.run_addons) {
+    if(rootProject.run_addons) {
         ext.projectName = "armory"
         def project = gradle.includedBuild("armory")
         dependsOn project.task(":buildBoth")

@@ -3,6 +3,7 @@ package smartin.miapi.datapack;
 import com.mojang.serialization.Codec;
 import dev.architectury.event.events.common.PlayerEvent;
 import io.netty.buffer.ByteBuf;
+import net.fabricmc.api.EnvType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.FriendlyByteBuf;
@@ -14,6 +15,7 @@ import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Environment;
 import smartin.miapi.Miapi;
+import smartin.miapi.modules.cache.CacheCommands;
 import smartin.miapi.network.Networking;
 import smartin.miapi.registries.MiapiRegistry;
 
@@ -90,13 +92,18 @@ public class ReloadEvents {
         }
 
         Networking.registerC2SPacket(RELOAD_PACKET_ID, ((buf, serverPlayerEntity) -> {
-            Miapi.DEBUG_LOGGER.info("Recieved reload request from client!" + serverPlayerEntity.getUUID() + "! sending reload! " + Thread.currentThread().getName());
+            Miapi.DEBUG_LOGGER.info("Recieved reload request from client! " + serverPlayerEntity.getUUID() + "! sending reload! " + Thread.currentThread().getName());
             boolean allowHandshake = buf.readBoolean();
+            boolean reloadServer = buf.readBoolean();
             if (!allowHandshake) {
                 Miapi.LOGGER.warn("Client " + serverPlayerEntity.getUUID() + " rejected reload? this should never happen!");
                 Miapi.server.sendSystemMessage(Component.literal("Client " + serverPlayerEntity.getDisplayName() + " failed to reload."));
             } else {
-                triggerReloadOnClient(serverPlayerEntity);
+                if (reloadServer && serverPlayerEntity.hasPermissions(4)) {
+                    CacheCommands.triggerServerReload();
+                }else{
+                    triggerReloadOnClient(serverPlayerEntity);
+                }
             }
         }));
 
@@ -144,6 +151,17 @@ public class ReloadEvents {
             }
         }));
 
+    }
+
+    /**
+     * this functions makes the client request serverdata or directly ask the server for a full reload
+     */
+    @net.fabricmc.api.Environment(EnvType.CLIENT)
+    public static void requestClientSideDataReload(boolean forceServerReload) {
+        FriendlyByteBuf buf = Networking.createBuffer();
+        buf.writeBoolean(true);
+        buf.writeBoolean(forceServerReload);
+        Networking.sendC2S(RELOAD_PACKET_ID, buf);
     }
 
     /**

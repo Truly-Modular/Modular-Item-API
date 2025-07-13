@@ -25,14 +25,16 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.model.*;
+import smartin.miapi.client.model.module.BakedMiapiModel;
+import smartin.miapi.client.model.DynamicBakery;
 import smartin.miapi.client.model.item.BakedSingleModel;
 import smartin.miapi.client.renderer.TrimRenderer;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.item.modular.Transform;
 import smartin.miapi.item.modular.TransformMap;
+import smartin.miapi.material.MaterialProperty;
 import smartin.miapi.material.base.ColorController;
 import smartin.miapi.material.base.Material;
-import smartin.miapi.material.MaterialProperty;
 import smartin.miapi.mixin.client.ModelLoaderInterfaceAccessor;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.cache.ModularItemCache;
@@ -46,7 +48,16 @@ import java.io.IOException;
 import java.util.*;
 import java.util.function.Function;
 
-
+/**
+ * NOTE!
+ * this is functional, but badly outdated.
+ * It is just the old 1.20 code, made functional
+ * Reworking this for a more dynamic solution tied in with the normal Bakery makes much more sense.
+ * But this likely has to wait till after 1.21.1
+ * It would save a marginal performance to do so, but decent amount of complexity of this class.
+ * Abandoning the DynmicBakery would also help to allow for 3rd party models to work with this.
+ * TODO:rework the model handling
+ */
 @Environment(EnvType.CLIENT)
 public class ModelProperty extends CodecProperty<List<ModelProperty.ModelData>> {
     public static ModelProperty property;

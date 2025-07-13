@@ -1,4 +1,4 @@
-package smartin.miapi.client.model;
+package smartin.miapi.client.model.module;
 
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -25,6 +25,9 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.GlintShader;
+import smartin.miapi.client.model.MiapiModel;
+import smartin.miapi.client.model.ModelHolder;
+import smartin.miapi.client.model.ModelTransformer;
 import smartin.miapi.client.renderer.RescaledVertexConsumer;
 import smartin.miapi.client.renderer.TrimRenderer;
 import smartin.miapi.config.MiapiConfig;

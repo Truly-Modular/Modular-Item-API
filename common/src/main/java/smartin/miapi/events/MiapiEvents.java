@@ -285,6 +285,6 @@ public class MiapiEvents {
     }
 
     public interface StatUpdateEvent {
-        EventResult update(ModularWorkBenchEntity blockEntity, StatProvidersMap map, int syncId, Inventory playerInventory, Player player, CraftingScreenHandler handler);
+        EventResult update(ModularWorkBenchEntity blockEntity, StatProvidersMap map, int syncId, Inventory  playerInventory, Player player, CraftingScreenHandler handler);
     }
 }

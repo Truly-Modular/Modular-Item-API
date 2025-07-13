@@ -10,8 +10,10 @@ import smartin.miapi.modules.properties.util.InitializeAble;
 import smartin.miapi.modules.properties.util.MergeAble;
 import smartin.miapi.modules.properties.util.MergeType;
 
+import java.util.Optional;
+
 public record BlockData(
-        ResourceLocation pose,
+        Optional<ResourceLocation> pose,
         ResourceLocation sound,
         DoubleOperationResolvable pitch,
         DoubleOperationResolvable volume,
@@ -23,7 +25,7 @@ public record BlockData(
 ) implements MergeAble<BlockData>, InitializeAble<BlockData> {
 
     public static final BlockData DEFAULT = new BlockData(
-            Miapi.id(Miapi.MOD_ID, "medium_shield_block"),
+            Optional.empty(),
             Miapi.id("minecraft:block.iron_trapdoor.close"),
             new DoubleOperationResolvable(1.0),
             new DoubleOperationResolvable(1.0),
@@ -35,7 +37,7 @@ public record BlockData(
     );
 
     public static final MapCodec<BlockData> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-            ResourceLocation.CODEC.optionalFieldOf("pose", DEFAULT.pose()).forGetter(BlockData::pose),
+            ResourceLocation.CODEC.optionalFieldOf("pose").forGetter(BlockData::pose),
             ResourceLocation.CODEC.optionalFieldOf("sound", DEFAULT.sound()).forGetter(BlockData::sound),
             DoubleOperationResolvable.CODEC.optionalFieldOf("pitch", DEFAULT.pitch()).forGetter(BlockData::pitch),
             DoubleOperationResolvable.CODEC.optionalFieldOf("volume", DEFAULT.volume()).forGetter(BlockData::volume),
