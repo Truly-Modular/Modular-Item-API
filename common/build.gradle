@@ -75,8 +75,7 @@ dependencies {
     modCompileOnly "com.github.apace100:apoli:${project.fabric_apoli_version}"
     //include "com.github.apace100:apoli:${project.fabric_apoli_version}"
 
-    modCompileOnly "dev.latvian.mods:rhino:${rootProject.rhino_version}"
-    modCompileOnly "dev.latvian.mods:kubejs:${rootProject.kjs_version}"
+    modCompileOnly "curse.maven:kubejs-238086:5853326"
 
     modImplementation "software.bernie.geckolib:geckolib-fabric-${minecraft_version}:${geckolib_version}"
 

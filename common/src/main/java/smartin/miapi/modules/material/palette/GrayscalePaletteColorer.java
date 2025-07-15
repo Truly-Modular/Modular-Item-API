@@ -132,7 +132,7 @@ public class GrayscalePaletteColorer extends SpritePixelReplacer {
         colors.putIfAbsent(0, Color.BLACK);
         colors.putIfAbsent(255, Color.WHITE);
 
-        MaterialRenderControllers.PixelPlacer placer = (color, x, y) -> colors.put(x, color);
+        MaterialRenderControllers.PixelPlacer placer = (color, x, y) -> colors.put(Math.min(255, Math.max(0, x)), color);
 
         List<Map.Entry<Integer, Color>> list = colors.entrySet().stream().sorted(Map.Entry.comparingByKey()).toList();
         for (int i = 0; i < list.size(); i++) {
@@ -149,7 +149,7 @@ public class GrayscalePaletteColorer extends SpritePixelReplacer {
                     next.getKey(),
                     placer
             );
-            colors.put(current.getKey(), current.getValue());
+            colors.put(Math.min(255, Math.max(0, current.getKey())), current.getValue());
         }
     }
 
@@ -157,7 +157,8 @@ public class GrayscalePaletteColorer extends SpritePixelReplacer {
      * Creates the color array from the map of colors
      */
     public static int[] createColorsArray(Map<Integer, Color> colors) {
-        if (colors.size() != 256) throw new IllegalArgumentException("There must be 256 colors!");
+        if (colors.size() != 256)
+            throw new IllegalArgumentException("There must be 256 colors! instead there are " + colors.size());
         int[] array = new int[256];
         colors.forEach((pos, color) -> array[pos] = color.abgr());
         return array;
@@ -219,7 +220,8 @@ public class GrayscalePaletteColorer extends SpritePixelReplacer {
             float distanceCurrent = Math.max(1, pixels.lastIndexOf(current) - pixels.indexOf(current));
 
             int medianScaled = (int) (pixels.indexOf(current) + distanceCurrent / 2);
-            finalColorMap.put((int) ((medianScaled) * scale), current);
+            ;
+            finalColorMap.put(Math.min(255, Math.max(0, (int) ((medianScaled) * scale))), current);
 
             Color next = uniqueColors.get(i + 1);
             float distanceNext = Math.max(1, pixels.lastIndexOf(next) - pixels.indexOf(next));
@@ -231,7 +233,7 @@ public class GrayscalePaletteColorer extends SpritePixelReplacer {
                     current.blueAsFloat() * weight + next.blueAsFloat() * (1 - weight),
                     current.alphaAsFloat() * weight + next.alphaAsFloat() * (1 - weight));
             float weightedPos = pixels.lastIndexOf(current) + (pixels.lastIndexOf(current) - pixels.indexOf(next)) * 0.5f;
-            finalColorMap.put((int) (weightedPos * scale), weightedAverage);
+            finalColorMap.put(Math.min(255, Math.max(0, (int) (weightedPos * scale))), weightedAverage);
         }
 
         finalColorMap.putIfAbsent(0, Color.BLACK);

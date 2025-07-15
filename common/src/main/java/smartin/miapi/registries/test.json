@@ -1,15 +1,7 @@
 {
     "ability_context": {
-        "parry_block": {
-            "pose_id": "miapi:block",
-            "max_hold_time": "20",
-            "damage_return_percent": "10000",
-            "cooldown_attacker_weapon": "15",
-            "cooldown": "40",
-            "cooldown_miss_time": "40",
-            "sound_volume": 10000,
-            "sound_pitch": 0.5,
-            "sound": "minecraft:music_disc.5"
+        "copy_item": {
+            "id": "minecraft:flint_and_steel"
         }
     }
 }
