@@ -1,0 +1,19 @@
+{
+    "type": "tag",
+    "heavy_armor": {
+        "condition": {
+            "type": "tag",
+            "tag": "boot"
+        },
+        "merge": {
+            "attributes": [
+                {
+                    "attribute": "minecraft:generic.armor",
+                    "value": "( [material.hardness]  / [module.cost]/4 ) * 1.1",
+                    "operation": "+",
+                    "slot": "feet"
+                }
+            ]
+        }
+    }
+}

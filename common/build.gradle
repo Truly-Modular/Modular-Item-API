@@ -75,8 +75,13 @@ dependencies {
     modCompileOnly "com.github.apace100:apoli:${project.fabric_apoli_version}"
     //include "com.github.apace100:apoli:${project.fabric_apoli_version}"
 
-    modCompileOnly "curse.maven:kubejs-238086:5853326"
-    modCompileOnly "curse.maven:rhino-416294:6186971"
+    modCompileOnly"curse.maven:kubejs-238086:5853321"
+
+    modCompileOnlyApi("curse.maven:rhino-416294:6186971") {
+        transitive = false
+        // Important: allow remapping
+        because "KubeJS is needed at compile-time and must be remapped"
+    }
 
     modImplementation "software.bernie.geckolib:geckolib-fabric-${minecraft_version}:${geckolib_version}"
 
@@ -92,6 +97,8 @@ dependencies {
     //modImplementation "curse.maven:epic-fight-mod-405076:4785528"
 
     implementation "com.ezylang:EvalEx:${rootProject.eval_ex_version}"
+
+    compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:${rootProject.mixin_extras_version}"))
 }
 
 architectury {

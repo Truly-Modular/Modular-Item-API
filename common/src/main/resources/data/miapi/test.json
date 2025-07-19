@@ -1,0 +1,78 @@
+{
+    "helmet_base": {
+        "condition": {
+            "type": "otherModule",
+            "condition": {
+                "type": "tag",
+                "tag": "heavy_armor"
+            }
+        },
+        "merge": {
+            "attributes": [
+                {
+                    "attribute": "minecraft:generic.armor",
+                    "value": "2.4",
+                    "operation": "**",
+                    "slot": "head"
+                }
+            ]
+        }
+    },
+    "chest_base": {
+        "condition": {
+            "type": "otherModule",
+            "condition": {
+                "type": "tag",
+                "tag": "heavy_armor"
+            }
+        },
+        "merge": {
+            "attributes": [
+                {
+                    "attribute": "minecraft:generic.armor",
+                    "value": "2.4",
+                    "operation": "**",
+                    "slot": "chest"
+                }
+            ]
+        }
+    },
+    "pants_base": {
+        "condition": {
+            "type": "otherModule",
+            "condition": {
+                "type": "tag",
+                "tag": "heavy_armor"
+            }
+        },
+        "merge": {
+            "attributes": [
+                {
+                    "attribute": "minecraft:generic.armor",
+                    "value": "2.4",
+                    "operation": "**",
+                    "slot": "legs"
+                }
+            ]
+        }
+    },
+    "boot_base": {
+        "condition": {
+            "type": "otherModule",
+            "condition": {
+                "type": "tag",
+                "tag": "heavy_armor"
+            }
+        },
+        "merge": {
+            "attributes": [
+                {
+                    "attribute": "minecraft:generic.armor",
+                    "value": "2.4",
+                    "operation": "**",
+                    "slot": "feet"
+                }
+            ]
+        }
+    }
+}

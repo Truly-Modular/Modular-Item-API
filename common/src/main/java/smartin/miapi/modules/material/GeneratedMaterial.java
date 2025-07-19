@@ -83,7 +83,7 @@ public class GeneratedMaterial implements Material {
                             new JsonMaterial(material, isClient),
                             material, isClient));
         }, -1);
-        ReloadEvents.dataSyncerRegistry.register("generated_materials", new ReloadEvents.DataSyncer() {
+        ReloadEvents.DATA_SYNCER_REGIGISTRY.register("generated_materials", new ReloadEvents.DataSyncer() {
             @Override
             public PacketByteBuf createDataServer() {
                 PacketByteBuf packetByteBuf = Networking.createBuffer();

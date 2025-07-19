@@ -1,6 +1,7 @@
 package smartin.miapi.datapack;
 
 import dev.architectury.event.events.common.PlayerEvent;
+import io.netty.buffer.Unpooled;
 import net.fabricmc.api.EnvType;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.network.PacketByteBuf;
@@ -11,6 +12,8 @@ import smartin.miapi.Miapi;
 import smartin.miapi.network.Networking;
 import smartin.miapi.registries.MiapiRegistry;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -21,7 +24,12 @@ public class ReloadEvents {
      * This is to register DataSyncer. This can be used by addons to sync their own data from the server to the client.
      * This class will deal with all the default logic to sync the packet
      */
-    public static MiapiRegistry<DataSyncer> dataSyncerRegistry = MiapiRegistry.getInstance(DataSyncer.class);
+    public static MiapiRegistry<DataSyncer> DATA_SYNCER_REGIGISTRY = MiapiRegistry.getInstance(DataSyncer.class);
+
+    /**
+     * Data syncer packets are automatically split into not being larger then this size.
+     */
+    private static final int MAX_PAYLOAD_SIZE = 1_000_000; // Adjust as needed (in bytes)
 
     private static List<String> receivedSyncer = new ArrayList<>();
 
@@ -105,7 +113,7 @@ public class ReloadEvents {
             }
         }));
 
-        dataSyncerRegistry.register("data_packs", new DataSyncer() {
+        DATA_SYNCER_REGIGISTRY.register("data_packs", new DataSyncer() {
             @Override
             public PacketByteBuf createDataServer() {
                 PacketByteBuf buf = Networking.createBuffer();
@@ -157,6 +165,25 @@ public class ReloadEvents {
 
     }
 
+    private static void sendInChunks(ServerPlayerEntity entity, String id, byte[] data) {
+        int totalChunks = (int) Math.ceil((double) data.length / MAX_PAYLOAD_SIZE);
+
+        for (int i = 0; i < totalChunks; i++) {
+            int start = i * MAX_PAYLOAD_SIZE;
+            int end = Math.min(start + MAX_PAYLOAD_SIZE, data.length);
+            byte[] chunk = Arrays.copyOfRange(data, start, end);
+
+            PacketByteBuf buf = Networking.createBuffer();
+            buf.writeString(id);          // Syncer ID
+            buf.writeInt(totalChunks);    // Total chunk count
+            buf.writeInt(i);              // This chunk index
+            buf.writeBytes(chunk);        // Actual chunk data
+
+            Networking.sendS2C(RELOAD_PACKET_ID, entity, buf);
+        }
+    }
+
+
     /**
      * Triggers a reload on the client by sending the server-to-client reload packet with the data packs to be synced.
      *
@@ -164,14 +191,58 @@ public class ReloadEvents {
      */
     public static void triggerReloadOnClient(ServerPlayerEntity entity) {
         if (!isInReload()) {
-            dataSyncerRegistry.getFlatMap().forEach((id, syncer) -> {
-                PacketByteBuf buf = Networking.createBuffer();
-                buf.writeString(id);
-                buf.writeBytes(syncer.createDataServer().copy());
-                Networking.sendS2C(RELOAD_PACKET_ID, entity, buf);
+            DATA_SYNCER_REGIGISTRY.getFlatMap().forEach((id, syncer) -> {
+                byte[] fullData = syncer.createDataServer().copy().array();
+                sendInChunks(entity, id, fullData);
             });
         }
     }
+
+    private static final Map<String, List<byte[]>> chunkBuffer = new HashMap<>();
+    private static final Map<String, Integer> expectedChunks = new HashMap<>();
+
+
+    private static void clientSetup() {
+        Networking.registerS2CPacket(RELOAD_PACKET_ID, (buffer) -> {
+            String id = buffer.readString();
+            int totalChunks = buffer.readInt();
+            int chunkIndex = buffer.readInt();
+            byte[] chunk = new byte[buffer.readableBytes()];
+            buffer.readBytes(chunk);
+
+            chunkBuffer.computeIfAbsent(id, k -> new ArrayList<>(Collections.nCopies(totalChunks, null)))
+                    .set(chunkIndex, chunk);
+
+            expectedChunks.putIfAbsent(id, totalChunks);
+
+            if (chunkBuffer.get(id).stream().allMatch(Objects::nonNull)) {
+                // All chunks received
+                ByteArrayOutputStream out = new ByteArrayOutputStream();
+                for (byte[] part : chunkBuffer.get(id)) {
+                    try {
+                        out.write(part);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        return;
+                    }
+                }
+
+                PacketByteBuf reconstructed = new PacketByteBuf(Unpooled.wrappedBuffer(out.toByteArray()));
+                DATA_SYNCER_REGIGISTRY.get(id).interpretDataClient(reconstructed);
+                receivedSyncer.add(id);
+
+                // Cleanup
+                chunkBuffer.remove(id);
+                expectedChunks.remove(id);
+            }
+
+            if (receivedSyncer.size() == DATA_SYNCER_REGIGISTRY.getFlatMap().keySet().size()) {
+                receivedSyncer.clear();
+                executeClientReload(MinecraftClient.getInstance());
+            }
+        });
+    }
+
 
     /**
      * returns true if a reload is ongoing
@@ -184,21 +255,6 @@ public class ReloadEvents {
     }
 
     private static long clientReloadTimeStart = System.nanoTime();
-
-    private static void clientSetup() {
-        Networking.registerS2CPacket(RELOAD_PACKET_ID, (buffer) -> {
-            if (receivedSyncer.isEmpty()) {
-                clientReloadTimeStart = System.nanoTime();
-            }
-            String receivedID = buffer.readString();
-            receivedSyncer.add(receivedID);
-            dataSyncerRegistry.get(receivedID).interpretDataClient(buffer);
-            if (receivedSyncer.size() == dataSyncerRegistry.getFlatMap().keySet().size()) {
-                receivedSyncer.clear();
-                executeClientReload(MinecraftClient.getInstance());
-            }
-        });
-    }
 
     @net.fabricmc.api.Environment(EnvType.CLIENT)
     public static void executeClientReload(MinecraftClient client) {

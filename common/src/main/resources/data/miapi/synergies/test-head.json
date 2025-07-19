@@ -1,0 +1,19 @@
+{
+    "type": "tag",
+    "heavy_armor": {
+        "condition": {
+            "type": "tag",
+            "tag": "helmet"
+        },
+        "merge": {
+            "attributes": [
+                {
+                    "attribute": "minecraft:generic.armor",
+                    "value": "( [material.hardness]  / [module.cost]/5 ) * 1.1",
+                    "operation": "+",
+                    "slot": "head"
+                }
+            ]
+        }
+    }
+}

@@ -5,3 +5,4 @@
 - fixed Epic armor arm alignment
 - improved rendering performance
 - fixed UI crash related to emi malum and create
+- fix for packet size
