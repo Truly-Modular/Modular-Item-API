@@ -15,3 +15,4 @@ and either create a GH issue or ping me on discord with the spark link and a des
 - fixed bug where items sometimes would not render on the bench
 - fixed crossbow not shooting
 - removed ht treechop compat log spam
+- re-added epic fight compat

@@ -1,8 +1,8 @@
 package smartin.miapi.item;
 
+import me.shedaniel.cloth.clothconfig.shadowed.blue.endless.jankson.annotation.Nullable;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.Nullable;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.datapack.ReloadEvents;
 

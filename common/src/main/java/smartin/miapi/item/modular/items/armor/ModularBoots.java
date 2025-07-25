@@ -3,6 +3,7 @@ package smartin.miapi.item.modular.items.armor;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.Item;
@@ -13,6 +14,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import org.lwjgl.system.NonnullDefault;
 import smartin.miapi.Miapi;
+import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.item.FakeItemManager;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.PlatformModularItemMethods;
@@ -70,6 +72,11 @@ public class ModularBoots extends ArmorItem implements PlatformModularItemMethod
     public int getBarColor(ItemStack stack) {
         float f = Math.max(0.0F, ((float) ModularItem.getDurability(stack) - stack.getDamageValue()) / ModularItem.getDurability(stack));
         return Mth.hsvToRgb(f / 3.0F, 1.0F, 1.0F);
+    }
+
+    @Override
+    public void inventoryTick(ItemStack stack, Level level, Entity entity, int slotId, boolean isSelected) {
+        MiapiEvents.INVENTORY_TICK.invoker().tick(stack,level,entity,slotId,isSelected);
     }
 
     @Override

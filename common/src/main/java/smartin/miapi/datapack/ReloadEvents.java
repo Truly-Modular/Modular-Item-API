@@ -3,6 +3,7 @@ package smartin.miapi.datapack;
 import com.mojang.serialization.Codec;
 import dev.architectury.event.events.common.PlayerEvent;
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import net.fabricmc.api.EnvType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.RegistryAccess;
@@ -19,6 +20,8 @@ import smartin.miapi.modules.cache.CacheCommands;
 import smartin.miapi.network.Networking;
 import smartin.miapi.registries.MiapiRegistry;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -29,9 +32,14 @@ public class ReloadEvents {
      * This is to register DataSyncer. This can be used by addons to sync their own data from the server to the client.
      * This class will deal with all the default logic to sync the packet
      */
-    public static MiapiRegistry<DataSyncer> dataSyncerRegistry = MiapiRegistry.getInstance(DataSyncer.class);
+    public static MiapiRegistry<DataSyncer> DATA_SYNCER_REGISTRY = MiapiRegistry.getInstance(DataSyncer.class);
 
-    private static final List<String> receivedSyncer = new ArrayList<>();
+    private static final List<String> RECEIVED_SYNCER = new ArrayList<>();
+
+    /**
+     * Data syncer packets are automatically split into not being larger then this size.
+     */
+    private static final int MAX_PAYLOAD_SIZE = 1_000_000; // Adjust as needed (in bytes)
 
     /**
      * The packet ID for triggering a server-to-client reload.
@@ -50,7 +58,7 @@ public class ReloadEvents {
     /**
      * A map that stores the paths of data packs that have been synced.
      */
-    public static Map<String, List<String>> syncedPaths = new HashMap<>();
+    public static Map<String, List<String>> SYNCED_PATHS = new HashMap<>();
 
     /**
      * Registers the path of a data pack to be synced.
@@ -59,7 +67,7 @@ public class ReloadEvents {
      * @param path  The path of the data pack to be synced.
      */
     public static void registerDataPackPathToSync(String modId, String path) {
-        syncedPaths.computeIfAbsent(modId, k -> new ArrayList<>()).add(path);
+        SYNCED_PATHS.computeIfAbsent(modId, k -> new ArrayList<>()).add(path);
     }
 
     /**
@@ -111,7 +119,7 @@ public class ReloadEvents {
         Codec<Map<ResourceLocation, String>> codec = Codec.unboundedMap(ResourceLocation.CODEC, Miapi.CHUNKED_STRING_CODEC);
         StreamCodec<ByteBuf, Map<ResourceLocation, String>> streamCodec = ByteBufCodecs.fromCodec(codec);
 
-        dataSyncerRegistry.register(Miapi.id("data_packs"), new SimpleSyncer<Map<ResourceLocation, String>>(streamCodec) {
+        DATA_SYNCER_REGISTRY.register(Miapi.id("data_packs"), new SimpleSyncer<Map<ResourceLocation, String>>(streamCodec) {
             @Override
             public Map<ResourceLocation, String> getDataServer() {
                 Map<ResourceLocation, String> toSend;
@@ -170,17 +178,33 @@ public class ReloadEvents {
      * @param entity The player entity to send the packet to.
      */
     public static void triggerReloadOnClient(ServerPlayer entity) {
-        dataSyncerRegistry.getFlatMap().forEach((id, syncer) -> {
-            FriendlyByteBuf buf = Networking.createBuffer();
-            buf.writeUtf(id.toString());
+        DATA_SYNCER_REGISTRY.getFlatMap().forEach((id, syncer) -> {
             try {
-                buf.writeByteArray(syncer.createDataServer().array());
-                Networking.sendS2C(RELOAD_PACKET_ID, entity, buf);
+                byte[] fullData = syncer.createDataServer().copy().array();
+                sendInChunks(entity, id.toString(), fullData);
                 //Miapi.DEBUG_LOGGER.info("sending dataSyncer info to client!" + entity.getUUID() + "!" + Thread.currentThread().getName());
             } catch (RuntimeException e) {
                 Miapi.LOGGER.error("Datasyncer " + id + " was not able to create Packet with error ", e);
             }
         });
+    }
+
+    private static void sendInChunks(ServerPlayer entity, String id, byte[] data) {
+        int totalChunks = (int) Math.ceil((double) data.length / MAX_PAYLOAD_SIZE);
+
+        for (int i = 0; i < totalChunks; i++) {
+            int start = i * MAX_PAYLOAD_SIZE;
+            int end = Math.min(start + MAX_PAYLOAD_SIZE, data.length);
+            byte[] chunk = Arrays.copyOfRange(data, start, end);
+
+            FriendlyByteBuf buf = Networking.createBuffer();
+            buf.writeUtf(id);          // Syncer ID
+            buf.writeInt(totalChunks);    // Total chunk count
+            buf.writeInt(i);              // This chunk index
+            buf.writeBytes(chunk);        // Actual chunk data
+
+            Networking.sendS2C(RELOAD_PACKET_ID, entity, buf);
+        }
     }
 
     /**
@@ -193,37 +217,65 @@ public class ReloadEvents {
     private static long clientReloadTimeStart = System.nanoTime();
 
     private static void clientSetup() {
+
+        final Map<String, List<byte[]>> chunkBuffer = new HashMap<>();
+        final Map<String, Integer> expectedChunks = new HashMap<>();
+
         Networking.registerS2CPacket(RELOAD_PACKET_ID, (buffer) -> {
-            //Miapi.DEBUG_LOGGER.info("recieved dataSyncer info on client! " + Thread.currentThread().getName());
-            if (receivedSyncer.isEmpty()) {
-                clientReloadTimeStart = System.nanoTime();
-            }
-            String receivedID = buffer.readUtf();
-            receivedSyncer.add(receivedID);
-            FriendlyByteBuf dataBuffer = Networking.createBuffer();
-            dataBuffer.writeBytes(buffer.readByteArray());
-            try {
-                dataSyncerRegistry.get(receivedID).interpretDataClient(dataBuffer);
-            } catch (RuntimeException exception) {
-                Miapi.LOGGER.error("Exception during Reload Networking!", exception);
-            }
-            if (receivedSyncer.size() == dataSyncerRegistry.getFlatMap().keySet().size()) {
-                receivedSyncer.clear();
-                Minecraft.getInstance().execute(() -> {
-                    reloadCounter++;
-                    RegistryAccess access;
-                    if (Minecraft.getInstance().level != null) {
-                        access = Minecraft.getInstance().level.registryAccess();
-                    } else {
-                        access = Minecraft.getInstance().getConnection().registryAccess();
+            String id = buffer.readUtf();
+            int totalChunks = buffer.readInt();
+            int chunkIndex = buffer.readInt();
+            byte[] chunk = new byte[buffer.readableBytes()];
+            buffer.readBytes(chunk);
+
+            chunkBuffer.computeIfAbsent(id, k -> new ArrayList<>(Collections.nCopies(totalChunks, null)))
+                    .set(chunkIndex, chunk);
+
+            expectedChunks.putIfAbsent(id, totalChunks);
+
+            if (chunkBuffer.get(id).stream().allMatch(Objects::nonNull)) {
+                // All chunks received
+                ByteArrayOutputStream out = new ByteArrayOutputStream();
+                for (byte[] part : chunkBuffer.get(id)) {
+                    try {
+                        out.write(part);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        return;
                     }
-                    ReloadEvents.START.fireEvent(true, access);
-                    ReloadEvents.MAIN.fireEvent(true, access);
-                    ReloadEvents.END.fireEvent(true, access);
-                    reloadCounter--;
-                    Miapi.LOGGER.info("Client load took " + (double) (System.nanoTime() - clientReloadTimeStart) / 1000 / 1000 + " ms");
-                });
+                }
+                FriendlyByteBuf reconstructed = Networking.createBuffer();
+                reconstructed.writeBytes(Unpooled.wrappedBuffer(out.toByteArray()));
+
+                DATA_SYNCER_REGISTRY.get(id).interpretDataClient(reconstructed);
+                RECEIVED_SYNCER.add(id);
+
+                // Cleanup
+                chunkBuffer.remove(id);
+                expectedChunks.remove(id);
             }
+
+            if (RECEIVED_SYNCER.size() == DATA_SYNCER_REGISTRY.getFlatMap().keySet().size()) {
+                RECEIVED_SYNCER.clear();
+                executeReloadClient();
+            }
+        });
+    }
+
+    private static void executeReloadClient() {
+        Minecraft.getInstance().execute(() -> {
+            reloadCounter++;
+            RegistryAccess access;
+            if (Minecraft.getInstance().level != null) {
+                access = Minecraft.getInstance().level.registryAccess();
+            } else {
+                access = Minecraft.getInstance().getConnection().registryAccess();
+            }
+            ReloadEvents.START.fireEvent(true, access);
+            ReloadEvents.MAIN.fireEvent(true, access);
+            ReloadEvents.END.fireEvent(true, access);
+            reloadCounter--;
+            Miapi.LOGGER.info("Client load took " + (double) (System.nanoTime() - clientReloadTimeStart) / 1000 / 1000 + " ms");
         });
     }
 

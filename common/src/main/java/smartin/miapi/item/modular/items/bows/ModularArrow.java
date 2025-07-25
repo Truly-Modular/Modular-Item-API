@@ -4,6 +4,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Position;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.entity.projectile.Projectile;
@@ -17,6 +18,7 @@ import org.jetbrains.annotations.Nullable;
 import org.lwjgl.system.NonnullDefault;
 import smartin.miapi.Miapi;
 import smartin.miapi.entity.ItemProjectileEntity;
+import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.item.FakeItemManager;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.PlatformModularItemMethods;
@@ -51,6 +53,11 @@ public class ModularArrow extends ArrowItem implements PlatformModularItemMethod
     @Override
     public AbstractArrow createArrow(Level level, ItemStack ammo, @Nullable LivingEntity shooter, @Nullable ItemStack weapon) {
         return new ItemProjectileEntity(level, shooter, ammo.copyWithCount(1), weapon);
+    }
+
+    @Override
+    public void inventoryTick(ItemStack stack, Level level, Entity entity, int slotId, boolean isSelected) {
+        MiapiEvents.INVENTORY_TICK.invoker().tick(stack,level,entity,slotId,isSelected);
     }
 
     @Override

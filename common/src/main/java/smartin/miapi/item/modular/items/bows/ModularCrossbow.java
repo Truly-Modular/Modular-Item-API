@@ -12,6 +12,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -28,6 +29,7 @@ import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.client.model.ModularModelPredicateProvider;
 import smartin.miapi.entity.ItemProjectileEntity;
 import smartin.miapi.entity.ProjectileWithBow;
+import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.events.MiapiProjectileEvents;
 import smartin.miapi.item.FakeItemManager;
 import smartin.miapi.item.modular.ModularItem;
@@ -105,6 +107,11 @@ public class ModularCrossbow extends CrossbowItem implements PlatformModularItem
     @Override
     public boolean isEnchantable(ItemStack itemStack) {
         return true;
+    }
+
+    @Override
+    public void inventoryTick(ItemStack stack, Level level, Entity entity, int slotId, boolean isSelected) {
+        MiapiEvents.INVENTORY_TICK.invoker().tick(stack,level,entity,slotId,isSelected);
     }
 
     @Override

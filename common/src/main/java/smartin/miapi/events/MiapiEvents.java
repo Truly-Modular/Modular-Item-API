@@ -19,6 +19,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.*;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunction;
 import org.apache.commons.lang3.mutable.Mutable;
 import org.apache.commons.lang3.mutable.MutableFloat;
@@ -69,6 +70,7 @@ public class MiapiEvents {
      * without enchantment effect this should not trigger.
      */
     public static final PrioritizedEvent<DurabilityEvent> MODULAR_ITEM_DAMAGE = PrioritizedEvent.createLoop();
+    public static final PrioritizedEvent<InventoryTickEvent> INVENTORY_TICK = PrioritizedEvent.createEventResult();
 
     public static final PrioritizedEvent<ReloadEvent> ADJUST_RAW_DATA = PrioritizedEvent.createLoop();
     public static final PrioritizedEvent<EmptyEvent> POST_HOT_RELOAD = PrioritizedEvent.createLoop();
@@ -79,6 +81,10 @@ public class MiapiEvents {
             ComponentApplyProperty.updateItemStack(listener.itemStack, listener.registryAccess);
             return EventResult.pass();
         });
+    }
+
+    public interface InventoryTickEvent{
+        void tick(ItemStack stack, Level level, Entity entity, int slotId, boolean isSelected);
     }
 
     public interface DurabilityEvent {

@@ -37,7 +37,12 @@ public class DoubleResolvableStatDisplay extends SingleStatDisplayDouble {
         if (!condition.apply(original, compareTo)) {
             return false;
         }
-        return resolvableGetter.apply(original).isPresent() || resolvableGetter.apply(compareTo).isPresent();
+        return resolvableGetter.apply(original).isPresent()
+               && !resolvableGetter.apply(original).get().operations.isEmpty()
+               && resolvableGetter.apply(original).get().getValue() != resolvableGetter.apply(original).get().getFallback()
+               || resolvableGetter.apply(compareTo).isPresent()
+                  && !resolvableGetter.apply(compareTo).get().operations.isEmpty()
+                  && resolvableGetter.apply(compareTo).get().getValue() != resolvableGetter.apply(compareTo).get().getFallback();
     }
 
     @Override

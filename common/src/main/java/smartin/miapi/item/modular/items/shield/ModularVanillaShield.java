@@ -18,6 +18,7 @@ import org.apache.commons.lang3.mutable.MutableFloat;
 import org.lwjgl.system.NonnullDefault;
 import smartin.miapi.Miapi;
 import smartin.miapi.events.MeleeModularAttackEvents;
+import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.item.FakeItemManager;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;
@@ -83,6 +84,11 @@ public class ModularVanillaShield extends ShieldItem implements ModularItem {
     @Override
     public boolean isEnchantable(ItemStack itemStack) {
         return true;
+    }
+
+    @Override
+    public void inventoryTick(ItemStack stack, Level level, Entity entity, int slotId, boolean isSelected) {
+        MiapiEvents.INVENTORY_TICK.invoker().tick(stack,level,entity,slotId,isSelected);
     }
 
     @Override

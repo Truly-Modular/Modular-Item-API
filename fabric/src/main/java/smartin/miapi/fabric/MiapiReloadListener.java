@@ -37,7 +37,7 @@ public class MiapiReloadListener implements PreparableReloadListener {
     public CompletableFuture load(ResourceManager manager, ProfilerFiller profiler, Executor executor) {
         Map<ResourceLocation, String> data = new LinkedHashMap<>();
 
-        ReloadEvents.syncedPaths.forEach((modID, dataPaths) -> {
+        ReloadEvents.SYNCED_PATHS.forEach((modID, dataPaths) -> {
             dataPaths.forEach(dataPath -> {
                 Map<ResourceLocation, List<Resource>> map = manager.listResourceStacks(dataPath, (fileName) -> true);
                 map.forEach((identifier, resources) -> {

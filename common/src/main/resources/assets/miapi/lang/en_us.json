@@ -184,6 +184,18 @@
     "miapi.application_target.redirect.attacking": "Victim",
     "miapi.application_target.redirect_possession": "'s %s",
     "miapi.application_target.description.hurt_victim": "victims when you attack with this item.",
+
+    "miapi.stat.miapi.ability.blocking.block": "Blocking",
+    "miapi.stat.miapi.ability.blocking.block.description": "Blocking ability % of damage blocked when right clicked.",
+    "miapi.stat.miapi.ability.blocking.angle": "Blocking Angle",
+    "miapi.stat.miapi.ability.blocking.angle.description": "Attacking angle where one can block\nDefault is 45°",
+    "miapi.stat.miapi.ability.blocking.damage_return_percent": "Blocking Reflect",
+    "miapi.stat.miapi.ability.blocking.damage_return_percent.description": "Damage percentage returned to attacker when blocking.\nDefault is 0",
+    "miapi.stat.miapi.ability.blocking.cooldown_attacker_weapon": "Blocking Reprisal",
+    "miapi.stat.miapi.ability.blocking.cooldown_attacker_weapon.description": "Sets Weapon on cooldown or inflicts stun damage.\nOnce a non-player entity receives more than 20 blocking damage, they get stunned.",
+    "miapi.stat.miapi.ability.blocking.cooldown_miss_time": "Blocking Fumble",
+    "miapi.stat.miapi.ability.blocking.cooldown_miss_time.description": "How much cooldown (in s) are applied if a block is misstimed\nDefaults to 0",
+
     "miapi.stat.miapi.is_piglin_gold": "Golden",
     "miapi.stat.miapi.is_piglin_gold.description": "Piglins will not attack you while wearing this Armor",
     "miapi.stat.miapi.rapid_fire_crossbow": "Magazine",

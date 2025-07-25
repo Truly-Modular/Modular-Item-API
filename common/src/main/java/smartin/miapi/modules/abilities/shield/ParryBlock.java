@@ -4,7 +4,12 @@ import com.mojang.serialization.MapCodec;
 import com.redpxnda.nucleus.codec.auto.AutoCodec;
 import com.redpxnda.nucleus.pose.server.ServerPoseFacet;
 import dev.architectury.event.EventResult;
+import dev.architectury.platform.Platform;
+import dev.architectury.utils.Env;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.core.Holder;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
@@ -17,6 +22,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import smartin.miapi.client.gui.crafting.statdisplay.DoubleResolvableStatDisplay;
+import smartin.miapi.client.gui.crafting.statdisplay.StatListWidget;
+import smartin.miapi.events.ClientEvents;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
@@ -64,15 +72,12 @@ public class ParryBlock extends MinMaxCDAbility<BlockData> {
             }
 
 
-            player.getCooldowns().addCooldown(stack.getItem(), getCooldown(stack));
-
             if (event.damageSource.getEntity() instanceof LivingEntity attacker) {
                 int attackerCD = (int) data.cooldownAttackerWeapon().getValue();
                 if (attacker instanceof Player p) {
                     ItemStack attackStack = p.getMainHandItem();
                     if (!attackStack.isEmpty()) {
-                        p.getCooldowns().addCooldown(attackStack.getItem(), attackerCD);
-                        p.stopUsingItem();
+                        addCooldown(p,attackStack,attackerCD);
                     }
                 } else {
                     // Apply a stun effect
@@ -94,17 +99,92 @@ public class ParryBlock extends MinMaxCDAbility<BlockData> {
             }
             double blocking = data.blocking().getValue();
             if (blocking >= 100) {
-                player.getCooldowns().addCooldown(stack.getItem(), getCooldown(stack));
-                player.stopUsingItem();
+                cooldown(player, stack);
                 return EventResult.interruptDefault();
             }
             if (blocking > 0) {
                 float blockPercent = (float) blocking / 100f;
                 event.amount = Math.max(0, event.amount - blockPercent * event.amount);
+                cooldown(player, stack);
                 return EventResult.pass();
             }
             return EventResult.pass();
         });
+        if(Platform.getEnvironment() == Env.CLIENT){
+            ClientEvents.STAT_WIDGET_REGISTRATION.register(this::registerStatDisplays);
+        }
+    }
+
+    @Environment(EnvType.CLIENT)
+    public void registerStatDisplays(){
+        StatListWidget.addStatDisplay(
+                DoubleResolvableStatDisplay
+                        .builder(
+                                (s -> ItemAbilityManager.getAbilities(s)
+                                        .stream()
+                                        .filter(a -> a.ability() instanceof ParryBlock)
+                                        .findAny().map(a -> ((BlockData)((MinMaxCDAbility.MinMaxCDData) a.context()).data()).blocking())
+                                ))
+                        .setName(Component.translatable("miapi.stat.miapi.ability.blocking.block"))
+                        .setHoverDescription(Component.translatable("miapi.stat.miapi.ability.blocking.block.description"))
+                        .build());
+        StatListWidget.addStatDisplay(
+                DoubleResolvableStatDisplay
+                        .builder(
+                                (s -> ItemAbilityManager.getAbilities(s)
+                                        .stream()
+                                        .filter(a -> a.ability() instanceof ParryBlock)
+                                        .findAny().map(a -> ((BlockData)((MinMaxCDAbility.MinMaxCDData) a.context()).data()).angle())
+                                ))
+                        .setName(Component.translatable("miapi.stat.miapi.ability.blocking.angle"))
+                        .setHoverDescription(Component.translatable("miapi.stat.miapi.ability.blocking.angle"))
+                        .build());
+        StatListWidget.addStatDisplay(
+                DoubleResolvableStatDisplay
+                        .builder(
+                                (s -> ItemAbilityManager.getAbilities(s)
+                                        .stream()
+                                        .filter(a -> a.ability() instanceof ParryBlock)
+                                        .findAny().map(a -> ((BlockData)((MinMaxCDAbility.MinMaxCDData) a.context()).data()).cooldownAttackerWeapon())
+                                ))
+                        .setName(Component.translatable("miapi.stat.miapi.ability.blocking.cooldown_attacker_weapon"))
+                        .setHoverDescription(Component.translatable("miapi.stat.miapi.ability.blocking.cooldown_attacker_weapon.description"))
+                        .build());
+        StatListWidget.addStatDisplay(
+                DoubleResolvableStatDisplay
+                        .builder(
+                                (s -> ItemAbilityManager.getAbilities(s)
+                                        .stream()
+                                        .filter(a -> a.ability() instanceof ParryBlock)
+                                        .findAny().map(a -> ((BlockData)((MinMaxCDAbility.MinMaxCDData) a.context()).data()).damageReturnPercent())
+                                ))
+                        .setName(Component.translatable("miapi.stat.miapi.ability.blocking.damage_return_percent"))
+                        .setHoverDescription(Component.translatable("miapi.stat.miapi.ability.blocking.damage_return_percent.description"))
+                        .build());
+        StatListWidget.addStatDisplay(
+                DoubleResolvableStatDisplay
+                        .builder(
+                                (s -> ItemAbilityManager.getAbilities(s)
+                                        .stream()
+                                        .filter(a -> a.ability() instanceof ParryBlock)
+                                        .findAny().map(a -> ((BlockData)((MinMaxCDAbility.MinMaxCDData) a.context()).data()).cooldownMissTime())
+                                ))
+                        .setName(Component.translatable("miapi.stat.miapi.ability.blocking.cooldown_miss_time"))
+                        .setHoverDescription(Component.translatable("miapi.stat.miapi.ability.blocking.cooldown_miss_time.description"))
+                        .build());
+    }
+
+    public void cooldown(Player player, ItemStack stack) {
+        int cooldown = getCooldown(stack);
+        addCooldown(player,stack,cooldown);
+    }
+
+    public void addCooldown(Player player, ItemStack stack, int cooldown) {
+        if (cooldown > 0) {
+            player.getCooldowns().addCooldown(stack.getItem(), cooldown);
+            player.stopUsingItem();
+            player.getCooldowns().addCooldown(stack.getItem(), cooldown);
+        }
     }
 
 
@@ -184,8 +264,8 @@ public class ParryBlock extends MinMaxCDAbility<BlockData> {
     public void applyCooldownMissTime(ItemStack itemStack, LivingEntity livingEntity) {
         BlockData data = getData(itemStack).orElse(null);
         if (livingEntity instanceof ServerPlayer serverPlayer && data != null) {
-            serverPlayer.getCooldowns().addCooldown(itemStack.getItem(), (int) data.cooldownMissTime().getValue());
-            serverPlayer.stopUsingItem();
+
+            addCooldown(serverPlayer,itemStack,(int) data.cooldownMissTime().getValue());
         }
     }
 

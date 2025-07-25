@@ -63,7 +63,7 @@ public class GeneratedMaterialManager {
                 }
             }
         }, -1);
-        ReloadEvents.dataSyncerRegistry.register(Miapi.id("generated_materials"),
+        ReloadEvents.DATA_SYNCER_REGISTRY.register(Miapi.id("generated_materials"),
                 new ReloadEvents.SimpleSyncer<>(ByteBufCodecs.fromCodec(Codec.list(GeneratedMaterial.CODEC))) {
                     @Override
                     public List<GeneratedMaterial> getDataServer() {
@@ -85,7 +85,7 @@ public class GeneratedMaterialManager {
                         generatedMaterials.addAll(data);
                     }
                 });
-        ReloadEvents.dataSyncerRegistry.register(Miapi.id("generated_simple_materials"),
+        ReloadEvents.DATA_SYNCER_REGISTRY.register(Miapi.id("generated_simple_materials"),
                 new ReloadEvents.SimpleSyncer<>(ByteBufCodecs.fromCodec(Codec.list(GeneratedMaterialFromCopy.CODEC))) {
                     @Override
                     public List<GeneratedMaterialFromCopy.GeneratedMaterialCopy> getDataServer() {
