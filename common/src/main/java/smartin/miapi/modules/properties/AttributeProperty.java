@@ -464,12 +464,12 @@ public class AttributeProperty implements ModuleProperty {
         ItemModule.ModuleInstance rootInstance = ItemModule.getModules(itemStack);
         Multimap<EntityAttribute, EntityAttributeModifierHolder> attributeModifiers = ArrayListMultimap.create();
         for (ItemModule.ModuleInstance instance : rootInstance.allSubModules()) {
-            getAttributeModifiers(defaultUUID, instance, attributeModifiers);
+            getAttributeModifiers(defaultUUID,itemStack, instance, attributeModifiers);
         }
         return attributeModifiers;
     }
 
-    public static void getAttributeModifiers(UUIDGetter defaultUUID, ItemModule.ModuleInstance instance, Multimap<EntityAttribute, EntityAttributeModifierHolder> attributeModifiers) {
+    public static void getAttributeModifiers(UUIDGetter defaultUUID,ItemStack stack, ItemModule.ModuleInstance instance, Multimap<EntityAttribute, EntityAttributeModifierHolder> attributeModifiers) {
         JsonElement element = instance.getProperties().get(property);
         if (element == null) {
             return;
@@ -479,7 +479,12 @@ public class AttributeProperty implements ModuleProperty {
             assert attributeJson.attribute != null;
             assert attributeJson.value != null;
             assert attributeJson.operation != null;
-            EquipmentSlot slot = (attributeJson.slot != null) ? getSlot(attributeJson.slot) : EquipmentSlot.MAINHAND;
+            EquipmentSlot slot;
+            if(attributeJson.slot!=null && attributeJson.slot.equals("item")){
+                slot = EquipmentSlotProperty.getSlot(stack);
+            }else{
+                slot = (attributeJson.slot != null) ? getSlot(attributeJson.slot) : EquipmentSlot.MAINHAND;
+            }
             String attributeName = attributeJson.attribute;
             double value = StatResolver.resolveDouble(attributeJson.value, instance);
             EntityAttributeModifier.Operation operation = getOperation(attributeJson.operation);
@@ -589,6 +594,9 @@ public class AttributeProperty implements ModuleProperty {
 
     public static EquipmentSlot getSlot(String slotString) {
         if (slotString != null && !slotString.isEmpty()) {
+            if(slotString.equals("item")){
+                return EquipmentSlot.MAINHAND;
+            }
             try {
                 return EquipmentSlot.byName(slotString);
             } catch (Exception e) {

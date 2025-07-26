@@ -52,6 +52,9 @@ public class CraftingScreenHandler extends ScreenHandler {
     public CraftingScreenHandler craftingScreenHandler;
     private List<Slot> mutableSlots = new ArrayList<>();
 
+    public static int CLIENT_SLOT_ID = 36;
+    public static int SERVER_SLOT_ID = 36;
+
     static final Identifier[] EMPTY_ARMOR_SLOT_TEXTURES = new Identifier[]{PlayerScreenHandler.EMPTY_BOOTS_SLOT_TEXTURE, PlayerScreenHandler.EMPTY_LEGGINGS_SLOT_TEXTURE, PlayerScreenHandler.EMPTY_CHESTPLATE_SLOT_TEXTURE, PlayerScreenHandler.EMPTY_HELMET_SLOT_TEXTURE};
     private static final EquipmentSlot[] EQUIPMENT_SLOT_ORDER = new EquipmentSlot[]{EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET};
 
@@ -234,7 +237,16 @@ public class CraftingScreenHandler extends ScreenHandler {
             this.addSlot(new PlayerInventorySlot(playerInventory, j, j * 18 + xOffset - 15, 3 * 18 + 4 + yOffset - 14));
         }
 
-        this.addSlot(new ModifyingSlot(inventory, 0, 112 - 60 - 15 - 3, 118 + 72 - 14, blockEntity));
+        ModifyingSlot slot = new ModifyingSlot(inventory, 0, 112 - 60 - 15 - 3, 118 + 72 - 14, blockEntity);
+        this.addSlot(slot);
+        var optional = this.getSlotIndex(inventory,0);
+        if(optional.isPresent()){
+            if(notClient()){
+                SERVER_SLOT_ID = optional.getAsInt();
+            }else{
+                CLIENT_SLOT_ID = optional.getAsInt();
+            }
+        }
         for (int i = 0; i < 4; ++i) {
             final EquipmentSlot equipmentSlot = EQUIPMENT_SLOT_ORDER[i];
             int offset = i < 2 ? 0 : 1;
@@ -398,6 +410,7 @@ public class CraftingScreenHandler extends ScreenHandler {
     public ItemStack quickMove(PlayerEntity player, int index) {
         inventory.markDirty();
         Slot slot = this.slots.get(index);
+        int id = notClient() ? SERVER_SLOT_ID : CLIENT_SLOT_ID;
 
         if (slot != null && slot.hasStack()) {
             ItemStack itemStack2 = slot.getStack();

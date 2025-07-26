@@ -1,7 +1,12 @@
+
 {
-    "ability_context": {
-        "copy_item": {
-            "id": "minecraft:flint_and_steel"
+    "attributes": [
+        {
+            "attribute": "minecraft:generic.attack_damage",
+            "value": "[module.cost]*0.1",
+            "operation": "*",
+            "slot": "item",
+            "target_operation": "*"
         }
-    }
+    ]
 }

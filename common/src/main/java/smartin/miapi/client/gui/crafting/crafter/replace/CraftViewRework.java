@@ -18,6 +18,7 @@ import org.joml.Vector4f;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.*;
 import smartin.miapi.client.gui.crafting.CraftingScreen;
+import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
 import smartin.miapi.craft.CraftAction;
 import smartin.miapi.modules.edit_options.EditOption;
 import smartin.miapi.modules.properties.SlotProperty;
@@ -63,7 +64,7 @@ public class CraftViewRework extends InteractAbleWidget {
             editContext.getScreenHandler().removeListener(listener);
         }
         listener = new SimpleScreenHandlerListener((h, slotId, itemStack) -> {
-            if (slotId != 36) {
+            if (slotId != CraftingScreenHandler.CLIENT_SLOT_ID) {
                 update();
             }
         });
