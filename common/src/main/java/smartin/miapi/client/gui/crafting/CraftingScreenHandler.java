@@ -414,7 +414,7 @@ public class CraftingScreenHandler extends ScreenHandler {
 
         if (slot != null && slot.hasStack()) {
             ItemStack itemStack2 = slot.getStack();
-            if (index == 36 || index > 41) {
+            if (index == id || index > 41) {
                 //case 1: tool slot to player
                 slot.onTakeItem(player, itemStack2);
                 //attempt armor slots
@@ -422,7 +422,7 @@ public class CraftingScreenHandler extends ScreenHandler {
                     this.insertItem(itemStack2, 0, 36, true);
                 }
 
-                if (index == 36 && blockEntity != null) {
+                if (index == id && blockEntity != null) {
                     blockEntity.setItem(itemStack2);
                     if (notClient()) blockEntity.saveAndSync();
                 }
@@ -437,7 +437,7 @@ public class CraftingScreenHandler extends ScreenHandler {
                         }
                     }
                 }
-                if ((slots.get(36).getStack().isEmpty() || slots.get(36).getStack().getItem().equals(itemStack2.getItem())) && !this.insertItem(itemStack2, 36, 37, true)) {
+                if ((slots.get(id).getStack().isEmpty() || slots.get(id).getStack().getItem().equals(itemStack2.getItem())) && !this.insertItem(itemStack2, id, id+1, true)) {
                     return ItemStack.EMPTY;
                 }
                 slot.markDirty();

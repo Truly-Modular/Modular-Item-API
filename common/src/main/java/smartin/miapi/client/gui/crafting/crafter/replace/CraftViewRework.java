@@ -134,14 +134,14 @@ public class CraftViewRework extends InteractAbleWidget {
     private void update() {
         try {
             if (!isClosed) {
-                ItemStack previewStack = action.getPreview();
+                ItemStack previewStack = action.getPreview().copy();
                 setBuffers();
                 editContext.preview(action.toPacket(Networking.createBuffer()));
                 Pair<Map<CraftingProperty, Boolean>, Boolean> canPerform = action.fullCanPerform();
                 craftButton.isEnabled = canPerform.getSecond();
 
                 warnings.clear();
-                ItemStack crafted = editContext.getItemstack();
+                ItemStack crafted = editContext.getItemstack().copy();
                 if (ItemStack.areEqual(previewStack, crafted)) {
                     warnings.add(Text.translatable(Miapi.MOD_ID + ".ui.craft.result_equal_warning"));
                     craftButton.isEnabled = false;

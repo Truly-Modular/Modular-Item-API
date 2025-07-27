@@ -147,9 +147,10 @@ public class CraftAction {
     public boolean canPerform() {
         ItemStack crafted = getPreview();
         AtomicBoolean test = new AtomicBoolean(true);
+        ItemStack oldStack = old.copy();
         forEachCraftingProperty(crafted, (guiCraftingProperty, module, inventory, start, end, buffer) -> {
             if (test.get()) {
-                test.set(guiCraftingProperty.canPerform(old, crafted, blockEntity, player, this, toAdd, inventory, buffer));
+                test.set(guiCraftingProperty.canPerform(oldStack, crafted, blockEntity, player, this, toAdd, inventory, buffer));
             }
         });
         return test.get();
@@ -164,8 +165,9 @@ public class CraftAction {
         Map<CraftingProperty, Boolean> map = new HashMap<>();
         ItemStack crafted = getPreview();
         AtomicBoolean test = new AtomicBoolean(true);
+        ItemStack oldStack= old.copy();
         forEachCraftingProperty(crafted, (guiCraftingProperty, module, inventory, start, end, dataMap) -> {
-            boolean result = guiCraftingProperty.canPerform(old, crafted, blockEntity, player, this, toAdd, inventory, dataMap);
+            boolean result = guiCraftingProperty.canPerform(oldStack, crafted, blockEntity, player, this, toAdd, inventory, dataMap);
             map.put(guiCraftingProperty, result);
             if (test.get()) test.set(result);
         });
@@ -210,9 +212,10 @@ public class CraftAction {
      */
     public ItemStack perform() {
         final ItemStack[] craftingStack = {craft()};
+        ItemStack oldStack = old.copy();
         forEachCraftingProperty(craftingStack[0], (craftingProperty, module, inventory, start, end, buffer) -> {
             List<ItemStack> itemStacks = craftingProperty.performCraftAction(
-                    old,
+                    oldStack,
                     craftingStack[0],
                     player,
                     blockEntity,
@@ -254,14 +257,14 @@ public class CraftAction {
             //return ItemStack.EMPTY;
         }
         if (slotId.size() == 1) {
-        } else if (!old.hasNbt() || !(old.hasNbt() && old.getOrCreateNbt().contains(ItemModule.MODULE_KEY) || (old.hasNbt() && old.getOrCreateNbt().contains(NBT_MODULE_KEY)))) {
+        } else if (!craftingStack.hasNbt() || !(craftingStack.hasNbt() && craftingStack.getOrCreateNbt().contains(ItemModule.MODULE_KEY) || (craftingStack.hasNbt() && craftingStack.getOrCreateNbt().contains(NBT_MODULE_KEY)))) {
             Exception exception = new IllegalArgumentException();
             Miapi.LOGGER.error("old Item has no Modules - something went very wrong", exception);
-            Miapi.LOGGER.error(old.toString());
+            Miapi.LOGGER.error(craftingStack.toString());
             return old;
         }
         //remove CacheKey so new cache gets Generated
-        ItemModule.ModuleInstance oldBaseModule = ItemModule.getModules(old);
+        ItemModule.ModuleInstance oldBaseModule = ItemModule.getModules(craftingStack);
         ItemModule.ModuleInstance newBaseModule = ItemModule.ModuleInstance.fromString(oldBaseModule.toString());
         Map<Integer, ItemModule.ModuleInstance> subModuleMap = new HashMap<>();
         if (slotId.isEmpty()) {
@@ -325,9 +328,10 @@ public class CraftAction {
      */
     public ItemStack getPreview() {
         AtomicReference<ItemStack> craftingStack = new AtomicReference<>(craft());
+        ItemStack oldStack = old.copy();
         forEachCraftingProperty(craftingStack.get(), (guiCraftingProperty, module, inventory, start, end, buffer) ->
                 craftingStack.set(guiCraftingProperty.preview(
-                        old,
+                        oldStack,
                         craftingStack.get(),
                         player,
                         blockEntity,
@@ -342,7 +346,6 @@ public class CraftAction {
         for (CraftingEvent eventHandler : events) {
             craftingStack.set(eventHandler.onPreview(old, craftingStack.get(), parsingInstance));
         }
-        linkedInventory.markDirty();
         return craftingStack.get();
     }
 
