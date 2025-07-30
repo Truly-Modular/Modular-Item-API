@@ -56,6 +56,8 @@ public class CraftingScreenHandler extends AbstractContainerMenu {
 
     static final ResourceLocation[] EMPTY_ARMOR_SLOT_TEXTURES = new ResourceLocation[]{InventoryMenu.EMPTY_ARMOR_SLOT_BOOTS, InventoryMenu.EMPTY_ARMOR_SLOT_LEGGINGS, InventoryMenu.EMPTY_ARMOR_SLOT_CHESTPLATE, InventoryMenu.EMPTY_ARMOR_SLOT_HELMET};
     private static final EquipmentSlot[] EQUIPMENT_SLOT_ORDER = new EquipmentSlot[]{EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET};
+    public static int CLIENT_SLOT_ID = 36;
+    public static int SERVER_SLOT_ID = 36;
 
     /**
      * Constructs a new CraftingScreenHandler instance with the specified sync ID and player inventory.
@@ -247,7 +249,16 @@ public class CraftingScreenHandler extends AbstractContainerMenu {
             this.addSlot(new PlayerInventorySlot(playerInventory, j, j * 18 + xOffset - 15, 3 * 18 + 4 + yOffset - 14));
         }
 
-        this.addSlot(new ModifyingSlot(inventory, 0, 112 - 60 - 15 - 3, 118 + 72 - 14, blockEntity));
+        ModifyingSlot slot = new ModifyingSlot(inventory, 0, 112 - 60 - 15 - 3, 118 + 72 - 14, blockEntity);
+        this.addSlot(slot);
+        var opt = this.findSlot(inventory,0);
+        if(opt.isPresent()){
+            if(notClient()){
+                SERVER_SLOT_ID = opt.getAsInt();
+            }else{
+                CLIENT_SLOT_ID = opt.getAsInt();
+            }
+        }
         for (int i = 0; i < 4; ++i) {
             final EquipmentSlot equipmentSlot = EQUIPMENT_SLOT_ORDER[i];
             int offset = i < 2 ? 0 : 1;
@@ -414,6 +425,7 @@ public class CraftingScreenHandler extends AbstractContainerMenu {
     public ItemStack quickMoveStack(Player player, int index) {
         inventory.setChanged();
         Slot slot = this.slots.get(index);
+        int id = notClient() ? SERVER_SLOT_ID : CLIENT_SLOT_ID;
 
         if (slot != null && slot.hasItem()) {
             ItemStack itemStack2 = slot.getItem();
@@ -425,7 +437,7 @@ public class CraftingScreenHandler extends AbstractContainerMenu {
                     this.moveItemStackTo(itemStack2, 0, 36, true);
                 }
 
-                if (index == 36 && blockEntity != null) {
+                if (index == id && blockEntity != null) {
                     blockEntity.setItem(itemStack2);
                     if (notClient()) blockEntity.saveAndSync();
                 }
@@ -434,13 +446,13 @@ public class CraftingScreenHandler extends AbstractContainerMenu {
             } else {
                 //PlayerInv
                 for (Slot slot1 : mutableSlots) {
-                    if (slot1.index >= 36) {
+                    if (slot1.index >= id) {
                         if (!this.moveItemStackTo(itemStack2, slot1.index, slot1.index + 1, true)) {
                             return ItemStack.EMPTY;
                         }
                     }
                 }
-                if ((slots.get(36).getItem().isEmpty() || slots.get(36).getItem().getItem().equals(itemStack2.getItem())) && !this.moveItemStackTo(itemStack2, 36, 37, true)) {
+                if ((slots.get(id ).getItem().isEmpty() || slots.get(id ).getItem().getItem().equals(itemStack2.getItem())) && !this.moveItemStackTo(itemStack2, id , id +1, true)) {
                     return ItemStack.EMPTY;
                 }
                 slot.setChanged();

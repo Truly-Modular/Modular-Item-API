@@ -7,6 +7,8 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.world.item.*;
 import smartin.miapi.item.modular.VisualModularItem;
+import smartin.miapi.item.modular.items.shield.ModularNonVanillaShield;
+import smartin.miapi.item.modular.items.shield.ModularVanillaShield;
 
 public class ModularWorkBenchRenderer implements BlockEntityRenderer<ModularWorkBenchEntity> {
     private final BlockEntityRendererProvider.Context context;
@@ -36,7 +38,12 @@ public class ModularWorkBenchRenderer implements BlockEntityRenderer<ModularWork
         matrices.mulPose(Axis.YP.rotationDegrees(rotAmnt));
         matrices.mulPose(Axis.XP.rotationDegrees(90));
         matrices.scale(0.75f, 0.75f, 0.75f);
-
+        if(
+                stack.getItem() instanceof ShieldItem ||
+                stack.getItem() instanceof ModularNonVanillaShield ||
+                stack.getItem() instanceof ModularVanillaShield){
+            matrices.scale(2,2,2);
+        }
         try {
             context.getItemRenderer().renderStatic(
                     stack,

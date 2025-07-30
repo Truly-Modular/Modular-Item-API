@@ -21,6 +21,7 @@ public record BlockData(
         DoubleOperationResolvable damageReturnPercent,
         DoubleOperationResolvable cooldownAttackerWeapon,
         DoubleOperationResolvable cooldownMissTime,
+        DoubleOperationResolvable respectAttackingWeaponCooldown,
         DoubleOperationResolvable angle
 ) implements MergeAble<BlockData>, InitializeAble<BlockData> {
 
@@ -33,6 +34,7 @@ public record BlockData(
             new DoubleOperationResolvable(0.0),
             new DoubleOperationResolvable(0),
             new DoubleOperationResolvable(40),
+            new DoubleOperationResolvable(1.0),
             new DoubleOperationResolvable(45)
     );
 
@@ -45,6 +47,7 @@ public record BlockData(
             DoubleOperationResolvable.CODEC.optionalFieldOf("damage_return_percent", DEFAULT.damageReturnPercent()).forGetter(BlockData::damageReturnPercent),
             DoubleOperationResolvable.CODEC.optionalFieldOf("cooldown_attacker_weapon", DEFAULT.cooldownAttackerWeapon()).forGetter(BlockData::cooldownAttackerWeapon),
             DoubleOperationResolvable.CODEC.optionalFieldOf("cooldown_miss_time", DEFAULT.cooldownMissTime()).forGetter(BlockData::cooldownMissTime),
+            DoubleOperationResolvable.CODEC.optionalFieldOf("respect_attacker_weapon_ratio", DEFAULT.respectAttackingWeaponCooldown()).forGetter(BlockData::respectAttackingWeaponCooldown),
             DoubleOperationResolvable.CODEC.optionalFieldOf("angle", DEFAULT.angle()).forGetter(BlockData::angle)
     ).apply(instance, BlockData::new));
 
@@ -59,6 +62,7 @@ public record BlockData(
                 DoubleOperationResolvable.merge(left.damageReturnPercent, right.damageReturnPercent, mergeType),
                 DoubleOperationResolvable.merge(left.cooldownAttackerWeapon, right.cooldownAttackerWeapon, mergeType),
                 DoubleOperationResolvable.merge(left.cooldownMissTime, right.cooldownMissTime, mergeType),
+                DoubleOperationResolvable.merge(left.respectAttackingWeaponCooldown, right.respectAttackingWeaponCooldown, mergeType),
                 DoubleOperationResolvable.merge(left.angle, right.angle, mergeType)
         );
     }
@@ -74,6 +78,7 @@ public record BlockData(
                 data.damageReturnPercent.initialize(moduleInstance),
                 data.cooldownAttackerWeapon.initialize(moduleInstance),
                 data.cooldownMissTime.initialize(moduleInstance),
+                data.respectAttackingWeaponCooldown.initialize(moduleInstance),
                 data.angle.initialize(moduleInstance)
         );
     }

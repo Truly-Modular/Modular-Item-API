@@ -195,6 +195,12 @@
     "miapi.stat.miapi.ability.blocking.cooldown_attacker_weapon.description": "Sets Weapon on cooldown or inflicts stun damage.\nOnce a non-player entity receives more than 20 blocking damage, they get stunned.",
     "miapi.stat.miapi.ability.blocking.cooldown_miss_time": "Blocking Fumble",
     "miapi.stat.miapi.ability.blocking.cooldown_miss_time.description": "How much cooldown (in s) are applied if a block is misstimed\nDefaults to 0",
+    "miapi.stat.miapi.ability.blocking.respect_attacker_weapon_cd": "Blocking Absorption",
+    "miapi.stat.miapi.ability.blocking.respect_attacker_weapon_cd.description": "How much the attaching weapon can inflict cooldown (like axes)\nDefaults to 0",
+    "miapi.stat.miapi.ability.blocking.min_use": "Blocking minimum hold",
+    "miapi.stat.miapi.ability.blocking.min_use.description": "How long until the shield is actually up\nDefaults to 0",
+    "miapi.stat.miapi.ability.blocking.max_use": "Blocking maximum hold",
+    "miapi.stat.miapi.ability.blocking.max_use.description": "How long a shield can be kept up.\nDefaults to infinite.",
 
     "miapi.stat.miapi.is_piglin_gold": "Golden",
     "miapi.stat.miapi.is_piglin_gold.description": "Piglins will not attack you while wearing this Armor",

@@ -15,13 +15,17 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.resources.model.ModelResourceLocation;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.InterModComms;
+import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.InterModEnqueueEvent;
@@ -35,6 +39,7 @@ import net.neoforged.neoforge.event.AddReloadListenerEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeModificationEvent;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import net.neoforged.neoforge.registries.RegisterEvent;
+import org.apache.commons.lang3.mutable.MutableInt;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 import smartin.miapi.Miapi;
@@ -45,6 +50,8 @@ import smartin.miapi.client.model.MiapiItemModel;
 import smartin.miapi.client.model.MiapiModel;
 import smartin.miapi.client.model.item.ItemBakedModelReplacement;
 import smartin.miapi.datapack.ReloadEvents;
+import smartin.miapi.events.MiapiEvents;
+import smartin.miapi.forge.compat.epic_fight.EpicFightCompat;
 import smartin.miapi.item.modular.VisualModularItem;
 import smartin.miapi.modules.properties.attributes.AttributeProperty;
 import smartin.miapi.modules.properties.render.ModelProperty;
@@ -56,18 +63,21 @@ import java.util.WeakHashMap;
 import java.util.function.Consumer;
 
 import static smartin.miapi.Miapi.MOD_ID;
+import static smartin.miapi.events.MiapiEvents.GET_ITEM_SHIELD_COOLDOWN;
 
 @Mod(MOD_ID)
 public class TrulyModularForge {
     public static int test = 0;
+    public static final IEventBus BUS = ModLoadingContext.get().getActiveContainer().getEventBus();
 
     public TrulyModularForge() {
         NeoForge.EVENT_BUS.register(new ServerEvents());
         Miapi.init();
 
 
+        //RegistryInventory.moduleProperties.register(EpicFightCompatProperty.KEY, new EpicFightCompatProperty())
         loadCompat("epicfight", () -> {
-            //RegistryInventory.moduleProperties.register(EpicFightCompatProperty.KEY, new EpicFightCompatProperty())
+            EpicFightCompat.setup();
         });
 
         //use explicit classpath to prevent accidental class loading
@@ -93,6 +103,19 @@ public class TrulyModularForge {
                 }
             });
         }
+
+        GET_ITEM_SHIELD_COOLDOWN.register(new MiapiEvents.CooldownAttackingWeaponGatherEvent() {
+            @Override
+            public void durability(MutableInt cooldown, ItemStack attacking, ItemStack shield, LivingEntity defender, Entity attacker) {
+                if (
+                        cooldown.getValue() == 0 &&
+                        attacker instanceof LivingEntity livingAttacker &&
+                        (attacking.canDisableShield(shield, defender, livingAttacker) ||
+                        attacking.canDisableShield(Items.SHIELD.getDefaultInstance(), defender, livingAttacker))) {
+                    cooldown.setValue(100);
+                }
+            }
+        }, -1);
     }
 
     public static void setupAttributes() {

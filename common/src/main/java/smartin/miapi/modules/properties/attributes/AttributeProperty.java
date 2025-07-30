@@ -226,8 +226,12 @@ public class AttributeProperty extends
 
     public static class AttributeJson {
         public static Codec<EquipmentSlotGroup> EQUIPMENTSLOT_CODEC = EquipmentSlotGroup.CODEC;
+        public static Codec<String> VALUE_CODEC = Codec.withAlternative(
+                Codec.STRING,
+                Codec.DOUBLE.xmap(i -> ""+i, b -> 0.0));
 
         public String attribute;
+        @CodecBehavior.Override("VALUE_CODEC")
         public String value;
         public String operation;
         @CodecBehavior.Override("EQUIPMENTSLOT_CODEC")

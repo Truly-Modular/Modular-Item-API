@@ -8,24 +8,29 @@ import dev.architectury.platform.Platform;
 import dev.architectury.utils.Env;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.core.Holder;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.UseAnim;
+import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import org.apache.commons.lang3.mutable.MutableInt;
 import smartin.miapi.client.gui.crafting.statdisplay.DoubleResolvableStatDisplay;
 import smartin.miapi.client.gui.crafting.statdisplay.StatListWidget;
 import smartin.miapi.events.ClientEvents;
 import smartin.miapi.events.MiapiEvents;
+import smartin.miapi.item.modular.ModularItem;
+import smartin.miapi.mixin.CooldownInstanceAccessor;
+import smartin.miapi.mixin.ItemCooldownsAccessor;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;
@@ -33,12 +38,30 @@ import smartin.miapi.modules.abilities.util.MinMaxCDAbility;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.registries.RegistryInventory;
 
+import java.util.Map;
+
+import static smartin.miapi.attributes.AttributeRegistry.SHIELD_BREAK;
+import static smartin.miapi.events.MiapiEvents.GET_ITEM_SHIELD_COOLDOWN;
+
 public class ParryBlock extends MinMaxCDAbility<BlockData> {
     public static final String KEY = "parry_block";
     public static final MapCodec<BlockData> CODEC = AutoCodec.of(BlockData.class);
 
     public ParryBlock() {
-        super(0, 20, 30);
+        super(0, 7200, 30);
+
+        GET_ITEM_SHIELD_COOLDOWN.register(new MiapiEvents.CooldownAttackingWeaponGatherEvent() {
+            @Override
+            public void durability(MutableInt cooldown, ItemStack attacking, ItemStack shield, LivingEntity defender, Entity attacker) {
+                if (ModularItem.isModularItem(attacking) && attacker instanceof LivingEntity livingEntity) {
+                    double value = livingEntity.getAttributeValue(SHIELD_BREAK);
+                    cooldown.setValue(value * 20);
+                }
+                if (cooldown.getValue() == 0 && attacking.getItem() instanceof AxeItem) {
+                    cooldown.setValue(100);
+                }
+            }
+        }, -1);
 
         MiapiEvents.LIVING_HURT.register(event -> {
             if (!(event.defender instanceof Player player)) return EventResult.pass();
@@ -77,12 +100,13 @@ public class ParryBlock extends MinMaxCDAbility<BlockData> {
                 if (attacker instanceof Player p) {
                     ItemStack attackStack = p.getMainHandItem();
                     if (!attackStack.isEmpty()) {
-                        addCooldown(p,attackStack,attackerCD);
+                        addCooldown(p, attackStack, attackerCD);
                     }
                 } else {
                     // Apply a stun effect
-
-                    attacker.addEffect(new MobEffectInstance(RegistryInventory.stunEffect, attackerCD));
+                    if (attackerCD > 10) {
+                        attacker.addEffect(new MobEffectInstance(RegistryInventory.stunEffect, attackerCD));
+                    }
                 }
 
                 float returnPercent = (float) data.damageReturnPercent().getValue() / 100f;
@@ -94,39 +118,67 @@ public class ParryBlock extends MinMaxCDAbility<BlockData> {
 
             // Play sound
             if (data.sound() != null) {
-                Holder<SoundEvent> holder = Holder.direct(SoundEvent.createVariableRangeEvent(data.sound()));
-                player.playSound(holder.value(), (float) data.volume().getValue(), (float) data.pitch().getValue());
+                SoundEvent soundEvent= BuiltInRegistries.SOUND_EVENT.get(data.sound());
+                if(soundEvent!=null){
+                    if (player instanceof ServerPlayer serverPlayer) {
+                        serverPlayer.level().playSound(
+                                player,
+                                player.getOnPos(),
+                                soundEvent,
+                                SoundSource.PLAYERS,
+                                (float) data.volume().getValue(),
+                                (float) data.pitch().getValue());
+                    }
+                }
             }
             double blocking = data.blocking().getValue();
+            int cooldown = getCooldown(stack);
+            if (data.respectAttackingWeaponCooldown().getValue() > 0) {
+                MutableInt base = new MutableInt(0);
+                GET_ITEM_SHIELD_COOLDOWN.invoker().durability(base, event.getMainCausingStack(), stack, event.defender, event.attacker);
+                cooldown += base.getValue();
+            }
             if (blocking >= 100) {
-                cooldown(player, stack);
+                addCooldown(player, stack, cooldown);
                 return EventResult.interruptDefault();
             }
             if (blocking > 0) {
                 float blockPercent = (float) blocking / 100f;
                 event.amount = Math.max(0, event.amount - blockPercent * event.amount);
-                cooldown(player, stack);
+                addCooldown(player, stack, cooldown);
                 return EventResult.pass();
             }
             return EventResult.pass();
         });
-        if(Platform.getEnvironment() == Env.CLIENT){
+        if (Platform.getEnvironment() == Env.CLIENT) {
             ClientEvents.STAT_WIDGET_REGISTRATION.register(this::registerStatDisplays);
         }
     }
 
     @Environment(EnvType.CLIENT)
-    public void registerStatDisplays(){
+    public void registerStatDisplays() {
         StatListWidget.addStatDisplay(
                 DoubleResolvableStatDisplay
                         .builder(
                                 (s -> ItemAbilityManager.getAbilities(s)
                                         .stream()
                                         .filter(a -> a.ability() instanceof ParryBlock)
-                                        .findAny().map(a -> ((BlockData)((MinMaxCDAbility.MinMaxCDData) a.context()).data()).blocking())
+                                        .findAny().map(a -> ((BlockData) ((MinMaxCDData<?>) a.context()).data()).blocking())
                                 ))
                         .setName(Component.translatable("miapi.stat.miapi.ability.blocking.block"))
                         .setHoverDescription(Component.translatable("miapi.stat.miapi.ability.blocking.block.description"))
+                        .build());
+
+        StatListWidget.addStatDisplay(
+                DoubleResolvableStatDisplay
+                        .builder(
+                                (s -> ItemAbilityManager.getAbilities(s)
+                                        .stream()
+                                        .filter(a -> a.ability() instanceof ParryBlock)
+                                        .findAny().map(a -> ((MinMaxCDData<?>) a.context()).max())
+                                ))
+                        .setName(Component.translatable("miapi.stat.miapi.ability.blocking.max_use"))
+                        .setHoverDescription(Component.translatable("miapi.stat.miapi.ability.blocking.max_use.description"))
                         .build());
         StatListWidget.addStatDisplay(
                 DoubleResolvableStatDisplay
@@ -134,7 +186,29 @@ public class ParryBlock extends MinMaxCDAbility<BlockData> {
                                 (s -> ItemAbilityManager.getAbilities(s)
                                         .stream()
                                         .filter(a -> a.ability() instanceof ParryBlock)
-                                        .findAny().map(a -> ((BlockData)((MinMaxCDAbility.MinMaxCDData) a.context()).data()).angle())
+                                        .findAny().map(a -> ((MinMaxCDData<?>) a.context()).min())
+                                ))
+                        .setName(Component.translatable("miapi.stat.miapi.ability.blocking.min_use"))
+                        .setHoverDescription(Component.translatable("miapi.stat.miapi.ability.blocking.min_use.description"))
+                        .build());
+        StatListWidget.addStatDisplay(
+                DoubleResolvableStatDisplay
+                        .builder(
+                                (s -> ItemAbilityManager.getAbilities(s)
+                                        .stream()
+                                        .filter(a -> a.ability() instanceof ParryBlock)
+                                        .findAny().map(a -> ((BlockData) ((MinMaxCDData<?>) a.context()).data()).respectAttackingWeaponCooldown())
+                                ))
+                        .setName(Component.translatable("miapi.stat.miapi.ability.blocking.respect_attacker_weapon_cd"))
+                        .setHoverDescription(Component.translatable("miapi.stat.miapi.ability.blocking.respect_attacker_weapon_cd"))
+                        .build());
+        StatListWidget.addStatDisplay(
+                DoubleResolvableStatDisplay
+                        .builder(
+                                (s -> ItemAbilityManager.getAbilities(s)
+                                        .stream()
+                                        .filter(a -> a.ability() instanceof ParryBlock)
+                                        .findAny().map(a -> ((BlockData) ((MinMaxCDData<?>) a.context()).data()).angle())
                                 ))
                         .setName(Component.translatable("miapi.stat.miapi.ability.blocking.angle"))
                         .setHoverDescription(Component.translatable("miapi.stat.miapi.ability.blocking.angle"))
@@ -145,7 +219,7 @@ public class ParryBlock extends MinMaxCDAbility<BlockData> {
                                 (s -> ItemAbilityManager.getAbilities(s)
                                         .stream()
                                         .filter(a -> a.ability() instanceof ParryBlock)
-                                        .findAny().map(a -> ((BlockData)((MinMaxCDAbility.MinMaxCDData) a.context()).data()).cooldownAttackerWeapon())
+                                        .findAny().map(a -> ((BlockData) ((MinMaxCDData<?>) a.context()).data()).cooldownAttackerWeapon())
                                 ))
                         .setName(Component.translatable("miapi.stat.miapi.ability.blocking.cooldown_attacker_weapon"))
                         .setHoverDescription(Component.translatable("miapi.stat.miapi.ability.blocking.cooldown_attacker_weapon.description"))
@@ -156,7 +230,7 @@ public class ParryBlock extends MinMaxCDAbility<BlockData> {
                                 (s -> ItemAbilityManager.getAbilities(s)
                                         .stream()
                                         .filter(a -> a.ability() instanceof ParryBlock)
-                                        .findAny().map(a -> ((BlockData)((MinMaxCDAbility.MinMaxCDData) a.context()).data()).damageReturnPercent())
+                                        .findAny().map(a -> ((BlockData) ((MinMaxCDData<?>) a.context()).data()).damageReturnPercent())
                                 ))
                         .setName(Component.translatable("miapi.stat.miapi.ability.blocking.damage_return_percent"))
                         .setHoverDescription(Component.translatable("miapi.stat.miapi.ability.blocking.damage_return_percent.description"))
@@ -167,20 +241,23 @@ public class ParryBlock extends MinMaxCDAbility<BlockData> {
                                 (s -> ItemAbilityManager.getAbilities(s)
                                         .stream()
                                         .filter(a -> a.ability() instanceof ParryBlock)
-                                        .findAny().map(a -> ((BlockData)((MinMaxCDAbility.MinMaxCDData) a.context()).data()).cooldownMissTime())
+                                        .findAny().map(a -> ((BlockData) ((MinMaxCDData<?>) a.context()).data()).cooldownMissTime())
                                 ))
                         .setName(Component.translatable("miapi.stat.miapi.ability.blocking.cooldown_miss_time"))
                         .setHoverDescription(Component.translatable("miapi.stat.miapi.ability.blocking.cooldown_miss_time.description"))
                         .build());
     }
 
-    public void cooldown(Player player, ItemStack stack) {
-        int cooldown = getCooldown(stack);
-        addCooldown(player,stack,cooldown);
-    }
-
     public void addCooldown(Player player, ItemStack stack, int cooldown) {
         if (cooldown > 0) {
+
+            Map<Item, ItemCooldowns.CooldownInstance> cd = ((ItemCooldownsAccessor) player.getCooldowns()).getCooldowns();
+            if (cd.containsKey(stack.getItem())) {
+                int currentCD = ((CooldownInstanceAccessor) cd.get(stack.getItem())).getEndTime() - ((ItemCooldownsAccessor) player.getCooldowns()).getTickCount();
+                if (currentCD > cooldown) {
+                    return;
+                }
+            }
             player.getCooldowns().addCooldown(stack.getItem(), cooldown);
             player.stopUsingItem();
             player.getCooldowns().addCooldown(stack.getItem(), cooldown);
@@ -265,7 +342,7 @@ public class ParryBlock extends MinMaxCDAbility<BlockData> {
         BlockData data = getData(itemStack).orElse(null);
         if (livingEntity instanceof ServerPlayer serverPlayer && data != null) {
 
-            addCooldown(serverPlayer,itemStack,(int) data.cooldownMissTime().getValue());
+            addCooldown(serverPlayer, itemStack, (int) data.cooldownMissTime().getValue());
         }
     }
 

@@ -248,11 +248,15 @@ public class MiapiClient {
         });
     }
 
-    public static boolean isSodiumLoaded() {
+    public static boolean isSodiumLikeLoaded() {
         return Platform.isModLoaded("sodium") ||
                Platform.isModLoaded("embeddium") ||
                Platform.isModLoaded("magnesium") ||
                Platform.isModLoaded("rubidium");
+    }
+
+    public static boolean isSodiumLoaded() {
+        return Platform.isModLoaded("sodium");
     }
 
     public static boolean isHigherVersion(String version, String compareToVersion) {

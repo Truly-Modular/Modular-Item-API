@@ -23,6 +23,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunction;
 import org.apache.commons.lang3.mutable.Mutable;
 import org.apache.commons.lang3.mutable.MutableFloat;
+import org.apache.commons.lang3.mutable.MutableInt;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
 import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
@@ -71,6 +72,7 @@ public class MiapiEvents {
      */
     public static final PrioritizedEvent<DurabilityEvent> MODULAR_ITEM_DAMAGE = PrioritizedEvent.createLoop();
     public static final PrioritizedEvent<InventoryTickEvent> INVENTORY_TICK = PrioritizedEvent.createEventResult();
+    public static final PrioritizedEvent<CooldownAttackingWeaponGatherEvent> GET_ITEM_SHIELD_COOLDOWN = PrioritizedEvent.createLoop();
 
     public static final PrioritizedEvent<ReloadEvent> ADJUST_RAW_DATA = PrioritizedEvent.createLoop();
     public static final PrioritizedEvent<EmptyEvent> POST_HOT_RELOAD = PrioritizedEvent.createLoop();
@@ -83,12 +85,16 @@ public class MiapiEvents {
         });
     }
 
-    public interface InventoryTickEvent{
+    public interface InventoryTickEvent {
         void tick(ItemStack stack, Level level, Entity entity, int slotId, boolean isSelected);
     }
 
     public interface DurabilityEvent {
         void durability(int damage, ItemStack itemStack, ServerLevel level);
+    }
+
+    public interface CooldownAttackingWeaponGatherEvent {
+        void durability(MutableInt cooldown, ItemStack attacking, ItemStack shield, LivingEntity defender, Entity attacker);
     }
 
     public interface DefaultLootFunctions {
@@ -173,7 +179,7 @@ public class MiapiEvents {
                 if (projectile instanceof ItemProjectileEntity itemProjectile) {
                     itemStacks.add(itemProjectile.getPickupItem());
                 }
-                }
+            }
             if (damageSource.getEntity() instanceof LivingEntity attacker) {
                 attacker.getArmorSlots().forEach(itemStacks::add);
                 itemStacks.add(attacker.getMainHandItem());
@@ -291,6 +297,6 @@ public class MiapiEvents {
     }
 
     public interface StatUpdateEvent {
-        EventResult update(ModularWorkBenchEntity blockEntity, StatProvidersMap map, int syncId, Inventory  playerInventory, Player player, CraftingScreenHandler handler);
+        EventResult update(ModularWorkBenchEntity blockEntity, StatProvidersMap map, int syncId, Inventory playerInventory, Player player, CraftingScreenHandler handler);
     }
 }

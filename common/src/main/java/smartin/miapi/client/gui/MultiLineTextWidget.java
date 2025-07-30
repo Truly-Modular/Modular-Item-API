@@ -46,13 +46,17 @@ public class MultiLineTextWidget extends InteractAbleWidget {
             if (maxLineLength > 0 && textRenderer.width(rawLine) > maxLineLength) {
                 List<String> words;
                 if (MiapiConfig.getClientConfig().other.splitNewLineAlways) {
-                    words = new ArrayList<>(Arrays.asList(rawLine.split("")));
+                    words = rawLine.chars()
+                            .mapToObj(c -> String.valueOf((char) c))
+                            .collect(Collectors.toList());
                 } else {
                     words = new ArrayList<>(Arrays.stream(rawLine.split(" ")).toList());
                 }
                 StringBuilder currentLine = new StringBuilder();
                 currentLine.append(words.remove(0));
-                currentLine.append(" ");
+                if (!MiapiConfig.getClientConfig().other.splitNewLineAlways) {
+                    currentLine.append(" ");
+                }
                 StringBuilder nextLine = new StringBuilder();
                 int currentLineLength = 0;
 
@@ -60,15 +64,48 @@ public class MultiLineTextWidget extends InteractAbleWidget {
                 for (String word : words) {
                     int wordLength = textRenderer.width(word);
 
-                    if ((!isLineExceeded && currentLineLength + wordLength + 1 <= maxLineLength)) {
-                        // Include the word in the current line if it's the first word or if the line has already exceeded the maximum length
-                        currentLine.append(word).append(" ");
+                    if (wordLength > maxLineLength) {
+                        // Word too long and can't fit on an empty line: split by characters
+                        StringBuilder part = new StringBuilder();
+                        for (char c : word.toCharArray()) {
+                            part.append(c);
+                            if (textRenderer.width(part.toString()) > maxLineLength) {
+                                // Push the previous part (excluding this char) as a new line
+                                rawLines.add(0, word.substring(part.length() - 1)); // remainder
+                                word = part.substring(0, part.length() - 1);
+                                break;
+                            }
+                        }
+                        rawLines.add(0, word); // re-add the split word
+                        break; // Restart processing with the split word
+                    }else if ((!isLineExceeded && currentLineLength + wordLength + 1 <= maxLineLength)) {
+                        currentLine.append(word);
+                        if (!MiapiConfig.getClientConfig().other.splitNewLineAlways) {
+                            currentLine.append(" ");
+                        }
                         currentLineLength = textRenderer.width(currentLine.toString());
+                    } else if (currentLineLength == 0 && wordLength > maxLineLength) {
+                        // Word too long and can't fit on an empty line: split by characters
+                        StringBuilder part = new StringBuilder();
+                        for (char c : word.toCharArray()) {
+                            part.append(c);
+                            if (textRenderer.width(part.toString()) > maxLineLength) {
+                                // Push the previous part (excluding this char) as a new line
+                                rawLines.add(0, word.substring(part.length() - 1)); // remainder
+                                word = part.substring(0, part.length() - 1);
+                                break;
+                            }
+                        }
+                        rawLines.add(0, word); // re-add the split word
+                        break; // Restart processing with the split word
                     } else {
-                        // Add the word to the next line if it exceeds the maximum length
-                        nextLine.append(word).append(" ");
+                        nextLine.append(word);
+                        if (!MiapiConfig.getClientConfig().other.splitNewLineAlways) {
+                            nextLine.append(" ");
+                        }
                         isLineExceeded = true;
                     }
+
                 }
                 if (isLineExceeded) {
                     rawLines.add(0, nextLine.toString());

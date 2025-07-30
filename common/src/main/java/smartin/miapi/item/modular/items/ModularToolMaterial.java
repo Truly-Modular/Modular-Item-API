@@ -78,7 +78,7 @@ public class ModularToolMaterial implements Tier {
 
             @Override
             public int getUses() {
-                return (int) DurabilityProperty.property.getData(itemStack).get().getValue();
+                return DurabilityProperty.property.getValue(itemStack).orElse(50.0).intValue();
             }
 
             @Override
