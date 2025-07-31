@@ -52,7 +52,7 @@ public class LiveDataPackEditorManager implements MiapiEditor {
         }
 
         ImGui.setNextWindowSize(400, 600, ImGuiCond.FirstUseEver);
-        if (ImGui.begin("LivePack Manager", show)) {
+        if (ImGui.begin("LivePack Manager##"+ System.identityHashCode(this), show)) {
             // Top button row
             if (ImGui.button("Create New Pack")) {
                 showCreateWindow.set(true);

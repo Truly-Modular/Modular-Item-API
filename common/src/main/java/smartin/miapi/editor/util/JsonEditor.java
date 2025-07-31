@@ -22,7 +22,7 @@ public class JsonEditor {
     }
 
     public void render() {
-        if (ImGui.collapsingHeader(title)) {
+        if (ImGui.collapsingHeader(title+"##"+ System.identityHashCode(this))) {
             if (ImGui.inputTextMultiline("##" + title, content, ImGuiInputTextFlags.None)) {
                 try {
                     JsonParser.parseString(content.get());

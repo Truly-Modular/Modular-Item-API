@@ -127,7 +127,7 @@ public class ModuleEditor implements MiapiEditor {
         }
 
         ImGui.setNextWindowSize(400, 300, ImGuiCond.FirstUseEver);
-        if (ImGui.begin("Module Editor", show)) {
+        if (ImGui.begin("Module Editor##"+ System.identityHashCode(this), show)) {
             renderModuleInstance();
         }
         if (ImGui.button("Save")) {

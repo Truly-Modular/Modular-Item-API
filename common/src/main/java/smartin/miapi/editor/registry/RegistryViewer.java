@@ -48,7 +48,7 @@ public class RegistryViewer<T> implements MiapiEditor {
         }
 
         ImGui.setNextWindowSize(800, 600, ImGuiCond.FirstUseEver);
-        if (ImGui.begin(getWindowTitle(), show)) {
+        if (ImGui.begin(getWindowTitle()+"##"+ System.identityHashCode(this), show)) {
             // Search bar
             if (ImGui.inputText("Search", searchText)) {
                 updateFilteredEntries();

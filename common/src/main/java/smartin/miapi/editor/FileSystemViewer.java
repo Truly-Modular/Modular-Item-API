@@ -97,7 +97,7 @@ public class FileSystemViewer implements MiapiEditor {
         }
 
         ImGui.setNextWindowSize(800, 600, ImGuiCond.FirstUseEver);
-        if (ImGui.begin("File System Viewer", show)) {
+        if (ImGui.begin("File System Viewer##"+ System.identityHashCode(this), show)) {
             // Add buttons at the top
             /*
             if (ImGui.button("New Folder")) {

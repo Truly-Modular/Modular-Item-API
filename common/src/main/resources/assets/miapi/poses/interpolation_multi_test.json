@@ -1,0 +1,43 @@
+{
+  "name": "nucleus:multi_interpolation_test",
+  "frames": [
+    {
+      "leftArm": {
+        "position": [1, 0, 0],
+        "rotation": [0, 0, 0],
+        "scale": [1, 1, 1]
+      },
+      "interpolate": "easeInOut",
+      "endTime": 1
+    },
+    {
+      "rightArm": {
+        "position": [1, 10, 0],
+        "rotation": [0, 0, 0],
+        "scale": [1, 1, 1]
+      },
+      "interpolate": "easeInOut",
+      "endTime": 2
+    },
+    {
+      "leftArm": {
+        "position": [1, 10, 0],
+        "rotation": [180, 0, 0],
+        "scale": [1, 1, 1]
+      },
+      "interpolate": "easeInOut",
+      "endTime": 3
+    },
+    {
+      "rightArm": {
+        "position": [1, 0, 0],
+        "rotation": [180, 0, 0],
+        "scale": [1, 1, 1]
+      },
+      "interpolate": "easeInOut",
+      "endTime": 4
+    }
+  ],
+  "loops": 3,
+  "nextPose": "nucleus:item_test"
+}

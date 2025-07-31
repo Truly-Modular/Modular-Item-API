@@ -45,9 +45,14 @@ public class EditorCommands {
                 .then(Commands.literal("editor")
                         .then(Commands.literal("material")
                                 .executes(EditorCommands::executeOpenMaterialEditor)));
+        LiteralArgumentBuilder<CommandSourceStack> poseEditor = Commands.literal("miapi")
+                .then(Commands.literal("editor")
+                        .then(Commands.literal("pose")
+                                .executes(EditorCommands::executeOpenPoseEditor)));
         dispatcher.register(runPose);
         dispatcher.register(fs);
         dispatcher.register(materialEditor);
+        dispatcher.register(poseEditor);
         if (Platform.getEnv() == EnvType.CLIENT) {
             registerClient();
         }
@@ -138,6 +143,13 @@ public class EditorCommands {
                 context.getSource().sendFailure(Component.literal("Hand Item is not a valid modular item!"));
                 return -1;
             }
+        });
+    }
+
+    private static int executeOpenPoseEditor(CommandContext<CommandSourceStack> context) {
+        return canExecute(context, (c) -> {
+            editors.add(new HumanoidPoseAnimationRegistryEditor());
+            return 1; // Return success
         });
     }
 

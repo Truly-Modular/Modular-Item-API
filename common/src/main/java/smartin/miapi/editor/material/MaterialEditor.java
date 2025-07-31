@@ -109,7 +109,7 @@ public class MaterialEditor implements MiapiEditor {
         }
 
         ImGui.setNextWindowSize(600, 400, ImGuiCond.FirstUseEver);
-        if (ImGui.begin("Material Editor", show)) {
+        if (ImGui.begin("Material Editor##"+ System.identityHashCode(this), show)) {
             renderMaterialProperties();
 
             if (ImGui.button("Save")) {

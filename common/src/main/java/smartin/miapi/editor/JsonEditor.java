@@ -198,7 +198,7 @@ public class JsonEditor implements MiapiEditor {
 
         ImGui.pushID(resourceLocation.toString());
         ImGui.setNextWindowSize(800, 600, ImGuiCond.FirstUseEver);
-        if (ImGui.begin("JSON Editor " + resourceLocation, show)) {
+        if (ImGui.begin("JSON Editor " + resourceLocation+"##"+ System.identityHashCode(this), show)) {
             float windowWidth = ImGui.getWindowWidth();
             float windowHeight = ImGui.getWindowHeight();
 

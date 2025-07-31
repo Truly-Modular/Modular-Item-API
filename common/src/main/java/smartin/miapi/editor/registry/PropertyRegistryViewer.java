@@ -56,7 +56,7 @@ public class PropertyRegistryViewer extends RegistryViewer<ModuleProperty> {
 
     private void renderTestEditor(ModuleProperty property) {
         ImGui.setNextWindowSize(400, 300, ImGuiCond.FirstUseEver);
-        if (ImGui.begin("Test Property: " + selectedEntry.get(), showTestEditor)) {
+        if (ImGui.begin("Test Property: " + selectedEntry.get()+"##"+ System.identityHashCode(this), showTestEditor)) {
             ImGui.text("Enter JSON to test property parsing:");
             
             if (ImGui.inputTextMultiline("##testJson", testJson, 
