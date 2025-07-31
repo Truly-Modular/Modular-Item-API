@@ -3,12 +3,14 @@ package smartin.miapi.editor.renderers;
 import com.redpxnda.nucleus.pose.client.HumanoidPoseAnimation;
 import imgui.ImGui;
 
+import java.util.EnumMap;
 import java.util.function.Consumer;
 
 public class FrameEditor {
     private final HumanoidPoseAnimation.Frame frame;
     private final Consumer<HumanoidPoseAnimation.Frame> onChange;
     private final Runnable onDelete;
+    private final EnumMap<PartType, PartStateEditor> editorCache = new EnumMap<>(PartType.class);
 
     public FrameEditor(HumanoidPoseAnimation.Frame frame, Consumer<HumanoidPoseAnimation.Frame> onChange, Runnable onDelete) {
         this.frame = frame;
@@ -28,7 +30,8 @@ public class FrameEditor {
             for (PartType type : PartType.values()) {
                 HumanoidPoseAnimation.PartState part = getPart(type);
                 if (part != null) {
-                    renderPart(type.name().replaceAll("([A-Z])", " $1").trim(), part, p -> setPart(type, p));
+                    renderPart(type.name().replaceAll("([A-Z])", " $1").trim(), part, p -> setPart(type, p), type);
+
                 }
             }
 
@@ -148,24 +151,40 @@ public class FrameEditor {
         }
     }
 
-    private void renderPart(String label, HumanoidPoseAnimation.PartState partState, Consumer<HumanoidPoseAnimation.PartState> setter) {
-        if (ImGui.treeNode(label+"##"+System.identityHashCode(this))) {
-            new PartStateEditor(partState, updated -> {
-                setter.accept(updated);
-                triggerChange();
-            }).render();
+    private void renderPart(String label, HumanoidPoseAnimation.PartState partState, Consumer<HumanoidPoseAnimation.PartState> setter, PartType type) {
+        if (ImGui.treeNode(label + "##" + System.identityHashCode(this))) {
 
-            // Add Delete Button for the Part
+            // Check for cached editor
+            PartStateEditor editor = editorCache.get(type);
+
+            // Update cache if partState changed (added, replaced, or recreated)
+            if (partState == null) {
+                editorCache.remove(type);
+            } else if (editor == null || editor.getMultiplier() != partState) {
+                editor = new PartStateEditor(partState, updated -> {
+                    setter.accept(updated);
+                    triggerChange();
+                });
+                editorCache.put(type, editor);
+            }
+
+            if (editor != null) {
+                editor.render();
+            }
+
+            // Delete button
             if (ImGui.button("Delete " + label)) {
-                setter.accept(null); // Set the part to null
+                setter.accept(null); // remove part
+                editorCache.remove(type); // remove editor
                 triggerChange();
-                ImGui.treePop(); // Close the tree early since part is now deleted
+                ImGui.treePop();
                 return;
             }
 
             ImGui.treePop();
         }
     }
+
 
     private enum PartType {
         Head, Body,

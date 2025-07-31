@@ -1,7 +1,9 @@
 package smartin.miapi.editor.renderers;
 
+import com.redpxnda.nucleus.math.InterpolateMode;
 import com.redpxnda.nucleus.pose.client.HumanoidPoseAnimation;
 import imgui.ImGui;
+import imgui.type.ImBoolean;
 import org.joml.Vector3f;
 
 import java.util.function.Consumer;
@@ -16,6 +18,10 @@ public class PartStateEditor {
     private final Vector3fEditor positionEditor;
     private final Vector3fEditor rotationEditor;
     private final Vector3fEditor scaleEditor;
+    private final InterpolateModeEditor interpolateModeEditor;
+
+    private final ImBoolean interpolationEnabled;
+    private InterpolateMode lastUsedInterpolation = null;
 
     public PartStateEditor(HumanoidPoseAnimation.PartState multiplier, Consumer<HumanoidPoseAnimation.PartState> onChange) {
         this.multiplier = multiplier;
@@ -41,6 +47,20 @@ public class PartStateEditor {
         });
 
         this.scaleEditor = new Vector3fEditor("Scale", 0.01f, multiplier.scale, v -> triggerChange());
+
+        this.interpolationEnabled = new ImBoolean(multiplier.interpolateMode != null);
+        this.lastUsedInterpolation = multiplier.interpolateMode;
+
+        this.interpolateModeEditor = new InterpolateModeEditor(
+                multiplier.interpolateMode,
+                mode -> {
+                    lastUsedInterpolation = mode;
+                    if (interpolationEnabled.get()) {
+                        multiplier.interpolateMode = mode;
+                        triggerChange();
+                    }
+                }
+        );
     }
 
     public void render() {
@@ -50,37 +70,24 @@ public class PartStateEditor {
         scaleEditor.render();
 
         ImGui.separator();
-                /*
-        ImGui.text("Interpolation Mode (JSON or null)");
 
-        String initialText = multiplier.interpolateMode != null
-                ? multiplier.interpolateMode.toString()
-                : "";
-
-        ImString jsonInput = new ImString(initialText, 1024);
-
-        if (ImGui.inputTextMultiline("##interpJson", jsonInput, ImGuiInputTextFlags.AutoSelectAll)) {
-            String input = jsonInput.get().trim();
-            if (input.isEmpty()) {
-                multiplier.interpolateMode = null;
-                triggerChange();
-            } else {
-                try {
-                    JsonElement parsed = JsonParser.parseString(input);
-                    multiplier.interpolateMode = InterpolateMode.codec.decode(JsonOps.INSTANCE, parsed)
-                            .result()
-                            .orElseThrow()
-                            .getFirst();
-                    triggerChange();
-                } catch (Exception e) {
-                    // Optional: log or display parse error
+        if (ImGui.checkbox("Custom Interpolation", interpolationEnabled)) {
+            if (interpolationEnabled.get()) {
+                // Re-enable last known mode or default
+                multiplier.interpolateMode = lastUsedInterpolation != null ? lastUsedInterpolation : null;
+                if (lastUsedInterpolation == null) {
+                    lastUsedInterpolation = InterpolateMode.LERP;
+                    multiplier.interpolateMode = lastUsedInterpolation;
                 }
+            } else {
+                multiplier.interpolateMode = null;
             }
+            triggerChange();
         }
 
-         */
-
-
+        if (interpolationEnabled.get()) {
+            interpolateModeEditor.render();
+        }
     }
 
     private void triggerChange() {
@@ -88,7 +95,7 @@ public class PartStateEditor {
                 new Vector3f(multiplier.position),
                 new Vector3f(multiplier.rotation),
                 new Vector3f(multiplier.scale),
-                null
+                multiplier.interpolateMode
         ));
     }
 
