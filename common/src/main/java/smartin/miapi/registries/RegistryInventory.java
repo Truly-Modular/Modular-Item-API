@@ -154,7 +154,7 @@ public class RegistryInventory {
     public static final MiapiRegistry<Material> MATERIAL_REGISTRY = MiapiRegistry.getInstance(Material.class);
     public static final Registrar<LootItemFunctionType<?>> LOOT_ITEM_FUNCTION_TYPE_REGISTRAR = registrar.get().get(Registries.LOOT_FUNCTION_TYPE);
     public static final Registrar<LootItemConditionType> LOOT_ITEM_CONDITION_TYPE_REGISTRAR = registrar.get().get(Registries.LOOT_CONDITION_TYPE);
-    public static final TagKey<Item> MIAPI_FORBIDDEN_TAG = TagKey.create(Registries.ITEM, ResourceLocation.parse("miapi_forbidden"));
+    public static final TagKey<Item> MIAPI_FORBIDDEN_TAG = TagKey.create(Registries.ITEM, Miapi.id("forbidden"));
     public static final TagKey<Item> MIAPI_MATERIALS = TagKey.create(Registries.ITEM, ResourceLocation.parse("miapi_materials"));
 
     public static <T> RegistrySupplier<T> registerAndSupply(Registrar<T> rg, ResourceLocation id, Supplier<T> object) {

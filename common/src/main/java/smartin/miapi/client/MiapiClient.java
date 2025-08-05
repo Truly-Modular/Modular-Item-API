@@ -40,6 +40,7 @@ import smartin.miapi.client.model.ModularModelPredicateProvider;
 import smartin.miapi.client.renderer.SpriteLoader;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.datapack.ReloadEvents;
+import smartin.miapi.editor.EditorCommands;
 import smartin.miapi.effects.CryoStatusEffect;
 import smartin.miapi.entity.ItemProjectileRenderer;
 import smartin.miapi.events.MiapiEvents;
@@ -142,16 +143,14 @@ public class MiapiClient {
         ClientReloadShadersEvent.EVENT.register((resourceFactory, shadersSink) -> {
             MiapiEvents.CLEAR_CACHE.invoker().onReload();
             if (Minecraft.getInstance().level != null) {
-                Minecraft.getInstance().execute(() -> {
-                    Map<ResourceLocation, String> cacheDatapack = new LinkedHashMap<>(ReloadEvents.DATA_PACKS);
-                    ReloadEvents.reloadCounter++;
-                    ReloadEvents.START.fireEvent(true, Minecraft.getInstance().level.registryAccess());
-                    ReloadEvents.DataPackLoader.trigger(cacheDatapack);
-                    ReloadEvents.MAIN.fireEvent(true, Minecraft.getInstance().level.registryAccess());
-                    ReloadEvents.END.fireEvent(true, Minecraft.getInstance().level.registryAccess());
-                    ReloadEvents.reloadCounter--;
-                    MiapiEvents.CLEAR_CACHE.invoker().onReload();
-                });
+                ReloadEvents.reloadCounter++;
+                Map<ResourceLocation, String> cacheDatapack = new LinkedHashMap<>(ReloadEvents.DATA_PACKS);
+                ReloadEvents.START.fireEvent(true, Minecraft.getInstance().level.registryAccess());
+                ReloadEvents.DataPackLoader.trigger(cacheDatapack);
+                ReloadEvents.MAIN.fireEvent(true, Minecraft.getInstance().level.registryAccess());
+                ReloadEvents.END.fireEvent(true, Minecraft.getInstance().level.registryAccess());
+                ReloadEvents.reloadCounter--;
+                MiapiEvents.CLEAR_CACHE.invoker().onReload();
             }
         });
 
@@ -233,6 +232,10 @@ public class MiapiClient {
             return options;
         });
         GlintShader.registerShaders();
+
+        if (Platform.getEnv() == EnvType.CLIENT) {
+            EditorCommands.registerClient();
+        }
         //Minecraft client = Minecraft.getInstance();
         //materialAtlasManager = new MaterialAtlasManager(client.getTextureManager());
         //ReloadListenerRegistry.register(PackType.CLIENT_RESOURCES, materialAtlasManager);

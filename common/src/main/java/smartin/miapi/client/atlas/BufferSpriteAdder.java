@@ -31,6 +31,7 @@ public class BufferSpriteAdder implements SpriteSource {
     @Override
     public void run(ResourceManager resourceManager, Output output) {
         MaterialSpriteManager.ATLAS_SPRITE_POOL.clear();
+        MaterialSpriteManager.FAST_CACHE.clear();
         MiapiConfig.getClientConfig().other.cacheSprites.forEach(cacheSprites -> {
             for (int i = 0; i < cacheSprites.count; i++) {
                 List<MaterialSpriteManager.SpriteSlot> slots = MaterialSpriteManager.ATLAS_SPRITE_POOL.computeIfAbsent(MaterialSpriteManager.resToKey(cacheSprites.x, cacheSprites.y), (s) -> new ArrayList<>());

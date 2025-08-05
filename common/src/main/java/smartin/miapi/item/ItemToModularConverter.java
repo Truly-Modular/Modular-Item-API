@@ -47,6 +47,9 @@ public class ItemToModularConverter implements ModularItemStackConverter.Modular
     }
 
     public boolean preventConvert(ItemStack itemStack) {
+        if(itemStack.is(RegistryInventory.MIAPI_FORBIDDEN_TAG)){
+            return true;
+        }
         return false;
     }
 

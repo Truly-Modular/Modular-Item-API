@@ -1,9 +1,9 @@
 package smartin.miapi.modules.abilities;
 
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.DynamicOps;
 import com.redpxnda.nucleus.codec.auto.AutoCodec;
 import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -19,6 +19,7 @@ import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.UseAnim;
+import net.minecraft.world.item.enchantment.EnchantmentEffectComponents;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
@@ -39,6 +40,9 @@ public class RiptideAbility implements ItemUseDefaultCooldownAbility<RiptideAbil
 
     @Override
     public boolean allowedOnItem(ItemStack itemStack, Level world, Player player, InteractionHand hand, ItemAbilityManager.AbilityHitContext abilityHitContext) {
+        if (EnchantmentHelper.getTridentSpinAttackStrength(itemStack, player) == 0) {
+            return false;
+        }
         return true;
     }
 
@@ -70,34 +74,43 @@ public class RiptideAbility implements ItemUseDefaultCooldownAbility<RiptideAbil
         return RiptideAbility.CODEC;
     }
 
-    public void onStoppedUsingAfter(ItemStack stack, Level world, LivingEntity user, int remainingUseTicks) {
-        if (user instanceof Player playerEntity && world instanceof ServerLevel serverLevel) {
-            int i = this.getMaxUseTime(stack, user) - remainingUseTicks;
-            if (i >= 10) {
-                RiptideContextJson riptideContextJson = getSpecialContext(stack);
-                int j = EnchantmentHelper.getTridentReturnToOwnerAcceleration(serverLevel, stack, user);
+    public void onStoppedUsingAfter(ItemStack stack, Level level, LivingEntity livingEntity, int timeCharged) {
+        if (livingEntity instanceof Player player) {
+            int var6 = this.getMaxUseTime(stack, livingEntity) - timeCharged;
+            if (var6 >= 10) {
+                float f = EnchantmentHelper.getTridentSpinAttackStrength(stack, player);
+                if (player.isInWaterOrRain()) {
+                    if (!isTooDamagedToUse(stack)) {
+                        Holder<SoundEvent> holder = (Holder) EnchantmentHelper.pickHighestLevel(stack, EnchantmentEffectComponents.TRIDENT_SOUND).orElse(SoundEvents.TRIDENT_THROW);
+                        player.awardStat(Stats.ITEM_USED.get(stack.getItem()));
+                        if (f > 0.0F) {
+                            float g = player.getYRot();
+                            float h = player.getXRot();
+                            float j = -Mth.sin(g * 0.017453292F) * Mth.cos(h * 0.017453292F);
+                            float k = -Mth.sin(h * 0.017453292F);
+                            float l = Mth.cos(g * 0.017453292F) * Mth.cos(h * 0.017453292F);
+                            float m = Mth.sqrt(j * j + k * k + l * l);
+                            j *= f / m;
+                            k *= f / m;
+                            l *= f / m;
+                            player.push((double) j, (double) k, (double) l);
+                            player.startAutoSpinAttack(20, 8.0F, stack);
+                            if (player.onGround()) {
+                                float n = 1.1999999F;
+                                player.move(MoverType.SELF, new Vec3(0.0, 1.1999999284744263, 0.0));
+                            }
 
-                playerEntity.awardStat(Stats.ITEM_USED.get(stack.getItem()));
-                float f = playerEntity.getYRot();
-                float g = playerEntity.getXRot();
-                float h = -Mth.sin(f * 0.017453292F) * Mth.cos(g * 0.017453292F);
-                float k = -Mth.sin(g * 0.017453292F);
-                float l = Mth.cos(f * 0.017453292F) * Mth.cos(g * 0.017453292F);
-                float m = Mth.sqrt(h * h + k * k + l * l);
-                float n = (float) (riptideContextJson.riptideStrength.getValue() * ((1.0F + j) / 4.0F));
-                h *= n / m;
-                k *= n / m;
-                l *= n / m;
-                playerEntity.push(h, k, l);
-                playerEntity.startAutoSpinAttack((int) riptideContextJson.spinDuration.getValue(), EnchantmentHelper.getTridentSpinAttackStrength(stack, user), stack);
-                if (playerEntity.onGround()) {
-                    playerEntity.move(MoverType.SELF, new Vec3(0.0, 1.1999999284744263, 0.0));
+                            level.playSound((Player) null, player, (SoundEvent) holder.value(), SoundSource.PLAYERS, 1.0F, 1.0F);
+                        }
+
+                    }
                 }
-
-                SoundEvent soundEvent = riptideContextJson.resolveSoundEvent(j);
-                world.playSound(null, playerEntity, soundEvent, SoundSource.PLAYERS, 1.0F, 1.0F);
             }
         }
+    }
+
+    private static boolean isTooDamagedToUse(ItemStack stack) {
+        return stack.getDamageValue() >= stack.getMaxDamage() - 1;
     }
 
     @Override

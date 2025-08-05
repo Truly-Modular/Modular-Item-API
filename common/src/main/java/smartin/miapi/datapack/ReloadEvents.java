@@ -92,7 +92,7 @@ public class ReloadEvents {
     /**
      * This int counts the reloads, on reload start it gets increased, on reload end it decreases. if its 0 no reload is happening
      */
-    public static int reloadCounter = 0;
+    public static volatile int reloadCounter = 0;
 
     public static void setup() {
         if (Environment.isClient()) {

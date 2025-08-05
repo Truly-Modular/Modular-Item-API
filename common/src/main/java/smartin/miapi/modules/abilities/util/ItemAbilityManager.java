@@ -110,7 +110,8 @@ public class ItemAbilityManager {
             keybindID = serverKeyBindID.get(player);
         }
         if (keybindID == null) {
-            for (Map.Entry<ItemUseAbility<?>, Object> entry : AbilityMangerProperty.property.getData(itemStack).orElse(new HashMap<>()).entrySet()) {
+            var data = AbilityMangerProperty.property.getData(itemStack).orElse(new LinkedHashMap<>());
+            for (Map.Entry<ItemUseAbility<?>, Object> entry : data.entrySet()) {
                 if (entry.getKey().allowedOnItem(itemStack, world, player, hand, abilityHitContext)) {
                     //return new Pair<>(entry.getKey(), entry.getValue());
                     if (player instanceof ServerPlayer serverPlayer) {
@@ -120,7 +121,7 @@ public class ItemAbilityManager {
                 }
             }
         } else {
-            var map = KeyBindAbilityManagerProperty.property.getData(itemStack).orElse(new HashMap<>());
+            var map = KeyBindAbilityManagerProperty.property.getData(itemStack).orElse(new LinkedHashMap<>());
             Map<ItemUseAbility<?>, Object> abilities = map.get(keybindID);
             if (abilities != null) {
                 for (Map.Entry<ItemUseAbility<?>, Object> entry : abilities.entrySet()) {

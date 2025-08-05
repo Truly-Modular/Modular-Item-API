@@ -25,6 +25,7 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.GlintShader;
+import smartin.miapi.client.atlas.MaterialSpriteManager;
 import smartin.miapi.client.model.MiapiModel;
 import smartin.miapi.client.model.ModelHolder;
 import smartin.miapi.client.model.ModelTransformer;
@@ -131,6 +132,7 @@ public class BakedMiapiModel implements MiapiModel {
             }
         } catch (RuntimeException e) {
             Miapi.LOGGER.error("rendering error in module " + instance.moduleID + " " + MaterialProperty.getMaterial(instance), e);
+            MaterialSpriteManager.clear();
         }
         Minecraft.getInstance().getProfiler().pop();
 

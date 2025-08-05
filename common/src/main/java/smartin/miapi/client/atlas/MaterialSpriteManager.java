@@ -117,6 +117,11 @@ public class MaterialSpriteManager {
      */
     public static void clear() {
         materialSpriteCache.invalidateAll();
+        ANIMATED_ATLAS_SPRITES.clear();
+        FAST_CACHE.forEach((h,s)->{
+            s.used = 0;
+        });
+        FAST_CACHE.clear();
         //TODO:free atlas sprites
     }
 

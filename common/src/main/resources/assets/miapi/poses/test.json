@@ -1,0 +1,307 @@
+{
+    "name": "miapi:test",
+    "frames": [
+        {
+            "head": null,
+            "body": null,
+            "fpUsedArm": null,
+            "fpUnusedArm": null,
+            "fpRightArm": null,
+            "fpLeftArm": null,
+            "usedArm": null,
+            "unusedArm": null,
+            "rightArm": null,
+            "leftArm": null,
+            "usedItem": null,
+            "unusedItem": null,
+            "rightItem": null,
+            "leftItem": null,
+            "rightLeg": null,
+            "leftLeg": null,
+            "interpolate": {
+                "type": "easeInOut",
+                "amplifier": 2.0
+            },
+            "endTime": 1.0
+        },
+        {
+            "head": null,
+            "body": null,
+            "fpUsedArm": null,
+            "fpUnusedArm": null,
+            "fpRightArm": null,
+            "fpLeftArm": null,
+            "usedArm": {
+                "position": [
+                    0.04845034,
+                    0.0,
+                    0.0
+                ],
+                "rotation": [
+                    -2.3251975,
+                    -0.20943952,
+                    0.27925268
+                ],
+                "scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ],
+                "interpolateMode": {
+                    "type": "easeIn",
+                    "amplifier": 100.0
+                }
+            },
+            "unusedArm": {
+                "position": [
+                    0.549,
+                    0.062,
+                    0.0
+                ],
+                "rotation": [
+                    -2.4958208,
+                    -0.55850536,
+                    0.0
+                ],
+                "scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ],
+                "interpolateMode": null
+            },
+            "rightArm": null,
+            "leftArm": null,
+            "usedItem": {
+                "position": [
+                    0.017,
+                    0.0,
+                    0.0
+                ],
+                "rotation": [
+                    -0.23415338,
+                    -0.34906584,
+                    0.05235988
+                ],
+                "scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ],
+                "interpolateMode": {
+                    "type": "easeOut",
+                    "amplifier": 60.2
+                }
+            },
+            "unusedItem": null,
+            "rightItem": null,
+            "leftItem": null,
+            "rightLeg": null,
+            "leftLeg": null,
+            "interpolate": {
+                "type": "easeInOut",
+                "amplifier": 2.0
+            },
+            "endTime": 0.26
+        },
+        {
+            "head": null,
+            "body": null,
+            "fpUsedArm": null,
+            "fpUnusedArm": null,
+            "fpRightArm": null,
+            "fpLeftArm": null,
+            "usedArm": {
+                "position": [
+                    0.12845623,
+                    0.0,
+                    0.0
+                ],
+                "rotation": [
+                    -0.9536479,
+                    -0.4886922,
+                    0.12217305
+                ],
+                "scale": [
+                    1.0,
+                    1.1,
+                    1.0
+                ],
+                "interpolateMode": null
+            },
+            "unusedArm": {
+                "position": [
+                    0.281,
+                    0.0,
+                    -0.25
+                ],
+                "rotation": [
+                    -1.3788102,
+                    -0.36651915,
+                    0.0
+                ],
+                "scale": [
+                    1.0,
+                    1.16,
+                    1.0
+                ],
+                "interpolateMode": null
+            },
+            "rightArm": null,
+            "leftArm": null,
+            "usedItem": {
+                "position": [
+                    0.051,
+                    -0.187,
+                    -0.125
+                ],
+                "rotation": [
+                    -1.3027138,
+                    -0.017453292,
+                    -0.2268928
+                ],
+                "scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ],
+                "interpolateMode": null
+            },
+            "unusedItem": null,
+            "rightItem": null,
+            "leftItem": null,
+            "rightLeg": null,
+            "leftLeg": null,
+            "interpolate": {
+                "type": "easeInOut",
+                "amplifier": 2.0
+            },
+            "endTime": 2.56
+        }
+    ],
+    "loops": -1,
+    "initialPose": {
+        "head": {
+            "position": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "interpolateMode": null
+        },
+        "body": {
+            "position": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "interpolateMode": null
+        },
+        "fpUsedArm": {
+            "position": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "interpolateMode": null
+        },
+        "fpUnusedArm": null,
+        "fpRightArm": null,
+        "fpLeftArm": null,
+        "usedArm": null,
+        "unusedArm": null,
+        "rightArm": null,
+        "leftArm": null,
+        "usedItem": null,
+        "unusedItem": null,
+        "rightItem": null,
+        "leftItem": null,
+        "rightLeg": {
+            "position": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "interpolateMode": null
+        },
+        "leftLeg": {
+            "position": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "interpolateMode": null
+        },
+        "interpolate": "none",
+        "endTime": 0.0
+    },
+    "resetFirstPersonView": false,
+    "leftHandMultiplier": {
+        "position": [
+            -1.0,
+            1.0,
+            1.0
+        ],
+        "rotation": [
+            1.0,
+            -1.0,
+            -1.0
+        ],
+        "scale": [
+            1.0,
+            1.0,
+            1.0
+        ]
+    },
+    "nextPose": null
+}

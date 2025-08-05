@@ -53,13 +53,10 @@ public class EditorCommands {
         dispatcher.register(fs);
         dispatcher.register(materialEditor);
         dispatcher.register(poseEditor);
-        if (Platform.getEnv() == EnvType.CLIENT) {
-            registerClient();
-        }
     }
 
     @Environment(EnvType.CLIENT)
-    private static void registerClient() {
+    public static void registerClient() {
         JsonEditor.registerGlobalInterface(new JsonSyntaxHighlighter());
         JsonEditor.registerGlobalInterface(new PropertyMapHighlighter());
         var synergyValidator = new CodecValidatorInterface(SynergyManager.SYNERGY_CODEC, "Synergy Validator");
