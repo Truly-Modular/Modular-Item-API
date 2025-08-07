@@ -32,8 +32,6 @@ import smartin.miapi.craft.stat.StatActorType;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.datapack.ReloadHelpers;
 import smartin.miapi.editor.EditorCommands;
-import smartin.miapi.editor.LiveDataPackManager;
-import smartin.miapi.entity.ProjectileWithBow;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.item.ItemToModularConverter;
 import smartin.miapi.item.ModularItemStackConverter;
@@ -165,7 +163,6 @@ public class Miapi {
         GeneratedMaterialManager.setup();
         KeyBindManager.setup();
         ReloadHelpers.registerReloadHandlers();
-        LiveDataPackManager.setup();
 
         LifecycleEvent.SERVER_BEFORE_START.register(minecraftServer -> {
             server = minecraftServer;
@@ -229,7 +226,6 @@ public class Miapi {
             }
             return EventResult.pass();
         });
-        ProjectileWithBow.get();
     }
 
 

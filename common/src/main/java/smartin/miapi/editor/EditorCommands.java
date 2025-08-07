@@ -152,7 +152,7 @@ public class EditorCommands {
 
     private static int executeOpenEditor(CommandContext<CommandSourceStack> context) {
         return canExecute(context, (c) -> {
-            editors.add(new LiveDataPackEditorManager());
+            LiveDataPackEditorManager.openLivePackEditor();
             return 1; // Return success
         });
     }

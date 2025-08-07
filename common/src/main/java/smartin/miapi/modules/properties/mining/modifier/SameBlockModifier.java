@@ -19,7 +19,7 @@ import java.util.List;
 /**
  * The `SameBlockModifier` class implements a mining modifier that adjusts the list of blocks to mine based on whether they match the type of the initial block.
  * @header Same Block modifier
- * @path /data_types/properties/mining/shape/same_block_modifier
+ * @path /data_types/properties/mining/shape/modifier/same_block_modifier
  * @description_start
  * This modifier ensures that only blocks of the same type as the one being initially mined are processed. If the `requireSame` flag is set to true, the modifier will filter the list of blocks to only include those of the same type as the starting block. If set to false, all blocks in the list will be processed.
  * @description_end

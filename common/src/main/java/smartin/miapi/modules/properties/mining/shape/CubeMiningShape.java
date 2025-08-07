@@ -18,6 +18,14 @@ import java.util.List;
  * This class adds a Cube Mining shape with
  * radius height, width, depth.
  * if height, width, depth are not defined they fallback onto radius
+ * @header Cube Shape
+ * @path /data_types/properties/mining/shape/shapes/cube
+ * @description_start
+ * A simple Cube Mining shape
+ * @description_end
+ * @data width: The width of the Cube.
+ * @data height: The height of the Cube.
+ * @data depth: The depth of the Cube.
  */
 public class CubeMiningShape implements MiningShape {
     public static MapCodec<CubeMiningShape> CODEC = AutoCodec.of(CubeMiningShape.class);

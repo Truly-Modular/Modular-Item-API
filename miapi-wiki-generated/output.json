@@ -496,7 +496,7 @@
                 },
                 "enchantability": {
                   "header": "Enchantability Property",
-                  "description": "  \nThe Enchantability Property defines how effective an item is for enchanting purposes.\rThis value influences the quality of enchantments available through the enchanting table.\rBy default, enchantability is derived from the material properties of the item, but this property allows for modification through module instances.\rIf no specific value is set, a default enchantability of 15 is used.\r",
+                  "description": " The Enchantability Property defines how effective an item is for enchanting purposes.  \nThis value influences the quality of enchantments available through the enchanting table.\rBy default, enchantability is derived from the material properties of the item, but this property allows for modification through module instances.\rIf no specific value is set, a default enchantability of 15 is used.\r",
                   "java": "common/src/main/java/smartin/miapi/modules/properties/enchanment/EnchantAbilityProperty.java",
                   "data": {
                     "enchantability": " double, representing the enchantability value used for enchantment calculations.",
@@ -581,7 +581,7 @@
             },
             "luminous_learning": {
               "header": "Luminous Learning Property",
-              "description": "  \nThe LuminousLearningProperty enhances the experience drops from both blocks and entities. When an item with this property\ris used to break blocks or when a player slays a mob, the amount of XP dropped is increased based on the configured value.\r *\r",
+              "description": " The LuminousLearningProperty enhances the experience drops from both blocks and entities. When an item with this property  \nis used to break blocks or when a player slays a mob, the amount of XP dropped is increased based on the configured value.\r",
               "java": "common/src/main/java/smartin/miapi/modules/properties/LuminousLearningProperty.java",
               "data": {
                 "luminious_learning": " the amount of XP increase."
@@ -598,7 +598,6 @@
                 "shape": {
                   "header": "Mining Shape Property",
                   "description": " The MiningShapeProperty controls how tools mine multiple blocks based on the configured mining shapes, conditions, and modes.  \nThis allows for varied mining behaviors such as mining entire veins or large areas with a single action.\r<p>\rThe property supports different mining shapes (e.g., cubes, veins), conditions (e.g., block tags, always mine), and modes (e.g., instant, staggered).\rIt also incorporates mining modifiers that can influence mining behavior, such as requiring all blocks to be the same type.\r",
-                  "java": "common/src/main/java/smartin/miapi/modules/properties/mining/MiningShapeProperty.java",
                   "data": {
                     "mining_modes": " instant or staggered exist by default",
                     "mining_conditions": " always and block_tag exist by default",
@@ -606,62 +605,111 @@
                   },
                   "key_words": [],
                   "sub_pages": {
-                    "always": {
-                      "header": "Always Mining Condition",
-                      "description": "  \nThis is condition less, you can just always mine whatever\r",
-                      "java": "common/src/main/java/smartin/miapi/modules/properties/mining/condition/AlwaysMiningCondition.java",
+                    "condition": {
+                      "header": "Mining Conditions",
+                      "description": "  \nConditions allow to restrict what blocks can be mined\r",
+                      "java": "common/src/main/java/smartin/miapi/modules/properties/mining/condition/MiningCondition.java",
                       "data": {},
-                      "key_words": []
+                      "key_words": [],
+                      "sub_pages": {
+                        "always": {
+                          "header": "Always Mining Condition",
+                          "description": "  \nThis is condition less, you can just always mine whatever\r",
+                          "java": "common/src/main/java/smartin/miapi/modules/properties/mining/condition/AlwaysMiningCondition.java",
+                          "data": {},
+                          "key_words": []
+                        },
+                        "block_tag": {
+                          "header": "Block Tag Condition",
+                          "description": "  \nThe `BlockTagCondition` implements the `MiningCondition` interface and is used to enforce that mining shapes only apply to blocks that have one of the specified tags.\rIt is useful for scenarios where you want to restrict the mining operation to blocks that are categorized under specific tags.\r",
+                          "java": "common/src/main/java/smartin/miapi/modules/properties/mining/condition/BlockTagCondition.java",
+                          "data": {
+                            "block_tag": " A list of block tags that are used to determine which blocks are eligible for mining. The mining operation will only apply to blocks with these tags."
+                          },
+                          "key_words": []
+                        }
+                      }
                     },
-                    "block_tag": {
-                      "header": "Block Tag Condition",
-                      "description": "  \nThe `BlockTagCondition` implements the `MiningCondition` interface and is used to enforce that mining shapes only apply to blocks that have one of the specified tags.\rIt is useful for scenarios where you want to restrict the mining operation to blocks that are categorized under specific tags.\r",
-                      "java": "common/src/main/java/smartin/miapi/modules/properties/mining/condition/BlockTagCondition.java",
-                      "data": {
-                        "block_tag": " A list of block tags that are used to determine which blocks are eligible for mining. The mining operation will only apply to blocks with these tags."
-                      },
-                      "key_words": []
+                    "mode": {
+                      "header": "Mining Mode",
+                      "description": "  \nA Mode controls the Mining directly, basically this is the way blocks are mined.\r",
+                      "java": "common/src/main/java/smartin/miapi/modules/properties/mining/mode/MiningMode.java",
+                      "data": {},
+                      "key_words": [],
+                      "sub_pages": {
+                        "instant_mining": {
+                          "header": "Instant Mining",
+                          "description": "  \nThis mode processes all blocks in the list instantly, creating drops at the exact location where each block was mined. It also includes a durability break chance which determines the likelihood of breaking the item during mining.\r *\r *\r",
+                          "java": "common/src/main/java/smartin/miapi/modules/properties/mining/mode/InstantMiningMode.java",
+                          "data": {
+                            "id": " The unique identifier for this mining mode, used in configurations and data definitions.",
+                            "durabilityBreakChance": " The probability that the item's durability will decrease during mining. This value ranges from 0.0 (no chance) to 1.0 (guaranteed breakage)."
+                          },
+                          "key_words": []
+                        },
+                        "staggered_mining": {
+                          "header": "Staggered Mining",
+                          "description": " This mode processes blocks in a staggered manner, giving a more gradual mining experience compared to instant mining. It handles mining tasks in a delayed fashion, which can help manage performance and resource usage during mining operations.  \n",
+                          "java": "common/src/main/java/smartin/miapi/modules/properties/mining/mode/StaggeredMiningMode.java",
+                          "data": {
+                            "speed": " The rate at which blocks are mined. Higher values result in faster mining speeds.",
+                            "durabilityBreakChance": " The probability that the item's durability will decrease during mining, ranging from 0.0 (no chance) to 1.0 (guaranteed breakage)."
+                          },
+                          "key_words": []
+                        }
+                      }
                     },
-                    "instant_mining": {
-                      "header": "Instant Mining",
-                      "description": "  \nThis mode processes all blocks in the list instantly, creating drops at the exact location where each block was mined. It also includes a durability break chance which determines the likelihood of breaking the item during mining.\r *\r *\r",
-                      "java": "common/src/main/java/smartin/miapi/modules/properties/mining/mode/InstantMiningMode.java",
-                      "data": {
-                        "codec": " Defines the codec used to serialize and deserialize `InstantMiningMode` instances.",
-                        "id": " The unique identifier for this mining mode, used in configurations and data definitions.",
-                        "durabilityBreakChance": " The probability that the item's durability will decrease during mining. This value ranges from 0.0 (no chance) to 1.0 (guaranteed breakage)."
-                      },
-                      "key_words": []
+                    "modifier": {
+                      "sub_pages": {
+                        "same_block_modifier": {
+                          "header": "Same Block modifier",
+                          "description": "  \nThis modifier ensures that only blocks of the same type as the one being initially mined are processed. If the `requireSame` flag is set to true, the modifier will filter the list of blocks to only include those of the same type as the starting block. If set to false, all blocks in the list will be processed.\r",
+                          "java": "common/src/main/java/smartin/miapi/modules/properties/mining/modifier/SameBlockModifier.java",
+                          "data": {
+                            "requireSame": " A boolean flag indicating whether only blocks of the same type as the initial block should be mined."
+                          },
+                          "key_words": []
+                        }
+                      }
                     },
-                    "staggered_mining": {
-                      "header": "Staggered Mining",
-                      "description": " This mode processes blocks in a staggered manner, giving a more gradual mining experience compared to instant mining. It handles mining tasks in a delayed fashion, which can help manage performance and resource usage during mining operations.  \n",
-                      "java": "common/src/main/java/smartin/miapi/modules/properties/mining/mode/StaggeredMiningMode.java",
-                      "data": {
-                        "speed": " The rate at which blocks are mined. Higher values result in faster mining speeds.",
-                        "durabilityBreakChance": " The probability that the item's durability will decrease during mining, ranging from 0.0 (no chance) to 1.0 (guaranteed breakage)."
-                      },
-                      "key_words": []
-                    },
-                    "same_block_modifier": {
-                      "header": "Same Block modifier",
-                      "description": "  \nThis modifier ensures that only blocks of the same type as the one being initially mined are processed. If the `requireSame` flag is set to true, the modifier will filter the list of blocks to only include those of the same type as the starting block. If set to false, all blocks in the list will be processed.\r",
-                      "java": "common/src/main/java/smartin/miapi/modules/properties/mining/modifier/SameBlockModifier.java",
-                      "data": {
-                        "requireSame": " A boolean flag indicating whether only blocks of the same type as the initial block should be mined."
-                      },
-                      "key_words": []
+                    "shapes": {
+                      "header": "Mining Shapes",
+                      "description": "  \nShapes set the overall Shape of what is to be mined\r",
+                      "java": "common/src/main/java/smartin/miapi/modules/properties/mining/shape/MiningShape.java",
+                      "data": {},
+                      "key_words": [],
+                      "sub_pages": {
+                        "cube": {
+                          "header": "Cube Shape",
+                          "description": "  \nA simple Cube Mining shape\r",
+                          "java": "common/src/main/java/smartin/miapi/modules/properties/mining/shape/CubeMiningShape.java",
+                          "data": {
+                            "width": " The width of the Cube.",
+                            "height": " The height of the Cube.",
+                            "depth": " The depth of the Cube."
+                          },
+                          "key_words": []
+                        },
+                        "vein": {
+                          "header": "Vein Shape",
+                          "description": "  \nThe Vein shape, mines connected ones of the same block\r",
+                          "java": "common/src/main/java/smartin/miapi/modules/properties/mining/shape/VeinMiningShape.java",
+                          "data": {
+                            "max": " The maximum distance blocks can be mined.",
+                            "size": " The maximum amount of blocks mined."
+                          },
+                          "key_words": []
+                        }
+                      }
                     }
-                  }
+                  },
+                  "java": "common/src/main/java/smartin/miapi/modules/properties/mining/MiningShapeProperty.java"
                 },
                 "mining_level": {
                   "header": "Mining Level Property",
                   "description": " The MiningLevelProperty manages the mining capabilities of tools, determining their effectiveness based on various rules and configurations.  \nThese configurations include block-specific mining speeds, block blacklists, and conditions for correct tool usage.\r<p>\rBy default, the mining level is influenced by the material properties associated with the tool.\rCustom rules can be defined to adjust mining speeds and tool compatibilities dynamically.\r",
                   "java": "common/src/main/java/smartin/miapi/modules/properties/mining/MiningLevelProperty.java",
                   "data": {
-                    "mining_capabilities": " A map linking mining rules to specific block tags for determining tool effectiveness.",
-                    "codec": " A codec for serializing and deserializing mining rules, allowing for flexible data handling.",
-                    "caching": " The property uses a caching mechanism to optimize performance when accessing mining rules.",
                     "mining_rules": "",
                     "`blocks`": " List of blocks that the tool can mine.",
                     "`block_list | blacklist_tag`": " List of blocks that the tool cannot mine.",
@@ -833,21 +881,21 @@
               "data": {},
               "key_words": [],
               "sub_pages": {
-                "on_damaged_effects": {
-                  "header": "On Damaged Effects Property",
-                  "description": " This property triggers specific potion effects on an entity when it is damaged. The effects and their  \nproperties (such as duration, amplifier, probability) are defined by `PossibleEffect` instances. The effects\rcan be configured to apply to either the attacker or the target entity, based on the `targetSelf` parameter.\r",
-                  "java": "common/src/main/java/smartin/miapi/modules/properties/potion/OnDamagedEffects.java",
+                "on_hit_target_effects": {
+                  "header": "On Hit Target Effects Property",
+                  "description": " This property triggers specific potion effects on the target entity when the attacker hits it.  \nThe effects is defensive in nature and triggered by the defenders items.\rare defined by `PossibleEffect` instances, which include parameters like probability, duration, and amplifier.\rThe effects can be configured to apply based on various conditions, and the tooltip will display relevant\rinformation about these effects.\r",
+                  "java": "common/src/main/java/smartin/miapi/modules/properties/potion/OnHitDefensiveEffects.java",
                   "data": {
-                    "effects": " A list of `PossibleEffect` instances, each defining a potion effect to be applied under certain conditions."
+                    "effects": " A list of `PossibleEffect` instances that define the potion effects to be applied when hitting the target entity."
                   },
                   "key_words": []
                 },
-                "on_hit_target_effects": {
-                  "header": "On Hit Target Effects Property",
-                  "description": " This property triggers specific potion effects on the target entity when the attacker hits it. The effects  \nare defined by `PossibleEffect` instances, which include parameters like probability, duration, and amplifier.\rThe effects can be configured to apply based on various conditions, and the tooltip will display relevant\rinformation about these effects.\r",
-                  "java": "common/src/main/java/smartin/miapi/modules/properties/potion/OnHitTargetEffects.java",
+                "on_damaged_effects": {
+                  "header": "On Damaged Effects Property",
+                  "description": " This property triggers specific potion effects on an entity when it is damaged.  \nThis Effect is Aggressive in Nature and triggered from the Attackers Items.\rThe effects and their\rproperties (such as duration, amplifier, probability) are defined by `PossibleEffect` instances. The effects\rcan be configured to apply to either the attacker or the target entity, based on the `targetSelf` parameter.\r",
+                  "java": "common/src/main/java/smartin/miapi/modules/properties/potion/OnHitOffensiveEffects.java",
                   "data": {
-                    "effects": " A list of `PossibleEffect` instances that define the potion effects to be applied when hitting the target entity."
+                    "effects": " A list of `PossibleEffect` instances, each defining a potion effect to be applied under certain conditions."
                   },
                   "key_words": []
                 },
@@ -1113,31 +1161,31 @@
         },
         "abilities": {
           "header": "Abilities",
-          "description": "Abilities are set via the Ability Property and are used to control the right click behaviour of modular items.\r\rWIP: \rthe ability system is planned to be extended (mostly arround the ability property to add more functionality)\r\rThe Ability Property ``miapi:abilities`` controls the abilities.  \rThe Property is a list of abilities that are tried in order.\rif the first one cannot be executed (f.e. axe carve can only be executed on certain blocks) the next one is tried.\rMany Abilities share common fields:  \r- ``cooldown`` will set the item on cooldown after usage (often defaults to 0)\r- ``min_hold`` how long the minimum hold time is before activation (often defaults to 0)\r- ``max_hold`` how long right click can be held. (often defaults to an hour)",
+          "description": "Abilities are set via the Ability Property and are used to control the right click behaviour of modular items.\r\rWIP: \rthe ability system is planned to be extended (mostly arround the ability property to add more functionality)\r\rThe Ability Property ``miapi:abilities`` controls the abilities.  \rThe Property is a list of abilities that are tried in order.\rif the first one cannot be executed (f.e. axe carve can only be executed on certain blocks) the next one is tried.\rMany Abilities share common fields:  \r- ``cooldown`` will set the item on cooldown after usage (often defaults to 0)\r- ``min_hold`` how long the minimum hold time is before activation (often defaults to 0)\r- ``max_hold`` how long right click can be held. (often defaults to an hour)\r\rCurrently, abilities utilize the Ability Manager Property.\r  \rthis means in the json it looks like this:\r```json\r{\r    \"ability_context\": {\r        \"ability-1\": {\r            \"cooldown\": 20\r        },\r        \"ability-2\": {\r            \"special_field\": \"minecraft:creeper\"\r        }\r    }\r}\r```\r**Headsup**\rwe are planning on reworking this system.",
           "data": {},
           "key_words": [],
           "sub_pages": {
             "area_harvest": {
               "header": "Area Harvest Ability",
-              "description": "The `area_harvest_ability` allows automatic harvesting and replanting of fully-grown crops in a square area centered on the targeted crop block.\r\rThis ability uses the **default fields** (`cooldown`, `min_hold`, `max_hold`) and supports one additional custom field:\r\r#### Fields\r\r- **`range`** *(resolvable double)*:  \r  Defines the radius (in blocks) around the clicked crop to harvest and replant. A value of `2` results in a 5×5 area.\r\r#### Behavior\r\r- Activates when right-clicking a fully-grown crop block.\r- Harvests and replants crops in the defined area.\r- Drops harvested items at the respective block positions.\r- Damages the item once for each crop harvested.\r- Only executes on the server side.\r\r#### Use Animation\r\r- **`BRUSH`** animation is played during use.\r\r---\r\r#### Example\r\r```json\r{\r    \"ability\": \"area_harvest_ability\",\r    \"cooldown\": 20,\r    \"min_hold\": 0,\r    \"max_hold\": 72000,\r    \"range\": 2\r}\r```\r\rThis configuration:\r- Applies a 1-second cooldown (20 ticks),\r- Instantly activates on right-click (no hold time),\r- Harvests a 5×5 crop area (range of 2).",
+              "description": "The `area_harvest_ability` allows automatic harvesting and replanting of fully-grown crops in a square area centered on the targeted crop block.\r\rThis ability uses the **default fields** (`cooldown`, `min_hold`, `max_hold`) and supports one additional custom field:\r\r#### Fields\r\r- **`range`** *(resolvable double)*:  \r  Defines the radius (in blocks) around the clicked crop to harvest and replant. A value of `2` results in a 5×5 area.\r\r#### Behavior\r\r- Activates when right-clicking a fully-grown crop block.\r- Harvests and replants crops in the defined area.\r- Drops harvested items at the respective block positions.\r- Damages the item once for each crop harvested.\r- Only executes on the server side.\r\r#### Use Animation\r\r- **`BRUSH`** animation is played during use.\r\r---\r\r#### Example\r```json\r{\r  \"ability_context\": {\r    \"area_harvest_ability\": {\r      \"cooldown\": 20,\r      \"min_hold\": 0,\r      \"max_hold\": 72000,\r      \"range\": 2\r    }\r  }\r}\r```\r\rThis configuration:\r- Applies a 1-second cooldown (20 ticks),\r- Instantly activates on right-click (no hold time),\r- Harvests a 5×5 crop area (range of 2).",
               "data": {},
               "key_words": []
             },
             "cast_lightning": {
               "header": "CastLightingAbility",
-              "description": "## CastLightingAbility\r\rThis ability allows the player to **summon lightning bolts** at a targeted location within a configurable range, by using and holding the item.\r\r### Features\r\r- Requires a minimum hold time before activation.\r- Can only be used within a maximum range from the player to the targeted block.\r- Spawns a configurable number of lightning bolt entities on the targeted position.\r- Plays a configurable sound event on use (default is empty).\r- Applies a cooldown after use.\r- Only works on the server side (requires `ServerPlayer`).\r- Uses a custom `UseAnim.SPEAR` animation while holding the item.\r- Supports merging and initialization of all configurable parameters.\r\r### Context Fields (CastLightingContext)\r\r| Field       | Type                   | Description                                                   | Default Value         |\r|-------------|------------------------|---------------------------------------------------------------|----------------------|\r| onThrow     | `SoundEvent`           | Sound played when lightning is cast                           | `SoundEvents.EMPTY`  |\r| minHold     | `DoubleOperationResolvable` | Minimum ticks the item must be held before activation         | 10                   |\r| lighting    | `DoubleOperationResolvable` | Number of lightning bolts to summon                           | 1                    |\r| cooldown    | `DoubleOperationResolvable` | Cooldown duration in ticks after use                          | 40                   |\r| maxRange    | `DoubleOperationResolvable` | Maximum allowed distance from player to cast lightning        | 6                    |\r\r### Usage\r\r- Player holds the item (right-click and hold).\r- On release after the minimum hold time, if within range of the targeted block, the ability summons lightning bolts.\r- The number of lightning bolts and cooldown are determined by the context values.\r- The ability checks the squared distance between player and target to ensure it's within `maxRange`.",
+              "description": "## CastLightingAbility\r\rThis ability allows the player to **summon lightning bolts** at a targeted location within a configurable range, by using and holding the item.\r\r### Features\r\r- Requires a minimum hold time before activation.\r- Can only be used within a maximum range from the player to the targeted block.\r- Spawns a configurable number of lightning bolt entities on the targeted position.\r- Plays a configurable sound event on use (default is empty).\r- Applies a cooldown after use.\r- Only works on the server side (requires `ServerPlayer`).\r- Uses a custom `UseAnim.SPEAR` animation while holding the item.\r- Supports merging and initialization of all configurable parameters.\r\r### Context Fields (CastLightingContext)\r\r| Field       | Type                   | Description                                                   | Default Value         |\r|-------------|------------------------|---------------------------------------------------------------|----------------------|\r| onThrow     | `SoundEvent`           | Sound played when lightning is cast                           | `SoundEvents.EMPTY`  |\r| minHold     | `DoubleOperationResolvable` | Minimum ticks the item must be held before activation         | 10                   |\r| lighting    | `DoubleOperationResolvable` | Number of lightning bolts to summon                           | 1                    |\r| cooldown    | `DoubleOperationResolvable` | Cooldown duration in ticks after use                          | 40                   |\r| maxRange    | `DoubleOperationResolvable` | Maximum allowed distance from player to cast lightning        | 6                    |\r\r### Example\r```json\r{\r  \"ability_context\": {\r    \"cast_lighting\": {\r        \"lighting\": \"[material.tier]\",\r        \"cooldown\": \"[material.density]*20\"\r    }\r  }\r}\r```\r\r### Usage\r\r- Player holds the item (right-click and hold).\r- On release after the minimum hold time, if within range of the targeted block, the ability summons lightning bolts.\r- The number of lightning bolts and cooldown are determined by the context values.\r- The ability checks the squared distance between player and target to ensure it's within `maxRange`.",
               "data": {},
               "key_words": []
             },
             "copy_item": {
               "header": "Copy Item Ability",
-              "description": "The **Copy Item Ability** allows a modular item to behave exactly like another item. When activated, it mimics the right-click behavior, animations, and usage duration of the target item.\r\rThis is useful for replicating functionality from vanilla or custom items while still using the modular item system.\r\r---\r\r### Behavior\r\r- When right-clicked, the modular item performs the same actions as the target item it is mimicking.\r- All interactions (e.g., block use, entity use, item finish, ticking) are delegated to the target item.\r- The copied item must be specified by its item ID (`id` field).\r- The copied item's animation and behavior are reflected completely, including charge time and usage result.\r\r---\r\r### Fields\r\r- **`id`** *(string, resource location)*:  \r  The item ID of the target item to copy. This must be a valid item registered in the game.  \r  Example: `\"minecraft:bow\"`, `\"modid:custom_tool\"`\r\r---\r\r### Default Fields\r\rThis ability supports the common default ability fields:\r- **`cooldown`**: Item cooldown after use.\r- **`min_hold`**: Minimum time the item must be held before it activates.\r- **`max_hold`**: Maximum time the item can be held.\r\r---\r\r### Example\r\r```json\r{\r  \"ability\": \"copy_item\",\r  \"cooldown\": 0,\r  \"min_hold\": 0,\r  \"max_hold\": 72000,\r  \"id\": \"minecraft:bow\"\r}\r```\r\rThis configuration:\r- Makes the modular item behave like a vanilla bow,\r- Has no cooldown,\r- Can be held for up to 72000 ticks (1 hour),\r- Triggers bow behavior, including charging and firing, when used.",
+              "description": "The **Copy Item Ability** allows a modular item to behave exactly like another item. When activated, it mimics the right-click behavior, animations, and usage duration of the target item.\r\rThis is useful for replicating functionality from vanilla or custom items while still using the modular item system.\r\r---\r\r### Behavior\r\r- When right-clicked, the modular item performs the same actions as the target item it is mimicking.\r- All interactions (e.g., block use, entity use, item finish, ticking) are delegated to the target item.\r- The copied item must be specified by its item ID (`id` field).\r**Warning**\rmany items have issues with this type of ability copy, since the ability is still being executed by the modular item!\r\r---\r\r### Fields\r\r- **`id`** *(string, resource location)*:  \r  The item ID of the target item to copy. This must be a valid item registered in the game.  \r  Example: `\"minecraft:flint_and_steel\"`, `\"modid:custom_tool\"`\r\r---\r\r### Example\r\r```json\r{\r  \"ability_context\": {\r    \"copy_item\": {\r      \"id\": \"minecraft:flint_and_steel\"\r    }\r  }\r}\r```\r\rThis configuration:\r- Makes the modular item behave like a vanilla bow,\r- Triggers bow behavior, including charging and firing, when used.",
               "data": {},
               "key_words": []
             },
             "eat": {
               "header": "Eat Ability",
-              "description": "The **Eat Ability** allows modular items to function as consumable food. When right-clicked and held, the item restores hunger and saturation, plays eating sounds, and can apply effects similar to vanilla food items.\r\r---\r\r### Behavior\r\r- Triggers the eating animation when used.\r- Restores hunger and saturation after a configured delay.\r- Can optionally apply potion effects when consumed.\r- Can optionally be consumed like food or take durability damage instead.\r- Can be set to always be edible, even at full hunger.\r\r---\r\r### Default Fields\r\rThis ability uses the default ability fields:\r- **`cooldown`**: Sets the cooldown (in ticks) after the item is eaten.\r- **`min_hold`**: Automatically derived from `eat_ticks`.\r- **`max_hold`**: Not directly used.\r\r---\r\r### Fields\r\r| Field         | Type                            | Description |\r|---------------|----------------------------------|-------------|\r| `nutrition`   | `DoubleOperationResolvable`      | Amount of hunger restored. |\r| `saturation`  | `DoubleOperationResolvable`      | Saturation modifier applied. |\r| `eat_ticks`   | `DoubleOperationResolvable` *(default: 32)* | Number of ticks the item must be held to consume. |\r| `cooldown`    | `DoubleOperationResolvable` *(default: 0)* | Cooldown applied after usage. |\r| `durability`  | `DoubleOperationResolvable` *(optional)* | Damage applied to item instead of consuming it. |\r| `alwaysEdible`| `boolean` *(optional)*           | If true, the item can be eaten even when the player is full. |\r| `effects`     | `List<FoodProperties.PossibleEffect>` *(optional)* | List of possible effects applied when consumed. Each effect has:  \r- `effect`: the mob effect\r- `probability`: the chance it is applied |\r\r---\r\r### Example\r\r```json\r{\r  \"ability\": \"eat\",\r  \"nutrition\": 4,\r  \"saturation\": 0.6,\r  \"cooldown\": 60,\r  \"eat_ticks\": 32,\r  \"alwaysEdible\": true,\r  \"effects\": [\r    {\r      \"effect\": \"minecraft:regeneration\",\r      \"probability\": 0.25\r    },\r    {\r      \"effect\": \"minecraft:speed\",\r      \"probability\": 0.1\r    }\r  ]\r}\r```\r\rThis configuration:\r- Restores 4 hunger and 0.6 saturation,\r- Plays the eating animation for 32 ticks,\r- Has a cooldown of 60 ticks,\r- Can be eaten at full hunger,\r- Has a 25% chance to give Regeneration and a 10% chance to give Speed on consumption.",
+              "description": "The **Eat Ability** allows modular items to function as consumable food. When right-clicked and held, the item restores\rhunger and saturation, plays eating sounds, and can apply effects similar to vanilla food items.\r\r---\r\r### Behavior\r\r- Triggers the eating animation when used.\r- Restores hunger and saturation after a configured delay.\r- Can optionally apply potion effects when consumed.\r- Can optionally be consumed like food or take durability damage instead.\r- Can be set to always be edible, even at full hunger.\r\r---\r\r### Default Fields\r\rThis ability uses the default ability fields:\r\r- **`cooldown`**: Sets the cooldown (in ticks) after the item is eaten.\r- **`min_hold`**: Automatically derived from `eat_ticks`.\r- **`max_hold`**: Not directly used.\r\r---\r\r### Fields\r\r| Field          | Type                                               | Description                                                      |\r|----------------|----------------------------------------------------|------------------------------------------------------------------|\r| `nutrition`    | `DoubleOperationResolvable`                        | Amount of hunger restored.                                       |\r| `saturation`   | `DoubleOperationResolvable`                        | Saturation modifier applied.                                     |\r| `eat_ticks`    | `DoubleOperationResolvable` *(default: 32)*        | Number of ticks the item must be held to consume.                |\r| `cooldown`     | `DoubleOperationResolvable` *(default: 0)*         | Cooldown applied after usage.                                    |\r| `durability`   | `DoubleOperationResolvable` *(optional)*           | Damage applied to item instead of consuming it.                  |\r| `alwaysEdible` | `boolean` *(optional)*                             | If true, the item can be eaten even when the player is full.     |\r| `effects`      | `List<FoodProperties.PossibleEffect>` *(optional)* | List of possible effects applied when consumed. Each effect has: \r\r- `effect`: the mob effect\r- `probability`: the chance it is applied |\r\r---\r\r### Example\r\r```json\r{\r    \"ability_context\": {\r        \"eat\": {\r            \"nutrition\": 4,\r            \"saturation\": 0.6,\r            \"cooldown\": 60,\r            \"eat_ticks\": 32,\r            \"alwaysEdible\": true,\r            \"effects\": [\r                {\r                    \"effect\": \"minecraft:regeneration\",\r                    \"probability\": 0.25\r                },\r                {\r                    \"effect\": \"minecraft:speed\",\r                    \"probability\": 0.1\r                }\r            ]\r        }\r    }\r}\r```\r\rThis configuration:\r\r- Restores 4 hunger and 0.6 saturation,\r- Plays the eating animation for 32 ticks,\r- Has a cooldown of 60 ticks,\r- Can be eaten at full hunger,\r- Has a 25% chance to give Regeneration and a 10% chance to give Speed on consumption.",
               "data": {},
               "key_words": []
             },
@@ -1163,7 +1211,7 @@
         },
         "condition": {
           "header": "Conditions",
-          "description": "  \nConditions! what is there to describe\r",
+          "description": " Conditions! what is there to describe  \n",
           "java": "common/src/main/java/smartin/miapi/modules/conditions/ConditionManager.java",
           "data": {},
           "key_words": [

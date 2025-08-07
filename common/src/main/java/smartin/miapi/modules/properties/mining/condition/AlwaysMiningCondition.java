@@ -17,7 +17,7 @@ import java.util.List;
  * This condition does not impose any restrictions or filters on the mining process.
  *
  * @header Always Mining Condition
- * @path /data_types/properties/mining/shape/always
+ * @path /data_types/properties/mining/shape/condition/always
  * @description_start
  * This is condition less, you can just always mine whatever
  * @description_end

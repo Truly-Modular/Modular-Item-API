@@ -31,9 +31,34 @@ public class LiveDataPackEditorManager implements MiapiEditor {
     private final ImString editDescription = new ImString(256);
     private final ImString editDataPath = new ImString(1024);
     private final ImBoolean editWatchFiles = new ImBoolean(true);
+    public static LiveDataPackEditorManager openUI;
+
+    static {
+        LiveDataPackManager.isEnabled = LiveDataPackEditorManager::isEnabled;
+    }
 
     public LiveDataPackEditorManager() {
         this.manager = LiveDataPackManager.getInstance();
+    }
+
+    public static void openLivePackEditor() {
+        if (openUI != null) {
+            openUI.show.set(true);
+            if (!editors.contains(openUI)) {
+                editors.add(openUI);
+            }
+        } else {
+            openUI = new LiveDataPackEditorManager();
+            editors.add(openUI);
+        }
+    }
+
+    public static boolean isEnabled() {
+        if (openUI != null) {
+            return openUI.show.get();
+        } else {
+            return false;
+        }
     }
 
     private void clearNewPackFields() {
@@ -52,7 +77,7 @@ public class LiveDataPackEditorManager implements MiapiEditor {
         }
 
         ImGui.setNextWindowSize(400, 600, ImGuiCond.FirstUseEver);
-        if (ImGui.begin("LivePack Manager##"+ System.identityHashCode(this), show)) {
+        if (ImGui.begin("LivePack Manager##" + System.identityHashCode(this), show)) {
             // Top button row
             if (ImGui.button("Create New Pack")) {
                 showCreateWindow.set(true);

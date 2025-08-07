@@ -41,6 +41,7 @@ import smartin.miapi.client.renderer.SpriteLoader;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.editor.EditorCommands;
+import smartin.miapi.editor.LiveDataPackManager;
 import smartin.miapi.effects.CryoStatusEffect;
 import smartin.miapi.entity.ItemProjectileRenderer;
 import smartin.miapi.events.MiapiEvents;
@@ -236,6 +237,7 @@ public class MiapiClient {
         if (Platform.getEnv() == EnvType.CLIENT) {
             EditorCommands.registerClient();
         }
+        LiveDataPackManager.setup();
         //Minecraft client = Minecraft.getInstance();
         //materialAtlasManager = new MaterialAtlasManager(client.getTextureManager());
         //ReloadListenerRegistry.register(PackType.CLIENT_RESOURCES, materialAtlasManager);

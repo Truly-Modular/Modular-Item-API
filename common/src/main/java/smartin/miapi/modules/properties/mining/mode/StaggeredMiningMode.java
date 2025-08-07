@@ -21,7 +21,7 @@ import java.util.List;
  * The `StaggeredMiningMode` class represents a mining mode where blocks are mined in a staggered fashion. This means that blocks are processed one at a time with a slight delay between them, allowing for a more controlled mining experience.
  *
  * @header Staggered Mining
- * @path /data_types/properties/mining/shape/staggered_mining
+ * @path /data_types/properties/mining/shape/mode/staggered_mining
  * @description_start This mode processes blocks in a staggered manner, giving a more gradual mining experience compared to instant mining. It handles mining tasks in a delayed fashion, which can help manage performance and resource usage during mining operations.
  * @description_end
  * @data speed: The rate at which blocks are mined. Higher values result in faster mining speeds.

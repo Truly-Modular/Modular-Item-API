@@ -10,7 +10,15 @@ import net.minecraft.world.level.Level;
 import java.util.List;
 
 /**
- * This class adds a Condition for applying the Mining. this is supposed to filter for block or tool prior to mining
+ * The `BlockTagCondition` class represents a mining condition that allows mining only if the block at a specific position has a tag that matches any of the specified tags.
+ * This condition provides a way to filter blocks based on their tags, ensuring that only blocks with the correct tags are affected by the mining shape.
+ *
+ * @header Mining Conditions
+ * @path /data_types/properties/mining/shape/condition
+ * @description_start
+ * Conditions allow to restrict what blocks can be mined
+ * @description_end
+ *
  */
 public interface MiningCondition {
 

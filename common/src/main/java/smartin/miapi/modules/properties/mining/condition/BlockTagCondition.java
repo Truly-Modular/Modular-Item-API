@@ -19,7 +19,7 @@ import java.util.List;
  * This condition provides a way to filter blocks based on their tags, ensuring that only blocks with the correct tags are affected by the mining shape.
  *
  * @header Block Tag Condition
- * @path /data_types/properties/mining/shape/block_tag
+ * @path /data_types/properties/mining/shape/condition/block_tag
  * @description_start
  * The `BlockTagCondition` implements the `MiningCondition` interface and is used to enforce that mining shapes only apply to blocks that have one of the specified tags.
  * It is useful for scenarios where you want to restrict the mining operation to blocks that are categorized under specific tags.

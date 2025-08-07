@@ -17,6 +17,15 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
+/**
+ * @header Vein Shape
+ * @path /data_types/properties/mining/shape/shapes/vein
+ * @description_start
+ * The Vein shape, mines connected ones of the same block
+ * @description_end
+ * @data max: The maximum distance blocks can be mined.
+ * @data size: The maximum amount of blocks mined.
+ */
 public class VeinMiningShape implements MiningShape {
     public static MapCodec<VeinMiningShape> CODEC = AutoCodec.of(VeinMiningShape.class);
     public static ResourceLocation ID = Miapi.id("vein");

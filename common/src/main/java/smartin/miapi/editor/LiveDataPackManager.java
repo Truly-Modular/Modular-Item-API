@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
 import java.util.*;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 public class LiveDataPackManager implements AutoCloseable {
@@ -35,6 +36,7 @@ public class LiveDataPackManager implements AutoCloseable {
     private final Map<WatchKey, DataPackContext> watchKeys = new HashMap<>();
     public List<MiapiEditor> openedEditors = new ArrayList<>();
     boolean isValidating = false;
+    public static Supplier<Boolean> isEnabled = () -> false;
 
     public static void setup() {
         MiapiEvents.PLAYER_TICK_END.register(player -> {
@@ -46,12 +48,13 @@ public class LiveDataPackManager implements AutoCloseable {
             return EventResult.pass();
         });
         MiapiEvents.ADJUST_RAW_DATA.register(event -> {
-            if (Platform.getEnv() == EnvType.CLIENT && Miapi.server != null) {
+            if (Platform.getEnv() == EnvType.CLIENT && Miapi.server != null &&  isEnabled.get()) {
                 getInstance().processDataPacks(event);
             }
             return EventResult.pass();
         });
     }
+
 
     public static LiveDataPackManager getInstance() {
         if (INSTANCE == null) {

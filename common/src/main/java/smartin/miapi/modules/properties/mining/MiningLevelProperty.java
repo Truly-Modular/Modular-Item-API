@@ -37,9 +37,6 @@ import java.util.*;
  * Custom rules can be defined to adjust mining speeds and tool compatibilities dynamically.
  * @description_end
  * @path /data_types/properties/mining/mining_level
- * @data mining_capabilities: A map linking mining rules to specific block tags for determining tool effectiveness.
- * @data codec: A codec for serializing and deserializing mining rules, allowing for flexible data handling.
- * @data caching: The property uses a caching mechanism to optimize performance when accessing mining rules.
  * @data mining_rules:
  * @data `blocks`: List of blocks that the tool can mine.
  * @data `block_list | blacklist_tag`: List of blocks that the tool cannot mine.

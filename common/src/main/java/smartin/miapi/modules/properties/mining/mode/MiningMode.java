@@ -17,6 +17,11 @@ import java.util.List;
  * They control the actual mining Part
  * They are not meant to filter the mining blocks
  * {@link MiningModifier} is meant to filter blocks from the shape
+ * @header Mining Mode
+ * @path /data_types/properties/mining/shape/mode
+ * @description_start
+ * A Mode controls the Mining directly, basically this is the way blocks are mined.
+ * @description_end
  */
 public interface MiningMode extends InitializeAble<MiningMode> {
 
