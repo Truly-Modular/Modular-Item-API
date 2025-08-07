@@ -15,7 +15,7 @@ import java.util.List;
  * they are meant to filter after the {@link MiningShape} scanned for the block
  * use cautiously
  * @header Mining Modifiers
- * @path /data_types/properties/mining/shape/mode
+ * @path /data_types/properties/mining/shape/modifier
  * @description_start
  * modifies the list of blocks to be mined after the shape is set.
  * @description_end

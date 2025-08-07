@@ -660,6 +660,11 @@
                       }
                     },
                     "modifier": {
+                      "header": "Mining Modifiers",
+                      "description": "  \nmodifies the list of blocks to be mined after the shape is set.\r",
+                      "java": "common/src/main/java/smartin/miapi/modules/properties/mining/modifier/MiningModifier.java",
+                      "data": {},
+                      "key_words": [],
                       "sub_pages": {
                         "same_block_modifier": {
                           "header": "Same Block modifier",
