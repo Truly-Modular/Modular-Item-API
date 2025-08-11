@@ -89,6 +89,7 @@ public class Miapi {
     public static NetworkingImplCommon networkingImplementation;
     public static MinecraftServer server;
     public static RegistryAccess registryAccess;
+    public static RegistryAccess clientRegistryAccess;
     /**
      * idk, sometimes in networking booleans seem to become 0 and 1, default codec cant deal with that,
      * this one can

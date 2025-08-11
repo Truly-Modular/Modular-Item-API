@@ -1,6 +1,5 @@
 package smartin.miapi.client.gui.crafting.crafter.replace;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.Util;
@@ -66,7 +65,6 @@ public class MaterialCraftingWidget extends InteractAbleWidget {
 
     @Override
     public void renderWidget(GuiGraphics drawContext, int mouseX, int mouseY, float delta) {
-        RenderSystem.enableDepthTest();
         ReplaceOption.unsafeCraftAction = action;
         if (
                 ReplaceOption.unsafeEditContext != null &&

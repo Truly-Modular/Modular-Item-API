@@ -1,0 +1,37 @@
+{
+    "actions": [
+        {
+            "type": "loot-table-modifier:pool_add",
+            "pools": [
+                {
+                    "rolls": 1,
+                    "entries": [
+                        {
+                            "type": "minecraft:loot_table",
+                            "value": "modular_legends:complete_lootable",
+                            "conditions": [
+                                {
+                                    "condition": "minecraft:random_chance",
+                                    "chance": 0.15
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "predicate": {
+        "type": "loot-table-modifier:table",
+        "identifiers": [
+            "minecraft:chests/ancient_city",
+            "minecraft:chests/bastion_treasure",
+            "minecraft:chests/desert_pyramid",
+            "minecraft:chests/end_city_treasure",
+            "minecraft:chests/jungle_temple",
+            "minecraft:chests/nether_bridge",
+            "minecraft:chests/stronghold_library",
+            "minecraft:chests/woodland_mansion"
+        ]
+    }
+}

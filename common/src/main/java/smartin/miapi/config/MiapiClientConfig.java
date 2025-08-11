@@ -70,7 +70,7 @@ public class MiapiClientConfig {
         public List<CacheSprites> cacheSprites = List.of(
                 new CacheSprites(16, 16, 30),
                 new CacheSprites(32, 32, 10),
-                new CacheSprites(64, 64, 10));
+                new CacheSprites(64, 64, 20));
 
         public boolean try_fast_render = false;
     }

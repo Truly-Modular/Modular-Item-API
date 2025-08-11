@@ -17,7 +17,7 @@ public interface PlatformModularItemMethodsMixin extends FabricItem {
 
     @Override
     default boolean canBeEnchantedWith(ItemStack stack, Holder<Enchantment> enchantment, EnchantingContext context) {
-        return AllowedEnchantments.isSupported(stack, enchantment, context == EnchantingContext.PRIMARY
+        return AllowedEnchantments.isSupported(stack, enchantment.value(), context == EnchantingContext.PRIMARY
                 ? enchantment.value().isPrimaryItem(stack)
                 : enchantment.value().canEnchant(stack));
     }

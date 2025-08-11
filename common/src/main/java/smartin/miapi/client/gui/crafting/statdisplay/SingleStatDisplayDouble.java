@@ -123,9 +123,6 @@ public abstract class SingleStatDisplayDouble extends InteractAbleWidget impleme
 
         double min = Math.min(minValue, Math.min(oldValue, compareToValue));
         double max = Math.max(maxValue, Math.max(oldValue, compareToValue));
-
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
-
         drawTextureWithEdge(drawContext, texture, getX(), getY(), 339, 6, 51, 19, width, height, 512, 512, 2);
 
         textWidget.setX(this.getX() + 3);

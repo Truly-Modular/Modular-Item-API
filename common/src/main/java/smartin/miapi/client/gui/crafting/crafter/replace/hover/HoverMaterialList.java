@@ -1,6 +1,5 @@
 package smartin.miapi.client.gui.crafting.crafter.replace.hover;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
@@ -94,7 +93,6 @@ public class HoverMaterialList extends InteractAbleWidget {
         sizeDetailList += 10;
         if (isMouseOver(realMouseX, realMouseY) || permaOpen) {
             lastRendered = true;
-            RenderSystem.disableDepthTest();
             drawContext.fill(getX(), getY(), getX() + sizeDetailList + sizeBaseList, getY() + verticalSize, FastColor.ARGB32.color(210, 0, 0, 0));
             if (!materials.isEmpty()) {
                 scrollPosOne = Math.max(0, Math.min(materials.size() - maxElements, scrollPosOne));
@@ -161,7 +159,6 @@ public class HoverMaterialList extends InteractAbleWidget {
                 }
                 //selectedMaterialUpdate(materialList.get(0));
             }
-            RenderSystem.enableDepthTest();
         } else {
             lastRendered = false;
             scrollPosOne = 0;

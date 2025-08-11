@@ -1,7 +1,6 @@
 package smartin.miapi.client.gui.crafting.crafter.replace;
 
 import com.google.gson.JsonElement;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.datafixers.util.Pair;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -262,11 +261,6 @@ public class CraftViewRework extends InteractAbleWidget {
         @Override
         public void renderWidget(GuiGraphics context, int mouseX, int mouseY, float delta) {
             super.renderWidget(context, mouseX, mouseY, delta);
-            RenderSystem.setShaderTexture(0, texture);
-            RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
-            RenderSystem.enableBlend();
-            RenderSystem.defaultBlendFunc();
-            RenderSystem.enableDepthTest();
 
             int textureOffset = 0;
 

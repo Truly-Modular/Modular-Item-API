@@ -1,6 +1,5 @@
 package smartin.miapi.client.gui.crafting.crafter.create_module;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.GuiGraphics;
@@ -29,7 +28,8 @@ public class CreateListView extends InteractAbleWidget {
         super(x, y, width, height, Component.empty());
         List<InteractAbleWidget> widgets = new ArrayList<>();
         this.editContext = editContext;
-        CreateItemOption.createAbleItems.stream()
+        var values = CreateItemOption.CREATE_ITEM_MIAPI_REGISTRY.getFlatMap().values();
+        CreateItemOption.CREATE_ITEM_MIAPI_REGISTRY.getFlatMap().values().stream()
                 .filter(item -> item.isAllowed(editContext.getPlayer(), editContext.getWorkbench()))
                 .sorted(Comparator.comparingDouble(CreateItemOption.CreateItem::getPriority))
                 .forEach(item -> widgets.add(new CreateItemEntry(0, 0, 100, 14, item)));
@@ -70,9 +70,6 @@ public class CreateListView extends InteractAbleWidget {
 
         @Override
         public void renderWidget(GuiGraphics drawContext, int mouseX, int mouseY, float delta) {
-            RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
-            RenderSystem.enableBlend();
-            RenderSystem.defaultBlendFunc();
             int hoverOffset = 0;
             if (isMouseOver(mouseX, mouseY)) {
                 hoverOffset = 14;

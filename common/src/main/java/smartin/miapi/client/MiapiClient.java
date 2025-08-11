@@ -26,6 +26,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import smartin.miapi.Miapi;
 import smartin.miapi.blocks.ModularWorkBenchRenderer;
 import smartin.miapi.blueprint.BlueprintManager;
@@ -171,6 +172,7 @@ public class MiapiClient {
         ClientPlayerEvent.CLIENT_PLAYER_JOIN.register(player -> new Thread(() -> MiapiPermissions.getPerms(player)).start());
         ClientPlayerEvent.CLIENT_PLAYER_JOIN.register(player -> {
             MiapiEvents.CLEAR_CACHE.invoker().onReload();
+            Miapi.clientRegistryAccess = player.registryAccess();
             if (jerLoaded && Miapi.server == null) {
                 String version = Platform.getMod("jeresources").getVersion();
                 if (version.equals("1.4.0.238") || version.equals("1.4.0.246") || version.equals("1.4.0.247")) {
@@ -179,6 +181,17 @@ public class MiapiClient {
                     Component link = Component.literal("For more information you can read this");
                     player.sendSystemMessage(link.toFlatList(Style.EMPTY.withClickEvent(event).withUnderlined(true)).get(0));
                     player.sendSystemMessage(Component.literal("This message was sent by Truly Modular."));
+                }
+            }
+        });
+        ClientTickEvent.CLIENT_POST.register(new ClientTickEvent.Client() {
+            @Override
+            public void tick(Minecraft instance) {
+                if (instance != null && instance.player != null && instance.player.getMainHandItem() != null) {
+                    ItemStack stack = instance.player.getMainHandItem();
+                    stack.getEnchantments().keySet().forEach(enchantmentHolder -> {
+                        Miapi.LOGGER.info("enchant" + enchantmentHolder.getRegisteredName() + " " + stack.getEnchantments().getLevel(enchantmentHolder));
+                    });
                 }
             }
         });

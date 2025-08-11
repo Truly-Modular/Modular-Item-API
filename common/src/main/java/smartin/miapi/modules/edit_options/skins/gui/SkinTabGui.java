@@ -1,6 +1,5 @@
 package smartin.miapi.modules.edit_options.skins.gui;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -119,17 +118,11 @@ class SkinTabGui extends InteractAbleWidget implements SkinGui.SortAble {
     @Override
     public void renderWidget(GuiGraphics drawContext, int mouseX, int mouseY, float delta) {
         if (!isRoot) {
-            RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
-            RenderSystem.enableBlend();
-            RenderSystem.defaultBlendFunc();
-            RenderSystem.enableDepthTest();
-            RenderSystem.setShaderTexture(0, arrowTexture);
             int offset = isOpen ? 10 : 0;
             int hover = isOpen ? tabInfo.header.ySize() * 2 : 0;
             hover = this.isMouseOverReal(mouseX, mouseY) ? tabInfo.header.ySize() : hover;
             drawTextureWithEdge(drawContext, arrowTexture, getX(), getY() + 2, offset, 0, 10, 10, 10, 10, 20, 10, 3);
             //Header
-            RenderSystem.setShaderTexture(0, tabInfo.header.texture());
             drawTextureWithEdgeAndScale(drawContext, tabInfo.header.texture(), getX(), getY(), 0, hover, tabInfo.header.xSize(), tabInfo.header.ySize(), this.width, realHeight, tabInfo.header.xSize(), tabInfo.header.ySize() * 3, tabInfo.header.borderSize(), tabInfo.header.scale());
 
             if (isOpen) {
@@ -137,7 +130,6 @@ class SkinTabGui extends InteractAbleWidget implements SkinGui.SortAble {
                 if (tabInfo.background.keepScale()) {
                     drawContext.blit(tabInfo.background.texture(), getX(), getY() + realHeight, this.width, height - realHeight, 0, 0, tabInfo.background.xSize(), tabInfo.background.ySize());
                 } else {
-                    RenderSystem.setShaderTexture(0, tabInfo.background.texture());
                     drawTextureWithEdgeAndScale(drawContext, tabInfo.background.texture(), getX(), getY() + realHeight, 0, 0, tabInfo.background.xSize(), tabInfo.background.ySize(), this.width, height - realHeight, tabInfo.background.xSize(), tabInfo.background.ySize(), tabInfo.background.borderSize(), tabInfo.background.scale());
                 }
             }

@@ -243,9 +243,6 @@ public class SlotDisplay extends InteractAbleWidget {
 
         public void renderButton(GuiGraphics drawContext, int mouseX, int mouseY, float delta) {
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
-            RenderSystem.enableBlend();
-            RenderSystem.defaultBlendFunc();
-            RenderSystem.enableDepthTest();
 
             int textureSize = 30;
             int textureOffset = 0;

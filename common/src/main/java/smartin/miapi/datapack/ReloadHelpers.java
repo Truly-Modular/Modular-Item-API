@@ -53,7 +53,7 @@ public class ReloadHelpers {
                 }, ((isClient, path, data, registryAccess) ->
                         DocPage.CODEC.decode(
                                 JsonOps.INSTANCE,
-                                data).getOrThrow(s -> new DecoderException("could not decode wiki info"+s)).getFirst()),
+                                data).getOrThrow(s -> new DecoderException("could not decode wiki info" + s)).getFirst()),
                 ((isClient, path, data, registryAccess) -> {
                     DocPage.setupLookup(data);
                 }), 0.0f);
@@ -64,16 +64,14 @@ public class ReloadHelpers {
             SkinOptions.loadTabData(data);
         }, 1);
         ReloadHelpers.registerReloadHandler(ReloadEvents.END, "miapi/create_options", (isClient -> {
-            CreateItemOption.createAbleItems.clear();
+            CreateItemOption.CREATE_ITEM_MIAPI_REGISTRY.clear();
         }), ((isClient, path, data, registryAccess) -> {
-            if (isClient) {
-                CreateItemOption.CreateItem createItem = Miapi.gson.fromJson(data, CreateItemOption.JsonCreateItem.class);
-                if (createItem.getBaseModule() != null && createItem.getItem() != null) {
-                    CreateItemOption.createAbleItems.add(createItem);
-                } else {
-                    Miapi.LOGGER.error("could not find module or item for create option " + path);
-                    Miapi.LOGGER.error(data);
-                }
+            CreateItemOption.CreateItem createItem = Miapi.gson.fromJson(data, CreateItemOption.JsonCreateItem.class);
+            if (createItem.getBaseModule() != null && createItem.getItem() != null) {
+                CreateItemOption.CREATE_ITEM_MIAPI_REGISTRY.register(path, createItem);
+            } else {
+                Miapi.LOGGER.error("could not find module or item for create option " + path);
+                Miapi.LOGGER.error(data);
             }
         }), 0);
         ReloadHelpers.registerReloadHandler(ReloadEvents.MAIN, "miapi/key_binding", true, (isClient) -> {

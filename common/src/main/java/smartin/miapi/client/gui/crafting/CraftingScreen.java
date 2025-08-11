@@ -409,15 +409,11 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
     public void render(GuiGraphics drawContext, int mouseX, int mouseY, float delta) {
         this.overwriteMouseY = mouseY;
         this.overwriteMouseX = mouseX;
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-        // long timeSinceMod = Util.getMeasuringTimeMs()-minimizer.getLastChangeTime();
         if (hoverElement == null) {
             super.render(drawContext, overwriteMouseX, overwriteMouseY, delta);
         } else {
             hoverElement.render(drawContext, overwriteMouseX, overwriteMouseY, delta);
         }
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-        // long timeSinceMod = Util.getMeasuringTimeMs()-minimizer.getLastChangeTime();
         this.renderTooltip(drawContext, overwriteMouseX, overwriteMouseY);
         drawContext.pose().pushPose();
         drawContext.pose().translate(0.0F, 0.0F, 400.0F);

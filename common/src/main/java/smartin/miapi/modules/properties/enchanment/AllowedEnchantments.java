@@ -106,18 +106,32 @@ public class AllowedEnchantments extends CodecProperty<AllowedEnchantments.Allow
      * @param oldValue
      * @return
      */
-    public static boolean isSupported(ItemStack itemStack, Holder<Enchantment> enchantment, boolean oldValue) {
+    public static boolean isSupported(ItemStack itemStack, Enchantment enchantment, boolean oldValue) {
         Optional<AllowedEnchantsData> optional = property.getData(itemStack);
+        RegistryAccess access;
+        ModuleInstance moduleInstance = ItemModule.getModules(itemStack);
+        if (moduleInstance != null && moduleInstance.registryAccess != null) {
+            access = moduleInstance.registryAccess;
+        } else {
+            access = null;
+        }
         return optional.map(allowedEnchantsData -> allowedEnchantsData
-                        .isSupported(enchantment)
+                        .isSupported(enchantment, access, Miapi.registryAccess)
                         .orElse(oldValue && MiapiConfig.getServerConfig().enchants.lenientEnchantments))
                 .orElse(oldValue);
     }
 
-    public static boolean canEnchant(ItemStack itemStack, Holder<Enchantment> enchantment, boolean oldValue) {
+    public static boolean canEnchant(ItemStack itemStack, Enchantment enchantment, boolean oldValue) {
         Optional<AllowedEnchantsData> optional = property.getData(itemStack);
+        RegistryAccess access;
+        ModuleInstance moduleInstance = ItemModule.getModules(itemStack);
+        if (moduleInstance != null && moduleInstance.registryAccess != null) {
+            access = moduleInstance.registryAccess;
+        } else {
+            access = null;
+        }
         return optional.map(allowedEnchantsData -> allowedEnchantsData
-                        .canEnchant(enchantment)
+                        .canEnchant(enchantment, access, Miapi.registryAccess)
                         .orElse(oldValue && MiapiConfig.getServerConfig().enchants.lenientEnchantments))
                 .orElse(oldValue);
     }
@@ -182,56 +196,73 @@ public class AllowedEnchantments extends CodecProperty<AllowedEnchantments.Allow
                         .apply(instance, AllowedEnchantsData::new));
 
 
-        Optional<Boolean> isSupported(Holder<Enchantment> enchantment) {
-            if (contains(enchantment, forbidden())) {
+        Optional<Boolean> isSupported(Enchantment enchantment, RegistryAccess main, RegistryAccess fallback) {
+            if (contains(enchantment, forbidden(), main, fallback)) {
                 return Optional.of(false);
             }
-            if (contains(enchantment, allowed())) {
+            if (contains(enchantment, allowed(), main, fallback)) {
                 return Optional.of(true);
             }
-            if (contains(enchantment, anvilAllowed())) {
+            if (contains(enchantment, anvilAllowed(), main, fallback)) {
                 return Optional.of(true);
             }
             return Optional.empty();
         }
 
-        Optional<Boolean> canEnchant(Holder<Enchantment> enchantment) {
-            if (contains(enchantment, forbidden())) {
+        Optional<Boolean> canEnchant(Enchantment enchantment, RegistryAccess main, RegistryAccess fallback) {
+            if (contains(enchantment, forbidden(), main, fallback)) {
                 return Optional.of(false);
             }
-            if (contains(enchantment, allowed())) {
+            if (contains(enchantment, allowed(), main, fallback)) {
                 return Optional.of(true);
             }
             return Optional.empty();
         }
 
-        private boolean contains(Holder<Enchantment> enchantment, List<ResourceLocation> ids) {
+        private boolean contains(Enchantment enchantment, List<ResourceLocation> ids, RegistryAccess main, RegistryAccess fallback) {
+            Miapi.LOGGER.info("checking ids " + ids.size());
+            ResourceLocation mainID = null;
+            Holder<Enchantment> enchantmentHolder = null;
+            if (main != null) {
+                mainID = main.registry(Registries.ENCHANTMENT).get().getKey(enchantment);
+                if (mainID == null) {
+                    var asd = main.registry(Registries.ENCHANTMENT).get().getHolder(mainID);
+                    if (asd.isPresent()) {
+                        enchantmentHolder = asd.get();
+                    }
+                }
+            }
+            if (mainID == null && fallback != null) {
+                mainID = fallback.registry(Registries.ENCHANTMENT).get().getKey(enchantment);
+                var asd = fallback.registry(Registries.ENCHANTMENT).get().getHolder(mainID);
+                if (asd.isPresent()) {
+                    enchantmentHolder = asd.get();
+                }
+            }
+            if (mainID == null && fallback != null) {
+                mainID = Miapi.registryAccess.registry(Registries.ENCHANTMENT).get().getKey(enchantment);
+                var asd = Miapi.registryAccess.registry(Registries.ENCHANTMENT).get().getHolder(mainID);
+                if (asd.isPresent()) {
+                    enchantmentHolder = asd.get();
+                }
+            }
+            if (mainID == null && Miapi.clientRegistryAccess != null) {
+                mainID = Miapi.clientRegistryAccess.registry(Registries.ENCHANTMENT).get().getKey(enchantment);
+                var asd = Miapi.clientRegistryAccess.registry(Registries.ENCHANTMENT).get().getHolder(mainID);
+                if (asd.isPresent()) {
+                    enchantmentHolder = asd.get();
+                }
+            }
             for (ResourceLocation id : ids) {
-                if (enchantment.is(id)) {
+                if (enchantmentHolder != null && enchantmentHolder.is(id)) {
+                    Miapi.LOGGER.info("detected tag" + id);
                     return true;
                 }
-                if (enchantment instanceof Holder.Direct<Enchantment> direct) {
-                    if (Miapi.registryAccess != null) {
-                        direct.value();
-                        Miapi.registryAccess.lookup(Registries.ENCHANTMENT).get();
-                        var ads = Miapi.registryAccess.registry(Registries.ENCHANTMENT).get().wrapAsHolder(direct.value());
-                        if (ads.is(id)) {
-                            return true;
-                        }
-                        var optional = Miapi.registryAccess
-                                .lookup(Registries.ENCHANTMENT)
-                                .get()
-                                .listElements()
-                                .filter(a -> a.value().equals(direct.value()))
-                                .findFirst();
-                        if (optional.isPresent() && optional.get().is(id)) {
-                            return false;
-                        }
-                    }
-                    direct.value().definition();
-
+                Miapi.LOGGER.info("detected id" + mainID);
+                if (mainID != null && id.equals(mainID)) {
+                    return true;
                 }
-                if (enchantment.value().definition().supportedItems() instanceof HolderSet.Named<Item> set) {
+                if (enchantment.definition().supportedItems() instanceof HolderSet.Named<Item> set) {
                     ResourceLocation tagID = ((NamedAccessor) set).getKey().location();
                     if (tagID.equals(id)) {
                         return true;

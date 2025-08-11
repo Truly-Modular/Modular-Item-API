@@ -1,10 +1,8 @@
 package smartin.miapi.client.gui;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.FastColor;
 import smartin.miapi.client.gui.crafting.CraftingScreen;
@@ -91,9 +89,7 @@ public class SimpleButton<T> extends InteractAbleWidget {
      * @param delta       The time since the last tick.
      */
     public void renderButton(GuiGraphics drawContext, int mouseX, int mouseY, float delta) {
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
-        RenderSystem.setShader(GameRenderer::getRendertypeTranslucentShader);
-        int offset = 0;
+       int offset = 0;
         if (this.isMouseOver(mouseX, mouseY)) {
             offset = 10;
         }

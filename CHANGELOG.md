@@ -16,3 +16,5 @@ and either create a GH issue or ping me on discord with the spark link and a des
 - fixed crossbow not shooting
 - removed ht treechop compat log spam
 - re-added epic fight compat
+- fixed create options disappearing on reload
+- fixed issues in enchanting logic

@@ -1,6 +1,5 @@
 package smartin.miapi.forge.mixin.item;
 
-import net.minecraft.core.Holder;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
@@ -133,7 +132,7 @@ public abstract class ModularItemTestMixin {
         return CanWalkOnSnow.canSnowWalk(stack);
     }
 
-    public boolean isPrimaryItemFor(ItemStack stack, Holder<Enchantment> enchantment) {
-        return AllowedEnchantments.canEnchant(stack, enchantment, stack.getItem() == Items.BOOK || enchantment.value().isPrimaryItem(stack));
+    public boolean isPrimaryItemFor(ItemStack stack, Enchantment enchantment) {
+        return AllowedEnchantments.canEnchant(stack, enchantment, stack.getItem() == Items.BOOK || enchantment.isPrimaryItem(stack));
     }
 }

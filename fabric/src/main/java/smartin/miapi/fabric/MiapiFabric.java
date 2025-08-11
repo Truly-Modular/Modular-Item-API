@@ -10,7 +10,6 @@ import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.util.TriState;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.world.entity.ai.attributes.RangedAttribute;
 import net.minecraft.world.level.block.Block;
@@ -78,7 +77,7 @@ public class MiapiFabric implements ModInitializer {
         EnchantmentEvents.ALLOW_ENCHANTING.register((enchantment, target, enchantingContext) -> {
             if (
                     ModularItem.isModularItem(target) &&
-                    (AllowedEnchantments.isSupported(target, enchantment, false))) {
+                    (AllowedEnchantments.isSupported(target, enchantment.value(), false))) {
                 return TriState.TRUE;
             }
             return TriState.DEFAULT;

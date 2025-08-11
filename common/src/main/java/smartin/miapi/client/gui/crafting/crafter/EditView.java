@@ -1,6 +1,5 @@
 package smartin.miapi.client.gui.crafting.crafter;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
@@ -258,9 +257,6 @@ public class EditView extends InteractAbleWidget {
         }
 
         public void renderWidget(GuiGraphics drawContext, int mouseX, int mouseY, float delta) {
-            RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
-            RenderSystem.enableBlend();
-            RenderSystem.defaultBlendFunc();
             int hoverOffset = 0;
             if (isMouseOver(mouseX, mouseY)) {
                 hoverOffset = 14;

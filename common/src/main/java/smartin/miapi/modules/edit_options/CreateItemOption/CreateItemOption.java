@@ -27,16 +27,16 @@ import smartin.miapi.modules.edit_options.EditOptionIcon;
 import smartin.miapi.modules.edit_options.ReplaceOption;
 import smartin.miapi.modules.properties.slot.SlotProperty;
 import smartin.miapi.network.Networking;
+import smartin.miapi.registries.MiapiRegistry;
 import smartin.miapi.registries.RegistryInventory;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class CreateItemOption implements EditOption {
     public static CreateItem selected;
-    public static List<CreateItem> createAbleItems = new ArrayList<>();
+    public static final MiapiRegistry<CreateItem> CREATE_ITEM_MIAPI_REGISTRY = MiapiRegistry.getInstance(CreateItem.class);
 
 
     public CreateItemOption() {

@@ -1,6 +1,5 @@
 package smartin.miapi.client.gui.crafting.crafter.replace;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.Util;
@@ -46,7 +45,6 @@ public class EmptyCraftingWidget extends InteractAbleWidget {
 
     @Override
     public void renderWidget(GuiGraphics drawContext, int mouseX, int mouseY, float delta) {
-        RenderSystem.enableDepthTest();
 
         drawTextureWithEdge(drawContext, CraftingScreen.BACKGROUND_TEXTURE, getX(), getY(), 368, 138, 26, 26, getWidth(), getHeight(), 512, 512, 5);
 
