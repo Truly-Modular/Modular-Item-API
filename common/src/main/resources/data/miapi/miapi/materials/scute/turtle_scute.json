@@ -1,7 +1,7 @@
 {
     "icon": {
         "type": "item",
-        "item": "minecraf:scute"
+        "item": "minecraft:scute"
     },
     "load_condition": {
         "type": "mod_loaded",

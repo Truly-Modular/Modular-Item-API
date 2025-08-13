@@ -1,7 +1,8 @@
 {
-    "enchantments": {
-        "anvil_allowed": [
-            "minecraft:sharpness"
-        ]
+    "fake_item_tag": [
+        "create:pressurized_air_sources"
+    ],
+    "components": {
+        "create:banktank_air": "|||miapi.evaluate[material.hardness]"
     }
 }

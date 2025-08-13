@@ -1,8 +1,12 @@
 package smartin.miapi.modules.properties;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
+import com.redpxnda.nucleus.pose.network.clientbound.PoseFacetSyncPacket;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -15,21 +19,13 @@ import smartin.miapi.blocks.ModularWorkBenchEntity;
 import smartin.miapi.craft.CraftAction;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.util.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
-/**
- * @header Component Property
- * @path /data_types/properties/component
- * @description_start
- * This Property allows you to set any component. Whenever the module giving the Component, that component is also removed again.
- * If there was a Component set before, that component will be overwritten
- * Its a map of id to Component data in json format
- * @description_end
- * @data id:data.
- */
 public class ComponentProperty extends CodecProperty<Map<ResourceLocation, JsonElement>> implements ComponentApplyProperty, CraftingProperty {
     public static Codec<Map<ResourceLocation, JsonElement>> CODEC = Codec.unboundedMap(ResourceLocation.CODEC, StatResolver.Codecs.JSONELEMENT_CODEC);
     public static final ResourceLocation KEY = Miapi.id("components");
@@ -38,6 +34,7 @@ public class ComponentProperty extends CodecProperty<Map<ResourceLocation, JsonE
     public ComponentProperty() {
         super(CODEC);
         property = this;
+        PoseFacetSyncPacket poseFacetSyncPacket;
     }
 
     @Override
@@ -59,12 +56,50 @@ public class ComponentProperty extends CodecProperty<Map<ResourceLocation, JsonE
         });
     }
 
+    public Map<ResourceLocation, JsonElement> initialize(Map<ResourceLocation, JsonElement> property, ModuleInstance context) {
+        Map<ResourceLocation, JsonElement> map = new ConcurrentHashMap<>();
+        property.forEach((id, element) -> {
+            map.put(id, deepParse(element, context));
+        });
+        return map;
+    }
+
     public <T> void update(DataComponentType<T> type, JsonElement element, ItemStack itemStack) {
         var result = type.codec().decode(JsonOps.INSTANCE, element);
         if (result.isError()) {
             throw new RuntimeException("Could not decode Data Component ");
         }
         itemStack.set(type, result.getOrThrow().getFirst());
+    }
+
+    public JsonElement deepParse(JsonElement element, ModuleInstance context) {
+        if (element.isJsonObject()) {
+            JsonObject obj = element.getAsJsonObject();
+            JsonObject next = new JsonObject();
+            for (Map.Entry<String, JsonElement> entry : obj.entrySet()) {
+                next.add(
+                        entry.getKey(),
+                        deepParse(entry.getValue(), context)
+                );
+            }
+            return next;
+        } else if (element.isJsonArray()) {
+            JsonArray arr = element.getAsJsonArray();
+            JsonArray next = new JsonArray(arr.size());
+            for (int i = 0; i < arr.size(); i++) {
+                next.add(arr.get(i));
+            }
+            return next;
+        } else if (element.isJsonPrimitive() && element.getAsJsonPrimitive().isString()) {
+            String potential = element.getAsString();
+            if (potential.startsWith("|||miapi.evaluate")) {
+                potential = potential.replace("|||miapi.evaluate","");
+                return new JsonPrimitive(StatResolver.resolveDouble(potential,context));
+            }
+            return element.deepCopy();
+        } else {
+            return element.deepCopy();
+        }
     }
 
     @Override

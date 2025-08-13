@@ -1,14 +1,15 @@
 package smartin.miapi.material;
 
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.commands.arguments.ResourceLocationArgument;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import smartin.miapi.material.base.Material;
 import smartin.miapi.network.Networking;
@@ -16,7 +17,7 @@ import smartin.miapi.network.Networking;
 import java.util.List;
 
 /**
- * A command related to materials- used to fetch debug data of active materials
+ * A command related to materials - used to fetch debug data of active materials
  */
 public class MaterialCommand {
     public static String SEND_MATERIAL_CLIENT = "miapi_material_debug";
@@ -24,7 +25,7 @@ public class MaterialCommand {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         LiteralArgumentBuilder<CommandSourceStack> literal = Commands.literal("miapi")
                 .then(Commands.literal("material")
-                        .then(Commands.argument("material_id", StringArgumentType.word())
+                        .then(Commands.argument("material_id", ResourceLocationArgument.id())
                                 .suggests(MATERIAL_SUGGESTIONS) // Specify suggestion provider
                                 .executes(MaterialCommand::executeMaterialCommand)));
         LiteralArgumentBuilder<CommandSourceStack> getHand = Commands.literal("miapi")
@@ -55,14 +56,14 @@ public class MaterialCommand {
     }
 
     private static int executeMaterialCommand(CommandContext<CommandSourceStack> context) {
-        String materialId = StringArgumentType.getString(context, "material_id");
-        List<String> materialOptions = getMaterialOptions(); // You need to define this method to getVertexConsumer the list of material options
+        ResourceLocation materialId = ResourceLocationArgument.getId(context, "material_id");
+        List<ResourceLocation> materialOptions = getMaterialOptions(); // You need to define this method to getVertexConsumer the list of material options
         if (materialOptions.contains(materialId)) {
             // Material ID is valid, perform desired action
             context.getSource().sendSuccess(() -> Component.literal("Material ID is valid: " + materialId), false);
             if (context.getSource().isPlayer()) {
                 FriendlyByteBuf buf = Networking.createBuffer();
-                buf.writeUtf(materialId);
+                buf.writeUtf(materialId.toString());
                 Networking.sendS2C(SEND_MATERIAL_CLIENT, context.getSource().getPlayer(), buf);
             }
             return 1; // Return success
@@ -75,12 +76,14 @@ public class MaterialCommand {
 
     // Suggestion provider for material options
     private static final SuggestionProvider<CommandSourceStack> MATERIAL_SUGGESTIONS = (context, builder) -> {
-        List<String> materialOptions = getMaterialOptions();
-        materialOptions.forEach(builder::suggest);
+        List<ResourceLocation> materialOptions = getMaterialOptions();
+        materialOptions.forEach( s ->{
+            builder.suggest(s.toString());
+        });
         return builder.buildFuture();
     };
 
-    private static List<String> getMaterialOptions() {
-        return MaterialProperty.MATERIAL_REGISTRY.getFlatMap().values().stream().map(Material::getStringID).toList();
+    private static List<ResourceLocation> getMaterialOptions() {
+        return MaterialProperty.MATERIAL_REGISTRY.getFlatMap().values().stream().map(Material::getID).toList();
     }
 }

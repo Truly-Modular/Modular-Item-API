@@ -33,7 +33,6 @@ import smartin.miapi.registries.MiapiRegistry;
 import smartin.miapi.registries.RegistryInventory;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * This is the Property relating to materials of a Module
@@ -156,7 +155,8 @@ public class MaterialProperty extends CodecProperty<ResourceLocation> {
     public static Material getMaterialFromIngredient(ItemStack item) {
         double lowestPrio = Double.MAX_VALUE;
         Material foundMaterial = null;
-        for (Material material : MATERIAL_REGISTRY.getFlatMap().values()) {
+
+        for (Material material : MATERIAL_REGISTRY.getFlatMap().values().stream().toList()) {
             Double matPrio = material.getPriorityOfIngredientItem(item);
             if (matPrio != null && matPrio < lowestPrio) {
                 lowestPrio = matPrio;
