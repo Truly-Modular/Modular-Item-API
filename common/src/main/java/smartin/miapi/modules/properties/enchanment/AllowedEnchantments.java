@@ -220,7 +220,6 @@ public class AllowedEnchantments extends CodecProperty<AllowedEnchantments.Allow
         }
 
         private boolean contains(Enchantment enchantment, List<ResourceLocation> ids, RegistryAccess main, RegistryAccess fallback) {
-            Miapi.LOGGER.info("checking ids " + ids.size());
             ResourceLocation mainID = null;
             Holder<Enchantment> enchantmentHolder = null;
             if (main != null) {
@@ -255,10 +254,8 @@ public class AllowedEnchantments extends CodecProperty<AllowedEnchantments.Allow
             }
             for (ResourceLocation id : ids) {
                 if (enchantmentHolder != null && enchantmentHolder.is(id)) {
-                    Miapi.LOGGER.info("detected tag" + id);
                     return true;
                 }
-                Miapi.LOGGER.info("detected id" + mainID);
                 if (mainID != null && id.equals(mainID)) {
                     return true;
                 }

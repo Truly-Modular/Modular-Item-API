@@ -1,6 +1,5 @@
 package smartin.miapi.client.gui;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
@@ -11,7 +10,6 @@ import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -86,7 +84,7 @@ public abstract class InteractAbleWidget extends AbstractWidget implements Rende
      * coordinates (u, v) and (u2, regionHeight).
      * This is useful if a texture might be resized in the UI to still align its Edges
      *
-     * @param drawContext   The drawContext used.
+     * @param context   The drawContext used.
      * @param texture       The texture rendered.
      * @param x             The x-coordinate to draw the texture at.
      * @param y             The y-coordinate to draw the texture at.
@@ -100,12 +98,11 @@ public abstract class InteractAbleWidget extends AbstractWidget implements Rende
      * @param textureHeight The height of the texture sheet.
      * @param borderWidth   The width of the border to draw around the texture.
      */
-    public static void drawTextureWithEdgeAndScale(GuiGraphics drawContext, ResourceLocation texture, int x, int y, int u, int v, int regionWidth, int regionHeight, int width, int height, int textureWidth, int textureHeight, int borderWidth, float scale) {
-        GuiGraphics context = new GuiGraphics(Minecraft.getInstance(), drawContext.bufferSource());
-        context.pose().mulPose(drawContext.pose().last().pose());
+    public static void drawTextureWithEdgeAndScale(GuiGraphics context, ResourceLocation texture, int x, int y, int u, int v, int regionWidth, int regionHeight, int width, int height, int textureWidth, int textureHeight, int borderWidth, float scale) {
         context.pose().last().pose().scale(1 / scale);
         drawTextureWithEdge(context, texture, (int) (x * scale), (int) (y * scale), u, v, regionWidth, regionHeight, (int)
                 (width * scale), (int) (height * scale), textureWidth, textureHeight, borderWidth);
+        context.pose().last().pose().scale(scale);
     }
 
     /**
@@ -383,10 +380,16 @@ public abstract class InteractAbleWidget extends AbstractWidget implements Rende
      */
     @Override
     public void renderWidget(GuiGraphics drawContext, int mouseX, int mouseY, float delta) {
-        if ((debug || MiapiConfig.getServerConfig().other.developmentMode) && Screen.hasAltDown())
+        if ((debug || MiapiConfig.getServerConfig().other.developmentMode) && Screen.hasAltDown()) {
             drawSquareBorder(drawContext, getX(), getY(), getWidth(), getHeight(), 1, randomColor);
+        }else{
+            //yeah, i dont fucking know, but remove this and EMI/JEI break their rendeirng on scrolllists scissorboxes
+            //nope, no clue why
+            //even less to why this remotly fixes it, gi some deeprooted issue with scissors
+            drawSquareBorder(drawContext, getX(), getY(), getWidth(), getHeight(), 1, 0000000000);
+        }
 
-        RenderSystem.setShader(GameRenderer::getPositionShader);
+        //RenderSystem.setShader(GameRenderer::getPositionShader);
         List<GuiEventListener> reverse = new ArrayList<>(children());
         Collections.reverse(reverse);
 

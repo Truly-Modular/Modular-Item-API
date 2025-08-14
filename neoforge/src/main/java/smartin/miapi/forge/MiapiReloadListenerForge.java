@@ -87,9 +87,6 @@ public class MiapiReloadListenerForge implements PreparableReloadListener {
                 }
             });
             reloadData = filteredMap;
-            if (Miapi.server != null) {
-                Miapi.server.getPlayerList().getPlayers().forEach(ReloadEvents::triggerReloadOnClient);
-            }
         });
     }
 
@@ -108,6 +105,9 @@ public class MiapiReloadListenerForge implements PreparableReloadListener {
         ReloadEvents.END.fireEvent(false, access);
         Miapi.LOGGER.info("Server load took " + (double) (System.nanoTime() - timeStart) / 1000 / 1000 + " ms");
         ReloadEvents.reloadCounter--;
+        if (Miapi.server != null) {
+            Miapi.server.getPlayerList().getPlayers().forEach(ReloadEvents::triggerReloadOnClient);
+        }
     }
 
     @Override

@@ -57,6 +57,11 @@ public class CreateListView extends InteractAbleWidget {
         this.addChild(craftView);
     }
 
+    @Override
+    public void renderWidget(GuiGraphics drawContext, int mouseX, int mouseY, float delta) {
+        super.renderWidget(drawContext, mouseX, mouseY, delta);
+    }
+
     protected class CreateItemEntry extends InteractAbleWidget {
         final CreateItemOption.CreateItem createItem;
         final ScrollingTextWidget textWidget;

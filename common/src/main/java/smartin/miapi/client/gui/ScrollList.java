@@ -92,8 +92,8 @@ public class ScrollList extends InteractAbleWidget {
         int startY = this.getY() - this.scrollAmount;
 
         for (AbstractWidget widget : this.widgets) {
+            widget.setY(startY);
             if (startY + widget.getHeight() >= this.getY() && startY <= this.getY() + this.height - 1) {
-                widget.setY(startY);
                 widget.setX(this.getX());
                 if (showScrollbar()) {
                     widget.setWidth(this.width - barWidth);
@@ -230,7 +230,9 @@ public class ScrollList extends InteractAbleWidget {
 
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
-        if (mouseX > this.getX() + this.width - barWidth && mouseX < this.getX() + this.width) {
+        if (
+                mouseX > this.getX() + this.width - barWidth &&
+                mouseX < this.getX() + this.width) {
             if (mouseY < (double) this.getY()) {
                 this.scrollAmount = 0;
                 return true;
@@ -287,7 +289,11 @@ public class ScrollList extends InteractAbleWidget {
             double y = this.getY();
             double width = this.width;
             double height = this.height;
-            return mouseX >= x && mouseY >= y && mouseX < x + width && mouseY < y + height;
+            return
+                    mouseX >= x &&
+                    mouseY >= y &&
+                    mouseX < x + width &&
+                    mouseY < y + height;
         }
     }
 }

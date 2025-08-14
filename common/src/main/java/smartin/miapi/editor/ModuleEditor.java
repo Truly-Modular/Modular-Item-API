@@ -35,7 +35,7 @@ public class ModuleEditor implements MiapiEditor {
         this.module = module;
         this.onChange = onChange;
         itemModuleName.set(module.moduleID);
-        module.subModules.forEach((id, m) -> {
+        module.getSubModuleMap().forEach((id, m) -> {
             subModuleEditors.put(id, new ModuleEditor(m, (change -> {
                 module.setSubModule(id, change);
                 onChange.accept(module);

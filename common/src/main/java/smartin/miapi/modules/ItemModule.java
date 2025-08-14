@@ -151,7 +151,7 @@ public record ItemModule(ResourceLocation id, Map<ModuleProperty<?>, Object> pro
                                 moduleInstance.registryAccess = root.registryAccess;
                             }
                             compareTo.writeToItem(stack);
-                            return getModules(stack);
+                            return compareTo.copy();
                         }
                     }
                 }
@@ -177,12 +177,12 @@ public record ItemModule(ResourceLocation id, Map<ModuleProperty<?>, Object> pro
             if (module != null) {
                 flatList.add(module);
 
-                List<ModuleInstance> submodules = new ArrayList<>();
+                List<ModuleInstance> allSubModules = new ArrayList<>();
                 //TODO:add prioritized sorting into slot logic
                 module.subModules.keySet().stream().sorted().forEach(id -> {
-                    submodules.add(module.subModules.get(id));
+                    allSubModules.add(module.subModules.get(id));
                 });
-                queue.addAll(0, submodules);
+                queue.addAll(0, allSubModules);
             }
         }
 

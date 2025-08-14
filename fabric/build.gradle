@@ -137,6 +137,7 @@ dependencies {
     modCompileOnly "maven.modrinth:zenith:1.1.9-1.20.1"
     modLocalRuntime "maven.modrinth:mmmmmmmmmmmm:fabric_1.21-2.0.7"
     modLocalRuntime "maven.modrinth:moonlight:fHnDuS0y"
+    modLocalRuntime "maven.modrinth:emi:1.1.22+1.21.1+fabric"
 
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) { transitive false }

@@ -257,6 +257,8 @@ public class ReloadEvents {
 
             if (RECEIVED_SYNCER.size() == DATA_SYNCER_REGISTRY.getFlatMap().keySet().size()) {
                 RECEIVED_SYNCER.clear();
+                chunkBuffer.clear();
+                expectedChunks.clear();
                 executeReloadClient();
             }
         });
@@ -264,6 +266,7 @@ public class ReloadEvents {
 
     private static void executeReloadClient() {
         Minecraft.getInstance().execute(() -> {
+            clientReloadTimeStart = System.nanoTime();
             reloadCounter++;
             RegistryAccess access;
             if (Minecraft.getInstance().level != null) {

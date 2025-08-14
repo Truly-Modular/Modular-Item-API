@@ -3,12 +3,10 @@ package smartin.miapi.fabric;
 import com.google.gson.JsonObject;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.WorldLoader;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.profiling.ProfilerFiller;
-import net.minecraft.world.item.crafting.RecipeManager;
 import smartin.miapi.Miapi;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.events.MiapiEvents;
@@ -91,9 +89,6 @@ public class MiapiReloadListener implements PreparableReloadListener {
 
 
         //TODO:this is not working on servers at the moment for no known reason
-        if (Miapi.server != null) {
-            Miapi.server.getPlayerList().getPlayers().forEach(ReloadEvents::triggerReloadOnClient);
-        }
     }
 
     public static void actualReload(RegistryAccess access) {
@@ -111,8 +106,9 @@ public class MiapiReloadListener implements PreparableReloadListener {
         ReloadEvents.END.fireEvent(false, access);
         Miapi.LOGGER.info("Server load took " + (double) (System.nanoTime() - timeStart) / 1000 / 1000 + " ms");
         ReloadEvents.reloadCounter--;
-        WorldLoader loader;
-        RecipeManager manager;
+        if (Miapi.server != null) {
+            Miapi.server.getPlayerList().getPlayers().forEach(ReloadEvents::triggerReloadOnClient);
+        }
     }
 
     @Override
