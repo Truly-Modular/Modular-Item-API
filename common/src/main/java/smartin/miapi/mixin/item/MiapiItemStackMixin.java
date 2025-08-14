@@ -95,9 +95,6 @@ public abstract class MiapiItemStackMixin {
 
     @Inject(method = "addToTooltip(Lnet/minecraft/core/component/DataComponentType;Lnet/minecraft/world/item/Item$TooltipContext;Ljava/util/function/Consumer;Lnet/minecraft/world/item/TooltipFlag;)V", at = @At("TAIL"))
     public <T> void miapi$injectToolTip(DataComponentType<T> component, Item.TooltipContext context, Consumer<Component> tooltipAdder, TooltipFlag tooltipFlag, CallbackInfo ci) {
-        if (true) {
-            return;
-        }
         ItemStack stack = (ItemStack) (Object) this;
         PreviewManager.setCursorItemstack(stack);
         if (DataComponents.UNBREAKABLE.equals(component)) {

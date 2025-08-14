@@ -47,7 +47,7 @@ public class GeneratedMaterial implements Material {
     ResourceLocation key = Miapi.id("empty_material");
     List<String> groups = new ArrayList<>();
     List<String> textureKeys = new ArrayList<>();
-    Map<String, Double> stats = new HashMap<>();
+    public Map<String, Double> stats = new HashMap<>();
     List<ArmorItem> armorItems = new ArrayList<>();
     TagKey<Block> incorrectForTool = BlockTags.INCORRECT_FOR_WOODEN_TOOL;
     GrayscalePaletteColorer palette;
@@ -323,7 +323,7 @@ public class GeneratedMaterial implements Material {
 
     @Override
     public List<String> getAllPropertyKeys() {
-        return List.of();
+        return properties.keySet().stream().toList();
     }
 
     @Override
@@ -392,6 +392,11 @@ public class GeneratedMaterial implements Material {
 
     @Override
     public JsonObject getDebugJson() {
+        try {
+            return MaterialHelper.toCodecMaterial(this).getDebugJson();
+        } catch (RuntimeException e) {
+            Miapi.LOGGER.warn("could not convert generated material", e);
+        }
         JsonObject object = new JsonObject();
         object.add("id", new JsonPrimitive(getID().toString()));
         JsonArray jsonElements = new JsonArray();

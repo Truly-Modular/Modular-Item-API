@@ -34,7 +34,7 @@ public class PropertyHolder {
                     }
             );
 
-    private static final Codec<Map<ModuleProperty<?>, Object>> PROPERTY_MAP_CODEC = Codec.dispatchedMap(
+    public static final Codec<Map<ModuleProperty<?>, Object>> PROPERTY_MAP_CODEC = Codec.dispatchedMap(
             PROPERTY_CODEC,
             a -> {
                 if (a == null) {

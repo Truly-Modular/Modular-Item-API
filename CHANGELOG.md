@@ -18,3 +18,6 @@ and either create a GH issue or ping me on discord with the spark link and a des
 - re-added epic fight compat
 - fixed create options disappearing on reload
 - fixed issues in enchanting logic
+- fixed emi/jei/rei item tooltip rendering issue
+- fixed crash related to skeletons
+- fixed bug with create options where the top options would select the wrong thing.

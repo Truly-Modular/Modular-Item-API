@@ -1,8 +1,100 @@
 {
-    "fake_item_tag": [
-        "create:pressurized_air_sources"
+    "mining_speed": 10.0,
+    "hardness": 7.0,
+    "flexibility": 2.5,
+    "density": 3.5,
+    "tier": 2.0,
+    "durability": 1660.0,
+    "enchantability": 22.0,
+    "translation": "Dragon Bone",
+    "color": "ffffffffff817c70",
+    "items": [
+        {
+            "item": "iceandfire:dragonbone"
+        },
+        {
+            "item": "iceandfire:dragonbone"
+        }
     ],
-    "components": {
-        "create:banktank_air": "|||miapi.evaluate[material.hardness]"
+    "generate_converters": false,
+    "mining_level": "minecraft:incorrect_for_wooden_tool",
+    "groups": [
+        "miapi:generated/item.iceandfire.dragonboneitem.iceandfire.dragonbone_sword",
+        "bone"
+    ],
+    "properties": {
+        "pickaxe": {
+            "miapi:ability_context": {
+                "miapi:copy_item": {
+                    "id": "iceandfire:dragonbone_pickaxe"
+                }
+            },
+            "miapi:copy_item_lore": [
+                "iceandfire:dragonbone_pickaxe"
+            ],
+            "miapi:copy_item_on_hit": [
+                "iceandfire:dragonbone_pickaxe"
+            ]
+        },
+        "shovel": {
+            "miapi:ability_context": {
+                "miapi:copy_item": {
+                    "id": "iceandfire:dragonbone_shovel"
+                }
+            },
+            "miapi:copy_item_lore": [
+                "iceandfire:dragonbone_shovel"
+            ],
+            "miapi:copy_item_on_hit": [
+                "iceandfire:dragonbone_shovel"
+            ]
+        },
+        "blade": {
+            "miapi:ability_context": {
+                "miapi:copy_item": {
+                    "id": "iceandfire:dragonbone_sword"
+                }
+            },
+            "miapi:copy_item_lore": [
+                "iceandfire:dragonbone_sword"
+            ],
+            "miapi:copy_item_on_hit": [
+                "iceandfire:dragonbone_sword"
+            ]
+        },
+        "axe": {
+            "miapi:ability_context": {
+                "miapi:copy_item": {
+                    "id": "iceandfire:dragonbone_axe"
+                }
+            },
+            "miapi:copy_item_lore": [
+                "iceandfire:dragonbone_axe"
+            ],
+            "miapi:copy_item_on_hit": [
+                "iceandfire:dragonbone_axe"
+            ]
+        },
+        "hoe": {
+            "miapi:ability_context": {
+                "miapi:copy_item": {
+                    "id": "iceandfire:dragonbone_hoe"
+                }
+            },
+            "miapi:copy_item_lore": [
+                "iceandfire:dragonbone_hoe"
+            ],
+            "miapi:copy_item_on_hit": [
+                "iceandfire:dragonbone_hoe"
+            ]
+        }
+    },
+    "icon": {
+        "type": "item",
+        "item": "iceandfire:dragonbone"
+    },
+    "color_palette": {
+        "type": "image_generated_item",
+        "item": "iceandfire:dragonbone"
     }
 }

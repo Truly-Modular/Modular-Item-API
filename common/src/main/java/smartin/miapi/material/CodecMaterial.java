@@ -48,8 +48,12 @@ public class CodecMaterial implements Material {
     public Optional<JsonElement> iconJson;
     Optional<JsonElement> paletteJson;
     Optional<JsonElement> dyePaletteJson;
-    Map<String, Map<ModuleProperty<?>, Object>> propertyMap = new HashMap<>();
-    Map<String, Map<ModuleProperty<?>, Object>> displayPropertyMap = new HashMap<>();
+    Map<String, Map<ModuleProperty<?>, Object>> mergedAllAppliedProperties = new HashMap<>();
+    Map<String, Map<ModuleProperty<?>, Object>> mergedAllVisualProperties = new HashMap<>();
+
+    Map<String, Map<ModuleProperty<?>, Object>> normalProperties = new HashMap<>();
+    Map<String, Map<ModuleProperty<?>, Object>> displayProperties = new HashMap<>();
+    Map<String, Map<ModuleProperty<?>, Object>> hiddenProperties = new HashMap<>();
     public List<String> groups;
     List<String> guiGroups;
     public List<String> textureKeys;
@@ -106,15 +110,18 @@ public class CodecMaterial implements Material {
             StatResolver.Codecs.JSONELEMENT_CODEC.optionalFieldOf("icon").forGetter(material -> material.iconJson),
             StatResolver.Codecs.JSONELEMENT_CODEC.optionalFieldOf("color_palette").forGetter(material -> material.paletteJson),
             StatResolver.Codecs.JSONELEMENT_CODEC.optionalFieldOf("dye_color_palette").forGetter(material -> material.dyePaletteJson),
-            Codec.STRING.listOf().optionalFieldOf("groups", new ArrayList<>()).forGetter(CodecMaterial::getGroups),
-            Codec.STRING.listOf().optionalFieldOf("hidden_groups", new ArrayList<>()).forGetter(CodecMaterial::getGuiGroups),
-            Codec.STRING.listOf().optionalFieldOf("gui_groups", new ArrayList<>()).forGetter(CodecMaterial::getGuiGroups),
+            Codec.STRING.listOf().optionalFieldOf("groups", new ArrayList<>()).forGetter(m ->
+                    m.getGroups().stream().filter(g -> m.getGuiGroups().contains(g)).toList()),
+            Codec.STRING.listOf().optionalFieldOf("hidden_groups", new ArrayList<>()).forGetter(m ->
+                    m.getGroups().stream().filter(g -> !m.getGuiGroups().contains(g)).toList()),
+            Codec.STRING.listOf().optionalFieldOf("gui_groups", new ArrayList<>()).forGetter(m ->
+                    m.getGuiGroups().stream().filter(g -> !m.getGroups().contains(g)).toList()),
             Codec.unboundedMap(Codec.STRING, StatResolver.Codecs.JSONELEMENT_CODEC)
-                    .optionalFieldOf("properties", new HashMap<>()).forGetter(m -> PropertyController.toJsonMap(m.getActualProperty())),
+                    .optionalFieldOf("properties", new HashMap<>()).forGetter(m -> PropertyController.toJsonMap(m.normalProperties)),
             Codec.unboundedMap(Codec.STRING, StatResolver.Codecs.JSONELEMENT_CODEC)
-                    .optionalFieldOf("display_properties", new HashMap<>()).forGetter(m -> PropertyController.toJsonMap(m.getDisplayProperty())),
+                    .optionalFieldOf("display_properties", new HashMap<>()).forGetter(m -> PropertyController.toJsonMap(m.displayProperties)),
             Codec.unboundedMap(Codec.STRING, StatResolver.Codecs.JSONELEMENT_CODEC)
-                    .optionalFieldOf("hidden_properties", new HashMap<>()).forGetter(m -> PropertyController.toJsonMap(m.getHiddenProperty())),
+                    .optionalFieldOf("hidden_properties", new HashMap<>()).forGetter(m -> PropertyController.toJsonMap(m.hiddenProperties)),
             Codec.STRING.listOf().optionalFieldOf("textures", List.of("default")).forGetter(CodecMaterial::getTextureKeys),
             ResourceLocation.CODEC.optionalFieldOf("mining_level").forGetter(material -> Optional.of(material.getIncorrectBlocksForDrops().location())),
             ComponentSerialization.CODEC.optionalFieldOf("translation").forGetter(material -> material.translation),
@@ -163,14 +170,20 @@ public class CodecMaterial implements Material {
         this.items = items;
         this.generateConverters = generateConverters;
         hiddenProperty.forEach((type, json) -> {
-            propertyMap.put(type, ModuleDataPropertiesManager.resolvePropertiesFromJson(json));
+            var data = ModuleDataPropertiesManager.resolvePropertiesFromJson(json);
+            mergedAllAppliedProperties.put(type, data);
+            this.hiddenProperties.put(type, data);
         });
         property.forEach((type, json) -> {
-            propertyMap.put(type, ModuleDataPropertiesManager.resolvePropertiesFromJson(json));
-            displayPropertyMap.put(type, ModuleDataPropertiesManager.resolvePropertiesFromJson(json));
+            var data = ModuleDataPropertiesManager.resolvePropertiesFromJson(json);
+            mergedAllAppliedProperties.put(type, data);
+            mergedAllVisualProperties.put(type, data);
+            this.normalProperties.put(type, data);
         });
         visualProperty.forEach((type, json) -> {
-            displayPropertyMap.put(type, ModuleDataPropertiesManager.resolvePropertiesFromJson(json));
+            var data = ModuleDataPropertiesManager.resolvePropertiesFromJson(json);
+            mergedAllVisualProperties.put(type, data);
+            displayProperties.put(type, data);
         });
         if (smartin.miapi.Environment.isClient()) {
             clientSetup(iconJson, paletteJson, dyePaletteJson);
@@ -207,9 +220,9 @@ public class CodecMaterial implements Material {
                 new ArrayList<>(this.groups),
                 List.of(),
                 new ArrayList<>(this.guiGroups),
-                PropertyController.toJsonMap(this.getActualProperty()),
-                PropertyController.toJsonMap(this.getDisplayProperty()),
-                PropertyController.toJsonMap(this.getHiddenProperty()),
+                PropertyController.toJsonMap(this.normalProperties),
+                PropertyController.toJsonMap(this.hiddenProperties),
+                PropertyController.toJsonMap(this.displayProperties),
                 new ArrayList<>(this.textureKeys),
                 this.incorrectForTool.map(TagKey::location),
                 this.translation,
@@ -222,8 +235,8 @@ public class CodecMaterial implements Material {
         copy.id = this.id;
         copy.stringData = new HashMap<>(this.stringData);
         copy.doubleMap = new HashMap<>(this.doubleMap);
-        copy.propertyMap = new HashMap<>(this.propertyMap);
-        copy.displayPropertyMap = new HashMap<>(this.displayPropertyMap);
+        copy.mergedAllAppliedProperties = new HashMap<>(this.mergedAllAppliedProperties);
+        copy.mergedAllVisualProperties = new HashMap<>(this.mergedAllVisualProperties);
         copy.incorrectForTool = this.incorrectForTool;
         copy.translation = this.translation;
 
@@ -273,8 +286,8 @@ public class CodecMaterial implements Material {
         this.guiGroups.addAll(material.guiGroups);
 
         // Merge properties
-        mergeProperties(material.propertyMap, this.propertyMap);
-        mergeProperties(material.displayPropertyMap, this.displayPropertyMap);
+        mergeProperties(material.mergedAllAppliedProperties, this.mergedAllAppliedProperties);
+        mergeProperties(material.mergedAllVisualProperties, this.mergedAllVisualProperties);
 
         // Merge other fields
         this.textureKeys = new ArrayList<>(this.textureKeys);
@@ -409,22 +422,22 @@ public class CodecMaterial implements Material {
 
     @Override
     public Map<ModuleProperty<?>, Object> materialProperties(String key) {
-        return propertyMap.getOrDefault(key, new HashMap<>());
+        return mergedAllAppliedProperties.getOrDefault(key, new HashMap<>());
     }
 
     @Override
     public Map<ModuleProperty<?>, Object> getDisplayMaterialProperties(String key) {
-        return displayPropertyMap.getOrDefault(key, new HashMap<>());
+        return mergedAllVisualProperties.getOrDefault(key, new HashMap<>());
     }
 
     @Override
     public List<String> getAllPropertyKeys() {
-        return new ArrayList<>(propertyMap.keySet());
+        return new ArrayList<>(mergedAllAppliedProperties.keySet());
     }
 
     @Override
     public List<String> getAllDisplayPropertyKeys() {
-        return new ArrayList<>(displayPropertyMap.keySet());
+        return new ArrayList<>(mergedAllVisualProperties.keySet());
     }
 
     @Override

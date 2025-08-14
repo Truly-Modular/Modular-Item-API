@@ -13,7 +13,10 @@ import smartin.miapi.entity.ProjectileWithBow;
 @Mixin(SynchedEntityData.Builder.class)
 public class SynchedEntityDataMixin {
 
-    @Inject(method = "Lnet/minecraft/network/syncher/SynchedEntityData$Builder;<init>(Lnet/minecraft/network/syncher/SyncedDataHolder;)V", at = @At("TAIL"))
+    @Inject(
+            method = "Lnet/minecraft/network/syncher/SynchedEntityData$Builder;<init>(Lnet/minecraft/network/syncher/SyncedDataHolder;)V",
+            at = @At("TAIL"),
+            require = 1)
     private void miapi$injectBowItem(SyncedDataHolder entity, CallbackInfo ci) {
         if (entity instanceof Projectile projectile) {
             ((SynchedEntityData.Builder) (Object) this).define(ProjectileWithBow.get(), ItemStack.EMPTY);

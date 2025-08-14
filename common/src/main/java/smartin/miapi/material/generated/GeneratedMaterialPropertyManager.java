@@ -127,7 +127,9 @@ public class GeneratedMaterialPropertyManager {
                     .map(tag -> tag.location().toString())
                     .toList();
 
-            propertyMap.put(FakeItemTagProperty.property, uniqueTags);
+            if (!uniqueTags.isEmpty()) {
+                propertyMap.put(FakeItemTagProperty.property, uniqueTags);
+            }
         }
 
         if (shouldApplyProperty(MiapiConfig.getServerConfig().generatedMaterials.properties.componentProperty, id.toString())) {
@@ -143,7 +145,9 @@ public class GeneratedMaterialPropertyManager {
                     components.put(componentId, element);
                 }
             });
-            propertyMap.put(ComponentProperty.property, components);
+            if (!components.isEmpty()) {
+                propertyMap.put(ComponentProperty.property, components);
+            }
         }
 
         if (shouldApplyProperty(MiapiConfig.getServerConfig().generatedMaterials.properties.enchantProperty, id.toString())) {
@@ -156,7 +160,9 @@ public class GeneratedMaterialPropertyManager {
                     Miapi.LOGGER.info("detected enchantemnt " + enchantment.getRegisteredName() + " on " + id);
                 }
             });
-            propertyMap.put(CraftingEnchantProperty.property, enchantments);
+            if(!enchantments.isEmpty()){
+                propertyMap.put(CraftingEnchantProperty.property, enchantments);
+            }
         }
 
         if (shouldApplyProperty(MiapiConfig.getServerConfig().generatedMaterials.properties.attributeProperty, id.toString())) {
@@ -189,7 +195,9 @@ public class GeneratedMaterialPropertyManager {
                         .put(Either.left(e.slot()), resolvable);
             });
 
-            propertyMap.put(AttributeProperty.property, attributes);
+            if(!attributes.isEmpty()){
+                propertyMap.put(AttributeProperty.property, attributes);
+            }
         }
 
         // Add the collected propertyMap to the properties map

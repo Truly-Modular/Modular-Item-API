@@ -7,7 +7,7 @@ import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
 
 public interface ProjectileWithBow {
-    EntityDataAccessor<ItemStack> BOW_ITEM_STACK = SynchedEntityData.defineId(Projectile.class, EntityDataSerializers.ITEM_STACK);
+    EntityDataAccessor<ItemStack> BOW_ITEM_STACK = create();
 
     static EntityDataAccessor<ItemStack> get() {
         return BOW_ITEM_STACK;
@@ -15,5 +15,9 @@ public interface ProjectileWithBow {
 
     ItemStack getBowItem();
     void setBowItem(ItemStack bowItem);
+
+    static EntityDataAccessor<ItemStack> create() {
+        return SynchedEntityData.defineId(Projectile.class, EntityDataSerializers.ITEM_STACK);
+    }
 
 }

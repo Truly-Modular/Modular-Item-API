@@ -130,7 +130,10 @@ public class MiapiClient {
             Minecraft.getInstance().execute(() -> {
                 Material material = MaterialProperty.MATERIAL_REGISTRY.get(Miapi.id(materialId));
                 if (material != null) {
-                    String raw = Miapi.gson.toJson(material.getDebugJson());
+                    String raw = Miapi.gson.newBuilder()
+                            .setPrettyPrinting()
+                            .create()
+                            .toJson(material.getDebugJson());
                     Component text = Component.literal(raw);
                     ClickEvent event = new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, raw);
                     text = text.toFlatList(Style.EMPTY.withClickEvent(event)).get(0);

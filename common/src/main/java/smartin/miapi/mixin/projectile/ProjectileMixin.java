@@ -3,6 +3,7 @@ package smartin.miapi.mixin.projectile;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
+import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
@@ -17,6 +18,7 @@ import smartin.miapi.entity.ProjectileWithBow;
 @Mixin(Projectile.class)
 public class ProjectileMixin implements ProjectileWithBow {
     private static final String MIAPI_SHOW_BY_BOW = "miapi:show_by_bow";
+    private static final EntityDataAccessor<ItemStack> asd = ProjectileWithBow.get();
 
     @Inject(method = "Lnet/minecraft/world/entity/projectile/Projectile;readAdditionalSaveData(Lnet/minecraft/nbt/CompoundTag;)V", at = @At("HEAD"))
     private void miapi$readBowItem(CompoundTag compound, CallbackInfo ci) {
