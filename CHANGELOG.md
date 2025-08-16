@@ -21,3 +21,4 @@ and either create a GH issue or ping me on discord with the spark link and a des
 - fixed emi/jei/rei item tooltip rendering issue
 - fixed crash related to skeletons
 - fixed bug with create options where the top options would select the wrong thing.
+- added support for module-ids as material property keys

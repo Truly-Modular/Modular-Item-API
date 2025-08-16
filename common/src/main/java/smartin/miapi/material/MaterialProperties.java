@@ -50,6 +50,13 @@ public class MaterialProperties extends CodecProperty<List<String>> {
                         returnMap = PropertyResolver.merge(oldMap, materialProperties, MergeType.SMART);
                     }
                 }
+                Map<ModuleProperty<?>, Object> materialProperties = PropertyResolver
+                        .setSource(
+                                material.materialProperties(moduleInstance.moduleID.toString()),
+                                Component.translatable("miapi.property.source.material", material.getTranslation().getString()).withStyle(ChatFormatting.DARK_GRAY));
+                if (!materialProperties.isEmpty()) {
+                    returnMap = PropertyResolver.merge(oldMap, materialProperties, MergeType.SMART);
+                }
             }
             return returnMap;
         });

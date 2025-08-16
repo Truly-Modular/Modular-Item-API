@@ -9,6 +9,9 @@ import net.minecraft.world.item.ItemStack;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.ScrollingTextWidget;
 import smartin.miapi.client.gui.crafting.statdisplay.SingleStatDisplay;
+import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.ModuleInstance;
+import smartin.miapi.registries.RegistryInventory;
 
 import java.util.List;
 
@@ -23,9 +26,19 @@ public class MaterialGroupTitleWidget extends InteractAbleWidget {
 
     public MaterialGroupTitleWidget(int x, int y, int width, String materialKey, List<InteractAbleWidget> widgets, ItemStack itemStack, ItemStack compare) {
         super(x, y, width, 12, Component.literal(materialKey));
-        scrollingTextWidget = new ScrollingTextWidget(x, y + 2, width, Component.translatableWithFallback("miapi.material_property.category." + materialKey, materialKey));
+        ItemModule module = RegistryInventory.ITEM_MODULE_MIAPI_REGISTRY.get(materialKey);
+        if (module != null) {
+
+        }
+        scrollingTextWidget = new ScrollingTextWidget(x, y + 2, width,
+                module != null ?
+                        new ModuleInstance(module).getModuleName() :
+                        Component.translatableWithFallback("miapi.material_property.category." + materialKey, materialKey));
         scrollingTextWidget.setOrientation(ScrollingTextWidget.Orientation.CENTERED);
-        hoverDescription = Component.translatableWithFallback("miapi.material_property.category." + materialKey + ".description", materialKey);
+        hoverDescription =
+                Component.translatableWithFallback("miapi.material_property.category." + materialKey + ".description",
+                        materialKey);
+
         hasHoverdescription = !hoverDescription.getString().equals(materialKey);
         this.addChild(scrollingTextWidget);
         this.widgets = widgets;

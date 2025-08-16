@@ -1,6 +1,5 @@
 package smartin.miapi.client.gui.crafting;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
@@ -118,6 +117,10 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
         editOption = null;
         List<String> allowedModules = new ArrayList<>();
         allowedModules.add("melee");
+        if (Minecraft.getInstance().player.containerMenu instanceof CraftingScreenHandler craftingScreenHandler) {
+            craftingScreenHandler.clearSlots();
+        }
+
         baseSlot = new SlotProperty.ModuleSlot(allowedModules);
 
         int centerX = (this.width - this.imageWidth - 6) / 2;
