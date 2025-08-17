@@ -6,7 +6,7 @@ import com.mojang.serialization.JsonOps;
 import io.netty.handler.codec.DecoderException;
 import net.minecraft.resources.ResourceLocation;
 import smartin.miapi.Miapi;
-import smartin.miapi.modules.properties.TagProperty;
+import smartin.miapi.modules.properties.tag.ModuleTagProperty;
 import smartin.miapi.registries.RegistryInventory;
 
 import java.util.List;
@@ -24,7 +24,7 @@ public record ItemModuleExtension(PropertyHolder holder, List<ItemModule> module
                     .getFirst();
             if (moduleJson.has("tag")) {
                 String tag = moduleJson.get("tag").getAsString();
-                List<ItemModule> toChange = TagProperty.getModulesWithTag(tag);
+                List<ItemModule> toChange = ModuleTagProperty.getModulesWithTag(tag);
                 return new ItemModuleExtension(holder, toChange);
             } else if (moduleJson.has("id")) {
                 ResourceLocation id = Miapi.id(moduleJson.get("id").getAsString());

@@ -32,7 +32,7 @@ import smartin.miapi.material.palette.FallbackColorer;
 import smartin.miapi.material.palette.GrayscalePaletteColorer;
 import smartin.miapi.material.palette.MaterialRenderController;
 import smartin.miapi.modules.ModuleInstance;
-import smartin.miapi.modules.properties.TagProperty;
+import smartin.miapi.modules.properties.tag.ModuleTagProperty;
 import smartin.miapi.modules.properties.attributes.AttributeUtil;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
@@ -190,7 +190,7 @@ public class GeneratedMaterial implements Material {
     }
 
     public Material getMaterial(ModuleInstance moduleInstance) {
-        if (TagProperty.getTags(moduleInstance).contains("armor")) {
+        if (ModuleTagProperty.getTags(moduleInstance).contains("armor")) {
             if (stats.containsKey("armor_hardness")) {
                 return new DelegatingMaterial(this) {
                     @Override

@@ -1,7 +1,6 @@
 package smartin.miapi.material.base;
 
 import com.google.gson.JsonElement;
-import smartin.miapi.material.MaterialProperties;
 import smartin.miapi.modules.ModuleDataPropertiesManager;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
@@ -11,7 +10,7 @@ import java.util.Map;
 
 public interface PropertyController {
     /**
-     * Retuns all Material Properties for this key, see {@link MaterialProperties} for more details
+     * Retuns all Material Properties for this key, see {@link smartin.miapi.modules.properties.tag.ModuleTagProperty} for more details
      *
      * @param key
      * @return

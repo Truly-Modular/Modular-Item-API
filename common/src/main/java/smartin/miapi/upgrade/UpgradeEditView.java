@@ -15,7 +15,7 @@ import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.conditions.ConditionManager;
 import smartin.miapi.modules.edit_options.EditOption;
-import smartin.miapi.modules.properties.TagProperty;
+import smartin.miapi.modules.properties.tag.ModuleTagProperty;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -147,7 +147,7 @@ public class UpgradeEditView extends InteractAbleWidget {
                 if (upgrade.condition().isAllowed(ctx)
                     && currentLevel < upgrade.max()
                     && upgrade.isAllowed(existingUpgrades)
-                    && TagProperty.getTags(instance).contains(upgrade.moduleTag())) {
+                    && ModuleTagProperty.getTags(instance).contains(upgrade.moduleTag())) {
 
                     UpgradeSelection selection = new UpgradeSelection(instance, upgradeId);
                     SimpleButton<UpgradeSelection> button = new SimpleButton<>(

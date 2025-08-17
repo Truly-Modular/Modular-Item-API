@@ -5,7 +5,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
 import smartin.miapi.Miapi;
-import smartin.miapi.modules.properties.TagProperty;
+import smartin.miapi.modules.properties.tag.ModuleTagProperty;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.List;
@@ -43,7 +43,7 @@ public class TagCondition implements ModuleCondition {
         Optional<Map<ModuleProperty<?>, Object>> propertyMapOptional = conditionContext.getContext(ConditionManager.MODULE_PROPERTIES);
         if (propertyMapOptional.isPresent()) {
             Map<ModuleProperty<?>, Object> propertyMap = propertyMapOptional.get();
-            List<String> tags = (List<String>) propertyMap.get(TagProperty.property);
+            List<String> tags = (List<String>) propertyMap.get(ModuleTagProperty.property);
             if (tags != null) {
                 if (tags.contains(tag)) {
                     return true;

@@ -22,3 +22,7 @@ and either create a GH issue or ping me on discord with the spark link and a des
 - fixed crash related to skeletons
 - fixed bug with create options where the top options would select the wrong thing.
 - added support for module-ids as material property keys
+- deprecated tag and material_property and merged their usage into module_tag.  
+  for now using the old ids will merge into "module_tag"  
+  this property replaces both usages
+  

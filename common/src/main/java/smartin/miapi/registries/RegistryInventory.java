@@ -118,6 +118,9 @@ import smartin.miapi.modules.properties.slot.AllowedSlots;
 import smartin.miapi.modules.properties.slot.CanChangeParentModule;
 import smartin.miapi.modules.properties.slot.CanChildBeEmpty;
 import smartin.miapi.modules.properties.slot.SlotProperty;
+import smartin.miapi.modules.properties.tag.ModuleTagLegacyProperty;
+import smartin.miapi.modules.properties.tag.ModuleTagMaterialLegacyProperty;
+import smartin.miapi.modules.properties.tag.ModuleTagProperty;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.modules.synergies.SynergyManager;
 
@@ -522,8 +525,9 @@ public class RegistryInventory {
             registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, ArmorPenProperty.KEY, new ArmorPenProperty());
             registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, ToolOrWeaponProperty.KEY, new ToolOrWeaponProperty());
             registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, MiningLevelProperty.KEY, new MiningLevelProperty());
-            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, TagProperty.KEY, new TagProperty());
-            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, MaterialProperties.KEY, new MaterialProperties());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, ModuleTagProperty.KEY, new ModuleTagProperty());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, ModuleTagLegacyProperty.KEY, new ModuleTagLegacyProperty());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, ModuleTagMaterialLegacyProperty.KEY, new ModuleTagMaterialLegacyProperty());
             registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, CraftingConditionProperty.KEY, new CraftingConditionProperty());
             registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, StatRequirementProperty.KEY, new StatRequirementProperty());
             registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, GlintProperty.KEY, new GlintProperty());

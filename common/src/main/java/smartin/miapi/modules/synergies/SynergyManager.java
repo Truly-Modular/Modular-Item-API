@@ -14,7 +14,7 @@ import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.PropertyHolder;
 import smartin.miapi.modules.conditions.ConditionManager;
 import smartin.miapi.modules.conditions.ModuleCondition;
-import smartin.miapi.modules.properties.TagProperty;
+import smartin.miapi.modules.properties.tag.ModuleTagProperty;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.List;
@@ -41,7 +41,7 @@ public class SynergyManager {
                         oldMap = synergy.apply(moduleInstance, oldMap);
                     }
                 }
-                for (String tag : TagProperty.getTags(moduleInstance)) {
+                for (String tag : ModuleTagProperty.getTags(moduleInstance)) {
                     var tagSynergy = tagSynergies.get(tag);
                     if (tagSynergy != null) {
                         for (Synergy synergy : tagSynergy) {

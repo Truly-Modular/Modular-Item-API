@@ -16,7 +16,7 @@ import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.PropertyHolder;
 import smartin.miapi.modules.conditions.ConditionManager;
 import smartin.miapi.modules.conditions.ModuleCondition;
-import smartin.miapi.modules.properties.TagProperty;
+import smartin.miapi.modules.properties.tag.ModuleTagProperty;
 import smartin.miapi.registries.RegistryInventory;
 
 import java.util.ArrayList;
@@ -116,7 +116,7 @@ public class Skin {
         List<ItemModule> modules = new ArrayList<>();
         if (jsonObject.has("module_tags")) {
             jsonObject.get("module_tags").getAsJsonArray().asList().forEach(jsonElement -> {
-                modules.addAll(TagProperty.getModulesWithTag(jsonElement.getAsString()));
+                modules.addAll(ModuleTagProperty.getModulesWithTag(jsonElement.getAsString()));
             });
         }
         if (jsonObject.has("module")) {
