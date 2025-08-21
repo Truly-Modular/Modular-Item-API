@@ -26,7 +26,7 @@ public class KeyBindManager {
         KeyBindFacet.KEY.cls();
         ModernNetworking.registerC2SReceiver(PACKET_ID, PACKET_CODEC, (id, player, access) -> {
             if (id.toString().equals("miapi:none")) {
-                ItemAbilityManager.serverKeyBindID.remove(player, id);
+                ItemAbilityManager.serverKeyBindID.remove(player);
             } else {
                 ItemAbilityManager.serverKeyBindID.put(player, id);
             }

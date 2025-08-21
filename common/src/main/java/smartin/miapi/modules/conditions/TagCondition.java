@@ -43,11 +43,9 @@ public class TagCondition implements ModuleCondition {
         Optional<Map<ModuleProperty<?>, Object>> propertyMapOptional = conditionContext.getContext(ConditionManager.MODULE_PROPERTIES);
         if (propertyMapOptional.isPresent()) {
             Map<ModuleProperty<?>, Object> propertyMap = propertyMapOptional.get();
-            List<String> tags = (List<String>) propertyMap.get(ModuleTagProperty.property);
-            if (tags != null) {
-                if (tags.contains(tag)) {
-                    return true;
-                }
+            List<String> tags = ModuleTagProperty.getTags(propertyMap);
+            if (tags.contains(tag)) {
+                return true;
             }
             conditionContext.failReasons.add(error);
         }

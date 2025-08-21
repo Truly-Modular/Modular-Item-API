@@ -2,10 +2,12 @@ package smartin.miapi.material.generated;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.JsonOps;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.crafting.Ingredient;
 import smartin.miapi.blueprint.IngredientWithCount;
 import smartin.miapi.material.CodecMaterial;
@@ -65,8 +67,9 @@ public class MaterialHelper {
         items.add(new IngredientWithCount(Ingredient.of(mat.mainIngredient), 1));
         items.add(new IngredientWithCount(mat.ingredient, 1));
 
-        // 11. generateConverters — unknown logic, leave empty
-        Optional<Boolean> generateConverters = Optional.empty();
+        List<Item> toConvert = new ArrayList<>();
+        toConvert.addAll(mat.armorItems);
+        toConvert.addAll(mat.toolItems);
 
         // Build and return
         CodecMaterial codec = new CodecMaterial(
@@ -84,7 +87,7 @@ public class MaterialHelper {
                 translation,
                 Optional.empty(),
                 items,
-                generateConverters
+                Either.right(toConvert.stream().map(BuiltInRegistries.ITEM::wrapAsHolder).toList())
         );
         codec.doubleMap = new HashMap<>(mat.stats);
         return codec;

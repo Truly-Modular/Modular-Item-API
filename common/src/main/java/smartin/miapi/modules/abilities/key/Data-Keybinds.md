@@ -4,14 +4,18 @@
 Truly Modular gives datapacks the ability to add keybinds to the game.
 They need to be placed under mod-id:miapi/key_binding/any-name-or-path.json
 These keybinds will be send to the client on connect and the client will cache them in Truly Modulars Config.
-After the first connect to the server the Keybind will be on the client until the client purges their config.
+After the first connect to the server the Keybind will be on the client until the player purges their config.
+This means they cannot change keybinds until loading a world where the binding is used, 
+Afterwards, the binding will always be changeable - until the config is reset.
 Keybind jsons look like this
 
 ```json
 {
     "category": "testing-miapi",
     "scan_code": 32,
-    "entity_interaction": false
+    "entity_interaction": false,
+    "block_interaction": false,
+    "item_interaction": false
 }
 ```
 
@@ -29,3 +33,38 @@ This sets if block interactions can be triggered, something like stripping wood.
 
 ### item_interaction
 If Empty interactions (without entity or blocks) are allowed.
+
+
+# Ability
+To utilise new keybinds the Keybind Ability exists.
+```json
+{
+    "keybind_ability_context":{
+        "miapi:ability_id": {
+            //same context as normal ability property
+        }
+    }
+}
+```
+example:
+```json
+{
+    "keybind_ability_context":{
+        "miapi:test": {
+            "copy_item": {
+                "id":"minecraft:flint_and_steel"
+            }
+        }
+    }
+}
+```
+```json
+{
+    "category": "testing-miapi",
+    "scan_code": 32,
+    "entity_interaction": false
+}
+```
+while this is placed in miapi/miapi/key_binging/test
+
+will add a new custom keybind

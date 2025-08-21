@@ -1,6 +1,7 @@
 package smartin.miapi.editor.syntax;
 
 import com.google.gson.JsonElement;
+import com.mojang.datafixers.util.Either;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
@@ -47,7 +48,7 @@ public class CodecMaterialEditorInterface implements EditorInterface {
                             Optional.empty(),
                             Optional.empty(),
                             new ArrayList<>(),
-                            Optional.empty()
+                            Either.left(false)
                     )).getOrThrow()).result();
 
             if (result.isEmpty()) {

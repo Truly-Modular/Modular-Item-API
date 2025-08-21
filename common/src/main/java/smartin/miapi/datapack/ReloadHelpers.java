@@ -85,13 +85,16 @@ public class ReloadHelpers {
         ReloadHelpers.registerReloadHandler(
                 "miapi/materials",
                 () -> MaterialProperty.MATERIAL_REGISTRY.clear(),
-                (id, mat) -> {
+                (isClient, id, mat, registryAccess) -> {
                     mat.setID(id);
+                    mat.generateConverters(isClient);
                     MaterialProperty.MATERIAL_REGISTRY.register(id, mat);
                 },
                 CodecMaterial.CODEC,
                 -2.0f);
-        ReloadHelpers.registerReloadHandler(ReloadEvents.MAIN, "miapi/modular_converter", ItemToModularConverter.regexes, (isClient, path, data, registryAccess) -> {
+        ReloadHelpers.registerReloadHandler(ReloadEvents.MAIN, "miapi/modular_converter", ItemToModularConverter.regexes, (isClient, path, data, registryAccess) ->
+
+        {
             ItemToModularConverter.setupModularConverter(path, data);
         }, 1);
     }
@@ -193,9 +196,20 @@ public class ReloadHelpers {
             BiConsumer<ResourceLocation, T> onDecode,
             Codec<T> codec,
             float priority) {
+        registerReloadHandler(location, clear, (isClient, path, data, registryAccess) -> {
+            onDecode.accept(path, data);
+        }, codec, priority);
+    }
+
+    public static <T> void registerReloadHandler(
+            String location,
+            Runnable clear,
+            SingleDecodedFileHandler<T> onDecode,
+            Codec<T> codec,
+            float priority) {
         SingleFileHandler handler = new CodecOptimisedFileHandler<>(codec, (isClient, path, data, registryAccess) -> {
             ResourceLocation shortened = Miapi.id(path.toString().replace(":" + location + "/", ":").replace(".json", ""));
-            onDecode.accept(shortened, data);
+            onDecode.reloadFile(isClient, shortened, data, registryAccess);
         }, location);
         registerReloadHandler(ReloadEvents.MAIN, location, true, (a) -> {
         }, handler, priority);

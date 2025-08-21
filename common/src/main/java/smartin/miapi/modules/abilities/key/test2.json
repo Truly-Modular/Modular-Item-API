@@ -1,0 +1,15 @@
+{
+    "ability_context": {
+        "copy_item": {
+            "id": "minecraft:bow",
+            "fake_item_identity": true
+        }
+    },
+    "keybind_ability_context": {
+        "miapi:test": {
+            "copy_item": {
+                "id": "minecraft:flint_and_steel"
+            }
+        }
+    }
+}

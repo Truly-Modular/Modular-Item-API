@@ -28,6 +28,12 @@ config = "miapi-common.mixins.json"
    ordering="AFTER"
    side="BOTH"
 [[dependencies.${mod_id}]] #optional
+   modId="nucleus_facet" #mandatory
+   mandatory=true #mandatory
+   versionRange="[1.0.0,)" #mandatory
+   ordering="AFTER"
+   side="BOTH"
+[[dependencies.${mod_id}]] #optional
    modId="architectury" #mandatory
    mandatory=true #mandatory
    versionRange="[${architectury_version},)" #mandatory

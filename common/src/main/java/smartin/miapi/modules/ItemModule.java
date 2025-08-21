@@ -18,11 +18,14 @@ import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.registries.RegistryInventory;
 
 import java.lang.reflect.Type;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
 
-import static smartin.miapi.Miapi.*;
+import static smartin.miapi.Miapi.LOGGER;
 
 /**
  * An ItemModule represents a Module loaded from a JSON
@@ -131,7 +134,7 @@ public record ItemModule(ResourceLocation id, Map<ModuleProperty<?>, Object> pro
             }
             return new ModuleInstance(ItemModule.empty);
         }
-        if (stack.getItem() instanceof VisualModularItem && !ReloadEvents.isInReload()) {
+        if (VisualModularItem.isVisualModularItem(stack) && !ReloadEvents.isInReload()) {
             ModuleInstance root = stack.get(ModuleInstance.MODULE_INSTANCE_COMPONENT);
             if (root != null) {
                 for (ModuleInstance moduleInstance : root.allSubModules()) {

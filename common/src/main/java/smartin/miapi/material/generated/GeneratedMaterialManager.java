@@ -282,8 +282,10 @@ public class GeneratedMaterialManager {
                         });
             }
             SmithingRecipeUtil.setupSmithingRecipe(generatedMaterials, false, (material -> {
-                MATERIAL_REGISTRY.register(material.getID(), material);
-                MiapiEvents.GENERATE_MATERIAL_CONVERTERS.invoker().generated(material, material.toolItems, material.armorItems, smartin.miapi.Environment.isClient());
+                if(material!=null){
+                    MATERIAL_REGISTRY.register(material.getID(), material);
+                    MiapiEvents.GENERATE_MATERIAL_CONVERTERS.invoker().generated(material, material.toolItems, material.armorItems, smartin.miapi.Environment.isClient());
+                }
             }), access, null);
             if (verboseLogging()) {
                 Miapi.LOGGER.info("MIAPI FINISHED MATERIAL GENERATION");

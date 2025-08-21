@@ -3,12 +3,15 @@ package smartin.miapi.client;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.redpxnda.nucleus.config.ConfigManager;
 import com.redpxnda.nucleus.event.RenderEvents;
+import com.redpxnda.nucleus.facet.network.clientbound.FacetSyncPacket;
 import com.redpxnda.nucleus.registry.effect.RenderingMobEffect;
 import dev.architectury.event.EventResult;
 import dev.architectury.event.events.client.ClientLifecycleEvent;
 import dev.architectury.event.events.client.ClientPlayerEvent;
 import dev.architectury.event.events.client.ClientReloadShadersEvent;
 import dev.architectury.event.events.client.ClientTickEvent;
+import dev.architectury.impl.NetworkAggregator;
+import dev.architectury.networking.NetworkManager;
 import dev.architectury.platform.Platform;
 import dev.architectury.registry.client.level.entity.EntityRendererRegistry;
 import dev.architectury.registry.client.rendering.BlockEntityRendererRegistry;
@@ -89,6 +92,13 @@ public class MiapiClient {
         var config = ConfigManager.getConfigObject(Miapi.id("server"));
         if (config.getInstance() == null) {
             config.load();
+        }
+        if(Platform.isForgeLike() && !NetworkAggregator.S2C_RECEIVER.containsKey(FacetSyncPacket.TYPE.id())){
+            NetworkManager.registerReceiver(
+                    NetworkManager.Side.S2C,
+                    FacetSyncPacket.TYPE,
+                    FacetSyncPacket.STREAM_CODEC,
+                    (packet, context) -> context.queue(() -> packet.handle(context)));
         }
         if (Platform.getMod("nucleus").getVersion().equals("1.1.4")) {
             RenderEvents.LIVING_ENTITY_RENDER.register((stage, model, entity, entityYaw, partialTick, matrixStack, multiBufferSource, packedLight) -> {

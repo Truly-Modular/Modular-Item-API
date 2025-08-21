@@ -147,7 +147,7 @@ public interface ItemUseAbility<T> extends MergeAble<T>, InitializeAble<T> {
                 new DecoderException("Could not encode Ability " + getClass().getName() + " with error" + s));
     }
 
-    default T getDefaultContext(){
+    default T getDefaultContext() {
         return null;
     }
 

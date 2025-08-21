@@ -149,6 +149,7 @@ public class Miapi {
             CodecBehavior.registerClass(MiapiBinding.class, MiapiBinding.CODEC);
         }
 
+
         ItemStackAccessor.setCODEC(ModuleInstance.registrySavingCodec(ItemStackAccessor.getCODEC(), (i, registryAccess) ->
                 ModularItemStackConverter.lookupMap.put(i, registryAccess)));
 
@@ -191,7 +192,7 @@ public class Miapi {
             return map;
         });
         ModularItemCache.setSupplier(ItemModule.MODULE_KEY, itemStack -> {
-            if (itemStack.getItem() instanceof VisualModularItem) {
+            if (VisualModularItem.isVisualModularItem(itemStack)) {
                 try {
                     return ItemModule.getModules(itemStack);
                 } catch (Exception e) {

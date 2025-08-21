@@ -25,7 +25,7 @@ public class BuiltinModelItemRendererMixin {
     private void miapi$customItemRendering(
             ItemStack stack, ItemDisplayContext mode, PoseStack matrices, MultiBufferSource vertexConsumers, int light, int overlay, CallbackInfo ci
     ) {
-        if (!MiapiClient.shaderModLoaded && stack.getItem() instanceof VisualModularItem) {
+        if (!MiapiClient.shaderModLoaded && VisualModularItem.isVisualModularItem(stack)) {
             MiapiItemModel miapiModel = MiapiItemModel.getItemModel(stack);
             if (miapiModel != null) {
                 miapiModel.render(matrices, stack, mode, Minecraft.getInstance().getTimer().getGameTimeDeltaTicks(), vertexConsumers, ItemBakedModelReplacement.currentEntity, light, overlay);

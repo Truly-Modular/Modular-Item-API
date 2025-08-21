@@ -231,7 +231,6 @@ public class DynamicBakery {
         @Nullable
         public BakedModel resolve(BakedModel model, ItemStack stack, @Nullable ClientLevel world, @Nullable LivingEntity entity, int seed) {
             if (this.dynamicOverrides.length != 0) {
-                Item item = stack.getItem();
                 int i = this.dynamicConditionTypes.length;
                 float[] fs = new float[i];
 

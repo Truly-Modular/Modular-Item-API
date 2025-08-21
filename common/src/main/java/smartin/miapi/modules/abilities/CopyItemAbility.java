@@ -2,6 +2,7 @@ package smartin.miapi.modules.abilities;
 
 import com.mojang.serialization.Codec;
 import com.redpxnda.nucleus.codec.auto.AutoCodec;
+import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
@@ -15,10 +16,12 @@ import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import smartin.miapi.Miapi;
+import smartin.miapi.MixinContextFlags;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;
 import smartin.miapi.modules.abilities.util.ItemUseAbility;
 
+import java.util.function.Supplier;
 
 public class CopyItemAbility implements ItemUseAbility<CopyItemAbility.ItemContext> {
     public static CopyItemAbility ability;
@@ -28,86 +31,102 @@ public class CopyItemAbility implements ItemUseAbility<CopyItemAbility.ItemConte
         ability = this;
     }
 
+    /**
+     * Runs a lambda with the MixinContextFlag temporarily set for this stack/item.
+     */
+    private static <T> T withFlag(ItemStack stack, CopyItemAbility.ItemContext item, Supplier<T> action) {
+        if (item == null) return null;
+        try {
+            if (item.fakeItemIdentity) {
+                MixinContextFlags.IGNORE_NEXT_GET_ITEM_CALL.get().put(stack, item.item);
+            }
+            return action.get();
+        } finally {
+            if (item.fakeItemIdentity) {
+                MixinContextFlags.IGNORE_NEXT_GET_ITEM_CALL.get().remove(stack);
+            }
+        }
+    }
+
+    private static void withFlag(ItemStack stack, CopyItemAbility.ItemContext item, Runnable action) {
+        if (item == null) return;
+        try {
+            if (item.fakeItemIdentity) {
+                MixinContextFlags.IGNORE_NEXT_GET_ITEM_CALL.get().put(stack, item.item);
+            }
+            action.run();
+        } finally {
+            if (item.fakeItemIdentity) {
+                MixinContextFlags.IGNORE_NEXT_GET_ITEM_CALL.get().remove(stack);
+            }
+        }
+    }
+
     @Override
     public boolean allowedOnItem(ItemStack stack, Level world, Player player, InteractionHand hand, ItemAbilityManager.AbilityHitContext abilityHitContext) {
         ItemContext context = getSpecialContext(stack);
         context.initialize();
-        Item item = context.item;
-        return item != null;
+        return context.item != null;
     }
 
     @Override
     public UseAnim getUseAction(ItemStack stack) {
-        if (getSpecialContext(stack).item != null) {
-            return getSpecialContext(stack).item.getUseAnimation(stack);
-        }
-        return null;
+        return withFlag(stack, getSpecialContext(stack),
+                () -> getSpecialContext(stack).item.getUseAnimation(stack));
     }
 
     @Override
     public int getMaxUseTime(ItemStack stack, LivingEntity entity) {
-        if (getSpecialContext(stack).item != null) {
-            return getSpecialContext(stack).item.getUseDuration(stack, entity);
-        }
-        return 0;
+        return withFlag(stack, getSpecialContext(stack),
+                () -> getSpecialContext(stack).item.getUseDuration(stack, entity));
     }
 
     @Override
     public InteractionResultHolder<ItemStack> use(Level world, Player user, InteractionHand hand) {
         ItemStack stack = user.getItemInHand(hand);
-        if (getSpecialContext(stack).item != null) {
-            return getSpecialContext(stack).item.use(world, user, hand);
-        }
-        return null;
+        return withFlag(stack, getSpecialContext(stack),
+                () -> getSpecialContext(stack).item.use(world, user, hand));
     }
 
     @Override
     public ItemStack finishUsing(ItemStack stack, Level world, LivingEntity user) {
-        if (getSpecialContext(stack).item != null) {
-            return getSpecialContext(stack).item.finishUsingItem(stack, world, user);
-        }
-        return ItemUseAbility.super.finishUsing(stack, world, user);
+        return withFlag(stack, getSpecialContext(stack),
+                () -> getSpecialContext(stack).item.finishUsingItem(stack, world, user));
     }
 
     @Override
     public boolean useOnRelease(ItemStack stack) {
-        if (getSpecialContext(stack).item != null) {
-            return getSpecialContext(stack).item.useOnRelease(stack);
-        }
-        return ItemUseAbility.super.useOnRelease(stack);
+        Boolean result = withFlag(stack, getSpecialContext(stack),
+                () -> getSpecialContext(stack).item.useOnRelease(stack));
+        return result != null ? result : ItemUseAbility.super.useOnRelease(stack);
     }
 
     @Override
     public void onStoppedUsing(ItemStack stack, Level world, LivingEntity user, int remainingUseTicks) {
-        ItemUseAbility.super.onStoppedUsing(stack, world, user, remainingUseTicks);
+        withFlag(stack, getSpecialContext(stack),
+                () -> getSpecialContext(stack).item.releaseUsing(stack, world, user, remainingUseTicks));
     }
 
     @Override
     public void onStoppedHolding(ItemStack stack, Level world, LivingEntity user) {
-        ItemUseAbility.super.onStoppedHolding(stack, world, user);
-    }
-
-    @Override
-    public InteractionResult useOnEntity(ItemStack stack, Player user, LivingEntity entity, InteractionHand hand) {
-        return ItemUseAbility.super.useOnEntity(stack, user, entity, hand);
+        withFlag(stack, getSpecialContext(stack),
+                () -> ItemUseAbility.super.onStoppedHolding(stack, world, user));
     }
 
     @Override
     public InteractionResult useOnBlock(UseOnContext context) {
-        ItemStack stack = context.getItemInHand();
-        if (getSpecialContext(stack).item != null) {
-            return getSpecialContext(stack).item.useOn(context);
-        }
-        return ItemUseAbility.super.useOnBlock(context);
+        return withFlag(context.getItemInHand(), getSpecialContext(context.getItemInHand()),
+                () -> getSpecialContext(context.getItemInHand()).item.useOn(context));
     }
 
     @Override
     public void usageTick(Level world, LivingEntity user, ItemStack stack, int remainingUseTicks) {
         if (getSpecialContext(stack).item != null) {
-            getSpecialContext(stack).item.onUseTick(world, user, stack, remainingUseTicks);
-            return;
+            withFlag(stack, getSpecialContext(stack),
+                            () ->getSpecialContext(stack).item.onUseTick(world, user, stack, remainingUseTicks));
+        } else {
+            ItemUseAbility.super.usageTick(world, user, stack, remainingUseTicks);
         }
-        ItemUseAbility.super.usageTick(world, user, stack, remainingUseTicks);
     }
 
     @Override
@@ -120,6 +139,7 @@ public class CopyItemAbility implements ItemUseAbility<CopyItemAbility.ItemConte
         ItemContext itemContext = new ItemContext();
         itemContext.id = data.id;
         itemContext.item = BuiltInRegistries.ITEM.get(data.id);
+        itemContext.fakeItemIdentity = data.fakeItemIdentity;
         return itemContext;
     }
 
@@ -132,13 +152,15 @@ public class CopyItemAbility implements ItemUseAbility<CopyItemAbility.ItemConte
         public ResourceLocation id = Miapi.id("empty");
         @AutoCodec.Ignored
         public Item item;
+        @CodecBehavior.Optional
+        @AutoCodec.Name("fake_item_identity")
+        public boolean fakeItemIdentity = false;
 
         public void initialize() {
             item = BuiltInRegistries.ITEM.get(id);
         }
 
         public ItemContext() {
-
         }
 
         public ItemContext(Item item) {

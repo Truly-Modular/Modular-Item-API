@@ -21,6 +21,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import smartin.miapi.MixinContextFlags;
 import smartin.miapi.client.gui.crafting.PreviewManager;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.item.FakeItemManager;
@@ -38,6 +39,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
+import static smartin.miapi.item.modular.ModularItem.isModularItem;
+
 @Mixin(value = ItemStack.class, priority = 2000)
 public abstract class MiapiItemStackMixin {
 
@@ -50,7 +53,7 @@ public abstract class MiapiItemStackMixin {
     @ModifyReturnValue(method = "is(Lnet/minecraft/tags/TagKey;)Z", at = @At("RETURN"))
     public boolean miapi$injectItemTag(boolean original, TagKey<Item> tag) {
         ItemStack stack = (ItemStack) (Object) this;
-        if (ModularItem.isModularItem(stack)) {
+        if (isModularItem(stack)) {
             if (!original) {
                 return FakeItemTagProperty.hasTag(tag.location(), stack);
             }
@@ -58,12 +61,31 @@ public abstract class MiapiItemStackMixin {
         return original;
     }
 
+    @Inject(
+            method = "Lnet/minecraft/world/item/ItemStack;getItemHolder()Lnet/minecraft/core/Holder;",
+            at = @At("HEAD"))
+    public void miapi$preventItem(CallbackInfoReturnable<Item> cir) {
+    }
+
     @Inject(method = "getItem", at = @At("TAIL"))
     public void miapi$capturePotentialItemstack(CallbackInfoReturnable<Item> cir) {
         ItemStack stack = (ItemStack) (Object) this;
-        if (ModularItem.isModularItem(stack, cir.getReturnValue())) {
+        if (isModularItem(stack, cir.getReturnValue())) {
             FakeItemManager.getItemCall(stack, cir.getReturnValue());
         }
+    }
+
+    @ModifyReturnValue(method = "getItem", at = @At("RETURN"))
+    public Item miapi$adjustIsItem(Item original) {
+        ItemStack stack = (ItemStack) (Object) this;
+        if (ModularItem.isModularItem(stack, original)) {
+            var a = MixinContextFlags.IGNORE_NEXT_GET_ITEM_CALL;
+            Item fake = a.get().get(stack);
+            if (fake != null) {
+                return fake;
+            }
+        }
+        return original;
     }
 
     @Inject(method = "copy", at = @At("RETURN"))
@@ -77,7 +99,7 @@ public abstract class MiapiItemStackMixin {
     @ModifyReturnValue(method = "is(Lnet/minecraft/world/item/Item;)Z", at = @At("RETURN"))
     public boolean miapi$adjustIsItem(boolean original, Item item) {
         ItemStack stack = (ItemStack) (Object) this;
-        if (item != null && !original && ModularItem.isModularItem(stack)) {
+        if (item != null && !original && isModularItem(stack)) {
             var property = AssumeItemIdentityProperty.property.getData(stack);
             var match = property.map(a -> a.stream().anyMatch(h -> h.value().equals(item)));
             return match.orElse(original);
@@ -88,7 +110,7 @@ public abstract class MiapiItemStackMixin {
     @Inject(method = "<init>(Lnet/minecraft/world/level/ItemLike;ILnet/minecraft/core/component/PatchedDataComponentMap;)V", at = @At("RETURN"))
     public void miapi$capturePotentialItemstack(ItemLike item, int count, PatchedDataComponentMap components, CallbackInfo ci) {
         ItemStack stack = (ItemStack) (Object) this;
-        if (ModularItem.isModularItem(stack, item.asItem())) {
+        if (isModularItem(stack, item.asItem())) {
             FakeEnchantmentManager.initOnItemStack(stack);
         }
     }
@@ -117,7 +139,7 @@ public abstract class MiapiItemStackMixin {
             cancellable = true)
     public void miapi$preventFullBreak(int damage, ServerLevel level, ServerPlayer player, Consumer<Item> onBreak, CallbackInfo ci) {
         ItemStack current = (ItemStack) (Object) this;
-        if (ModularItem.isModularItem(current) && current.isDamageableItem() && !MiapiConfig.getServerConfig().other.fullBreakModularItems) {
+        if (isModularItem(current) && current.isDamageableItem() && !MiapiConfig.getServerConfig().other.fullBreakModularItems) {
             if (player != null && !player.hasInfiniteMaterials()) {
                 if (damage + current.getDamageValue() >= current.getMaxDamage()) {
                     for (EquipmentSlot slot : EquipmentSlot.values()) {
@@ -141,7 +163,7 @@ public abstract class MiapiItemStackMixin {
             cancellable = true)
     public <T> void miapi$preventFullBreak(int amount, LivingEntity entity, EquipmentSlot slot, CallbackInfo ci) {
         ItemStack current = (ItemStack) (Object) this;
-        if (ModularItem.isModularItem(current) && current.isDamageableItem() && !MiapiConfig.getServerConfig().other.fullBreakModularItems) {
+        if (isModularItem(current) && current.isDamageableItem() && !MiapiConfig.getServerConfig().other.fullBreakModularItems) {
             if (entity != null && !entity.hasInfiniteMaterials()) {
                 if (amount + current.getDamageValue() >= current.getMaxDamage()) {
                     ItemStack broken = new ItemStack(RegistryInventory.brokenModualrItem);

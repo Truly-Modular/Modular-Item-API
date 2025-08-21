@@ -82,6 +82,7 @@
         "client.ModelLoaderInterfaceAccessor",
         "client.ModelLoaderMixin",
         "client.ModelPredicateProviderRegistryAccessor",
+        "client.MultiPlayerGameModeMixin",
         "client.SpriteContentsAccessor",
         "client.SpriteContentsNativeImageGetter",
         "client.SpriteSourceListMixin",

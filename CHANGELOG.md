@@ -25,4 +25,7 @@ and either create a GH issue or ping me on discord with the spark link and a des
 - deprecated tag and material_property and merged their usage into module_tag.  
   for now using the old ids will merge into "module_tag"  
   this property replaces both usages
+- added "fake_item_identity" (default false) field to "copy_item" ability, allowing to fake the items identity to a degree.
+  this might be unsafe and accidentally convert the item to the fake identity, but in some conditions it might also fix 
+  the right click behaviour. Use with care.
   

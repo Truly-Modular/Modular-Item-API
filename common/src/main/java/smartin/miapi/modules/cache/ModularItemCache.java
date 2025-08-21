@@ -55,7 +55,7 @@ public class ModularItemCache {
     }
 
     public static <T> T getVisualOnlyCache(ItemStack stack, String key, T fallback) {
-        if (!ReloadEvents.isInReload() && !stack.isEmpty() && stack.getItem() instanceof VisualModularItem) {
+        if (!ReloadEvents.isInReload() && !stack.isEmpty() && VisualModularItem.isVisualModularItem(stack)) {
             return get(stack, key, () -> fallback);
         }
         return fallback;

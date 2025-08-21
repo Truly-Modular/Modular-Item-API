@@ -1,8 +1,0 @@
-["irons_spellbooks:spell_container"={
-spellWheel: 1b,
-mustEquip: 1b,
-data: [
-{index: 0, level: 6, id: "irons_spellbooks:acupuncture"},
-{index: 9, level: 5, id: "irons_spellbooks:blood_needles"}],
-maxSpells: 10},
-"irons_spellbooks:affinity_data": {bonuses: {}}]

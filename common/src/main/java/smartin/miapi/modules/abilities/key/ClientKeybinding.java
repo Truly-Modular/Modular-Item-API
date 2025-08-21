@@ -24,17 +24,16 @@ public class ClientKeybinding {
         ItemAbilityManager.clientKeyBindID.remove(player);
         Collection<MiapiBinding> bindings = KeyBindManager.BINDING_REGISTRY.getFlatMap().values();
         if (player != null) {
-            //Miapi.LOGGER.info("is using " + player.isUsingItem());
-            if (player.isUsingItem()) {
-                //Miapi.LOGGER.info("using item");
-                for (MiapiBinding binding : bindings) {
-                    if (!binding.asKeyMapping().isDown() && binding.lastDown) {
-                        client.gameMode.releaseUsingItem(player);
-                        isUsing = false;
-                        binding.lastDown = binding.asKeyMapping().isDown();
-                        return;
-                    }
+            for (MiapiBinding binding : bindings) {
+                if (!binding.asKeyMapping().isDown() && binding.lastDown) {
+                    client.gameMode.releaseUsingItem(player);
+                    isUsing = false;
+                    binding.lastDown = binding.asKeyMapping().isDown();
+                    removeActiveButton(client, player);
+                    return;
                 }
+            }
+            if (player.isUsingItem()) {
                 for (MiapiBinding binding : bindings) {
                     if (binding.lastDown) {
                         while (binding.asKeyMapping().consumeClick()) {
@@ -46,33 +45,35 @@ public class ClientKeybinding {
                 for (MiapiBinding binding : bindings) {
                     while (binding.asKeyMapping().consumeClick()) {
                         //stat use item logic
-                        ResourceLocation id = ItemAbilityManager.clientKeyBindID.get(player);
-                        ItemAbilityManager.clientKeyBindID.put(player, binding.id);
-                        if (startUseItem(Minecraft.getInstance(), binding)) {
-                            binding.lastDown = true;
-                            isUsing = true;
-                        } else {
-                            ItemAbilityManager.clientKeyBindID.put(player, id);
-                        }
+                        startItemUseLogic(binding, player);
                     }
                 }
             }
             if (((MinecraftAccessor) client).getRightClickDelay() == 0 && !player.isUsingItem()) {
                 for (MiapiBinding binding : bindings) {
                     if (binding.asKeyMapping().isDown()) {
-                        //start use item logic here
-                        ResourceLocation id = ItemAbilityManager.clientKeyBindID.get(player);
-                        ItemAbilityManager.clientKeyBindID.put(player, binding.id);
-                        if (startUseItem(Minecraft.getInstance(), binding)) {
-                            binding.lastDown = true;
-                            isUsing = true;
-                        } else {
-                            ItemAbilityManager.clientKeyBindID.put(player, id);
-                        }
+                        startItemUseLogic(binding, player);
                     }
                 }
             }
         }
+    }
+
+    private static void startItemUseLogic(MiapiBinding binding, LocalPlayer player) {
+        //start use item logic here
+        ResourceLocation id = ItemAbilityManager.clientKeyBindID.get(player);
+        ItemAbilityManager.clientKeyBindID.put(player, binding.id);
+        if (startUseItem(Minecraft.getInstance(), binding)) {
+            binding.lastDown = true;
+            isUsing = true;
+        } else {
+            ItemAbilityManager.clientKeyBindID.put(player, id);
+        }
+    }
+
+    private static void removeActiveButton(Minecraft client, LocalPlayer player) {
+        KeyBindManager.updateServerId(Miapi.id("none"), client.player);
+        ItemAbilityManager.clientKeyBindID.remove(player);
     }
 
     private static boolean startUseItem(Minecraft minecraft, MiapiBinding binding) {

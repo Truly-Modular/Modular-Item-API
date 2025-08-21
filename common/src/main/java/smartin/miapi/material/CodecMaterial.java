@@ -3,6 +3,7 @@ package smartin.miapi.material;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import com.mojang.datafixers.util.Either;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
@@ -12,19 +13,20 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
-import net.minecraft.world.item.ItemDisplayContext;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.*;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.blueprint.IngredientWithCount;
+import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.material.base.IngredientController;
 import smartin.miapi.material.base.Material;
@@ -60,7 +62,6 @@ public class CodecMaterial implements Material {
     Optional<TagKey<Block>> incorrectForTool = Optional.empty();
     Optional<Integer> color = Optional.empty();
     public List<IngredientWithCount> items;
-    Optional<Boolean> generateConverters;
     public Map<String, String> stringData = new HashMap<>();
     public Map<String, Double> doubleMap = new HashMap<>();
     public Optional<Component> translation = Optional.empty();
@@ -71,28 +72,50 @@ public class CodecMaterial implements Material {
     @Environment(EnvType.CLIENT)
     @Nullable
     protected MaterialRenderController dyeAblePalette;
+    public Either<Boolean, List<Holder<Item>>> toGenerate = Either.left(false);
 
     public static final Codec<CodecMaterial> CODEC = new Codec<>() {
         @Override
         public <T> DataResult<Pair<CodecMaterial, T>> decode(DynamicOps<T> ops, T input) {
             Map<String, String> stringData = new HashMap<>();
             Map<String, Double> doubleMap = new HashMap<>();
-            ops.convertTo(JsonOps.INSTANCE, input).getAsJsonObject().asMap().forEach((string, element) -> {
-                if (element.isJsonPrimitive()) {
-                    try {
-                        stringData.put(string, element.getAsString());
-                    } catch (Exception ignored) {
-                    }
-                    try {
-                        doubleMap.put(string, element.getAsDouble());
-                    } catch (Exception ignored) {
-                    }
-                }
-            });
-            var dataResult = INNER_CODEC.decode(ops, input);
-            if (dataResult.isSuccess()) {
-                dataResult.getOrThrow().getFirst().setData(stringData, doubleMap);
+
+            try {
+                ops.convertTo(JsonOps.INSTANCE, input)
+                        .getAsJsonObject()
+                        .asMap()
+                        .forEach((key, element) -> {
+                            if (element.isJsonPrimitive()) {
+                                try {
+                                    stringData.put(key, element.getAsString());
+                                } catch (Exception e) {
+                                    Miapi.LOGGER.debug("Failed to read '{}' as string: {}", key, e.getMessage());
+                                }
+                                try {
+                                    doubleMap.put(key, element.getAsDouble());
+                                } catch (Exception e) {
+                                    Miapi.LOGGER.debug("Failed to read '{}' as double: {}", key, e.getMessage());
+                                }
+                            }
+                        });
+            } catch (Exception e) {
+                Miapi.LOGGER.error("Error converting input during decode: {}", input, e);
+                return DataResult.error(() -> "Failed to parse input: " + e.getMessage());
             }
+
+            var dataResult = INNER_CODEC.decode(ops, input);
+
+            if (dataResult.isSuccess()) {
+                try {
+                    dataResult.getOrThrow().getFirst().setData(stringData, doubleMap);
+                } catch (Exception e) {
+                    Miapi.LOGGER.error("Failed to attach parsed data to CodecMaterial", e);
+                    return DataResult.error(() -> "Failed to attach parsed data: " + e.getMessage());
+                }
+            } else {
+                Miapi.LOGGER.warn("INNER_CODEC failed to decode input: {}", input);
+            }
+
             return dataResult;
         }
 
@@ -128,7 +151,11 @@ public class CodecMaterial implements Material {
             Codec.STRING.optionalFieldOf("color")
                     .forGetter(m -> Optional.of(Long.toHexString(((long) m.getColor(new ModuleInstance(ItemModule.empty))) & 0xFFFFFFFF))),
             IngredientWithCount.CODEC.listOf().optionalFieldOf("items", new ArrayList<>()).forGetter(material -> material.items),
-            Miapi.FIXED_BOOL_CODEC.optionalFieldOf("generate_converters").forGetter(m -> Optional.of(m.generateConverters()))
+            Codec.either(
+                    Miapi.FIXED_BOOL_CODEC,
+                    ItemStack.ITEM_NON_AIR_CODEC.listOf()
+            ).optionalFieldOf("generate_converters", Either.left(false)).forGetter(m -> m.toGenerate)
+
     ).apply(instance, CodecMaterial::new));
 
     public CodecMaterial(Optional<JsonElement> iconJson,
@@ -145,7 +172,7 @@ public class CodecMaterial implements Material {
                          Optional<Component> translation,
                          Optional<String> color,
                          List<IngredientWithCount> items,
-                         Optional<Boolean> generateConverters) {
+                         Either<Boolean, List<Holder<Item>>> generateConverters) {
         this.iconJson = iconJson;
         this.paletteJson = paletteJson;
         this.dyePaletteJson = dyePaletteJson;
@@ -168,7 +195,7 @@ public class CodecMaterial implements Material {
             }
         }
         this.items = items;
-        this.generateConverters = generateConverters;
+        this.toGenerate = generateConverters;
         hiddenProperty.forEach((type, json) -> {
             var data = ModuleDataPropertiesManager.resolvePropertiesFromJson(json);
             mergedAllAppliedProperties.put(type, data);
@@ -228,7 +255,7 @@ public class CodecMaterial implements Material {
                 this.translation,
                 this.color.map(Integer::toHexString),
                 new ArrayList<>(this.items),
-                this.generateConverters
+                this.toGenerate
         );
 
         // Copy non-constructor fields
@@ -306,9 +333,7 @@ public class CodecMaterial implements Material {
         this.items.addAll(material.items);
 
         // Merge generateConverters if present
-        if (material.generateConverters.isPresent()) {
-            this.generateConverters = material.generateConverters;
-        }
+        this.toGenerate = material.toGenerate;
 
         // Merge string and double maps
         this.stringData.putAll(material.stringData);
@@ -443,6 +468,69 @@ public class CodecMaterial implements Material {
     @Override
     public List<String> getTextureKeys() {
         return textureKeys;
+    }
+
+    private static List<TieredItem> tieredItems;
+    private static List<ArmorItem> armorItems;
+
+    private static List<TieredItem> getTieredItems() {
+        if (tieredItems == null) {
+            tieredItems = BuiltInRegistries.ITEM.stream()
+                    .filter(TieredItem.class::isInstance)
+                    .map(i -> (TieredItem) i)
+                    .toList();
+        }
+        return tieredItems;
+    }
+
+    private static List<ArmorItem> getArmorItems() {
+        if (armorItems == null) {
+            armorItems = BuiltInRegistries.ITEM.stream()
+                    .filter(ArmorItem.class::isInstance)
+                    .map(i -> (ArmorItem) i)
+                    .toList();
+        }
+        return armorItems;
+    }
+
+    public void generateConverters(boolean isClient) {
+        if (toGenerate.left().isPresent()) {
+            if (toGenerate.left().get()) {
+                List<TieredItem> matchedTiered = null;
+                List<ArmorItem> matchedArmor = null;
+
+                for (TieredItem item : getTieredItems()) {
+                    if (this.getPriorityOfIngredientItem(item.getDefaultInstance()) != null) {
+                        if (matchedTiered == null) matchedTiered = new ArrayList<>();
+                        matchedTiered.add(item);
+                    }
+                }
+
+                for (ArmorItem item : getArmorItems()) {
+                    if (this.getPriorityOfIngredientItem(item.getDefaultInstance()) != null) {
+                        if (matchedArmor == null) matchedArmor = new ArrayList<>();
+                        matchedArmor.add(item);
+                    }
+                }
+
+                if ((matchedTiered != null && !matchedTiered.isEmpty()) ||
+                    (matchedArmor != null && !matchedArmor.isEmpty())) {
+
+                    MiapiEvents.GENERATE_MATERIAL_CONVERTERS.invoker().generated(
+                            this,
+                            matchedTiered != null ? matchedTiered : List.of(),
+                            matchedArmor != null ? matchedArmor : List.of(),
+                            isClient
+                    );
+                }
+            }
+        } else {
+            List<Item> items = toGenerate.right().get().stream().map(Holder::value).toList();
+            MiapiEvents.GENERATE_MATERIAL_CONVERTERS.invoker().generated(this,
+                    items.stream().filter(TieredItem.class::isInstance).map(i -> (TieredItem) i).toList(),
+                    items.stream().filter(ArmorItem.class::isInstance).map(i -> (ArmorItem) i).toList(),
+                    isClient);
+        }
     }
 
     @Environment(EnvType.CLIENT)

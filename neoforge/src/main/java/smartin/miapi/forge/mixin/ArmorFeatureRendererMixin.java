@@ -50,7 +50,7 @@ public abstract class ArmorFeatureRendererMixin<T extends LivingEntity, M extend
     void miapi$renderArmorInject(PoseStack matrices, MultiBufferSource vertexConsumers, T entity, EquipmentSlot armorSlot, int light, A model, CallbackInfo ci) {
         ItemStack itemStack = entity.getItemBySlot(armorSlot);
         HumanoidArmorLayer renderer = (HumanoidArmorLayer) (Object) this;
-        if (itemStack.getItem() instanceof VisualModularItem) {
+        if (VisualModularItem.isVisualModularItem(itemStack)) {
             renderPieces(matrices, vertexConsumers, light, armorSlot, itemStack, entity, model, ((FeatureRendererAccessor) renderer).getContext());
             ci.cancel();
         }

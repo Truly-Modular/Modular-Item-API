@@ -117,7 +117,9 @@ public class ItemAbilityManager {
                     if (player instanceof ServerPlayer serverPlayer) {
                         KeyBindFacet.get(serverPlayer).reset(serverPlayer);
                     }
-                    return entry.getKey().getAsHolder(entry.getValue());
+                    AbilityHolder<?> ability = entry.getKey().getAsHolder(entry.getValue());
+                    abilityMap.put(itemStack, ability);
+                    return ability;
                 }
             }
         } else {
@@ -132,11 +134,14 @@ public class ItemAbilityManager {
                                 KeyBindFacet.get(serverPlayer).set(keybindID, serverPlayer);
                             }
                         }
-                        return entry.getKey().getAsHolder(entry.getValue());
+                        AbilityHolder<?> ability = entry.getKey().getAsHolder(entry.getValue());
+                        abilityMap.put(itemStack, ability);
+                        return ability;
                     }
                 }
             }
         }
+        abilityMap.remove(itemStack);
         return emptyAbility;
     }
 
@@ -263,7 +268,8 @@ public class ItemAbilityManager {
             }
             return result;
         }
-        return getAbility(context.getItemInHand()).ability().useOnBlock(context);
+        AbilityHolder<?> executing = getAbility(context.getItemInHand());
+        return executing.ability().useOnBlock(context);
     }
 
     public interface AbilityHitContext {
@@ -301,7 +307,7 @@ public class ItemAbilityManager {
         }
     }
 
-    public static record AbilityHolder<T>(ItemUseAbility<T> ability, T context) {
+    public record AbilityHolder<T>(ItemUseAbility<T> ability, T context) {
 
         public AbilityHolder(Object context, ItemUseAbility<T> ability) {
             this(ability, ability.castTo(context));

@@ -50,7 +50,7 @@ public class FakeEnchantmentManager {
 
     public static void initOnItemStack(ItemStack stack) {
         ItemEnchantments enchantments = stack.getComponents().get(DataComponents.ENCHANTMENTS);
-        if (enchantments != null && (stack.getItem() instanceof VisualModularItem)) {
+        if (enchantments != null && (VisualModularItem.isVisualModularItem(stack))) {
             lookupMap.put(enchantments, stack);
         }
     }

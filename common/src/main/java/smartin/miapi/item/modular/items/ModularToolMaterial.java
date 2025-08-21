@@ -53,7 +53,7 @@ public class ModularToolMaterial implements Tier {
     }
 
     public static Tier forItemStack(ItemStack itemStack) {
-        if (itemStack == null || itemStack.isEmpty() || itemStack.getItem() == null || VisualModularItem.isVisualModularItem(itemStack)) {
+        if (itemStack == null || itemStack.isEmpty() || VisualModularItem.isVisualModularItem(itemStack)) {
             return new ModularToolMaterial();
         }
         AtomicReference<TagKey<Block>> getIncorrectBlocksForDrops = new AtomicReference<>(BlockTags.INCORRECT_FOR_WOODEN_TOOL);
