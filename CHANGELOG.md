@@ -1,4 +1,4 @@
-## v2.0.13 (1.21)
+## v2.1.0 (1.21)
 ### Performance :
 - improved modular item checks by 50%
 - improved decode performance by 90%
@@ -28,4 +28,5 @@ and either create a GH issue or ping me on discord with the spark link and a des
 - added "fake_item_identity" (default false) field to "copy_item" ability, allowing to fake the items identity to a degree.
   this might be unsafe and accidentally convert the item to the fake identity, but in some conditions it might also fix 
   the right click behaviour. Use with care.
+- reworked ability system and repaired keybind abilities to be fully functional again.
   

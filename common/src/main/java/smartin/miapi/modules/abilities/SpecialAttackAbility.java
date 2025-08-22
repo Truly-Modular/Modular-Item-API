@@ -1,8 +1,6 @@
 package smartin.miapi.modules.abilities;
 
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.DynamicOps;
-import com.mojang.serialization.ListBuilder;
 import com.redpxnda.nucleus.codec.auto.AutoCodec;
 import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
 import com.redpxnda.nucleus.network.clientbound.ParticleCreationPacket;
@@ -41,7 +39,7 @@ public class SpecialAttackAbility implements
     public SpecialAttackAbility() {
         LoreProperty.bottomLoreSuppliers.add(itemStack -> {
             List<Component> texts = new ArrayList<>();
-            if (AbilityMangerProperty.isPrimaryAbility(this, itemStack)) {
+            if (AbilityProperty.isPrimaryAbility(this, itemStack)) {
                 texts.add(Component.translatable("miapi.ability.heavy_attack.lore"));
             }
             return texts;
@@ -49,22 +47,22 @@ public class SpecialAttackAbility implements
     }
 
     @Override
-    public boolean allowedOnItem(ItemStack itemStack, Level world, Player player, InteractionHand hand, ItemAbilityManager.AbilityHitContext abilityHitContext) {
+    public boolean allowedOnItem(ItemStack itemStack, Level world, Player player, InteractionHand hand, ItemAbilityManager.AbilityHitContext abilityHitContext, SpecialAttackJson context) {
         return true;
     }
 
     @Override
-    public UseAnim getUseAction(ItemStack itemStack) {
+    public UseAnim getUseAction(ItemStack itemStack, SpecialAttackJson context) {
         return UseAnim.SPEAR;
     }
 
     @Override
-    public int getMaxUseTime(ItemStack itemStack, LivingEntity entity) {
+    public int getMaxUseTime(ItemStack itemStack, LivingEntity entity, SpecialAttackJson context) {
         return 72000;
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level world, Player user, InteractionHand hand) {
+    public InteractionResultHolder<ItemStack> use(Level world, Player user, InteractionHand hand, SpecialAttackJson context) {
         if (user.getCooldowns().isOnCooldown(user.getItemInHand(hand).getItem())) {
             return InteractionResultHolder.pass(user.getItemInHand(hand));
         }
@@ -78,9 +76,9 @@ public class SpecialAttackAbility implements
     }
 
     @Override
-    public void onStoppedUsingAfter(ItemStack stack, Level world, LivingEntity user, int remainingUseTicks) {
+    public void onStoppedUsingAfter(ItemStack stack, Level world, LivingEntity user, int remainingUseTicks, SpecialAttackJson context) {
         SpecialAttackJson specialAttackJson = getSpecialContext(stack);
-        if (user instanceof Player player && getMaxUseTime(stack, user) - remainingUseTicks > specialAttackJson.minHold.getValue()) {
+        if (user instanceof Player player && getMaxUseTime(stack, user, context) - remainingUseTicks > specialAttackJson.minHold.getValue()) {
             EntityHitResult entityHitResult = AttackUtil.raycastFromPlayer(specialAttackJson.range.evaluate(3.5, 3.5), player);
             if (entityHitResult != null) {
                 Entity target2 = entityHitResult.getEntity();

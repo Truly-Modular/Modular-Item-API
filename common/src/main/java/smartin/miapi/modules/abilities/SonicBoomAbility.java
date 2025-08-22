@@ -1,7 +1,6 @@
 package smartin.miapi.modules.abilities;
 
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
@@ -9,8 +8,6 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.damagesource.DamageSources;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -40,22 +37,22 @@ public class SonicBoomAbility implements ItemUseDefaultCooldownAbility<SonicBoom
     }
 
     @Override
-    public boolean allowedOnItem(ItemStack itemStack, Level world, Player player, InteractionHand hand, ItemAbilityManager.AbilityHitContext abilityHitContext) {
+    public boolean allowedOnItem(ItemStack itemStack, Level world, Player player, InteractionHand hand, ItemAbilityManager.AbilityHitContext abilityHitContext, SonicBoomContext context) {
         return true;
     }
 
     @Override
-    public UseAnim getUseAction(ItemStack itemStack) {
+    public UseAnim getUseAction(ItemStack itemStack, SonicBoomContext context) {
         return UseAnim.SPYGLASS;
     }
 
     @Override
-    public int getMaxUseTime(ItemStack itemStack, LivingEntity entity) {
+    public int getMaxUseTime(ItemStack itemStack, LivingEntity entity, SonicBoomContext context) {
         return 72000;
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level world, Player user, InteractionHand hand) {
+    public InteractionResultHolder<ItemStack> use(Level world, Player user, InteractionHand hand, SonicBoomContext context) {
         if (user.getCooldowns().isOnCooldown(user.getItemInHand(hand).getItem())) {
             return InteractionResultHolder.pass(user.getItemInHand(hand));
         }
@@ -69,9 +66,8 @@ public class SonicBoomAbility implements ItemUseDefaultCooldownAbility<SonicBoom
     }
 
     @Override
-    public void onStoppedUsingAfter(ItemStack stack, Level world, LivingEntity user, int remainingUseTicks) {
-        SonicBoomContext context = getSpecialContext(stack);
-        if (user instanceof Player player && getMaxUseTime(stack, user) - remainingUseTicks >= context.minHold().getValue()) {
+    public void onStoppedUsingAfter(ItemStack stack, Level world, LivingEntity user, int remainingUseTicks, SonicBoomContext context) {
+        if (user instanceof Player player && getMaxUseTime(stack, user,context) - remainingUseTicks >= context.minHold().getValue()) {
             if (world instanceof ServerLevel serverLevel) {
                 double range = context.maxRange().getValue();
                 AABB aabb = new AABB(player.getX() - range, player.getY() - range, player.getZ() - range,

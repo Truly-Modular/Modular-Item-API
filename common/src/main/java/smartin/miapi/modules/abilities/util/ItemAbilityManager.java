@@ -54,8 +54,8 @@ public class ItemAbilityManager {
                 activeItems.put(playerEntity, playerItem);
                 if (oldItem != null) {
                     AbilityHolder<?> holder = getAbility(oldItem);
-                    holder.ability().onStoppedHolding(oldItem, playerEntity.level(), playerEntity);
-                    abilityMap.remove(oldItem);
+                    holder.onStoppedHolding(oldItem, playerEntity.level(), playerEntity);
+                    clearAbility(oldItem);
                 }
             }
         });
@@ -84,18 +84,19 @@ public class ItemAbilityManager {
         List<AbilityHolder<?>> result = new ArrayList<>();
 
         // Abilities without keybinds
-        Map<ItemUseAbility<?>, Object> baseAbilities = AbilityMangerProperty.property.getData(itemStack).orElse(new HashMap<>());
-        for (Map.Entry<ItemUseAbility<?>, Object> entry : baseAbilities.entrySet()) {
-            result.add(entry.getKey().getAsHolder(entry.getValue()));
-        }
+        AbilityProperty.property.getData(itemStack).ifPresent(list -> {
+            list.forEach(context -> {
+                result.add(context.ability.getAsHolder(context.data));
+            });
+        });
 
         // Abilities with keybinds
-        Map<ResourceLocation, Map<ItemUseAbility<?>, Object>> keyboundAbilities =
+        Map<ResourceLocation, List<AbilityProperty.AbilityContext<?>>> keyboundAbilities =
                 KeyBindAbilityManagerProperty.property.getData(itemStack).orElse(new HashMap<>());
-        for (Map<ItemUseAbility<?>, Object> abilityMap : keyboundAbilities.values()) {
-            for (Map.Entry<ItemUseAbility<?>, Object> entry : abilityMap.entrySet()) {
-                result.add(entry.getKey().getAsHolder(entry.getValue()));
-            }
+        for (List<AbilityProperty.AbilityContext<?>> list : keyboundAbilities.values()) {
+            list.forEach(context -> {
+                result.add(context.ability.getAsHolder(context.data));
+            });
         }
 
         return result;
@@ -110,39 +111,88 @@ public class ItemAbilityManager {
             keybindID = serverKeyBindID.get(player);
         }
         if (keybindID == null) {
-            var data = AbilityMangerProperty.property.getData(itemStack).orElse(new LinkedHashMap<>());
-            for (Map.Entry<ItemUseAbility<?>, Object> entry : data.entrySet()) {
-                if (entry.getKey().allowedOnItem(itemStack, world, player, hand, abilityHitContext)) {
-                    //return new Pair<>(entry.getKey(), entry.getValue());
-                    if (player instanceof ServerPlayer serverPlayer) {
-                        KeyBindFacet.get(serverPlayer).reset(serverPlayer);
-                    }
-                    AbilityHolder<?> ability = entry.getKey().getAsHolder(entry.getValue());
-                    abilityMap.put(itemStack, ability);
-                    return ability;
+            AbilityHolder<?> abilityHolder =
+                    AbilityProperty.property.getData(itemStack)
+                            .flatMap(list -> list.stream()
+                                    .filter(abilityContext -> {
+                                        if (
+                                                abilityHitContext.hitEntity() != null &&
+                                                abilityContext.allowedOnEntity.isTrue()) {
+                                            return true;
+                                        } else if (abilityContext.allowedOnBlock.isTrue() &&
+                                                   abilityHitContext.hitEntity() == null &&
+                                                   abilityHitContext.hitResult() != null &&
+                                                   abilityHitContext.hitResult().getClickedPos() != null
+                                        ) {
+                                            return true;
+                                        }
+                                        return abilityContext.allowedOnAir.isTrue() &&
+                                               abilityHitContext.hitEntity() == null &&
+                                               abilityHitContext.hitResult() == null;
+                                    })
+                                    .map(abilityContext -> abilityContext.ability.getAsHolder(abilityContext.data))
+                                    .filter(ability -> ability.allowedOnItem(itemStack, world, player, hand, abilityHitContext))
+                                    .findFirst()
+                            ).orElse(null);
+
+            if (abilityHolder != null) {
+                if (player instanceof ServerPlayer serverPlayer) {
+                    KeyBindFacet.get(serverPlayer).reset(serverPlayer);
                 }
+                setCurrentAbility(itemStack, abilityHolder);
+                return abilityHolder;
             }
         } else {
             var map = KeyBindAbilityManagerProperty.property.getData(itemStack).orElse(new LinkedHashMap<>());
-            Map<ItemUseAbility<?>, Object> abilities = map.get(keybindID);
-            if (abilities != null) {
-                for (Map.Entry<ItemUseAbility<?>, Object> entry : abilities.entrySet()) {
-                    if (entry.getKey().allowedOnItem(itemStack, world, player, hand, abilityHitContext)) {
-                        //return new Pair<>(entry.getKey(), entry.getValue());
-                        if (player instanceof ServerPlayer serverPlayer) {
-                            if (KeyBindFacet.get(serverPlayer) != null) {
-                                KeyBindFacet.get(serverPlayer).set(keybindID, serverPlayer);
-                            }
-                        }
-                        AbilityHolder<?> ability = entry.getKey().getAsHolder(entry.getValue());
-                        abilityMap.put(itemStack, ability);
-                        return ability;
-                    }
+            AbilityHolder<?> abilityHolder =
+                    Optional.ofNullable(map.get(keybindID))
+                            .flatMap(list -> list.stream()
+                                    .filter(abilityContext -> {
+                                        if (
+                                                abilityHitContext.hitEntity() != null &&
+                                                abilityContext.allowedOnEntity.isTrue()) {
+                                            return true;
+                                        } else if (abilityContext.allowedOnBlock.isTrue() &&
+                                                   abilityHitContext.hitEntity() == null &&
+                                                   abilityHitContext.hitResult() != null &&
+                                                   abilityHitContext.hitResult().getClickedPos() != null
+                                        ) {
+                                            return true;
+                                        }
+                                        return abilityContext.allowedOnAir.isTrue() &&
+                                               abilityHitContext.hitEntity() == null &&
+                                               abilityHitContext.hitResult() == null;
+                                    })
+                                    .map(abilityContext -> abilityContext.ability.getAsHolder(abilityContext.data))
+                                    .filter(ability -> ability.allowedOnItem(itemStack, world, player, hand, abilityHitContext))
+                                    .findFirst()
+                            ).orElse(null);
+
+            if (abilityHolder != null) {
+                if (player instanceof ServerPlayer serverPlayer) {
+                    KeyBindFacet.get(serverPlayer).reset(serverPlayer);
                 }
+                setCurrentAbility(itemStack, abilityHolder);
+                return abilityHolder;
             }
         }
-        abilityMap.remove(itemStack);
+        clearAbility(itemStack);
         return emptyAbility;
+    }
+
+    private static @Nullable AbilityHolder<?> setCurrentAbility(ItemStack itemStack, AbilityHolder<?> abilityHolder) {
+        ModularItemCache.clear(itemStack,
+                AbilityMangerProperty.KEY + "_" + RegistryInventory.ITEM_USE_ABILITY_MIAPI_REGISTRY.findKey(abilityHolder.ability()));
+        return abilityMap.put(itemStack, abilityHolder);
+    }
+
+    private static AbilityHolder<?> clearAbility(ItemStack oldItem) {
+        var abilityHolder = abilityMap.remove(oldItem);
+        if (abilityHolder != null) {
+            ModularItemCache.clear(oldItem,
+                    AbilityMangerProperty.KEY + "_" + RegistryInventory.ITEM_USE_ABILITY_MIAPI_REGISTRY.findKey(abilityHolder.ability()));
+        }
+        return abilityHolder;
     }
 
     public static UseAnim getUseAction(ItemStack itemStack, Supplier<UseAnim> getItem) {
@@ -150,7 +200,7 @@ public class ItemAbilityManager {
         if (emptyAbility.equals(ability)) {
             return getItem.get();
         }
-        return ability.ability().getUseAction(itemStack);
+        return ability.getUseAction(itemStack);
     }
 
     public static int getMaxUseTime(ItemStack itemStack, LivingEntity livingEntity, Supplier<Integer> getItem) {
@@ -158,10 +208,11 @@ public class ItemAbilityManager {
         if (emptyAbility.equals(ability)) {
             return getItem.get();
         }
-        return ability.ability().getMaxUseTime(itemStack, livingEntity);
+        return ability.getMaxUseTime(itemStack, livingEntity);
     }
 
-    public static InteractionResultHolder<ItemStack> use(Level world, Player user, InteractionHand hand, Supplier<InteractionResultHolder<ItemStack>> getItem) {
+    public static InteractionResultHolder<ItemStack> use
+            (Level world, Player user, InteractionHand hand, Supplier<InteractionResultHolder<ItemStack>> getItem) {
         ItemStack itemStack = user.getItemInHand(hand);
         AbilityHolder<?> ability = getAbility(itemStack, world, user, hand, new AbilityHitContext() {
             @Override
@@ -174,58 +225,62 @@ public class ItemAbilityManager {
                 return null;
             }
         });
-        abilityMap.put(itemStack, ability);
+        setCurrentAbility(itemStack, ability);
         if (emptyAbility.equals(ability)) {
             return getItem.get();
         }
-        return ability.ability().use(world, user, hand);
+        return ability.use(world, user, hand);
     }
 
-    public static ItemStack finishUsing(ItemStack stack, Level world, LivingEntity user, Supplier<ItemStack> getItem) {
+    public static ItemStack finishUsing
+            (ItemStack stack, Level world, LivingEntity user, Supplier<ItemStack> getItem) {
         AbilityHolder<?> ability = getAbility(stack);
         if (emptyAbility.equals(ability)) {
-            abilityMap.remove(stack);
+            clearAbility(stack);
             return getItem.get();
         }
-        ItemStack itemStack = ability.ability().finishUsing(stack, world, user);
-        abilityMap.remove(stack);
+        ItemStack itemStack = ability.finishUsing(stack, world, user);
+        clearAbility(stack);
 
         return itemStack;
     }
 
-    public static void onStoppedUsing(ItemStack stack, Level world, LivingEntity user, int remainingUseTicks, Runnable getItem) {
+    public static void onStoppedUsing(ItemStack stack, Level world, LivingEntity user,
+                                      int remainingUseTicks, Runnable getItem) {
         AbilityHolder<?> ability = getAbility(stack);
         if (emptyAbility.equals(ability)) {
             getItem.run();
             return;
         }
-        ability.ability().onStoppedUsing(stack, world, user, remainingUseTicks);
+        ability.onStoppedUsing(stack, world, user, remainingUseTicks);
         if (ability.ability() instanceof ItemUseDefaultCooldownAbility itemUseDefaultCooldownAbility) {
             itemUseDefaultCooldownAbility.afterStopAbility(stack, world, user, remainingUseTicks);
         }
-        abilityMap.remove(stack);
+        clearAbility(stack);
     }
 
-    public static void usageTick(Level world, LivingEntity user, ItemStack stack, int remainingUseTicks, Runnable getItem) {
+    public static void usageTick(Level world, LivingEntity user, ItemStack stack, int remainingUseTicks, Runnable
+            getItem) {
         AbilityHolder<?> ability = getAbility(stack);
         if (emptyAbility.equals(ability)) {
-            abilityMap.remove(stack);
+            clearAbility(stack);
             getItem.run();
             return;
         }
-        ability.ability().usageTick(world, user, stack, remainingUseTicks);
+        ability.usageTick(world, user, stack, remainingUseTicks);
     }
 
     public static boolean useOnRelease(ItemStack stack, Supplier<Boolean> getItem) {
         AbilityHolder<?> ability = getAbility(stack);
         if (emptyAbility.equals(ability)) {
-            abilityMap.remove(stack);
+            clearAbility(stack);
             return getItem.get();
         }
-        return ability.ability().useOnRelease(stack);
+        return ability.useOnRelease(stack);
     }
 
-    public static InteractionResult useOnEntity(ItemStack stack, Player user, LivingEntity entity, InteractionHand hand, Supplier<InteractionResult> getItem) {
+    public static InteractionResult useOnEntity
+            (ItemStack stack, Player user, LivingEntity entity, InteractionHand hand, Supplier<InteractionResult> getItem) {
         AbilityHolder<?> ability = getAbility(stack, user.level(), user, hand, new AbilityHitContext() {
             @Override
             public @Nullable UseOnContext hitResult() {
@@ -240,8 +295,8 @@ public class ItemAbilityManager {
         if (emptyAbility.equals(ability)) {
             return getItem.get();
         }
-        abilityMap.put(stack, ability);
-        return getAbility(stack).ability().useOnEntity(stack, user, entity, hand);
+        setCurrentAbility(stack, ability);
+        return getAbility(stack).useOnEntity(stack, user, entity, hand);
     }
 
     public static InteractionResult useOnBlock(UseOnContext context, Supplier<InteractionResult> getItem) {
@@ -259,17 +314,17 @@ public class ItemAbilityManager {
         if (emptyAbility.equals(ability)) {
             return getItem.get();
         }
-        abilityMap.put(context.getItemInHand(), ability);
+        setCurrentAbility(context.getItemInHand(), ability);
         if (Platform.isForgeLike()) {
             //fuck you forge, implemented fallback for ItemAbility shit
-            InteractionResult result = getAbility(context.getItemInHand()).ability().useOnBlock(context);
+            InteractionResult result = getAbility(context.getItemInHand()).useOnBlock(context);
             if (result.equals(InteractionResult.PASS)) {
                 return getItem.get();
             }
             return result;
         }
         AbilityHolder<?> executing = getAbility(context.getItemInHand());
-        return executing.ability().useOnBlock(context);
+        return executing.useOnBlock(context);
     }
 
     public interface AbilityHitContext {
@@ -283,21 +338,21 @@ public class ItemAbilityManager {
     static class EmptyAbility implements ItemUseAbility {
 
         @Override
-        public boolean allowedOnItem(ItemStack itemStack, Level world, Player player, InteractionHand hand, AbilityHitContext abilityHitContext) {
+        public boolean allowedOnItem(ItemStack itemStack, Level world, Player player, InteractionHand hand, AbilityHitContext abilityHitContext, Object context) {
             return true;
         }
 
         @Override
-        public UseAnim getUseAction(ItemStack itemStack) {
+        public UseAnim getUseAction(ItemStack itemStack, Object context) {
             return UseAnim.NONE;
         }
 
         @Override
-        public int getMaxUseTime(ItemStack itemStack, LivingEntity entity) {
+        public int getMaxUseTime(ItemStack itemStack, LivingEntity entity, Object context) {
             return 0;
         }
 
-        public InteractionResultHolder<ItemStack> use(Level world, Player user, InteractionHand hand) {
+        public InteractionResultHolder<ItemStack> use(Level world, Player user, InteractionHand hand, Object context) {
             return InteractionResultHolder.pass(user.getItemInHand(hand));
         }
 
@@ -307,11 +362,4 @@ public class ItemAbilityManager {
         }
     }
 
-    public record AbilityHolder<T>(ItemUseAbility<T> ability, T context) {
-
-        public AbilityHolder(Object context, ItemUseAbility<T> ability) {
-            this(ability, ability.castTo(context));
-        }
-
-    }
 }

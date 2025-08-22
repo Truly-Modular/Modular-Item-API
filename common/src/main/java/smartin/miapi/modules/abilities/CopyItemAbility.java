@@ -63,69 +63,68 @@ public class CopyItemAbility implements ItemUseAbility<CopyItemAbility.ItemConte
     }
 
     @Override
-    public boolean allowedOnItem(ItemStack stack, Level world, Player player, InteractionHand hand, ItemAbilityManager.AbilityHitContext abilityHitContext) {
-        ItemContext context = getSpecialContext(stack);
+    public boolean allowedOnItem(ItemStack stack, Level world, Player player, InteractionHand hand, ItemAbilityManager.AbilityHitContext abilityHitContext, ItemContext context) {
         context.initialize();
         return context.item != null;
     }
 
     @Override
-    public UseAnim getUseAction(ItemStack stack) {
+    public UseAnim getUseAction(ItemStack stack, ItemContext context) {
         return withFlag(stack, getSpecialContext(stack),
                 () -> getSpecialContext(stack).item.getUseAnimation(stack));
     }
 
     @Override
-    public int getMaxUseTime(ItemStack stack, LivingEntity entity) {
+    public int getMaxUseTime(ItemStack stack, LivingEntity entity, ItemContext context) {
         return withFlag(stack, getSpecialContext(stack),
                 () -> getSpecialContext(stack).item.getUseDuration(stack, entity));
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level world, Player user, InteractionHand hand) {
+    public InteractionResultHolder<ItemStack> use(Level world, Player user, InteractionHand hand, ItemContext context) {
         ItemStack stack = user.getItemInHand(hand);
         return withFlag(stack, getSpecialContext(stack),
                 () -> getSpecialContext(stack).item.use(world, user, hand));
     }
 
     @Override
-    public ItemStack finishUsing(ItemStack stack, Level world, LivingEntity user) {
+    public ItemStack finishUsing(ItemStack stack, Level world, LivingEntity user, ItemContext context) {
         return withFlag(stack, getSpecialContext(stack),
                 () -> getSpecialContext(stack).item.finishUsingItem(stack, world, user));
     }
 
     @Override
-    public boolean useOnRelease(ItemStack stack) {
+    public boolean useOnRelease(ItemStack stack, ItemContext context) {
         Boolean result = withFlag(stack, getSpecialContext(stack),
                 () -> getSpecialContext(stack).item.useOnRelease(stack));
-        return result != null ? result : ItemUseAbility.super.useOnRelease(stack);
+        return result != null ? result : ItemUseAbility.super.useOnRelease(stack, context);
     }
 
     @Override
-    public void onStoppedUsing(ItemStack stack, Level world, LivingEntity user, int remainingUseTicks) {
+    public void onStoppedUsing(ItemStack stack, Level world, LivingEntity user, int remainingUseTicks, ItemContext context) {
         withFlag(stack, getSpecialContext(stack),
                 () -> getSpecialContext(stack).item.releaseUsing(stack, world, user, remainingUseTicks));
     }
 
     @Override
-    public void onStoppedHolding(ItemStack stack, Level world, LivingEntity user) {
+    public void onStoppedHolding(ItemStack stack, Level world, LivingEntity user, ItemContext context) {
         withFlag(stack, getSpecialContext(stack),
-                () -> ItemUseAbility.super.onStoppedHolding(stack, world, user));
+                () -> ItemUseAbility.super.onStoppedHolding(stack, world, user, context));
     }
 
     @Override
-    public InteractionResult useOnBlock(UseOnContext context) {
+    public InteractionResult useOnBlock(UseOnContext context, ItemContext abilityContext) {
         return withFlag(context.getItemInHand(), getSpecialContext(context.getItemInHand()),
                 () -> getSpecialContext(context.getItemInHand()).item.useOn(context));
     }
 
     @Override
-    public void usageTick(Level world, LivingEntity user, ItemStack stack, int remainingUseTicks) {
+    public void usageTick(Level world, LivingEntity user, ItemStack stack, int remainingUseTicks, ItemContext context) {
         if (getSpecialContext(stack).item != null) {
             withFlag(stack, getSpecialContext(stack),
                             () ->getSpecialContext(stack).item.onUseTick(world, user, stack, remainingUseTicks));
         } else {
-            ItemUseAbility.super.usageTick(world, user, stack, remainingUseTicks);
+            ItemUseAbility.super.usageTick(world, user, stack, remainingUseTicks, context);
         }
     }
 

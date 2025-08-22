@@ -21,8 +21,9 @@ import java.util.Map;
 /**
  * This property manages the active {@link ItemUseAbility}
  */
+@Deprecated
 public class AbilityMangerProperty extends CodecProperty<Map<ItemUseAbility<?>, Object>> {
-    public static String KEY = "ability_context";
+    public static String KEY = "ability_context_old";
     public static AbilityMangerProperty property;
     public static Codec<Map<ItemUseAbility<?>, Object>> CODEC = new Codec<>() {
         @Override

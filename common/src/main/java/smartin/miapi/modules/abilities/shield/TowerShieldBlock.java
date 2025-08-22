@@ -50,30 +50,29 @@ public class TowerShieldBlock implements ItemUseDefaultCooldownAbility<TowerShie
     }
 
     @Override
-    public boolean allowedOnItem(ItemStack itemStack, Level world, Player player, InteractionHand hand, ItemAbilityManager.AbilityHitContext abilityHitContext) {
+    public boolean allowedOnItem(ItemStack itemStack, Level world, Player player, InteractionHand hand, ItemAbilityManager.AbilityHitContext abilityHitContext, BlockData context) {
         return true;
     }
 
     @Override
-    public UseAnim getUseAction(ItemStack itemStack) {
+    public UseAnim getUseAction(ItemStack itemStack, BlockData context) {
         return UseAnim.BLOCK;
     }
 
     @Override
-    public int getMaxUseTime(ItemStack itemStack, LivingEntity livingEntity) {
+    public int getMaxUseTime(ItemStack itemStack, LivingEntity livingEntity, BlockData context) {
         return 72000;
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level world, Player user, InteractionHand hand) {
+    public InteractionResultHolder<ItemStack> use(Level world, Player user, InteractionHand hand, BlockData context) {
         ItemStack itemStack = user.getItemInHand(hand);
-        BlockData data = getSpecialContext(itemStack);
         var component = itemStack.get(TowerShieldComponent.TOWER_SHIELD_COMPONENT);
         if (component != null) {
-            component.update(world.getGameTime(), (int) data.cooldown.getValue());
+            component.update(world.getGameTime(), (int) context.cooldown.getValue());
             itemStack.set(TowerShieldComponent.TOWER_SHIELD_COMPONENT, component);
         }
-        setAnimation(user, hand, data.animation);
+        setAnimation(user, hand, context.animation);
         return InteractionResultHolder.pass(user.getItemInHand(hand));
     }
 
@@ -103,13 +102,13 @@ public class TowerShieldBlock implements ItemUseDefaultCooldownAbility<TowerShie
     }
 
     @Override
-    public ItemStack finishUsing(ItemStack stack, Level world, LivingEntity user) {
+    public ItemStack finishUsing(ItemStack stack, Level world, LivingEntity user, BlockData context) {
         resetAnimation(user);
         return stack;
     }
 
     @Override
-    public void onStoppedHolding(ItemStack stack, Level world, LivingEntity user) {
+    public void onStoppedHolding(ItemStack stack, Level world, LivingEntity user, BlockData context) {
         resetAnimation(user);
     }
 

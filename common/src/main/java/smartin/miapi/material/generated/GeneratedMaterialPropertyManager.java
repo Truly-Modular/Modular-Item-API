@@ -24,7 +24,7 @@ import smartin.miapi.Miapi;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.config.MiapiServerConfig;
 import smartin.miapi.modules.abilities.CopyItemAbility;
-import smartin.miapi.modules.abilities.util.AbilityMangerProperty;
+import smartin.miapi.modules.abilities.util.AbilityProperty;
 import smartin.miapi.modules.properties.ComponentProperty;
 import smartin.miapi.modules.properties.CopyItemLoreProperty;
 import smartin.miapi.modules.properties.FakeItemTagProperty;
@@ -91,10 +91,18 @@ public class GeneratedMaterialPropertyManager {
         Map<ModuleProperty<?>, Object> propertyMap = new HashMap<>();
 
         if (shouldApplyProperty(MiapiConfig.getServerConfig().generatedMaterials.properties.abilityProperty, id.toString())) {
-            propertyMap.put(
+            /*propertyMap.put(
                     AbilityMangerProperty.property,
                     Map.of(CopyItemAbility.ability, new CopyItemAbility.ItemContext(item))
             );
+
+             */
+            propertyMap.put(AbilityProperty.property,List.of(new AbilityProperty.AbilityContext(
+                    Miapi.id("generated_material_ability"),
+                    0.0f,
+                    CopyItemAbility.ability,
+                    new CopyItemAbility.ItemContext(item)
+                    )));
         }
 
         if (shouldApplyProperty(MiapiConfig.getServerConfig().generatedMaterials.properties.loreProperty, id.toString())) {

@@ -30,18 +30,18 @@ public abstract class ToolAbilities extends MinMaxCDAbility<ToolAbilities.ToolAb
     }
 
     @Override
-    public boolean allowedOnItem(ItemStack itemStack, Level world, Player player, InteractionHand hand, ItemAbilityManager.AbilityHitContext abilityHitContext) {
+    public boolean allowedOnItem(ItemStack itemStack, Level world, Player player, InteractionHand hand, ItemAbilityManager.AbilityHitContext abilityHitContext, MinMaxCDData<ToolAbilityContext> context) {
         return abilityHitContext.hitResult() != null;
     }
 
     @Override
-    public UseAnim getUseAction(ItemStack itemStack) {
+    public UseAnim getUseAction(ItemStack itemStack, MinMaxCDData<ToolAbilityContext> context) {
         return UseAnim.NONE;
     }
 
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level world, Player user, InteractionHand hand) {
+    public InteractionResultHolder<ItemStack> use(Level world, Player user, InteractionHand hand, MinMaxCDData<ToolAbilityContext> context) {
         return null;
     }
 
@@ -54,7 +54,7 @@ public abstract class ToolAbilities extends MinMaxCDAbility<ToolAbilities.ToolAb
     public abstract Optional<BlockState> getBlockState(BlockState blockState, UseOnContext context);
 
     @Override
-    public InteractionResult useOnBlock(UseOnContext context) {
+    public InteractionResult useOnBlock(UseOnContext context, MinMaxCDData<ToolAbilityContext> abilityContext) {
         Level world = context.getLevel();
         BlockPos blockPos = context.getClickedPos();
         Player playerEntity = context.getPlayer();

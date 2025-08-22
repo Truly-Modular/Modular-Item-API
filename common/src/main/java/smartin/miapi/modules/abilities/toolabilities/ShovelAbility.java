@@ -24,7 +24,7 @@ public class ShovelAbility extends ToolAbilities {
         return Optional.empty();
     }
 
-    public InteractionResult useOnBlock(UseOnContext context) {
+    public InteractionResult useOnBlock(UseOnContext context, MinMaxCDData<ToolAbilityContext> abilityContext) {
         Level world = context.getLevel();
         BlockPos blockPos = context.getClickedPos();
         BlockState blockState = world.getBlockState(blockPos);

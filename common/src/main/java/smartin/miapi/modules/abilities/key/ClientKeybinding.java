@@ -2,7 +2,6 @@ package smartin.miapi.modules.abilities.key;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
@@ -61,13 +60,9 @@ public class ClientKeybinding {
 
     private static void startItemUseLogic(MiapiBinding binding, LocalPlayer player) {
         //start use item logic here
-        ResourceLocation id = ItemAbilityManager.clientKeyBindID.get(player);
-        ItemAbilityManager.clientKeyBindID.put(player, binding.id);
+        binding.lastDown = true;
         if (startUseItem(Minecraft.getInstance(), binding)) {
-            binding.lastDown = true;
             isUsing = true;
-        } else {
-            ItemAbilityManager.clientKeyBindID.put(player, id);
         }
     }
 
@@ -94,6 +89,7 @@ public class ClientKeybinding {
                             //full prevent execution if there is no ability. reduces networking
                             return false;
                         }
+                        ItemAbilityManager.clientKeyBindID.put(minecraft.player, binding.id);
                         KeyBindManager.updateServerId(binding.id, minecraft.player);
 
                         if (minecraft.hitResult != null) {

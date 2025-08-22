@@ -35,7 +35,7 @@ public class AreaHarvestReplant extends MinMaxCDAbility<AreaHarvestReplant.AreaH
     }
 
     @Override
-    public boolean allowedOnItem(ItemStack itemStack, Level world, Player player, InteractionHand hand, ItemAbilityManager.AbilityHitContext abilityHitContext) {
+    public boolean allowedOnItem(ItemStack itemStack, Level world, Player player, InteractionHand hand, ItemAbilityManager.AbilityHitContext abilityHitContext, MinMaxCDData<AreaHarvestJson> context) {
         if (
                 abilityHitContext.hitEntity() == null &&
                 abilityHitContext.hitResult() != null) {
@@ -54,16 +54,16 @@ public class AreaHarvestReplant extends MinMaxCDAbility<AreaHarvestReplant.AreaH
     }
 
     @Override
-    public UseAnim getUseAction(ItemStack itemStack) {
+    public UseAnim getUseAction(ItemStack itemStack, MinMaxCDData<AreaHarvestJson> context) {
         return UseAnim.BRUSH;
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level world, Player user, InteractionHand hand) {
+    public InteractionResultHolder<ItemStack> use(Level world, Player user, InteractionHand hand, MinMaxCDData<AreaHarvestJson> context) {
         return null;
     }
 
-    public InteractionResult useOnBlock(UseOnContext context) {
+    public InteractionResult useOnBlock(UseOnContext context, MinMaxCDData<AreaHarvestJson> abilityContext) {
         ItemStack itemStack = context.getItemInHand();
         if (!context.getLevel().isClientSide() && context.getPlayer() instanceof ServerPlayer serverPlayer) {
             int blocksHarvested = 0;

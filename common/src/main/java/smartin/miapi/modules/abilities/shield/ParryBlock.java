@@ -281,12 +281,12 @@ public class ParryBlock extends MinMaxCDAbility<BlockData> {
     }
 
     @Override
-    public boolean allowedOnItem(ItemStack itemStack, Level world, Player player, InteractionHand hand, ItemAbilityManager.AbilityHitContext abilityHitContext) {
+    public boolean allowedOnItem(ItemStack itemStack, Level world, Player player, InteractionHand hand, ItemAbilityManager.AbilityHitContext abilityHitContext, MinMaxCDData<BlockData> context) {
         return true;
     }
 
     @Override
-    public UseAnim getUseAction(ItemStack itemStack) {
+    public UseAnim getUseAction(ItemStack itemStack, MinMaxCDData<BlockData> context) {
         if (getData(itemStack).isPresent()) {
             var data = getData(itemStack).get();
             if (data.pose().isEmpty()) {
@@ -297,7 +297,7 @@ public class ParryBlock extends MinMaxCDAbility<BlockData> {
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level world, Player user, InteractionHand hand) {
+    public InteractionResultHolder<ItemStack> use(Level world, Player user, InteractionHand hand, MinMaxCDData<BlockData> context) {
         if (!world.isClientSide) {
             if (user instanceof ServerPlayer serverPlayer) {
                 ModuleInstance moduleInstance = ItemModule.getModules(user.getItemInHand(hand));
@@ -318,23 +318,23 @@ public class ParryBlock extends MinMaxCDAbility<BlockData> {
     }
 
     @Override
-    public ItemStack finishUsing(ItemStack stack, Level world, LivingEntity user) {
+    public ItemStack finishUsing(ItemStack stack, Level world, LivingEntity user, MinMaxCDData<BlockData> context) {
         resetAnimation(user);
         applyCooldownMissTime(stack, user);
-        return super.finishUsing(stack, world, user);
+        return super.finishUsing(stack, world, user, context);
     }
 
     @Override
-    public void onStoppedUsingAfter(ItemStack stack, Level world, LivingEntity user, int remainingUseTicks) {
+    public void onStoppedUsingAfter(ItemStack stack, Level world, LivingEntity user, int remainingUseTicks, MinMaxCDData<BlockData> context) {
         resetAnimation(user);
-        super.onStoppedUsingAfter(stack, world, user, remainingUseTicks);
+        super.onStoppedUsingAfter(stack, world, user, remainingUseTicks, context);
         applyCooldownMissTime(stack, user);
     }
 
     @Override
-    public void onStoppedHolding(ItemStack stack, Level world, LivingEntity user) {
+    public void onStoppedHolding(ItemStack stack, Level world, LivingEntity user, MinMaxCDData<BlockData> context) {
         resetAnimation(user);
-        super.onStoppedHolding(stack, world, user);
+        super.onStoppedHolding(stack, world, user, context);
         applyCooldownMissTime(stack, user);
     }
 

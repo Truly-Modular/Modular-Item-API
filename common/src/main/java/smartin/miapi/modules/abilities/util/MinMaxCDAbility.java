@@ -47,7 +47,7 @@ public abstract class MinMaxCDAbility<T> implements
         return getContext(itemStack).map(a -> a.cooldown().evaluate(0.0, defaultCoolDown)).orElse((double) defaultCoolDown).intValue();
     }
 
-    public int getMaxUseTime(ItemStack itemStack, LivingEntity livingEntity) {
+    public int getMaxUseTime(ItemStack itemStack, LivingEntity livingEntity, MinMaxCDData<T> context) {
         return getContext(itemStack).map(a -> a.max().evaluate(0.0, defaultMaxHoldTime)).orElse((double) defaultMaxHoldTime).intValue();
     }
 

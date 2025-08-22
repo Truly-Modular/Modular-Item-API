@@ -25,7 +25,7 @@ import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
-import smartin.miapi.modules.abilities.util.AbilityMangerProperty;
+import smartin.miapi.modules.abilities.util.AbilityProperty;
 import smartin.miapi.modules.abilities.util.EntityAttributeAbility;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;
 import smartin.miapi.modules.properties.LoreProperty;
@@ -45,7 +45,7 @@ public class BlockAbility extends EntityAttributeAbility<BlockDataOld> {
     public BlockAbility() {
         LoreProperty.bottomLoreSuppliers.add(itemStack -> {
             List<Component> texts = new ArrayList<>();
-            if (AbilityMangerProperty.isPrimaryAbility(this, itemStack)) {
+            if (AbilityProperty.isPrimaryAbility(this, itemStack)) {
                 Component raw = Component.translatable("miapi.ability.block.lore");
                 texts.add(raw);
             }
@@ -106,32 +106,32 @@ public class BlockAbility extends EntityAttributeAbility<BlockDataOld> {
     }
 
     @Override
-    public boolean allowedOnItem(ItemStack itemStack, Level world, Player player, InteractionHand hand, ItemAbilityManager.AbilityHitContext abilityHitContext) {
+    public boolean allowedOnItem(ItemStack itemStack, Level world, Player player, InteractionHand hand, ItemAbilityManager.AbilityHitContext abilityHitContext, MinMaxCDData<BlockDataOld> context) {
         return true;
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level world, Player user, InteractionHand hand) {
+    public InteractionResultHolder<ItemStack> use(Level world, Player user, InteractionHand hand, MinMaxCDData<BlockDataOld> context) {
         setAnimation(user, hand);
-        return super.use(world, user, hand);
+        return super.use(world, user, hand, context);
     }
 
     @Override
-    public ItemStack finishUsing(ItemStack stack, Level world, LivingEntity user) {
+    public ItemStack finishUsing(ItemStack stack, Level world, LivingEntity user, MinMaxCDData<BlockDataOld> context) {
         resetAnimation(user);
-        return super.finishUsing(stack, world, user);
+        return super.finishUsing(stack, world, user, context);
     }
 
     @Override
-    public void onStoppedUsingAfter(ItemStack stack, Level world, LivingEntity user, int remainingUseTicks) {
+    public void onStoppedUsingAfter(ItemStack stack, Level world, LivingEntity user, int remainingUseTicks, MinMaxCDData<BlockDataOld> context) {
         resetAnimation(user);
-        super.onStoppedUsingAfter(stack, world, user, remainingUseTicks);
+        super.onStoppedUsingAfter(stack, world, user, remainingUseTicks, context);
     }
 
     @Override
-    public void onStoppedHolding(ItemStack stack, Level world, LivingEntity user) {
+    public void onStoppedHolding(ItemStack stack, Level world, LivingEntity user, MinMaxCDData<BlockDataOld> context) {
         resetAnimation(user);
-        super.onStoppedHolding(stack, world, user);
+        super.onStoppedHolding(stack, world, user, context);
     }
 
     public void setAnimation(Player p, InteractionHand hand) {

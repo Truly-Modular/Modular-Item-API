@@ -54,6 +54,13 @@ public class ModularItemCache {
         return fallback.get();
     }
 
+    public static void clear(ItemStack stack, String key) {
+        ModuleInstance moduleInstance = ItemModule.getModules(stack);
+        if (moduleInstance != null) {
+            moduleInstance.cachedData.remove(key);
+        }
+    }
+
     public static <T> T getVisualOnlyCache(ItemStack stack, String key, T fallback) {
         if (!ReloadEvents.isInReload() && !stack.isEmpty() && VisualModularItem.isVisualModularItem(stack)) {
             return get(stack, key, () -> fallback);

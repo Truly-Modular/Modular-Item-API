@@ -29,7 +29,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
 import smartin.miapi.Miapi;
 import smartin.miapi.blocks.ModularWorkBenchRenderer;
 import smartin.miapi.blueprint.BlueprintManager;
@@ -93,13 +92,6 @@ public class MiapiClient {
         if (config.getInstance() == null) {
             config.load();
         }
-        if(Platform.isForgeLike() && !NetworkAggregator.S2C_RECEIVER.containsKey(FacetSyncPacket.TYPE.id())){
-            NetworkManager.registerReceiver(
-                    NetworkManager.Side.S2C,
-                    FacetSyncPacket.TYPE,
-                    FacetSyncPacket.STREAM_CODEC,
-                    (packet, context) -> context.queue(() -> packet.handle(context)));
-        }
         if (Platform.getMod("nucleus").getVersion().equals("1.1.4")) {
             RenderEvents.LIVING_ENTITY_RENDER.register((stage, model, entity, entityYaw, partialTick, matrixStack, multiBufferSource, packedLight) -> {
                 if (stage != RenderEvents.EntityRenderStage.PRE) return EventResult.pass();
@@ -156,6 +148,13 @@ public class MiapiClient {
         }));
 
         ClientReloadShadersEvent.EVENT.register((resourceFactory, shadersSink) -> {
+            if(Platform.isForgeLike() && !NetworkAggregator.S2C_RECEIVER.containsKey(FacetSyncPacket.TYPE.id())){
+                NetworkManager.registerReceiver(
+                        NetworkManager.Side.S2C,
+                        FacetSyncPacket.TYPE,
+                        FacetSyncPacket.STREAM_CODEC,
+                        (packet, context) -> context.queue(() -> packet.handle(context)));
+            }
             MiapiEvents.CLEAR_CACHE.invoker().onReload();
             if (Minecraft.getInstance().level != null) {
                 ReloadEvents.reloadCounter++;
@@ -194,17 +193,6 @@ public class MiapiClient {
                     Component link = Component.literal("For more information you can read this");
                     player.sendSystemMessage(link.toFlatList(Style.EMPTY.withClickEvent(event).withUnderlined(true)).get(0));
                     player.sendSystemMessage(Component.literal("This message was sent by Truly Modular."));
-                }
-            }
-        });
-        ClientTickEvent.CLIENT_POST.register(new ClientTickEvent.Client() {
-            @Override
-            public void tick(Minecraft instance) {
-                if (instance != null && instance.player != null && instance.player.getMainHandItem() != null) {
-                    ItemStack stack = instance.player.getMainHandItem();
-                    stack.getEnchantments().keySet().forEach(enchantmentHolder -> {
-                        Miapi.LOGGER.info("enchant" + enchantmentHolder.getRegisteredName() + " " + stack.getEnchantments().getLevel(enchantmentHolder));
-                    });
                 }
             }
         });

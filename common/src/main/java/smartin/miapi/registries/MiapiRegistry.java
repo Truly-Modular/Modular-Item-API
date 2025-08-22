@@ -7,6 +7,7 @@ import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 
 import java.util.*;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -30,6 +31,8 @@ public class MiapiRegistry<T> {
      * The list of callbacks to invoke when new entries are added to the registry.
      */
     protected final List<Consumer<T>> callbacks = new ArrayList<>();
+
+    protected final List<BiConsumer<ResourceLocation, T>> idCallbacks = new ArrayList<>();
 
     protected final Map<ResourceLocation, Supplier<T>> suppliers = Collections.synchronizedMap(new LinkedHashMap<>());
 
@@ -120,6 +123,7 @@ public class MiapiRegistry<T> {
 
         // Call the callbacks for the class type
         callbacks.forEach(callback -> callback.accept(value));
+        idCallbacks.forEach(callback -> callback.accept(name, value));
         return value;
     }
 
@@ -158,8 +162,11 @@ public class MiapiRegistry<T> {
             T entry = supplier.get();
             entries.put(id, entry);
             suppliers.remove(entry);
-            callbacks.forEach(callbacks -> {
-                callbacks.accept(entry);
+            callbacks.forEach(callback -> {
+                callback.accept(entry);
+            });
+            idCallbacks.forEach(callback -> {
+                callback.accept(id, entry);
             });
         });
     }
@@ -177,9 +184,8 @@ public class MiapiRegistry<T> {
                 T entry = suppliers.get(name).get();
                 entries.put(name, entry);
                 suppliers.remove(entry);
-                callbacks.forEach(callbacks -> {
-                    callbacks.accept(entry);
-                });
+                callbacks.forEach(callback -> callback.accept(entry));
+                idCallbacks.forEach(callback -> callback.accept(name, entry));
                 return entry;
             }
             return null;
@@ -212,6 +218,11 @@ public class MiapiRegistry<T> {
     public void addCallback(Consumer<T> callback) {
         callbacks.add(callback);
         entries.values().forEach(callback);
+    }
+
+    public void addCallback(BiConsumer<ResourceLocation, T> callback) {
+        idCallbacks.add(callback);
+        entries.forEach(callback::accept);
     }
 
     public String getName() {

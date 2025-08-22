@@ -37,7 +37,7 @@ public abstract class EntityAttributeAbility<T> extends MinMaxCDAbility<T> {
     protected abstract Multimap<Holder<Attribute>, AttributeModifier> getAttributes(ItemStack itemStack);
 
 
-    public InteractionResultHolder<ItemStack> use(Level world, Player user, InteractionHand hand) {
+    public InteractionResultHolder<ItemStack> use(Level world, Player user, InteractionHand hand, MinMaxCDData<T> context) {
         ItemStack itemStack = user.getItemInHand(hand);
         user.startUsingItem(hand);
         Multimap<Holder<Attribute>, AttributeModifier> attributeAttributePropertyMultimap = getAttributes(itemStack);
@@ -56,21 +56,21 @@ public abstract class EntityAttributeAbility<T> extends MinMaxCDAbility<T> {
         }
     }
 
-    public ItemStack finishUsing(ItemStack stack, Level world, LivingEntity user) {
+    public ItemStack finishUsing(ItemStack stack, Level world, LivingEntity user, MinMaxCDData<T> context) {
         remove(stack, user);
         return stack;
     }
 
-    public void onStoppedUsingAfter(ItemStack stack, Level world, LivingEntity user, int remainingUseTicks) {
+    public void onStoppedUsingAfter(ItemStack stack, Level world, LivingEntity user, int remainingUseTicks, MinMaxCDData<T> context) {
         remove(stack, user);
     }
 
-    public void onStoppedHolding(ItemStack stack, Level world, LivingEntity user) {
+    public void onStoppedHolding(ItemStack stack, Level world, LivingEntity user, MinMaxCDData<T> context) {
         remove(stack, user);
     }
 
     @Override
-    public UseAnim getUseAction(ItemStack itemStack) {
+    public UseAnim getUseAction(ItemStack itemStack, MinMaxCDData<T> context) {
         return UseAnim.NONE;
     }
 }

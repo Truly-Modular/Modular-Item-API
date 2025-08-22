@@ -39,7 +39,7 @@ public class RiptideAbility implements ItemUseDefaultCooldownAbility<RiptideAbil
     public static String KEY = "riptide";
 
     @Override
-    public boolean allowedOnItem(ItemStack itemStack, Level world, Player player, InteractionHand hand, ItemAbilityManager.AbilityHitContext abilityHitContext) {
+    public boolean allowedOnItem(ItemStack itemStack, Level world, Player player, InteractionHand hand, ItemAbilityManager.AbilityHitContext abilityHitContext, RiptideContextJson context) {
         if (EnchantmentHelper.getTridentSpinAttackStrength(itemStack, player) == 0) {
             return false;
         }
@@ -47,17 +47,17 @@ public class RiptideAbility implements ItemUseDefaultCooldownAbility<RiptideAbil
     }
 
     @Override
-    public UseAnim getUseAction(ItemStack itemStack) {
+    public UseAnim getUseAction(ItemStack itemStack, RiptideContextJson context) {
         return UseAnim.SPEAR;
     }
 
     @Override
-    public int getMaxUseTime(ItemStack itemStack, LivingEntity entity) {
+    public int getMaxUseTime(ItemStack itemStack, LivingEntity entity, RiptideContextJson context) {
         return 7200;
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level world, Player user, InteractionHand hand) {
+    public InteractionResultHolder<ItemStack> use(Level world, Player user, InteractionHand hand, RiptideContextJson context) {
         ItemStack itemStack = user.getItemInHand(hand);
         if (itemStack.getDamageValue() >= itemStack.getMaxDamage() - 1) {
             return InteractionResultHolder.fail(itemStack);
@@ -74,9 +74,9 @@ public class RiptideAbility implements ItemUseDefaultCooldownAbility<RiptideAbil
         return RiptideAbility.CODEC;
     }
 
-    public void onStoppedUsingAfter(ItemStack stack, Level level, LivingEntity livingEntity, int timeCharged) {
+    public void onStoppedUsingAfter(ItemStack stack, Level level, LivingEntity livingEntity, int timeCharged, RiptideContextJson context) {
         if (livingEntity instanceof Player player) {
-            int var6 = this.getMaxUseTime(stack, livingEntity) - timeCharged;
+            int var6 = this.getMaxUseTime(stack, livingEntity, context) - timeCharged;
             if (var6 >= 10) {
                 float f = EnchantmentHelper.getTridentSpinAttackStrength(stack, player);
                 if (player.isInWaterOrRain()) {

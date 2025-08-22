@@ -39,7 +39,7 @@ public class ThrowingAbility implements ItemUseDefaultCooldownAbility<ThrowingAb
     public ThrowingAbility() {
         LoreProperty.bottomLoreSuppliers.add(itemStack -> {
             List<Component> texts = new ArrayList<>();
-            if (AbilityMangerProperty.isPrimaryAbility(this, itemStack)) {
+            if (AbilityProperty.isPrimaryAbility(this, itemStack)) {
                 texts.add(Component.translatable("miapi.ability.throw.lore"));
             }
             return texts;
@@ -47,22 +47,22 @@ public class ThrowingAbility implements ItemUseDefaultCooldownAbility<ThrowingAb
     }
 
     @Override
-    public boolean allowedOnItem(ItemStack itemStack, Level world, Player player, InteractionHand hand, ItemAbilityManager.AbilityHitContext abilityHitContext) {
+    public boolean allowedOnItem(ItemStack itemStack, Level world, Player player, InteractionHand hand, ItemAbilityManager.AbilityHitContext abilityHitContext, BasicContext context) {
         return true;
     }
 
     @Override
-    public UseAnim getUseAction(ItemStack itemStack) {
+    public UseAnim getUseAction(ItemStack itemStack, BasicContext context) {
         return UseAnim.SPEAR;
     }
 
     @Override
-    public int getMaxUseTime(ItemStack stack, LivingEntity entity) {
+    public int getMaxUseTime(ItemStack stack, LivingEntity entity, BasicContext context) {
         return 72000;
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level world, Player user, InteractionHand hand) {
+    public InteractionResultHolder<ItemStack> use(Level world, Player user, InteractionHand hand, BasicContext context) {
         user.startUsingItem(hand);
         return InteractionResultHolder.consume(user.getItemInHand(hand));
     }
@@ -73,9 +73,9 @@ public class ThrowingAbility implements ItemUseDefaultCooldownAbility<ThrowingAb
     }
 
     @Override
-    public void onStoppedUsingAfter(ItemStack stack, Level world, LivingEntity user, int remainingUseTicks) {
+    public void onStoppedUsingAfter(ItemStack stack, Level world, LivingEntity user, int remainingUseTicks, BasicContext context) {
         if (user instanceof Player playerEntity) {
-            int i = this.getMaxUseTime(stack, user) - remainingUseTicks;
+            int i = this.getMaxUseTime(stack, user, context) - remainingUseTicks;
             if (i >= 10) {
                 playerEntity.awardStat(Stats.ITEM_USED.get(stack.getItem()));
                 if (world instanceof ServerLevel serverWorld) {

@@ -1,7 +1,7 @@
 package smartin.miapi.modules.abilities;
 
 import com.mojang.serialization.Codec;
-import com.redpxnda.nucleus.codec.auto.AutoCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -35,23 +35,23 @@ public class EatAbility implements ItemUseDefaultCooldownAbility<EatAbility.EatR
     }
 
     @Override
-    public boolean allowedOnItem(ItemStack itemStack, Level world, Player player, InteractionHand hand, ItemAbilityManager.AbilityHitContext abilityHitContext) {
+    public boolean allowedOnItem(ItemStack itemStack, Level world, Player player, InteractionHand hand, ItemAbilityManager.AbilityHitContext abilityHitContext, EatRawData context) {
         EatRawData data = getSpecialContext(itemStack);
         return data != null && (data.alwaysEdible || player.getFoodData().needsFood());
     }
 
     @Override
-    public UseAnim getUseAction(ItemStack itemStack) {
+    public UseAnim getUseAction(ItemStack itemStack, EatRawData context) {
         return UseAnim.EAT;
     }
 
     @Override
-    public int getMaxUseTime(ItemStack itemStack, LivingEntity entity) {
+    public int getMaxUseTime(ItemStack itemStack, LivingEntity entity, EatRawData context) {
         return getSpecialContext(itemStack).eatTicks();
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level world, Player user, InteractionHand hand) {
+    public InteractionResultHolder<ItemStack> use(Level world, Player user, InteractionHand hand, EatRawData context) {
         if (user.getCooldowns().isOnCooldown(user.getItemInHand(hand).getItem())) {
             return InteractionResultHolder.pass(user.getItemInHand(hand));
         }
@@ -61,10 +61,9 @@ public class EatAbility implements ItemUseDefaultCooldownAbility<EatAbility.EatR
     }
 
     @Override
-    public void usageTick(Level world, LivingEntity user, ItemStack stack, int remainingUseTicks) {
+    public void usageTick(Level world, LivingEntity user, ItemStack stack, int remainingUseTicks, EatRawData context) {
         if (remainingUseTicks <= 0) {
             user.releaseUsingItem();
-            EatRawData context = getSpecialContext(stack);
 
             boolean isClient = user.level().isClientSide;
             if (isClient) {
@@ -94,7 +93,7 @@ public class EatAbility implements ItemUseDefaultCooldownAbility<EatAbility.EatR
 
     @Override
     public Codec<EatRawData> getCodec() {
-        return EatRawData.codec;
+        return EatRawData.CODEC;
     }
 
     @Override
@@ -113,17 +112,58 @@ public class EatAbility implements ItemUseDefaultCooldownAbility<EatAbility.EatR
     }
 
     public static class EatRawData {
-        public static final Codec<EatRawData> codec = AutoCodec.of(EatRawData.class).codec();
+        //public static final Codec<EatRawData> codec = AutoCodec.of(EatRawData.class).codec();
+
+        public static final Codec<EatRawData> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+                DoubleOperationResolvable.CODEC.fieldOf("nutrition")
+                        .orElse(new DoubleOperationResolvable(0))
+                        .forGetter(d -> d.nutrition),
+                DoubleOperationResolvable.CODEC.fieldOf("saturation")
+                        .orElse(new DoubleOperationResolvable(0))
+                        .forGetter(d -> d.saturation),
+                DoubleOperationResolvable.CODEC.fieldOf("eat_ticks")
+                        .orElse(new DoubleOperationResolvable(32))
+                        .forGetter(d -> d.eat_ticks),
+                DoubleOperationResolvable.CODEC.fieldOf("cooldown")
+                        .orElse(new DoubleOperationResolvable(0))
+                        .forGetter(d -> d.cooldown),
+                DoubleOperationResolvable.CODEC.optionalFieldOf("durability", new DoubleOperationResolvable(0))
+                        .forGetter(d -> d.durability),
+                Codec.BOOL.optionalFieldOf("alwaysEdible", false)
+                        .forGetter(d -> d.alwaysEdible),
+                Codec.list(FoodProperties.PossibleEffect.CODEC).optionalFieldOf("effects", new ArrayList<>())
+                        .forGetter(d -> d.effects)
+        ).apply(instance, EatRawData::new));
 
         public DoubleOperationResolvable nutrition;
         public DoubleOperationResolvable saturation;
-        public DoubleOperationResolvable eat_ticks = new DoubleOperationResolvable(32);
-        public DoubleOperationResolvable cooldown = new DoubleOperationResolvable(0);
-        public @CodecBehavior.Optional DoubleOperationResolvable durability = new DoubleOperationResolvable(0);
-        public @CodecBehavior.Optional boolean alwaysEdible = false;
+        public DoubleOperationResolvable eat_ticks;
+        public DoubleOperationResolvable cooldown;
+        public DoubleOperationResolvable durability;
+        public boolean alwaysEdible;
         @CodecBehavior.Override("effect_codec")
         public static Codec<List<FoodProperties.PossibleEffect>> effect_codec = Codec.list(FoodProperties.PossibleEffect.CODEC);
         public @CodecBehavior.Optional List<FoodProperties.PossibleEffect> effects = new ArrayList<>();
+
+        public EatRawData(DoubleOperationResolvable nutrition,
+                          DoubleOperationResolvable saturation,
+                          DoubleOperationResolvable eat_ticks,
+                          DoubleOperationResolvable cooldown,
+                          DoubleOperationResolvable durability,
+                          boolean alwaysEdible,
+                          List<FoodProperties.PossibleEffect> effects) {
+            this.nutrition = nutrition;
+            this.saturation = saturation;
+            this.eat_ticks = eat_ticks;
+            this.cooldown = cooldown;
+            this.durability = durability;
+            this.alwaysEdible = alwaysEdible;
+            this.effects = effects;
+        }
+
+        public EatRawData() {
+        }
+
 
         public EatRawData initialize(ModuleInstance instance) {
             this.nutrition.initialize(instance);

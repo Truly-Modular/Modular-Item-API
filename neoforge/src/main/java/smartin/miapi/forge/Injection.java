@@ -7,13 +7,12 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.common.ItemAbilities;
 import net.neoforged.neoforge.common.ItemAbility;
 import net.neoforged.neoforge.common.extensions.IItemExtension;
-import smartin.miapi.Miapi;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.items.armor.ModularElytraItem;
 import smartin.miapi.modules.abilities.toolabilities.AxeAbility;
 import smartin.miapi.modules.abilities.toolabilities.HoeAbility;
 import smartin.miapi.modules.abilities.toolabilities.ShovelAbility;
-import smartin.miapi.modules.abilities.util.AbilityMangerProperty;
+import smartin.miapi.modules.abilities.util.AbilityProperty;
 import smartin.miapi.modules.abilities.util.ItemUseAbility;
 import smartin.miapi.modules.properties.armor.CanWalkOnSnow;
 import smartin.miapi.modules.properties.armor.EquipmentSlotProperty;
@@ -120,8 +119,9 @@ public class Injection {
         }
 
         private static boolean hasRightClickBehaviour(ItemStack stack, Predicate<? super ItemUseAbility> predicate) {
-            var optional = AbilityMangerProperty.property.getData(stack);
-            return optional.map(itemUseAbilityObjectMap -> itemUseAbilityObjectMap.keySet().stream().anyMatch(predicate)).orElse(false);
+            //var optional = AbilityMangerProperty.property.getData(stack);
+            //return optional.map(itemUseAbilityObjectMap -> itemUseAbilityObjectMap.keySet().stream().anyMatch(predicate)).orElse(false);
+            return AbilityProperty.property.getData(stack).map(abilities -> abilities.stream().anyMatch(a -> predicate.test(a.ability))).orElse(false);
         }
 
         default int getEnchantmentValue(ItemStack stack) {

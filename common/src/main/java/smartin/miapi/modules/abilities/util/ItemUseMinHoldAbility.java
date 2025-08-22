@@ -10,14 +10,14 @@ public interface ItemUseMinHoldAbility<T> extends ItemUseAbility<T> {
     int getMinHoldTime(ItemStack itemStack);
 
     @Override
-    default void onStoppedUsing(ItemStack stack, Level world, LivingEntity user, int remainingUseTicks) {
-        if (finishedMinHold(stack, world, user, remainingUseTicks)) {
-            onStoppedUsingAfter(stack, world, user, remainingUseTicks);
+    default void onStoppedUsing(ItemStack stack, Level world, LivingEntity user, int remainingUseTicks, T context) {
+        if (finishedMinHold(stack, world, user, remainingUseTicks, context)) {
+            onStoppedUsingAfter(stack, world, user, remainingUseTicks, context);
         }
     }
 
-    default boolean finishedMinHold(ItemStack stack, Level world, LivingEntity user, int remainingUseTicks) {
-        return getMaxUseTime(stack, user) - remainingUseTicks > getMinHoldTime(stack);
+    default boolean finishedMinHold(ItemStack stack, Level world, LivingEntity user, int remainingUseTicks, T context) {
+        return getMaxUseTime(stack, user, context) - remainingUseTicks > getMinHoldTime(stack);
     }
 
     /**
@@ -27,8 +27,9 @@ public interface ItemUseMinHoldAbility<T> extends ItemUseAbility<T> {
      * @param world             The world in which the item was used.
      * @param user              The entity using the item.
      * @param remainingUseTicks The remaining ticks of item usage.
+     * @param context
      */
-    default void onStoppedUsingAfter(ItemStack stack, Level world, LivingEntity user, int remainingUseTicks) {
+    default void onStoppedUsingAfter(ItemStack stack, Level world, LivingEntity user, int remainingUseTicks, T context) {
 
     }
 }

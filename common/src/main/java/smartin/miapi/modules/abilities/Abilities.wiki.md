@@ -3,32 +3,62 @@
 
 Abilities are set via the Ability Property and are used to control the right click behaviour of modular items.
 
-WIP: 
+WIP:
 the ability system is planned to be extended (mostly arround the ability property to add more functionality)
 
-The Ability Property ``miapi:abilities`` controls the abilities.  
-The Property is a list of abilities that are tried in order.
-if the first one cannot be executed (f.e. axe carve can only be executed on certain blocks) the next one is tried.
-Many Abilities share common fields:  
-- ``cooldown`` will set the item on cooldown after usage (often defaults to 0)
-- ``min_hold`` how long the minimum hold time is before activation (often defaults to 0)
-- ``max_hold`` how long right click can be held. (often defaults to an hour)
+The Ability Property ``miapi:ability_context`` controls the abilities.
+This property uses a list of abilities.
+Each Ability has the following fields:
+- id: an arbitrary id of this ability on this item. Used so other modules can interact with this ability
+- type: the actual ability type
+- priority: allows you to manipulate the order of abilities.  
+  Lower gets tested first.  
+  defaults to 0
+  if you for example set this to 1 this ability will execute after the ability of submodules/only if the submodule ability does not want to trigger(f.e. the submodule ability only interacts with blocks but you want to capture other right clicks)
+- data: the data of your ability
+- allowed_on_block: (default true) if it`s allowed on block interaction (stuff like axe right clicking or other tool actions)
+- allowed_on_entity: (default true) if it`s allowed on an entity interaction (Usually these are controlled by the target entity rather then the item)  
+  in vanilla only the leads, name-tag and dye item(while clicking on sheep) use this behaviour.
+- allowed_on_air: (default true) if it`s allowed on neither a block nor air interaction (stuff like eating)
 
-Currently, abilities utilize the Ability Manager Property.
-  
-this means in the json it looks like this:
+example:
 ```json
 {
-    "ability_context": {
-        "ability-1": {
-            "cooldown": 20
-        },
-        "ability-2": {
-            "special_field": "minecraft:creeper"
+    "ability_context": [
+        {
+            "id": "tm_arsenal:parry_shield_block",
+            "type": "miapi:block",
+            "priority": 0,
+            "data": {
+                "blocking": 50
+            }
         }
-    }
+    ]
 }
 ```
-**Headsup**
-we are planning on reworking this system.
 
+This System also allows you to have items with multiple abilities of the same type, for example:
+```json
+{
+    "ability_context": [
+        {
+            "id": "test:copy_flint_and_steel",
+            "type": "miapi:copy_item",
+            "priority": 0,
+            "allowed_on_air": false,
+            "data": {
+                "id": "minecraft:flint_and_steel"
+            }
+        },
+        {
+            "id": "test:copy_bow",
+            "type": "miapi:copy_item",
+            "priority": 1,
+            "data": {
+                "id": "minecraft:bow",
+                "fake_item_identity": true
+            }
+        }
+    ]
+}
+```

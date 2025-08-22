@@ -24,7 +24,7 @@ public class HoeAbility extends ToolAbilities {
         return Optional.empty();
     }
 
-    public InteractionResult useOnBlock(UseOnContext context) {
+    public InteractionResult useOnBlock(UseOnContext context, MinMaxCDData<ToolAbilityContext> abilityContext) {
         Level world = context.getLevel();
         BlockPos blockPos = context.getClickedPos();
         Pair<Predicate<UseOnContext>, Consumer<UseOnContext>> pair = HoeItemAccessor.getTILLING_ACTIONS().get(world.getBlockState(blockPos).getBlock());

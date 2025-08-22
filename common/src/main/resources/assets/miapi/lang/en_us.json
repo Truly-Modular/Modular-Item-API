@@ -241,6 +241,8 @@
     "miapi.stat.miapi.health_percent.description": "Deals %d percentage health Damage",
     "miapi.stat.miapi.slashing": "Slashing",
     "miapi.stat.miapi.slashing.description": "Slashing Damage deals bonus dmg up to the Slashing value directly reduced by Targets Armor\n Every armor toughness point of the target reduces slashing by one\n Every 3 armor points of the target reduces slashing by one",
+    "miapi.stat.miapi.bludgeon": "Bludgeon",
+    "miapi.stat.miapi.bludgeon.description": "Bludgeon Damage deals bonus dmg up to the Bludgeon value but cannot exceed the target's Armor Toughness.\nThis makes blunt weapons stronger against heavily armored targets.",
     "miapi.stat.miapi.armor_pen": "Armor Pierce",
     "miapi.stat.miapi.armor_pen.description": "Reduced Target armor by %d percent",
     "miapi.stat.miapi.shield_break": "Shield Break",

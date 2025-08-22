@@ -12,7 +12,7 @@ public interface ItemUseDefaultCooldownAbility<T> extends ItemUseAbility<T> {
 
     default boolean useCooldown(ItemStack stack, Level world, LivingEntity user, int remainingUseTicks) {
         if (this instanceof ItemUseMinHoldAbility itemUseMinHoldAbility) {
-            return itemUseMinHoldAbility.finishedMinHold(stack, world, user, remainingUseTicks);
+            return itemUseMinHoldAbility.finishedMinHold(stack, world, user, remainingUseTicks, getDefaultContext());
         }
         return true;
     }

@@ -34,46 +34,51 @@ public interface ItemUseAbility<T> extends MergeAble<T>, InitializeAble<T> {
      * @param world     The world in which the item is being used.
      * @param player    The player using the item.
      * @param hand      The hand with which the item is being used.
+     * @param context
      * @return true if the item is allowed to be used, false otherwise.
      */
-    boolean allowedOnItem(ItemStack itemStack, Level world, Player player, InteractionHand hand, ItemAbilityManager.AbilityHitContext abilityHitContext);
+    boolean allowedOnItem(ItemStack itemStack, Level world, Player player, InteractionHand hand, ItemAbilityManager.AbilityHitContext abilityHitContext, T context);
 
     /**
      * Gets the use action of the specified item stack.
      *
      * @param itemStack The item stack being used.
+     * @param context
      * @return The use action of the item stack.
      */
-    UseAnim getUseAction(ItemStack itemStack);
+    UseAnim getUseAction(ItemStack itemStack, T context);
 
     /**
      * Gets the maximum use time of the specified item stack.
      *
      * @param itemStack The item stack being used.
+     * @param context
      * @return The maximum use time of the item stack.
      */
-    int getMaxUseTime(ItemStack itemStack, LivingEntity livingEntity);
+    int getMaxUseTime(ItemStack itemStack, LivingEntity livingEntity, T context);
 
     /**
      * Handles the usage of the item in the specified world by the specified player and hand.
      * This is called when the item is first used, so the moment the user right clicks.
      *
-     * @param world The world in which the item is being used.
-     * @param user  The player using the item.
-     * @param hand  The hand with which the item is being used.
+     * @param world   The world in which the item is being used.
+     * @param user    The player using the item.
+     * @param hand    The hand with which the item is being used.
+     * @param context
      * @return The result of using the item, including the modified item stack.
      */
-    InteractionResultHolder<ItemStack> use(Level world, Player user, InteractionHand hand);
+    InteractionResultHolder<ItemStack> use(Level world, Player user, InteractionHand hand, T context);
 
     /**
      * Called when the item usage is finished (MaxUseTime is over)
      *
-     * @param stack The item stack being used.
-     * @param world The world in which the item was used.
-     * @param user  The entity using the item.
+     * @param stack   The item stack being used.
+     * @param world   The world in which the item was used.
+     * @param user    The entity using the item.
+     * @param context
      * @return The resulting item stack after finishing usage.
      */
-    default ItemStack finishUsing(ItemStack stack, Level world, LivingEntity user) {
+    default ItemStack finishUsing(ItemStack stack, Level world, LivingEntity user, T context) {
         return stack;
     }
 
@@ -84,23 +89,25 @@ public interface ItemUseAbility<T> extends MergeAble<T>, InitializeAble<T> {
      * @param world             The world in which the item was used.
      * @param user              The entity using the item.
      * @param remainingUseTicks The remaining ticks of item usage.
+     * @param context
      */
-    default void onStoppedUsing(ItemStack stack, Level world, LivingEntity user, int remainingUseTicks) {
+    default void onStoppedUsing(ItemStack stack, Level world, LivingEntity user, int remainingUseTicks, T context) {
 
     }
 
-    default boolean useOnRelease(ItemStack itemStack) {
+    default boolean useOnRelease(ItemStack itemStack, T context) {
         return false;
     }
 
     /**
      * Called when the player swaps or drops the item or for whatever other reason does nolonger hold the item.
      *
-     * @param stack The item stack being held.
-     * @param world The world in which the item is being held.
-     * @param user  The entity holding the item.
+     * @param stack   The item stack being held.
+     * @param world   The world in which the item is being held.
+     * @param user    The entity holding the item.
+     * @param context
      */
-    default void onStoppedHolding(ItemStack stack, Level world, LivingEntity user) {
+    default void onStoppedHolding(ItemStack stack, Level world, LivingEntity user, T context) {
 
     }
 
@@ -111,27 +118,29 @@ public interface ItemUseAbility<T> extends MergeAble<T>, InitializeAble<T> {
     /**
      * Handles the usage of the item on an entity.
      *
-     * @param stack  The item stack being used.
-     * @param user   The player using the item.
-     * @param entity The entity being interacted with.
-     * @param hand   The hand with which the item is being used.
+     * @param stack   The item stack being used.
+     * @param user    The player using the item.
+     * @param entity  The entity being interacted with.
+     * @param hand    The hand with which the item is being used.
+     * @param context
      * @return The result of using the item on the entity.
      */
-    default InteractionResult useOnEntity(ItemStack stack, Player user, LivingEntity entity, InteractionHand hand) {
+    default InteractionResult useOnEntity(ItemStack stack, Player user, LivingEntity entity, InteractionHand hand, T context) {
         return InteractionResult.PASS;
     }
 
     /**
      * Handles the usage of the item on a block.
      *
-     * @param context The item usage context, including the item stack, player, and block information.
+     * @param context        The item usage context, including the item stack, player, and block information.
+     * @param abilityContext
      * @return The result of using the item on the block.
      */
-    default InteractionResult useOnBlock(UseOnContext context) {
+    default InteractionResult useOnBlock(UseOnContext context, T abilityContext) {
         return InteractionResult.PASS;
     }
 
-    default void usageTick(Level world, LivingEntity user, ItemStack stack, int remainingUseTicks) {
+    default void usageTick(Level world, LivingEntity user, ItemStack stack, int remainingUseTicks, T context) {
 
     }
 
@@ -181,8 +190,8 @@ public interface ItemUseAbility<T> extends MergeAble<T>, InitializeAble<T> {
     }
 
     @SuppressWarnings("unchecked")
-    default ItemAbilityManager.AbilityHolder<T> getAsHolder(Object context) {
-        return new ItemAbilityManager.AbilityHolder<>(this, (T) context);
+    default AbilityHolder<T> getAsHolder(Object context) {
+        return new AbilityHolder<>(this, (T) context);
     }
 
 

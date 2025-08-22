@@ -88,6 +88,7 @@ import smartin.miapi.modules.abilities.toolabilities.AxeAbility;
 import smartin.miapi.modules.abilities.toolabilities.HoeAbility;
 import smartin.miapi.modules.abilities.toolabilities.ShovelAbility;
 import smartin.miapi.modules.abilities.util.AbilityMangerProperty;
+import smartin.miapi.modules.abilities.util.AbilityProperty;
 import smartin.miapi.modules.abilities.util.ItemUseAbility;
 import smartin.miapi.modules.conditions.*;
 import smartin.miapi.modules.edit_options.*;
@@ -606,6 +607,8 @@ public class RegistryInventory {
             registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, TreechopProperty.KEY, new TreechopProperty());
             registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, AutoSmeltProperty.KEY, new AutoSmeltProperty());
             registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, MiningTelekinesisProperty.KEY, new MiningTelekinesisProperty());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, BludgeonProperty.KEY, new BludgeonProperty());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, AbilityProperty.KEY, new AbilityProperty());
             //compat
             //registerMiapi(moduleProperties, BetterCombatProperty.KEY, new BetterCombatProperty());
             BetterCombatHelper.setup();

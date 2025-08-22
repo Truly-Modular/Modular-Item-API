@@ -38,34 +38,32 @@ public class CastLightingAbility implements ItemUseDefaultCooldownAbility<CastLi
     }
 
     @Override
-    public boolean allowedOnItem(ItemStack itemStack, Level world, Player player, InteractionHand hand, ItemAbilityManager.AbilityHitContext abilityHitContext) {
+    public boolean allowedOnItem(ItemStack itemStack, Level world, Player player, InteractionHand hand, ItemAbilityManager.AbilityHitContext abilityHitContext, CastLightingContext context) {
         return Math.pow(getSpecialContext(itemStack).maxRange().getValue(), 2) >= abilityHitContext.hitResult().getClickedPos().distToCenterSqr(player.getX(), player.getY(), player.getZ());
     }
 
     @Override
-    public UseAnim getUseAction(ItemStack itemStack) {
+    public UseAnim getUseAction(ItemStack itemStack, CastLightingContext context) {
         return UseAnim.SPEAR;
     }
 
     @Override
-    public int getMaxUseTime(ItemStack itemStack, LivingEntity livingEntity) {
+    public int getMaxUseTime(ItemStack itemStack, LivingEntity livingEntity, CastLightingContext context) {
         return 7200;
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level world, Player user, InteractionHand hand) {
+    public InteractionResultHolder<ItemStack> use(Level world, Player user, InteractionHand hand, CastLightingContext context) {
         return null;
     }
 
-    public InteractionResult useOnBlock(UseOnContext context) {
-        ItemStack itemStack = context.getItemInHand();
+    public InteractionResult useOnBlock(UseOnContext context, CastLightingContext abilityContext) {
         Player player = context.getPlayer();
-        CastLightingContext castLightingContext = getSpecialContext(itemStack);
         if (context.getPlayer() instanceof ServerPlayer serverPlayer) {
-            if (Math.pow(castLightingContext.maxRange().getValue(), 2) >=
+            if (Math.pow(abilityContext.maxRange().getValue(), 2) >=
                 context.getClickedPos().distToCenterSqr(player.getX(), player.getY(), player.getZ())) {
                 context.getClickedPos();
-                for (int i = 0; i < castLightingContext.lighting().getValue(); i++) {
+                for (int i = 0; i < abilityContext.lighting().getValue(); i++) {
                     LightningBolt lightningEntity = EntityType.LIGHTNING_BOLT.create(context.getLevel());
                     assert lightningEntity != null;
                     lightningEntity.moveTo(Vec3.atBottomCenterOf(context.getClickedPos()));
