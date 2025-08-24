@@ -13,6 +13,8 @@ import net.minecraft.client.texture.SpriteContents;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
 import smartin.miapi.Miapi;
@@ -40,6 +42,19 @@ public class GrayscalePaletteColorer extends SpritePixelReplacer {
         if (isItem) {
             Item item = Registries.ITEM.get(new Identifier(json.getAsJsonObject().get("item").getAsString()));
             return createForGeneratedMaterial(material, item.getDefaultStack());
+        }
+        return new GrayscalePaletteColorer(material, createImagePalette(new SpriteFromJson(json).imageSupplier.get()));
+    }
+
+    /**
+     * Create a GrayscalePaletteColorer from a sprite(or rather, the json representing it)
+     */
+    public static GrayscalePaletteColorer createForImageJsonTag(Material material, JsonElement json) {
+        Identifier identifier = new Identifier(json.getAsJsonObject().get("tag").getAsString());
+        TagKey<Item> key = TagKey.of(RegistryKeys.ITEM, identifier);
+        var optional = Registries.ITEM.stream().filter(item1 -> item1.arch$holder().isIn(key)).findFirst();
+        if(optional.isPresent()){
+            return createForGeneratedMaterial(material, optional.get().getDefaultStack());
         }
         return new GrayscalePaletteColorer(material, createImagePalette(new SpriteFromJson(json).imageSupplier.get()));
     }

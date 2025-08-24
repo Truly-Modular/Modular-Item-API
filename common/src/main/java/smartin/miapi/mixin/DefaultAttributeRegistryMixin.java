@@ -14,15 +14,18 @@ public class DefaultAttributeRegistryMixin {
             method = "get(Lnet/minecraft/entity/EntityType;)Lnet/minecraft/entity/attribute/DefaultAttributeContainer;",
             at = @At("RETURN"))
     private static DefaultAttributeContainer miapi$addAttributes(DefaultAttributeContainer old) {
-        DefaultAttributeContainer.Builder builder = DefaultAttributeContainer.builder();
-        ((DefaultAttributeContainerAccessor) old).getInstances().forEach((entityAttribute, entityAttributeInstance) -> {
-            builder.add(entityAttribute, entityAttributeInstance.getValue());
-        });
-        if (builder != null) {
-            AttributeRegistry.entityAttributeMap.forEach((id, attribute) -> {
-                builder.add(attribute, attribute.getDefaultValue());
+        if (old != null) {
+            DefaultAttributeContainer.Builder builder = DefaultAttributeContainer.builder();
+            ((DefaultAttributeContainerAccessor) old).getInstances().forEach((entityAttribute, entityAttributeInstance) -> {
+                builder.add(entityAttribute, entityAttributeInstance.getValue());
             });
+            if (builder != null) {
+                AttributeRegistry.entityAttributeMap.forEach((id, attribute) -> {
+                    builder.add(attribute, attribute.getDefaultValue());
+                });
+            }
+            return builder.build();
         }
-        return builder.build();
+        return old;
     }
 }
