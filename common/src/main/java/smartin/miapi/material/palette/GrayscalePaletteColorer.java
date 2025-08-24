@@ -12,8 +12,10 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.SpriteContents;
 import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
 import net.minecraft.util.FastColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -42,6 +44,22 @@ public class GrayscalePaletteColorer extends SpritePixelReplacer {
         if (isItem) {
             Item item = BuiltInRegistries.ITEM.get(ResourceLocation.parse(json.getAsJsonObject().get("item").getAsString()));
             return createForGeneratedMaterial(material, item.getDefaultInstance());
+        }
+        return new GrayscalePaletteColorer(material, createImagePalette(SpriteFromJson.getFromJson(json).imageSupplier.get()));
+    }
+
+    /**
+     * Create a GrayscalePaletteColorer from a sprite(or rather, the json representing it)
+     */
+    public static GrayscalePaletteColorer createForImageJson(Material material, JsonElement json) {
+        ResourceLocation id = ResourceLocation.parse(json.getAsJsonObject().get("tag").getAsString());
+        TagKey<Item> tag = TagKey.create(BuiltInRegistries.ITEM.key(), id);
+        var optinal = BuiltInRegistries.ITEM.getTag(tag);
+        if (optinal.isPresent()) {
+            Optional<Holder<Item>> item = optinal.get().stream().findFirst();
+            if (item.isPresent()) {
+                return createForGeneratedMaterial(material, item.get().value().getDefaultInstance());
+            }
         }
         return new GrayscalePaletteColorer(material, createImagePalette(SpriteFromJson.getFromJson(json).imageSupplier.get()));
     }

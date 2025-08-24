@@ -29,4 +29,4 @@ and either create a GH issue or ping me on discord with the spark link and a des
   this might be unsafe and accidentally convert the item to the fake identity, but in some conditions it might also fix 
   the right click behaviour. Use with care.
 - reworked ability system and repaired keybind abilities to be fully functional again.
-  
+- added bludgeon property
