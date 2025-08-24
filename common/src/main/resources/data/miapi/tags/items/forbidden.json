@@ -1,10 +1,5 @@
 {
     "replace": false,
     "values": [
-        "miapi:modular_helmet",
-        "miapi:modular_chestplate",
-        "miapi:modular_elytra",
-        "miapi:modular_leggings",
-        "miapi:modular_boots"
     ]
 }
