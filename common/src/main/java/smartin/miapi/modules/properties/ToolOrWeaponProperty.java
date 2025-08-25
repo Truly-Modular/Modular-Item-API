@@ -28,10 +28,12 @@ public class ToolOrWeaponProperty extends ComplexBooleanProperty {
         super(KEY, false);
         property = this;
         MeleeModularAttackEvents.HURT_ENEMY_POST.register((stack, target, attacker) -> {
-            if (ToolOrWeaponProperty.isWeapon(stack)) {
-                stack.hurtAndBreak(1, attacker, EquipmentSlot.MAINHAND);
-            } else {
-                stack.hurtAndBreak(2, attacker, EquipmentSlot.MAINHAND);
+            if(!attacker.level().isClientSide()){
+                if (ToolOrWeaponProperty.isWeapon(stack)) {
+                    stack.hurtAndBreak(1, attacker, EquipmentSlot.MAINHAND);
+                } else {
+                    stack.hurtAndBreak(2, attacker, EquipmentSlot.MAINHAND);
+                }
             }
             return EventResult.pass();
         });

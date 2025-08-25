@@ -5,7 +5,7 @@
 - improved encode performance by 50%
 - improved rendering performance by ~20%
   
-So, Performance seems to still be an issue, so if you encounter any issues create run spark profiler
+Ff you encounter any issues create run spark profiler
 (try to keep the profiler as contained on the issue as possible)
 and either create a GH issue or ping me on discord with the spark link and a description of the issue.
 
@@ -30,3 +30,4 @@ and either create a GH issue or ping me on discord with the spark link and a des
   the right click behaviour. Use with care.
 - reworked ability system and repaired keybind abilities to be fully functional again.
 - added bludgeon property
+- fixed mining speed ui not working on neoforge

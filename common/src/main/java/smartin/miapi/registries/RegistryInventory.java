@@ -1,7 +1,6 @@
 package smartin.miapi.registries;
 
 import com.google.common.base.Suppliers;
-import dev.architectury.event.EventResult;
 import dev.architectury.event.events.common.LifecycleEvent;
 import dev.architectury.platform.Platform;
 import dev.architectury.registry.CreativeTabRegistry;
@@ -20,11 +19,9 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.flag.FeatureFlagSet;
-import net.minecraft.world.inventory.AnvilMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -53,7 +50,6 @@ import smartin.miapi.effects.StunResistanceStatusEffect;
 import smartin.miapi.effects.StunStatusEffect;
 import smartin.miapi.effects.TeleportBlockEffect;
 import smartin.miapi.entity.ItemProjectileEntity;
-import smartin.miapi.events.MeleeModularAttackEvents;
 import smartin.miapi.item.MaterialSmithingRecipe;
 import smartin.miapi.item.modular.ModularItemPart;
 import smartin.miapi.item.modular.PropertyResolver;
@@ -110,8 +106,8 @@ import smartin.miapi.modules.properties.onHit.entity.AquaticDamage;
 import smartin.miapi.modules.properties.onHit.entity.IllagerBane;
 import smartin.miapi.modules.properties.onHit.entity.SmiteDamage;
 import smartin.miapi.modules.properties.onHit.entity.SpiderDamage;
-import smartin.miapi.modules.properties.potion.OnHitOffensiveEffects;
 import smartin.miapi.modules.properties.potion.OnHitDefensiveEffects;
+import smartin.miapi.modules.properties.potion.OnHitOffensiveEffects;
 import smartin.miapi.modules.properties.potion.OnKillEffects;
 import smartin.miapi.modules.properties.projectile.*;
 import smartin.miapi.modules.properties.render.*;
@@ -440,14 +436,6 @@ public class RegistryInventory {
         });
 
         smartin.miapi.registries.AttributeRegistry.registerAttributes();
-
-        MeleeModularAttackEvents.HURT_ENEMY_POST.register((stack, target, attacker) -> {
-            if (stack.getItem() instanceof SwordItem || stack.getItem() instanceof TieredItem) {
-                stack.hurtAndBreak(1, attacker, EquipmentSlot.MAINHAND);
-            }
-            return EventResult.pass();
-        });
-        AnvilMenu m;
 
 
         // GAME EVENTS

@@ -15,10 +15,7 @@ import smartin.miapi.client.gui.crafting.statdisplay.SingleStatDisplayDouble;
 import smartin.miapi.client.gui.crafting.statdisplay.StatListWidget;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.cache.ModularItemCache;
-import smartin.miapi.modules.properties.util.CodecProperty;
-import smartin.miapi.modules.properties.util.DoubleOperationResolvable;
-import smartin.miapi.modules.properties.util.MergeAble;
-import smartin.miapi.modules.properties.util.MergeType;
+import smartin.miapi.modules.properties.util.*;
 
 import java.util.*;
 
@@ -102,7 +99,7 @@ public class GuiStatProperty extends CodecProperty<Map<String, GuiStatProperty.G
 
     @Override
     public Map<String, GuiInfo> merge(Map<String, GuiInfo> left, Map<String, GuiInfo> right, MergeType mergeType) {
-        return MergeAble.mergeMap(left, right, mergeType);
+        return MergeAble.mergeMap(left, right, mergeType, (id, l, r) -> r.merge(l,r,mergeType));
     }
 
     @Override
@@ -112,7 +109,7 @@ public class GuiStatProperty extends CodecProperty<Map<String, GuiStatProperty.G
         return super.initialize(initialized, context);
     }
 
-    public static class GuiInfo {
+    public static class GuiInfo implements InitializeAble<GuiInfo>, MergeAble<GuiInfo> {
         public DoubleOperationResolvable min = new DoubleOperationResolvable(0.0);
         public DoubleOperationResolvable max = new DoubleOperationResolvable(10.0);
         public DoubleOperationResolvable value;
@@ -143,6 +140,22 @@ public class GuiStatProperty extends CodecProperty<Map<String, GuiStatProperty.G
             init.min = this.min.initialize(moduleInstance);
             init.max = this.max.initialize(moduleInstance);
             init.value = this.value.initialize(moduleInstance);
+            init.header = this.header;
+            init.description = this.description;
+            return init;
+        }
+
+        @Override
+        public GuiInfo initialize(GuiInfo property, ModuleInstance context) {
+            return property.initialize(context);
+        }
+
+        @Override
+        public GuiInfo merge(GuiInfo left, GuiInfo right, MergeType mergeType) {
+            GuiInfo init = new GuiInfo();
+            init.min = MergeAble.decideLeftRight(left.max, right.max, mergeType);
+            init.max = MergeAble.decideLeftRight(left.max, right.max, mergeType);
+            init.value = DoubleOperationResolvable.merge(left.value, right.value, mergeType);
             init.header = this.header;
             init.description = this.description;
             return init;

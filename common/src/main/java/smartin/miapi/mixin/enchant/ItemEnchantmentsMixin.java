@@ -26,8 +26,9 @@ public abstract class ItemEnchantmentsMixin implements ItemEnchantmentsAccessor 
     public ItemStack getOwnerStack() {
         return ownerStack;
     }
+
     @Override
-    public void setOwnerStack(ItemStack itemStack){
+    public void setOwnerStack(ItemStack itemStack) {
         this.ownerStack = itemStack;
     }
 

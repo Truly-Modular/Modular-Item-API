@@ -75,18 +75,39 @@ public class FakeEitherEnchantmentProperty extends EitherModuleProperty<
             } else {
                 //Miapi.LOGGER.warn("could not decode enchantments - missing lookup!");
             }
+            if (Miapi.registryAccess != null) {
+                Miapi.registryAccess.lookup(Registries.ENCHANTMENT).ifPresentOrElse(enchantmentRegistryInfo -> {
+                    enchantmentRegistryInfo.get(ResourceKey.create(Registries.ENCHANTMENT, id)).ifPresentOrElse(holder -> {
+                                resolvable.setFunctionTransformer((s) -> s.getFirst().replace("[old_level]", "0"));
+                                initialized.put(holder, resolvable.initialize(context));
+                                //Miapi.LOGGER.info("full ID " + holder.key().location());
+                            }, () -> Miapi.LOGGER.warn("Could not find enchanment " + id + " skiping")
+                    );
+                }, () -> Miapi.LOGGER.warn("Enchantment Registries not Found - could not decode enchantments"));
+            }
+            if (Miapi.clientRegistryAccess != null) {
+                Miapi.clientRegistryAccess.lookup(Registries.ENCHANTMENT).ifPresentOrElse(enchantmentRegistryInfo -> {
+                    enchantmentRegistryInfo.get(ResourceKey.create(Registries.ENCHANTMENT, id)).ifPresentOrElse(holder -> {
+                                resolvable.setFunctionTransformer((s) -> s.getFirst().replace("[old_level]", "0"));
+                                initialized.put(holder, resolvable.initialize(context));
+                                //Miapi.LOGGER.info("full ID " + holder.key().location());
+                            }, () -> Miapi.LOGGER.warn("Could not find enchanment " + id + " skiping")
+                    );
+                }, () -> Miapi.LOGGER.warn("Enchantment Registries not Found - could not decode enchantments"));
+            }
         });
         return initialized;
     }
 
+
     @Override
     protected Map<Holder.Reference<Enchantment>, DoubleOperationResolvable> mergeInterpreted(Map<Holder.Reference<Enchantment>, DoubleOperationResolvable> left, Map<Holder.Reference<Enchantment>, DoubleOperationResolvable> right, MergeType mergeType) {
-        return MergeAble.mergeMap(left, right, mergeType);
+        return MergeAble.mergeMap(left, right, mergeType, (e, l, r) -> DoubleOperationResolvable.merge(l, r, mergeType));
     }
 
     @Override
     protected Map<ResourceLocation, DoubleOperationResolvable> mergeRaw(Map<ResourceLocation, DoubleOperationResolvable> left, Map<ResourceLocation, DoubleOperationResolvable> right, MergeType mergeType) {
-        return MergeAble.mergeMap(left, right, mergeType);
+        return MergeAble.mergeMap(left, right, mergeType, (e, l, r) -> DoubleOperationResolvable.merge(l, r, mergeType));
     }
 
     @Override
