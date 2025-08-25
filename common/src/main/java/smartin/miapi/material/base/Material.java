@@ -13,6 +13,7 @@ import smartin.miapi.material.generated.TierManager;
 import smartin.miapi.modules.ModuleInstance;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -118,26 +119,37 @@ public interface Material extends PropertyController, ColorController, StatContr
         return lines;
     }
 
+    private static PickaxeItem preferMojang(Collection<PickaxeItem> candidates) {
+        return candidates.stream()
+                .sorted((a, b) -> {
+                    boolean aVanilla = a.builtInRegistryHolder().key().location().getNamespace().equals("minecraft");
+                    boolean bVanilla = b.builtInRegistryHolder().key().location().getNamespace().equals("minecraft");
+                    if (aVanilla && !bVanilla) return -1;
+                    if (!aVanilla && bVanilla) return 1;
+                    return 0; // otherwise leave them equal, or sort by name if you want
+                })
+                .findFirst()
+                .orElse(null);
+    }
+
+
     default List<Component> getMiningLevelToolTip() {
-        Optional<PickaxeItem> pickaxeItem = Optional.ofNullable(TierManager.TAG_LOOK_UP.get(this.getIncorrectBlocksForDrops()));
-        return pickaxeItem.map(item -> List.of(
-                Component
-                        .translatable(
-                                "miapi.material.mining_level.pickaxe.description"
-                        ),
-                item.getName(item.getDefaultInstance()))).orElseGet(() -> List.of(
-                Component
-                        .translatable(
-                                "miapi.material.mining_level.description"
-                        ),
-                Component
-                        .translatable(
-                                "tag.block." + this
-                                        .getIncorrectBlocksForDrops()
+        return TierManager.getPreferredPickaxe(this.getIncorrectBlocksForDrops())
+                .map(pickaxe -> List.of(
+                        Component.translatable("miapi.material.mining_level.pickaxe.description"),
+                        pickaxe.getName(pickaxe.getDefaultInstance())
+                ))
+                .orElseGet(() -> List.of(
+                        Component.translatable("miapi.material.mining_level.description"),
+                        Component.translatable(
+                                "tag.block." +
+                                this.getIncorrectBlocksForDrops()
                                         .location()
                                         .toString()
                                         .replace(":", ".")
                                         .replace("/", ".")
-                        )));
+                        )
+                ));
     }
+
 }

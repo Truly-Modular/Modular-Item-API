@@ -68,7 +68,7 @@ public class GlintProperty extends CodecProperty<GlintProperty.RainbowGlintSetti
             }
             Material material = MaterialProperty.getMaterial(instance);
             if (material != null) {
-                Color adjusted = new Color(material.getColor(instance, ItemDisplayContext.GUI));
+                Color adjusted = brighten(new Color(material.getColor(instance, ItemDisplayContext.GUI)), MiapiConfig.getClientConfig().enchantingGlint.materialColorBrigtening);
                 return defaultSettings.copyWithColor(adjustWith(
                         adjusted,
                         MiapiConfig.getClientConfig().enchantingGlint.materialRatioColor,
@@ -78,6 +78,37 @@ public class GlintProperty extends CodecProperty<GlintProperty.RainbowGlintSetti
         }));
         GLINT_RESOLVE.invoker().get(stack, instance, reference);
         return reference.get();
+    }
+
+    /**
+     * Brightens a color proportionally based on a factor.
+     *
+     * @param color  The original color
+     * @param factor Brightening factor: 0.0 = original, 1.0 = maximum brightness
+     * @return A new brightened Color
+     */
+    public static Color brighten(Color color, float factor) {
+
+        // Get RGB componentsg
+        int r = color.r();
+        int g = color.g();
+        int b = color.b();
+
+        // Find the maximum component
+        int max = Math.max(r, Math.max(g, b));
+
+        // If already at full brightness, return color
+        if (max == 255) return color;
+
+        // Compute the scale factor to apply to each channel
+        float scale = 1f + factor * ((255f / max) - 1f);
+
+        // Scale and clamp each channel
+        r = Math.max(0, Math.min(255, Math.round(r * scale)));
+        g = Math.max(0, Math.min(255, Math.round(g * scale)));
+        b = Math.max(0, Math.min(255, Math.round(b * scale)));
+
+        return new Color(r, g, b, color.a());
     }
 
     public List<Color> adjustWith(Color adjust, float percent, Color[] previous) {

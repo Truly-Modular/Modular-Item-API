@@ -9,26 +9,60 @@ import smartin.miapi.loot.MaterialSwapLootFunction;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class TierManager {
 
-    public static final Map<TagKey<Block>, PickaxeItem> TAG_LOOK_UP = new HashMap<>();
+    private static final Map<TagKey<Block>, List<PickaxeItem>> TAG_LOOK_UP = new HashMap<>();
 
     public static void setup() {
         TAG_LOOK_UP.clear();
+
         List<PickaxeItem> pickaxeItems = GeneratedMaterialManager.getRegistry().stream()
                 .filter(PickaxeItem.class::isInstance)
                 .map(PickaxeItem.class::cast)
-                .filter(pickaxe -> pickaxe.getTier() != null)
-                .filter(pickaxe -> pickaxe.getTier().getIncorrectBlocksForDrops() != null)
+                .filter(p -> p.getTier() != null && p.getTier().getIncorrectBlocksForDrops() != null)
                 .toList();
 
-        for (PickaxeItem pickaxe : pickaxeItems) {
-            TagKey<Block> tagKey = pickaxe.getTier().getIncorrectBlocksForDrops();
-            if (tagKey != null) {
-                TAG_LOOK_UP.put(tagKey, pickaxe);
-            }
+        TAG_LOOK_UP.putAll(
+                pickaxeItems.stream()
+                        .collect(Collectors.groupingBy(
+                                p -> p.getTier().getIncorrectBlocksForDrops()
+                        ))
+        );
+    }
+
+    /**
+     * Returns the preferred pickaxe for this tag, preferring Mojang tools.
+     */
+    public static Optional<PickaxeItem> getPreferredPickaxe(TagKey<Block> tag) {
+        List<PickaxeItem> candidates = TAG_LOOK_UP.get(tag);
+        if (candidates == null || candidates.isEmpty()) {
+            return Optional.empty();
         }
+
+        // prefer namespace "minecraft"
+        return candidates.stream()
+                .sorted((a, b) -> {
+                    boolean aVanilla = isMojangItem(a);
+                    boolean bVanilla = isMojangItem(b);
+                    if (aVanilla && !bVanilla) return -1;
+                    if (!aVanilla && bVanilla) return 1;
+                    return a.getName(a.getDefaultInstance()).getString()
+                            .compareToIgnoreCase(b.getName(b.getDefaultInstance()).getString());
+                })
+                .findFirst();
+    }
+
+    public static List<PickaxeItem> getAllPickaxes(TagKey<Block> tag) {
+        return TAG_LOOK_UP.getOrDefault(tag, List.of());
+    }
+
+    private static boolean isMojangItem(PickaxeItem item) {
+        // for 1.20+, use item.builtInRegistryHolder().key().location().getNamespace()
+        return item.arch$registryName() != null
+               && "minecraft".equals(item.arch$registryName().getNamespace());
     }
 
 

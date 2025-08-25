@@ -121,6 +121,13 @@ public class MiapiClientConfig {
         public float enchantingGlintSpeed = 1.0f;
 
         @Comment("""
+                Default speed of Color Change on enchanting Glint
+                - DISABLE VANILLA LIKE!
+                """)
+        @AutoCodec.Name("material_color_brightening")
+        public float materialColorBrigtening = 0.3f;
+
+        @Comment("""
                 The Ratio of default color to Material Color.
                 1.0 = only material, 0.0 is no material color.
                 We recommend experiment with this setting, as it allows material colors

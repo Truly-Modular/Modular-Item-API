@@ -28,6 +28,10 @@ and either create a GH issue or ping me on discord with the spark link and a des
 - added "fake_item_identity" (default false) field to "copy_item" ability, allowing to fake the items identity to a degree.
   this might be unsafe and accidentally convert the item to the fake identity, but in some conditions it might also fix 
   the right click behaviour. Use with care.
-- reworked ability system and repaired keybind abilities to be fully functional again.
+- reworked ability system and repaired keybinding abilities to be fully functional again.
 - added bludgeon property
 - fixed mining speed ui not working on neoforge
+- fix bug were fake enchantment levels would sometimes not work if the item was not enchanted
+- fix bug were sometimes ui stats would not merge correctly
+- now preferring vanilla tools for mining level comparison
+- added new config options do brighten materials for enchantment glint (Recommended)
