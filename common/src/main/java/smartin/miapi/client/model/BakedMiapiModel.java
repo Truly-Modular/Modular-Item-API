@@ -118,24 +118,34 @@ public class BakedMiapiModel implements MiapiModel {
             currentModel.getQuads(null, dir, Random.create()).forEach(quad -> {
                 VertexConsumer vertexConsumer = getConsumer(modelHolder.colorProvider(), quad.getSprite(), vertexConsumers, stack, instance, transformationMode);
                 vertexConsumer.quad(matrices.peek(), quad, colors[0], colors[1], colors[2], light, overlay);
-                if (stack.hasGlint()) {
-                    if (MiapiConfig.INSTANCE.client.other.enchantingGlint) {
-                        VertexConsumer altConsumer = vertexConsumers.getBuffer(ShaderRegistry.modularItemGlint);
-                        Color glintColor = settings.getColor();
-                        altConsumer.quad(matrices.peek(), quad, glintColor.redAsFloat(), glintColor.greenAsFloat(), glintColor.blueAsFloat(), light, overlay);
-                    }
-                    if (MiapiConfig.INSTANCE.client.other.enableVanillaGlint) {
-                        VertexConsumer altConsumer = vertexConsumers.getBuffer(fallbackGlintRenderLayer.get());
-                        if (useGlintColor.apply(stack)) {
-                            altConsumer.quad(matrices.peek(), quad, colors[0], colors[1], colors[2], light, overlay);
-                        } else {
-                            altConsumer.quad(matrices.peek(), quad, 0.0f, 0.0f, 0.0f, light, overlay);
+            });
+            if (stack.hasGlint()) {
+                if (MiapiConfig.INSTANCE.client.other.enchantingGlint) {
+                    lastVC = null;
+                    VertexConsumer altConsumer = vertexConsumers.getBuffer(ShaderRegistry.modularItemGlint);
+                    currentModel.getQuads(null, dir, Random.create()).forEach(quad -> {
+                        if (MiapiConfig.INSTANCE.client.other.enchantingGlint) {
+                            Color glintColor = settings.getColor();
+                            altConsumer.quad(matrices.peek(), quad, glintColor.redAsFloat(), glintColor.greenAsFloat(), glintColor.blueAsFloat(), light, overlay);
                         }
+                    });
+                }
+                if (MiapiConfig.INSTANCE.client.other.enableVanillaGlint) {
+                    VertexConsumer altConsumer = vertexConsumers.getBuffer(fallbackGlintRenderLayer.get());
+                    if (useGlintColor.apply(stack)) {
+                        currentModel.getQuads(null, dir, Random.create()).forEach(quad -> {
+                            altConsumer.quad(matrices.peek(), quad, colors[0], colors[1], colors[2], light, overlay);
+                        });
+                    } else {
+                        currentModel.getQuads(null, dir, Random.create()).forEach(quad -> {
+                            altConsumer.quad(matrices.peek(), quad, 0.0f, 0.0f, 0.0f, light, overlay);
+                        });
                     }
                 }
-            });
+            }
         }
         MinecraftClient.getInstance().world.getProfiler().pop();
+
         if (hasBanner) {
             MinecraftClient.getInstance().world.getProfiler().push("Banner");
             BannerMiapiModel.render(
@@ -145,36 +155,50 @@ public class BakedMiapiModel implements MiapiModel {
             MinecraftClient.getInstance().world.getProfiler().pop();
         }
 
-        MinecraftClient.getInstance().world.getProfiler().push("TrimModel");
+        MinecraftClient.getInstance().world.getProfiler().
+
+                push("TrimModel");
+
         //render Trims
         ArmorTrim trim = ArmorTrim.getTrim(entity.getWorld().getRegistryManager(), stack).orElse(null);
         ArmorMaterial armorMaterial = (stack.getItem() instanceof ArmorItem armorItem) ? armorItem.getMaterial() : null;
 
-        if (trim != null && armorMaterial != null && !modelHolder.trimMode().equals(TrimRenderer.TrimMode.NONE)) {
+        if (trim != null && armorMaterial != null && !modelHolder.trimMode().
+
+                equals(TrimRenderer.TrimMode.NONE)) {
             ModelTransformer.getRescale(currentModel, random).forEach(quad -> {
                 TrimRenderer.renderTrims(matrices, quad, modelHolder.trimMode(), light, vertexConsumers, armorMaterial, stack);
             });
         }
-        MinecraftClient.getInstance().world.getProfiler().pop();
+        MinecraftClient.getInstance().world.getProfiler().
+
+                pop();
 
 
-        MinecraftClient.getInstance().world.getProfiler().push("EntityModel");
+        MinecraftClient.getInstance().world.getProfiler().
+
+                push("EntityModel");
         //render from both sides if requested
         if (modelHolder.entityRendering()) {
-            ModelTransformer.getInverse(currentModel, random).forEach(quad -> {
+            List<BakedQuad> quads = ModelTransformer.getInverse(currentModel, random);
+            quads.forEach(quad -> {
                 VertexConsumer vertexConsumer = getConsumer(modelHolder.colorProvider(), quad.getSprite(), vertexConsumers, stack, instance, transformationMode);
                 vertexConsumer.quad(matrices.peek(), quad, colors[0], colors[1], colors[2], light, overlay);
-                if (stack.hasGlint()) {
+            });
+            if (stack.hasGlint()) {
+                quads.forEach(quad -> {
                     if (MiapiConfig.INSTANCE.client.other.enchantingGlint) {
                         VertexConsumer altConsumer = vertexConsumers.getBuffer(ShaderRegistry.modularItemGlint);
                         Color glintColor = settings.getColor();
                         altConsumer.quad(matrices.peek(), quad, glintColor.redAsFloat(), glintColor.greenAsFloat(), glintColor.blueAsFloat(), light, overlay);
                     }
-                }
-            });
+                });
+            }
         }
 
-        MinecraftClient.getInstance().world.getProfiler().pop();
+        MinecraftClient.getInstance().world.getProfiler().
+
+                pop();
         matrices.pop();
     }
 

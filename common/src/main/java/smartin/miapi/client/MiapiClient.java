@@ -122,7 +122,10 @@ public class MiapiClient {
                 }
             }
         });
-        ClientReloadShadersEvent.EVENT.register((resourceFactory, asd) -> ModularItemCache.discardCache());
+        ClientReloadShadersEvent.EVENT.register((resourceFactory, asd) -> {
+            ModularItemCache.discardCache();
+            smartin.miapi.client.ShaderRegistry.setup();
+        });
         RegistryInventory.modularItems.addCallback((item -> {
             ModularModelPredicateProvider.registerModelOverride(item, new Identifier(Miapi.MOD_ID, "damage"), (stack, world, entity, seed) -> stack.isDamageable() && stack.getDamage() > 0 ? ((float) stack.getDamage() / stack.getMaxDamage()) : 0.0f);
             ModularModelPredicateProvider.registerModelOverride(item, new Identifier(Miapi.MOD_ID, "damaged"), (stack, world, entity, seed) -> stack.isDamaged() ? 1.0F : 0.0F);
@@ -140,7 +143,6 @@ public class MiapiClient {
         if (sodiumLoaded) {
             ClientEvents.HUD_RENDER.register((drawContext, deltaTick) -> MaterialSpriteManager.onHudRender(drawContext));
         }
-        smartin.miapi.client.ShaderRegistry.setup();
     }
 
     @Environment(EnvType.CLIENT)

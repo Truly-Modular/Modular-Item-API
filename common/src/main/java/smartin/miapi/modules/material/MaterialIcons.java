@@ -6,9 +6,9 @@ import com.google.gson.JsonPrimitive;
 import com.mojang.serialization.Codec;
 import com.redpxnda.nucleus.codec.auto.AutoCodec;
 import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
-import com.redpxnda.nucleus.util.InterfaceDispatcher;
 import com.redpxnda.nucleus.codec.misc.MiscCodecs;
 import com.redpxnda.nucleus.codec.misc.PolyCodec;
+import com.redpxnda.nucleus.util.InterfaceDispatcher;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -25,7 +25,10 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import org.joml.Matrix4f;
@@ -74,6 +77,34 @@ public class MaterialIcons {
 
             return new ItemMaterialIcon(stack, offset, spin);
         });
+
+        iconCreators.put("tag", (element, mat) -> {
+            if (!(element instanceof JsonObject object))
+                throw new RuntimeException("JSON data for the tag icon of the '" + mat + "' material is not a JSON object! -> " + element);
+
+            if (!object.has("tag"))
+                throw new RuntimeException("'tag' field for the icon of the '" + mat + "' material is missing! -> " + element);
+
+            // parse the tag key
+            Identifier identifier = new Identifier(object.getAsJsonObject().get("tag").getAsString());
+            TagKey<Item> key = TagKey.of(RegistryKeys.ITEM, identifier);
+
+            // get the first item in the tag
+            ItemStack stack = Registries.ITEM.stream().filter(item1 -> item1.arch$holder().isIn(key)).findFirst().orElse(Items.IRON_INGOT).getDefaultStack();
+
+            int offset = object.get("offset") instanceof JsonPrimitive prim ? prim.getAsInt() : 16;
+
+            SpinSettings spin = object.has("spin") ?
+                    MiscCodecs.quickParse(object.get("spin"), SpinSettings.codec,
+                            s -> Miapi.LOGGER.error("Failed to parse spin settings for item icon of the '{}' material! -> {}", mat, s)) :
+                    null;
+
+            // reuse the ItemMaterialIcon directly
+            return new ItemMaterialIcon(stack, offset, spin);
+        });
+
+
+
 
         iconCreators.put("entity", (element, materialKey) -> {
             EntityIconHolder holder = MiscCodecs.quickParse(
