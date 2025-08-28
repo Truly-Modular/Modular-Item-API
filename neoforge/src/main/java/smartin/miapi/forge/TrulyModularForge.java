@@ -12,7 +12,6 @@ import net.minecraft.client.model.Model;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.world.entity.Entity;
@@ -155,7 +154,6 @@ public class TrulyModularForge {
             //dont ask me, but this fixes registration for client
             List<ModelResourceLocation> ids = RegistryInventory.MODULAR_ITEMS.getFlatMap().keySet().stream().map(ModelResourceLocation::inventory).toList();
             ModelProperty.textureGetter = registerAdditional.getTextureGetter();
-            ItemRenderer itemRenderer;
             ids.forEach(id -> {
                 registerAdditional.getModels().put(id, new ItemBakedModelReplacement() {
                     @Override

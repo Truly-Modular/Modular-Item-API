@@ -87,7 +87,6 @@ public class MiapiClient {
     }
 
     public static void init() {
-        //ImGui.begin("miapi_test");
         var config = ConfigManager.getConfigObject(Miapi.id("server"));
         if (config.getInstance() == null) {
             config.load();

@@ -296,7 +296,7 @@ public class RegistryInventory {
         RegistryInventory.LOOT_ITEM_FUNCTION_TYPE_REGISTRAR.register(
                 Miapi.id("auto_smelt"), () -> autoSmeltFunctionLootItemFunctionType);
         RegistryInventory.LOOT_ITEM_FUNCTION_TYPE_REGISTRAR.register(
-                Miapi.id("global_loot_adjuster"), () -> autoSmeltFunctionLootItemFunctionType);
+                Miapi.id("global_loot_adjuster"), () -> globalLootItemFunctionType);
 
         register(ARMOR_MATERIAL_REGISTRAR, "modular_armor_material", () ->
                 new ArmorMaterial(
@@ -418,6 +418,8 @@ public class RegistryInventory {
 
         register(MODULAR_ITEMS, "modular_tower_shield", ModularVanillaShield::new);
         register(MODULAR_ITEMS, "modular_shield", ModularNonVanillaShield::new);
+        register(MODULAR_ITEMS, "modular_round_shield", ModularNonVanillaShield::new);
+        register(MODULAR_ITEMS, "modular_heater_shield", ModularNonVanillaShield::new);
 
         register(MODULAR_ITEMS, "modular_elytra", ModularElytraItem::getInstance);
 

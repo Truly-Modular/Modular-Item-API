@@ -13,7 +13,7 @@ public class GlobalLootModularisationFunction implements LootItemFunction {
 
     @Override
     public LootItemFunctionType<? extends LootItemFunction> getType() {
-        return RegistryInventory.autoSmeltFunctionLootItemFunctionType;
+        return RegistryInventory.globalLootItemFunctionType;
     }
 
     @Override

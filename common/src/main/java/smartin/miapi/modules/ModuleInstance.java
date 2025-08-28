@@ -179,6 +179,9 @@ public class ModuleInstance {
             this.module = RegistryInventory.ITEM_MODULE_MIAPI_REGISTRY.get(moduleID);
             if (this.module == null) {
                 this.module = ItemModule.empty;
+                if (ReloadEvents.isInReload()) {
+                    return module;
+                }
                 Miapi.LOGGER.warn("could not find module " + moduleID + " substituting with empty module");
             }
         }

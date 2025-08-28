@@ -100,7 +100,6 @@ public class ReloadEvents {
         }
 
         Networking.registerC2SPacket(RELOAD_PACKET_ID, ((buf, serverPlayerEntity) -> {
-            Miapi.DEBUG_LOGGER.info("Recieved reload request from client! " + serverPlayerEntity.getUUID() + "! sending reload! " + Thread.currentThread().getName());
             boolean allowHandshake = buf.readBoolean();
             boolean reloadServer = buf.readBoolean();
             if (!allowHandshake) {
@@ -126,13 +125,11 @@ public class ReloadEvents {
                 synchronized (DATA_PACKS) {
                     toSend = new LinkedHashMap<>(DATA_PACKS);
                 }
-                Miapi.LOGGER.error("MIAPI sending "+toSend.entrySet().size() + " datapack files");
                 return toSend;
             }
 
             @Override
             public void interpretData(Map<ResourceLocation, String> data) {
-                Miapi.LOGGER.error("MIAPI recieved "+data.entrySet().size() + " datapack files");
                 Minecraft.getInstance().execute(() -> {
                     synchronized (DATA_PACKS) {
                         DATA_PACKS.clear();
@@ -194,8 +191,6 @@ public class ReloadEvents {
     private static void sendInChunks(ServerPlayer entity, String id, byte[] data) {
         int totalChunks = (int) Math.ceil((double) data.length / MAX_PAYLOAD_SIZE);
 
-        Miapi.LOGGER.error("MIAPI detected " + id + " " + totalChunks + " data chunks with total size " + data.length);
-
         for (int i = 0; i < totalChunks; i++) {
             int start = i * MAX_PAYLOAD_SIZE;
             int end = Math.min(start + MAX_PAYLOAD_SIZE, data.length);
@@ -210,7 +205,6 @@ public class ReloadEvents {
 
 
             Networking.sendS2C(RELOAD_PACKET_ID, entity, buf);
-            Miapi.LOGGER.error(" MIAPI sending chunk " + id + " " + i + " with size " + chunk.length);
         }
     }
 
@@ -260,11 +254,8 @@ public class ReloadEvents {
                     }
                 }
                 byte[] merged = out.toByteArray();
-                Miapi.LOGGER.error("MIAPI reassembled {} total bytes for {}", merged.length, id);
 
                 FriendlyByteBuf reconstructed = new FriendlyByteBuf(Unpooled.wrappedBuffer(merged));
-                Miapi.LOGGER.error("MIAPI reconstructed readableBytes={} capacity={}",
-                        reconstructed.readableBytes(), reconstructed.capacity());
 
                 DATA_SYNCER_REGISTRY.get(id).interpretDataClient(reconstructed);
                 RECEIVED_SYNCER.add(id);
@@ -275,7 +266,6 @@ public class ReloadEvents {
             }
 
             if (RECEIVED_SYNCER.size() == DATA_SYNCER_REGISTRY.getFlatMap().keySet().size()) {
-                Miapi.LOGGER.error("MIAPI recieved all data syncers!" );
                 RECEIVED_SYNCER.clear();
                 chunkBuffer.clear();
                 expectedChunks.clear();

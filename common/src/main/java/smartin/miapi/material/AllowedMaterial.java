@@ -23,7 +23,10 @@ import smartin.miapi.material.base.Material;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.DurabilityProperty;
-import smartin.miapi.modules.properties.util.*;
+import smartin.miapi.modules.properties.util.CodecProperty;
+import smartin.miapi.modules.properties.util.CraftingProperty;
+import smartin.miapi.modules.properties.util.MergeAble;
+import smartin.miapi.modules.properties.util.MergeType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -102,7 +105,7 @@ public class AllowedMaterial extends CodecProperty<AllowedMaterial.AllowedMateri
         if (optional.isPresent()) {
             AllowedMaterialData json = optional.get();
             Material material = MaterialProperty.getMaterialFromIngredient(input);
-            materialRequirementClient = json.cost * crafting.getCount();
+            materialRequirementClient = json.getCost() * crafting.getCount();
             if (material != null) {
                 boolean isAllowed = json.isValid(material);
                 wrongMaterial = !isAllowed;
@@ -174,7 +177,7 @@ public class AllowedMaterial extends CodecProperty<AllowedMaterial.AllowedMateri
         AllowedMaterialData json = optional.get();
         Material material = MaterialProperty.getMaterialFromIngredient(input);
         if (material != null) {
-            int newCount = (int) (input.getCount() - Math.ceil(json.cost * crafting.getCount() / material.getValueOfItem(input)));
+            int newCount = (int) (input.getCount() - Math.ceil(json.getCost() * crafting.getCount() / material.getValueOfItem(input)));
             if (!player.level().isClientSide()) {
                 input.setCount(newCount);
             }
@@ -203,14 +206,14 @@ public class AllowedMaterial extends CodecProperty<AllowedMaterial.AllowedMateri
     public static double getMaterialCost(ModuleInstance moduleInstance) {
         Optional<AllowedMaterialData> optional = property.getData(moduleInstance);
         if (optional.isPresent()) {
-            return optional.get().cost;
+            return optional.get().getCost();
         }
         return 0;
     }
 
     @Override
     public AllowedMaterialData merge(AllowedMaterialData left, AllowedMaterialData right, MergeType mergeType) {
-        return MergeAble.decideLeftRight(left, right, mergeType);
+        return left.merge(left, right, mergeType);
     }
 
     @Override
@@ -233,15 +236,35 @@ public class AllowedMaterial extends CodecProperty<AllowedMaterial.AllowedMateri
         return materialRequirementClient;
     }
 
-    public static class AllowedMaterialData {
+    public static class AllowedMaterialData implements MergeAble<AllowedMaterialData> {
         public List<String> allowedMaterials;
         @CodecBehavior.Optional
-        public float cost = 1;
+        public Float cost = null;
 
         public boolean isValid(Material material) {
             return (allowedMaterials.stream().anyMatch(allowedMaterial ->
                     material.getGroups().contains(allowedMaterial) ||
                     material.getID().toString().equals(allowedMaterial)));
+        }
+
+        public float getCost() {
+            if (cost == null) {
+                return 1.0f;
+            }
+            return cost.floatValue();
+        }
+
+        @Override
+        public AllowedMaterialData merge(AllowedMaterialData left, AllowedMaterialData right, MergeType mergeType) {
+            AllowedMaterialData material = new AllowedMaterialData();
+            material.allowedMaterials = new ArrayList<>(left.allowedMaterials);
+            material.allowedMaterials.addAll(right.allowedMaterials);
+            if (left.cost != null && right.cost == null) {
+                material.cost = left.cost;
+            } else {
+                material.cost = right.cost;
+            }
+            return material;
         }
     }
 }

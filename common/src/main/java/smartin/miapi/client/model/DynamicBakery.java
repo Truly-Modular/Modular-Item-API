@@ -15,7 +15,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
@@ -78,11 +77,17 @@ public class DynamicBakery {
                 for (Direction direction : modelElement.faces.keySet()) {
                     BlockElementFace modelElementFace = modelElement.faces.get(direction);
                     try {
-                        TextureAtlasSprite sprite2 = textureGetter.apply(model.getMaterial(modelElementFace.texture()));
-                        if (modelElementFace.cullForDirection() == null) {
-                            builder.addUnculledFace(createQuad(modelElement, modelElementFace, sprite2, direction, BlockModelRotation.X0_Y0, id, color));
-                        } else {
-                            builder.addCulledFace(Direction.rotate(BlockModelRotation.X0_Y0.getRotation().getMatrix(), modelElementFace.cullForDirection()), createQuad(modelElement, modelElementFace, sprite2, direction, BlockModelRotation.X0_Y0, id, color));
+                        if(
+                                modelElementFace.texture()!=null &&
+                                !model.getMaterial(modelElementFace.texture()).texture().toString().equals("miapi:block/texture/modular_workbench") &&
+                                !model.getMaterial(modelElementFace.texture()).texture().toString().equals("miapi:texture/block/modular_workbench")
+                        ){
+                            TextureAtlasSprite sprite2 = textureGetter.apply(model.getMaterial(modelElementFace.texture()));
+                            if (modelElementFace.cullForDirection() == null) {
+                                builder.addUnculledFace(createQuad(modelElement, modelElementFace, sprite2, direction, BlockModelRotation.X0_Y0, id, color));
+                            } else {
+                                builder.addCulledFace(Direction.rotate(BlockModelRotation.X0_Y0.getRotation().getMatrix(), modelElementFace.cullForDirection()), createQuad(modelElement, modelElementFace, sprite2, direction, BlockModelRotation.X0_Y0, id, color));
+                            }
                         }
                     } catch (RuntimeException e) {
                         Miapi.LOGGER.info("could not find texture for model " + id);
