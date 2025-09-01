@@ -14,6 +14,7 @@ import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.protocol.game.ClientboundSetEntityMotionPacket;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -668,7 +669,11 @@ public class ModuleInstance {
         if (this == object) return true; // Check for object identity first
         if (!(object instanceof ModuleInstance)) return false; // Ensure the object is of type ModuleInstance
 
+        ClientboundSetEntityMotionPacket packet;
+
         ModuleInstance other = (ModuleInstance) object;
+        this.getSubModuleMap();
+        other.getSubModuleMap();
 
         // Compare the 'module' field
         if (!this.moduleID.equals(other.moduleID)) return false;
@@ -692,6 +697,6 @@ public class ModuleInstance {
 
     @Override
     public int hashCode() {
-        return this.moduleID.hashCode() + subModules.size() * 13;
+        return this.moduleID.hashCode() * subModules.hashCode()*13+moduleData.hashCode();
     }
 }

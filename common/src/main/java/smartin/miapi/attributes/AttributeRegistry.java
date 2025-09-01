@@ -19,17 +19,15 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.phys.Vec3;
 import smartin.miapi.Miapi;
-import smartin.miapi.entity.EntitySpeedFacetFix;
 import smartin.miapi.entity.ItemProjectileEntity;
 import smartin.miapi.entity.ShieldingArmorFacet;
 import smartin.miapi.entity.StunHealthFacet;
-import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.events.MeleeModularAttackEvents;
+import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.events.MiapiProjectileEvents;
-import smartin.miapi.modules.abilities.key.KeyBindFacet;
 import smartin.miapi.mixin.LivingEntityAccessor;
+import smartin.miapi.modules.abilities.key.KeyBindFacet;
 import smartin.miapi.modules.properties.attributes.AttributeUtil;
 
 import java.util.HashMap;
@@ -96,20 +94,6 @@ public class AttributeRegistry {
                 attacher.add(StunHealthFacet.KEY, stunHealthFacet);
                 KeyBindFacet keyBindFacet = new KeyBindFacet(livingEntity);
                 attacher.add(KeyBindFacet.KEY, keyBindFacet);
-            }
-            if(entity instanceof ItemProjectileEntity itemProjectileEntity){
-                attacher.add(EntitySpeedFacetFix.KEY,new EntitySpeedFacetFix(entity));
-                EntitySpeedFacetFix facet = EntitySpeedFacetFix.KEY.get(itemProjectileEntity);
-                if (facet != null) {
-                    if (itemProjectileEntity.level().isClientSide()) {
-                        if (facet.validate()) {
-                            Vec3 vec3 = facet.getVelocity();
-                            itemProjectileEntity.lerpMotion(vec3.x(), vec3.y(), vec3.z());
-                        }
-                    } else {
-                        facet.updateAndSync();
-                    }
-                }
             }
         });
 

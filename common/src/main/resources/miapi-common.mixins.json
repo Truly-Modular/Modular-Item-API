@@ -51,6 +51,7 @@
         "loot.LootTableAccessor",
         "loot.LootTableMixin",
         "projectile.AbstractArrowAccessor",
+        "projectile.ClientboundSetEntityMotionPacketMixin",
         "projectile.ProjectileMixin",
         "projectile.SynchedEntityDataMixin",
         "smithing.AnvilMenuMixin",

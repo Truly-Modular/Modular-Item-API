@@ -59,12 +59,6 @@ public class ItemProjectileEntity extends AbstractArrow {
 
     public ItemProjectileEntity(EntityType<? extends Entity> entityType, Level world) {
         super((EntityType<? extends AbstractArrow>) entityType, world);
-        EntitySpeedFacetFix facet = EntitySpeedFacetFix.KEY.get(this);
-        if (facet != null) {
-            if (!this.level().isClientSide()) {
-                facet.updateAndSync();
-            }
-        }
     }
 
     public ItemProjectileEntity(Level world, Position position, ItemStack itemStack) {
@@ -185,26 +179,9 @@ public class ItemProjectileEntity extends AbstractArrow {
         if (this.isInWater()) {
             m = 1.0f;
         }
+        vec3d = vec3d.scale(m);
         this.setDeltaMovement(vec3d.scale(m));
-
-        EntitySpeedFacetFix facet = EntitySpeedFacetFix.KEY.get(this);
-        if (facet != null) {
-            if (!this.level().isClientSide()) {
-                facet.updateAndSync();
-            }
-        }
         super.tick();
-    }
-
-    @Override
-    public void lerpMotion(double x, double y, double z) {
-        EntitySpeedFacetFix facet = EntitySpeedFacetFix.KEY.get(this);
-        if (facet.validate()) {
-            Vec3 vec3 = facet.getVelocity();
-            super.lerpMotion(vec3.x(), vec3.y(), vec3.z());
-        } else {
-            super.lerpMotion(x, y, z);
-        }
     }
 
     protected void tickDespawn() {
