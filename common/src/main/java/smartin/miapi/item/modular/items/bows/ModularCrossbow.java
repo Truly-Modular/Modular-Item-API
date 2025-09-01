@@ -133,6 +133,7 @@ public class ModularCrossbow extends CrossbowItem implements PlatformModularItem
         return 15;
     }
 
+    @Override
     protected Projectile createProjectile(Level level, LivingEntity shooter, ItemStack weapon, ItemStack ammo, boolean isCrit) {
         if (IsCrossbowShootAble.canCrossbowShoot(ammo) && ammo.getItem() instanceof ProjectileItem projectileItem) {
             Projectile projectile = super.createProjectile(level, shooter, weapon, ammo, isCrit);
@@ -147,13 +148,21 @@ public class ModularCrossbow extends CrossbowItem implements PlatformModularItem
         return projectile1;
     }
 
+    @Override
     protected void shootProjectile(LivingEntity shooter, Projectile projectile, int index, float velocity, float inaccuracy, float angle, @Nullable LivingEntity target) {
-        if(index!=0 && projectile instanceof ItemProjectileEntity entity){
+        if (index != 0 && projectile instanceof ItemProjectileEntity entity) {
             entity.pickup = AbstractArrow.Pickup.CREATIVE_ONLY;
         }
         super.shootProjectile(shooter, projectile, index, velocity, inaccuracy, angle, target);
     }
 
+    public static List<ItemStack> drawPublic(ItemStack weapon, ItemStack ammo, LivingEntity shooter) {
+        return draw(weapon, ammo, shooter);
+    }
+
+
+    //TODO: somehow give apoth enchants a callback here, maybe custom event?
+    @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand usedHand) {
         ItemStack crossbow = player.getItemInHand(usedHand);
         ChargedProjectiles chargedProjectiles = crossbow.get(DataComponents.CHARGED_PROJECTILES);
@@ -199,6 +208,7 @@ public class ModularCrossbow extends CrossbowItem implements PlatformModularItem
     }
 
 
+    @Override
     public Predicate<ItemStack> getAllSupportedProjectiles() {
         return super.getAllSupportedProjectiles().or(IsCrossbowShootAble::canCrossbowShoot);
     }

@@ -34,7 +34,7 @@ public class CopyItemAbility implements ItemUseAbility<CopyItemAbility.ItemConte
     /**
      * Runs a lambda with the MixinContextFlag temporarily set for this stack/item.
      */
-    private static <T> T withFlag(ItemStack stack, CopyItemAbility.ItemContext item, Supplier<T> action) {
+    public static <T> T withFlag(ItemStack stack, CopyItemAbility.ItemContext item, Supplier<T> action) {
         if (item == null) return null;
         try {
             if (item.fakeItemIdentity) {
@@ -48,7 +48,7 @@ public class CopyItemAbility implements ItemUseAbility<CopyItemAbility.ItemConte
         }
     }
 
-    private static void withFlag(ItemStack stack, CopyItemAbility.ItemContext item, Runnable action) {
+    public static void withFlag(ItemStack stack, CopyItemAbility.ItemContext item, Runnable action) {
         if (item == null) return;
         try {
             if (item.fakeItemIdentity) {

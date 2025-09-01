@@ -4,19 +4,19 @@ import com.mojang.serialization.Codec;
 import dev.architectury.event.EventResult;
 import net.fabricmc.api.EnvType;
 import net.minecraft.core.Holder;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.EnchantmentTags;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import smartin.miapi.Environment;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.InteractAbleWidget;
-import smartin.miapi.client.gui.crafting.statdisplay.JsonStatDisplay;
+import smartin.miapi.client.gui.crafting.statdisplay.DoubleResolvableStatDisplay;
 import smartin.miapi.client.gui.crafting.statdisplay.SingleStatDisplay;
-import smartin.miapi.client.gui.crafting.statdisplay.SingleStatDisplayDouble;
 import smartin.miapi.client.gui.crafting.statdisplay.StatListWidget;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.util.DoubleOperationResolvable;
@@ -40,8 +40,7 @@ public class FakeEitherEnchantmentProperty extends EitherModuleProperty<
             for (Map.Entry<Holder.Reference<Enchantment>, DoubleOperationResolvable> location : getEnchants(itemStack).entrySet()) {
                 if (enchantmentHolder.is(location.getKey())) {
                     DoubleOperationResolvable resolvable = location.getValue();
-                    resolvable.setFunctionTransformer((s) -> s.getFirst().replace("[old_level]", String.valueOf(oldLevel)));
-                    return (int) resolvable.evaluate(0.0, oldLevel);
+                    oldLevel = (int) resolvable.evaluate(oldLevel, oldLevel);
                 }
             }
             return oldLevel;
@@ -63,40 +62,24 @@ public class FakeEitherEnchantmentProperty extends EitherModuleProperty<
     protected Map<Holder.Reference<Enchantment>, DoubleOperationResolvable> initializeDecode(Map<ResourceLocation, DoubleOperationResolvable> property, ModuleInstance context) {
         Map<Holder.Reference<Enchantment>, DoubleOperationResolvable> initialized = new HashMap<>();
         property.forEach((id, resolvable) -> {
-            if (context.lookup != null) {
-                context.lookup.lookup(Registries.ENCHANTMENT).ifPresentOrElse(enchantmentRegistryInfo -> {
-                    enchantmentRegistryInfo.getter().get(ResourceKey.create(Registries.ENCHANTMENT, id)).ifPresentOrElse(holder -> {
-                                resolvable.setFunctionTransformer((s) -> s.getFirst().replace("[old_level]", "0"));
-                                initialized.put(holder, resolvable.initialize(context));
-                                //Miapi.LOGGER.info("full ID " + holder.key().location());
-                            }, () -> Miapi.LOGGER.warn("Could not find enchanment " + id + " skiping")
-                    );
-                }, () -> Miapi.LOGGER.warn("Enchantment Registries not Found - could not decode enchantments"));
-            } else {
-                //Miapi.LOGGER.warn("could not decode enchantments - missing lookup!");
-            }
             if (Miapi.registryAccess != null) {
-                Miapi.registryAccess.lookup(Registries.ENCHANTMENT).ifPresentOrElse(enchantmentRegistryInfo -> {
-                    enchantmentRegistryInfo.get(ResourceKey.create(Registries.ENCHANTMENT, id)).ifPresentOrElse(holder -> {
-                                resolvable.setFunctionTransformer((s) -> s.getFirst().replace("[old_level]", "0"));
-                                initialized.put(holder, resolvable.initialize(context));
-                                //Miapi.LOGGER.info("full ID " + holder.key().location());
-                            }, () -> Miapi.LOGGER.warn("Could not find enchanment " + id + " skiping")
-                    );
-                }, () -> Miapi.LOGGER.warn("Enchantment Registries not Found - could not decode enchantments"));
+                getWithRegistry(Miapi.registryAccess, id, resolvable, initialized, context);
             }
             if (Miapi.clientRegistryAccess != null) {
-                Miapi.clientRegistryAccess.lookup(Registries.ENCHANTMENT).ifPresentOrElse(enchantmentRegistryInfo -> {
-                    enchantmentRegistryInfo.get(ResourceKey.create(Registries.ENCHANTMENT, id)).ifPresentOrElse(holder -> {
-                                resolvable.setFunctionTransformer((s) -> s.getFirst().replace("[old_level]", "0"));
-                                initialized.put(holder, resolvable.initialize(context));
-                                //Miapi.LOGGER.info("full ID " + holder.key().location());
-                            }, () -> Miapi.LOGGER.warn("Could not find enchanment " + id + " skiping")
-                    );
-                }, () -> Miapi.LOGGER.warn("Enchantment Registries not Found - could not decode enchantments"));
+                getWithRegistry(Miapi.clientRegistryAccess, id, resolvable, initialized, context);
             }
         });
         return initialized;
+    }
+
+    private static void getWithRegistry(RegistryAccess clientRegistryAccess, ResourceLocation id, DoubleOperationResolvable resolvable, Map<Holder.Reference<Enchantment>, DoubleOperationResolvable> initialized, ModuleInstance context) {
+        clientRegistryAccess.lookup(Registries.ENCHANTMENT).ifPresentOrElse(enchantmentRegistryInfo -> {
+            enchantmentRegistryInfo.get(ResourceKey.create(Registries.ENCHANTMENT, id)).ifPresentOrElse(holder -> {
+                        resolvable.setFunctionTransformer((s) -> s.getFirst().replace("[old_level]", "0"));
+                        initialized.put(holder, resolvable.initialize(context));
+                    }, () -> Miapi.LOGGER.warn("Could not find enchantment " + id + " skiping")
+            );
+        }, () -> Miapi.LOGGER.warn("Enchantment Registries not Found - could not decode enchantments"));
     }
 
 
@@ -122,34 +105,28 @@ public class FakeEitherEnchantmentProperty extends EitherModuleProperty<
     }
 
     @net.fabricmc.api.Environment(EnvType.CLIENT)
+    @SuppressWarnings("unchecked")
     public void setupClient() {
         StatListWidget.addStatDisplaySupplier(new StatListWidget.StatWidgetSupplier() {
             @Override
             public <T extends InteractAbleWidget & SingleStatDisplay> List<T> currentList(ItemStack original, ItemStack compareTo) {
                 List<T> displays = new ArrayList<>();
-                Set<Holder<Enchantment>> enchantments = new HashSet<>();
-                enchantments.addAll(getEnchants(original).keySet());
-                enchantments.addAll(getEnchants(compareTo).keySet());
-                enchantments.forEach(enchantment -> {
-                    JsonStatDisplay display = new JsonStatDisplay((stack) -> enchantment.value().description(),
-                            (stack) -> enchantment.value().description(),
-                            new SingleStatDisplayDouble.StatReaderHelper() {
-                                @Override
-                                public double getValue(ItemStack itemStack) {
-                                    return EnchantmentHelper.getItemEnchantmentLevel(enchantment, itemStack);
-                                }
-
-                                @Override
-                                public boolean hasValue(ItemStack itemStack) {
-                                    return true;
-                                }
-                            },
-                            0,
-                            enchantment.value().getMaxLevel());
-                    if (enchantment.is(EnchantmentTags.CURSE)) {
-                        display.inverse = true;
-                    }
-                    displays.add((T) display);
+                Map<Holder.Reference<Enchantment>, DoubleOperationResolvable> enchantments = new HashMap<>();
+                enchantments.putAll(getEnchants(original));
+                enchantments.putAll(getEnchants(compareTo));
+                enchantments.forEach((enchantment, data) -> {
+                    Component desc = Component
+                            .translatableWithFallback(
+                                    "enchantment." + enchantment.key().location().getNamespace() + "." + enchantment.key().location().getPath() + ".desc",
+                                    "");
+                    displays.add((T) DoubleResolvableStatDisplay.builder(
+                                    (s) -> Optional.ofNullable(getEnchants(s).get(enchantment)))
+                            .setHoverDescription(Component.translatable("miapi.fake_enchant.desc", enchantment.value().description(), desc))
+                            .setName(enchantment.value().description())
+                            .setMax(enchantment.value().getMaxLevel())
+                            .setFormat("#")
+                            .setInverse(enchantment.is(EnchantmentTags.CURSE))
+                            .setMin(0).build());
                 });
                 return displays;
             }

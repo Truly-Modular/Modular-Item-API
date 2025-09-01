@@ -190,6 +190,8 @@ public class SlotDisplay extends InteractAbleWidget {
         matrixStack.scale(getSize(), getSize(), 1.0F);
         RenderSystem.applyModelViewMatrix();
         MultiBufferSource.BufferSource immediate = Minecraft.getInstance().renderBuffers().bufferSource();
+        //OutlineBufferSource immediate = Minecraft.getInstance().renderBuffers().outlineBufferSource();
+        //immediate.setColor(255, 255, 255, 255);
         boolean bl = true;
         if (bl) {
             Lighting.setupForFlatItems();
@@ -197,12 +199,15 @@ public class SlotDisplay extends InteractAbleWidget {
         RenderSystem.enableDepthTest();
         renderer.renderStatic(stack, ItemDisplayContext.GUI, 15728880, OverlayTexture.NO_OVERLAY, slotProjection, immediate, Minecraft.getInstance().level, 0);
         immediate.endBatch();
+        //immediate.endOutlineBatch();
         RenderSystem.enableDepthTest();
         if (bl) {
             Lighting.setupFor3DItems();
         }
         matrixStack.popMatrix();
         RenderSystem.applyModelViewMatrix();
+
+        Minecraft.getInstance().renderBuffers().outlineBufferSource();
     }
 
     @Override

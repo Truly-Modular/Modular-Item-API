@@ -29,20 +29,7 @@
     "properties": {
         "tool": {
             "fake_enchants": {
-                "minecraft:fortune": "[old_level]+1"
-            },
-            "gui_stat": {
-                "fortune": {
-                    "value": "1",
-                    "min": 0,
-                    "max": 3,
-                    "header": {
-                        "translate": "miapi.stat.miapi.fortune"
-                    },
-                    "description": {
-                        "translate": "miapi.stat.miapi.fortune.description"
-                    }
-                }
+                "minecraft:fortune": "1"
             }
         },
         "handheld": {

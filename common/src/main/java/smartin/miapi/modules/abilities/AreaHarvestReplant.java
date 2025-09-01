@@ -22,6 +22,7 @@ import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;
 import smartin.miapi.modules.abilities.util.MinMaxCDAbility;
 import smartin.miapi.modules.properties.util.DoubleOperationResolvable;
+import smartin.miapi.modules.properties.util.MergeAble;
 import smartin.miapi.modules.properties.util.MergeType;
 
 import java.util.List;
@@ -67,7 +68,7 @@ public class AreaHarvestReplant extends MinMaxCDAbility<AreaHarvestReplant.AreaH
         ItemStack itemStack = context.getItemInHand();
         if (!context.getLevel().isClientSide() && context.getPlayer() instanceof ServerPlayer serverPlayer) {
             int blocksHarvested = 0;
-            int range = getData(itemStack).map(a -> a.range.getValue()).orElse(1.0).intValue();
+            int range = (int) abilityContext.data().range.evaluate(0, 1);
             BlockState state = context.getLevel().getBlockState(context.getClickedPos());
             BlockPos origin = context.getClickedPos();
 
@@ -98,7 +99,7 @@ public class AreaHarvestReplant extends MinMaxCDAbility<AreaHarvestReplant.AreaH
 
     @Override
     protected AreaHarvestJson mergeData(AreaHarvestJson left, AreaHarvestJson right, MergeType mergeType) {
-        return left;
+        return left.merge(left, right, mergeType);
     }
 
     public AreaHarvestJson initializeData(AreaHarvestJson data, ModuleInstance moduleInstance) {
@@ -110,7 +111,7 @@ public class AreaHarvestReplant extends MinMaxCDAbility<AreaHarvestReplant.AreaH
         return CODEC;
     }
 
-    public static class AreaHarvestJson {
+    public static class AreaHarvestJson implements MergeAble<AreaHarvestJson> {
         @CodecBehavior.Optional
         public DoubleOperationResolvable range = new DoubleOperationResolvable(0);
 
@@ -120,5 +121,11 @@ public class AreaHarvestReplant extends MinMaxCDAbility<AreaHarvestReplant.AreaH
             return init;
         }
 
+        @Override
+        public AreaHarvestJson merge(AreaHarvestJson left, AreaHarvestJson right, MergeType mergeType) {
+            AreaHarvestJson init = new AreaHarvestJson();
+            init.range = DoubleOperationResolvable.merge(left.range, right.range, mergeType);
+            return init;
+        }
     }
 }

@@ -134,15 +134,15 @@ public class AttributeSplitProperty extends CodecProperty<Map<AttributeSplitProp
 
                     var resolveAble = addValueMap.get(targetKey);
                     if (resolveAble != null) {
-                        var operation = new DoubleOperationResolvable.Operation(totalValue * splitContext.percent().getValue() / 100.0, AttributeModifier.Operation.ADD_VALUE);
+                        var operation = new DoubleOperationResolvable.IndividualOperation(totalValue * splitContext.percent().getValue() / 100.0, DoubleOperationResolvable.IndividualOperation.Operation.ADD_VALUE.ADD_VALUE);
                         operation.instance = splitContext.moduleInstance;
-                        List<DoubleOperationResolvable.Operation> operations = new ArrayList<>(resolveAble.operations);
+                        List<DoubleOperationResolvable.IndividualOperation> operations = new ArrayList<>(resolveAble.operations);
                         operations.add(operation);
                         resolveAble.operations = operations;
                         resolveAble.clearCache();
                         resolveAble.getValue();
                     } else {
-                        resolveAble = new DoubleOperationResolvable(List.of(new DoubleOperationResolvable.Operation(totalValue * splitContext.percent().getValue() / 100.0, AttributeModifier.Operation.ADD_VALUE)));
+                        resolveAble = new DoubleOperationResolvable(List.of(new DoubleOperationResolvable.IndividualOperation(totalValue * splitContext.percent().getValue() / 100.0,DoubleOperationResolvable.IndividualOperation.Operation.ADD_VALUE)));
                         resolveAble = resolveAble.initialize(splitContext.moduleInstance);
                         addValueMap.put(targetKey, resolveAble);
                     }

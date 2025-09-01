@@ -40,9 +40,13 @@ public class CacheCommands {
         LiteralArgumentBuilder<CommandSourceStack> reloadCommand = Commands.literal("miapi")
                 .then(Commands.literal("miapi_reload")
                         .executes(CacheCommands::executeMiapiReload));
+        LiteralArgumentBuilder<CommandSourceStack> testCommand = Commands.literal("miapi")
+                .then(Commands.literal("test")
+                        .executes(CacheCommands::executeMiapiReload));
 
         dispatcher.register(literal);
         dispatcher.register(reloadCommand);
+        dispatcher.register(testCommand);
         ModernNetworking.registerC2SReceiver(CLEAR_CACHE_PACKET_ID, ByteBufCodecs.fromCodecWithRegistries(Miapi.FIXED_BOOL_CODEC), (data, player, registryAccess) -> {
             MiapiEvents.CLEAR_CACHE.invoker().onReload();
         });
@@ -73,6 +77,12 @@ public class CacheCommands {
     }
 
     private static int executeMiapiReload(CommandContext<CommandSourceStack> context) {
+        context.getSource().sendSuccess(() -> Component.literal("starting reload"), false);
+        triggerServerReload();
+        return 1; // Return success
+    }
+
+    private static int executeMiapiTest(CommandContext<CommandSourceStack> context) {
         context.getSource().sendSuccess(() -> Component.literal("starting reload"), false);
         triggerServerReload();
         return 1; // Return success

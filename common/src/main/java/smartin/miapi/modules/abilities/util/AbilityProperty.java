@@ -140,6 +140,17 @@ public class AbilityProperty extends CodecProperty<List<AbilityProperty.AbilityC
         return new ArrayList<>(merged.values());
     }
 
+    @Override
+    public List<AbilityContext<?>> initialize(List<AbilityContext<?>> left, ModuleInstance context) {
+        List<AbilityContext<?>> list = new ArrayList<>();
+        left.forEach(abilityContext -> list.add(init(abilityContext, context)));
+        return list;
+    }
+
+    static <T> AbilityContext<T> init(AbilityContext<T> context, ModuleInstance moduleInstance) {
+        return context.initialize(context, moduleInstance);
+    }
+
 
     public static class AbilityContext<T> implements MergeAble<AbilityContext<T>>, InitializeAble<AbilityContext<T>> {
         public static final Map<ResourceLocation, MapCodec<? extends AbilityContext<?>>> ABILITY_CODECS = new ConcurrentHashMap<>();

@@ -18,18 +18,18 @@ public abstract class DoubleProperty extends CodecProperty<DoubleOperationResolv
     public double baseValue = 0;
     public boolean allowVisualOnly = false;
     public final ResourceLocation id;
-    static Codec<List<DoubleOperationResolvable.Operation>> listCodec = Codec.list(AutoCodec.of(DoubleOperationResolvable.Operation.class).codec());
-    public static Codec<List<DoubleOperationResolvable.Operation>> CODEC = Codec.withAlternative(
+    static Codec<List<DoubleOperationResolvable.IndividualOperation>> listCodec = Codec.list(AutoCodec.of(DoubleOperationResolvable.IndividualOperation.class).codec());
+    public static Codec<List<DoubleOperationResolvable.IndividualOperation>> CODEC = Codec.withAlternative(
             new Codec<>() {
                 @Override
-                public <T> DataResult<T> encode(List<DoubleOperationResolvable.Operation> input, DynamicOps<T> ops, T prefix) {
+                public <T> DataResult<T> encode(List<DoubleOperationResolvable.IndividualOperation> input, DynamicOps<T> ops, T prefix) {
                     return listCodec.encode(input, ops, prefix);
                 }
 
                 @Override
-                public <T> DataResult<Pair<List<DoubleOperationResolvable.Operation>, T>> decode(DynamicOps<T> ops, T input) {
+                public <T> DataResult<Pair<List<DoubleOperationResolvable.IndividualOperation>, T>> decode(DynamicOps<T> ops, T input) {
                     Pair<String, T> stringTPair = Codec.STRING.decode(ops, input).getOrThrow();
-                    List<DoubleOperationResolvable.Operation> operations = List.of(new DoubleOperationResolvable.Operation(stringTPair.getFirst()));
+                    List<DoubleOperationResolvable.IndividualOperation> operations = List.of(new DoubleOperationResolvable.IndividualOperation(stringTPair.getFirst()));
                     return DataResult.success(new Pair<>(operations, stringTPair.getSecond()));
                 }
             },

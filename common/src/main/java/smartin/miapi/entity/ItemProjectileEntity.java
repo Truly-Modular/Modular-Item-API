@@ -59,6 +59,12 @@ public class ItemProjectileEntity extends AbstractArrow {
 
     public ItemProjectileEntity(EntityType<? extends Entity> entityType, Level world) {
         super((EntityType<? extends AbstractArrow>) entityType, world);
+        EntitySpeedFacetFix facet = EntitySpeedFacetFix.KEY.get(this);
+        if (facet != null) {
+            if (!this.level().isClientSide()) {
+                facet.updateAndSync();
+            }
+        }
     }
 
     public ItemProjectileEntity(Level world, Position position, ItemStack itemStack) {
@@ -87,6 +93,7 @@ public class ItemProjectileEntity extends AbstractArrow {
         this.entityData.set(PREFERRED_SLOT, -1);
         setup();
         MiapiProjectileEvents.MODULAR_PROJECTILE_DATA_TRACKER_SET.invoker().dataTracker(this, this.getEntityData());
+
     }
 
     private void setup() {
@@ -180,7 +187,24 @@ public class ItemProjectileEntity extends AbstractArrow {
         }
         this.setDeltaMovement(vec3d.scale(m));
 
+        EntitySpeedFacetFix facet = EntitySpeedFacetFix.KEY.get(this);
+        if (facet != null) {
+            if (!this.level().isClientSide()) {
+                facet.updateAndSync();
+            }
+        }
         super.tick();
+    }
+
+    @Override
+    public void lerpMotion(double x, double y, double z) {
+        EntitySpeedFacetFix facet = EntitySpeedFacetFix.KEY.get(this);
+        if (facet.validate()) {
+            Vec3 vec3 = facet.getVelocity();
+            super.lerpMotion(vec3.x(), vec3.y(), vec3.z());
+        } else {
+            super.lerpMotion(x, y, z);
+        }
     }
 
     protected void tickDespawn() {

@@ -58,19 +58,19 @@ public class AttributeProperty extends
                     } else {
                         id = ResourceLocation.parse(attributeJson.attribute);
                     }
-                    AttributeModifier.Operation operation = DoubleOperationResolvable.Operation.getOperation(attributeJson.operation);
-                    AttributeModifier.Operation targetOperation = DoubleOperationResolvable.Operation.getOperation(attributeJson.targetOperation == null ? "+" : attributeJson.targetOperation);
+                    DoubleOperationResolvable.IndividualOperation.Operation operation = DoubleOperationResolvable.IndividualOperation.getOperation(attributeJson.operation);
+                    AttributeModifier.Operation targetOperation = getOperation(attributeJson.targetOperation == null ? "+" : attributeJson.targetOperation);
                     EquipmentSlotGroup equipmentSlotGroup = attributeJson.slot;
-                    DoubleOperationResolvable.Operation doubleOperation = new DoubleOperationResolvable.Operation(attributeJson.value);
+                    DoubleOperationResolvable.IndividualOperation doubleOperation = new DoubleOperationResolvable.IndividualOperation(attributeJson.value);
                     if (targetOperation.equals(AttributeModifier.Operation.ADD_MULTIPLIED_BASE)) {
                         if (operation.equals(AttributeModifier.Operation.ADD_MULTIPLIED_BASE)) {
-                            operation = AttributeModifier.Operation.ADD_VALUE;
+                            operation = DoubleOperationResolvable.IndividualOperation.Operation.ADD_VALUE;
                         } else {
-                            operation = AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL;
+                            operation = DoubleOperationResolvable.IndividualOperation.Operation.ADD_MULTIPLIED_TOTAL;
                         }
                     }
                     if (targetOperation.equals(AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL)) {
-                        operation = AttributeModifier.Operation.ADD_VALUE;
+                        operation = DoubleOperationResolvable.IndividualOperation.Operation.ADD_VALUE;
                     }
                     doubleOperation.attributeOperation = operation;
 
@@ -80,13 +80,21 @@ public class AttributeProperty extends
                                 if (resolvable1 == null) {
                                     return new DoubleOperationResolvable(List.of(doubleOperation));
                                 }
-                                List<DoubleOperationResolvable.Operation> operations = new ArrayList<>(resolvable1.operations);
+                                List<DoubleOperationResolvable.IndividualOperation> operations = new ArrayList<>(resolvable1.operations);
                                 operations.add(doubleOperation);
                                 return new DoubleOperationResolvable(operations);
                             });
                 });
                 return map;
             }, map -> List.of()));
+
+    public static AttributeModifier.Operation getOperation(String operationString) {
+        return switch (operationString) {
+            case "*" -> AttributeModifier.Operation.ADD_MULTIPLIED_BASE;
+            case "**" -> AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL;
+            default -> AttributeModifier.Operation.ADD_VALUE;
+        };
+    }
 
     public AttributeProperty() {
         super(CODEC);

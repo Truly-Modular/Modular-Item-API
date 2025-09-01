@@ -7,7 +7,7 @@ import com.mojang.serialization.DynamicOps;
 import com.redpxnda.nucleus.codec.auto.AutoCodec;
 import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.util.StringRepresentable;
 import smartin.miapi.Miapi;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ModuleInstance;
@@ -25,34 +25,34 @@ import java.util.function.Function;
  * would be negated by an Autocodec
  */
 public class DoubleOperationResolvable implements SourceSetter<DoubleOperationResolvable> {
-    static Codec<Operation> autoCodec = AutoCodec.of(Operation.class).codec();
-    static Codec<Operation> operationCodec = Codec.withAlternative(new Codec<>() {
+    static Codec<IndividualOperation> autoCodec = AutoCodec.of(IndividualOperation.class).codec();
+    static Codec<IndividualOperation> operationCodec = Codec.withAlternative(new Codec<>() {
         @Override
-        public <T> DataResult<T> encode(Operation input, DynamicOps<T> ops, T prefix) {
+        public <T> DataResult<T> encode(IndividualOperation input, DynamicOps<T> ops, T prefix) {
             return autoCodec.encode(input, ops, prefix);
         }
 
         @Override
-        public <T> DataResult<Pair<Operation, T>> decode(DynamicOps<T> ops, T input) {
-            DataResult<Pair<String, T>> result = Operation.NUMBERSTRINGCODEC.decode(ops, input);
+        public <T> DataResult<Pair<IndividualOperation, T>> decode(DynamicOps<T> ops, T input) {
+            DataResult<Pair<String, T>> result = IndividualOperation.NUMBERSTRINGCODEC.decode(ops, input);
             if (result.isError()) {
                 DataResult<Pair<Double, T>> doubleResult = Codec.DOUBLE.decode(ops, input);
                 if (doubleResult.isSuccess()) {
                     Pair<Double, T> doubleTPair = doubleResult.getOrThrow();
-                    return DataResult.success(new Pair<>(new Operation("" + doubleTPair.getFirst()), doubleTPair.getSecond()));
+                    return DataResult.success(new Pair<>(new IndividualOperation("" + doubleTPair.getFirst()), doubleTPair.getSecond()));
                 }
                 return DataResult.error(() -> "is neither a string nor a boolean or a number");
             }
             Pair<String, T> stringTPair = result.getOrThrow();
-            return DataResult.success(new Pair<>(new Operation(stringTPair.getFirst()), stringTPair.getSecond()));
+            return DataResult.success(new Pair<>(new IndividualOperation(stringTPair.getFirst()), stringTPair.getSecond()));
         }
     }, autoCodec);
-    static Codec<List<Operation>> listCodec = Codec.list(operationCodec);
+    static Codec<List<IndividualOperation>> listCodec = Codec.list(operationCodec);
     public static Codec<DoubleOperationResolvable> CODEC = Codec.withAlternative(new Codec<>() {
         @Override
         public <T> DataResult<T> encode(DoubleOperationResolvable input, DynamicOps<T> ops, T prefix) {
-            List<Operation> opsToEncode = input.operations.isEmpty()
-                    ? List.of(new Operation("" + input.fallback)) // Replace with your default
+            List<IndividualOperation> opsToEncode = input.operations.isEmpty()
+                    ? List.of(new IndividualOperation("" + input.fallback)) // Replace with your default
                     : input.operations;
 
             return listCodec.encode(opsToEncode, ops, prefix);
@@ -64,14 +64,14 @@ public class DoubleOperationResolvable implements SourceSetter<DoubleOperationRe
             if (result.isError()) {
                 return DataResult.error(() -> "could not decode double operations");
             }
-            Pair<Operation, T> pair = result.getOrThrow();
+            Pair<IndividualOperation, T> pair = result.getOrThrow();
             return DataResult.success(new Pair<>(new DoubleOperationResolvable(List.of(pair.getFirst())), pair.getSecond()));
         }
     }, new Codec<>() {
         @Override
         public <T> DataResult<T> encode(DoubleOperationResolvable input, DynamicOps<T> ops, T prefix) {
-            List<Operation> opsToEncode = input.operations.isEmpty()
-                    ? List.of(new Operation("" + input.fallback)) // Replace with your default
+            List<IndividualOperation> opsToEncode = input.operations.isEmpty()
+                    ? List.of(new IndividualOperation("" + input.fallback)) // Replace with your default
                     : input.operations;
 
             return listCodec.encode(opsToEncode, ops, prefix);
@@ -79,12 +79,12 @@ public class DoubleOperationResolvable implements SourceSetter<DoubleOperationRe
 
         @Override
         public <T> DataResult<Pair<DoubleOperationResolvable, T>> decode(DynamicOps<T> ops, T input) {
-            Pair<List<Operation>, T> pair = listCodec.decode(ops, input).getOrThrow((e) -> new RuntimeException(e + "could not decode double operations"));
+            Pair<List<IndividualOperation>, T> pair = listCodec.decode(ops, input).getOrThrow((e) -> new RuntimeException(e + "could not decode double operations"));
             return DataResult.success(new Pair<>(new DoubleOperationResolvable(pair.getFirst()), pair.getSecond()));
         }
     });
 
-    public List<Operation> operations;
+    public List<IndividualOperation> operations;
     /**
      * use the function to set this value.
      */
@@ -102,11 +102,11 @@ public class DoubleOperationResolvable implements SourceSetter<DoubleOperationRe
         operations = new ArrayList<>();
     }
 
-    public DoubleOperationResolvable(List<Operation> operations) {
+    public DoubleOperationResolvable(List<IndividualOperation> operations) {
         this.operations = operations;
     }
 
-    protected DoubleOperationResolvable(List<Operation> operations, Function<Pair<String, ModuleInstance>, String> functionTransformer) {
+    protected DoubleOperationResolvable(List<IndividualOperation> operations, Function<Pair<String, ModuleInstance>, String> functionTransformer) {
         this.operations = operations;
         this.functionTransformer = functionTransformer;
     }
@@ -124,9 +124,10 @@ public class DoubleOperationResolvable implements SourceSetter<DoubleOperationRe
     /**
      * returns the fallback value,
      * this value is returned if there are no operations set.
+     *
      * @return
      */
-    public double getFallback(){
+    public double getFallback() {
         return fallback;
     }
 
@@ -137,7 +138,7 @@ public class DoubleOperationResolvable implements SourceSetter<DoubleOperationRe
      */
     public void setFunctionTransformer(Function<Pair<String, ModuleInstance>, String> functionTransformer) {
         this.functionTransformer = functionTransformer;
-        for (Operation operation : operations) {
+        for (IndividualOperation operation : operations) {
             operation.transformer = this.functionTransformer;
         }
         this.cachedResult = null;
@@ -154,10 +155,10 @@ public class DoubleOperationResolvable implements SourceSetter<DoubleOperationRe
      * @return
      */
     public DoubleOperationResolvable initialize(ModuleInstance moduleInstance) {
-        List<Operation> operationList = new ArrayList<>();
+        List<IndividualOperation> operationList = new ArrayList<>();
         if (operations != null) {
             operations.forEach(operation -> {
-                Operation copiesOperation = new Operation(operation.value);
+                IndividualOperation copiesOperation = new IndividualOperation(operation.value);
                 copiesOperation.attributeOperation = operation.attributeOperation;
                 copiesOperation.instance = moduleInstance;
                 copiesOperation.transformer = this.functionTransformer;
@@ -193,22 +194,24 @@ public class DoubleOperationResolvable implements SourceSetter<DoubleOperationRe
         return Optional.ofNullable(cachedResult);
     }
 
-    public static double resolve(List<Operation> operations, double baseValue, double fallback) {
+    public static double resolve(List<IndividualOperation> operations, double baseValue, double fallback) {
         return resolve(operations, baseValue).orElse(fallback);
     }
 
-    public static Optional<Double> resolve(List<Operation> operations, double baseValue) {
+    public static Optional<Double> resolve(List<IndividualOperation> operations, double baseValue) {
         double value = baseValue;
         boolean hasValue = false;
         List<Double> addition = new ArrayList<>();
         List<Double> multiplyBase = new ArrayList<>();
         List<Double> multiplyTotal = new ArrayList<>();
-        for (Operation operation : operations) {
+        List<IndividualOperation> custom = new ArrayList<>();
+        for (IndividualOperation operation : operations) {
             hasValue = true;
             switch (operation.attributeOperation) {
                 case ADD_VALUE -> addition.add(operation.solve());
                 case ADD_MULTIPLIED_BASE -> multiplyBase.add(operation.solve());
                 case ADD_MULTIPLIED_TOTAL -> multiplyTotal.add(operation.solve());
+                case CUSTOM_TOTAL -> custom.add(operation);
             }
         }
         for (Double currentValue : addition) {
@@ -226,6 +229,9 @@ public class DoubleOperationResolvable implements SourceSetter<DoubleOperationRe
             if (Double.isNaN(value)) {
                 Miapi.LOGGER.error("could not correctly resolve Double Operations. this indicates a serious issue");
                 return Optional.empty();
+            }
+            for (IndividualOperation operation : custom) {
+                value = operation.solve(value);
             }
             return Optional.of(value);
         } else {
@@ -249,7 +255,7 @@ public class DoubleOperationResolvable implements SourceSetter<DoubleOperationRe
         if (MergeType.EXTEND.equals(mergeType)) {
             functionTransformer = left.functionTransformer;
         }
-        List<Operation> operationList = new ArrayList<>(left.operations);
+        List<IndividualOperation> operationList = new ArrayList<>(left.operations);
         operationList.addAll(right.operations);
         DoubleOperationResolvable resolvable = new DoubleOperationResolvable(operationList, functionTransformer);
         if (left.initialized != null) {
@@ -264,19 +270,19 @@ public class DoubleOperationResolvable implements SourceSetter<DoubleOperationRe
         return data;
     }
 
-    public static class Operation {
+    public static class IndividualOperation {
 
 
-        public static Codec<AttributeModifier.Operation> operationCodec = new Codec<>() {
+        public static Codec<Operation> operationCodec = new Codec<>() {
             @Override
-            public <T> DataResult<Pair<AttributeModifier.Operation, T>> decode(DynamicOps<T> ops, T input) {
+            public <T> DataResult<Pair<Operation, T>> decode(DynamicOps<T> ops, T input) {
                 Pair<String, T> stringTPair = Codec.STRING.decode(ops, input).getOrThrow();
-                AttributeModifier.Operation operations = getOperation(stringTPair.getFirst());
+                Operation operations = getOperation(stringTPair.getFirst());
                 return DataResult.success(new Pair<>(operations, stringTPair.getSecond()));
             }
 
             @Override
-            public <T> DataResult<T> encode(AttributeModifier.Operation input, DynamicOps<T> ops, T prefix) {
+            public <T> DataResult<T> encode(Operation input, DynamicOps<T> ops, T prefix) {
                 return Codec.STRING.encode(toCodecString(input), ops, prefix);
             }
         };
@@ -324,7 +330,7 @@ public class DoubleOperationResolvable implements SourceSetter<DoubleOperationRe
         };
         @AutoCodec.Name("operation")
         @CodecBehavior.Override("operationCodec")
-        public AttributeModifier.Operation attributeOperation = AttributeModifier.Operation.ADD_VALUE;
+        public Operation attributeOperation = Operation.ADD_VALUE;
         @AutoCodec.Name("value")
         @CodecBehavior.Override("NUMBERSTRINGCODEC")
         public String value;
@@ -335,16 +341,16 @@ public class DoubleOperationResolvable implements SourceSetter<DoubleOperationRe
         @AutoCodec.Ignored
         public Optional<Component> source = Optional.empty();
 
-        public Operation() {
+        public IndividualOperation() {
             this.value = "1";
         }
 
-        public Operation(double value, AttributeModifier.Operation operation) {
+        public IndividualOperation(double value, Operation operation) {
             this.value = String.valueOf(value);
             this.attributeOperation = operation;
         }
 
-        public Operation(String value) {
+        public IndividualOperation(String value) {
             this.value = value;
         }
 
@@ -358,20 +364,55 @@ public class DoubleOperationResolvable implements SourceSetter<DoubleOperationRe
             return StatResolver.resolveDouble(transformed, instance);
         }
 
-        public static AttributeModifier.Operation getOperation(String operationString) {
+        public double solve(double oldValue) {
+            if (instance == null) {
+                var error = new IllegalAccessError("Double Resolvable was resolved before initialized!");
+                Miapi.LOGGER.error("Double Resolvable was never initialized!", error);
+                return 0;
+            }
+            String transformed = transformer.apply(new Pair<>(value, instance)).replace("[old_value]", "" + oldValue);
+            return StatResolver.resolveDouble(transformed, instance);
+        }
+
+        public static Operation getOperation(String operationString) {
             return switch (operationString) {
-                case "*" -> AttributeModifier.Operation.ADD_MULTIPLIED_BASE;
-                case "**" -> AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL;
-                default -> AttributeModifier.Operation.ADD_VALUE;
+                case "*" -> Operation.ADD_MULTIPLIED_BASE;
+                case "**" -> Operation.ADD_MULTIPLIED_TOTAL;
+                case "custom" -> Operation.CUSTOM_TOTAL;
+                default -> Operation.ADD_VALUE;
             };
         }
 
-        private static String toCodecString(AttributeModifier.Operation operation) {
+        private static String toCodecString(Operation operation) {
             return switch (operation) {
                 case ADD_MULTIPLIED_BASE -> "*";
                 case ADD_MULTIPLIED_TOTAL -> "**";
+                case CUSTOM_TOTAL -> "custom";
                 default -> "+";
             };
+        }
+
+        public static enum Operation implements StringRepresentable {
+            ADD_VALUE("add_value", 0),
+            ADD_MULTIPLIED_BASE("add_multiplied_base", 1),
+            ADD_MULTIPLIED_TOTAL("add_multiplied_total", 2),
+            CUSTOM_TOTAL("custom", 3);
+
+            private final String name;
+            private final int id;
+
+            private Operation(final String name, final int value) {
+                this.name = name;
+                this.id = value;
+            }
+
+            public int id() {
+                return this.id;
+            }
+
+            public String getSerializedName() {
+                return this.name;
+            }
         }
     }
 }

@@ -162,7 +162,7 @@ public class GeneratedMaterialPropertyManager {
             Map<ResourceLocation, DoubleOperationResolvable> enchantments = new HashMap<>();
             ItemEnchantments itemEnchantments = getDefaultStack(item).getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY);
             itemEnchantments.keySet().forEach(enchantment -> {
-                DoubleOperationResolvable resolvable = new DoubleOperationResolvable(List.of(new DoubleOperationResolvable.Operation(itemEnchantments.getLevel(enchantment), AttributeModifier.Operation.ADD_VALUE)));
+                DoubleOperationResolvable resolvable = new DoubleOperationResolvable(List.of(new DoubleOperationResolvable.IndividualOperation(itemEnchantments.getLevel(enchantment), DoubleOperationResolvable.IndividualOperation.Operation.ADD_VALUE.ADD_VALUE)));
                 enchantments.put(enchantment.unwrapKey().get().location(), resolvable);
                 if (GeneratedMaterialManager.verboseLogging()) {
                     Miapi.LOGGER.info("detected enchantemnt " + enchantment.getRegisteredName() + " on " + id);
@@ -196,7 +196,7 @@ public class GeneratedMaterialPropertyManager {
             Map<ResourceLocation, Map<AttributeModifier.Operation, Map<Either<EquipmentSlotGroup, Boolean>, DoubleOperationResolvable>>> attributes = new HashMap<>();
 
             modifiers.forEach(e -> {
-                DoubleOperationResolvable resolvable = new DoubleOperationResolvable(List.of(new DoubleOperationResolvable.Operation("" + e.modifier().amount() + "/" + cost + " * [module.cost]")));
+                DoubleOperationResolvable resolvable = new DoubleOperationResolvable(List.of(new DoubleOperationResolvable.IndividualOperation("" + e.modifier().amount() + "/" + cost + " * [module.cost]")));
                 attributes
                         .computeIfAbsent(BuiltInRegistries.ATTRIBUTE.getKey(e.attribute().value()), (c) -> new HashMap<>())
                         .computeIfAbsent(AttributeModifier.Operation.ADD_VALUE, (c) -> new HashMap<>())

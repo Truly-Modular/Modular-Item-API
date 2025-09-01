@@ -26,6 +26,8 @@
     "tag.item.miapi.tools": "Modular Tools",
     "tag.item.miapi.knifes": "Modular Knifes",
 
+    "miapi.fake_enchant.desc": "%s enchantment level adjusted\n%s",
+
     "miapi.config_screen.title": "Miapi Config",
     "miapi.config_screen.client": "Client Config",
     "miapi.config_screen.server": "Server Config",

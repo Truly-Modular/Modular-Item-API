@@ -5,7 +5,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.Util;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.ItemStack;
 import smartin.miapi.Miapi;
 import smartin.miapi.modules.properties.util.DoubleOperationResolvable;
@@ -44,7 +43,7 @@ public class SinglePropertyStatDisplay extends SingleStatDisplayDouble {
         return property.getData(stack).orElse(null);
     }
 
-    public static String stringForOperation(DecimalFormat format, DoubleOperationResolvable.Operation resolvable) {
+    public static String stringForOperation(DecimalFormat format, DoubleOperationResolvable.IndividualOperation resolvable) {
         String number = "" + format.format(resolvable.solve());
         String operation = getStringName(resolvable.attributeOperation);
         if (operation.equals("+") && number.startsWith("-")) {
@@ -53,11 +52,12 @@ public class SinglePropertyStatDisplay extends SingleStatDisplayDouble {
         return operation + number + " " + resolvable.instance.getModuleName().getString();
     }
 
-    public static String getStringName(AttributeModifier.Operation operation) {
+    public static String getStringName(DoubleOperationResolvable.IndividualOperation.Operation operation) {
         return switch (operation) {
-            case AttributeModifier.Operation.ADD_VALUE -> "+";
+            case ADD_VALUE -> "+";
             case ADD_MULTIPLIED_BASE -> "*";
             case ADD_MULTIPLIED_TOTAL -> "**";
+            case CUSTOM_TOTAL -> "custom ";
         };
     }
 
