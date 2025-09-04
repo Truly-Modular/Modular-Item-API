@@ -90,7 +90,7 @@ public class StatListWidget extends InteractAbleWidget {
         addStatDisplay(AttributeSingleDisplay
                 .builder(Attributes.ATTACK_DAMAGE)
                 .setTranslationKey("minecraft.damage")
-                .setDefault(0)
+                .setDefault(1)
                 .setMax(13.0).build());
         addStatDisplay(AttributeSingleDisplay
                 .builder(Attributes.ATTACK_SPEED)

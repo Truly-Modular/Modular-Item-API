@@ -47,25 +47,30 @@ This ability uses the default ability fields:
 
 ```json
 {
-    "ability_context": {
-        "eat": {
-            "nutrition": 4,
-            "saturation": 0.6,
-            "cooldown": 60,
-            "eat_ticks": 32,
-            "alwaysEdible": true,
-            "effects": [
-                {
-                    "effect": "minecraft:regeneration",
-                    "probability": 0.25
-                },
-                {
-                    "effect": "minecraft:speed",
-                    "probability": 0.1
-                }
-            ]
+    "ability_context": [
+        {
+            "id": "addon:custom_eat",
+            "type": "miapi:eat",
+            "data": {
+                "nutrition": 4,
+                "saturation": 0.6,
+                "cooldown": 60,
+                "eat_ticks": 32,
+                "alwaysEdible": true,
+                "effects": [
+                    {
+                        "effect": {
+                            "id": "minecraft:regeneration",
+                            "amplifier": 1,
+                            "duration": 100
+                            
+                        },
+                        "probability": 1.0
+                    }
+                ]
+            }
         }
-    }
+    ]
 }
 ```
 

@@ -74,10 +74,13 @@ dependencies {
     modApi "com.redpxnda.nucleus:nucleus-facet-common:${rootProject.minecraft_version}+${rootProject.nucleus_facet_version}"
     modApi "com.redpxnda.nucleus:nucleus-editor-common:${rootProject.minecraft_version}+${rootProject.nucleus_editor_version}"
 
+    /*
     modImplementation("foundry.veil:veil-common-1.21.1:${project.veil_version}") {
         exclude group: "maven.modrinth"
         exclude group: "me.fallenbreath"
     }
+
+     */
 
     //https://modrinth.com/mod/treechop/version/tIdTnzkf
 

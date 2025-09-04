@@ -66,7 +66,10 @@ public class AbilityProperty extends CodecProperty<List<AbilityProperty.AbilityC
         @Override
         public <T> DataResult<Pair<Map<ItemUseAbility<?>, Object>, T>> decode(DynamicOps<T> ops, T input) {
             Map<ItemUseAbility<?>, Object> abilityMap = new LinkedHashMap<>();
-            ops.getMap(input).getOrThrow().entries();
+            DataResult<MapLike<T>> map = ops.getMap(input);
+            if (map.error().isPresent()) {
+                return DataResult.error(() -> map.error().get().message());
+            }
             ops.getMapValues(input).getOrThrow().toList().forEach((pair) -> {
                 String resourceLocation = Codec.STRING.decode(ops, pair.getFirst()).getOrThrow().getFirst();
                 ItemUseAbility<?> itemUseAbility = RegistryInventory.ITEM_USE_ABILITY_MIAPI_REGISTRY.get(resourceLocation);
@@ -201,7 +204,7 @@ public class AbilityProperty extends CodecProperty<List<AbilityProperty.AbilityC
         @SuppressWarnings("unchecked")
         public static <T> void registerAbilityCodec(ResourceLocation type, ItemUseAbility<T> ability) {
             MapCodec<AbilityContext<T>> codec = RecordCodecBuilder.mapCodec(instance -> instance.group(
-                    ResourceLocation.CODEC.fieldOf("id")
+                    Miapi.ID_CODEC.fieldOf("id")
                             .forGetter(holder -> holder.id),
                     Codec.FLOAT.optionalFieldOf("priority", 0.0f)
                             .forGetter(holder -> holder.priority),

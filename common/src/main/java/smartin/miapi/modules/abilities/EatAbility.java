@@ -20,6 +20,8 @@ import smartin.miapi.modules.abilities.util.ItemAbilityManager;
 import smartin.miapi.modules.abilities.util.ItemUseDefaultCooldownAbility;
 import smartin.miapi.modules.abilities.util.ItemUseMinHoldAbility;
 import smartin.miapi.modules.properties.util.DoubleOperationResolvable;
+import smartin.miapi.modules.properties.util.InitializeAble;
+import smartin.miapi.modules.properties.util.MergeAble;
 import smartin.miapi.modules.properties.util.MergeType;
 
 import java.util.ArrayList;
@@ -35,8 +37,7 @@ public class EatAbility implements ItemUseDefaultCooldownAbility<EatAbility.EatR
     }
 
     @Override
-    public boolean allowedOnItem(ItemStack itemStack, Level world, Player player, InteractionHand hand, ItemAbilityManager.AbilityHitContext abilityHitContext, EatRawData context) {
-        EatRawData data = getSpecialContext(itemStack);
+    public boolean allowedOnItem(ItemStack itemStack, Level world, Player player, InteractionHand hand, ItemAbilityManager.AbilityHitContext abilityHitContext, EatRawData data) {
         return data != null && (data.alwaysEdible || player.getFoodData().needsFood());
     }
 
@@ -62,7 +63,7 @@ public class EatAbility implements ItemUseDefaultCooldownAbility<EatAbility.EatR
 
     @Override
     public void usageTick(Level world, LivingEntity user, ItemStack stack, int remainingUseTicks, EatRawData context) {
-        if (remainingUseTicks <= 0) {
+        if (remainingUseTicks <= 1) {
             user.releaseUsingItem();
 
             boolean isClient = user.level().isClientSide;
@@ -102,6 +103,17 @@ public class EatAbility implements ItemUseDefaultCooldownAbility<EatAbility.EatR
     }
 
     @Override
+    public EatRawData merge(EatRawData left, EatRawData right, MergeType mergeType) {
+        return left.merge(left, right, mergeType);
+    }
+
+    @Override
+    public EatRawData initialize(EatRawData left, ModuleInstance moduleInstance) {
+        return left.initialize(left,moduleInstance);
+    }
+
+
+    @Override
     public int getCooldown(ItemStack itemStack) {
         return getSpecialContext(itemStack).getCooldown();
     }
@@ -111,7 +123,7 @@ public class EatAbility implements ItemUseDefaultCooldownAbility<EatAbility.EatR
         return getSpecialContext(itemStack).eatTicks();
     }
 
-    public static class EatRawData {
+    public static class EatRawData implements MergeAble<EatRawData>, InitializeAble<EatRawData> {
         //public static final Codec<EatRawData> codec = AutoCodec.of(EatRawData.class).codec();
 
         public static final Codec<EatRawData> CODEC = RecordCodecBuilder.create(instance -> instance.group(
@@ -165,18 +177,19 @@ public class EatAbility implements ItemUseDefaultCooldownAbility<EatAbility.EatR
         }
 
 
-        public EatRawData initialize(ModuleInstance instance) {
-            this.nutrition.initialize(instance);
-            this.saturation.initialize(instance);
-            this.durability.initialize(instance);
-            return this;
+        public EatRawData initialize(EatRawData property,ModuleInstance instance) {
+            return new EatRawData(
+                    property.nutrition.initialize(instance),
+                    property.saturation.initialize(instance),
+                    property.eat_ticks.initialize(instance),
+                    property.cooldown.initialize(instance),
+                    property.durability.initialize(instance),
+                    property.alwaysEdible,
+                    property.effects);
         }
 
-        public EatRawData merge(EatRawData merge, MergeType mergeType) {
-            return merge(this, merge, mergeType);
-        }
 
-        public static EatRawData merge(EatRawData left, EatRawData right, MergeType mergeType) {
+        public EatRawData merge(EatRawData left, EatRawData right, MergeType mergeType) {
             EatRawData rawData = new EatRawData();
             rawData.nutrition = DoubleOperationResolvable.merge(left.nutrition, right.nutrition, mergeType);
             rawData.saturation = DoubleOperationResolvable.merge(left.saturation, right.saturation, mergeType);
@@ -209,11 +222,11 @@ public class EatAbility implements ItemUseDefaultCooldownAbility<EatAbility.EatR
         }
 
         int durabilityDamage() {
-            return (int) eat_ticks.evaluate(0.0, 0);
+            return (int) durability.evaluate(0.0, 0);
         }
 
         boolean consumeOnEat() {
-            return eat_ticks.evaluate(0.0) == null;
+            return durability.evaluate(0.0) == null;
         }
     }
 }
