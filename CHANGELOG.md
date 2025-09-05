@@ -4,3 +4,4 @@
 - fixed bug with storage mods like create or refined storage
 - fixed vanilla projectile velocity bug
 - fixed eat ability
+- added [slot] to the resolvers, slo [slot.blade.material.hardness] now works

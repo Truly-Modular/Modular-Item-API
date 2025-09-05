@@ -89,6 +89,10 @@ Resolves to numeric counts related to item structure:
 - `[count.root_material_matches]` – number of materials across the item matching the first module's material
 - `[count.material_matches]` – number of materials matching the current module's material
 
+### `slot`
+- `[count.slot_name]` switches the context module to the one in the slot if available. otherwise defaults to 0
+example: `[count.blade.material.hardness]` will check the submodule in the blade slot for its material hardness
+
 ### `collect`
 Supports aggregation across multiple modules.
 

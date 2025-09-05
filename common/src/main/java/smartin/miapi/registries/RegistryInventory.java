@@ -102,10 +102,7 @@ import smartin.miapi.modules.properties.mining.MiningLevelProperty;
 import smartin.miapi.modules.properties.mining.MiningShapeProperty;
 import smartin.miapi.modules.properties.mining.MiningTelekinesisProperty;
 import smartin.miapi.modules.properties.onHit.*;
-import smartin.miapi.modules.properties.onHit.entity.AquaticDamage;
-import smartin.miapi.modules.properties.onHit.entity.IllagerBane;
-import smartin.miapi.modules.properties.onHit.entity.SmiteDamage;
-import smartin.miapi.modules.properties.onHit.entity.SpiderDamage;
+import smartin.miapi.modules.properties.onHit.entity.*;
 import smartin.miapi.modules.properties.potion.OnHitDefensiveEffects;
 import smartin.miapi.modules.properties.potion.OnHitOffensiveEffects;
 import smartin.miapi.modules.properties.potion.OnKillEffects;
@@ -599,6 +596,8 @@ public class RegistryInventory {
             registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, MiningTelekinesisProperty.KEY, new MiningTelekinesisProperty());
             registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, BludgeonProperty.KEY, new BludgeonProperty());
             registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, AbilityProperty.KEY, new AbilityProperty());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, EntityDamageStrength.KEY, new EntityDamageStrength());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, EntityArmorStrength.KEY, new EntityArmorStrength());
             //compat
             //registerMiapi(moduleProperties, BetterCombatProperty.KEY, new BetterCombatProperty());
             BetterCombatHelper.setup();

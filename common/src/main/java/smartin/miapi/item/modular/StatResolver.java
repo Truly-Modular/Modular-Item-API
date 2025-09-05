@@ -250,6 +250,17 @@ public class StatResolver {
                 return firstResult;
             }
         });
+        StatResolver.registerResolver("slot", new Resolver() {
+            @Override
+            public double resolveDouble(String data, ModuleInstance instance) {
+                String[] parts = data.split("\\.", 2);
+                ModuleInstance module = instance.getSubModule(parts[0]);
+                if (module != null) {
+                    return StatResolver.resolveDouble(parts[1], module);
+                }
+                return 0;
+            }
+        });
         StatResolver.registerResolver("count", new Resolver() {
             @Override
             public double resolveDouble(String data, ModuleInstance instance) {
@@ -436,7 +447,7 @@ public class StatResolver {
          * @param instance the module instance for which to resolve the value
          * @return the resolved string value
          */
-        default String resolveString(String data, ModuleInstance instance){
+        default String resolveString(String data, ModuleInstance instance) {
             return "";
         }
     }
