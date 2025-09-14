@@ -62,13 +62,17 @@ public abstract class GenericEntityStrengthProperty extends CodecProperty<Map<Re
                                 .setMax(8)
                                 .setName(edit.name().orElse(getFallbackName(exampleType)))
                                 .setHoverDescription(stack -> {
-                                    MutableComponent component = MutableComponent
-                                            .create(getBaseDescription(
+                                    MutableComponent component = Component.empty();;
+                                    component
+                                            .append(edit.name().orElse(getFallbackName(exampleType)))
+                                            .append("\n")
+                                            .append(getBaseDescription(
                                                     getData(stack)
                                                             .filter(a -> a.containsKey(id))
-                                                            .map(a -> a.get(id).strength().getValue()).orElse(0.0))
-                                                    .getContents()).append("\n");
-                                    component.append(Component.translatable("miapi.property.entity.source")).append("\n");
+                                                            .map(a -> a.get(id).strength().getValue()).orElse(0.0)))
+                                            .append("\n")
+                                            .append(Component.translatable("miapi.property.entity.source"))
+                                            .append("\n");
                                     edit.entities().forEach(context -> {
                                         if (context instanceof HolderSet.Named<EntityType<?>> named) {
                                             component.append(Helper.getTranslation(named.key())).append("\n");

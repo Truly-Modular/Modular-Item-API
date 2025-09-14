@@ -1,39 +1,13 @@
 {
-    "icon": {
-        "type": "item",
-        "item": "minecraft:blue_ice"
-    },
-    "groups": [
-        "mace_replacement"
-    ],
-    "hardness": 2,
-    "density": 150,
-    "flexibility": 0,
-    "durability": 50,
-    "enchantability": 10,
-    "color": "6EB5FF",
-    "color_palette": {
-        "type": "image_generated",
-        "atlas": "block",
-        "texture": "minecraft:block/blue_ice"
-    },
-    "properties":{
-        "default": {
-            "on_hit_target_effects":[
-                {
-                    "potion": "minecraft:slowness",
-                    "amplifier": "0",
-                    "duration": "10"
-                }
-            ]
-        }
-    },
-    "mining_speed": 0,
-    "mining_level": "minecraft:incorrect_for_wooden_tool",
-    "items": [
-        {
-            "item": "minecraft:blue_ice",
-            "value": 0.1
-        }
-    ]
+    "parent": "miapi:metal/iron",
+    "data": {
+        "mining_speed": 0,
+        "mining_level": "minecraft:incorrect_for_diamond_tool",
+        "items": [
+            {
+                "item": "minecraft:blue_ice",
+                "value": 0.1
+            }
+        ]
+    }
 }

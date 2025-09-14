@@ -387,9 +387,7 @@ public class CodecMaterial implements Material {
         List<String> g = new ArrayList<>(this.groups);
         g.addFirst(getStringID());
         groups = g;
-        List<String> uiGroups = new ArrayList<>(this.guiGroups);
-        uiGroups.addFirst(getStringID());
-        guiGroups = uiGroups;
+        guiGroups = new ArrayList<>(this.guiGroups);
     }
 
     public void setData(Map<String, String> stringData, Map<String, Double> doubleMap) {

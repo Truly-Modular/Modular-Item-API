@@ -586,7 +586,7 @@
 
     "miapi.property.entity.source": "Applies to the following Entities:",
     "miapi.property.entity.armor.default": "%sprotection",
-    "miapi.property.entity.armor.description": "Reduces damage by %s percent",
+    "miapi.property.entity.armor.description": "Reduces damage by %s%%\nCaps out at 80%% reduction. \nHas diminishing returns.",
     "miapi.property.entity.attack.default": "%sbane",
     "miapi.property.entity.attack.description": "Bonus damage",
     "miapi.arsenal.compat.ht_treechop": "Axe Chops",

@@ -38,6 +38,7 @@ public class GeneratedMaterialFromCopy implements Material {
     ItemStack mainIngredient;
     ResourceLocation key;
     List<String> groups = new ArrayList<>();
+    List<String> guiGroups = new ArrayList<>();
     List<String> textureKeys;
     Map<String, Double> stats = new HashMap<>();
     TagKey<Block> incorrectForTool;
@@ -73,8 +74,9 @@ public class GeneratedMaterialFromCopy implements Material {
         }
         this.source = other;
         this.mainIngredient = mainIngredient;
-        groups.add(key.toString());
+        groups.add(getStringID());
         groups.addAll(other.getGroups());
+        guiGroups.addAll(other.getGuiGroups());
         textureKeys = List.of("default");
         stats.put("hardness", other.getDouble("hardness"));
         stats.put("density", other.getDouble("density"));
@@ -131,6 +133,11 @@ public class GeneratedMaterialFromCopy implements Material {
     @Override
     public List<String> getGroups() {
         return groups;
+    }
+
+    @Override
+    public List<String> getGuiGroups() {
+        return guiGroups;
     }
 
     @Environment(EnvType.CLIENT)

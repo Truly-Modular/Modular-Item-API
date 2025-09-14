@@ -20,7 +20,7 @@ public class EntityArmorStrength extends GenericEntityStrengthProperty {
                             strengthForEntity(
                                     event.attacker.getType().arch$holder(),
                                     event.defender.getArmorAndBodyArmorSlots());
-                    event.amount *= (float) valueRemap(strength);
+                    event.amount *= (1 - (float) valueRemap(strength));
                 }
                 return EventResult.pass();
             }
@@ -34,10 +34,27 @@ public class EntityArmorStrength extends GenericEntityStrengthProperty {
 
     @Override
     public Component getBaseDescription(double strength) {
-        return Component.translatable("miapi.property.entity.armor.description", 1 - valueRemap(strength));
+        return Component.translatable("miapi.property.entity.armor.description", String.format("%.2f", (100 * valueRemap(strength))));
     }
 
     public static double valueRemap(double x) {
-        return 1 - (2 / (1 + Math.exp(-x / 10)) - 1);
+        if (x < 0) {
+            return -reductionHyperbolic(-x, 50, 3);
+        }
+        return reductionHyperbolic(x, 50, 3);
+    }
+
+    /**
+     * This function is used to scale the incomming damage down, but have diminishing returns at an upper cap.
+     * it works by calculating the reduction as a gain in effective health and converting this in a % dmg reduction.
+     *
+     * @param a the value to be rempaed
+     * @param K scalling factor, scales how fast the limit m is approached
+     * @param M the upper limit of effective health gain.
+     * @return the remaped value
+     */
+    public static double reductionHyperbolic(double a, double K, double M) {
+        double ehp = 1.0 + M * (a / (a + K));
+        return 1.0 - 1.0 / ehp;
     }
 }

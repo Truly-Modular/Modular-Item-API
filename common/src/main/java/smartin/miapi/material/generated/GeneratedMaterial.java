@@ -137,6 +137,7 @@ public class GeneratedMaterial implements Material {
         stats.put("mining_speed", (double) toolMaterial.getSpeed());
         stats.put("enchantability", (double) toolMaterial.getEnchantmentValue());
         isValid = assignStats(toolItems);
+        this.incorrectForTool = sourceTier.getIncorrectBlocksForDrops();
     }
 
     public boolean assignStats(List<TieredItem> toolItems) {
@@ -164,7 +165,7 @@ public class GeneratedMaterial implements Material {
             }
 
             if (Math.abs(calculatedDamage - axeAttackDmg) > 0.1) {
-                stats.put("axe_damage", calculatedDamage - axeAttackDmg);
+                stats.put("axe_damage", -(calculatedDamage - axeAttackDmg));
             }
 
             if (groups.contains("crystal") || groups.contains("gemstone")) {

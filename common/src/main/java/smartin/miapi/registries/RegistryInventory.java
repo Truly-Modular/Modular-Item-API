@@ -89,6 +89,7 @@ import smartin.miapi.modules.abilities.util.ItemUseAbility;
 import smartin.miapi.modules.conditions.*;
 import smartin.miapi.modules.edit_options.*;
 import smartin.miapi.modules.edit_options.CreateItemOption.CreateItemOption;
+import smartin.miapi.modules.edit_options.material.MaterialViewer;
 import smartin.miapi.modules.edit_options.skins.SkinOptions;
 import smartin.miapi.modules.properties.*;
 import smartin.miapi.modules.properties.armor.*;
@@ -450,6 +451,7 @@ public class RegistryInventory {
             registerMiapi(EDIT_OPTION_MIAPI_REGISTRY, "create", new CreateItemOption());
             registerMiapi(EDIT_OPTION_MIAPI_REGISTRY, "cosmetic", new CosmeticEditOption());
             registerMiapi(EDIT_OPTION_MIAPI_REGISTRY, "glint_settings", new GlintEditOption());
+            registerMiapi(EDIT_OPTION_MIAPI_REGISTRY, "material_lexica", new MaterialViewer());
             SynergyManager.setup();
 
             //CONDITIONS

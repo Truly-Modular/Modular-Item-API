@@ -133,6 +133,7 @@ public class LoreProperty extends CodecProperty<List<LoreProperty.Holder>> {
         if (MiapiConfig.getClientConfig().loreConfig.injectLoreModularMaterial) {
             Material material = materialLookupTable.computeIfAbsent(itemStack, itemStack1 -> MaterialProperty.getMaterialFromIngredient(itemStack));
             if (material != null) {
+
                 int i = material.getGroups().size();
                 if (i == 1) {
                     if (MiapiConfig.getClientConfig().loreConfig.injectLoreWithoutGroup) {

@@ -1,8 +1,0 @@
-{
-    "ability_context": {
-        "copy_item": {
-            "id": "minecraft:bow",
-            "fake_item_identity": true
-        }
-    }
-}

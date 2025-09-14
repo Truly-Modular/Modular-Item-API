@@ -19,6 +19,7 @@ public class SimpleButton<T> extends InteractAbleWidget {
     private final T toCallback;
     private final Consumer<T> callback;
     public boolean isEnabled = true;
+    public ScrollingTextWidget textWidget;
 
     /**
      * Creates a new instance of {@link SimpleButton}.
@@ -36,6 +37,27 @@ public class SimpleButton<T> extends InteractAbleWidget {
         assert callback != null;
         this.toCallback = toCallback;
         this.callback = callback;
+        textWidget = new ScrollingTextWidget(x, y, width, title, FastColor.ARGB32.color(255, 255, 255, 255));
+        textWidget.setOrientation(ScrollingTextWidget.Orientation.CENTERED);
+        textWidget.hasTextShadow = false;
+        this.addChild(textWidget);
+    }
+
+    /**
+     * Creates a new instance of {@link SimpleButton}.
+     *
+     * @param x          The x coordinate of the button.
+     * @param y          The y coordinate of the button.
+     * @param width      The width of the button.
+     * @param height     The height of the button.
+     * @param title      The title of the button.
+     * @param callback   The callback to invoke when the button is clicked.
+     */
+    public SimpleButton(int x, int y, int width, int height, Component title, Runnable callback) {
+        super(x, y, width, height, title);
+        assert callback != null;
+        this.toCallback = null;
+        this.callback = (o)-> callback.run();
         ScrollingTextWidget textWidget = new ScrollingTextWidget(x, y, width, title, FastColor.ARGB32.color(255, 255, 255, 255));
         textWidget.setOrientation(ScrollingTextWidget.Orientation.CENTERED);
         textWidget.hasTextShadow = false;

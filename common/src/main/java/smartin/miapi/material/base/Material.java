@@ -111,7 +111,7 @@ public interface Material extends PropertyController, ColorController, StatContr
         List<Component> lines = new ArrayList<>();
         if (extended) {
             lines.add(gray(Component.translatable("miapi.ui.material_desc_alt_2")));
-            for (int i = 1; i < this.getGuiGroups().size(); i++) {
+            for (int i = 0; i < this.getGuiGroups().size(); i++) {
                 String groupId = this.getGuiGroups().get(i);
                 lines.add(gray(Component.literal(" - " + HoverMaterialList.getTranslation(groupId).getString())));
             }

@@ -187,7 +187,7 @@ public class JsonMaterial implements Material {
     @Override
     public List<String> getGroups() {
         List<String> groups = new ArrayList<>();
-        groups.add(id.toString());
+        groups.add(getStringID());
         if (rawJson.getAsJsonObject().has("groups")) {
             JsonArray groupsJson = rawJson.getAsJsonObject().getAsJsonArray("groups");
             for (JsonElement groupElement : groupsJson) {
@@ -208,7 +208,6 @@ public class JsonMaterial implements Material {
     @Override
     public List<String> getGuiGroups() {
         List<String> groups = new ArrayList<>();
-        groups.add(id.toString());
         if (rawJson.getAsJsonObject().has("groups")) {
             JsonArray groupsJson = rawJson.getAsJsonObject().getAsJsonArray("groups");
             for (JsonElement groupElement : groupsJson) {

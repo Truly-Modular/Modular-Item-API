@@ -2,6 +2,7 @@ package smartin.miapi.datapack;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 import io.netty.handler.codec.DecoderException;
@@ -12,6 +13,7 @@ import smartin.miapi.Miapi;
 import smartin.miapi.editor.DocPage;
 import smartin.miapi.item.ItemToModularConverter;
 import smartin.miapi.material.CodecMaterial;
+import smartin.miapi.material.CodecMaterialExtension;
 import smartin.miapi.material.MaterialProperty;
 import smartin.miapi.material.composite.material.DatapackComposite;
 import smartin.miapi.modules.ItemModule;
@@ -23,6 +25,7 @@ import smartin.miapi.modules.synergies.SynergyManager;
 import smartin.miapi.registries.MiapiRegistry;
 import smartin.miapi.registries.RegistryInventory;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -74,17 +77,27 @@ public class ReloadHelpers {
                 Miapi.LOGGER.error(data);
             }
         }), 0);
-        ReloadHelpers.registerReloadHandler(ReloadEvents.MAIN, "miapi/key_binding", true, (isClient) -> {
-        }, (isClient, id, data, registryAccess) -> KeyBindManager.processKeybind(isClient, id, data), 0.0f);
+        ReloadHelpers.registerReloadHandler(
+                ReloadEvents.MAIN,
+                "miapi/key_binding",
+                true,
+                (isClient) -> {
+                },
+                (isClient) -> {
+                },
+                (isClient, id, data, registryAccess) -> KeyBindManager.processKeybind(isClient, id, data), 0.0f);
         ReloadHelpers.registerReloadHandler("miapi/data_composite", DatapackComposite.DATA_COMPOSITE_REGISTRY, DatapackComposite.DATA_PACK_CODEC, 0.0f);
         ReloadHelpers.registerReloadHandler(ReloadEvents.MAIN, "miapi/material_extensions", (isClient) -> {
                 },
                 (isClient, path, data, registryAccess) -> {
                     MaterialProperty.loadMaterialExtention(path, data, registryAccess);
                 }, -1.5f);
+        /*
         ReloadHelpers.registerReloadHandler(
                 "miapi/materials",
                 () -> MaterialProperty.MATERIAL_REGISTRY.clear(),
+                () -> {
+                },
                 (isClient, id, mat, registryAccess) -> {
                     mat.setID(id);
                     mat.generateConverters(isClient);
@@ -92,6 +105,19 @@ public class ReloadHelpers {
                 },
                 CodecMaterial.CODEC,
                 -2.0f);
+
+         */
+        ReloadHelpers.registerHierarchicalReloadHandler(
+                "miapi/materials",
+                CodecMaterial.CODEC,
+                CodecMaterialExtension.CODEC,
+                () -> MaterialProperty.MATERIAL_REGISTRY.clear(),
+                (isClient, path, data, registryAccess) -> {
+                    data.setID(path);
+                    MaterialProperty.MATERIAL_REGISTRY.register(path, data);
+                },
+                -2.0f
+        );
         ReloadHelpers.registerReloadHandler(ReloadEvents.MAIN, "miapi/modular_converter", ItemToModularConverter.regexes, (isClient, path, data, registryAccess) ->
 
         {
@@ -104,6 +130,7 @@ public class ReloadHelpers {
             String location,
             boolean syncToClient,
             Consumer<Boolean> beforeLoop,
+            Consumer<Boolean> afterLoop,
             SingleFileHandler handler,
             float priority) {
         if (syncToClient)
@@ -119,6 +146,7 @@ public class ReloadHelpers {
                     }
                 }
             });
+            afterLoop.accept(isClient);
         }, priority);
     }
 
@@ -128,7 +156,8 @@ public class ReloadHelpers {
             Consumer<Boolean> beforeLoop,
             SingleFileHandler handler,
             float priority) {
-        registerReloadHandler(event, location, true, beforeLoop, handler, priority);
+        registerReloadHandler(event, location, true, beforeLoop, bl -> {
+        }, handler, priority);
     }
 
     public static void registerReloadHandler(
@@ -136,7 +165,8 @@ public class ReloadHelpers {
             String location, Map<?, ?> toClear,
             SingleFileHandler handler,
             float prio) {
-        registerReloadHandler(event, location, true, bl -> toClear.clear(), handler, prio);
+        registerReloadHandler(event, location, true, bl -> toClear.clear(), bl -> {
+        }, handler, prio);
     }
 
     public static <T> void registerReloadHandler(
@@ -171,7 +201,8 @@ public class ReloadHelpers {
             SimpleDecoder<T> decoder,
             SingleDecodedFileHandler<T> onDecode,
             float prio) {
-        registerReloadHandler(ReloadEvents.MAIN, location, true, (a) -> {
+        registerReloadHandler(ReloadEvents.MAIN, location, true, (before) -> {
+        }, after -> {
         }, new SingleFileHandler() {
             @Override
             public void reloadFile(boolean isClient, ResourceLocation path, String data, RegistryAccess registryAccess) {
@@ -196,7 +227,8 @@ public class ReloadHelpers {
             BiConsumer<ResourceLocation, T> onDecode,
             Codec<T> codec,
             float priority) {
-        registerReloadHandler(location, clear, (isClient, path, data, registryAccess) -> {
+        registerReloadHandler(location, clear, () -> {
+        }, (isClient, path, data, registryAccess) -> {
             onDecode.accept(path, data);
         }, codec, priority);
     }
@@ -204,6 +236,7 @@ public class ReloadHelpers {
     public static <T> void registerReloadHandler(
             String location,
             Runnable clear,
+            Runnable post,
             SingleDecodedFileHandler<T> onDecode,
             Codec<T> codec,
             float priority) {
@@ -211,7 +244,9 @@ public class ReloadHelpers {
             ResourceLocation shortened = Miapi.id(path.toString().replace(":" + location + "/", ":").replace(".json", ""));
             onDecode.reloadFile(isClient, shortened, data, registryAccess);
         }, location);
-        registerReloadHandler(ReloadEvents.MAIN, location, true, (a) -> {
+        registerReloadHandler(ReloadEvents.MAIN, location, true, (before) -> {
+        }, (after) -> {
+            post.run();
         }, handler, priority);
         ReloadEvents.START.subscribe((isClient, registryAccess) -> clear.run());
     }
@@ -249,4 +284,135 @@ public class ReloadHelpers {
     public interface SimpleDecoder<T> {
         T decode(boolean isClient, ResourceLocation path, JsonElement element, RegistryAccess registryAccess) throws DecoderException;
     }
+
+    public static <B, E extends Extension<B>> void registerHierarchicalReloadHandler(
+            String location,
+            MiapiRegistry<B> registry,
+            Codec<B> baseCodec,
+            Codec<E> extCodec,
+            float priority
+    ) {
+        registerHierarchicalReloadHandler(location, baseCodec, extCodec, registry::clear, (isClient, path, data, registryAccess) -> registry.register(path, data), priority);
+    }
+
+
+    public static <K, B extends K, E extends Extension<B>> void registerHierarchicalReloadHandler(
+            String location,
+            Codec<B> baseCodec,
+            Codec<E> extCodec,
+            MiapiRegistry<K> registry,
+
+            float priority
+    ) {
+        registerHierarchicalReloadHandler(location, baseCodec, extCodec, registry::clear, new SingleDecodedFileHandler<B>() {
+            @Override
+            public void reloadFile(boolean isClient, ResourceLocation path, B data, RegistryAccess registryAccess) {
+                if (path.toString().contains("test")) {
+                    Miapi.LOGGER.info("test");
+                }
+                registry.register(path, data);
+            }
+        }, priority);
+    }
+
+    public static <B, E extends Extension<B>> void registerHierarchicalReloadHandler(
+            String location,
+            Codec<B> baseCodec,
+            Codec<E> extCodec,
+            Runnable clear,
+            SingleDecodedFileHandler<B> baseHandler,
+            float priority
+    ) {
+        registerHierarchicalReloadHandler(location, baseCodec, extCodec, clear, baseHandler, (isClient, path, data, registryAccess) -> {
+
+        }, priority);
+    }
+
+    public static <B, E extends Extension<B>> void registerHierarchicalReloadHandler(
+            String location,
+            Codec<B> baseCodec,
+            Codec<E> extCodec,
+            Runnable clear,
+            SingleDecodedFileHandler<B> baseHandler,
+            SingleDecodedFileHandler<E> extensionHandler,
+            float priority
+    ) {
+        Map<ResourceLocation, B> pendingBase = new HashMap<>();
+        Map<ResourceLocation, E> pendingExts = new HashMap<>();
+
+        Codec<BaseOrExtension<B, E>> unionCodec = createCodec(baseCodec, extCodec);
+
+        // Phase 1: collect
+        registerReloadHandler(location, clear,
+                () -> {
+                    // Phase 2a: register bases
+                    for (var entry : pendingBase.entrySet()) {
+                        baseHandler.reloadFile(false, entry.getKey(), entry.getValue(), null);
+                    }
+
+                    // Phase 2b: register extensions
+                    for (var entry : pendingExts.entrySet()) {
+                        E ext = entry.getValue();
+                        extensionHandler.reloadFile(false, entry.getKey(), ext, null);
+                        B base = pendingBase.get(ext.getTarget());
+                        if (base == null) {
+                            Miapi.LOGGER.error("Missing base {} for extension {}", ext.getTarget(), entry.getKey());
+                            continue;
+                        }
+                        B extended = ext.applyTo(base);
+                        baseHandler.reloadFile(false, entry.getKey(), extended, null);
+                    }
+
+                    pendingBase.clear();
+                    pendingExts.clear();
+                },
+                (isClient, id, decoded, registryAccess) -> {
+                    if (decoded instanceof BaseOrExtension.Base<B, E> b) {
+                        pendingBase.put(id, b.base());
+                    } else if (decoded instanceof BaseOrExtension.Ext<B, E> e) {
+                        pendingExts.put(id, e.extension());
+                    }
+                },
+                unionCodec,
+                priority
+        );
+    }
+
+
+    public static <T, E extends Extension<T>> Codec<BaseOrExtension<T, E>> createCodec(
+            Codec<T> baseCodec,
+            Codec<E> extCodec
+    ) {
+        return Codec.either(extCodec, baseCodec).xmap(
+                either -> either.map(
+                        BaseOrExtension.Ext::new,   // left = extension
+                        BaseOrExtension.Base::new   // right = base
+                ),
+                boe -> {
+                    if (boe instanceof BaseOrExtension.Ext<T, E> e) {
+                        return Either.left(e.extension());
+                    } else {
+                        return Either.right(((BaseOrExtension.Base<T, E>) boe).base());
+                    }
+                }
+        );
+    }
+
+
+    public sealed interface BaseOrExtension<T, E extends Extension<T>>
+            permits BaseOrExtension.Base, BaseOrExtension.Ext {
+
+        record Base<T, E extends Extension<T>>(T base) implements BaseOrExtension<T, E> {
+        }
+
+        record Ext<T, E extends Extension<T>>(E extension) implements BaseOrExtension<T, E> {
+        }
+    }
+
+    public interface Extension<T> {
+        ResourceLocation getTarget();
+
+        T applyTo(T base);
+    }
+
 }
