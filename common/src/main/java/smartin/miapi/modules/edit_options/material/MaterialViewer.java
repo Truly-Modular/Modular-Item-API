@@ -1,6 +1,5 @@
 package smartin.miapi.modules.edit_options.material;
 
-import dev.architectury.platform.Platform;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.network.FriendlyByteBuf;
@@ -21,9 +20,10 @@ public class MaterialViewer implements EditOption {
 
     @Override
     public boolean isVisible(EditContext editContext) {
-        return (editContext.getItemstack()==null || editContext.getItemstack().isEmpty()) && Platform.isDevelopmentEnvironment();
+        return (editContext.getItemstack()==null || editContext.getItemstack().isEmpty());
     }
 
+    @Environment(EnvType.CLIENT)
     @Override
     public InteractAbleWidget getGui(int x, int y, int width, int height, EditContext editContext) {
         return new MaterialViewerWidget(x,y,width,height);

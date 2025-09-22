@@ -3,6 +3,7 @@ package smartin.miapi.client.gui.crafting.crafter;
 import net.minecraft.Util;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FastColor;
 import net.minecraft.world.item.ItemStack;
@@ -21,7 +22,6 @@ import java.util.Locale;
 import java.util.function.Consumer;
 
 public class MaterialDetailView extends InteractAbleWidget {
-    private final ItemStack itemStack;
     private final Consumer<Object> back;
     private final ScrollingTextWidget header;
     private final Material material;
@@ -31,51 +31,60 @@ public class MaterialDetailView extends InteractAbleWidget {
 
     static {
         registerBuilder(
-                new Builder("hardness")
+                new NumberBuilder("hardness")
         );
         registerBuilder(
-                new Builder("flexibility")
+                new NumberBuilder("flexibility")
         );
         registerBuilder(
-                new Builder("density")
+                new NumberBuilder("density")
         );
         registerBuilder(
-                new Builder("durability").setMax(2000).setFormat("##")
+                new NumberBuilder("durability").setMax(2000).setFormat("##")
         );
         registerBuilder(
-                new Builder("enchantability")
+                new NumberBuilder("enchantability")
         );
         registerBuilder(
-                new Builder("mining_speed")
+                new NumberBuilder("mining_speed")
         );
+        registerBuilder(new MaterialDetailView.MiningLevelBuilder());
+        registerBuilder(new ColorBuilder());
     }
 
     public MaterialDetailView(int x, int y, int width, int height, ItemStack stack, Consumer<Object> back) {
+        this(x, y, width, height, MaterialProperty.getMaterialFromIngredient(stack), back);
+    }
+
+    public MaterialDetailView(int x, int y, int width, int height, Material material, Consumer<Object> back) {
         super(x, y, width, height, Component.empty());
-        this.itemStack = stack;
         this.back = back;
-        this.material = MaterialProperty.getMaterialFromIngredient(stack);
+        this.material = material;
+        int buttonWidth = 0;
+        if (back != null) {
+            buttonWidth = 27;
+        }
         TransformableWidget headerScaler = new TransformableWidget(this.getX(), this.getY(), this.getWidth(), this.getHeight(), scale);
-        this.header = new ScrollingTextWidget((int) ((x + 5) * (1 / scale)), (int) ((y + 5) * (1 / scale)), width, material.getTranslation(), FastColor.ARGB32.color(255, 255, 255, 255));
+        this.header = new ScrollingTextWidget((int) ((x + 5) * (1 / scale)), (int) ((y + 5) * (1 / scale)), (int) ((width - buttonWidth - 6 - (material.hasIcon() ? 16 : 0)) / scale), material.getTranslation(), FastColor.ARGB32.color(255, 255, 255, 255));
         headerScaler.addChild(header);
         this.addChild(headerScaler);
         int spacer = 13;
         List<InteractAbleWidget> widgets = new ArrayList<>();
-        widgets.add(new ColorWidget(this.getX(), this.getY(), this.getWidth(), spacer, material.getColor(new ModuleInstance(ItemModule.empty))));
         for (Builder builder : infoBarBuilders) {
             widgets.add(builder.build(x, y, width, spacer, material));
         }
-        material.getMiningLevelToolTip().forEach(c->{
-            widgets.add(
-                    new ScrollingTextWidget(
-                            (int) ((x + 5) * (1 / scale)),
-                            (int) ((y + 5) * (1 / scale)),
-                            width,
-                            c,
-                            FastColor.ARGB32.color(255, 255, 255, 255)));
-        });
-        ScrollList list = new ScrollList(x + 10, y + 27, width - 10, this.getHeight() - 27, widgets);
+        ScrollList list = new ScrollList(
+                x + 10, y + 28,
+                width - 10,
+                this.getHeight() - 28, widgets);
         this.addChild(list);
+        if (back != null) {
+            this.addChild(new SimpleButton<>(
+                    x + width -  buttonWidth, y,
+                    buttonWidth, 18,
+                    Component.translatable("miapi.ui.back"),
+                    () -> back.accept(null)));
+        }
     }
 
     public static void registerBuilder(Builder builder) {
@@ -157,33 +166,58 @@ public class MaterialDetailView extends InteractAbleWidget {
         }
     }
 
-    public static class Builder {
+    public static class NumberBuilder implements Builder {
         public String key;
         public int min = 0;
         public int max = 10;
         public String format = "##.##";
 
-        public Builder(String key) {
+        public NumberBuilder(String key) {
             this.key = key;
         }
 
-        public Builder setMax(int max) {
+        public NumberBuilder setMax(int max) {
             this.max = max;
             return this;
         }
 
-        public Builder setMin(int min) {
+        public NumberBuilder setMin(int min) {
             this.min = min;
             return this;
         }
 
-        public Builder setFormat(String format) {
+        public NumberBuilder setFormat(String format) {
             this.format = format;
             return this;
         }
 
         public InteractAbleWidget build(int x, int y, int width, int spacer, Material material) {
-            return new InfoBar(x + 10, y, width - 10, spacer, Component.translatable(Miapi.MOD_ID + ".material_stat." + key), (float) material.getDouble(key), min, max, format);
+            return new InfoBar(x + 10, y, width - 10, spacer,
+                    Component.translatable(
+                            Miapi.MOD_ID + ".material_stat." + key),
+                    (float) material.getDouble(key), min, max, format);
         }
+    }
+
+    public static class ColorBuilder implements Builder {
+
+        @Override
+        public InteractAbleWidget build(int x, int y, int width, int spacer, Material material) {
+            return new ColorWidget(x,y,width,spacer,material.getColor(new ModuleInstance(ItemModule.empty)));
+        }
+    }
+
+    public static class MiningLevelBuilder implements Builder {
+
+        @Override
+        public InteractAbleWidget build(int x, int y, int width, int spacer, Material material) {
+            MutableComponent component = MutableComponent.create(Component.empty().getContents());
+            material.getMiningLevelToolTip().forEach(c -> component.append(c).append("\n"));
+            return new MultiLineTextWidget(x, y, width, spacer, component);
+        }
+    }
+
+    public interface Builder {
+        InteractAbleWidget build(int x, int y, int width, int spacer, Material material);
     }
 }

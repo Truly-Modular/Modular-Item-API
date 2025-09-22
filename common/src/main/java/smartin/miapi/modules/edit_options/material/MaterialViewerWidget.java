@@ -9,6 +9,9 @@ import smartin.miapi.material.base.Material;
 import java.util.*;
 
 public class MaterialViewerWidget extends InteractAbleWidget {
+    ScrollList list;
+    MaterialDisplayWidget materialDisplayWidget;
+
 
     public MaterialViewerWidget(int x, int y, int width, int height) {
         super(x, y, width, height, Component.literal("material-lexica"));
@@ -20,8 +23,19 @@ public class MaterialViewerWidget extends InteractAbleWidget {
                 }
             });
         });
-        addChild(new ScrollList(x, y, width, height,
-                materialMap.keySet().stream().map(key -> (InteractAbleWidget) new MaterialGroupWidget(x, y, width, key, materialMap.get(key))).toList())
-        );
+        list = new ScrollList(x, y, width, height,
+                materialMap.keySet().stream().map(key -> (InteractAbleWidget) new MaterialGroupWidget(x, y, width, key, materialMap.get(key),this::setMaterial)).toList());
+        addChild(list);
+    }
+
+    public void setMaterial(Material material) {
+        this.removeChild(list);
+        materialDisplayWidget = new MaterialDisplayWidget(this.getX(), this.getY(), this.width, this.height, material, this::clearMaterial);
+        this.addChild(materialDisplayWidget);
+    }
+
+    public void clearMaterial() {
+        this.removeChild(materialDisplayWidget);
+        this.addChild(list);
     }
 }

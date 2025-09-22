@@ -22,11 +22,17 @@ public class PreviewManager {
     public static void setCursorItemstack(ItemStack itemstack) {
         if (Environment.isClient()) {
             if (Minecraft.getInstance().isSameThread()) {
-                if (cursorStack != itemstack) {
+                if (cursorStack != itemstack ||
+                    cursorStack != null &&
+                    itemstack != null &&
+                    cursorStack.equals(itemstack)
+                ) {
                     Material material = MaterialProperty.getMaterialFromIngredient(itemstack);
                     if (material != currentPreviewMaterial) {
                         cursorStack = itemstack;
                         updateMaterial(material, cursorStack);
+                    }else{
+                        noUpdate = 0;
                     }
                 } else {
                     noUpdate = 0;

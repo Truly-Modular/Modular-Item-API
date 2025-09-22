@@ -153,9 +153,7 @@ public class ModuleCrafter extends InteractAbleWidget {
             }
             case MATERIAL -> {
                 this.children.clear();
-                MaterialDetailView detailView = new MaterialDetailView(this.getX(), this.getY(), this.width, this.getHeight(), stack, (object) -> {
-                    setMode(Mode.DETAIL);
-                });
+                MaterialDetailView detailView = new MaterialDetailView(this.getX(), this.getY(), this.width, this.getHeight(), stack, null);
                 this.addChild(detailView);
             }
             case HELP -> {

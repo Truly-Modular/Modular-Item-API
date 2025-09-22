@@ -133,7 +133,7 @@ public class GeneratedMaterial implements Material {
         if (smartin.miapi.Environment.isClient()) {
             //setupClient();
         }
-        stats.put("durability", (double) toolMaterial.getUses());
+        stats.put("durability", (double) toolMaterial.getUses() -15);
         stats.put("mining_speed", (double) toolMaterial.getSpeed());
         stats.put("enchantability", (double) toolMaterial.getEnchantmentValue());
         isValid = assignStats(toolItems);

@@ -77,9 +77,10 @@ public class MiapiClient {
             Platform.isModLoaded("optifine") ||
             Platform.isModLoaded("optifabric") ||
             Platform.isModLoaded("oculus");
-    public static boolean IS_VEIL_LOADED = Platform.isModLoaded("veil");
-    public static boolean sodiumLoaded = isSodiumLoaded();
-    public static boolean jerLoaded = Platform.isModLoaded("jeresources");
+    public static boolean VEIL_LOADED = Platform.isModLoaded("veil");
+    public static boolean SODIUM_LOADED = isSodiumLoaded();
+    public static boolean EMI_LOADED = Platform.isModLoaded("emi");
+    public static boolean JER_LOADED = Platform.isModLoaded("jeresources");
     public static final MiapiRegistry<KeyMapping> KEY_BINDINGS = MiapiRegistry.getInstance(KeyMapping.class);
     //public static final KeyBinding HOVER_DETAIL_BINDING = KEY_BINDINGS.register("miapi:hover_detail", new KeyBinding("miapi.gui.item_detail", 42, "miapi.keybinds"));
 
@@ -185,7 +186,7 @@ public class MiapiClient {
         ClientPlayerEvent.CLIENT_PLAYER_JOIN.register(player -> {
             MiapiEvents.CLEAR_CACHE.invoker().onReload();
             Miapi.clientRegistryAccess = player.registryAccess();
-            if (jerLoaded && Miapi.server == null) {
+            if (JER_LOADED && Miapi.server == null) {
                 String version = Platform.getMod("jeresources").getVersion();
                 if (version.equals("1.4.0.238") || version.equals("1.4.0.246") || version.equals("1.4.0.247")) {
                     player.sendSystemMessage(Component.literal("Just Enough Resources 1.20.1-1.4.0.247 Release is broken on servers. Please Remove it."));
