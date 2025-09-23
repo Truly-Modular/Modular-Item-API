@@ -187,7 +187,7 @@ public class MaterialSpriteManager {
      */
     public static VertexConsumer getVertexConsumer(MultiBufferSource vertexConsumers, TextureAtlasSprite originalSprite, Material material, SpriteColorer materialSpriteColorer) {
         Holder holder = new Holder(originalSprite, material, materialSpriteColorer);
-        if (MiapiConfig.getClientConfig().other.try_fast_render) {
+        if (!MiapiConfig.getClientConfig().other.disableFastRender) {
             SpriteSlot spriteSlot = FAST_CACHE.get(holder);
             if (spriteSlot == null) {
                 spriteSlot = getFreeAtlasSlot(((SpriteContentsAccessor) originalSprite.contents()).getWidth(), ((SpriteContentsAccessor) originalSprite.contents()).getHeight());

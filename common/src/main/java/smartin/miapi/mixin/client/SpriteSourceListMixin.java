@@ -9,6 +9,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import smartin.miapi.client.atlas.BufferSpriteAdder;
+import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.mixin.SpriteSourceListAccessor;
 
 import java.util.ArrayList;
@@ -22,7 +23,7 @@ public class SpriteSourceListMixin {
 
     @ModifyReturnValue(method = "load(Lnet/minecraft/server/packs/resources/ResourceManager;Lnet/minecraft/resources/ResourceLocation;)Lnet/minecraft/client/renderer/texture/atlas/SpriteSourceList;", at = @At("RETURN"))
     private static SpriteSourceList miapi$insertSprites(SpriteSourceList original, ResourceManager resourceManager, ResourceLocation sprite) {
-        if (sprite != null && sprite.equals(blockAtlas)) {
+        if (sprite != null && sprite.equals(blockAtlas) && !MiapiConfig.getClientConfig().other.disableFastRender) {
             List<SpriteSource> list = new ArrayList<>(((SpriteSourceListAccessor) original).getSources());
             list.add(new BufferSpriteAdder());
             return SpriteSourceListAccessor.createSpriteSourceList(list);

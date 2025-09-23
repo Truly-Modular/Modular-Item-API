@@ -71,20 +71,18 @@ public class AllowedEnchantments extends CodecProperty<AllowedEnchantments.Allow
         allTools.addAll(hoe);
 
         access.registry(Registries.ENCHANTMENT).get().forEach(enchantment -> {
-            if (!allSupportEnchantment(allTools, enchantment)) {
-                ResourceLocation enchantmentID = access.registry(Registries.ENCHANTMENT).get().getKey(enchantment);
-                if (allSupportEnchantment(pickaxes, enchantment)) {
-                    enchantmentExtentionsMap.get(ResourceLocation.parse("c:enchantable/pickaxe")).add(enchantmentID);
-                }
-                if (allSupportEnchantment(axe, enchantment)) {
-                    enchantmentExtentionsMap.get(ResourceLocation.parse("c:enchantable/axe")).add(enchantmentID);
-                }
-                if (allSupportEnchantment(shovel, enchantment)) {
-                    enchantmentExtentionsMap.get(ResourceLocation.parse("c:enchantable/shovel")).add(enchantmentID);
-                }
-                if (allSupportEnchantment(hoe, enchantment)) {
-                    enchantmentExtentionsMap.get(ResourceLocation.parse("c:enchantable/hoe")).add(enchantmentID);
-                }
+            ResourceLocation enchantmentID = access.registry(Registries.ENCHANTMENT).get().getKey(enchantment);
+            if (allSupportEnchantment(pickaxes, enchantment)) {
+                enchantmentExtentionsMap.get(ResourceLocation.parse("c:enchantable/pickaxe")).add(enchantmentID);
+            }
+            if (allSupportEnchantment(axe, enchantment)) {
+                enchantmentExtentionsMap.get(ResourceLocation.parse("c:enchantable/axe")).add(enchantmentID);
+            }
+            if (allSupportEnchantment(shovel, enchantment)) {
+                enchantmentExtentionsMap.get(ResourceLocation.parse("c:enchantable/shovel")).add(enchantmentID);
+            }
+            if (allSupportEnchantment(hoe, enchantment)) {
+                enchantmentExtentionsMap.get(ResourceLocation.parse("c:enchantable/hoe")).add(enchantmentID);
             }
         });
     }
