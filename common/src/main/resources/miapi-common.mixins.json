@@ -9,6 +9,7 @@
         "BufferBuilderAccessor",
         "CooldownInstanceAccessor",
         "CraftingResultInventorMixin",
+        "DataResultErrorMixin",
         "EndermanEntityMixin",
         "EnderpearlEntityMixin",
         "EntityMixin",

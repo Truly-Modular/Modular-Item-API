@@ -45,9 +45,8 @@ public class AttributeProperty extends
                     Codec.unboundedMap(
                             AttributeModifier.Operation.CODEC,
                             Codec.unboundedMap(
-                                    Codec.either(EquipmentSlotGroup.CODEC, Codec.BOOL),
+                                    Codec.either(EquipmentSlotGroup.CODEC, Codec.STRING.xmap(a->true,b->"true")),
                                     DoubleOperationResolvable.CODEC)));
-
     public static Codec<Map<ResourceLocation, Map<AttributeModifier.Operation, Map<Either<EquipmentSlotGroup, Boolean>, DoubleOperationResolvable>>>> CODEC = Codec.withAlternative(NEW_CODEC,
             OLD_CODEC.xmap(list -> {
                 Map<ResourceLocation, Map<AttributeModifier.Operation, Map<Either<EquipmentSlotGroup, Boolean>, DoubleOperationResolvable>>> map = new LinkedHashMap<>();
@@ -76,7 +75,7 @@ public class AttributeProperty extends
 
                     map.computeIfAbsent(id, i -> new LinkedHashMap<>())
                             .computeIfAbsent(targetOperation, t -> new LinkedHashMap<>())
-                            .compute(Either.left(equipmentSlotGroup), (e, resolvable1) -> {
+                            .compute(equipmentSlotGroup != null ? Either.left(equipmentSlotGroup) : Either.right(true), (e, resolvable1) -> {
                                 if (resolvable1 == null) {
                                     return new DoubleOperationResolvable(List.of(doubleOperation));
                                 }
@@ -233,17 +232,16 @@ public class AttributeProperty extends
     }
 
     public static class AttributeJson {
-        public static Codec<EquipmentSlotGroup> EQUIPMENTSLOT_CODEC = EquipmentSlotGroup.CODEC;
         public static Codec<String> VALUE_CODEC = Codec.withAlternative(
                 Codec.STRING,
-                Codec.DOUBLE.xmap(i -> ""+i, b -> 0.0));
+                Codec.DOUBLE.xmap(i -> "" + i, b -> 0.0));
 
         public String attribute;
         @CodecBehavior.Override("VALUE_CODEC")
         public String value;
         public String operation;
-        @CodecBehavior.Override("EQUIPMENTSLOT_CODEC")
-        public EquipmentSlotGroup slot;
+        @CodecBehavior.Optional
+        public EquipmentSlotGroup slot = null;
         @CodecBehavior.Optional
         @AutoCodec.Name("target_operation")
         public String targetOperation;

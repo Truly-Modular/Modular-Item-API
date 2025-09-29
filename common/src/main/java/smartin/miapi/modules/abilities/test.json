@@ -1,0 +1,19 @@
+{
+    "ability_context": [
+        {
+            "id": "addon:custom_command",
+            "type": "miapi:command",
+            "data": {
+                "command": [
+                    "say You used the command ability!",
+                    "effect give @p minecraft:strength 10 1"
+                ],
+                "asPlayer": true,
+                "atPlayer": true,
+                "minHold": 30,
+                "cooldown": 60,
+                "userAnim": "NONE"
+            }
+        }
+    ]
+}

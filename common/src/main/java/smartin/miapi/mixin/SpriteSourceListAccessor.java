@@ -10,11 +10,12 @@ import java.util.List;
 
 @Mixin(SpriteSourceList.class)
 public interface SpriteSourceListAccessor {
+
+    @Accessor("sources")
+    List<SpriteSource> getSourcesMiapi();
+
     @Invoker("<init>")
     static SpriteSourceList createSpriteSourceList(List<SpriteSource> sources) {
         throw new UnsupportedOperationException();
     }
-
-    @Accessor
-    List<SpriteSource> getSources();
 }

@@ -443,6 +443,7 @@ public class RegistryInventory {
         register(GAME_EVENT_REGISTRAR, "stat_provider_removed", () -> new GameEvent(16), ev -> statProviderRemovedEvent = ev);
 
 
+
         LifecycleEvent.SETUP.register(() -> {
             //EDITPROPERTIES
             registerMiapi(EDIT_OPTION_MIAPI_REGISTRY, "replace", new ReplaceOption());
@@ -624,6 +625,7 @@ public class RegistryInventory {
             registerMiapi(useAbilityRegistry, AreaHarvestReplant.KEY, new AreaHarvestReplant());
             registerMiapi(useAbilityRegistry, CastLightingAbility.KEY, new CastLightingAbility());
             registerMiapi(useAbilityRegistry, SonicBoomAbility.KEY, new SonicBoomAbility());
+            registerMiapi(useAbilityRegistry, CommandExecuteAbility.KEY, new CommandExecuteAbility());
 
             registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, GunContextProperty.KEY, new GunContextProperty());
 
