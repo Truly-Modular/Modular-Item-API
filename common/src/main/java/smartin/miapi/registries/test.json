@@ -1,12 +1,17 @@
 
 {
-    "attributes": [
-        {
-            "attribute": "minecraft:generic.attack_damage",
-            "value": "[module.cost]*0.1",
-            "operation": "*",
-            "slot": "item",
-            "target_operation": "*"
+    "material": "diamond",
+    "ability_context": {
+        "command": {
+            "command": [
+                "say You used the command ability!",
+                "effect give @p minecraft:strength 10 1"
+            ],
+            "asPlayer": true,
+            "atPlayer": true,
+            "minHold": 30,
+            "cooldown": 60,
+            "userAnim": "BOW"
         }
-    ]
+    }
 }

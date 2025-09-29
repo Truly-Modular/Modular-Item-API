@@ -5,7 +5,10 @@ import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import com.mojang.serialization.JsonOps;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtOps;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.datapack.ReloadEvents;
@@ -46,6 +49,8 @@ public class ItemModule {
      *
      */
     public static final String NBT_MODULE_KEY = "miapi_modules";
+
+    public static final String NBT_MODULE_OBJECT_KEY = "miapi_module_object";
     /**
      * The key for the raw properties in the Cache.
      */
@@ -420,16 +425,22 @@ public class ItemModule {
             if (value.module.name != null) {
                 out.name("module").value(value.module.name);
                 if (value.moduleData != null) {
-                    out.name("moduleData").jsonValue(gson.toJson(value.moduleData));
+                    //out.name("moduleData").jsonValue(gson.toJson(value.moduleData));
+                    out.name("moduleData");
+                    gson.toJson(value.moduleData, Map.class, out);
                 } else {
                     Map<String, String> moduleData = new HashMap<>();
-                    out.name("moduleData").jsonValue(gson.toJson(moduleData));
+                    //out.name("moduleData").jsonValue(gson.toJson(moduleData));
+                    out.name("moduleData");
+                    gson.toJson( moduleData, Map.class, out);
                 }
                 if (value.subModules != null) {
-                    out.name("subModules").jsonValue(gson.toJson(value.subModules));
+                    out.name("subModules");
+                    gson.toJson(value.subModules, Map.class, out);
                 } else {
                     Map<String, String> subModules = new HashMap<>();
-                    out.name("subModules").jsonValue(gson.toJson(subModules));
+                    out.name("subModules");
+                    gson.toJson(subModules, Map.class, out);
                 }
             }
             out.endObject();
@@ -672,6 +683,15 @@ public class ItemModule {
         public void writeToItem(ItemStack stack, boolean clearCache) {
             if (clearCache) {
                 ModularItemCache.clearUUIDFor(stack);
+            }
+            try {
+                JsonElement element = gson.toJsonTree(this);
+                NbtElement nbtElement = JsonOps.COMPRESSED.convertTo(NbtOps.INSTANCE, element);
+                stack.getOrCreateNbt().put(
+                        ItemModule.NBT_MODULE_OBJECT_KEY,
+                        nbtElement);
+            } catch (RuntimeException e) {
+                LOGGER.info("issue during save", e);
             }
             stack.getOrCreateNbt().putString(ItemModule.NBT_MODULE_KEY, this.toString());
             if (stack.getOrCreateNbt().contains(MODULE_KEY)) {

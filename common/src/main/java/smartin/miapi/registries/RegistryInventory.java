@@ -591,6 +591,7 @@ public class RegistryInventory {
             registerMiapi(useAbilityRegistry, EatAbility.KEY, new EatAbility());
             registerMiapi(useAbilityRegistry, AreaHarvestReplant.KEY, new AreaHarvestReplant());
             registerMiapi(useAbilityRegistry, ParryBlock.KEY, new ParryBlock());
+            registerMiapi(useAbilityRegistry, CommandExecuteAbility.KEY, new CommandExecuteAbility());
             registerMiapi(moduleProperties, BlockSelfCooldownProperty.KEY, new BlockSelfCooldownProperty());
             registerMiapi(moduleProperties, InflictCooldownBlockingProperty.KEY, new InflictCooldownBlockingProperty());
             registerMiapi(moduleProperties, ReflectDamageBlockingProperty.KEY, new ReflectDamageBlockingProperty());

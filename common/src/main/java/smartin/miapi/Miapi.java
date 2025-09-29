@@ -3,6 +3,7 @@ package smartin.miapi;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.mojang.serialization.JsonOps;
 import com.redpxnda.nucleus.config.ConfigBuilder;
 import com.redpxnda.nucleus.config.ConfigManager;
 import com.redpxnda.nucleus.config.ConfigType;
@@ -11,6 +12,8 @@ import dev.architectury.event.events.common.CommandRegistrationEvent;
 import dev.architectury.event.events.common.LifecycleEvent;
 import dev.architectury.event.events.common.PlayerEvent;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
@@ -147,6 +150,18 @@ public class Miapi {
                 NbtCompound tag = itemStack.getOrCreateNbt();
                 try {
                     String modulesString;
+                    if (tag.contains(ItemModule.NBT_MODULE_OBJECT_KEY)) {
+                        try {
+                            NbtElement element = tag.get(ItemModule.NBT_MODULE_OBJECT_KEY);
+                            JsonElement element1 = NbtOps.INSTANCE.convertTo(JsonOps.INSTANCE, element);
+                            ItemModule.ModuleInstance moduleInstance = Miapi.gson.fromJson(element1, ItemModule.ModuleInstance.class);
+                            if (moduleInstance != null) {
+                                return moduleInstance;
+                            }
+                        } catch (RuntimeException e) {
+
+                        }
+                    }
                     if (tag.contains(ItemModule.NBT_MODULE_KEY) && tag.get(ItemModule.NBT_MODULE_KEY) != null) {
                         modulesString = tag.getString(ItemModule.NBT_MODULE_KEY);
                     } else {
