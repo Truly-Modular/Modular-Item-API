@@ -1,5 +1,5 @@
-@header ComponentProperty
-@path /data_types/properties/component
+@ header Component Property
+@ path /data_types/properties/component
 
 The `ComponentProperty` allows you to attach **Minecraft data components** to an item via JSON.
 When the module providing these components is removed, the associated components are also removed.
