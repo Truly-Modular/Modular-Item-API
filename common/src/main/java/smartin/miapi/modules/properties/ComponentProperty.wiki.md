@@ -1,5 +1,5 @@
-@ header Component Property
-@ path /data_types/properties/component
+@header Component Property
+@path /data_types/properties/component
 
 The `ComponentProperty` allows you to attach **Minecraft data components** to an item via JSON.
 When the module providing these components is removed, the associated components are also removed.
@@ -9,7 +9,7 @@ If a component already exists on the item, it will be overwritten by the one pro
 
 ## 📂 JSON Structure
 
-```jsonc
+```json
 {
   "components": {
     "namespace:component_id": { /* component data as JSON */ },
@@ -23,7 +23,7 @@ If a component already exists on the item, it will be overwritten by the one pro
 ```
 
 this allows for dynamic resolving as well
-```jsonc
+```json
 {
     "components": {
         "create:banktank_air": "|||miapi.evaluate[material.hardness]"

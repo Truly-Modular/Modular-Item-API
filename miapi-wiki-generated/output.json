@@ -427,6 +427,12 @@
                 }
               }
             },
+            "component": {
+              "header": "Component Property",
+              "description": "The `ComponentProperty` allows you to attach **Minecraft data components** to an item via JSON.\rWhen the module providing these components is removed, the associated components are also removed.\rIf a component already exists on the item, it will be overwritten by the one provided here.\r\r---\r\r## 📂 JSON Structure\r\r```json\r{\r  \"components\": {\r    \"namespace:component_id\": { /* component data as JSON */ },\r    \"minecraft:custom_name\": \"|||miapi.evaluate<expression>\",\r    \"minecraft:lore\": [\r      { \"text\": \"Line 1\" },\r      { \"text\": \"Line 2\" }\r    ]\r  }\r}\r```\r\rthis allows for dynamic resolving as well\r```json\r{\r    \"components\": {\r        \"create:banktank_air\": \"|||miapi.evaluate[material.hardness]\"\r    }\r}\r```\r\rTo start the custom resolver start a string with `|||miapi.evaluate`\rThe rest of the string will be evaluated and the whole string will be replaced with a number.",
+              "data": {},
+              "key_words": []
+            },
             "copy_item_lore": {
               "header": "Copy Item Lore",
               "description": " Copies lore properties from a specified item. This property enables the lore text to be duplicated  \nfrom the referenced item, allowing for a consistent narrative or flavor across items. Intended for items that share lore\rchanging lore.\r",
