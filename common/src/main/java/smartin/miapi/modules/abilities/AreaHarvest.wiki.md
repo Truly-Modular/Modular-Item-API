@@ -5,12 +5,12 @@ The `area_harvest_ability` allows automatic harvesting and replanting of fully-g
 
 This ability uses the **default fields** (`cooldown`, `min_hold`, `max_hold`) and supports one additional custom field:
 
-#### Fields
+### Fields
 
 - **`range`** *(resolvable double)*:  
   Defines the radius (in blocks) around the clicked crop to harvest and replant. A value of `2` results in a 5×5 area.
 
-#### Behavior
+### Behavior
 
 - Activates when right-clicking a fully-grown crop block.
 - Harvests and replants crops in the defined area.
@@ -18,13 +18,13 @@ This ability uses the **default fields** (`cooldown`, `min_hold`, `max_hold`) an
 - Damages the item once for each crop harvested.
 - Only executes on the server side.
 
-#### Use Animation
+### Use Animation
 
 - **`BRUSH`** animation is played during use.
 
 ---
 
-#### Example
+### Example
 ```json
 {
   "ability_context": {
