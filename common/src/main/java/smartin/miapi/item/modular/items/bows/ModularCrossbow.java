@@ -73,6 +73,7 @@ public class ModularCrossbow extends CrossbowItem implements PlatformModularItem
     @Override
     public void verifyComponentsAfterLoad(ItemStack stack) {
         ComponentApplyProperty.initializeItemStack(stack, Miapi.registryAccess);
+        super.verifyComponentsAfterLoad(stack);
     }
 
     @Environment(EnvType.CLIENT)
@@ -112,6 +113,7 @@ public class ModularCrossbow extends CrossbowItem implements PlatformModularItem
     @Override
     public void inventoryTick(ItemStack stack, Level level, Entity entity, int slotId, boolean isSelected) {
         MiapiEvents.INVENTORY_TICK.invoker().tick(stack,level,entity,slotId,isSelected);
+        super.inventoryTick(stack, level, entity, slotId, isSelected);
     }
 
     @Override
@@ -249,6 +251,7 @@ public class ModularCrossbow extends CrossbowItem implements PlatformModularItem
             }
 
         }
+        super.appendHoverText(stack,context,tooltipComponents,tooltipFlag);
     }
 
     private static float getShootingPower(ChargedProjectiles projectile) {

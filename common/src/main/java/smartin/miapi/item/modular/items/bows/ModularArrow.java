@@ -43,6 +43,7 @@ public class ModularArrow extends ArrowItem implements PlatformModularItemMethod
     @Override
     public void verifyComponentsAfterLoad(ItemStack stack) {
         ComponentApplyProperty.initializeItemStack(stack, Miapi.registryAccess);
+        super.verifyComponentsAfterLoad(stack);
     }
 
     @Override
@@ -58,6 +59,7 @@ public class ModularArrow extends ArrowItem implements PlatformModularItemMethod
     @Override
     public void inventoryTick(ItemStack stack, Level level, Entity entity, int slotId, boolean isSelected) {
         MiapiEvents.INVENTORY_TICK.invoker().tick(stack,level,entity,slotId,isSelected);
+        super.inventoryTick(stack, level, entity, slotId, isSelected);
     }
 
     @Override

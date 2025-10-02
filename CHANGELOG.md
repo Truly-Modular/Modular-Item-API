@@ -10,3 +10,4 @@
 - added config option "disable_fast_render" replacing "enable_fast_render" since it was accidentally set to false.
 - fixed mixin conflict with yungs cave bioms
 - fixed minecraft bug that could cause invalid crashes during datapack load
+- fixed compat issues related to item inventory tick and added tooltips

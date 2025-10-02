@@ -234,7 +234,7 @@ public class MiapiServerConfig {
 
             @Comment("Whether Custom Components should be added to the generated Materials")
             @AutoCodec.Name("component_property")
-            public GeneratePropertyOption componentProperty = new GeneratePropertyOption();
+            public GeneratePropertyOption componentProperty = new GeneratePropertyOption(List.of("mythic"));
 
             @Comment("Whether the material can turn into a smithing material")
             @AutoCodec.Name("smithing")
@@ -252,6 +252,14 @@ public class MiapiServerConfig {
 
             @Comment("A list of blocked regexes, if any material causes issues add their id to here")
             public List<String> blocked = List.of();
+
+            public GeneratePropertyOption(){
+
+            }
+
+            public GeneratePropertyOption(List<String> blocked){
+                this.blocked = blocked;
+            }
         }
     }
 

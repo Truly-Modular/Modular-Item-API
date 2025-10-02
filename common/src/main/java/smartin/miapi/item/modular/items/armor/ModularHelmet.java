@@ -40,6 +40,7 @@ public class ModularHelmet extends ArmorItem implements PlatformModularItemMetho
     @Override
     public void verifyComponentsAfterLoad(ItemStack stack) {
         ComponentApplyProperty.initializeItemStack(stack, Miapi.registryAccess);
+        super.verifyComponentsAfterLoad(stack);
     }
 
     @Override
@@ -65,8 +66,8 @@ public class ModularHelmet extends ArmorItem implements PlatformModularItemMetho
     @Override
     public void inventoryTick(ItemStack stack, Level level, Entity entity, int slotId, boolean isSelected) {
         MiapiEvents.INVENTORY_TICK.invoker().tick(stack,level,entity,slotId,isSelected);
+        super.inventoryTick(stack, level, entity, slotId, isSelected);
     }
-
     @Override
     public boolean isValidRepairItem(ItemStack stack, ItemStack ingredient) {
         return RepairPriority.getRepairValue(stack, ingredient) > 0;
@@ -95,6 +96,7 @@ public class ModularHelmet extends ArmorItem implements PlatformModularItemMetho
     @Override
     public void appendHoverText(ItemStack stack, net.minecraft.world.item.Item.TooltipContext tooltipContext, List<Component> list, TooltipFlag tooltipType) {
         LoreProperty.appendLoreTop(stack, list, tooltipContext, tooltipType);
+        super.appendHoverText(stack,tooltipContext,list,tooltipType);
     }
 
     @Override

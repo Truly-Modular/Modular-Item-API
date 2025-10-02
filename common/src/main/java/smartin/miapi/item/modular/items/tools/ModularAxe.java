@@ -53,6 +53,7 @@ public class ModularAxe extends AxeItem implements PlatformModularItemMethods, M
     @Override
     public void verifyComponentsAfterLoad(ItemStack stack) {
         ComponentApplyProperty.initializeItemStack(stack, Miapi.registryAccess);
+        super.verifyComponentsAfterLoad(stack);
     }
 
     @Override
@@ -102,6 +103,7 @@ public class ModularAxe extends AxeItem implements PlatformModularItemMethods, M
     @Override
     public void inventoryTick(ItemStack stack, Level level, Entity entity, int slotId, boolean isSelected) {
         MiapiEvents.INVENTORY_TICK.invoker().tick(stack,level,entity,slotId,isSelected);
+        super.inventoryTick(stack, level, entity, slotId, isSelected);
     }
 
     @Override
@@ -171,6 +173,7 @@ public class ModularAxe extends AxeItem implements PlatformModularItemMethods, M
     @Override
     public void appendHoverText(ItemStack itemStack, net.minecraft.world.item.Item.TooltipContext tooltipContext, List<Component> list, TooltipFlag tooltipType) {
         LoreProperty.appendLoreTop(itemStack, list, tooltipContext, tooltipType);
+        super.appendHoverText(itemStack,tooltipContext,list,tooltipType);
     }
 
     @Override

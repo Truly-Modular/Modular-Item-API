@@ -57,6 +57,7 @@ public class ModularBow extends BowItem implements PlatformModularItemMethods, M
     @Override
     public void verifyComponentsAfterLoad(ItemStack stack) {
         ComponentApplyProperty.initializeItemStack(stack, Miapi.registryAccess);
+        super.verifyComponentsAfterLoad(stack);
     }
 
     @Override
@@ -76,6 +77,7 @@ public class ModularBow extends BowItem implements PlatformModularItemMethods, M
     @Override
     public void inventoryTick(ItemStack stack, Level level, Entity entity, int slotId, boolean isSelected) {
         MiapiEvents.INVENTORY_TICK.invoker().tick(stack,level,entity,slotId,isSelected);
+        super.inventoryTick(stack, level, entity, slotId, isSelected);
     }
 
     @Override
