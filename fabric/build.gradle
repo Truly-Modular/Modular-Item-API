@@ -104,6 +104,9 @@ dependencies {
 
     //modCompileOnly "software.bernie.geckolib:geckolib-fabric-1.20.1:${geckolib_version}"
 
+    modImplementation("net.fabricmc:fabric-language-kotlin:1.13.6+kotlin.2.2.20")
+
+
     modApi(include("com.redpxnda.nucleus:nucleus-core-fabric:${rootProject.minecraft_version}+${rootProject.nucleus_core_version}"))
     modApi(include("com.redpxnda.nucleus:nucleus-codec-fabric:${rootProject.minecraft_version}+${rootProject.nucleus_codec_version}"))
     modApi(include("com.redpxnda.nucleus:nucleus-config-fabric:${rootProject.minecraft_version}+${rootProject.nucleus_config_version}"))

@@ -73,6 +73,7 @@ dependencies {
     modApi "com.redpxnda.nucleus:nucleus-pose-common:${rootProject.minecraft_version}+${rootProject.nucleus_pose_version}"
     modApi "com.redpxnda.nucleus:nucleus-facet-common:${rootProject.minecraft_version}+${rootProject.nucleus_facet_version}"
     modApi "com.redpxnda.nucleus:nucleus-editor-common:${rootProject.minecraft_version}+${rootProject.nucleus_editor_version}"
+    modImplementation("net.fabricmc:fabric-language-kotlin:1.13.6+kotlin.2.2.20")
 
     /*
     modImplementation("foundry.veil:veil-common-1.21.1:${project.veil_version}") {
