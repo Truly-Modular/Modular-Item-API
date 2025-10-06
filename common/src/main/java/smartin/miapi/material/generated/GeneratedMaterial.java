@@ -190,7 +190,7 @@ public class GeneratedMaterial implements Material {
         return false;
     }
 
-    public Material getMaterial(ModuleInstance moduleInstance) {
+    public Material getMaterial(ModuleInstance moduleInstance, Map<ModuleProperty<?>, Object> properties) {
         if (ModuleTagProperty.getTags(moduleInstance).contains("armor")) {
             if (stats.containsKey("armor_hardness")) {
                 return new DelegatingMaterial(this) {
@@ -243,8 +243,7 @@ public class GeneratedMaterial implements Material {
         }
         if (otherMat == null || this.equals(otherMat) || otherMat.getID().equals(this.getID())) {
             smithingMode = SmithingMode.INGREDIENT;
-            this.groups = new ArrayList<>(this.groups);
-            this.groups = List.of(getStringID(), "smithing");
+            this.groups = List.of("smithing");
         } else {
             smithingMode = SmithingMode.TEMPLATE;
             if (otherMat != null) {
@@ -262,8 +261,7 @@ public class GeneratedMaterial implements Material {
 
     public void addSmithingGroup() {
         if (!groups.contains("smithing")) {
-            groups = new ArrayList<>(groups);
-            groups.add("smithing");
+            groups = new ArrayList<>(List.of("smithing"));
         }
     }
 

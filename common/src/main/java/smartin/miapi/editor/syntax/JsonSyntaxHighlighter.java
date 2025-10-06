@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
 
 public class JsonSyntaxHighlighter implements EditorInterface {
     private static final ResourceLocation ID = Miapi.id("miapi", "json_syntax");
-    
+
     // Colors in RGBA format (packed into integers)
     private static final int STRING_COLOR = pack(0.0f, 0.8f, 0.0f, 1.0f);  // Green
     private static final int NUMBER_COLOR = pack(0.4f, 0.4f, 1.0f, 1.0f);  // Blue
@@ -30,13 +30,13 @@ public class JsonSyntaxHighlighter implements EditorInterface {
     @Override
     public List<EditorError> validateContent(@Nullable JsonElement json, String rawContent) {
         List<EditorError> errors = new ArrayList<>();
-        
+
         // Check for unmatched brackets
         checkBracketMatching(rawContent, errors);
-        
+
         // Check for trailing commas
         checkTrailingCommas(rawContent, errors);
-        
+
         // Check for missing colons in properties
         checkPropertyColons(rawContent, errors);
 
@@ -46,14 +46,18 @@ public class JsonSyntaxHighlighter implements EditorInterface {
     @Override
     public Map<TextRange, Integer> getSyntaxHighlighting(String content) {
         Map<TextRange, Integer> highlighting = new HashMap<>();
-        
+
         // Add highlighting for each pattern
-        addHighlighting(content, STRING_PATTERN, STRING_COLOR, highlighting);
-        addHighlighting(content, NUMBER_PATTERN, NUMBER_COLOR, highlighting);
-        addHighlighting(content, KEYWORD_PATTERN, KEYWORD_COLOR, highlighting);
-        addHighlighting(content, PROPERTY_PATTERN, PROPERTY_COLOR, highlighting);
-        addHighlighting(content, BRACKET_PATTERN, BRACKET_COLOR, highlighting);
-        
+        try {
+            addHighlighting(content, STRING_PATTERN, STRING_COLOR, highlighting);
+            addHighlighting(content, NUMBER_PATTERN, NUMBER_COLOR, highlighting);
+            addHighlighting(content, KEYWORD_PATTERN, KEYWORD_COLOR, highlighting);
+            addHighlighting(content, PROPERTY_PATTERN, PROPERTY_COLOR, highlighting);
+            addHighlighting(content, BRACKET_PATTERN, BRACKET_COLOR, highlighting);
+        } catch (StackOverflowError error) {
+
+        }
+
         return highlighting;
     }
 
@@ -72,14 +76,14 @@ public class JsonSyntaxHighlighter implements EditorInterface {
     private void checkBracketMatching(String content, List<EditorError> errors) {
         Stack<BracketInfo> stack = new Stack<>();
         int line = 1;
-        
+
         for (int i = 0; i < content.length(); i++) {
             char c = content.charAt(i);
             if (c == '\n') {
                 line++;
                 continue;
             }
-            
+
             if (c == '{' || c == '[') {
                 stack.push(new BracketInfo(c, line));
             } else if (c == '}' || c == ']') {
@@ -87,23 +91,23 @@ public class JsonSyntaxHighlighter implements EditorInterface {
                     errors.add(new EditorError(line, "Unexpected closing bracket: " + c, EditorError.ErrorSeverity.ERROR));
                     continue;
                 }
-                
+
                 BracketInfo opening = stack.pop();
                 char expected = (opening.bracket == '{') ? '}' : ']';
                 if (c != expected) {
-                    errors.add(new EditorError(line, 
-                        "Mismatched brackets: Expected " + expected + " but found " + c, 
-                        EditorError.ErrorSeverity.ERROR));
+                    errors.add(new EditorError(line,
+                            "Mismatched brackets: Expected " + expected + " but found " + c,
+                            EditorError.ErrorSeverity.ERROR));
                 }
             }
         }
-        
+
         // Check for unclosed brackets
         while (!stack.isEmpty()) {
             BracketInfo bracket = stack.pop();
-            errors.add(new EditorError(bracket.line, 
-                "Unclosed bracket: " + bracket.bracket, 
-                EditorError.ErrorSeverity.ERROR));
+            errors.add(new EditorError(bracket.line,
+                    "Unclosed bracket: " + bracket.bracket,
+                    EditorError.ErrorSeverity.ERROR));
         }
     }
 
@@ -112,50 +116,55 @@ public class JsonSyntaxHighlighter implements EditorInterface {
         Matcher matcher = trailingComma.matcher(content);
         int line = 1;
         int lastNewline = 0;
-        
+
         while (matcher.find()) {
             // Count lines up to the match
             for (int i = lastNewline; i < matcher.start(); i++) {
                 if (content.charAt(i) == '\n') line++;
             }
             lastNewline = matcher.start();
-            
-            errors.add(new EditorError(line, 
-                "Trailing comma before closing bracket", 
-                EditorError.ErrorSeverity.ERROR));
+
+            errors.add(new EditorError(line,
+                    "Trailing comma before closing bracket",
+                    EditorError.ErrorSeverity.ERROR));
         }
     }
 
     private void checkPropertyColons(String content, List<EditorError> errors) {
-        Pattern propertyPattern = Pattern.compile("\"(\\\\.|[^\"])*\"\\s*[^:]");
-        Matcher matcher = propertyPattern.matcher(content);
-        int line = 1;
-        int lastNewline = 0;
-        
-        while (matcher.find()) {
-            // Only check if this is actually a property (has a valid context)
-            int pos = matcher.start();
-            while (pos > 0 && Character.isWhitespace(content.charAt(pos - 1))) pos--;
-            if (pos > 0 && content.charAt(pos - 1) == ',') {
-                // Count lines up to the match
-                for (int i = lastNewline; i < matcher.start(); i++) {
-                    if (content.charAt(i) == '\n') line++;
+        Pattern propertyPattern = Pattern.compile("\"(?:\\\\.|[^\"\\\\])*\"\\s*[^:]");
+        try{
+            Matcher matcher = propertyPattern.matcher(content);
+            int line = 1;
+            int lastNewline = 0;
+
+            while (matcher.find()) {
+                // Only check if this is actually a property (has a valid context)
+                int pos = matcher.start();
+                while (pos > 0 && Character.isWhitespace(content.charAt(pos - 1))) pos--;
+                if (pos > 0 && content.charAt(pos - 1) == ',') {
+                    // Count lines up to the match
+                    for (int i = lastNewline; i < matcher.start(); i++) {
+                        if (content.charAt(i) == '\n') line++;
+                    }
+                    lastNewline = matcher.start();
+
+                    errors.add(new EditorError(line,
+                            "Missing colon after property name",
+                            EditorError.ErrorSeverity.ERROR));
                 }
-                lastNewline = matcher.start();
-                
-                errors.add(new EditorError(line, 
-                    "Missing colon after property name", 
-                    EditorError.ErrorSeverity.ERROR));
             }
+        }catch (StackOverflowError e){
+            Miapi.LOGGER.error("stack overflow in collon finder");
         }
     }
 
     private static int pack(float r, float g, float b, float a) {
-        return ((int)(r * 255) << 24) |
-               ((int)(g * 255) << 16) |
-               ((int)(b * 255) << 8) |
-               ((int)(a * 255));
+        return ((int) (r * 255) << 24) |
+               ((int) (g * 255) << 16) |
+               ((int) (b * 255) << 8) |
+               ((int) (a * 255));
     }
 
-    private record BracketInfo(char bracket, int line) {}
+    private record BracketInfo(char bracket, int line) {
+    }
 } 

@@ -1,5 +1,6 @@
 package smartin.miapi.editor;
 
+import com.google.gson.JsonObject;
 import com.redpxnda.nucleus.editor.core.ClientLoader;
 import imgui.ImGui;
 import imgui.flag.ImGuiCond;
@@ -11,8 +12,13 @@ import smartin.miapi.editor.material.MaterialListViewer;
 import smartin.miapi.modules.cache.CacheCommands;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Objects;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 public class LiveDataPackEditorManager implements MiapiEditor {
     private final LiveDataPackManager manager;
@@ -68,6 +74,7 @@ public class LiveDataPackEditorManager implements MiapiEditor {
         newPackDescription.clear();
         newPackEnabled.set(true);
     }
+
 
     @Override
     public void render(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
@@ -169,6 +176,44 @@ public class LiveDataPackEditorManager implements MiapiEditor {
                         });
                         MiapiEditor.editors.add(fileSystemViewer);
                     }
+                    ImGui.sameLine();
+                    if (ImGui.button("Open Explorer")) {
+                        File dataDir = new File(pack.directory, pack.dataPath);
+                        openInExplorer(dataDir);
+                    }
+
+                    ImGui.sameLine();
+                    if (ImGui.button("Create Datapack & Open")) {
+                        File defaultJsonFolder = pack.directory.getAbsoluteFile(); // base folder for output
+                        File zipFile = new File(defaultJsonFolder, pack.name + ".zip");
+                        File dataDir = new File(pack.directory, pack.dataPath);
+
+                        try (FileOutputStream fos = new FileOutputStream(zipFile);
+                             ZipOutputStream zos = new ZipOutputStream(fos, StandardCharsets.UTF_8)) {
+
+                            // Add pack.mcmeta
+                            JsonObject mcmeta = new JsonObject();
+                            mcmeta.addProperty("pack_format", 48); // adjust to Minecraft version
+                            mcmeta.addProperty("description", (pack.description != null ? pack.description : "Generated datapack") + "\nby " + pack.author);
+                            mcmeta.addProperty("author", pack.author != null ? pack.author : "unkown");
+
+                            zos.putNextEntry(new ZipEntry("pack.mcmeta"));
+                            zos.write(mcmeta.toString().getBytes(StandardCharsets.UTF_8));
+                            zos.closeEntry();
+
+                            // Add datapack files
+                            pack.createDatapack(zos, dataDir);
+
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
+                        openInExplorer(defaultJsonFolder);
+
+                        System.out.println("Datapack created at: " + zipFile.getAbsolutePath());
+
+                    }
+
 
                     ImGui.sameLine();
                     if (ImGui.button("Delete")) {
@@ -234,6 +279,30 @@ public class LiveDataPackEditorManager implements MiapiEditor {
             ImGui.end();
         }
     }
+
+    private void openInExplorer(File folder) {
+        try {
+            if (!folder.exists()) folder.mkdirs();
+
+            String os = System.getProperty("os.name").toLowerCase();
+
+            if (os.contains("win")) {
+                // Windows
+                new ProcessBuilder("explorer.exe", folder.getAbsolutePath()).start();
+            } else if (os.contains("mac")) {
+                // macOS
+                new ProcessBuilder("open", folder.getAbsolutePath()).start();
+            } else if (os.contains("nix") || os.contains("nux")) {
+                // Linux
+                new ProcessBuilder("xdg-open", folder.getAbsolutePath()).start();
+            } else {
+                System.err.println("Unsupported OS — cannot open file explorer.");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 
     public void reload() {
         LiveDataPackManager.getInstance().checkAndValidateDatapacks(true);

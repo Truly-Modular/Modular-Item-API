@@ -87,7 +87,8 @@ public class MaterialHelper {
                 translation,
                 Optional.empty(),
                 items,
-                Either.right(toConvert.stream().map(BuiltInRegistries.ITEM::wrapAsHolder).toList())
+                Either.right(toConvert.stream().map(BuiltInRegistries.ITEM::wrapAsHolder).toList()),
+                List.of()
         );
         codec.doubleMap = new HashMap<>(mat.stats);
         return codec;

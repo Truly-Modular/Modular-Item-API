@@ -10,6 +10,7 @@ import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceLocation;
 import smartin.miapi.Miapi;
+import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.editor.DocPage;
 import smartin.miapi.item.ItemToModularConverter;
 import smartin.miapi.material.CodecMaterial;
@@ -115,6 +116,7 @@ public class ReloadHelpers {
                 (isClient, path, data, registryAccess) -> {
                     data.setID(path);
                     MaterialProperty.MATERIAL_REGISTRY.register(path, data);
+                    data.generateConverters(isClient);
                 },
                 -2.0f
         );
@@ -212,7 +214,10 @@ public class ReloadHelpers {
                     T decoded = decoder.decode(isClient, shortened, element, registryAccess);
                     onDecode.reloadFile(isClient, shortened, decoded, registryAccess);
                 } catch (RuntimeException e) {
-                    Miapi.LOGGER.error("could not decode " + path + " for full-path " + path, e);
+                    Miapi.LOGGER.error("could not decode " + path + " for full-path " + path + e.getMessage());
+                    if (MiapiConfig.getServerConfig().other.verboseLogging) {
+                        Miapi.LOGGER.error("", e);
+                    }
                     Miapi.LOGGER.error("raw data :");
                     Miapi.LOGGER.error(data);
                 }
@@ -263,7 +268,10 @@ public class ReloadHelpers {
                         Miapi.gson.fromJson(data, JsonElement.class));
                 handler().reloadFile(isClient, path, result.getOrThrow((s) -> new DecoderException("Could not decode " + path + " " + s)).getFirst(), registryAccess);
             } catch (RuntimeException e) {
-                Miapi.LOGGER.error("could not decode " + path() + " for full-path " + path, e);
+                Miapi.LOGGER.error("could not decode " + path + " for full-path " + path + e.getMessage());
+                if (MiapiConfig.getServerConfig().other.verboseLogging) {
+                    Miapi.LOGGER.error("", e);
+                }
                 Miapi.LOGGER.error("raw data :");
                 Miapi.LOGGER.error(data);
             }
@@ -307,9 +315,6 @@ public class ReloadHelpers {
         registerHierarchicalReloadHandler(location, baseCodec, extCodec, registry::clear, new SingleDecodedFileHandler<B>() {
             @Override
             public void reloadFile(boolean isClient, ResourceLocation path, B data, RegistryAccess registryAccess) {
-                if (path.toString().contains("test")) {
-                    Miapi.LOGGER.info("test");
-                }
                 registry.register(path, data);
             }
         }, priority);

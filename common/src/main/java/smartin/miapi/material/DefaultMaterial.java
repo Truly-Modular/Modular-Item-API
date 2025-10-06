@@ -54,7 +54,7 @@ public class DefaultMaterial implements Material {
     }
 
     @Override
-    public Material getMaterial(ModuleInstance moduleInstance) {
+    public Material getMaterial(ModuleInstance moduleInstance, Map<ModuleProperty<?>, Object> properties) {
         return this; // Returns itself as it doesn't change
     }
 

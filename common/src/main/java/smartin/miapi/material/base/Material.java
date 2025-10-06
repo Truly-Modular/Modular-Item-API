@@ -11,11 +11,9 @@ import net.minecraft.world.level.block.Block;
 import smartin.miapi.client.gui.crafting.crafter.replace.hover.HoverMaterialList;
 import smartin.miapi.material.generated.TierManager;
 import smartin.miapi.modules.ModuleInstance;
+import smartin.miapi.modules.properties.util.ModuleProperty;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static smartin.miapi.Miapi.MOD_ID;
 import static smartin.miapi.modules.properties.LoreProperty.gray;
@@ -43,9 +41,10 @@ public interface Material extends PropertyController, ColorController, StatContr
      * used to load additional data on a module instance, should be in the data part of the {@link ModuleInstance}
      *
      * @param moduleInstance
+     * @param properties
      * @return
      */
-    default Material getMaterial(ModuleInstance moduleInstance) {
+    default Material getMaterial(ModuleInstance moduleInstance, Map<ModuleProperty<?>, Object> properties) {
         return this;
     }
 

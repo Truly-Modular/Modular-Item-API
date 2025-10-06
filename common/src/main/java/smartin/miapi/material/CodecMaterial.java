@@ -37,6 +37,7 @@ import smartin.miapi.material.palette.MaterialRenderControllers;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleDataPropertiesManager;
 import smartin.miapi.modules.ModuleInstance;
+import smartin.miapi.modules.conditions.ConditionManager;
 import smartin.miapi.modules.properties.render.ColorProperty;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
@@ -73,6 +74,7 @@ public class CodecMaterial implements Material {
     @Nullable
     protected MaterialRenderController dyeAblePalette;
     public Either<Boolean, List<Holder<Item>>> toGenerate = Either.left(false);
+    public List<MaterialVariant> variants = new ArrayList<>();
 
     public static final Codec<CodecMaterial> CODEC = new Codec<>() {
         @Override
@@ -114,6 +116,7 @@ public class CodecMaterial implements Material {
                 }
             } else {
                 Miapi.LOGGER.warn("INNER_CODEC failed to decode input: {}", input);
+                Miapi.LOGGER.warn(dataResult.error().get().message());
             }
 
             return dataResult;
@@ -154,8 +157,8 @@ public class CodecMaterial implements Material {
             Codec.either(
                     Miapi.FIXED_BOOL_CODEC,
                     ItemStack.ITEM_NON_AIR_CODEC.listOf()
-            ).optionalFieldOf("generate_converters", Either.left(false)).forGetter(m -> m.toGenerate)
-
+            ).optionalFieldOf("generate_converters", Either.left(false)).forGetter(m -> m.toGenerate),
+            MaterialVariant.CODEC.listOf().optionalFieldOf("variants", new ArrayList<>()).forGetter(m -> m.variants)
     ).apply(instance, CodecMaterial::new));
 
     public CodecMaterial(Optional<JsonElement> iconJson,
@@ -172,7 +175,9 @@ public class CodecMaterial implements Material {
                          Optional<Component> translation,
                          Optional<String> color,
                          List<IngredientWithCount> items,
-                         Either<Boolean, List<Holder<Item>>> generateConverters) {
+                         Either<Boolean, List<Holder<Item>>> generateConverters,
+                         List<MaterialVariant> variants) {
+        this.variants = variants;
         this.iconJson = iconJson;
         this.paletteJson = paletteJson;
         this.dyePaletteJson = dyePaletteJson;
@@ -217,6 +222,12 @@ public class CodecMaterial implements Material {
         }
     }
 
+    public void setup(){
+        if (smartin.miapi.Environment.isClient()) {
+            clientSetup(iconJson, paletteJson, dyePaletteJson);
+        }
+    }
+
     @Environment(EnvType.CLIENT)
     private void clientSetup(Optional<JsonElement> iconJson, Optional<JsonElement> paletteJson, Optional<JsonElement> dyePaletteJson) {
         if (iconJson.isPresent()) {
@@ -255,7 +266,8 @@ public class CodecMaterial implements Material {
                 this.translation,
                 this.color.map(Integer::toHexString),
                 new ArrayList<>(this.items),
-                this.toGenerate
+                this.toGenerate,
+                new ArrayList<>(this.variants)
         );
 
         // Copy non-constructor fields
@@ -304,8 +316,13 @@ public class CodecMaterial implements Material {
         }
         if (material.paletteJson.isPresent()) {
             this.paletteJson = material.paletteJson;
+            this.palette = MaterialRenderControllers.creators.get(this.paletteJson.get().getAsJsonObject().get("type").getAsString()).createPalette(this.paletteJson.get(), this);
         }
 
+        if(material.dyePaletteJson.isPresent()){
+            this.dyePaletteJson = material.paletteJson;
+            this.dyeAblePalette = MaterialRenderControllers.creators.get(this.dyePaletteJson.get().getAsJsonObject().get("type").getAsString()).createPalette(this.dyePaletteJson.get(), this);
+        }
         // Merge groups and guiGroups
         this.groups = new ArrayList<>(this.groups);
         this.groups.addAll(material.groups);
@@ -597,9 +614,24 @@ public class CodecMaterial implements Material {
         return incorrectForTool.orElse(BlockTags.INCORRECT_FOR_WOODEN_TOOL);
     }
 
+    public Material getMaterial(ModuleInstance moduleInstance, Map<ModuleProperty<?>, Object> properties) {
+        ConditionManager.ConditionContext context = ConditionManager.moduleContext(moduleInstance, properties);
+        for (MaterialVariant variant : variants) {
+            if (variant.condition().isAllowed(context)) {
+                CodecMaterial material = this.copy();
+                material.setID(this.getID());
+                material.merge(variant.overwrite());
+                material.setID(this.getID());
+                material.setup();
+                return material;
+            }
+        }
+        return this;
+    }
+
     @Override
     public int hashCode() {
-        return getID().hashCode();
+        return getID().hashCode() + 13 * variants.size();
     }
 
     public Component getTranslation() {

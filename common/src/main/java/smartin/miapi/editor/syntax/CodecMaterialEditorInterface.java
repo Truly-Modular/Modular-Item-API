@@ -48,7 +48,8 @@ public class CodecMaterialEditorInterface implements EditorInterface {
                             Optional.empty(),
                             Optional.empty(),
                             new ArrayList<>(),
-                            Either.left(false)
+                            Either.left(false),
+                            List.of()
                     )).getOrThrow()).result();
 
             if (result.isEmpty()) {

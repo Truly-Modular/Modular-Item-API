@@ -61,7 +61,13 @@ public abstract class ArmorFeatureRendererMixin<T extends LivingEntity, M extend
         ForgeModel.source = arg2;
     }
 
-    /*
+    @Unique
+    private void renderPieces(PoseStack matrices, MultiBufferSource vertexConsumers, int light, EquipmentSlot armorSlot, ItemStack itemStack, T entity, A outerModel, RenderLayerParent context) {
+        this.getParentModel().copyPropertiesTo(outerModel);
+        ArmorModelManager.renderArmorPiece(matrices, vertexConsumers, light, armorSlot, itemStack, entity, outerModel, this.getParentModel());
+    }
+
+        /*
     @Inject(method = "renderArmorPiece", at = @At("HEAD"), cancellable = true)
     void miapi$renderArmorInjectForge(
             PoseStack matrices,
@@ -85,10 +91,4 @@ public abstract class ArmorFeatureRendererMixin<T extends LivingEntity, M extend
     }
 
      */
-
-    @Unique
-    private void renderPieces(PoseStack matrices, MultiBufferSource vertexConsumers, int light, EquipmentSlot armorSlot, ItemStack itemStack, T entity, A outerModel, RenderLayerParent context) {
-        this.getParentModel().copyPropertiesTo(outerModel);
-        ArmorModelManager.renderArmorPiece(matrices, vertexConsumers, light, armorSlot, itemStack, entity, outerModel, this.getParentModel());
-    }
 }

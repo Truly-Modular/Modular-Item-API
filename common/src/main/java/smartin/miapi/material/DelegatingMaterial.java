@@ -56,8 +56,8 @@ public class DelegatingMaterial implements Material {
     }
 
     @Override
-    public Material getMaterial(ModuleInstance moduleInstance) {
-        return parent.getMaterial(moduleInstance);
+    public Material getMaterial(ModuleInstance moduleInstance, Map<ModuleProperty<?>, Object> properties) {
+        return parent.getMaterial(moduleInstance,properties );
     }
 
     @Override

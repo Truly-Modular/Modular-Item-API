@@ -20,8 +20,10 @@ import smartin.miapi.material.composite.stat.IncreaseStatsComposite;
 import smartin.miapi.material.composite.stat.PercentStatComposite;
 import smartin.miapi.material.composite.stat.SetStatComposite;
 import smartin.miapi.modules.ModuleInstance;
+import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -111,7 +113,7 @@ public class CompositeMaterial extends DelegatingMaterial {
         return ingredient.getOrDefault(COMPOSITE_MATERIAL_COMPONENT, null);
     }
 
-    public Material getMaterial(ModuleInstance moduleInstance) {
+    public Material getMaterial(ModuleInstance moduleInstance, Map<ModuleProperty<?>, Object> properties) {
         return this;
     }
 

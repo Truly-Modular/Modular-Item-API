@@ -11,3 +11,9 @@
 - fixed mixin conflict with yungs cave bioms
 - fixed minecraft bug that could cause invalid crashes during datapack load
 - fixed compat issues related to item inventory tick and added tooltips
+- adding material variants
+### Editor
+- replaced material editor with json editor
+- added export datapack button
+- added open in explorer button
+- fixed crashes related to editor validation

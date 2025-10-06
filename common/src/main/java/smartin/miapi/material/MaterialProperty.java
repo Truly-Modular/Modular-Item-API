@@ -220,13 +220,13 @@ public class MaterialProperty extends CodecProperty<ResourceLocation> {
             JsonElement element = instance.moduleData.get(KEY);
             Material jsonMaterial = getMaterial(element);
             if (jsonMaterial != null) {
-                return MaterialOverwriteProperty.property.adjustMaterial(instance, jsonMaterial.getMaterial(instance));
+                return MaterialOverwriteProperty.property.adjustMaterial(instance, jsonMaterial.getMaterial(instance, instance.initializedProperties));
             }
         }
         if (property.getData(instance).isPresent()) {
             Material material = MaterialProperty.MATERIAL_REGISTRY.get((ResourceLocation) property.getData(instance).get());
             if (material != null) {
-                material = material.getMaterial(instance);
+                material = material.getMaterial(instance, instance.initializedProperties);
                 return MaterialOverwriteProperty.property.adjustMaterial(instance, material);
             }
         }

@@ -19,7 +19,9 @@ import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.material.base.Material;
 import smartin.miapi.modules.ModuleInstance;
+import smartin.miapi.modules.properties.util.ModuleProperty;
 
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -112,7 +114,7 @@ public class ComponentMaterial extends JsonMaterial {
         });
     }
 
-    public Material getMaterial(ModuleInstance moduleInstance) {
+    public Material getMaterial(ModuleInstance moduleInstance, Map<ModuleProperty<?>, Object> properties) {
         //JsonElement data = moduleInstance.moduleData.get(Miapi.id("nbt_material_data"));
         //try {
         //    Optional<Material> material = decode(data.getAsJsonObject());

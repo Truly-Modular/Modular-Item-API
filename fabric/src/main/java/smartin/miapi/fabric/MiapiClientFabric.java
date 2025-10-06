@@ -4,7 +4,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.model.loading.v1.ModelLoadingPlugin;
 import net.fabricmc.fabric.api.client.rendering.v1.ArmorRenderer;
-import net.minecraft.client.renderer.texture.atlas.SpriteSource;
 import net.minecraft.resources.ResourceLocation;
 import smartin.miapi.client.model.item.ItemBakedModelReplacement;
 import smartin.miapi.registries.RegistryInventory;
@@ -28,7 +27,5 @@ public class MiapiClientFabric {
                 }
             });
         });
-        //AtlasSourceTypeRegistry.register(Miapi.id("test"),new SpriteSourceType());
-        SpriteSource spriteSource;
     }
 }

@@ -13,6 +13,7 @@ import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
 import smartin.miapi.Miapi;
+import smartin.miapi.editor.JsonEditor;
 import smartin.miapi.editor.MiapiEditor;
 import smartin.miapi.material.CodecMaterial;
 import smartin.miapi.material.MaterialProperty;
@@ -21,6 +22,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -57,11 +59,26 @@ public class MaterialListViewer implements MiapiEditor {
                         if (!newFile.exists()) {
                             newFile.getParentFile().mkdirs();
                             newFile.createNewFile();
-                            CodecMaterial newMaterial = CodecMaterial.CODEC.decode(JsonOps.INSTANCE, new JsonObject()).getOrThrow().getFirst();
+
+                            CodecMaterial newMaterial = CodecMaterial.CODEC
+                                    .decode(JsonOps.INSTANCE, new JsonObject())
+                                    .getOrThrow()
+                                    .getFirst();
+
                             newMaterial.setID(id);
                             writeToFile(newMaterial, newFile);
-                            MiapiEditor.editors.add(new MaterialEditor(newMaterial, mat -> writeToFile(mat, newFile)));
+
+                            // Instead of MaterialEditor, open JsonEditor
+                            JsonEditor jsonEditor = new JsonEditor(
+                                    Files.readString(newFile.toPath()), // content
+                                    (newContent) -> writeToFile(newMaterial, newFile), // onChange callback
+                                    newFile.toPath(),
+                                    Miapi.id(id.getNamespace() + ":" + id.getPath() + "/miapi/materials") // resource location
+                            );
+
+                            MiapiEditor.editors.add(jsonEditor);
                         }
+
                     } catch (Exception e) {
                         ImGui.textColored(1, 0, 0, 1, "Failed to create material: " + e.getMessage());
                     }
@@ -77,15 +94,33 @@ public class MaterialListViewer implements MiapiEditor {
 
                 for (File file : materialFiles) {
                     String relativePath = materialsDirectory.toPath().relativize(file.toPath()).toString();
+
                     if (ImGui.selectable(relativePath)) {
-                        CodecMaterial material = readFromFile(materialsDirectory, file);
-                        if (MaterialProperty.MATERIAL_REGISTRY.get(material.getID()) != null) {
-                            material = (CodecMaterial) MaterialProperty.MATERIAL_REGISTRY.get(material.getID());
-                        }
-                        if (material != null) {
-                            MiapiEditor.editors.add(new MaterialEditor(material, mat -> writeToFile(mat, materialsDirectory)));
-                        } else {
-                            ImGui.textColored(1, 0, 0, 1, "Failed to load " + relativePath);
+                        try {
+                            CodecMaterial material = readFromFile(materialsDirectory, file);
+                            if (MaterialProperty.MATERIAL_REGISTRY.get(material.getID()) != null) {
+                                material = (CodecMaterial) MaterialProperty.MATERIAL_REGISTRY.get(material.getID());
+                            }
+
+                            if (material != null) {
+                                String pathWithoutExt = relativePath.replace(".json", "").replace("\\", "/");
+                                pathWithoutExt = pathWithoutExt.replaceFirst("/", ":");
+                                ResourceLocation resourceLocation = Miapi.id(pathWithoutExt);
+                                CodecMaterial codecMaterial = material;
+                                JsonEditor jsonEditor = new JsonEditor(
+                                        Files.readString(file.toPath()), // JSON content
+                                        (newContent) -> writeToFile(codecMaterial, file), // onChange callback
+                                        file.toPath(),
+                                        resourceLocation
+                                );
+
+                                MiapiEditor.editors.add(jsonEditor);
+                            } else {
+                                ImGui.textColored(1, 0, 0, 1, "Failed to load " + relativePath);
+                            }
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                            ImGui.textColored(1, 0, 0, 1, "Error opening file " + relativePath);
                         }
                     }
                 }
@@ -96,6 +131,7 @@ public class MaterialListViewer implements MiapiEditor {
             } else {
                 ImGui.text("miapi/materials directory not found.");
             }
+
 
         }
         ImGui.end();

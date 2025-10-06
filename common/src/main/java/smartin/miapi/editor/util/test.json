@@ -1,0 +1,12 @@
+{
+    "step_noise_cancel":true,
+
+    "attributes": [
+        {
+            "attribute": "minecraft:player.sneaking_speed",
+            "value": 1,
+            "operation": "+",
+            "slot": "any"
+        }
+    ]
+}

@@ -4,13 +4,15 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.modules.ModuleInstance;
+import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.Arrays;
+import java.util.Map;
 import java.util.stream.Stream;
 
 /**
  * controls most of the Crafting logic of {@link Material}
- * {@link Material#getMaterial(ModuleInstance)} is the exception
+ * {@link IngredientController#getMaterial(ModuleInstance, Map)} is the exception
  */
 public interface IngredientController {
     /**
@@ -73,9 +75,10 @@ public interface IngredientController {
      * used to load additional data on a module instance, should be in the data part of the {@link ModuleInstance}
      *
      * @param moduleInstance
+     * @param properties
      * @return
      */
-    Material getMaterial(ModuleInstance moduleInstance);
+    Material getMaterial(ModuleInstance moduleInstance, Map<ModuleProperty<?>, Object> properties);
 
     /**
      * allowing the material to change based on the ingredient, to return a variant of itself

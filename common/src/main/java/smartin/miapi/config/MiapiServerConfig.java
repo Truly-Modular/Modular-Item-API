@@ -226,7 +226,7 @@ public class MiapiServerConfig {
 
             @Comment("Whether the Item Lore of the Items should be copied as Material Properties for generated Materials")
             @AutoCodec.Name("lore_property")
-            public GeneratePropertyOption loreProperty = new GeneratePropertyOption();
+            public GeneratePropertyOption loreProperty = new GeneratePropertyOption(List.of("mythic"));
 
             @Comment("Whether the On Hit Effects of the Items should be attempted to be copied as Material Properties for generated Materials")
             @AutoCodec.Name("on_hit_property")
@@ -234,7 +234,7 @@ public class MiapiServerConfig {
 
             @Comment("Whether Custom Components should be added to the generated Materials")
             @AutoCodec.Name("component_property")
-            public GeneratePropertyOption componentProperty = new GeneratePropertyOption(List.of("mythic"));
+            public GeneratePropertyOption componentProperty = new GeneratePropertyOption();
 
             @Comment("Whether the material can turn into a smithing material")
             @AutoCodec.Name("smithing")

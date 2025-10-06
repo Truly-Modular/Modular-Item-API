@@ -1,41 +1,66 @@
 {
-  "icon": "textures/item/iron_ingot.png",
-  "groups": ["metal"],
-  "hardness": 5,
-  "density": 3.8,
-  "flexibility": 1,
-  "durability": 235,
-  "armor_durability_offset": -10,
-  "enchantability": 14,
-  "tier": 3,
-  "color": "FCFCFC",
-  "color_palette": {
-    "type": "grayscale_map",
-    "colors": {
-      "24": "181818",
-      "68": "444444",
-      "107": "6b6b6b",
-      "150": "969696",
-      "190": "bebebe",
-      "216": "d8d8d8",
-      "255": "ffffff"
+    "icon": "textures/item/iron_ingot.png",
+    "groups": [
+        "metal"
+    ],
+    "hardness": 5,
+    "density": 3.8,
+    "flexibility": 1,
+    "durability": 235,
+    "armor_durability_offset": -10,
+    "enchantability": 14,
+    "tier": 3,
+    "color": "FCFCFC",
+    "color_palette": {
+        "type": "grayscale_map",
+        "colors": {
+            "24": "181818",
+            "68": "444444",
+            "107": "6b6b6b",
+            "150": "969696",
+            "190": "bebebe",
+            "216": "d8d8d8",
+            "255": "ffffff"
+        },
+        "filler": "interpolate"
     },
-    "filler": "interpolate"
-  },
-  "textures": [
-    "metallic",
-    "bright"
-  ],
-  "mining_speed": 6,
-  "mining_level": "minecraft:incorrect_for_iron_tool",
-  "items": [
-    {
-      "item": "minecraft:iron_ingot",
-      "value": 1.0
-    },
-    {
-      "item": "minecraft:iron_nugget",
-      "value": 0.11112
-    }
-  ]
+    "textures": [
+        "metallic",
+        "bright"
+    ],
+    "mining_speed": 6,
+    "mining_level": "minecraft:incorrect_for_iron_tool",
+    "items": [
+        {
+            "item": "minecraft:iron_ingot",
+            "value": 1.0
+        },
+        {
+            "item": "minecraft:iron_nugget",
+            "value": 0.11112
+        }
+    ],
+    "variants": [
+        {
+            "condition": {
+                "type": "tag",
+                "tag": "blade"
+            },
+            "overwrite": {
+                "color_palette": {
+                    "type": "grayscale_map",
+                    "colors": {
+                        "24": "3E2D0E",
+                        "68": "805C16",
+                        "107": "D99413",
+                        "150": "E6AF15",
+                        "190": "E7EB56",
+                        "216": "FAFC75",
+                        "255": "FCFCFC"
+                    },
+                    "filler": "interpolate"
+                }
+            }
+        }
+    ]
 }

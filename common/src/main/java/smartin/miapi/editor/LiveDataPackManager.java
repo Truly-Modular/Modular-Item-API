@@ -16,13 +16,13 @@ import smartin.miapi.modules.cache.CacheCommands;
 import smartin.miapi.modules.conditions.ConditionManager;
 import smartin.miapi.modules.properties.util.EditorError;
 
-import java.io.Closeable;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.*;
 import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 public class LiveDataPackManager implements AutoCloseable {
     private static final String RUNTIME_FOLDER = "miapi_runtime_datapacks";
@@ -431,6 +431,54 @@ public class LiveDataPackManager implements AutoCloseable {
                 validatedFiles = new HashMap<>();
             }
         }
+
+        public void createDatapack(ZipOutputStream zos, File dataPath) {
+            try {
+                if (dataPath == null || !dataPath.exists() || !dataPath.isDirectory()) {
+                    throw new IllegalArgumentException("Data path must exist and be a directory: " + dataPath);
+                }
+
+                Path basePath = dataPath.toPath();
+
+                Files.walk(basePath).forEach(path -> {
+                    try {
+                        String relativePath = basePath.relativize(path).toString().replace("\\", "/");
+
+                        if (Files.isDirectory(path)) {
+                            // Store directory with trailing slash inside "data/"
+                            if (!relativePath.isEmpty()) {
+                                String dirPath = "data/" + relativePath + "/";
+                                zos.putNextEntry(new ZipEntry(dirPath));
+                                zos.closeEntry();
+                            }
+                            return;
+                        }
+
+                        // File path inside zip inside "data/"
+                        String zipPath = "data/" + relativePath;
+
+                        ZipEntry entry = new ZipEntry(zipPath);
+                        zos.putNextEntry(entry);
+
+                        try (InputStream is = Files.newInputStream(path)) {
+                            byte[] buffer = new byte[4096];
+                            int len;
+                            while ((len = is.read(buffer)) > 0) {
+                                zos.write(buffer, 0, len);
+                            }
+                        }
+
+                        zos.closeEntry();
+                    } catch (IOException e) {
+                        Miapi.LOGGER.warn("Could not write data ", e);
+                    }
+                });
+            } catch (IOException e) {
+                Miapi.LOGGER.warn("Could not write data ", e);
+            }
+        }
+
+
 
         @Nullable
         public ValidationCache getValidationCache(String relativePath, File file, boolean forced) {
