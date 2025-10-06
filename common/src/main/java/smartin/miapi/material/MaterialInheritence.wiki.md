@@ -1,0 +1,22 @@
+@Header Material Inheritance
+@path /datapack/material/parent
+
+Material inheritance allows you to base materials of other materials, copying all things abt them.
+
+Example
+```json
+{
+    "parent": "miapi:metal/iron",
+    "data": {
+        "mining_speed": 0,
+        "mining_level": "minecraft:incorrect_for_diamond_tool",
+        "items": [
+            {
+                "item": "minecraft:blue_ice",
+                "value": 0.1
+            }
+        ]
+    }
+}
+```
+This example uses extends iron and increases its mining level to diamond and adding blue ice as ingredient.

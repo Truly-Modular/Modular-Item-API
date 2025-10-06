@@ -1,0 +1,50 @@
+@Header Material Variants
+@path /datapack/material/variants
+
+Material Variants allow you to create variants for materials.
+they are added in the material json (or in an extension) 
+they use a basic Module Condition and under overwrite is a data to be overwritten.
+this uses the same logic as material extensions.
+
+Example
+```json
+{
+    "color_palette": {
+        "type": "grayscale_map",
+        "colors": {
+            "24": "181818",
+            "68": "444444",
+            "107": "6b6b6b",
+            "150": "969696",
+            "190": "bebebe",
+            "216": "d8d8d8",
+            "255": "ffffff"
+        },
+        "filler": "interpolate"
+    },
+    "variants": [
+        {
+            "condition": {
+                "type": "tag",
+                "tag": "blade"
+            },
+            "overwrite": {
+                "color_palette": {
+                    "type": "grayscale_map",
+                    "colors": {
+                        "24": "3E2D0E",
+                        "68": "805C16",
+                        "107": "D99413",
+                        "150": "E6AF15",
+                        "190": "E7EB56",
+                        "216": "FAFC75",
+                        "255": "FCFCFC"
+                    },
+                    "filler": "interpolate"
+                }
+            }
+        }
+    ]
+}
+```
+This example uses iron for most module colors, but gold for blades.
