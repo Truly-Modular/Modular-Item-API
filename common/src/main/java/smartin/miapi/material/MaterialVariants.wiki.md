@@ -1,4 +1,4 @@
-@Header Material Variants
+@header Material Variants
 @path /datapack/material/variants
 
 Material Variants allow you to create variants for materials.
