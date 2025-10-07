@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
+import net.minecraft.resources.ResourceLocation;
 import smartin.miapi.Miapi;
 import smartin.miapi.modules.properties.tag.ModuleTagProperty;
 import smartin.miapi.modules.properties.util.ModuleProperty;
@@ -50,5 +51,10 @@ public class TagCondition implements ModuleCondition {
             conditionContext.failReasons.add(error);
         }
         return false;
+    }
+
+    @Override
+    public ResourceLocation getID() {
+        return Miapi.id("tag");
     }
 }

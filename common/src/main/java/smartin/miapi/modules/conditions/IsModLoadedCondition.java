@@ -3,6 +3,8 @@ package smartin.miapi.modules.conditions;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.architectury.platform.Platform;
+import net.minecraft.resources.ResourceLocation;
+import smartin.miapi.Miapi;
 
 /**
  * @header Mod Loaded Condition
@@ -32,5 +34,10 @@ public class IsModLoadedCondition implements ModuleCondition {
     @Override
     public boolean isAllowed(ConditionManager.ConditionContext conditionContext) {
         return Platform.isModLoaded(mod);
+    }
+
+    @Override
+    public ResourceLocation getID() {
+        return Miapi.id("mod_loaded");
     }
 }

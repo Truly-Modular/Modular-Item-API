@@ -90,24 +90,30 @@ public class CacheCommands {
 
     public static void triggerServerReload() {
         if (Platform.getEnv() == EnvType.CLIENT) {
-            if(Minecraft.getInstance().isSameThread()){
+            if (Minecraft.getInstance().isSameThread()) {
                 ReloadEvents.requestClientSideDataReload(true);
                 return;
             }
         }
-        ReloadEvents.reloadCounter++;
-        MiapiEvents.ReloadEventData data = new MiapiEvents.ReloadEventData();
-        data.data = new LinkedHashMap<>();
-        data.data.putAll(ReloadEvents.RAW_DATA_PACKS);
-        MiapiEvents.ADJUST_RAW_DATA.invoker().onReload(data);
-        ReloadEvents.START.fireEvent(false, Miapi.server.registryAccess());
-        ReloadEvents.DataPackLoader.trigger(data.data);
-        ReloadEvents.MAIN.fireEvent(false, Miapi.server.registryAccess());
-        ReloadEvents.END.fireEvent(false, Miapi.server.registryAccess());
-        ReloadEvents.reloadCounter = 0;
-        Miapi.server.getPlayerList().getPlayers().forEach(ReloadEvents::triggerReloadOnClient);
-        MiapiEvents.POST_HOT_RELOAD.invoker().onReload();
-        MiapiEvents.CLEAR_CACHE.invoker().onReload();
+        if (Miapi.server == null) {
+            ReloadEvents.requestClientSideDataReload(true);
+            return;
+        }
+        Miapi.server.execute(() -> {
+            ReloadEvents.reloadCounter++;
+            MiapiEvents.ReloadEventData data = new MiapiEvents.ReloadEventData();
+            data.data = new LinkedHashMap<>();
+            data.data.putAll(ReloadEvents.RAW_DATA_PACKS);
+            MiapiEvents.ADJUST_RAW_DATA.invoker().onReload(data);
+            ReloadEvents.START.fireEvent(false, Miapi.server.registryAccess());
+            ReloadEvents.DataPackLoader.trigger(data.data);
+            ReloadEvents.MAIN.fireEvent(false, Miapi.server.registryAccess());
+            ReloadEvents.END.fireEvent(false, Miapi.server.registryAccess());
+            ReloadEvents.reloadCounter = 0;
+            Miapi.server.getPlayerList().getPlayers().forEach(ReloadEvents::triggerReloadOnClient);
+            MiapiEvents.POST_HOT_RELOAD.invoker().onReload();
+            MiapiEvents.CLEAR_CACHE.invoker().onReload();
+        });
     }
 
     static ArgumentType<String> getArgumentType() {

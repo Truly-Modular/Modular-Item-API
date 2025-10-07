@@ -49,4 +49,9 @@ public class ModuleTypeCondition implements ModuleCondition {
         }
         return false;
     }
+
+    @Override
+    public ResourceLocation getID() {
+        return Miapi.id("module");
+    }
 }

@@ -28,7 +28,7 @@ import java.util.Objects;
  * It allows dynamic texture and color adjustments based on the provided palette data, influencing
  * how the material is rendered in the game.
  * @description_end
- * @path /data_types/composites/palette
+ * @path /datapack/material/composites/palette
  * @data palette: A JSON element defining the color palette and rendering rules.
  */
 public record PaletteComposite(JsonElement json) implements Composite {

@@ -20,7 +20,7 @@ import java.util.List;
  * The GroupComposite allows you to modify the groups of a material by either clearing the existing groups or adjusting them by removing and adding specific groups.
  * You can choose to clear the groups, then remove certain groups and add others. If no groups are specified, the existing groups will be used.
  * @description_end
- * @path /data_types/composites/group_modification
+ * @path /datapack/material/composites/group_modification
  * @data clear: A boolean value that determines if the existing groups should be cleared before applying the modifications.
  * @data remove: A list of group names (String) to be removed from the existing groups.
  * @data toAdd: A list of group names (String) to be added to the existing groups.

@@ -64,6 +64,11 @@ public class AdvancementCondition implements ModuleCondition {
         return false;
     }
 
+    @Override
+    public ResourceLocation getID() {
+        return Miapi.id("advancement");
+    }
+
     public static boolean hasAdvancement(AdvancementHolder advancement, Player player) {
         if (smartin.miapi.Environment.isClient()) {
             return hasAdvancementClient(advancement, player);

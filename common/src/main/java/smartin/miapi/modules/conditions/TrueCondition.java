@@ -4,6 +4,8 @@ import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
+import net.minecraft.resources.ResourceLocation;
+import smartin.miapi.Miapi;
 
 /**
  * @header True Condition
@@ -28,5 +30,10 @@ public class TrueCondition implements ModuleCondition {
     @Override
     public boolean isAllowed(ConditionManager.ConditionContext conditionContext) {
         return true;
+    }
+
+    @Override
+    public ResourceLocation getID() {
+        return Miapi.id("true");
     }
 }

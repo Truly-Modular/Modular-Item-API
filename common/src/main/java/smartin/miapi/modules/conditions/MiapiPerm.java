@@ -4,7 +4,9 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
+import smartin.miapi.Miapi;
 import smartin.miapi.modules.MiapiPermissions;
 
 import java.util.List;
@@ -49,5 +51,10 @@ public class MiapiPerm implements ModuleCondition {
             reasons.add(Component.literal("This is a Cosmetic for Kofi and Patreon supporter."));
         }
         return false;
+    }
+
+    @Override
+    public ResourceLocation getID() {
+        return Miapi.id("miapi_perms");
     }
 }

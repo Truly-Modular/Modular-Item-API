@@ -5,6 +5,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.advancements.critereon.MinMaxBounds;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -72,5 +73,10 @@ public record ItemInInventoryCondition(Ingredient item, MinMaxBounds.Ints count,
             }
         }
         return found;
+    }
+
+    @Override
+    public ResourceLocation getID() {
+        return Miapi.id("item_in_inventory");
     }
 }

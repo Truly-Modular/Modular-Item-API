@@ -42,7 +42,7 @@ import static smartin.miapi.material.MaterialProperty.MATERIAL_REGISTRY;
  * <p>
  * The final material is computed by applying the list of composites in sequence to an initial default material.
  * @description_end
- * @path /data_types/composites
+ * @path /datapack/material/composites
  * @data composite_material: A list of composite modifications that define how the material is built from its base.
  */
 

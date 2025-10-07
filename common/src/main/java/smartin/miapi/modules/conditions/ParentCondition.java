@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
+import net.minecraft.resources.ResourceLocation;
 import smartin.miapi.Miapi;
 import smartin.miapi.modules.ModuleInstance;
 
@@ -53,5 +54,10 @@ public class ParentCondition implements ModuleCondition {
     @SuppressWarnings("unchecked")
     public <T extends ModuleCondition> T getCondition() {
         return (T) condition;
+    }
+
+    @Override
+    public ResourceLocation getID() {
+        return Miapi.id("parent");
     }
 }

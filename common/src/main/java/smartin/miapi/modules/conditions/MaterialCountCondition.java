@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
+import net.minecraft.resources.ResourceLocation;
 import smartin.miapi.Miapi;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.material.base.Material;
@@ -65,5 +66,10 @@ public class MaterialCountCondition implements ModuleCondition {
             return moduleInstances.size();
         }
         return 0;
+    }
+
+    @Override
+    public ResourceLocation getID() {
+        return Miapi.id("material_count");
     }
 }

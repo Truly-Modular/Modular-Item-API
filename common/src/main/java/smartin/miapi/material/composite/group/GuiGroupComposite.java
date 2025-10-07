@@ -20,7 +20,7 @@ import java.util.List;
  * The GuiGroupComposite allows you to modify the GUI groups of a material by either clearing the existing groups or adjusting them by removing and adding specific groups.
  * You can choose to clear the GUI groups, then remove certain groups and add others. If no groups are specified, the existing groups will be used.
  * @description_end
- * @path /data_types/composites/gui_group_modification
+ * @path /datapack/material/composites/gui_group_modification
  * @data clear: A boolean value that determines if the existing GUI groups should be cleared before applying the modifications.
  * @data remove: A list of GUI group names (String) to be removed from the existing GUI groups.
  * @data toAdd: A list of GUI group names (String) to be added to the existing GUI groups.

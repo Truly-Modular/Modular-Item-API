@@ -2,6 +2,8 @@ package smartin.miapi.modules.conditions;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.resources.ResourceLocation;
+import smartin.miapi.Miapi;
 import smartin.miapi.modules.ModuleInstance;
 
 import java.util.Optional;
@@ -52,5 +54,10 @@ public class ChildCondition implements ModuleCondition {
             }
         }
         return false;
+    }
+
+    @Override
+    public ResourceLocation getID() {
+        return Miapi.id("child");
     }
 }

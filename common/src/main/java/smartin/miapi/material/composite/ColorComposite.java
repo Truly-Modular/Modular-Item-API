@@ -21,7 +21,7 @@ import java.util.Objects;
  * The Color Composite modifies the visual appearance of a material by applying a fixed color value.
  * This allows customization of material colors for better distinction and aesthetics.
  * @description_end
- * @path /data_types/composites/color
+ * @path /datapack/material/composites/color
  * @data color: A string representing the color value, which is converted into an ARGB integer.
  */
 public record ColorComposite(String color) implements Composite {

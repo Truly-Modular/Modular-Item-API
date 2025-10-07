@@ -114,6 +114,7 @@
     "miapi.crafting_condition.false": "Cannot craft",
     "miapi.condition.tag.error": "Item is missing ModuleTag",
     "miapi.crafting_condition.cant_change_parent": "Cannot change this module because of submodule",
+    "miapi.crafting_condition.cant_change_self": "You are not allowed to change this Module!",
     "miapi.gui.item_detail": "Hover detail",
     "miapi.broken_item.name": "Broken %s",
     "miapi.crossbow.ammo.addition": "Next Projectile: [%s]",

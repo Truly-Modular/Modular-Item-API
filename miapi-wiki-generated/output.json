@@ -30,6 +30,128 @@
           "data": {},
           "key_words": [],
           "sub_pages": {
+            "component": {
+              "header": "Component Material",
+              "description": "Component Materials use a special components for simply runtime Materials.\rIts called ``modular_material``.\rExample:\r```json\r{\r    \"modular_material\": {\r        \"parent\": \"miapi:metal/iron\",\r        \"cost\": 1,\r        \"overwrite\": {\r            \"hardness\": 5\r        }\r    }\r}\r```\r- ``\"parent\"`` Needs to refer to a json controlled material.\r- ``\"cost\"`` The value of this item as Ingredient, defaults to 1.\r- ``\"overwrite\"`` The json to overwrite material data of its parent. Works the same a a Material Extension.\r\r\rOverall, a better structure for this are Composite Materials, as they offer greater flexibility in most scenarios.\rBut for quick testing this still offers some value.",
+              "data": {},
+              "key_words": []
+            },
+            "composites": {
+              "header": "Composite Material",
+              "description": " The Composite Material allows defining a material as a combination of multiple composites. Each composite modifies the base material in a specific way,  \nsuch as changing its color, name, or attributes. This enables dynamic material creation by layering different modifications.\r<p>\rA composite material consists of a base material and a list of composite modifications that transform the base into a fully functional material.\rThese composites can adjust properties like durability, visual appearance or any other Material based system.\r<p>\r<p>\rThe final material is computed by applying the list of composites in sequence to an initial default material.\r",
+              "java": "common/src/main/java/smartin/miapi/material/composite/CompositeMaterial.java",
+              "data": {
+                "composite_material": " A list of composite modifications that define how the material is built from its base."
+              },
+              "key_words": [],
+              "sub_pages": {
+                "any_ingredient": {
+                  "header": "Any Ingredient Composite",
+                  "description": "  \nThe Any Ingredient Composite ensures that any item can contribute to material composition.\rIt assigns a default value and priority to all ingredients, making them universally valid\rin crafting or material processing.\r",
+                  "java": "common/src/main/java/smartin/miapi/material/composite/AnyIngredientComposite.java",
+                  "data": {
+                    "base": " An optional base material reference (not used in this implementation)."
+                  },
+                  "key_words": []
+                },
+                "color": {
+                  "header": "Color Composite",
+                  "description": "  \nThe Color Composite modifies the visual appearance of a material by applying a fixed color value.\rThis allows customization of material colors for better distinction and aesthetics.\r",
+                  "java": "common/src/main/java/smartin/miapi/material/composite/ColorComposite.java",
+                  "data": {
+                    "color": " A string representing the color value, which is converted into an ARGB integer."
+                  },
+                  "key_words": []
+                },
+                "dyeable": {
+                  "header": "Dyeable Composite",
+                  "description": "  \nThe Dyeable Composite enables a material to be dyed by players. When applied, the material gains the ability\rto change its color based on dyes used in crafting or customization interfaces.\r",
+                  "java": "common/src/main/java/smartin/miapi/material/composite/DyeableComposite.java",
+                  "data": {
+                    "is_dye_able": " A boolean value indicating whether the material can be dyed."
+                  },
+                  "key_words": []
+                },
+                "group_modification": {
+                  "header": "Group Modification Composite",
+                  "description": "  \nThe GroupComposite allows you to modify the groups of a material by either clearing the existing groups or adjusting them by removing and adding specific groups.\rYou can choose to clear the groups, then remove certain groups and add others. If no groups are specified, the existing groups will be used.\r",
+                  "java": "common/src/main/java/smartin/miapi/material/composite/group/GroupComposite.java",
+                  "data": {
+                    "clear": " A boolean value that determines if the existing groups should be cleared before applying the modifications.",
+                    "remove": " A list of group names (String) to be removed from the existing groups.",
+                    "toAdd": " A list of group names (String) to be added to the existing groups."
+                  },
+                  "key_words": []
+                },
+                "gui_group_modification": {
+                  "header": "GUI Group Modification Composite",
+                  "description": "  \nThe GuiGroupComposite allows you to modify the GUI groups of a material by either clearing the existing groups or adjusting them by removing and adding specific groups.\rYou can choose to clear the GUI groups, then remove certain groups and add others. If no groups are specified, the existing groups will be used.\r",
+                  "java": "common/src/main/java/smartin/miapi/material/composite/group/GuiGroupComposite.java",
+                  "data": {
+                    "clear": " A boolean value that determines if the existing GUI groups should be cleared before applying the modifications.",
+                    "remove": " A list of GUI group names (String) to be removed from the existing GUI groups.",
+                    "toAdd": " A list of GUI group names (String) to be added to the existing GUI groups."
+                  },
+                  "key_words": []
+                },
+                "hidden_group_modification": {
+                  "header": "Hidden Group Modification Composite",
+                  "description": "  \nThe HiddenGroupComposite allows you to modify the hidden groups of a material by either clearing the existing groups or adjusting them by removing and adding specific groups.\rYou can choose to clear the hidden groups, then remove certain groups and add others. If no groups are specified, the existing hidden groups will be used.\r",
+                  "java": "common/src/main/java/smartin/miapi/material/composite/group/HiddenGroupComposite.java",
+                  "data": {
+                    "clear": " A boolean value that determines if the existing hidden groups should be cleared before applying the modifications.",
+                    "remove": " A list of hidden group names (String) to be removed from the existing hidden groups.",
+                    "toAdd": " A list of hidden group names (String) to be added to the existing hidden groups."
+                  },
+                  "key_words": []
+                },
+                "material_copy": {
+                  "header": "Material Copy Composite",
+                  "description": " The Material Copy Composite replaces the current material with a specified base material.  \nThis allows for direct substitution of one material with another, maintaining all properties\rand behaviors of the target material.\r",
+                  "java": "common/src/main/java/smartin/miapi/material/composite/material/MaterialCopyComposite.java",
+                  "data": {
+                    "material": " The material that replaces the current material."
+                  },
+                  "key_words": []
+                },
+                "name": {
+                  "header": "Name Composite",
+                  "description": "  \nThe Name Composite overrides the default name of a material with a specified custom name.\rThis enables materials to have unique or dynamic names, which can be displayed in UI elements.\r",
+                  "java": "common/src/main/java/smartin/miapi/material/composite/NameComposite.java",
+                  "data": {
+                    "name": " The custom name assigned to the material."
+                  },
+                  "key_words": []
+                },
+                "palette": {
+                  "header": "Palette Composite",
+                  "description": "  \nThe Palette Composite modifies the visual appearance of a material by applying a color palette.\rIt allows dynamic texture and color adjustments based on the provided palette data, influencing\rhow the material is rendered in the game.\r",
+                  "java": "common/src/main/java/smartin/miapi/material/composite/PaletteComposite.java",
+                  "data": {
+                    "palette": " A JSON element defining the color palette and rendering rules."
+                  },
+                  "key_words": []
+                },
+                "increase_stats": {
+                  "header": "Add Stats Composite",
+                  "description": "  \nThe IncreaseStatsComposite allows you to increase specific stats by providing a map of stat names and their respective values.\rThe values are added to the existing stats of the parent material. If the stat is not found in the map, the parent's stat value is used.\r",
+                  "java": "common/src/main/java/smartin/miapi/material/composite/stat/IncreaseStatsComposite.java",
+                  "data": {
+                    "stats": " A map of stat names (String) and their increase values (Double) to apply to the parent material."
+                  },
+                  "key_words": []
+                },
+                "percent_stats": {
+                  "header": "Percent Stats Composite",
+                  "description": "  \nThe PercentStatComposite allows you to modify specific stats by providing a map of stat names and their respective percentage values.\rThe values are multiplied with the existing stats of the parent material. If the stat is not found in the map, the parent's stat value is used.\r",
+                  "java": "common/src/main/java/smartin/miapi/material/composite/stat/PercentStatComposite.java",
+                  "data": {
+                    "stats": " A map of stat names (String) and their percentage increase values (Double) to apply to the parent material."
+                  },
+                  "key_words": []
+                }
+              }
+            },
             "parent": {
               "header": "header is missing! Report this to a developer to fix this",
               "description": "@Header Material Inheritance\r\rMaterial inheritance allows you to base materials of other materials, copying all things abt them.\r\rExample\r```json\r{\r    \"parent\": \"miapi:metal/iron\",\r    \"data\": {\r        \"mining_speed\": 0,\r        \"mining_level\": \"minecraft:incorrect_for_diamond_tool\",\r        \"items\": [\r            {\r                \"item\": \"minecraft:blue_ice\",\r                \"value\": 0.1\r            }\r        ]\r    }\r}\r```\rThis example uses extends iron and increases its mining level to diamond and adding blue ice as ingredient.",
@@ -172,122 +294,6 @@
                 "chance": " An optional (default = 1.0) that sets the chance for a swap to occur in the first place.",
                 "blacklist": " An optional list of Module IDs representing modules that cannot be substituted.",
                 "whitelist": " An optional list of Module IDs, if set blocks all entries not on this list."
-              },
-              "key_words": []
-            }
-          }
-        },
-        "composites": {
-          "header": "Composite Material",
-          "description": " The Composite Material allows defining a material as a combination of multiple composites. Each composite modifies the base material in a specific way,  \nsuch as changing its color, name, or attributes. This enables dynamic material creation by layering different modifications.\r<p>\rA composite material consists of a base material and a list of composite modifications that transform the base into a fully functional material.\rThese composites can adjust properties like durability, visual appearance or any other Material based system.\r<p>\r<p>\rThe final material is computed by applying the list of composites in sequence to an initial default material.\r",
-          "java": "common/src/main/java/smartin/miapi/material/composite/CompositeMaterial.java",
-          "data": {
-            "composite_material": " A list of composite modifications that define how the material is built from its base."
-          },
-          "key_words": [],
-          "sub_pages": {
-            "any_ingredient": {
-              "header": "Any Ingredient Composite",
-              "description": "  \nThe Any Ingredient Composite ensures that any item can contribute to material composition.\rIt assigns a default value and priority to all ingredients, making them universally valid\rin crafting or material processing.\r",
-              "java": "common/src/main/java/smartin/miapi/material/composite/AnyIngredientComposite.java",
-              "data": {
-                "base": " An optional base material reference (not used in this implementation)."
-              },
-              "key_words": []
-            },
-            "color": {
-              "header": "Color Composite",
-              "description": "  \nThe Color Composite modifies the visual appearance of a material by applying a fixed color value.\rThis allows customization of material colors for better distinction and aesthetics.\r",
-              "java": "common/src/main/java/smartin/miapi/material/composite/ColorComposite.java",
-              "data": {
-                "color": " A string representing the color value, which is converted into an ARGB integer."
-              },
-              "key_words": []
-            },
-            "dyeable": {
-              "header": "Dyeable Composite",
-              "description": "  \nThe Dyeable Composite enables a material to be dyed by players. When applied, the material gains the ability\rto change its color based on dyes used in crafting or customization interfaces.\r",
-              "java": "common/src/main/java/smartin/miapi/material/composite/DyeableComposite.java",
-              "data": {
-                "is_dye_able": " A boolean value indicating whether the material can be dyed."
-              },
-              "key_words": []
-            },
-            "group_modification": {
-              "header": "Group Modification Composite",
-              "description": "  \nThe GroupComposite allows you to modify the groups of a material by either clearing the existing groups or adjusting them by removing and adding specific groups.\rYou can choose to clear the groups, then remove certain groups and add others. If no groups are specified, the existing groups will be used.\r",
-              "java": "common/src/main/java/smartin/miapi/material/composite/group/GroupComposite.java",
-              "data": {
-                "clear": " A boolean value that determines if the existing groups should be cleared before applying the modifications.",
-                "remove": " A list of group names (String) to be removed from the existing groups.",
-                "toAdd": " A list of group names (String) to be added to the existing groups."
-              },
-              "key_words": []
-            },
-            "gui_group_modification": {
-              "header": "GUI Group Modification Composite",
-              "description": "  \nThe GuiGroupComposite allows you to modify the GUI groups of a material by either clearing the existing groups or adjusting them by removing and adding specific groups.\rYou can choose to clear the GUI groups, then remove certain groups and add others. If no groups are specified, the existing groups will be used.\r",
-              "java": "common/src/main/java/smartin/miapi/material/composite/group/GuiGroupComposite.java",
-              "data": {
-                "clear": " A boolean value that determines if the existing GUI groups should be cleared before applying the modifications.",
-                "remove": " A list of GUI group names (String) to be removed from the existing GUI groups.",
-                "toAdd": " A list of GUI group names (String) to be added to the existing GUI groups."
-              },
-              "key_words": []
-            },
-            "hidden_group_modification": {
-              "header": "Hidden Group Modification Composite",
-              "description": "  \nThe HiddenGroupComposite allows you to modify the hidden groups of a material by either clearing the existing groups or adjusting them by removing and adding specific groups.\rYou can choose to clear the hidden groups, then remove certain groups and add others. If no groups are specified, the existing hidden groups will be used.\r",
-              "java": "common/src/main/java/smartin/miapi/material/composite/group/HiddenGroupComposite.java",
-              "data": {
-                "clear": " A boolean value that determines if the existing hidden groups should be cleared before applying the modifications.",
-                "remove": " A list of hidden group names (String) to be removed from the existing hidden groups.",
-                "toAdd": " A list of hidden group names (String) to be added to the existing hidden groups."
-              },
-              "key_words": []
-            },
-            "material_copy": {
-              "header": "Material Copy Composite",
-              "description": " The Material Copy Composite replaces the current material with a specified base material.  \nThis allows for direct substitution of one material with another, maintaining all properties\rand behaviors of the target material.\r",
-              "java": "common/src/main/java/smartin/miapi/material/composite/material/MaterialCopyComposite.java",
-              "data": {
-                "material": " The material that replaces the current material."
-              },
-              "key_words": []
-            },
-            "name": {
-              "header": "Name Composite",
-              "description": "  \nThe Name Composite overrides the default name of a material with a specified custom name.\rThis enables materials to have unique or dynamic names, which can be displayed in UI elements.\r",
-              "java": "common/src/main/java/smartin/miapi/material/composite/NameComposite.java",
-              "data": {
-                "name": " The custom name assigned to the material."
-              },
-              "key_words": []
-            },
-            "palette": {
-              "header": "Palette Composite",
-              "description": "  \nThe Palette Composite modifies the visual appearance of a material by applying a color palette.\rIt allows dynamic texture and color adjustments based on the provided palette data, influencing\rhow the material is rendered in the game.\r",
-              "java": "common/src/main/java/smartin/miapi/material/composite/PaletteComposite.java",
-              "data": {
-                "palette": " A JSON element defining the color palette and rendering rules."
-              },
-              "key_words": []
-            },
-            "increase_stats": {
-              "header": "Add Stats Composite",
-              "description": "  \nThe IncreaseStatsComposite allows you to increase specific stats by providing a map of stat names and their respective values.\rThe values are added to the existing stats of the parent material. If the stat is not found in the map, the parent's stat value is used.\r",
-              "java": "common/src/main/java/smartin/miapi/material/composite/stat/IncreaseStatsComposite.java",
-              "data": {
-                "stats": " A map of stat names (String) and their increase values (Double) to apply to the parent material."
-              },
-              "key_words": []
-            },
-            "percent_stats": {
-              "header": "Percent Stats Composite",
-              "description": "  \nThe PercentStatComposite allows you to modify specific stats by providing a map of stat names and their respective percentage values.\rThe values are multiplied with the existing stats of the parent material. If the stat is not found in the map, the parent's stat value is used.\r",
-              "java": "common/src/main/java/smartin/miapi/material/composite/stat/PercentStatComposite.java",
-              "data": {
-                "stats": " A map of stat names (String) and their percentage increase values (Double) to apply to the parent material."
               },
               "key_words": []
             }
@@ -1149,6 +1155,16 @@
                   "data": {
                     "allow_change_parent": " A condition that determines whether a parent module can be changed.",
                     "`condition`": " The condition that must be met to allow changing the parent module."
+                  },
+                  "key_words": []
+                },
+                "allow_change_self": {
+                  "header": "Can Change Self Module Property",
+                  "description": "  \nThe Can Change Self Module Property validates if a module itself can be changed by checking specified conditions.\rIf the conditions are not met, the change is disallowed, and a failure reason is communicated. This is particularly\rimportant in crafting or upgrading scenarios where a module’s direct modification is restricted.\r",
+                  "java": "common/src/main/java/smartin/miapi/modules/properties/slot/CanChangeSelfModule.java",
+                  "data": {
+                    "allow_change_self": " A condition that determines whether a module can be changed.",
+                    "`condition`": " The condition that must be met to allow changing the module."
                   },
                   "key_words": []
                 },

@@ -20,7 +20,7 @@ import java.util.Objects;
  * The IncreaseStatsComposite allows you to increase specific stats by providing a map of stat names and their respective values.
  * The values are added to the existing stats of the parent material. If the stat is not found in the map, the parent's stat value is used.
  * @description_end
- * @path /data_types/composites/increase_stats
+ * @path /datapack/material/composites/increase_stats
  * @data stats: A map of stat names (String) and their increase values (Double) to apply to the parent material.
  */
 public record IncreaseStatsComposite(Map<String, Double> stats) implements Composite {

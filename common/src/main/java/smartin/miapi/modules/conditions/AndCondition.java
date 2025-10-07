@@ -2,6 +2,8 @@ package smartin.miapi.modules.conditions;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.resources.ResourceLocation;
+import smartin.miapi.Miapi;
 
 import java.util.List;
 /**
@@ -35,5 +37,10 @@ public class AndCondition implements ModuleCondition {
             }
         }
         return isAllowed;
+    }
+
+    @Override
+    public ResourceLocation getID() {
+        return Miapi.id("and");
     }
 }

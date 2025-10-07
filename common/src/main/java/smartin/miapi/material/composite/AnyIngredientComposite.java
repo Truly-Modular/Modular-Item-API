@@ -20,7 +20,7 @@ import java.util.Optional;
  * It assigns a default value and priority to all ingredients, making them universally valid
  * in crafting or material processing.
  * @description_end
- * @path /data_types/composites/any_ingredient
+ * @path /datapack/material/composites/any_ingredient
  * @data base: An optional base material reference (not used in this implementation).
  */
 public record AnyIngredientComposite() implements Composite {

@@ -16,7 +16,7 @@ import java.util.Objects;
  * This allows for direct substitution of one material with another, maintaining all properties
  * and behaviors of the target material.
  * @description_end
- * @path /data_types/composites/material_copy
+ * @path /datapack/material/composites/material_copy
  * @data material: The material that replaces the current material.
  */
 public class MaterialCopyComposite extends BasicOtherMaterialComposite {

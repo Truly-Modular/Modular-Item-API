@@ -55,4 +55,9 @@ public class MaterialCondition implements ModuleCondition {
         conditionContext.failReasons.add(Component.translatable(Miapi.MOD_ID + ".condition.material.error"));
         return false;
     }
+
+    @Override
+    public ResourceLocation getID() {
+        return Miapi.id("material");
+    }
 }

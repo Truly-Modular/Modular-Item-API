@@ -55,7 +55,36 @@ public class ConditionManager {
          */
         @Override
         public <T> DataResult<T> encode(ModuleCondition input, DynamicOps<T> ops, T prefix) {
-            return DataResult.error(() -> "conditions cannot be encoded. This feature might be added later");
+            // Find which codec this condition belongs to
+            ResourceLocation id = input.getID();
+            Codec<? extends ModuleCondition> codec = CONDITION_REGISTRY.get(input.getID());
+
+
+            if (codec == null) {
+                return DataResult.error(() -> "Cannot encode unknown condition type: " + input.getClass().getName() + " id " + id);
+            }
+
+            Map.Entry<ResourceLocation, Codec<? extends ModuleCondition>> entry = Map.entry(id, codec);
+
+            // Encode the condition-specific data
+            DataResult<T> encodedData = ((Codec<ModuleCondition>) entry.getValue()).encodeStart(ops, input);
+            if (encodedData.isError()) {
+                return DataResult.error(() -> "Failed to encode condition data: " + encodedData.error().get().message());
+            }
+
+            T conditionData = encodedData.getOrThrow();
+
+            // Build final JSON map with "type" + condition data
+            Map<T, T> outputMap = new LinkedHashMap<>();
+            outputMap.put(ops.createString("type"), ops.createString(entry.getKey().toString()));
+
+            // Merge the inner fields
+            if (ops.getMap(conditionData).result().isPresent()) {
+                ops.getMap(conditionData).result().get().entries().forEach((a) -> {
+                    outputMap.put(a.getFirst(), a.getSecond());
+                });
+            }
+            return DataResult.success(ops.createMap(outputMap));
         }
     };
 

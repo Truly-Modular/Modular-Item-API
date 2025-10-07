@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
+import net.minecraft.resources.ResourceLocation;
 import smartin.miapi.Miapi;
 import smartin.miapi.material.MaterialProperty;
 import smartin.miapi.material.base.Material;
@@ -51,5 +52,10 @@ public class MaterialGroupCondition implements ModuleCondition {
         }
         conditionContext.failReasons.add(Component.translatable(Miapi.MOD_ID + ".condition.material.error"));
         return false;
+    }
+
+    @Override
+    public ResourceLocation getID() {
+        return Miapi.id("material_group");
     }
 }

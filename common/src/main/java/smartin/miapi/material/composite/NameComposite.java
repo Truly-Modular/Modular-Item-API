@@ -19,7 +19,7 @@ import java.util.Objects;
  * The Name Composite overrides the default name of a material with a specified custom name.
  * This enables materials to have unique or dynamic names, which can be displayed in UI elements.
  * @description_end
- * @path /data_types/composites/name
+ * @path /datapack/material/composites/name
  * @data name: The custom name assigned to the material.
  */
 

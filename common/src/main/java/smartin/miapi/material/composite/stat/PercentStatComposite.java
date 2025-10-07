@@ -20,7 +20,7 @@ import java.util.Objects;
  * The PercentStatComposite allows you to modify specific stats by providing a map of stat names and their respective percentage values.
  * The values are multiplied with the existing stats of the parent material. If the stat is not found in the map, the parent's stat value is used.
  * @description_end
- * @path /data_types/composites/percent_stats
+ * @path /datapack/material/composites/percent_stats
  * @data stats: A map of stat names (String) and their percentage increase values (Double) to apply to the parent material.
  */
 public record PercentStatComposite(Map<String, Double> stats) implements Composite {
