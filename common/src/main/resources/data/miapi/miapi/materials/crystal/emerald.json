@@ -28,9 +28,14 @@
     },
     "properties": {
         "tool": {
-            "fake_enchants": {
-                "minecraft:fortune": "1"
-            }
+            "attributes": [
+                {
+                    "attribute": "minecraft:generic.luck",
+                    "value": "1",
+                    "operation": "+",
+                    "slot": "mainhand"
+                }
+            ]
         },
         "handheld": {
             "illager_bane": "1"
