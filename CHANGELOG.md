@@ -1,19 +1,2 @@
-## v2.1.1 (1.21)
-- severly reduced log spam
-- adjusted how fake enchantments work, [old_level] is no longer required and ui-info will be displayed more clearly.
-- fixed bug with storage mods like create or refined storage
-- fixed vanilla projectile velocity bug
-- fixed eat ability
-- added [slot] to the resolvers, slo [slot.blade.material.hardness] now works
-- fixed mining level for generated materials
-- should fix axe dmg for generated materials
-- added config option "disable_fast_render" replacing "enable_fast_render" since it was accidentally set to false.
-- fixed mixin conflict with yungs cave bioms
-- fixed minecraft bug that could cause invalid crashes during datapack load
-- fixed compat issues related to item inventory tick and added tooltips
-- adding material variants
-### Editor
-- replaced material editor with json editor
-- added export datapack button
-- added open in explorer button
-- fixed crashes related to editor validation
+## v2.1.2 (1.21)
+- reduced logging of failed number evaluations
