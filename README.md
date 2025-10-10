@@ -72,4 +72,4 @@ dependencies {
     modApi("com.Truly-Modular.Modular-Item-API:Truly-Modular-miapi-neoforge:${rootProject.miapi_version}")
 }
 ```
-
+miapi_version inclues the minecraft version. check https://github.com/Truly-Modular/Modular-Item-API/releases for exact release tags
