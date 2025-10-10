@@ -59,9 +59,17 @@ dependencies {
     modApi("com.Truly-Modular.Modular-Item-API:Truly-Modular-miapi-fabric:${rootProject.miapi_version}")
 }
 ```
-## Forge
+## Forge (1.20 only)
 ```js
 dependencies {
     modApi("com.Truly-Modular.Modular-Item-API:Truly-Modular-miapi-forge:${rootProject.miapi_version}")
 }
 ```
+
+## Neoforge (1.21.1 only)
+```js
+dependencies {
+    modApi("com.Truly-Modular.Modular-Item-API:Truly-Modular-miapi-neoforge:${rootProject.miapi_version}")
+}
+```
+
