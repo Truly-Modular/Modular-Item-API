@@ -74,6 +74,9 @@ public class MiapiClientConfig {
 
         @AutoCodec.Name("disable_fast_render")
         public boolean disableFastRender = false;
+
+        @AutoCodec.Name("disable_fast_trim")
+        public boolean disableFastTrim = false;
     }
 
     @ConfigAutoCodec.ConfigClassMarker

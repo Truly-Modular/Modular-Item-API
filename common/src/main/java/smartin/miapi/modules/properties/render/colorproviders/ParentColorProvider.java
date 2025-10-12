@@ -1,0 +1,59 @@
+package smartin.miapi.modules.properties.render.colorproviders;
+
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.world.item.ItemDisplayContext;
+import net.minecraft.world.item.ItemStack;
+import smartin.miapi.client.renderer.TrimRenderer;
+import smartin.miapi.material.MaterialProperty;
+import smartin.miapi.material.base.Material;
+import smartin.miapi.modules.ModuleInstance;
+
+public class ParentColorProvider extends MaterialColorProvider {
+
+    public ParentColorProvider() {
+    }
+
+    @Environment(EnvType.CLIENT)
+    @Override
+    public VertexConsumer getConsumer(MultiBufferSource vertexConsumers,
+                                      TextureAtlasSprite sprite,
+                                      ItemStack stack,
+                                      ModuleInstance moduleInstance,
+                                      ItemDisplayContext mode) {
+        return material.getRenderController(moduleInstance, mode).getVertexConsumer(vertexConsumers, sprite, stack, moduleInstance, mode);
+    }
+
+    @Override
+    public ColorProvider getInstance(ItemStack stack, ModuleInstance instance, TrimRenderer.TrimMode trimMode) {
+        Material material1 = MaterialProperty.getMaterial(instance);
+        if (material1 != null) {
+            return new MaterialColorProvider(material1, trimMode);
+        }
+        return new ModelColorProvider();
+    }
+
+    public ModuleInstance adapt(ModuleInstance moduleInstance) {
+        if (moduleInstance.parent != null) {
+            return moduleInstance.parent;
+        }
+        return moduleInstance;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        smartin.miapi.modules.properties.render.colorproviders.ParentColorProvider that = (smartin.miapi.modules.properties.render.colorproviders.ParentColorProvider) obj;
+        return java.util.Objects.equals(material, that.material);
+    }
+
+    @Override
+    public int hashCode() {
+        return java.util.Objects.hash(material);
+    }
+
+}

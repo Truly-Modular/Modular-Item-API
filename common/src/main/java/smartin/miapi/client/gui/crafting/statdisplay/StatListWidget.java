@@ -265,6 +265,10 @@ public class StatListWidget extends InteractAbleWidget {
                 .setTranslationKey("miapi.crit_chance")
                 .setMax(1)
                 .setMin(0).build());
+        addStatDisplay(AttributeSingleDisplay
+                .builder(Attributes.LUCK)
+                .setMax(5)
+                .setMin(0).build());
 
         addStatDisplay(SinglePropertyStatDisplay
                 .builder(DrawTimeProperty.property)
@@ -425,6 +429,9 @@ public class StatListWidget extends InteractAbleWidget {
 
     public static <T extends InteractAbleWidget & SingleStatDisplay> List<InteractAbleWidget> collectWidgets(ItemStack original, ItemStack compareTo) {
         List<InteractAbleWidget> widgets = new ArrayList<>();
+        if (original.isEmpty() && compareTo.isEmpty()) {
+            return widgets;
+        }
         for (StatWidgetSupplier supplier : statWidgetSupplier) {
             List<T> statWidgets = supplier.currentList(original, compareTo);
             for (T statDisplay : statWidgets) {

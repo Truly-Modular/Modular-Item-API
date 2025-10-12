@@ -4,15 +4,22 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.redpxnda.nucleus.util.Color;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.world.item.ArmorItem;
+import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
-import smartin.miapi.material.MaterialProperty;
+import net.minecraft.world.item.armortrim.ArmorTrim;
+import org.jetbrains.annotations.Nullable;
+import smartin.miapi.Miapi;
+import smartin.miapi.client.renderer.TrimRenderer;
+import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.material.base.Material;
-import smartin.miapi.material.palette.MaterialRenderController;
+import smartin.miapi.material.palette.SpriteColorer;
+import smartin.miapi.material.palette.SpriteOverlayer;
 import smartin.miapi.modules.ModuleInstance;
 
 import java.util.HashMap;
@@ -34,9 +41,13 @@ public interface ColorProvider {
         colorProviders.put("item.material", new ItemMaterialColorProvider());
     }
 
-    static ColorProvider getProvider(String type, ItemStack itemStack, ModuleInstance moduleInstance) {
+    static ColorProvider getProvider(String type, ItemStack itemStack, ModuleInstance moduleInstance, TrimRenderer.TrimMode mode) {
         ColorProvider base = colorProviders.getOrDefault(type, colorProviders.get("material"));
-        return base.getInstance(itemStack, base.adapt(moduleInstance));
+        base = base.getInstance(itemStack, base.adapt(moduleInstance), mode);
+        if (MiapiConfig.getClientConfig().other.disableFastTrim && !mode.equals(TrimRenderer.TrimMode.NONE)) {
+
+        }
+        return base;
     }
 
     default Optional<Color> getVertexColor() {
@@ -50,228 +61,65 @@ public interface ColorProvider {
     @Environment(EnvType.CLIENT)
     VertexConsumer getConsumer(MultiBufferSource vertexConsumers, TextureAtlasSprite sprite, ItemStack stack, ModuleInstance moduleInstance, ItemDisplayContext mode);
 
-    ColorProvider getInstance(ItemStack stack, ModuleInstance instance);
+    ColorProvider getInstance(ItemStack stack, ModuleInstance instance, TrimRenderer.TrimMode trimMode);
 
-    class MaterialColorProvider implements ColorProvider {
-        public Material material;
-
-        public MaterialColorProvider() {
-        }
-
-        public MaterialColorProvider(Material material) {
-            this.material = material;
-        }
-
-        @Environment(EnvType.CLIENT)
-        @Override
-        public VertexConsumer getConsumer(MultiBufferSource vertexConsumers,
-                                          TextureAtlasSprite sprite,
-                                          ItemStack stack,
-                                          ModuleInstance moduleInstance,
-                                          ItemDisplayContext mode) {
-            MaterialRenderController controller = material.getRenderController(moduleInstance, mode);
-            return controller.getVertexConsumer(vertexConsumers, sprite, stack, moduleInstance, mode);
-        }
-
-        @Override
-        public ColorProvider getInstance(ItemStack stack, ModuleInstance instance) {
-            Material material1 = MaterialProperty.getMaterial(instance);
-            if (material1 != null) {
-                return new MaterialColorProvider(material1);
-            }
-            return new ModelColorProvider();
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (this == obj) return true;
-            if (obj == null || getClass() != obj.getClass()) return false;
-            MaterialColorProvider that = (MaterialColorProvider) obj;
-            return java.util.Objects.equals(material, that.material);
-        }
-
-        @Override
-        public int hashCode() {
-            return java.util.Objects.hash(material);
-        }
-
+    static boolean isUseTrim(TrimRenderer.TrimMode mode) {
+        return !mode.equals(TrimRenderer.TrimMode.NONE) && !MiapiConfig.getClientConfig().other.disableFastTrim;
     }
 
-    class ParentColorProvider extends MaterialColorProvider {
-
-        public ParentColorProvider() {
-        }
-
-        @Environment(EnvType.CLIENT)
-        @Override
-        public VertexConsumer getConsumer(MultiBufferSource vertexConsumers,
-                                          TextureAtlasSprite sprite,
-                                          ItemStack stack,
-                                          ModuleInstance moduleInstance,
-                                          ItemDisplayContext mode) {
-            return material.getRenderController(moduleInstance, mode).getVertexConsumer(vertexConsumers, sprite, stack, moduleInstance, mode);
-        }
-
-        @Override
-        public ColorProvider getInstance(ItemStack stack, ModuleInstance instance) {
-            Material material1 = MaterialProperty.getMaterial(instance);
-            if (material1 != null) {
-                return new MaterialColorProvider(material1);
+    @Nullable
+    static SpriteOverlayer getTrimmControllor(Material material, TrimRenderer.TrimMode mode, ItemStack stack, SpriteColorer spriteColorer) {
+        ArmorTrim armorTrim = stack.getComponents().get(DataComponents.TRIM);
+        if (armorTrim != null) {
+            Holder<ArmorMaterial> armorMaterial = (stack.getItem() instanceof ArmorItem armorItem) ? armorItem.getMaterial() : null;
+            if (armorMaterial != null) {
+                TextureAtlasSprite trimSprite = switch (mode) {
+                    case ITEM -> {
+                        if(stack.getItem() instanceof ArmorItem armorItem){
+                            if(armorItem.getType() == ArmorItem.Type.HELMET){
+                                yield TrimRenderer.atlas.getSprite(Miapi.id("minecraft:trims/items/helmet_trim_" +armorTrim.material().value().assetName()));
+                            }
+                            if(armorItem.getType() == ArmorItem.Type.CHESTPLATE){
+                                yield TrimRenderer.atlas.getSprite(Miapi.id("minecraft:trims/items/chestplate_trim_" +armorTrim.material().value().assetName()));
+                            }
+                            if(armorItem.getType() == ArmorItem.Type.LEGGINGS){
+                                yield TrimRenderer.atlas.getSprite(Miapi.id("minecraft:trims/items/leggings_trim_" +armorTrim.material().value().assetName()));
+                            }
+                            if(armorItem.getType() == ArmorItem.Type.BOOTS){
+                                yield TrimRenderer.atlas.getSprite(Miapi.id("minecraft:trims/items/boots_trim_" +armorTrim.material().value().assetName()));
+                            }
+                        }
+                        yield null;
+                    }
+                    case TrimRenderer.TrimMode.ARMOR_LAYER_ONE ->
+                            TrimRenderer.armorTrimsAtlas.getSprite(armorTrim.outerTexture(armorMaterial));
+                    case TrimRenderer.TrimMode.ARMOR_LAYER_TWO ->
+                            TrimRenderer.armorTrimsAtlas.getSprite(armorTrim.innerTexture(armorMaterial));
+                    default -> {
+                        if(stack.getItem() instanceof ArmorItem armorItem){
+                            if(armorItem.getType() == ArmorItem.Type.HELMET){
+                                yield TrimRenderer.atlas.getSprite(Miapi.id("minecraft:trims/items/helmet_trim_" +armorTrim.material().value().assetName()));
+                            }
+                            if(armorItem.getType() == ArmorItem.Type.CHESTPLATE){
+                                yield TrimRenderer.atlas.getSprite(Miapi.id("minecraft:trims/items/chestplate_trim_" +armorTrim.material().value().assetName()));
+                            }
+                            if(armorItem.getType() == ArmorItem.Type.LEGGINGS){
+                                yield TrimRenderer.atlas.getSprite(Miapi.id("minecraft:trims/items/leggings_trim_" +armorTrim.material().value().assetName()));
+                            }
+                            if(armorItem.getType() == ArmorItem.Type.BOOTS){
+                                yield TrimRenderer.atlas.getSprite(Miapi.id("minecraft:trims/items/boots_trim_" +armorTrim.material().value().assetName()));
+                            }
+                        }
+                        yield null;
+                    }
+                };
+                if (trimSprite != null) {
+                    return new SpriteOverlayer(material, trimSprite, spriteColorer);
+                }
             }
-            return new ModelColorProvider();
         }
-
-        public ModuleInstance adapt(ModuleInstance moduleInstance) {
-            if (moduleInstance.parent != null) {
-                return moduleInstance.parent;
-            }
-            return moduleInstance;
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (this == obj) return true;
-            if (obj == null || getClass() != obj.getClass()) return false;
-            ParentColorProvider that = (ParentColorProvider) obj;
-            return java.util.Objects.equals(material, that.material);
-        }
-
-        @Override
-        public int hashCode() {
-            return java.util.Objects.hash(material);
-        }
-
+        return null;
     }
 
-    class ItemMaterialColorProvider extends MaterialColorProvider {
-        public Material material;
-        public Material actualMaterial;
-        public boolean needCheck = true;
 
-        public ItemMaterialColorProvider() {
-        }
-
-        public ItemMaterialColorProvider(Material material) {
-            this.material = material;
-        }
-
-        @Environment(EnvType.CLIENT)
-        @Override
-        public VertexConsumer getConsumer(MultiBufferSource vertexConsumers,
-                                          TextureAtlasSprite sprite,
-                                          ItemStack stack,
-                                          ModuleInstance moduleInstance,
-                                          ItemDisplayContext mode) {
-            if (actualMaterial == null && needCheck) {
-                actualMaterial = MaterialProperty.getMaterialFromIngredient(stack);
-                needCheck = false;
-            }
-            if (actualMaterial != null) {
-                return actualMaterial.getRenderController(moduleInstance, mode).getVertexConsumer(vertexConsumers, sprite, stack, moduleInstance, mode);
-            }
-            return material.getRenderController(moduleInstance, mode).getVertexConsumer(vertexConsumers, sprite, stack, moduleInstance, mode);
-        }
-
-        @Override
-        public ColorProvider getInstance(ItemStack stack, ModuleInstance instance) {
-            Material material1 = MaterialProperty.getMaterialFromIngredient(stack);
-            if (material1 != null) {
-                return new ItemMaterialColorProvider(material1);
-            }
-            return new ModelColorProvider();
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (this == obj) return true;
-            if (obj == null || getClass() != obj.getClass()) return false;
-            ItemMaterialColorProvider that = (ItemMaterialColorProvider) obj;
-            return java.util.Objects.equals(material, that.material);
-        }
-
-        @Override
-        public int hashCode() {
-            return java.util.Objects.hash(material);
-        }
-
-    }
-
-    class ModelColorProvider implements ColorProvider {
-//        ItemStack stack = ItemStack.EMPTY;
-
-        public ModelColorProvider() {
-        }
-
-        public ModelColorProvider(ItemStack stack) {
-//            this.stack = stack;
-        }
-
-        @Environment(EnvType.CLIENT)
-        @Override
-        public VertexConsumer getConsumer(MultiBufferSource vertexConsumers, TextureAtlasSprite sprite, ItemStack stack, ModuleInstance moduleInstance, ItemDisplayContext mode) {
-            return vertexConsumers.getBuffer(ItemBlockRenderTypes.getRenderType(stack, true));
-        }
-
-        @Override
-        public ColorProvider getInstance(ItemStack stack, ModuleInstance instance) {
-            return new ModelColorProvider(stack);
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            return obj != null && getClass() == obj.getClass();
-        }
-
-        @Override
-        public int hashCode() {
-            return getClass().hashCode();
-        }
-
-    }
-
-    class PotionColorProvider implements ColorProvider {
-        Color potioncolor;
-
-        public PotionColorProvider() {
-
-        }
-
-        public PotionColorProvider(ItemStack stack) {
-            if (!stack.has(DataComponents.POTION_CONTENTS)) {
-                potioncolor = Color.WHITE;
-            } else {
-                potioncolor = new Color(stack.getComponents().get(DataComponents.POTION_CONTENTS).getColor());
-            }
-        }
-
-        @Override
-        public Optional<Color> getVertexColor() {
-            return Optional.of(potioncolor);
-        }
-
-        @Environment(EnvType.CLIENT)
-        @Override
-        public VertexConsumer getConsumer(MultiBufferSource vertexConsumers, TextureAtlasSprite sprite, ItemStack stack, ModuleInstance moduleInstance, ItemDisplayContext mode) {
-            return vertexConsumers.getBuffer(ItemBlockRenderTypes.getRenderType(stack, true));
-        }
-
-        @Override
-        public ColorProvider getInstance(ItemStack stack, ModuleInstance instance) {
-            return new PotionColorProvider(stack);
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (this == obj) return true;
-            if (obj == null || getClass() != obj.getClass()) return false;
-            PotionColorProvider that = (PotionColorProvider) obj;
-            return java.util.Objects.equals(potioncolor, that.potioncolor);
-        }
-
-        @Override
-        public int hashCode() {
-            return java.util.Objects.hash(potioncolor);
-        }
-
-    }
 }

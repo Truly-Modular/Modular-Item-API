@@ -6,7 +6,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
-import com.redpxnda.nucleus.pose.network.clientbound.PoseFacetSyncPacket;
+import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -34,7 +34,6 @@ public class ComponentProperty extends CodecProperty<Map<ResourceLocation, JsonE
     public ComponentProperty() {
         super(CODEC);
         property = this;
-        PoseFacetSyncPacket poseFacetSyncPacket;
     }
 
     @Override
@@ -93,8 +92,8 @@ public class ComponentProperty extends CodecProperty<Map<ResourceLocation, JsonE
         } else if (element.isJsonPrimitive() && element.getAsJsonPrimitive().isString()) {
             String potential = element.getAsString();
             if (potential.startsWith("|||miapi.evaluate")) {
-                potential = potential.replace("|||miapi.evaluate","");
-                return new JsonPrimitive(StatResolver.resolveDouble(potential,context));
+                potential = potential.replace("|||miapi.evaluate", "");
+                return new JsonPrimitive(StatResolver.resolveDouble(potential, context));
             }
             return element.deepCopy();
         } else {
@@ -126,5 +125,18 @@ public class ComponentProperty extends CodecProperty<Map<ResourceLocation, JsonE
         });
         updateComponent(crafting, bench.getLevel().registryAccess());
         return crafting;
+    }
+
+    public record ComponentData(ResourceLocation id,
+                                JsonElement data,
+                                @CodecBehavior.Optional Boolean overWrite,
+                                @CodecBehavior.Optional Boolean resolve) {
+        public Boolean resolve() {
+            return resolve == null || resolve;
+        }
+
+        public Boolean overWrite() {
+            return resolve == null ? Boolean.FALSE : resolve;
+        }
     }
 }

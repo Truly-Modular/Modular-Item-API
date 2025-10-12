@@ -62,6 +62,7 @@ public class BakedMiapiModel implements MiapiModel {
     static VertexConsumer lastVC;
     static ColorProvider lastColor;
     static TextureAtlasSprite textureAtlasSprite;
+    boolean trimModel = MiapiConfig.getClientConfig().other.disableFastTrim;
 
 
     public BakedMiapiModel(ModelHolder holder, ModuleInstance moduleInstance, ItemStack stack) {
@@ -114,20 +115,10 @@ public class BakedMiapiModel implements MiapiModel {
         //render normally
         try {
             for (Direction dir : Direction.values()) {
-                //Minecraft.getInstance().getProfiler().push("BakedModel - get quads");
                 List<BakedQuad> quads = currentModel.getQuads(null, dir, RandomSource.create());
-                //Minecraft.getInstance().getProfiler().pop();
                 for (BakedQuad quad : quads) {
-                    //Minecraft.getInstance().getProfiler().push("getvc");
                     VertexConsumer consumer = getConsumer(modelHolder.colorProvider(), quad.getSprite(), vertexConsumers, stack, instance, transformationMode);
-                    // Minecraft.getInstance().getProfiler().pop();
-                    //VertexConsumer consumer = getConsumer(
-                    //        modelHolder.colorProvider(), quad.getSprite(), vertexConsumers, stack,
-                    //        instance, transformationMode);
-
-                    //Minecraft.getInstance().getProfiler().push("pushquad");
                     consumer.putBulkData(matrices.last(), quad, colors[0], colors[1], colors[2], alpha, light, overlay);
-                    //Minecraft.getInstance().getProfiler().pop();
                 }
             }
         } catch (RuntimeException e) {
@@ -155,16 +146,19 @@ public class BakedMiapiModel implements MiapiModel {
         }
         Minecraft.getInstance().getProfiler().pop();
 
-        Minecraft.getInstance().getProfiler().push("TrimModel");
-        //render Trims
-        Holder<ArmorMaterial> armorMaterial = (stack.getItem() instanceof ArmorItem armorItem) ? armorItem.getMaterial() : null;
 
-        if (armorMaterial != null && !modelHolder.trimMode().equals(TrimRenderer.TrimMode.NONE)) {
-            ModelTransformer.getRescale(currentModel, random).forEach(quad -> {
-                TrimRenderer.renderTrims(matrices, quad, modelHolder.trimMode(), light, vertexConsumers, armorMaterial, stack);
-            });
+        if(trimModel){
+            Minecraft.getInstance().getProfiler().push("TrimModel");
+            //render Trims
+            Holder<ArmorMaterial> armorMaterial = (stack.getItem() instanceof ArmorItem armorItem) ? armorItem.getMaterial() : null;
+
+            if (armorMaterial != null && !modelHolder.trimMode().equals(TrimRenderer.TrimMode.NONE)) {
+                ModelTransformer.getRescale(currentModel, random).forEach(quad -> {
+                    TrimRenderer.renderTrims(matrices, quad, modelHolder.trimMode(), light, vertexConsumers, armorMaterial, stack);
+                });
+            }
+            Minecraft.getInstance().getProfiler().pop();
         }
-        Minecraft.getInstance().getProfiler().pop();
 
         lookup.clear();
         //render from both sides if requested

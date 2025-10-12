@@ -1,48 +1,45 @@
 package smartin.miapi.material.palette;
 
+import com.google.gson.JsonElement;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.redpxnda.nucleus.util.Color;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.renderer.texture.SpriteContents;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.FastColor;
 import net.minecraft.util.Mth;
 import smartin.miapi.client.AnimatedTexturesManager;
 import smartin.miapi.client.renderer.NativeImageGetter;
 import smartin.miapi.material.base.Material;
 
-import java.util.Objects;
 import java.util.function.Consumer;
 
 @Environment(EnvType.CLIENT)
-public class SpriteOverlayer extends SpritePixelReplacer {
-    protected final TextureAtlasSprite overlayImage;
-    public SpriteColorer delegate;
+public class SpriteOverlayerJson extends SpritePixelReplacer {
+    public final Color averageColor;
+    public final SpriteFromJson delegate;
+    protected NativeImageGetter.ImageHolder overlayImage;
 
-    public SpriteOverlayer(Material material, TextureAtlasSprite sprite, SpriteColorer delegate) {
+    public SpriteOverlayerJson(Material material, JsonElement json) {
         super(material);
-        Objects.requireNonNull(sprite);
-        Objects.requireNonNull(delegate);
-        this.delegate = delegate;
-        this.overlayImage = sprite;
+        delegate = SpriteFromJson.getFromJson(json);
+        averageColor = delegate.getAverageColor();
     }
 
     @Override
     public void tick(Consumer<NativeImage> nativeImageConsumer, SpriteContents spriteContents) {
         super.tick(nativeImageConsumer, spriteContents);
-        AnimatedTexturesManager.markAnimated(overlayImage);
+        AnimatedTexturesManager.markAnimated(delegate.rawSprite);
     }
 
     @Override
     public Color getAverageColor() {
-        return delegate.getAverageColor();
+        return averageColor;
     }
 
     @Override
     public int getReplacementColor(int x, int y, int previousAbgr) {
-        NativeImageGetter.ImageHolder overlayNativeImage = NativeImageGetter.get(overlayImage.contents());
-        int abgr = overlayNativeImage.getColor(x % overlayNativeImage.getWidth(), y % overlayNativeImage.getHeight());
+        int abgr = overlayImage.getColor(x % overlayImage.getWidth(), y % overlayImage.getHeight());
         int alpha = FastColor.ABGR32.alpha(abgr);
 
         if (alpha != 255) {
@@ -68,30 +65,16 @@ public class SpriteOverlayer extends SpritePixelReplacer {
     }
 
     @Override
-    public NativeImage transform(SpriteContents originalSprite) {
-        NativeImage image = delegate.transform(originalSprite);
-        return transformNativeImage(NativeImageGetter.getFromContents(image));
+    public NativeImage transform(SpriteContents sprite) {
+        overlayImage = delegate.getNativeImage(); // temporarily saving overlay image for getReplacementColor
+        delegate.markUse();
+        NativeImage result = super.transform(sprite);
+        overlayImage = null;
+        return result;
     }
 
     @Override
     public boolean doTick() {
-        return delegate.doTick() || overlayImage.createTicker() != null;
+        return delegate.isAnimated();
     }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof SpriteOverlayer)) return false;
-        if (!super.equals(o)) return false;
-
-        SpriteOverlayer that = (SpriteOverlayer) o;
-        return Objects.equals(overlayImage, that.overlayImage)
-               && Objects.equals(delegate, that.delegate);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), overlayImage, delegate);
-    }
-
 }

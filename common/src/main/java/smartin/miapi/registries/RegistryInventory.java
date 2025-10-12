@@ -575,6 +575,7 @@ public class RegistryInventory {
             registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, BlueprintCrafting.KEY, new BlueprintCrafting());
             registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, SlashingProperty.KEY, new SlashingProperty());
             registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, ComponentProperty.KEY, new ComponentProperty());
+            //registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, AdvancedComponentProperty.KEY, new AdvancedComponentProperty());
             registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, MaterialInscribeProperty.KEY, new MaterialInscribeProperty());
             registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, DrawTimeProperty.KEY, new DrawTimeProperty());
             registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, MaterialOverwriteProperty.KEY, new MaterialOverwriteProperty());

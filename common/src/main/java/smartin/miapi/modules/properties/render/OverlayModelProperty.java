@@ -21,10 +21,12 @@ import smartin.miapi.client.model.module.BakedMiapiModel;
 import smartin.miapi.client.model.MiapiItemModel;
 import smartin.miapi.client.model.MiapiModel;
 import smartin.miapi.client.model.ModelHolder;
+import smartin.miapi.client.renderer.TrimRenderer;
 import smartin.miapi.material.MaterialProperty;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.render.colorproviders.ColorProvider;
+import smartin.miapi.modules.properties.render.colorproviders.MaterialColorProvider;
 import smartin.miapi.modules.properties.util.CodecProperty;
 import smartin.miapi.modules.properties.util.MergeAble;
 import smartin.miapi.modules.properties.util.MergeType;
@@ -146,7 +148,7 @@ public class OverlayModelProperty extends CodecProperty<List<OverlayModelPropert
                             }
 
                             @Override
-                            public ColorProvider getInstance(ItemStack stack, ModuleInstance instance) {
+                            public ColorProvider getInstance(ItemStack stack, ModuleInstance instance, TrimRenderer.TrimMode trimMode) {
                                 return this;
                             }
                         },
@@ -195,20 +197,20 @@ public class OverlayModelProperty extends CodecProperty<List<OverlayModelPropert
         public ColorProvider getColorProvider(ItemStack itemStack, ModuleInstance current, ModuleInstance other, ColorProvider otherColor) {
             switch (colorProvider) {
                 case "this": {
-                    return ColorProvider.getProvider("material", itemStack, current);
+                    return ColorProvider.getProvider("material", itemStack, current, TrimRenderer.TrimMode.NONE);
                 }
                 case "other": {
                     return otherColor;
                 }
                 default: {
                     if (ColorProvider.colorProviders.containsKey(colorProvider)) {
-                        return ColorProvider.getProvider(colorProvider, itemStack, current);
+                        return ColorProvider.getProvider(colorProvider, itemStack, current, TrimRenderer.TrimMode.NONE);
                     }
                     if (colorProvider.startsWith("material:")) {
                         ResourceLocation materialId = ResourceLocation.parse(colorProvider.split(":", 2)[1]);
                         smartin.miapi.material.base.Material material = MaterialProperty.MATERIAL_REGISTRY.get(materialId);
                         if (material != null) {
-                            return new ColorProvider.MaterialColorProvider(material);
+                            return new MaterialColorProvider(material, TrimRenderer.TrimMode.NONE);
                         }
                         Miapi.LOGGER.error("Could not find Material " + materialId + " for Color Provider ");
                     }

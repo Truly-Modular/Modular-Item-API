@@ -25,9 +25,8 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.model.*;
-import smartin.miapi.client.model.module.BakedMiapiModel;
-import smartin.miapi.client.model.DynamicBakery;
 import smartin.miapi.client.model.item.BakedSingleModel;
+import smartin.miapi.client.model.module.BakedMiapiModel;
 import smartin.miapi.client.renderer.TrimRenderer;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.item.modular.Transform;
@@ -155,7 +154,7 @@ public class ModelProperty extends CodecProperty<List<ModelProperty.ModelData>> 
             Matrix4f matrix4f = Transform.toModelTransformation(json.transform).toMatrix();
             String colorProviderId = unbakedModel.modelMetadata.colorProvider != null ?
                     unbakedModel.modelMetadata.colorProvider : json.color_provider;
-            ColorProvider colorProvider = ColorProvider.getProvider(colorProviderId, itemStack, instance);
+            ColorProvider colorProvider = ColorProvider.getProvider(colorProviderId, itemStack, instance, json.getTrimMode());
             if (colorProvider == null) {
                 throw new RuntimeException("colorProvider is null");
             }

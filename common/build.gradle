@@ -87,8 +87,8 @@ dependencies {
 
     modCompileOnly "maven.modrinth:treechop:${rootProject.fabric_treechop_version}"
     modCompileOnly "maven.modrinth:treechop:${rootProject.fabric_treechop_version}"
-    modImplementation("maven.modrinth:immediatelyfast:1.6.5+1.21.1-fabric")
-    modImplementation("maven.modrinth:iris:1.8.8+1.21.1-fabric")
+    modCompileOnly("maven.modrinth:immediatelyfast:1.6.5+1.21.1-fabric")
+    modCompileOnly("maven.modrinth:iris:1.8.8+1.21.1-fabric")
     modApi files("libs/sodium.jar")
 
     //modImplementation files('libs/arsenal-local.jar')
@@ -102,10 +102,10 @@ dependencies {
     //modApi files('libs/nucleus-pose-local.jar')
     modApi files('libs/veil.jar')
 
-    modCompileOnly("dev.onyxstudios.cardinal-components-api:cardinal-components-base:${cca_version}") {
+    modCompileOnlyApi("dev.onyxstudios.cardinal-components-api:cardinal-components-base:${cca_version}") {
         exclude(group: "net.fabricmc.fabric-api")
     }
-    modCompileOnly("dev.onyxstudios.cardinal-components-api:cardinal-components-entity:${cca_version}") {
+    modCompileOnlyApi("dev.onyxstudios.cardinal-components-api:cardinal-components-entity:${cca_version}") {
         exclude(group: "net.fabricmc.fabric-api")
     }
 
@@ -116,16 +116,15 @@ dependencies {
     modCompileOnly "dev.latvian.mods:rhino:${rootProject.rhino_version}"
     modCompileOnly "dev.latvian.mods:kubejs-neoforge:${rootProject.kjs_version}"
 
-    modImplementation "software.bernie.geckolib:geckolib-fabric-1.20.1:${geckolib_version}"
+    modCompileOnlyApi "software.bernie.geckolib:geckolib-fabric-1.20.1:${geckolib_version}"
+
+    modCompileOnly 'dev.kosmx.player-anim:player-animation-lib-fabric:2.0.0-alpha1+1.21'
+    modCompileOnly "curse.maven:bettercombat-639842:6092862"
 
     if ("${rootProject.run_with_bettercombat}" == "true") {
-        modImplementation 'dev.kosmx.player-anim:player-animation-lib-fabric:2.0.0-alpha1+1.21'
-        modImplementation "curse.maven:bettercombat-639842:6092862"
-    } else {
-        modCompileOnly 'dev.kosmx.player-anim:player-animation-lib-fabric:2.0.0-alpha1+1.21'
-        modCompileOnly "curse.maven:bettercombat-639842:6092862"
+        modLocalRuntime 'dev.kosmx.player-anim:player-animation-lib-fabric:2.0.0-alpha1+1.21'
+        modLocalRuntimen "curse.maven:bettercombat-639842:6092862"
     }
-    modCompileOnly "maven.modrinth:archers:1.0.6+1.20.1"
 
     //modImplementation "curse.maven:epic-fight-mod-405076:4785528"
 

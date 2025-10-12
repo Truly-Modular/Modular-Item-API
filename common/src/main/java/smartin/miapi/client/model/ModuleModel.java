@@ -30,6 +30,7 @@ public class ModuleModel {
     @Nullable
     public final ItemDisplayContext context;
     public boolean renderSubmodules = true;
+    public boolean simpleSubModules = true;
 
     public ModuleModel(ModuleInstance instance, ItemStack stack, String key, @Nullable ItemDisplayContext displayContext) {
         this.instance = instance;
@@ -47,7 +48,15 @@ public class ModuleModel {
         for (MiapiItemModel.ModelSupplier supplier : MiapiItemModel.modelSuppliers) {
             supplier.getModels(key, context, instance, stack).forEach(model -> {
                 modelList.add(new Pair<>(matrix4f, model));
+                if (model.hasAnimatedModuleMatrix()) {
+
+                }
             });
+        }
+        for (Pair<Matrix4f, MiapiModel> pair : modelList) {
+            if (pair.getSecond().hasAnimatedModuleMatrix()) {
+                simpleSubModules = false;
+            }
         }
         List<Pair<Matrix4f, MiapiModel>> model = modelList;
         for (MiapiItemModel.ModelSupplier supplier : MiapiItemModel.modelSuppliers) {
@@ -69,12 +78,27 @@ public class ModuleModel {
             matrix4fMiapiModelPair.getSecond().render(matrices, stack, mode, tickDelta, vertexConsumers, entity, light, overlay);
             Minecraft.getInstance().getProfiler().push("submodule-logic");
             matrices.popPose();
-
-            submoduleMatrix.mul(matrix4fMiapiModelPair.getSecond().subModuleMatrix());
+            if(!simpleSubModules){
+                submoduleMatrix.mul(matrix4fMiapiModelPair.getSecond().subModuleMatrix());
+            }
             Minecraft.getInstance().getProfiler().pop();
         });
         //render submodules
         if (renderSubmodules) {
+            if (simpleSubModules) {
+                instance.getSubModuleMap().forEach((id, instance1) -> {
+                    Minecraft.getInstance().getProfiler().push("submodule-logic");
+                    matrices.pushPose();
+                    ModuleModel subModuleModel = subModuleModels.get(id);
+                    if (subModuleModel == null) {
+                        subModuleModel = new ModuleModel(instance1, stack, key, context);
+                        subModuleModels.put(id, subModuleModel);
+                    }
+                    Minecraft.getInstance().getProfiler().pop();
+                    subModuleModel.render(modelType, stack, matrices, mode, tickDelta, vertexConsumers, entity, light, overlay);
+                    matrices.popPose();
+                });
+            }
             instance.getSubModuleMap().forEach((id, instance1) -> {
                 Minecraft.getInstance().getProfiler().push("submodule-logic");
                 matrices.pushPose();

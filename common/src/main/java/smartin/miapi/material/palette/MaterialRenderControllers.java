@@ -52,7 +52,7 @@ public class MaterialRenderControllers {
         });
 
         creators.put("grayscale_map", (json, material) -> new GrayscalePaletteColorer(material, json));
-        creators.put("overlay_texture", (json, material) -> new SpriteOverlayer(material, json));
+        creators.put("overlay_texture", (json, material) -> new SpriteOverlayerJson(material, json));
         creators.put("image_generated", (json, material) -> GrayscalePaletteColorer.createForImageJson(material, json,false));
         creators.put("image_generated_item", (json, material) -> GrayscalePaletteColorer.createForImageJson(material, json,true));
         creators.put("image_generated_tag", (json, material) -> GrayscalePaletteColorer.createForImageJson(material, json));

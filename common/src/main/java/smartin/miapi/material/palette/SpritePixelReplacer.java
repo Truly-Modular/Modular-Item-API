@@ -23,6 +23,10 @@ public abstract class SpritePixelReplacer extends SpriteColorer {
     @Override
     public NativeImage transform(SpriteContents originalSprite) {
         NativeImageGetter.ImageHolder rawImage = NativeImageGetter.get(originalSprite);
+        return transformNativeImage(rawImage);
+    }
+
+    protected NativeImage transformNativeImage(NativeImageGetter.ImageHolder rawImage) {
         if (lastImage == null) {
             lastImage = new NativeImage(rawImage.getWidth(), rawImage.getHeight(), true);
             lastImage.untrack();

@@ -64,10 +64,12 @@ dependencies {
     modLocalRuntime files('libs/archery-local.jar')
     modLocalRuntime files('libs/armory-local.jar')
 
-    if ("${rootProject.run_with_efm}" == "true") {
-        modImplementation "maven.modrinth:epic-fight:21.11.0.5"
-    } else {
-        modCompileOnly "maven.modrinth:epic-fight:21.11.0.5"
+    modCompileOnly 'dev.kosmx.player-anim:player-animation-lib-fabric:2.0.0-alpha1+1.21'
+    modCompileOnly "curse.maven:bettercombat-639842:6092862"
+
+    if ("${rootProject.run_with_bettercombat}" == "true") {
+        modLocalRuntime 'dev.kosmx.player-anim:player-animation-lib-fabric:2.0.0-alpha1+1.21'
+        modLocalRuntimen "curse.maven:bettercombat-639842:6092862"
     }
 
     //modCompileOnly "curse.maven:minecolonies-245506:5355518"

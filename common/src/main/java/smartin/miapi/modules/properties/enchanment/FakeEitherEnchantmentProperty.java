@@ -115,18 +115,20 @@ public class FakeEitherEnchantmentProperty extends EitherModuleProperty<
                 enchantments.putAll(getEnchants(original));
                 enchantments.putAll(getEnchants(compareTo));
                 enchantments.forEach((enchantment, data) -> {
-                    Component desc = Component
-                            .translatableWithFallback(
-                                    "enchantment." + enchantment.key().location().getNamespace() + "." + enchantment.key().location().getPath() + ".desc",
-                                    "");
-                    displays.add((T) DoubleResolvableStatDisplay.builder(
-                                    (s) -> Optional.ofNullable(getEnchants(s).get(enchantment)))
-                            .setHoverDescription(Component.translatable("miapi.fake_enchant.desc", enchantment.value().description(), desc))
-                            .setName(enchantment.value().description())
-                            .setMax(enchantment.value().getMaxLevel())
-                            .setFormat("#")
-                            .setInverse(enchantment.is(EnchantmentTags.CURSE))
-                            .setMin(0).build());
+                    if (Miapi.clientRegistryAccess != null && enchantment.canSerializeIn(Miapi.clientRegistryAccess.lookupOrThrow(Registries.ENCHANTMENT))) {
+                        Component desc = Component
+                                .translatableWithFallback(
+                                        "enchantment." + enchantment.key().location().getNamespace() + "." + enchantment.key().location().getPath() + ".desc",
+                                        "");
+                        displays.add((T) DoubleResolvableStatDisplay.builder(
+                                        (s) -> Optional.ofNullable(getEnchants(s).get(enchantment)))
+                                .setHoverDescription(Component.translatable("miapi.fake_enchant.desc", enchantment.value().description(), desc))
+                                .setName(enchantment.value().description())
+                                .setMax(enchantment.value().getMaxLevel())
+                                .setFormat("#")
+                                .setInverse(enchantment.is(EnchantmentTags.CURSE))
+                                .setMin(0).build());
+                    }
                 });
                 return displays;
             }

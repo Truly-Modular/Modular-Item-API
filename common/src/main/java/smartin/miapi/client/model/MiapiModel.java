@@ -28,4 +28,8 @@ public interface MiapiModel {
     default Matrix4f subModuleMatrix() {
         return new Matrix4f();
     }
+
+    default boolean hasAnimatedModuleMatrix() {
+        return false;
+    }
 }

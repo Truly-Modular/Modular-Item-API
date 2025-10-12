@@ -29,7 +29,7 @@ public class TrimRenderer {
 
             TextureAtlasSprite sprite = switch (trimMode) {
                 case ITEM -> null;
-                case ARMOR_LAYER_ONE -> armorTrimsAtlas.getSprite(armorTrim.innerTexture(armorMaterial));
+                case ARMOR_LAYER_ONE -> armorTrimsAtlas.getSprite(armorTrim.outerTexture(armorMaterial));
                 case ARMOR_LAYER_TWO -> armorTrimsAtlas.getSprite(armorTrim.innerTexture(armorMaterial));
                 default -> null;
             };
