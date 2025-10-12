@@ -54,6 +54,13 @@ repositories {
             includeGroup("com.eliotlash.mclib")
         }
     }
+    maven {
+        // saps.dev Maven (KubeJS and Rhino)
+        url "https://maven.saps.dev/minecraft"
+        content {
+            includeGroup "dev.latvian.mods"
+        }
+    }
 }
 ```
 incase dedyn is ever unresponsive you can try to use http://trulymodular.duckdns.org/maven instead
