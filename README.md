@@ -40,6 +40,7 @@ repositories {
     maven { url 'https://maven.uuid.gg/releases' }
     maven { url 'https://maven.terraformersmc.com/' }
     maven { url 'https://maven.theillusivec4.top/' }
+    maven { url 'https://www.cursemaven.com' }
     maven {
         url "https://maven.jamieswhiteshirt.com/libs-release"
         content {
