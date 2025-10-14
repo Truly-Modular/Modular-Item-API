@@ -165,7 +165,7 @@ public class GeneratedMaterial implements Material {
             }
 
             if (Math.abs(calculatedDamage - axeAttackDmg) > 0.1) {
-                stats.put("axe_damage", -(calculatedDamage - axeAttackDmg));
+                stats.put("axe_damage", (calculatedDamage - axeAttackDmg));
             }
 
             if (groups.contains("crystal") || groups.contains("gemstone")) {

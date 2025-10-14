@@ -64,12 +64,10 @@ dependencies {
     modLocalRuntime files('libs/archery-local.jar')
     modLocalRuntime files('libs/armory-local.jar')
 
-    modCompileOnly 'dev.kosmx.player-anim:player-animation-lib-fabric:2.0.0-alpha1+1.21'
-    modCompileOnly "curse.maven:bettercombat-639842:6092862"
+    modCompileOnly "maven.modrinth:epic-fight:21.11.0.5"
 
-    if ("${rootProject.run_with_bettercombat}" == "true") {
-        modLocalRuntime 'dev.kosmx.player-anim:player-animation-lib-fabric:2.0.0-alpha1+1.21'
-        modLocalRuntimen "curse.maven:bettercombat-639842:6092862"
+    if ("${rootProject.run_with_efm}" == "true") {
+        modLocalRuntime "maven.modrinth:epic-fight:21.11.0.5"
     }
 
     //modCompileOnly "curse.maven:minecolonies-245506:5355518"
@@ -80,10 +78,13 @@ dependencies {
 
     //modApi files('libs/apoli-forge-1.20.1-2.9.0.4-all.jar')
 
+    modCompileOnly 'dev.kosmx.player-anim:player-animation-lib-fabric:2.0.0-alpha1+1.21'
+    modCompileOnly "curse.maven:bettercombat-639842:6092862"
+
     if ("${rootProject.run_with_bettercombat}" == "true") {
-        //modImplementation "dev.kosmx.player-anim:player-animation-lib-forge:1.0.2-rc1+1.20"
-        //modImplementation "curse.maven:bettercombat-639842:5065424"
-        //modImplementation "curse.maven:cloth-config-348521:4973441"
+        modRuntimeOnly "dev.kosmx.player-anim:player-animation-lib-forge:1.0.2-rc1+1.20"
+        modRuntimeOnly "curse.maven:bettercombat-639842:5065424"
+        modRuntimeOnly "curse.maven:cloth-config-348521:4973441"
     }
 
 

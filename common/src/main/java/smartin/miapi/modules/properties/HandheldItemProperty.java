@@ -2,18 +2,16 @@ package smartin.miapi.modules.properties;
 
 import dev.architectury.event.EventResult;
 import dev.architectury.platform.Platform;
-import net.minecraft.resources.ResourceLocation;
-import smartin.miapi.Miapi;
-import smartin.miapi.events.MiapiEvents;
-
-import java.util.UUID;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import smartin.miapi.Miapi;
+import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.modules.properties.util.ComplexBooleanProperty;
 
 /**
@@ -30,9 +28,11 @@ import smartin.miapi.modules.properties.util.ComplexBooleanProperty;
 public class HandheldItemProperty extends ComplexBooleanProperty {
     public static ResourceLocation attackspeedID = Miapi.id("handheld_bonus_attackspeed");
     public static final ResourceLocation KEY = Miapi.id("handheld_item");
+    public static HandheldItemProperty property;
 
     public HandheldItemProperty() {
         super(KEY, false);
+        property = this;
         MiapiEvents.PLAYER_EQUIP_EVENT.register((player, changes) -> {
             if (player instanceof ServerPlayer serverPlayerEntity) {
                 ItemStack mainHandItem = changes.getOrDefault(EquipmentSlot.MAINHAND, player.getItemBySlot(EquipmentSlot.MAINHAND));
@@ -48,7 +48,7 @@ public class HandheldItemProperty extends ComplexBooleanProperty {
                                 .addTransientModifier(
                                         new AttributeModifier(
                                                 attackspeedID,
-                                                1.5,
+                                                0.25,
                                                 AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
                     }
 

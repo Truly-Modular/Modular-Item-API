@@ -600,6 +600,9 @@ public class RegistryInventory {
             registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, AbilityProperty.KEY, new AbilityProperty());
             registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, EntityDamageStrength.KEY, new EntityDamageStrength());
             registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, EntityArmorStrength.KEY, new EntityArmorStrength());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, ComboProperty.KEY, new ComboProperty());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, ComboTimeProperty.KEY, new ComboTimeProperty());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, InertiaProperty.KEY, new InertiaProperty());
             //compat
             //registerMiapi(moduleProperties, BetterCombatProperty.KEY, new BetterCombatProperty());
             BetterCombatHelper.setup();

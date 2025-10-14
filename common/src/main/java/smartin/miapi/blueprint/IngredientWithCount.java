@@ -23,7 +23,7 @@ public class IngredientWithCount {
                             .fieldOf("ingredient")
                             .forGetter((countIngredient) -> countIngredient.ingredient),
                     Codec.DOUBLE
-                            .fieldOf("count")
+                            .optionalFieldOf("count", 1.0)
                             .forGetter((countIngredient) -> countIngredient.count)
             ).apply(instance, IngredientWithCount::new
             ));

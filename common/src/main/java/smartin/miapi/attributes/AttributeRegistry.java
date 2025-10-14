@@ -7,6 +7,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.core.Holder;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.protocol.game.ClientboundAnimatePacket;
+import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -27,8 +28,10 @@ import smartin.miapi.events.MeleeModularAttackEvents;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.events.MiapiProjectileEvents;
 import smartin.miapi.mixin.LivingEntityAccessor;
+import smartin.miapi.mixin.projectile.AbstractArrowAccessor;
 import smartin.miapi.modules.abilities.key.KeyBindFacet;
 import smartin.miapi.modules.properties.attributes.AttributeUtil;
+import smartin.miapi.modules.properties.onHit.ComboFacet;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -94,6 +97,21 @@ public class AttributeRegistry {
                 attacher.add(StunHealthFacet.KEY, stunHealthFacet);
                 KeyBindFacet keyBindFacet = new KeyBindFacet(livingEntity);
                 attacher.add(KeyBindFacet.KEY, keyBindFacet);
+                ComboFacet comboFacet = new ComboFacet(livingEntity);
+                attacher.add(ComboFacet.KEY, comboFacet);
+            }
+        });
+        MiapiProjectileEvents.MODULAR_PROJECTILE_DATA_TRACKER_SET.register(new MiapiProjectileEvents.ItemProjectileDataTracker() {
+            @Override
+            public EventResult dataTracker(ItemProjectileEntity projectile, SynchedEntityData nbtCompound) {
+                if (projectile.level() instanceof ServerLevel level) {
+                    ItemStack projectileStack = projectile.thrownStack;
+                    nbtCompound.set(AbstractArrowAccessor.getPerceLevelDataPublic(),
+                            (byte) (AttributeUtil.getActualValue(projectileStack, EquipmentSlot.MAINHAND, PROJECTILE_PIERCING.value(), 0.0)
+                                    + nbtCompound.get(AbstractArrowAccessor.getPerceLevelDataPublic()))
+                    );
+                }
+                return EventResult.pass();
             }
         });
 

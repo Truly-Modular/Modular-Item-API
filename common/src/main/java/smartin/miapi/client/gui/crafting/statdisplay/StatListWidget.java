@@ -26,6 +26,7 @@ import smartin.miapi.events.ClientEvents;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.DurabilityProperty;
 import smartin.miapi.modules.properties.FireProof;
+import smartin.miapi.modules.properties.HandheldItemProperty;
 import smartin.miapi.modules.properties.LuminousLearningProperty;
 import smartin.miapi.modules.properties.armor.*;
 import smartin.miapi.modules.properties.attributes.AttributeUtil;
@@ -312,6 +313,10 @@ public class StatListWidget extends InteractAbleWidget {
                 .builder(SmiteDamage.property)
                 .setMax(5)
                 .setTranslationKey(SmiteDamage.KEY).build());
+        addStatDisplay(SinglePropertyStatDisplay
+                .builder(InertiaProperty.property)
+                .setMax(10)
+                .setTranslationKey(InertiaProperty.KEY).build());
 
         addStatDisplay(ComplexBooleanStatDisplay
                 .builder(CanWalkOnSnow.property)
@@ -334,6 +339,24 @@ public class StatListWidget extends InteractAbleWidget {
         addStatDisplay(ComplexBooleanStatDisplay
                 .builder(MiningTelekinesisProperty.property)
                 .setTranslationKey(MiningTelekinesisProperty.KEY).build());
+        addStatDisplay(ComplexBooleanStatDisplay
+                .builder(HandheldItemProperty.property)
+                .setTranslationKey(HandheldItemProperty.KEY).build());
+
+        addStatDisplay(SinglePropertyStatDisplay
+                .builder(ComboProperty.property)
+                .setMax(10)
+                .setTranslationKey(ComboProperty.KEY)
+                .setHoverDescription(stack ->{
+                    DecimalFormat format = new DecimalFormat("##.##");
+                    DecimalFormat intFormat = new DecimalFormat("##");
+                    return Component.translatable(
+                            Miapi.MOD_ID + ".stat." + Miapi.toLangString(ComboProperty.KEY),
+                            intFormat.format(ComboProperty.property.getValue(stack).orElse(0.0)),
+                            format.format(ComboTimeProperty.property.getValue(stack).orElse(0.0)/20)
+                    );
+                })
+                .build());
 
         ClientEvents.STAT_WIDGET_REGISTRATION.invoker().register();
 

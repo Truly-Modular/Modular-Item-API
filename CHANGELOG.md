@@ -1,3 +1,9 @@
 ## v2.1.2 (1.21)
 - reduced logging of failed number evaluations
 - rebalanced emeralds to give luck instead of fortune
+- minor performance improvements related to rendering
+- new trim render mode - icons and all 3D aspects should work now (compat with advanced trim mods is still impossible)
+- fixed Projectile Piercing Attribute
+- added Combo Property and System -> successive hits deal more damage with the property
+- added Inertia Property to deal more damage with player speed.
+- improved handheld feedback, it now cleanly tells the players it gives a 25% bonus attackspeed when dualwielded

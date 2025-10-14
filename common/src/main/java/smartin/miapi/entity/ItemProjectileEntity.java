@@ -142,9 +142,10 @@ public class ItemProjectileEntity extends AbstractArrow {
             this.setDeltaMovement(new Vec3(0, 0, 0));
             this.dealtDamage = true;
         }
-        if (this.blockPosition().getY() < this.level().getMinBuildHeight() - 50 && MiapiConfig.getServerConfig().enchants.betterLoyalty) {
+        if (this.blockPosition().getY() < this.level().getMinBuildHeight() && MiapiConfig.getServerConfig().enchants.betterLoyalty && this.getDeltaMovement().y() < 0) {
             //loyalty in void
             this.dealtDamage = true;
+            this.setDeltaMovement(0, 0, 0);
         }
 
         Entity entity = this.getOwner();
@@ -182,6 +183,9 @@ public class ItemProjectileEntity extends AbstractArrow {
         vec3d = vec3d.scale(m);
         this.setDeltaMovement(vec3d.scale(m));
         super.tick();
+        if (tickCount == 20 * 15) {
+
+        }
     }
 
     protected void tickDespawn() {

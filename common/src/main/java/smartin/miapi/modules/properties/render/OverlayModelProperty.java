@@ -59,7 +59,7 @@ public class OverlayModelProperty extends CodecProperty<List<OverlayModelPropert
                                 if (modelData.isValid(modelJson)) {
                                     ModelHolder holder = ModelProperty.bakedModel(moduleInstance, modelJson, stack, key);
                                     if (holder != null) {
-                                        ColorProvider colorProvider = modelData.getColorProvider(stack, module2, moduleInstance, holder.colorProvider());
+                                        ColorProvider colorProvider = modelData.getColorProvider(stack, module2, moduleInstance, holder.colorProvider(), holder.trimMode());
                                         TextureAtlasSprite overWriteSprite = modelData.resolveSprite();
                                         models.add(getBakedMiapiModel(
                                                 module,
@@ -104,7 +104,7 @@ public class OverlayModelProperty extends CodecProperty<List<OverlayModelPropert
                                 if (modelData.isValid(modelJson)) {
                                     ModelHolder holder = ModelProperty.bakedModel(moduleInstance, modelJson, stack, key);
                                     if (holder != null) {
-                                        ColorProvider colorProvider = modelData.getColorProvider(stack, module2, moduleInstance, holder.colorProvider());
+                                        ColorProvider colorProvider = modelData.getColorProvider(stack, module2, moduleInstance, holder.colorProvider(), holder.trimMode());
                                         TextureAtlasSprite overWriteSprite = modelData.resolveSprite();
                                         BakedMiapiModel model = getBakedMiapiModel(
                                                 module,
@@ -194,23 +194,23 @@ public class OverlayModelProperty extends CodecProperty<List<OverlayModelPropert
             }
         }
 
-        public ColorProvider getColorProvider(ItemStack itemStack, ModuleInstance current, ModuleInstance other, ColorProvider otherColor) {
+        public ColorProvider getColorProvider(ItemStack itemStack, ModuleInstance current, ModuleInstance other, ColorProvider otherColor, TrimRenderer.TrimMode mode) {
             switch (colorProvider) {
                 case "this": {
-                    return ColorProvider.getProvider("material", itemStack, current, TrimRenderer.TrimMode.NONE);
+                    return ColorProvider.getProvider("material", itemStack, current, mode);
                 }
                 case "other": {
                     return otherColor;
                 }
                 default: {
                     if (ColorProvider.colorProviders.containsKey(colorProvider)) {
-                        return ColorProvider.getProvider(colorProvider, itemStack, current, TrimRenderer.TrimMode.NONE);
+                        return ColorProvider.getProvider(colorProvider, itemStack, current, mode);
                     }
                     if (colorProvider.startsWith("material:")) {
                         ResourceLocation materialId = ResourceLocation.parse(colorProvider.split(":", 2)[1]);
                         smartin.miapi.material.base.Material material = MaterialProperty.MATERIAL_REGISTRY.get(materialId);
                         if (material != null) {
-                            return new MaterialColorProvider(material, TrimRenderer.TrimMode.NONE);
+                            return new MaterialColorProvider(material, mode);
                         }
                         Miapi.LOGGER.error("Could not find Material " + materialId + " for Color Provider ");
                     }

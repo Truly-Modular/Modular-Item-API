@@ -33,7 +33,7 @@ public class MaterialColorProvider extends TrimColorProvider {
                                       ModuleInstance moduleInstance,
                                       ItemDisplayContext mode) {
         MaterialRenderController controller = material.getRenderController(moduleInstance, mode);
-        controller = getTrimController(controller, material, stack);
+        controller = getTrimController(controller, material, stack,mode);
         return controller.getVertexConsumer(vertexConsumers, sprite, stack, moduleInstance, mode);
     }
 

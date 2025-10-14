@@ -193,9 +193,11 @@ public class LiveDataPackEditorManager implements MiapiEditor {
 
                             // Add pack.mcmeta
                             JsonObject mcmeta = new JsonObject();
-                            mcmeta.addProperty("pack_format", 48); // adjust to Minecraft version
-                            mcmeta.addProperty("description", (pack.description != null ? pack.description : "Generated datapack") + "\nby " + pack.author);
-                            mcmeta.addProperty("author", pack.author != null ? pack.author : "unkown");
+                            JsonObject packObject = new JsonObject();
+                            packObject.addProperty("pack_format", 48); // adjust to Minecraft version
+                            packObject.addProperty("description", (pack.description != null ? pack.description : "Generated datapack") + "\nby " + pack.author);
+                            packObject.addProperty("author", pack.author != null ? pack.author : "unkown");
+                            mcmeta.add("pack", packObject);
 
                             zos.putNextEntry(new ZipEntry("pack.mcmeta"));
                             zos.write(mcmeta.toString().getBytes(StandardCharsets.UTF_8));

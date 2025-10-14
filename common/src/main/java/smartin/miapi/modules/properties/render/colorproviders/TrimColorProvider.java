@@ -1,5 +1,6 @@
 package smartin.miapi.modules.properties.render.colorproviders;
 
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import smartin.miapi.client.renderer.TrimRenderer;
 import smartin.miapi.material.base.Material;
@@ -9,23 +10,25 @@ import smartin.miapi.material.palette.SpriteOverlayer;
 
 public abstract class TrimColorProvider implements ColorProvider {
     public TrimRenderer.TrimMode mode;
-    public final boolean useTrim;
+    public boolean useTrim;
     private SpriteOverlayer trimOverlayer = null;
 
-    public TrimColorProvider(TrimRenderer.TrimMode mode){
+    public TrimColorProvider(TrimRenderer.TrimMode mode) {
         this.mode = mode;
-        useTrim = ColorProvider.isUseTrim(mode) || true;
+        useTrim = ColorProvider.shouldHaveTrim(mode) || true;
     }
 
 
-    protected MaterialRenderController getTrimController(MaterialRenderController controller,Material material,ItemStack stack) {
+    protected MaterialRenderController getTrimController(MaterialRenderController controller, Material material, ItemStack stack, ItemDisplayContext mode) {
         if (useTrim && controller instanceof SpriteColorer spriteColorer) {
             if (trimOverlayer == null) {
-                trimOverlayer = ColorProvider.getTrimmControllor(material, this.mode, stack, spriteColorer);
+                trimOverlayer = ColorProvider.getTrimController(material, this.mode, stack, spriteColorer,mode);
             }
             if (trimOverlayer != null) {
                 trimOverlayer.delegate = spriteColorer;
                 return trimOverlayer;
+            } else {
+                useTrim = false;
             }
         }
         return controller;

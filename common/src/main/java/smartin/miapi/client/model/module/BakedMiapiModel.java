@@ -194,11 +194,11 @@ public class BakedMiapiModel implements MiapiModel {
         if (provider.equals(lastColor) && sprite.equals(textureAtlasSprite) && isStillValid(lastVC)) {
             return lastVC;
         }
-        //Minecraft.getInstance().getProfiler().push("Building VC");
+        Minecraft.getInstance().getProfiler().push("Building VC");
         lastVC = provider.getConsumer(source, sprite, itemStack, instance, context);
+        Minecraft.getInstance().getProfiler().pop();
         lastColor = provider;
         textureAtlasSprite = sprite;
-        //Minecraft.getInstance().getProfiler().pop();
         return lastVC;
     }
 

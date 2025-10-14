@@ -70,7 +70,9 @@ public class MiapiClientConfig {
         public List<CacheSprites> cacheSprites = List.of(
                 new CacheSprites(16, 16, 30),
                 new CacheSprites(32, 32, 10),
-                new CacheSprites(64, 64, 20));
+                new CacheSprites(64, 32, 40),
+                new CacheSprites(64, 64, 10),
+                new CacheSprites(128, 128, 10));
 
         @AutoCodec.Name("disable_fast_render")
         public boolean disableFastRender = false;

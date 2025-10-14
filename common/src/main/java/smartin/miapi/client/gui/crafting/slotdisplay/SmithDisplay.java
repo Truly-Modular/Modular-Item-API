@@ -8,7 +8,7 @@ import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.decoration.ArmorStand;
-import net.minecraft.world.item.ArmorItem;
+import net.minecraft.world.item.Equipable;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
@@ -48,7 +48,7 @@ public class SmithDisplay extends InteractAbleWidget {
         if (!stack.isEmpty()) {
             ItemStack itemStack = stack;
             Item item = stack.getItem();
-            if (item instanceof ArmorItem armorItem) {
+            if (item instanceof Equipable armorItem && armorItem.getEquipmentSlot() != EquipmentSlot.MAINHAND) {
                 this.armorStand.setItemSlot(armorItem.getEquipmentSlot(), itemStack);
             } else {
                 this.armorStand.setItemSlot(EquipmentSlot.OFFHAND, itemStack);

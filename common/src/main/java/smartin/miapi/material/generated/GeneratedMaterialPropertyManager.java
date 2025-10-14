@@ -3,7 +3,6 @@ package smartin.miapi.material.generated;
 import com.google.gson.JsonElement;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.JsonOps;
-import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
@@ -212,16 +211,16 @@ public class GeneratedMaterialPropertyManager {
         properties.put(type, propertyMap);
     }
 
-    private static final Set<Holder<Attribute>> IGNORED_ATTRIBUTES = Set.of(
-            Attributes.ATTACK_DAMAGE,
-            Attributes.ATTACK_SPEED,
-            Attributes.ARMOR,
-            Attributes.ARMOR_TOUGHNESS,
-            Attributes.KNOCKBACK_RESISTANCE
+    private static final Set<Attribute> IGNORED_ATTRIBUTES = Set.of(
+            Attributes.ATTACK_DAMAGE.value(),
+            Attributes.ATTACK_SPEED.value(),
+            Attributes.ARMOR.value(),
+            Attributes.ARMOR_TOUGHNESS.value(),
+            Attributes.KNOCKBACK_RESISTANCE.value()
     );
 
     private static boolean isRelevantAttribute(ItemAttributeModifiers.Entry a) {
-        boolean att = IGNORED_ATTRIBUTES.contains(a.attribute());
+        boolean att = IGNORED_ATTRIBUTES.contains(a.attribute().value());
         if (!att && GeneratedMaterialManager.verboseLogging()) {
             Miapi.LOGGER.info("valid attribute!" + a.attribute().getRegisteredName());
         }

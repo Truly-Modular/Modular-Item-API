@@ -88,7 +88,6 @@ public class MiapiClient {
     }
 
     public static void init() {
-        MobEffect mobEffect;
         var config = ConfigManager.getConfigObject(Miapi.id("server"));
         if (config.getInstance() == null) {
             config.load();
