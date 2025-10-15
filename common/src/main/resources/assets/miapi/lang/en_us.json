@@ -371,7 +371,7 @@
     "miapi.stat.miapi.mending": "Mending",
     "miapi.stat.miapi.mending.description": "Converts experience orbs to repair the tool",
     "miapi.stat.miapi.immolate": "Immolate",
-    "miapi.stat.miapi.immolate.description": "It burns! Yourself, your target, everything. \nAlso makes fire more tolerable",
+    "miapi.stat.miapi.immolate.description": "Deals extra damage to targets on fire or while on fire yourself\nalse reduces damage while you are on fire. \nFeel the burn, control the flames!",
     "miapi.stat.miapi.leeching": "Leeching",
     "miapi.stat.miapi.leeching.description": "Adds a bit of Life steal, is in % of damage dealt",
     "miapi.stat.minecraft.armor": "Armor",

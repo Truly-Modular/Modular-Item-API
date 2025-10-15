@@ -19,6 +19,7 @@ import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.editor.material.MaterialEditor;
 import smartin.miapi.editor.syntax.CodecValidatorInterface;
 import smartin.miapi.editor.syntax.JsonSyntaxHighlighter;
+import smartin.miapi.editor.syntax.ModuleValidatorInterface;
 import smartin.miapi.editor.syntax.PropertyMapHighlighter;
 import smartin.miapi.material.CodecMaterial;
 import smartin.miapi.material.MaterialProperty;
@@ -73,7 +74,8 @@ public class EditorCommands {
         EditorEvents.EDITOR_INTERFACES.register(event -> {
             if (event.resourceLocation != null &&
                 event.resourceLocation.getPath().startsWith("miapi/modules/")) {
-                event.interfaces.add(new PropertyMapHighlighter(event.resourceLocation));
+                event.interfaces.add(new ModuleValidatorInterface());
+                //event.interfaces.add(new PropertyMapHighlighter(event.resourceLocation));
             }
             if (event.resourceLocation != null &&
                 event.resourceLocation.getPath().startsWith("miapi/synergies/")) {
@@ -117,7 +119,7 @@ public class EditorCommands {
             }
             return EventResult.pass();
         });
-        if(Platform.isModLoaded("veil")){
+        if (Platform.isModLoaded("veil")) {
             VeilEditor.setup();
         } else if (Platform.isModLoaded("nucleus_editor")) {
             NucleusEditor.setup();

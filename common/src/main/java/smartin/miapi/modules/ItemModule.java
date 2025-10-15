@@ -4,6 +4,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.component.DataComponentType;
@@ -54,6 +55,12 @@ public record ItemModule(ResourceLocation id, Map<ModuleProperty<?>, Object> pro
      * An internal ItemModule instance, can be used for whatever purpose
      */
     public static final ItemModule internal = new ItemModule(Miapi.id("internal"), new HashMap<>());
+
+    public static final Codec<ItemModule> CODEC =
+            PropertyHolder.PROPERTY_MAP_CODEC.xmap(
+                    props -> new ItemModule(null, props),
+                    ItemModule::properties
+            );
 
 
     /**

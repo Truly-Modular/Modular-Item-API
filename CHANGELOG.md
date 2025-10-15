@@ -7,3 +7,5 @@
 - added Combo Property and System -> successive hits deal more damage with the property
 - added Inertia Property to deal more damage with player speed.
 - improved handheld feedback, it now cleanly tells the players it gives a 25% bonus attackspeed when dualwielded
+- implemented module inheritance system
+- fixed/reworked immolate -> bonus damage if self or target is on fire and damage reduction while on fire.

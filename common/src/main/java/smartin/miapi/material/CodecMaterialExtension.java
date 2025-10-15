@@ -25,7 +25,7 @@ public class CodecMaterialExtension implements ReloadHelpers.Extension<CodecMate
     }
 
     @Override
-    public ResourceLocation getTarget() {
+    public ResourceLocation target() {
         return parent;
     }
 
@@ -38,7 +38,7 @@ public class CodecMaterialExtension implements ReloadHelpers.Extension<CodecMate
 
     public static final Codec<CodecMaterialExtension> CODEC =
             RecordCodecBuilder.create(instance -> instance.group(
-                    ResourceLocation.CODEC.fieldOf("parent").forGetter(CodecMaterialExtension::getTarget),
+                    ResourceLocation.CODEC.fieldOf("parent").forGetter(CodecMaterialExtension::target),
                     CodecMaterial.CODEC.fieldOf("data").forGetter(ext -> ext.extension)
             ).apply(instance, CodecMaterialExtension::new));
 

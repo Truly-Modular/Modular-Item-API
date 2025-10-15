@@ -17,6 +17,7 @@ import smartin.miapi.material.CodecMaterial;
 import smartin.miapi.material.CodecMaterialExtension;
 import smartin.miapi.material.MaterialProperty;
 import smartin.miapi.material.composite.material.DatapackComposite;
+import smartin.miapi.modules.CodecModuleExtension;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ItemModuleExtension;
 import smartin.miapi.modules.abilities.key.KeyBindManager;
@@ -38,9 +39,12 @@ public class ReloadHelpers {
      * these need to be registered before most other things
      */
     public static void registerReloadHandlers() {
+        /*
         ReloadHelpers.registerReloadHandler("miapi/modules",
                 RegistryInventory.ITEM_MODULE_MIAPI_REGISTRY,
                 ItemModule::loadFromData, -0.5f);
+
+         */
         ReloadHelpers.registerReloadHandler("miapi/module_extensions",
                 () -> {
                 },
@@ -119,6 +123,18 @@ public class ReloadHelpers {
                     data.generateConverters(isClient);
                 },
                 -2.0f
+        );
+
+        ReloadHelpers.registerHierarchicalReloadHandler(
+                "miapi/modules",
+                ItemModule.CODEC,
+                CodecModuleExtension.CODEC,
+                RegistryInventory.ITEM_MODULE_MIAPI_REGISTRY::clear,
+                (isClient, path, data, registryAccess) -> {
+                    data = new ItemModule(path,data.properties());
+                    RegistryInventory.ITEM_MODULE_MIAPI_REGISTRY.register(path,data);
+                },
+                -0.5f
         );
         ReloadHelpers.registerReloadHandler(ReloadEvents.MAIN, "miapi/modular_converter", ItemToModularConverter.regexes, (isClient, path, data, registryAccess) ->
 
@@ -359,9 +375,9 @@ public class ReloadHelpers {
                     for (var entry : pendingExts.entrySet()) {
                         E ext = entry.getValue();
                         extensionHandler.reloadFile(false, entry.getKey(), ext, null);
-                        B base = pendingBase.get(ext.getTarget());
+                        B base = pendingBase.get(ext.target());
                         if (base == null) {
-                            Miapi.LOGGER.error("Missing base {} for extension {}", ext.getTarget(), entry.getKey());
+                            Miapi.LOGGER.error("Missing base {} for extension {}", ext.target(), entry.getKey());
                             continue;
                         }
                         B extended = ext.applyTo(base);
@@ -415,7 +431,7 @@ public class ReloadHelpers {
     }
 
     public interface Extension<T> {
-        ResourceLocation getTarget();
+        ResourceLocation target();
 
         T applyTo(T base);
     }
