@@ -109,7 +109,7 @@ public class AttributeRegistry {
                     livingHurt.damageSource.getAttacker() != null &&
                     livingHurt.damageSource.getAttacker() instanceof LivingEntity attacker) {
                 if (facet != null && !livingHurt.defender.getWorld().isClient()) {
-                    if (attacker.getAttributes().hasAttribute(STUN_DAMAGE)) {
+                    if (attacker.getAttributes().hasAttribute(STUN_DAMAGE) && !livingHurt.damageSource.isIndirect()) {
                         double currentStunDamage = attacker.getAttributeValue(STUN_DAMAGE);
                         if (currentStunDamage > 0.1) {
                             facet.takeStunDamage((float) currentStunDamage, attacker);
@@ -178,7 +178,8 @@ public class AttributeRegistry {
         MiapiEvents.LIVING_HURT.register((livingHurtEvent -> {
             if (
                     livingHurtEvent.damageSource != null &&
-                    livingHurtEvent.damageSource.getAttacker() instanceof LivingEntity attacker) {
+                    livingHurtEvent.damageSource.getAttacker() instanceof LivingEntity attacker &&
+                    !livingHurtEvent.damageSource.isIndirect()) {
                 if (attacker.getAttributes().hasAttribute(BACK_STAB)) {
                     if (livingHurtEvent.damageSource.getAttacker().getRotationVector().dotProduct(livingHurtEvent.defender.getRotationVector()) > 0) {
                         attacker.getAttributes().getCustomInstance(BACK_STAB).addTemporaryModifier(new EntityAttributeModifier(TEMP_BACKSTAB_DMG_UUID, "temp_backstab_base_damage", livingHurtEvent.amount, EntityAttributeModifier.Operation.ADDITION));
