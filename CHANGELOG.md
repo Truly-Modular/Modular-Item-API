@@ -9,3 +9,4 @@
 - improved handheld feedback, it now cleanly tells the players it gives a 25% bonus attackspeed when dualwielded
 - implemented module inheritance system
 - fixed/reworked immolate -> bonus damage if self or target is on fire and damage reduction while on fire.
+- fixed bug related to attribute merging

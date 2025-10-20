@@ -23,7 +23,6 @@ import smartin.miapi.modules.properties.armor.EquipmentSlotProperty;
 import smartin.miapi.modules.properties.util.*;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
 
 public class AttributeProperty extends
@@ -45,7 +44,7 @@ public class AttributeProperty extends
                     Codec.unboundedMap(
                             AttributeModifier.Operation.CODEC,
                             Codec.unboundedMap(
-                                    Codec.either(EquipmentSlotGroup.CODEC, Codec.STRING.xmap(a->true,b->"true")),
+                                    Codec.either(EquipmentSlotGroup.CODEC, Codec.STRING.xmap(a -> true, b -> "true")),
                                     DoubleOperationResolvable.CODEC)));
     public static Codec<Map<ResourceLocation, Map<AttributeModifier.Operation, Map<Either<EquipmentSlotGroup, Boolean>, DoubleOperationResolvable>>>> CODEC = Codec.withAlternative(NEW_CODEC,
             OLD_CODEC.xmap(list -> {
@@ -131,46 +130,66 @@ public class AttributeProperty extends
     @Override
     public void updateComponent(ItemStack itemStack, RegistryAccess registryAccess) {
         var attributes = itemStack.getOrDefault(DataComponents.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.EMPTY);
-        List<ItemAttributeModifiers.Entry> filteredList = new ArrayList<>(attributes.modifiers().stream().filter(
-                entry -> !(entry.modifier().id().getNamespace().equals(Miapi.MOD_ID)
-                           || entry.modifier().id().equals(Item.BASE_ATTACK_DAMAGE_ID)
-                           || entry.modifier().id().equals(Item.BASE_ATTACK_SPEED_ID))
-        ).toList());
-        AtomicBoolean hasChanged = new AtomicBoolean(false);
+        Map<ResourceLocation, ItemAttributeModifiers.Entry> mergedEntries = new HashMap<>();
+
+        for (var entry : attributes.modifiers()) {
+            var id = entry.modifier().id();
+            if (!(id.getNamespace().equals(Miapi.MOD_ID)
+                  || id.equals(Item.BASE_ATTACK_DAMAGE_ID)
+                  || id.equals(Item.BASE_ATTACK_SPEED_ID))) {
+                mergedEntries.put(id, entry);
+            }
+        }
+
         getData(itemStack).ifPresent(idMap -> {
             AttributeUtil.AttributeContext context = new AttributeUtil.AttributeContext();
             context.map = idMap;
             AttributeUtil.ITEM_ATTRIBUTE_ADJUST.invoker().adjust(context, itemStack);
             idMap = context.map;
-            idMap.forEach((id, operationMap) -> {
-                Attribute attribute = findAttribute(id);
-                if (attribute != null) {
-                    operationMap.forEach((attributeOperation, equipmentSlotMap) -> {
-                        equipmentSlotMap.forEach((slot, operation) -> {
-                            EquipmentSlotGroup slotGroup = EquipmentSlotProperty.getSlot(itemStack);
-                            if (slot.left().isPresent()) {
-                                slotGroup = slot.left().get();
-                            }
-                            if (slotGroup == null) {
-                                slotGroup = EquipmentSlotGroup.ANY;
-                            }
-                            ResourceLocation slotId = AttributeUtil.getIDForSlot(slotGroup, attribute, attributeOperation);
-                            double value = operation.evaluate(attribute.getDefaultValue()).orElse(0.0) - attribute.getDefaultValue();
-                            filteredList.add(new ItemAttributeModifiers.Entry(
-                                    BuiltInRegistries.ATTRIBUTE.wrapAsHolder(attribute),
-                                    new AttributeModifier(slotId, value, attributeOperation),
-                                    slotGroup
-                            ));
-                        });
+
+            for (var entry : idMap.entrySet()) {
+                Attribute attribute = findAttribute(entry.getKey());
+                if (attribute == null) continue;
+
+                for (var opEntry : entry.getValue().entrySet()) {
+                    Map<EquipmentSlotGroup, DoubleOperationResolvable> resolvableMap = new HashMap<>();
+                    AttributeModifier.Operation operation = opEntry.getKey();
+
+                    for (var slotEntry : opEntry.getValue().entrySet()) {
+                        Either<EquipmentSlotGroup, Boolean> slot = slotEntry.getKey();
+                        DoubleOperationResolvable expression = slotEntry.getValue();
+
+                        // Determine effective slot
+                        EquipmentSlotGroup slotGroup = EquipmentSlotProperty.getSlot(itemStack);
+                        if (slot.left().isPresent()) slotGroup = slot.left().get();
+                        if (slotGroup == null) slotGroup = EquipmentSlotGroup.ANY;
+                        resolvableMap.merge(slotGroup,expression,(a,b)-> DoubleOperationResolvable.merge(a,b,MergeType.SMART));
+                    }
+                    resolvableMap.forEach((group, op) -> {
+                        ResourceLocation slotId = AttributeUtil.getIDForSlot(group, attribute, operation);
+                        double value = op.evaluate(attribute.getDefaultValue()).orElse(0.0)
+                                       - attribute.getDefaultValue();
+                        mergedEntries.put(
+                                slotId,
+                                new ItemAttributeModifiers.Entry(
+                                        BuiltInRegistries.ATTRIBUTE.wrapAsHolder(attribute),
+                                        new AttributeModifier(slotId, value, operation),
+                                        group
+                                )
+                        );
                     });
                 }
-            });
+            }
         });
+
+        List<ItemAttributeModifiers.Entry> finalList = new ArrayList<>(mergedEntries.values());
         AttributeUtil.ItemVanillaAttributeContext context = new AttributeUtil.ItemVanillaAttributeContext();
-        context.list = filteredList;
+        context.list = finalList;
         AttributeUtil.VANILLA_ITEM_ATTRIBUTE_ADJUST.invoker().adjust(context, itemStack);
+
         itemStack.set(DataComponents.ATTRIBUTE_MODIFIERS, new ItemAttributeModifiers(context.list, true));
     }
+
 
     public Attribute findAttribute(ResourceLocation id) {
         var replacement = replaceMap.get(id.toString());
