@@ -17,6 +17,14 @@ public interface ModularItem extends VisualModularItem {
         return stack.getMaxDamage();
     }
 
+    static boolean isModularItemNoComponent(ItemStack itemStack) {
+        return isModularItemNoComponent(itemStack.getItem());
+    }
+
+    static boolean isModularItemNoComponent(Item item) {
+        return item instanceof ModularItem;
+    }
+
     static boolean isModularItem(ItemStack itemStack) {
         return isModularItem(itemStack, itemStack.getItem());
     }

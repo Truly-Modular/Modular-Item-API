@@ -34,6 +34,7 @@ public class BannerModelProperty extends CodecProperty<List<BannerModelProperty.
             List<MiapiModel> models = new ArrayList<>();
             getData(moduleInstance).ifPresent(list -> {
                 list.forEach(bannerModelData -> {
+                    bannerModelData = bannerModelData.copy();
                     if ("parent".equals(bannerModelData.modelType)) {
                         SlotProperty.ModuleSlot slot = SlotProperty.getSlotIn(moduleInstance);
                         if (slot != null) {
@@ -75,5 +76,14 @@ public class BannerModelProperty extends CodecProperty<List<BannerModelProperty.
         public String model;
         public String modelType;
         public Transform transform = Transform.IDENTITY;
+
+        public BannerModelData copy() {
+            BannerModelData copy = new BannerModelData();
+            copy.type = this.type;
+            copy.model = this.model;
+            copy.modelType = modelType;
+            copy.transform = transform.copy();
+            return copy;
+        }
     }
 }

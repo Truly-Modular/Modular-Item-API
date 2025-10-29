@@ -147,7 +147,7 @@ public class BakedMiapiModel implements MiapiModel {
         Minecraft.getInstance().getProfiler().pop();
 
 
-        if(trimModel){
+        if (trimModel) {
             Minecraft.getInstance().getProfiler().push("TrimModel");
             //render Trims
             Holder<ArmorMaterial> armorMaterial = (stack.getItem() instanceof ArmorItem armorItem) ? armorItem.getMaterial() : null;

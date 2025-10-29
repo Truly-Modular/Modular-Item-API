@@ -1,0 +1,34 @@
+{
+    "attributes": {
+        "minecraft:generic.armor": {
+            "add_value": {
+                "pants": [
+                    {
+                        "operation": "+",
+                        "value": "-3 / 7 * [module.cost] + 5 - 2 + 5"
+                    }
+                ]
+            }
+        },
+        "minecraft:generic.armor_toughness": {
+            "add_value": {
+                "pants": [
+                    {
+                        "operation": "+",
+                        "value": "3.0 / 7 * [module.cost]"
+                    }
+                ]
+            }
+        },
+        "minecraft:generic.knockback_resistance": {
+            "add_value": {
+                "pants": [
+                    {
+                        "operation": "+",
+                        "value": "2.25 / 7 * [module.cost]"
+                    }
+                ]
+            }
+        }
+    }
+}

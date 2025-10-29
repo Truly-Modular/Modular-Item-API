@@ -1,20 +1,29 @@
 package smartin.miapi.modules.properties;
 
+import com.google.gson.JsonElement;
 import com.mojang.serialization.Codec;
+import dev.architectury.event.EventResult;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import smartin.miapi.Miapi;
+import smartin.miapi.blocks.ModularWorkBenchEntity;
+import smartin.miapi.craft.CraftAction;
+import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.material.base.Material;
 import smartin.miapi.material.MaterialProperty;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.util.CodecProperty;
+import smartin.miapi.modules.properties.util.CraftingProperty;
 import smartin.miapi.modules.properties.util.MergeAble;
 import smartin.miapi.modules.properties.util.MergeType;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.WeakHashMap;
 
 /**
  * Allows the set Itemtags via a Properterty (relies on {@link ItemStack#is(TagKey)}
@@ -29,18 +38,26 @@ import java.util.List;
  * @description_end
  * @data tags: A list of strings representing the fake tags assigned to the item.
  */
-public class FakeItemTagProperty extends CodecProperty<List<String>> {
+public class FakeItemTagProperty extends CodecProperty<List<String>> implements CraftingProperty {
     public static final ResourceLocation KEY = Miapi.id("fake_item_tag");
     public static FakeItemTagProperty property;
     public static Codec<List<String>> CODEC = Codec.list(Codec.STRING);
+    public static WeakHashMap<ItemStack, List<String>> lookupCache = new WeakHashMap<>();
 
     public FakeItemTagProperty() {
         super(CODEC);
         property = this;
+        MiapiEvents.CLEAR_CACHE.register(() -> {
+            lookupCache = new WeakHashMap<>();
+            return EventResult.pass();
+        });
     }
 
 
     public static List<String> getTags(ItemStack itemStack) {
+        if (lookupCache.containsKey(itemStack)) {
+            return lookupCache.get(itemStack);
+        }
         ModuleInstance moduleInstance = ItemModule.getModules(itemStack);
         boolean dyeAble = false;
         List<String> list = property.getData(itemStack).orElse(new ArrayList<>());
@@ -50,22 +67,27 @@ public class FakeItemTagProperty extends CodecProperty<List<String>> {
                 dyeAble = true;
             }
         }
-        if(dyeAble){
+        if (dyeAble) {
             list = new ArrayList<>(list);
             list.add("minecraft:dyeable");
         }
+        lookupCache.put(itemStack, list);
         return list;
     }
 
     public static boolean hasTag(ResourceLocation identifier, ItemStack itemStack) {
-        if (itemStack == null) {
-            return false;
-        }
         return getTags(itemStack).contains(identifier.toString());
     }
 
     @Override
     public List<String> merge(List<String> left, List<String> right, MergeType mergeType) {
         return MergeAble.mergeList(left, right, mergeType);
+    }
+
+    @Override
+    public ItemStack preview(ItemStack old, ItemStack crafting, Player player, ModularWorkBenchEntity bench, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<ResourceLocation, JsonElement> data) {
+        lookupCache.remove(old);
+        lookupCache.remove(crafting);
+        return crafting;
     }
 }

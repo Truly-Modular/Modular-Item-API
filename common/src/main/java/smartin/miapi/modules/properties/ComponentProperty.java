@@ -16,6 +16,7 @@ import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
+import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.craft.CraftAction;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ItemModule;
@@ -49,7 +50,9 @@ public class ComponentProperty extends CodecProperty<Map<ResourceLocation, JsonE
                     }
                 } catch (RuntimeException e) {
                     Miapi.LOGGER.error("Could not apply component " + id);
-                    Miapi.LOGGER.error("raw data " + json);
+                    if (MiapiConfig.getServerConfig().other.verboseLogging) {
+                        Miapi.LOGGER.error("raw data " + json, e);
+                    }
                 }
             });
         });
@@ -66,12 +69,15 @@ public class ComponentProperty extends CodecProperty<Map<ResourceLocation, JsonE
     public <T> void update(DataComponentType<T> type, JsonElement element, ItemStack itemStack) {
         var result = type.codec().decode(JsonOps.INSTANCE, element);
         if (result.isError()) {
-            throw new RuntimeException("Could not decode Data Component ");
+            throw new RuntimeException("Could not decode Data Component " + result.error().get().message());
         }
         itemStack.set(type, result.getOrThrow().getFirst());
     }
 
     public JsonElement deepParse(JsonElement element, ModuleInstance context) {
+        if (true) {
+            return element;
+        }
         if (element.isJsonObject()) {
             JsonObject obj = element.getAsJsonObject();
             JsonObject next = new JsonObject();
@@ -95,9 +101,9 @@ public class ComponentProperty extends CodecProperty<Map<ResourceLocation, JsonE
                 potential = potential.replace("|||miapi.evaluate", "");
                 return new JsonPrimitive(StatResolver.resolveDouble(potential, context));
             }
-            return element.deepCopy();
+            return element;
         } else {
-            return element.deepCopy();
+            return element;
         }
     }
 

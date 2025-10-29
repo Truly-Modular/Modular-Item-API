@@ -63,6 +63,7 @@ public class ModelProperty extends CodecProperty<List<ModelProperty.ModelData>> 
     private static final String CACHE_KEY_ITEM = Miapi.MOD_ID + ":itemModelodel";
     public static final Map<String, UnbakedModelHolder> modelCache = new HashMap<>();
     public static final ResourceLocation KEY = Miapi.id("model");
+    public static Set<ResourceLocation> PRE_LOAD_IDS = new HashSet<>();
     public static Function<net.minecraft.client.resources.model.Material, TextureAtlasSprite> textureGetter;
     public static Codec<ModelData> DATA_CODEC = ModelData.CODEC;
     public static Codec<List<ModelData>> CODEC = Codec.withAlternative(Codec.list(DATA_CODEC), new Codec<>() {
@@ -231,7 +232,7 @@ public class ModelProperty extends CodecProperty<List<ModelProperty.ModelData>> 
         return ModelDecoder.EMPTY();
     }
 
-    protected static void loadModelsByPath(String filePath) {
+    public static void loadModelsByPath(String filePath) {
         String materialKey = "[material.texture]";
         Map<String, BlockModel> models = new HashMap<>();
         if (filePath.contains(materialKey)) {

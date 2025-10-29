@@ -148,7 +148,7 @@ public class MiapiClient {
         }));
 
         ClientReloadShadersEvent.EVENT.register((resourceFactory, shadersSink) -> {
-            if(Platform.isForgeLike() && !NetworkAggregator.S2C_RECEIVER.containsKey(FacetSyncPacket.TYPE.id())){
+            if (Platform.isForgeLike() && !NetworkAggregator.S2C_RECEIVER.containsKey(FacetSyncPacket.TYPE.id())) {
                 NetworkManager.registerReceiver(
                         NetworkManager.Side.S2C,
                         FacetSyncPacket.TYPE,
@@ -200,18 +200,48 @@ public class MiapiClient {
             MiapiEvents.CLEAR_CACHE.invoker().onReload();
             TierManager.setup();
         });
-        RegistryInventory.MODULAR_ITEMS.addCallback((item -> {
+        /*
+        ReloadListenerRegistry.register(PackType.CLIENT_RESOURCES, new PreparableReloadListener() {
+            @Override
+            public @NotNull CompletableFuture<Void> reload(PreparationBarrier preparationBarrier, ResourceManager resourceManager, ProfilerFiller preparationsProfiler, ProfilerFiller reloadProfiler, Executor backgroundExecutor, Executor gameExecutor) {
+                return CompletableFuture.runAsync(() -> {
+                    resourceManager.listResourceStacks("model/item", a -> a.getNamespace().equals(Miapi.MOD_ID)).forEach((id, model) -> {
+                        try {
+                            ModelProperty.loadModelsByPath(id.toString());
+                        } catch (RuntimeException e) {
+                            Miapi.LOGGER.info("could not pre-load");
+                        }
+                    });
+
+                });
+            }
+        }, Miapi.id("model_pre_loader"));
+        */
+        RegistryInventory.MODULAR_ITEMS.addCallback((item ->
+
+        {
             ModularModelPredicateProvider.registerModelOverride(item, Miapi.id("damage"), (stack, world, entity, seed) -> stack.isDamageableItem() && stack.getDamageValue() > 0 ? ((float) stack.getDamageValue() / stack.getMaxDamage()) : 0.0f);
             ModularModelPredicateProvider.registerModelOverride(item, Miapi.id("damaged"), (stack, world, entity, seed) -> stack.isDamaged() ? 1.0F : 0.0F);
             ModularModelPredicateProvider.registerModelOverride(item, Miapi.id("use"), (stack, world, entity, seed) -> entity.isUsingItem() && stack.equals(entity.getUseItem()) ? 1.0F : 0.0F);
             ModularModelPredicateProvider.registerModelOverride(item, Miapi.id("use_ticks"), (stack, world, entity, seed) -> entity.isUsingItem() && stack.equals(entity.getUseItem()) ? entity.getTicksUsingItem() : 0.0f);
         }));
-        ReloadEvents.START.subscribe((isClient, registryAccess) -> {
+        ReloadEvents.START.subscribe((isClient, registryAccess) ->
+
+        {
             if (isClient) {
                 StatListWidget.onReload();
             }
+            if (
+                    Minecraft.getInstance() != null &&
+                    Minecraft.getInstance().player != null &&
+                    Minecraft.getInstance().screen instanceof CraftingScreen craftingScreen) {
+                Minecraft.getInstance().forceSetScreen(null);
+
+            }
         });
-        ReloadEvents.END.subscribe((isClient, registryAccess) -> {
+        ReloadEvents.END.subscribe((isClient, registryAccess) ->
+
+        {
             if (isClient) {
                 StatListWidget.reloadEnd();
             }
@@ -220,9 +250,21 @@ public class MiapiClient {
         ReplaceView.optionSuppliers.add(option ->
                 option.getScreenHandler().slots
                         .stream()
-                        .filter(a -> a.getItem().has(BLUEPRINT_COMPONENT))
-                        .map(a -> a.getItem().get(BLUEPRINT_COMPONENT))
-                        .filter(b -> {
+                                .
+
+                        filter(a -> a.getItem().
+
+                                has(BLUEPRINT_COMPONENT))
+                                .
+
+                        map(a -> a.getItem().
+
+                                get(BLUEPRINT_COMPONENT))
+                                .
+
+                        filter(b ->
+
+                        {
                             for (String id : AllowedSlots.getAllowedSlots(b.toMerge)) {
                                 if (option.getSlot().allowed.contains(id)) {
                                     return true;
@@ -230,8 +272,14 @@ public class MiapiClient {
                             }
                             return false;
                         })
-                        .map(a -> a.asCraftOption(option.getScreenHandler())).toList());
-        ReplaceView.optionSuppliers.add(option -> {
+                                .
+
+                        map(a -> a.asCraftOption(option.getScreenHandler())).
+
+                        toList());
+        ReplaceView.optionSuppliers.add(option ->
+
+        {
             List<CraftOption> options = new ArrayList<>();
             BlueprintManager.RELOADED_BLUEPRINTS.getFlatMap().forEach((id, blueprint) -> {
                 boolean isAllowed = false;

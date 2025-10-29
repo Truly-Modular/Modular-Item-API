@@ -305,7 +305,7 @@ public class RegistryInventory {
                         5,
                         SoundEvents.ARMOR_EQUIP_IRON,
                         () -> Ingredient.EMPTY,
-                        List.of(new ArmorMaterial.Layer(ResourceLocation.fromNamespaceAndPath(MOD_ID,"miapi_modular_armor"))),
+                        List.of(new ArmorMaterial.Layer(ResourceLocation.fromNamespaceAndPath(MOD_ID, "miapi_modular_armor"))),
                         5.0f, 5.0f
                 ), (s) -> {
             armorMaterial = BuiltInRegistries.ARMOR_MATERIAL.wrapAsHolder(s);
@@ -440,7 +440,6 @@ public class RegistryInventory {
         register(GAME_EVENT_REGISTRAR, "stat_provider_removed", () -> new GameEvent(16), ev -> statProviderRemovedEvent = ev);
 
 
-
         LifecycleEvent.SETUP.register(() -> {
             //EDITPROPERTIES
             registerMiapi(EDIT_OPTION_MIAPI_REGISTRY, "replace", new ReplaceOption());
@@ -482,7 +481,10 @@ public class RegistryInventory {
                 registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, EntityModelProperty.KEY, new EntityModelProperty());
                 registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, CrystalModelProperty.KEY, new CrystalModelProperty());
                 registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, ConduitModelProperty.KEY, new ConduitModelProperty());
-                registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, OverlayModelProperty.KEY, new OverlayModelProperty());
+                //registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, OverlayModelProperty.KEY, new OverlayModelProperty());
+                registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY,
+                        smartin.miapi.modules.properties.render.overlay.OverlayModelProperty.KEY,
+                        new smartin.miapi.modules.properties.render.overlay.OverlayModelProperty());
             } else {
                 registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, "model", new ServerReplaceProperty());
                 registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, "model_transform", new ServerReplaceProperty());

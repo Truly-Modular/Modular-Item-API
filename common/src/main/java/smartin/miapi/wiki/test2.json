@@ -1,0 +1,10 @@
+{
+    "components": {
+        "irons_spellbooks:spell_container": {
+            "data": [],
+            "maxSpells": 1,
+            "mustEquip": false,
+            "spellWheel": false
+        }
+    }
+}

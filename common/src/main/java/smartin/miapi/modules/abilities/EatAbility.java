@@ -193,6 +193,8 @@ public class EatAbility implements ItemUseDefaultCooldownAbility<EatAbility.EatR
             EatRawData rawData = new EatRawData();
             rawData.nutrition = DoubleOperationResolvable.merge(left.nutrition, right.nutrition, mergeType);
             rawData.saturation = DoubleOperationResolvable.merge(left.saturation, right.saturation, mergeType);
+            rawData.eat_ticks = DoubleOperationResolvable.merge(left.eat_ticks, right.eat_ticks, mergeType);
+            rawData.cooldown = DoubleOperationResolvable.merge(left.cooldown, right.cooldown, mergeType);
             rawData.durability = DoubleOperationResolvable.merge(left.durability, right.durability, mergeType);
             if (MergeType.OVERWRITE.equals(mergeType)) {
                 rawData.effects = right.effects;

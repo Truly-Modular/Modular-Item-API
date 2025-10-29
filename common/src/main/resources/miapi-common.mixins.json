@@ -38,6 +38,7 @@
         "item.AxeItemAccessor",
         "item.ChorusFruitMixin",
         "item.CrossbowItemAccessor",
+        "item.CrossBowMixin",
         "item.HoeItemAccessor",
         "item.ItemStackAccessor",
         "item.MiapiItemStackMixin",

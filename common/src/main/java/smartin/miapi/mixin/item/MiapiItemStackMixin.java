@@ -40,6 +40,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import static smartin.miapi.item.modular.ModularItem.isModularItem;
+import static smartin.miapi.item.modular.ModularItem.isModularItemNoComponent;
 
 @Mixin(value = ItemStack.class, priority = 2000)
 public abstract class MiapiItemStackMixin {
@@ -53,7 +54,7 @@ public abstract class MiapiItemStackMixin {
     @ModifyReturnValue(method = "is(Lnet/minecraft/tags/TagKey;)Z", at = @At("RETURN"))
     public boolean miapi$injectItemTag(boolean original, TagKey<Item> tag) {
         ItemStack stack = (ItemStack) (Object) this;
-        if (isModularItem(stack)) {
+        if (isModularItemNoComponent(stack)) {
             if (!original) {
                 return FakeItemTagProperty.hasTag(tag.location(), stack);
             }
@@ -70,7 +71,7 @@ public abstract class MiapiItemStackMixin {
     @Inject(method = "getItem", at = @At("TAIL"))
     public void miapi$capturePotentialItemstack(CallbackInfoReturnable<Item> cir) {
         ItemStack stack = (ItemStack) (Object) this;
-        if (isModularItem(stack, cir.getReturnValue())) {
+        if (isModularItemNoComponent(cir.getReturnValue())) {
             FakeItemManager.getItemCall(stack, cir.getReturnValue());
         }
     }
@@ -78,7 +79,7 @@ public abstract class MiapiItemStackMixin {
     @ModifyReturnValue(method = "getItem", at = @At("RETURN"))
     public Item miapi$adjustIsItem(Item original) {
         ItemStack stack = (ItemStack) (Object) this;
-        if (ModularItem.isModularItem(stack, original)) {
+        if (ModularItem.isModularItemNoComponent(original)) {
             var a = MixinContextFlags.IGNORE_NEXT_GET_ITEM_CALL;
             Item fake = a.get().get(stack);
             if (fake != null) {
@@ -99,10 +100,8 @@ public abstract class MiapiItemStackMixin {
     @ModifyReturnValue(method = "is(Lnet/minecraft/world/item/Item;)Z", at = @At("RETURN"))
     public boolean miapi$adjustIsItem(boolean original, Item item) {
         ItemStack stack = (ItemStack) (Object) this;
-        if (item != null && !original && isModularItem(stack)) {
-            var property = AssumeItemIdentityProperty.property.getData(stack);
-            var match = property.map(a -> a.stream().anyMatch(h -> h.value().equals(item)));
-            return match.orElse(original);
+        if (item != null && !original && isModularItemNoComponent(stack)) {
+            return AssumeItemIdentityProperty.isItem(original, item, stack);
         }
         return original;
     }

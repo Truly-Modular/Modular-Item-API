@@ -82,8 +82,8 @@ public class ModularCrossbow extends CrossbowItem implements PlatformModularItem
             if (entity == null) {
                 return 0.0F;
             } else {
-                int i = this.getUseDuration(stack, entity) - entity.getTicksUsingItem();
-                return entity.getUseItem() != stack ? 0.0F : -getPowerForTime(i, stack, entity);
+                int i = entity.getTicksUsingItem();
+                return entity.getUseItem() != stack ? 0.0F : getPowerForTime(i, stack, entity);
             }
         });
         ModularModelPredicateProvider.registerModelOverride(this, ResourceLocation.parse("pulling"), (stack, world, entity, seed) -> {
@@ -229,6 +229,11 @@ public class ModularCrossbow extends CrossbowItem implements PlatformModularItem
         double drawTime = DrawTimeProperty.property.getValue(stack).orElse(0.25);
         float f = EnchantmentHelper.modifyCrossbowChargingTime(stack, shooter, (float) drawTime);
         return Mth.floor(f * 20.0F);
+    }
+
+    @Override
+    public int getUseDuration(ItemStack stack, LivingEntity entity) {
+        return getChargeDuration(stack, entity) + 3;
     }
 
     @Override

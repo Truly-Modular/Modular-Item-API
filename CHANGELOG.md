@@ -10,3 +10,7 @@
 - implemented module inheritance system
 - fixed/reworked immolate -> bonus damage if self or target is on fire and damage reduction while on fire.
 - fixed bug related to attribute merging
+- fixed bug related to rendering multiple banners at once (having 2 armpatches now works)
+- fixed issues with crossbow animations desyncing/playing wrong
+ ### Editor
+- reloading now closes ui to prevent crashes
