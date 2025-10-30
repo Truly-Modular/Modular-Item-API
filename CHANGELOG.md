@@ -12,5 +12,6 @@
 - fixed bug related to attribute merging
 - fixed bug related to rendering multiple banners at once (having 2 armpatches now works)
 - fixed issues with crossbow animations desyncing/playing wrong
+- fixed bug where a load fail module extension would also unload the module
  ### Editor
 - reloading now closes ui to prevent crashes

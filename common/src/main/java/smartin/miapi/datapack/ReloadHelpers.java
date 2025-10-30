@@ -233,9 +233,9 @@ public class ReloadHelpers {
                     Miapi.LOGGER.error("could not decode " + path + " for full-path " + path + e.getMessage());
                     if (MiapiConfig.getServerConfig().other.verboseLogging) {
                         Miapi.LOGGER.error("", e);
+                        Miapi.LOGGER.error("raw data :");
+                        Miapi.LOGGER.error(data);
                     }
-                    Miapi.LOGGER.error("raw data :");
-                    Miapi.LOGGER.error(data);
                 }
             }
         }, prio);
@@ -262,8 +262,15 @@ public class ReloadHelpers {
             Codec<T> codec,
             float priority) {
         SingleFileHandler handler = new CodecOptimisedFileHandler<>(codec, (isClient, path, data, registryAccess) -> {
-            ResourceLocation shortened = Miapi.id(path.toString().replace(":" + location + "/", ":").replace(".json", ""));
-            onDecode.reloadFile(isClient, shortened, data, registryAccess);
+            try {
+                ResourceLocation shortened = Miapi.id(path.toString().replace(":" + location + "/", ":").replace(".json", ""));
+                onDecode.reloadFile(isClient, shortened, data, registryAccess);
+            } catch (RuntimeException e) {
+                Miapi.LOGGER.info("failed to load " + path);
+                if (MiapiConfig.getServerConfig().other.verboseLogging) {
+                    Miapi.LOGGER.info(e.getLocalizedMessage(), e);
+                }
+            }
         }, location);
         registerReloadHandler(ReloadEvents.MAIN, location, true, (before) -> {
         }, (after) -> {
@@ -287,9 +294,9 @@ public class ReloadHelpers {
                 Miapi.LOGGER.error("could not decode " + path + " for full-path " + path + e.getMessage());
                 if (MiapiConfig.getServerConfig().other.verboseLogging) {
                     Miapi.LOGGER.error("", e);
+                    Miapi.LOGGER.error("raw data :");
+                    Miapi.LOGGER.error(data);
                 }
-                Miapi.LOGGER.error("raw data :");
-                Miapi.LOGGER.error(data);
             }
         }
     }
