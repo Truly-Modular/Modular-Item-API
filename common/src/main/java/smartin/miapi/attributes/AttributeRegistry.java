@@ -33,10 +33,7 @@ import smartin.miapi.modules.abilities.key.KeyBindFacet;
 import smartin.miapi.modules.properties.attributes.AttributeUtil;
 import smartin.miapi.modules.properties.onHit.ComboFacet;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.WeakHashMap;
+import java.util.*;
 
 
 public class AttributeRegistry {
@@ -44,7 +41,7 @@ public class AttributeRegistry {
     /**
      * Idk, this is kinda bad but i couldnt do it in the mixin
      */
-    public static Map<Player, Boolean> hasCrittedLast = new WeakHashMap<>();
+    public static Map<Player, Boolean> hasCrittedLast =  Collections.synchronizedMap(new WeakHashMap<>());
 
     public static Holder<Attribute> SWIM_SPEED;
 

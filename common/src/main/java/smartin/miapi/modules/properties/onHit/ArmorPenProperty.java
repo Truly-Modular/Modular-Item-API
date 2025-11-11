@@ -39,7 +39,7 @@ public class ArmorPenProperty extends DoubleProperty {
         super(KEY);
         property = this;
         MiapiEvents.LIVING_HURT.register((event -> {
-            if (event.damageSource.getEntity() instanceof LivingEntity attacker) {
+            if (event.damageSource.getEntity() instanceof LivingEntity attacker && !attacker.level().isClientSide()) {
                 ItemStack itemStack = event.getMainCausingStack();
                 Optional<Double> optionalDouble = getValue(itemStack);
                 if (optionalDouble.isPresent()) {

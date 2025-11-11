@@ -5,6 +5,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunction;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
+import org.jetbrains.annotations.NotNull;
 import smartin.miapi.registries.RegistryInventory;
 
 public class GlobalLootModularisationFunction implements LootItemFunction {
@@ -12,7 +13,7 @@ public class GlobalLootModularisationFunction implements LootItemFunction {
     public static AutoCodec< GlobalLootModularisationFunction> CODEC = AutoCodec.of( GlobalLootModularisationFunction.class);
 
     @Override
-    public LootItemFunctionType<? extends LootItemFunction> getType() {
+    public @NotNull LootItemFunctionType<? extends LootItemFunction> getType() {
         return RegistryInventory.globalLootItemFunctionType;
     }
 

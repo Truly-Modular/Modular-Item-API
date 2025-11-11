@@ -106,6 +106,7 @@
     "miapi.config_screen.server": "Server Config",
     "miapi.config_screen.back": "Back",
     "miapi.name.missing.nomodule": "Missing Modules!",
+    "miapi.template.source": "Template: %s",
     "config.miapi_server": "Server Config",
     "config.miapi_server.other": "Development",
     "config.miapi_server.enchants": "Enchantments",

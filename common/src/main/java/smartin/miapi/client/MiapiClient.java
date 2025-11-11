@@ -13,6 +13,7 @@ import dev.architectury.event.events.client.ClientTickEvent;
 import dev.architectury.impl.NetworkAggregator;
 import dev.architectury.networking.NetworkManager;
 import dev.architectury.platform.Platform;
+import dev.architectury.registry.ReloadListenerRegistry;
 import dev.architectury.registry.client.level.entity.EntityRendererRegistry;
 import dev.architectury.registry.client.rendering.BlockEntityRendererRegistry;
 import dev.architectury.registry.menu.MenuRegistry;
@@ -26,6 +27,10 @@ import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.PackType;
+import net.minecraft.server.packs.resources.PreparableReloadListener;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.item.Item;
@@ -67,6 +72,8 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 
 import static smartin.miapi.blueprint.BlueprintComponent.BLUEPRINT_COMPONENT;
 
@@ -147,26 +154,31 @@ public class MiapiClient {
             Minecraft.getInstance().execute(() -> MiapiEvents.CLEAR_CACHE.invoker().onReload());
         }));
 
-        ClientReloadShadersEvent.EVENT.register((resourceFactory, shadersSink) -> {
-            if (Platform.isForgeLike() && !NetworkAggregator.S2C_RECEIVER.containsKey(FacetSyncPacket.TYPE.id())) {
-                NetworkManager.registerReceiver(
-                        NetworkManager.Side.S2C,
-                        FacetSyncPacket.TYPE,
-                        FacetSyncPacket.STREAM_CODEC,
-                        (packet, context) -> context.queue(() -> packet.handle(context)));
-            }
-            MiapiEvents.CLEAR_CACHE.invoker().onReload();
-            if (Minecraft.getInstance().level != null) {
-                ReloadEvents.reloadCounter++;
-                Map<ResourceLocation, String> cacheDatapack = new LinkedHashMap<>(ReloadEvents.DATA_PACKS);
-                ReloadEvents.START.fireEvent(true, Minecraft.getInstance().level.registryAccess());
-                ReloadEvents.DataPackLoader.trigger(cacheDatapack);
-                ReloadEvents.MAIN.fireEvent(true, Minecraft.getInstance().level.registryAccess());
-                ReloadEvents.END.fireEvent(true, Minecraft.getInstance().level.registryAccess());
-                ReloadEvents.reloadCounter--;
-                MiapiEvents.CLEAR_CACHE.invoker().onReload();
-            }
-        });
+        if (Platform.isFabric() || Platform.isForgeLike()) {
+            ReloadListenerRegistry.register(PackType.CLIENT_RESOURCES, new PreparableReloadListener() {
+                @Override
+                public CompletableFuture<Void> reload(
+                        PreparationBarrier preparationBarrier,
+                        ResourceManager resourceManager,
+                        ProfilerFiller preparationsProfiler,
+                        ProfilerFiller reloadProfiler,
+                        Executor backgroundExecutor,
+                        Executor gameExecutor) {
+
+                    return CompletableFuture
+                            .supplyAsync(() -> null, backgroundExecutor)
+                            .thenCompose(preparationBarrier::wait)
+                            .thenRunAsync(MiapiClient::clientReload, gameExecutor);
+                }
+            }, Miapi.id("client_resource"), List.of(
+                    Miapi.id("minecraft:textures"),
+                    Miapi.id("continuity:default"),
+                    Miapi.id("continuity:glass_pane_culling_fix")));
+        } else {
+            ClientReloadShadersEvent.EVENT.register((resourceFactory, shadersSink) -> {
+                clientReload();
+            });
+        }
 
 
         ConfigManager.CONFIG_SCREENS_REGISTRY.register(registerer -> {
@@ -303,6 +315,27 @@ public class MiapiClient {
         //Minecraft client = Minecraft.getInstance();
         //materialAtlasManager = new MaterialAtlasManager(client.getTextureManager());
         //ReloadListenerRegistry.register(PackType.CLIENT_RESOURCES, materialAtlasManager);
+    }
+
+    private static void clientReload() {
+        if (Platform.isForgeLike() && !NetworkAggregator.S2C_RECEIVER.containsKey(FacetSyncPacket.TYPE.id())) {
+            NetworkManager.registerReceiver(
+                    NetworkManager.Side.S2C,
+                    FacetSyncPacket.TYPE,
+                    FacetSyncPacket.STREAM_CODEC,
+                    (packet, context) -> context.queue(() -> packet.handle(context)));
+        }
+        MiapiEvents.CLEAR_CACHE.invoker().onReload();
+        if (Minecraft.getInstance().level != null) {
+            ReloadEvents.reloadCounter++;
+            Map<ResourceLocation, String> cacheDatapack = new LinkedHashMap<>(ReloadEvents.DATA_PACKS);
+            ReloadEvents.START.fireEvent(true, Minecraft.getInstance().level.registryAccess());
+            ReloadEvents.DataPackLoader.trigger(cacheDatapack);
+            ReloadEvents.MAIN.fireEvent(true, Minecraft.getInstance().level.registryAccess());
+            ReloadEvents.END.fireEvent(true, Minecraft.getInstance().level.registryAccess());
+            ReloadEvents.reloadCounter--;
+            MiapiEvents.CLEAR_CACHE.invoker().onReload();
+        }
     }
 
     @Environment(EnvType.CLIENT)

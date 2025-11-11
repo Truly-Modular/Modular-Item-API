@@ -133,7 +133,7 @@ public class GeneratedMaterial implements Material {
         if (smartin.miapi.Environment.isClient()) {
             //setupClient();
         }
-        stats.put("durability", (double) toolMaterial.getUses() -15);
+        stats.put("durability", (double) toolMaterial.getUses() - 15);
         stats.put("mining_speed", (double) toolMaterial.getSpeed());
         stats.put("enchantability", (double) toolMaterial.getEnchantmentValue());
         isValid = assignStats(toolItems);
@@ -254,6 +254,7 @@ public class GeneratedMaterial implements Material {
                     ingredient.getItems()[0] != null &&
                     !ingredient.getItems()[0].isEmpty()) {
                     smithingTemplate = ingredient.getItems()[0];
+                    //this.groups = List.of("smithing", Component.translatable("miapi.template.source", smithingTemplate.getDisplayName()).getString());
                 }
             }
         }
@@ -352,6 +353,13 @@ public class GeneratedMaterial implements Material {
             if (ingredient.test(itemStack)) {
                 return 1.0;
             }
+        } else {
+            if (mainIngredient.getItem().equals(itemStack.getItem())) {
+                return 1.0;
+            }
+            if (ingredient.test(itemStack)) {
+                return 1.0;
+            }
         }
         return 0.0;
     }
@@ -379,6 +387,12 @@ public class GeneratedMaterial implements Material {
         } else {
             if (itemStack.getItem().equals(smithingTemplate.getItem())) {
                 return 1.0;
+            }
+            if (mainIngredient.getItem().equals(itemStack.getItem())) {
+                return -10.0;
+            }
+            if (ingredient.test(itemStack)) {
+                return -1.0;
             }
         }
         return null;

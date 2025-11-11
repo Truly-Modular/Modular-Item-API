@@ -54,38 +54,117 @@ public class AllowedEnchantments extends CodecProperty<AllowedEnchantments.Allow
         property = this;
         ReloadEvents.END.subscribe((isClient, registryAccess) -> {
             enchantmentExtentionsMap = new HashMap<>(Map.of(ResourceLocation.parse("c:enchantable/pickaxe"), new ArrayList<>(), ResourceLocation.parse("c:enchantable/axe"), new ArrayList<>(), ResourceLocation.parse("c:enchantable/shovel"), new ArrayList<>(), ResourceLocation.parse("c:enchantable/hoe"), new ArrayList<>()));
+            if (Miapi.registryAccess != null && !isClient) {
+                Miapi.registryAccess = Miapi.server.registryAccess();
+            }
+
             if (registryAccess != null) {
                 detectEnchantments(registryAccess);
+            } else if (isClient) {
+                if (Miapi.clientRegistryAccess != null) {
+                    detectEnchantments(Miapi.clientRegistryAccess);
+                } else {
+                    if (Miapi.registryAccess != null) {
+                        detectEnchantments(Miapi.registryAccess);
+                    }
+                }
+            } else if (Miapi.registryAccess != null) {
+                detectEnchantments(Miapi.registryAccess);
             }
         });
     }
 
     public void detectEnchantments(RegistryAccess access) {
+        // Tools
+        List<Item> swords = List.of(Items.WOODEN_SWORD, Items.STONE_SWORD, Items.GOLDEN_SWORD, Items.DIAMOND_SWORD, Items.NETHERITE_SWORD);
         List<Item> pickaxes = List.of(Items.WOODEN_PICKAXE, Items.STONE_PICKAXE, Items.GOLDEN_PICKAXE, Items.DIAMOND_PICKAXE, Items.NETHERITE_PICKAXE);
-        List<Item> axe = List.of(Items.WOODEN_AXE, Items.STONE_AXE, Items.GOLDEN_AXE, Items.DIAMOND_AXE, Items.NETHERITE_AXE);
-        List<Item> shovel = List.of(Items.WOODEN_SHOVEL, Items.STONE_SHOVEL, Items.GOLDEN_SHOVEL, Items.DIAMOND_SHOVEL, Items.NETHERITE_SHOVEL);
-        List<Item> hoe = List.of(Items.WOODEN_HOE, Items.STONE_HOE, Items.GOLDEN_HOE, Items.DIAMOND_HOE, Items.NETHERITE_HOE);
+        List<Item> axes = List.of(Items.WOODEN_AXE, Items.STONE_AXE, Items.GOLDEN_AXE, Items.DIAMOND_AXE, Items.NETHERITE_AXE);
+        List<Item> shovels = List.of(Items.WOODEN_SHOVEL, Items.STONE_SHOVEL, Items.GOLDEN_SHOVEL, Items.DIAMOND_SHOVEL, Items.NETHERITE_SHOVEL);
+        List<Item> hoes = List.of(Items.WOODEN_HOE, Items.STONE_HOE, Items.GOLDEN_HOE, Items.DIAMOND_HOE, Items.NETHERITE_HOE);
+
+        List<Item> sharp = new ArrayList<>(swords);
+        sharp.addAll(axes);
+
+        List<Item> weapons = new ArrayList<>(swords);
+        weapons.add(Items.MACE);
+
         List<Item> allTools = new ArrayList<>(pickaxes);
-        allTools.addAll(axe);
-        allTools.addAll(shovel);
-        allTools.addAll(hoe);
+        allTools.addAll(axes);
+        allTools.addAll(shovels);
+        allTools.addAll(hoes);
+
+        // Armor
+        List<Item> helmets = List.of(Items.LEATHER_HELMET, Items.CHAINMAIL_HELMET, Items.IRON_HELMET, Items.DIAMOND_HELMET, Items.NETHERITE_HELMET, Items.TURTLE_HELMET);
+        List<Item> chestplates = List.of(Items.LEATHER_CHESTPLATE, Items.CHAINMAIL_CHESTPLATE, Items.IRON_CHESTPLATE, Items.DIAMOND_CHESTPLATE, Items.NETHERITE_CHESTPLATE);
+        List<Item> leggings = List.of(Items.LEATHER_LEGGINGS, Items.CHAINMAIL_LEGGINGS, Items.IRON_LEGGINGS, Items.DIAMOND_LEGGINGS, Items.NETHERITE_LEGGINGS);
+        List<Item> boots = List.of(Items.LEATHER_BOOTS, Items.CHAINMAIL_BOOTS, Items.IRON_BOOTS, Items.DIAMOND_BOOTS, Items.NETHERITE_BOOTS);
+
+        List<Item> allArmor = new ArrayList<>();
+        allArmor.addAll(helmets);
+        allArmor.addAll(chestplates);
+        allArmor.addAll(leggings);
+        allArmor.addAll(boots);
+
+        // Ranged
+        List<Item> bows = List.of(Items.BOW);
+        List<Item> crossbows = List.of(Items.CROSSBOW);
+        
 
         access.registry(Registries.ENCHANTMENT).get().forEach(enchantment -> {
             ResourceLocation enchantmentID = access.registry(Registries.ENCHANTMENT).get().getKey(enchantment);
+
+            Miapi.LOGGER.info("testing " + enchantment.description().getString());
+
+            if (allSupportEnchantment(sharp, enchantment)) {
+                enchantmentExtentionsMap.computeIfAbsent(ResourceLocation.parse("minecraft:enchantable/sharp_weapon"),(s)->new ArrayList<>()).add(enchantmentID);
+            } else if (allSupportEnchantment(weapons, enchantment)) {
+                enchantmentExtentionsMap.computeIfAbsent(ResourceLocation.parse("minecraft:enchantable/weapon"),(s)->new ArrayList<>()).add(enchantmentID);
+                enchantmentExtentionsMap.computeIfAbsent(ResourceLocation.parse("c:enchantable/weapon"),(s)->new ArrayList<>()).add(enchantmentID);
+            } else if (allSupportEnchantment(swords, enchantment)) {
+                enchantmentExtentionsMap.computeIfAbsent(ResourceLocation.parse("minecraft:enchantable/sword"),(s)->new ArrayList<>()).add(enchantmentID);
+                enchantmentExtentionsMap.computeIfAbsent(ResourceLocation.parse("c:enchantable/sword"),(s)->new ArrayList<>()).add(enchantmentID);
+            }
+
             if (allSupportEnchantment(pickaxes, enchantment)) {
                 enchantmentExtentionsMap.get(ResourceLocation.parse("c:enchantable/pickaxe")).add(enchantmentID);
             }
-            if (allSupportEnchantment(axe, enchantment)) {
+            if (allSupportEnchantment(axes, enchantment)) {
                 enchantmentExtentionsMap.get(ResourceLocation.parse("c:enchantable/axe")).add(enchantmentID);
             }
-            if (allSupportEnchantment(shovel, enchantment)) {
+            if (allSupportEnchantment(shovels, enchantment)) {
                 enchantmentExtentionsMap.get(ResourceLocation.parse("c:enchantable/shovel")).add(enchantmentID);
             }
-            if (allSupportEnchantment(hoe, enchantment)) {
+            if (allSupportEnchantment(hoes, enchantment)) {
                 enchantmentExtentionsMap.get(ResourceLocation.parse("c:enchantable/hoe")).add(enchantmentID);
+            }
+
+            // Armor stuff
+            if (allSupportEnchantment(allArmor, enchantment)) {
+                enchantmentExtentionsMap.computeIfAbsent(ResourceLocation.parse("minecraft:enchantable/armor"),(s)->new ArrayList<>()).add(enchantmentID);
+            }
+            if (allSupportEnchantment(helmets, enchantment)) {
+                enchantmentExtentionsMap.computeIfAbsent(ResourceLocation.parse("minecraft:enchantable/head_armor"),(s)->new ArrayList<>()).add(enchantmentID);
+            }
+            if (allSupportEnchantment(chestplates, enchantment)) {
+                enchantmentExtentionsMap.computeIfAbsent(ResourceLocation.parse("minecraft:enchantable/chest_armor"),(s)->new ArrayList<>()).add(enchantmentID);
+            }
+            if (allSupportEnchantment(leggings, enchantment)) {
+                enchantmentExtentionsMap.computeIfAbsent(ResourceLocation.parse("minecraft:enchantable/leg_armor"),(s)->new ArrayList<>()).add(enchantmentID);
+            }
+            if (allSupportEnchantment(boots, enchantment)) {
+                enchantmentExtentionsMap.computeIfAbsent(ResourceLocation.parse("minecraft:enchantable/foot_armor"),(s)->new ArrayList<>()).add(enchantmentID);
+            }
+
+            // Ranged stuff
+            if (allSupportEnchantment(bows, enchantment)) {
+                enchantmentExtentionsMap.computeIfAbsent(ResourceLocation.parse("minecraft:enchantable/bow"),(s)->new ArrayList<>()).add(enchantmentID);
+            }
+            if (allSupportEnchantment(crossbows, enchantment)) {
+                enchantmentExtentionsMap.computeIfAbsent(ResourceLocation.parse("minecraft:enchantable/crossbow"),(s)->new ArrayList<>()).add(enchantmentID);
             }
         });
     }
+
 
     public boolean allSupportEnchantment(List<Item> items, Enchantment enchantment) {
         for (Item item : items) {

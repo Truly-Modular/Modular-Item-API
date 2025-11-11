@@ -11,8 +11,8 @@ import smartin.miapi.Miapi;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
 import smartin.miapi.craft.CraftAction;
 import smartin.miapi.events.MiapiEvents;
-import smartin.miapi.material.base.Material;
 import smartin.miapi.material.MaterialProperty;
+import smartin.miapi.material.base.Material;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.util.CodecProperty;
@@ -20,10 +20,7 @@ import smartin.miapi.modules.properties.util.CraftingProperty;
 import smartin.miapi.modules.properties.util.MergeAble;
 import smartin.miapi.modules.properties.util.MergeType;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.WeakHashMap;
+import java.util.*;
 
 /**
  * Allows the set Itemtags via a Properterty (relies on {@link ItemStack#is(TagKey)}
@@ -42,7 +39,7 @@ public class FakeItemTagProperty extends CodecProperty<List<String>> implements 
     public static final ResourceLocation KEY = Miapi.id("fake_item_tag");
     public static FakeItemTagProperty property;
     public static Codec<List<String>> CODEC = Codec.list(Codec.STRING);
-    public static WeakHashMap<ItemStack, List<String>> lookupCache = new WeakHashMap<>();
+    public static Map<ItemStack, List<String>> lookupCache = Collections.synchronizedMap(new WeakHashMap<>());
 
     public FakeItemTagProperty() {
         super(CODEC);

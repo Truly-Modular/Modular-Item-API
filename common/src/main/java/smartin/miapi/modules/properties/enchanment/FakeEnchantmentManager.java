@@ -14,7 +14,7 @@ import smartin.miapi.item.modular.VisualModularItem;
 import java.util.*;
 
 public class FakeEnchantmentManager {
-    public static Map<ItemEnchantments, ItemStack> lookupMap = new WeakHashMap<>();
+    public static Map<ItemEnchantments, ItemStack> lookupMap =  Collections.synchronizedMap(new WeakHashMap<>());
     public static List<LevelTransformer> transformerList = new ArrayList<>();
     public static final PrioritizedEvent<AddEnchantmentEvent> ADD_ENCHANTMENT = PrioritizedEvent.createEventResult();
 

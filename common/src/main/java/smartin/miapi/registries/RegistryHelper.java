@@ -13,12 +13,13 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.Level;
 import smartin.miapi.Miapi;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 import java.util.WeakHashMap;
 
 public class RegistryHelper {
-    public static final Map<Level, RegistryAccess> registryLookup = new WeakHashMap<>();
+    public static final Map<Level, RegistryAccess> registryLookup =  Collections.synchronizedMap(new WeakHashMap<>());
 
     public static void setup() {
         LifecycleEvent.SERVER_LEVEL_LOAD.register(world -> registryLookup.put(world, world.registryAccess()));

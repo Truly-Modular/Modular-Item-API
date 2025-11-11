@@ -13,7 +13,9 @@ import smartin.miapi.modules.properties.util.CodecProperty;
 import smartin.miapi.modules.properties.util.MergeAble;
 import smartin.miapi.modules.properties.util.MergeType;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.WeakHashMap;
 
@@ -29,13 +31,13 @@ import java.util.WeakHashMap;
 public class AssumeItemIdentityProperty extends CodecProperty<List<Holder<Item>>> {
     public static ResourceLocation KEY = Miapi.id("assume_item_id");
     public static AssumeItemIdentityProperty property;
-    public static WeakHashMap<ItemStack, Optional<List<Holder<Item>>>> lookupCache = new WeakHashMap<>();
+    public static Map<ItemStack, Optional<List<Holder<Item>>>> lookupCache =  Collections.synchronizedMap(new WeakHashMap<>());
 
     public AssumeItemIdentityProperty() {
         super(Miapi.toListOrSimple(BuiltInRegistries.ITEM.holderByNameCodec()));
         property = this;
         MiapiEvents.CLEAR_CACHE.register(() -> {
-            lookupCache = new WeakHashMap<>();
+            lookupCache = Collections.synchronizedMap(new WeakHashMap<>());
             return EventResult.pass();
         });
     }
