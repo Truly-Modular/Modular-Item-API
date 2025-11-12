@@ -6,14 +6,15 @@
 - fixed Projectile Piercing Attribute
 - added Combo Property and System -> successive hits deal more damage with the property
 - added Inertia Property to deal more damage with player speed.
-- improved handheld feedback, it now cleanly tells the players it gives a 25% bonus attackspeed when dualwielded
+- improved handheld feedback, it now cleanly tells the players it gives a 25% bonus attack speed when dual wielded
 - implemented module inheritance system
 - fixed/reworked immolate -> bonus damage if self or target is on fire and damage reduction while on fire.
 - fixed bug related to attribute merging
-- fixed bug related to rendering multiple banners at once (having 2 armpatches now works)
+- fixed bug related to rendering multiple banners at once (having 2 arm patches now works)
 - fixed issues with crossbow animations desyncing/playing wrong
 - fixed bug where a load fail module extension would also unload the module
 - fixed global loot modularisation  
+- fixed issues with fake enchants on neoforge
 ### Editor
 - reloading now closes ui to prevent crashes
 - fixed some crashes related to material editing

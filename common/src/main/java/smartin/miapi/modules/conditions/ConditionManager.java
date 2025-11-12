@@ -25,7 +25,7 @@ public class ConditionManager {
     public static ContextManager<Player> PLAYER_CONTEXT = Player.class::cast;
     public static ContextManager<Map<ModuleProperty<?>, Object>> MODULE_PROPERTIES = source -> new HashMap<>((Map<ModuleProperty<?>, Object>) source);
 
-    public static Codec<? extends ModuleCondition> CONDITION_CODEC = new Codec<ModuleCondition>() {
+    public static Codec<? extends ModuleCondition> CONDITION_CODEC = new Codec<>() {
         @Override
         public <T> DataResult<Pair<ModuleCondition, T>> decode(DynamicOps<T> ops, T input) {
             var idRestult = Codec.STRING.decode(ops, ops.getMap(input).getOrThrow().get("type"));

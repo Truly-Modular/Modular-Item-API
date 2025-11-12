@@ -6,7 +6,8 @@
     "mixins": [
         "LivingEntityMixin",
         "PlatformModularItemMethodsMixin",
-        "ReloadAbleServerResourcesMixin"
+        "ReloadAbleServerResourcesMixin",
+        "ItemEnchantmentsMixin"
     ],
     "client": [
         "EntityMixin",

@@ -20,6 +20,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.storage.loot.predicates.EnchantmentActiveCheck;
 import net.minecraft.world.level.storage.loot.providers.number.EnchantmentLevelProvider;
 import net.neoforged.api.distmarker.Dist;
@@ -76,6 +77,7 @@ public class TrulyModularForge {
         Miapi.init();
         EnchantmentActiveCheck activeCheck;
         EnchantmentLevelProvider enchantmentLevelProvider;
+        Block block;
 
 
         //RegistryInventory.moduleProperties.register(EpicFightCompatProperty.KEY, new EpicFightCompatProperty())

@@ -1,11 +1,14 @@
 package smartin.miapi.forge.mixin.item;
 
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.neoforged.neoforge.common.ItemAbilities;
 import net.neoforged.neoforge.common.ItemAbility;
 import net.neoforged.neoforge.common.extensions.IItemExtension;
@@ -32,6 +35,7 @@ import smartin.miapi.modules.properties.armor.EquipmentSlotProperty;
 import smartin.miapi.modules.properties.armor.IsPiglinGold;
 import smartin.miapi.modules.properties.enchanment.AllowedEnchantments;
 import smartin.miapi.modules.properties.enchanment.EnchantAbilityProperty;
+import smartin.miapi.modules.properties.enchanment.FakeEnchantmentManager;
 import smartin.miapi.modules.properties.mining.MiningLevelProperty;
 
 import java.util.function.Predicate;
@@ -67,6 +71,20 @@ import java.util.function.Predicate;
 public abstract class ModularItemTestMixin {
     public boolean makesPiglinsNeutral(ItemStack stack, LivingEntity wearer) {
         return IsPiglinGold.isPiglinGoldItem(stack);
+    }
+
+    public int getEnchantmentLevel(ItemStack stack, Holder<Enchantment> enchantment) {
+        ItemEnchantments itemenchantments = stack.getTagEnchantments();
+        return FakeEnchantmentManager.adjustLevel(enchantment, itemenchantments.getLevel(enchantment), stack);
+    }
+
+    public ItemEnchantments getAllEnchantments(ItemStack stack, HolderLookup.RegistryLookup<Enchantment> lookup) {
+        ItemEnchantments.Mutable mutable = new ItemEnchantments.Mutable(ItemEnchantments.EMPTY);
+        ItemEnchantments old = stack.getTagEnchantments();
+        FakeEnchantmentManager.adjustEnchantments(old.entrySet(), stack).forEach(holderEntry -> {
+            mutable.set(holderEntry.getKey(), FakeEnchantmentManager.adjustLevel(holderEntry.getKey(), old.getLevel(holderEntry.getKey()), stack));
+        });
+        return mutable.toImmutable();
     }
 
     public boolean canEquip(ItemStack stack, EquipmentSlot armorType, LivingEntity entity) {
