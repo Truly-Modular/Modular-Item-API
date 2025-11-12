@@ -15,6 +15,7 @@ import java.util.Optional;
  * @header Number Condition
  * @description_start
  * this condition inverses another condition
+ * Supports custom error
  * @desciption_end
  * @path /data_types/condition/number
  * @data type:number

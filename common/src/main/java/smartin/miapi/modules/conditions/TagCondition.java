@@ -16,6 +16,7 @@ import java.util.Optional;
 /**
  * @header Tag Condition
  * @description_start this condition checks if the associated module has a specific module tag. Not to be confused with Item Tags
+ * Supports custom error
  * @desciption_end
  * @path /data_types/condition/tag
  * @data type:tag

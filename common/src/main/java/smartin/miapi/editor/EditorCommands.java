@@ -14,18 +14,15 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 import smartin.miapi.Miapi;
-import smartin.miapi.blueprint.BlueprintComponent;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.editor.material.MaterialEditor;
 import smartin.miapi.editor.syntax.CodecValidatorInterface;
 import smartin.miapi.editor.syntax.JsonSyntaxHighlighter;
-import smartin.miapi.editor.syntax.ModuleValidatorInterface;
 import smartin.miapi.editor.syntax.PropertyMapHighlighter;
 import smartin.miapi.material.CodecMaterial;
 import smartin.miapi.material.MaterialProperty;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
-import smartin.miapi.modules.abilities.key.MiapiBinding;
 import smartin.miapi.modules.synergies.SynergyManager;
 
 import java.util.function.Function;
@@ -71,54 +68,7 @@ public class EditorCommands {
         });
 
         // Register PropertyMapHighlighter for module files
-        EditorEvents.EDITOR_INTERFACES.register(event -> {
-            if (event.resourceLocation != null &&
-                event.resourceLocation.getPath().startsWith("miapi/modules/")) {
-                event.interfaces.add(new ModuleValidatorInterface());
-                //event.interfaces.add(new PropertyMapHighlighter(event.resourceLocation));
-            }
-            if (event.resourceLocation != null &&
-                event.resourceLocation.getPath().startsWith("miapi/synergies/")) {
-                event.interfaces.add(new CodecValidatorInterface(SynergyManager.SYNERGY_CODEC, "Synergy Validator"));
-            }
-            if (event.resourceLocation != null &&
-                event.resourceLocation.getPath().startsWith("miapi/modular_converters/")) {
-                event.interfaces.add(new CodecValidatorInterface(ModuleInstance.CODEC, "Modular Converter Validator"));
-            }
-            if (event.resourceLocation != null &&
-                event.resourceLocation.getPath().startsWith("miapi/material/")) {
-                event.interfaces.add(new CodecValidatorInterface(CodecMaterial.CODEC, "Material Validator"));
-            }
-            if (event.resourceLocation != null &&
-                event.resourceLocation.getPath().startsWith("miapi/blueprints/")) {
-                event.interfaces.add(new CodecValidatorInterface(BlueprintComponent.CODEC, "Blueprint Validator"));
-            }
-            if (event.resourceLocation != null &&
-                event.resourceLocation.getPath().startsWith("miapi/key_binding")) {
-                event.interfaces.add(new CodecValidatorInterface(MiapiBinding.CODEC, "KeyBind Validator"));
-            }
-            if (event.resourceLocation != null &&
-                event.resourceLocation.getPath().startsWith("miapi/create_options/")) {
-                //TODO:validator
-            }
-            if (event.resourceLocation != null &&
-                event.resourceLocation.getPath().startsWith("miapi/material_extension/")) {
-                //TODO:validator
-            }
-            if (event.resourceLocation != null &&
-                event.resourceLocation.getPath().startsWith("miapi/module_extension/")) {
-                //TODO:validator
-            }
-            if (event.resourceLocation != null &&
-                event.resourceLocation.getPath().startsWith("miapi/skin/module")) {
-                //TODO:validator
-            }
-            if (event.resourceLocation != null &&
-                event.resourceLocation.getPath().startsWith("miapi/skin/tab")) {
-                //TODO:validator
-            }
-            return EventResult.pass();
-        });
+        ValidatorManager.setupValidators();
         if (Platform.isModLoaded("veil")) {
             VeilEditor.setup();
         } else if (Platform.isModLoaded("nucleus_editor")) {

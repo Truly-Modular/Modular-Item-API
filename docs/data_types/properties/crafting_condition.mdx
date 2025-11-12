@@ -2,13 +2,5 @@
 
 ## Description
 
-  
-The CraftingConditionProperty defines conditions for crafting modules, including whether they are visible, selectable, andcraftable. Conditions are evaluated using {@link ModuleCondition} instances, which can be customized for different scenarios.The property also supports event-based evaluations to manage crafting permissions dynamically.
-
-## Data
-
-- **crafting_condition**:  An instance of {@link CraftingConditionJson} containing conditions for visibility, selection, and crafting ability.
-- **visible**:  (optional) that determines if the module is visible for crafting.
-- **selectAble**:  (optional) that determines if the module can be selected for crafting.
-- **craftAble**:  (optional) that determines if the module can be crafted.
+# Crafting Condition PropertyThe **Crafting Condition Property** defines rules that control how a module behaves during crafting — specifically whether it is **visible**, **selectable**, or **craftable**.These conditions are evaluated using ModuleConditions, which can be customized to check for other modules, materials and in rare cases for player related checks (Advancement condition f.e.).This property allows for dynamic management of crafting permissions (e.g., restricting crafting under certain conditions or unlocking recipes when conditions are met).---## DescriptionThe `CraftingConditionProperty` works by evaluating multiple boolean conditions that determine a module’s availability in the crafting system:- **`visible`** — (Optional) Determines whether the module appears in the crafting UI.- **`selectAble`** — (Optional) Determines whether the player can select the module for crafting.- **`craftAble`** — (Optional) Determines whether the player can actually craft the module.Most Conditions support a custom "error" field to allow naming custom errors in them - they will be displayed on the craft or select button respectively.---## Example Usage```json{    "crafting_condition": {        "crafting_condition": {            "visible": {                "type": "tag",                "tag": "blade"            },            "selectAble": {                "type": "and",                "conditions": [                    {                        "type": "material_group",                        "material_group": "fabric"                    },                    {                        "type": "mod_loaded",                        "mod": "treechop"                    }                ]            },            "craftAble": {                "type": "other_module",                "condition": {                    "type": "tag",                    "tag": "handle_alt_4"                }            }        }    }}```
 

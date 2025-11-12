@@ -16,13 +16,10 @@ import smartin.miapi.Miapi;
 import smartin.miapi.editor.JsonEditor;
 import smartin.miapi.editor.MiapiEditor;
 import smartin.miapi.material.CodecMaterial;
-import smartin.miapi.material.MaterialProperty;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -97,32 +94,24 @@ public class MaterialListViewer implements MiapiEditor {
 
                     if (ImGui.selectable(relativePath)) {
                         try {
-                            CodecMaterial material = readFromFile(materialsDirectory, file);
-                            if (MaterialProperty.MATERIAL_REGISTRY.get(material.getID()) != null) {
-                                material = (CodecMaterial) MaterialProperty.MATERIAL_REGISTRY.get(material.getID());
-                            }
+                            String pathWithoutExt = relativePath.replace(".json", "").replace("\\", "/");
+                            pathWithoutExt = pathWithoutExt.replaceFirst("/", ":");
+                            ResourceLocation resourceLocation = Miapi.id(pathWithoutExt);
 
-                            if (material != null) {
-                                String pathWithoutExt = relativePath.replace(".json", "").replace("\\", "/");
-                                pathWithoutExt = pathWithoutExt.replaceFirst("/", ":");
-                                ResourceLocation resourceLocation = Miapi.id(pathWithoutExt);
-                                CodecMaterial codecMaterial = material;
-                                JsonEditor jsonEditor = new JsonEditor(
-                                        Files.readString(file.toPath()), // JSON content
-                                        (newContent) -> writeToFile(codecMaterial, file), // onChange callback
-                                        file.toPath(),
-                                        resourceLocation
-                                );
+                            JsonEditor jsonEditor = new JsonEditor(
+                                    Files.readString(file.toPath()),
+                                    (newContent) -> writeJsonToFile(file, newContent),
+                                    file.toPath(),
+                                    resourceLocation
+                            );
 
-                                MiapiEditor.editors.add(jsonEditor);
-                            } else {
-                                ImGui.textColored(1, 0, 0, 1, "Failed to load " + relativePath);
-                            }
+                            MiapiEditor.editors.add(jsonEditor);
                         } catch (IOException e) {
                             e.printStackTrace();
                             ImGui.textColored(1, 0, 0, 1, "Error opening file " + relativePath);
                         }
                     }
+
                 }
 
                 if (materialFiles.isEmpty()) {
@@ -136,6 +125,23 @@ public class MaterialListViewer implements MiapiEditor {
         }
         ImGui.end();
     }
+
+    private JsonObject readJsonFromFile(Path directory, File file) throws IOException {
+        Path fullPath = directory.resolve(file.toPath());
+        try (Reader reader = Files.newBufferedReader(fullPath)) {
+            return JsonParser.parseReader(reader).getAsJsonObject();
+        }
+    }
+
+    private void writeJsonToFile(File file, String jsonContent) {
+        try (Writer writer = Files.newBufferedWriter(file.toPath())) {
+            writer.write(jsonContent);
+        } catch (IOException e) {
+            e.printStackTrace();
+            ImGui.textColored(1, 0, 0, 1, "Failed to save " + file.getName());
+        }
+    }
+
 
     private void scanAllMaterialFiles(File dataFolder, List<File> result) {
         File[] namespaces = dataFolder.listFiles(File::isDirectory);

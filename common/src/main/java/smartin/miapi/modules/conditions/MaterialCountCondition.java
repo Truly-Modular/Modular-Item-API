@@ -16,6 +16,7 @@ import java.util.Optional;
  * @header Material Count Condition
  * @description_start
  * this condition checks if the item has a certain material a certain amount of times
+ * Supports custom error
  * @desciption_end
  * @path /data_types/condition/material_count
  * @data type:material_count

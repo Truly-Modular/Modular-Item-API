@@ -14,6 +14,7 @@ import java.util.Optional;
  * @header Other Module Condition
  * @description_start
  * this condition moves the context to any other module of the item
+ * Supports custom error
  * @desciption_end
  * @path /data_types/condition/other_module
  * @data type:other_module

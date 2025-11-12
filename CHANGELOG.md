@@ -16,3 +16,4 @@
 - fixed global loot modularisation  
 ### Editor
 - reloading now closes ui to prevent crashes
+- fixed some crashes related to material editing

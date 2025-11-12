@@ -16,6 +16,7 @@ import java.util.Optional;
  * @description_start
  * this condition is to check patreon or other types of outside conditions like time of year.
  * This is mostly used to give patreon subscribers their skins/enable free skins depending on the season
+ * Supports custom error
  * @desciption_end
  * @path /data_types/condition/miapi_perm
  * @data type:miapi_perm

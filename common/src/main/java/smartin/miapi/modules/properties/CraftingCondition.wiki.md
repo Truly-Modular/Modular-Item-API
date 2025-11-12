@@ -1,0 +1,59 @@
+@header Crafting Condition Property  
+@path /data_types/properties/crafting_condition
+
+# Crafting Condition Property
+
+The **Crafting Condition Property** defines rules that control how a module behaves during crafting — specifically whether it is **visible**, **selectable**, or **craftable**.
+
+These conditions are evaluated using ModuleConditions, which can be customized to check for other modules, materials and in rare cases for player related checks (Advancement condition f.e.).
+
+This property allows for dynamic management of crafting permissions (e.g., restricting crafting under certain conditions or unlocking recipes when conditions are met).
+
+---
+
+## Description
+
+The `CraftingConditionProperty` works by evaluating multiple boolean conditions that determine a module’s availability in the crafting system:
+
+- **`visible`** — (Optional) Determines whether the module appears in the crafting UI.
+- **`selectAble`** — (Optional) Determines whether the player can select the module for crafting.
+- **`craftAble`** — (Optional) Determines whether the player can actually craft the module.
+
+Most Conditions support a custom "error" field to allow naming custom errors in them - they will be displayed on the craft or select button respectively.
+
+---
+
+## Example Usage
+
+```json
+{
+    "crafting_condition": {
+        "crafting_condition": {
+            "visible": {
+                "type": "tag",
+                "tag": "blade"
+            },
+            "selectAble": {
+                "type": "and",
+                "conditions": [
+                    {
+                        "type": "material_group",
+                        "material_group": "fabric"
+                    },
+                    {
+                        "type": "mod_loaded",
+                        "mod": "treechop"
+                    }
+                ]
+            },
+            "craftAble": {
+                "type": "other_module",
+                "condition": {
+                    "type": "tag",
+                    "tag": "handle_alt_4"
+                }
+            }
+        }
+    }
+}
+```

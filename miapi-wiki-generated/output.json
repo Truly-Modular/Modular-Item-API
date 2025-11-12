@@ -470,14 +470,9 @@
             },
             "crafting_condition": {
               "header": "Crafting Condition Property",
-              "description": "  \nThe CraftingConditionProperty defines conditions for crafting modules, including whether they are visible, selectable, and\rcraftable. Conditions are evaluated using {@link ModuleCondition} instances, which can be customized for different scenarios.\rThe property also supports event-based evaluations to manage crafting permissions dynamically.\r",
+              "description": "# Crafting Condition Property\r\rThe **Crafting Condition Property** defines rules that control how a module behaves during crafting — specifically whether it is **visible**, **selectable**, or **craftable**.\r\rThese conditions are evaluated using ModuleConditions, which can be customized to check for other modules, materials and in rare cases for player related checks (Advancement condition f.e.).\r\rThis property allows for dynamic management of crafting permissions (e.g., restricting crafting under certain conditions or unlocking recipes when conditions are met).\r\r---\r\r## Description\r\rThe `CraftingConditionProperty` works by evaluating multiple boolean conditions that determine a module’s availability in the crafting system:\r\r- **`visible`** — (Optional) Determines whether the module appears in the crafting UI.\r- **`selectAble`** — (Optional) Determines whether the player can select the module for crafting.\r- **`craftAble`** — (Optional) Determines whether the player can actually craft the module.\r\rMost Conditions support a custom \"error\" field to allow naming custom errors in them - they will be displayed on the craft or select button respectively.\r\r---\r\r## Example Usage\r\r```json\r{\r    \"crafting_condition\": {\r        \"crafting_condition\": {\r            \"visible\": {\r                \"type\": \"tag\",\r                \"tag\": \"blade\"\r            },\r            \"selectAble\": {\r                \"type\": \"and\",\r                \"conditions\": [\r                    {\r                        \"type\": \"material_group\",\r                        \"material_group\": \"fabric\"\r                    },\r                    {\r                        \"type\": \"mod_loaded\",\r                        \"mod\": \"treechop\"\r                    }\r                ]\r            },\r            \"craftAble\": {\r                \"type\": \"other_module\",\r                \"condition\": {\r                    \"type\": \"tag\",\r                    \"tag\": \"handle_alt_4\"\r                }\r            }\r        }\r    }\r}\r```",
               "java": "common/src/main/java/smartin/miapi/modules/properties/CraftingConditionProperty.java",
-              "data": {
-                "crafting_condition": " An instance of {@link CraftingConditionJson} containing conditions for visibility, selection, and crafting ability.",
-                "visible": " (optional) that determines if the module is visible for crafting.",
-                "selectAble": " (optional) that determines if the module can be selected for crafting.",
-                "craftAble": " (optional) that determines if the module can be crafted."
-              },
+              "data": {},
               "key_words": []
             },
             "display_name": {
@@ -1268,16 +1263,13 @@
         },
         "condition": {
           "header": "Conditions",
-          "description": " Conditions! what is there to describe  \n",
-          "java": "common/src/main/java/smartin/miapi/modules/conditions/ConditionManager.java",
+          "description": "# Conditions\r\rConditions are a **core component** of the system that define logical requirements for various gameplay, data, and configuration scenarios.  \rThey allow dynamic evaluation of whether certain actions, states, or configurations should be active or valid — giving creators fine-grained control over how different elements interact.\r\r---\r\r## Overview\r\rA **Condition** represents a logical statement that can evaluate to **true** or **false** within a given context.  \rWhen a condition evaluates to `true`, the corresponding behavior, property, or feature becomes active or available.  \rIf it evaluates to `false`, that behavior may be hidden, disabled, or skipped entirely.\r\rConditions are used across a variety of systems — not just crafting — and can depend on:\r\r- Module configurations and relationships\r- Material properties and categories\r- Player advancements\r- External mod integrations\r- expandable by other java addons\r\rEach condition is defined as a small JSON object, specifying a `\"type\"` field that determines the logic or check to perform.  \rAdditional fields depend on the specific condition type.\r\r---\r\r## Behavior and Context\r\rConditions are always evaluated within a **context**, meaning their checks are relative to where they are used.  \rFor example, a condition inside a **module context** evaluates using that module’s data, and the condition can be shifted to other modules of the item via some of the conditions.\r\r## Custom Errors\r\rMany condition types support an optional `\"error\"` field.  \rWhen provided, and the condition evaluates to `false`, the system displays this error message in the relevant interface (e.g., a crafting button tooltip).  \rThis allows developers to give user-friendly feedback about why an action failed or is unavailable.\r\r```json\r{\r    \"type\": \"material_group\",\r    \"material_group\": \"fabric\",\r    \"error\": \"Requires a fabric material!\"\r}",
           "data": {},
-          "key_words": [
-            "Condition"
-          ],
+          "key_words": [],
           "sub_pages": {
             "advancement_condition": {
               "header": "Advancement Condition",
-              "description": " this condition checks if the associated player has a specific advancement. This is set to false if there is no associated Player  \n",
+              "description": " this condition checks if the associated player has a specific advancement. This is set to false if there is no associated Player  \nSupports custom error\r",
               "java": "common/src/main/java/smartin/miapi/modules/conditions/AdvancementCondition.java",
               "data": {
                 "type": "advancement",
@@ -1317,7 +1309,7 @@
             },
             "item_in_inventory": {
               "header": "Item in inventory Condition",
-              "description": "  \nthis condition checks if a certain amount of a certain item is in a players inventory\r",
+              "description": "  \nthis condition checks if a certain amount of a certain item is in a players inventory\rSupports custom error\r",
               "java": "common/src/main/java/smartin/miapi/modules/conditions/ItemInInventoryCondition.java",
               "data": {
                 "type": "item_in_inventory",
@@ -1328,7 +1320,7 @@
             },
             "material": {
               "header": "Material Condition",
-              "description": "  \nthis condition checks if this Module has a certain material\r",
+              "description": "  \nthis condition checks if this Module has a certain material\rSupports custom error\r",
               "java": "common/src/main/java/smartin/miapi/modules/conditions/MaterialCondition.java",
               "data": {
                 "type": "material",
@@ -1338,7 +1330,7 @@
             },
             "material_count": {
               "header": "Material Count Condition",
-              "description": "  \nthis condition checks if the item has a certain material a certain amount of times\r",
+              "description": "  \nthis condition checks if the item has a certain material a certain amount of times\rSupports custom error\r",
               "java": "common/src/main/java/smartin/miapi/modules/conditions/MaterialCountCondition.java",
               "data": {
                 "type": "material_count",
@@ -1349,7 +1341,7 @@
             },
             "miapi_perm": {
               "header": "Miapi Perm Condition",
-              "description": "  \nthis condition is to check patreon or other types of outside conditions like time of year.\rThis is mostly used to give patreon subscribers their skins/enable free skins depending on the season\r",
+              "description": "  \nthis condition is to check patreon or other types of outside conditions like time of year.\rThis is mostly used to give patreon subscribers their skins/enable free skins depending on the season\rSupports custom error\r",
               "java": "common/src/main/java/smartin/miapi/modules/conditions/MiapiPerm.java",
               "data": {
                 "type": "miapi_perm",
@@ -1359,7 +1351,7 @@
             },
             "module": {
               "header": "Module Type Condition",
-              "description": "  \nthis condition if the associated module instance uses this module\r",
+              "description": "  \nthis condition if the associated module instance uses this module\rSupports custom error\r",
               "java": "common/src/main/java/smartin/miapi/modules/conditions/ModuleTypeCondition.java",
               "data": {
                 "type": "module",
@@ -1369,7 +1361,7 @@
             },
             "not": {
               "header": "Not Condition",
-              "description": " this condition inverses another condition  \n",
+              "description": " this condition inverses another condition  \nSupports custom error\r",
               "java": "common/src/main/java/smartin/miapi/modules/conditions/NotCondition.java",
               "data": {
                 "type": "not",
@@ -1379,7 +1371,7 @@
             },
             "number": {
               "header": "Number Condition",
-              "description": "  \nthis condition inverses another condition\r",
+              "description": "  \nthis condition inverses another condition\rSupports custom error\r",
               "java": "common/src/main/java/smartin/miapi/modules/conditions/NumberCondition.java",
               "data": {
                 "type": "number",
@@ -1399,7 +1391,7 @@
             },
             "other_module": {
               "header": "Other Module Condition",
-              "description": "  \nthis condition moves the context to any other module of the item\r",
+              "description": "  \nthis condition moves the context to any other module of the item\rSupports custom error\r",
               "java": "common/src/main/java/smartin/miapi/modules/conditions/OtherModuleModuleCondition.java",
               "data": {
                 "type": "other_module",
@@ -1419,7 +1411,7 @@
             },
             "tag": {
               "header": "Tag Condition",
-              "description": " this condition checks if the associated module has a specific module tag. Not to be confused with Item Tags  \n",
+              "description": " this condition checks if the associated module has a specific module tag. Not to be confused with Item Tags  \nSupports custom error\r",
               "java": "common/src/main/java/smartin/miapi/modules/conditions/TagCondition.java",
               "data": {
                 "type": "tag",

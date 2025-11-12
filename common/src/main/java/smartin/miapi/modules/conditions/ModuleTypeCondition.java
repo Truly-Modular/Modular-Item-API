@@ -16,6 +16,7 @@ import java.util.Optional;
  * @header Module Type Condition
  * @description_start
  * this condition if the associated module instance uses this module
+ * Supports custom error
  * @desciption_end
  * @path /data_types/condition/module
  * @data type:module

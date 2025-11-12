@@ -24,6 +24,7 @@ import java.util.Optional;
 /**
  * @header Advancement Condition
  * @description_start this condition checks if the associated player has a specific advancement. This is set to false if there is no associated Player
+ * Supports custom error
  * @desciption_end
  * @path /data_types/condition/advancement_condition
  * @data type:advancement

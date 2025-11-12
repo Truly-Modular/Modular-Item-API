@@ -6,18 +6,17 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.resources.ResourceLocation;
 import smartin.miapi.Miapi;
-import smartin.miapi.material.base.Material;
 import smartin.miapi.material.MaterialProperty;
+import smartin.miapi.material.base.Material;
 import smartin.miapi.modules.ModuleInstance;
-import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 /**
  * @header Material Condition
  * @description_start
  * this condition checks if this Module has a certain material
+ * Supports custom error
  * @desciption_end
  * @path /data_types/condition/material
  * @data type:material

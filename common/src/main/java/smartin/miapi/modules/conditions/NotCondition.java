@@ -10,6 +10,7 @@ import smartin.miapi.Miapi;
 /**
  * @header Not Condition
  * @description_start this condition inverses another condition
+ * Supports custom error
  * @desciption_end
  * @path /data_types/condition/not
  * @data type:not

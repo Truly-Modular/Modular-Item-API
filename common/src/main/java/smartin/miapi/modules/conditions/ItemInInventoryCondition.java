@@ -17,6 +17,7 @@ import java.util.Optional;
  * @header Item in inventory Condition
  * @description_start
  * this condition checks if a certain amount of a certain item is in a players inventory
+ * Supports custom error
  * @desciption_end
  * @path /data_types/condition/item_in_inventory
  * @data type:item_in_inventory
