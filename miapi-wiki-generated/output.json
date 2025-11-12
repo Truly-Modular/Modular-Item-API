@@ -326,6 +326,12 @@
                 }
               }
             },
+            "advanced_component": {
+              "header": "Advanced Component Property",
+              "description": "The `Advanced ComponentProperty` works similar to the basic Component Property, just with some additional features.\r\r---\r\r- resolve disables |||miapi.evalute if set to false. defaults to true\r- overwrite determines the behaviour if a component is already set on them item. if true the component is freshly set.\rif false it will not set if the component exist. defaults to true\r\r## 📂 JSON Structure\r\r```json\r{\r  \"advanced_components\": {\r    \"namespace:component_id\": { \r        \"overwrite\": false,\r        \"data\": \"Super ComplexData\"\r    },\r    \"minecraft:custom_name\": {\r        \"data\": \"|||miapi.evaluate<expression>\",\r        \"overwrite\": false,\r        \"resolve\": true\r    },\r    \"minecraft:lore\": {\r        \"overwrite\": true,\r        \"data\": [\r            { \"text\": \"Line 1\" },\r            { \"text\": \"Line 2\" }\r        ]\r    }\r  }\r}\r```\r\rthis allows for dynamic resolving as well\r```json\r{\r    \"advanced_components\": {\r        \"create:banktank_air\": {\r            \"overwrite\": false,\r            \"data\": \"|||miapi.evaluate[material.hardness]\"\r        }\r    }\r}\r```\r\rTo start the custom resolver start a string with `|||miapi.evaluate`\rThe rest of the string will be evaluated and the whole string will be replaced with a number.",
+              "data": {},
+              "key_words": []
+            },
             "allowed_loot": {
               "header": "Allowed in Loot Property",
               "description": "  \nif this module can be found in randomized loot. should be turned off for rare/special modules.\r",
@@ -533,12 +539,8 @@
                 },
                 "fake_enchants": {
                   "header": "Fake Enchantment Property",
-                  "description": " The Fake Enchantment Property simulates enchantment levels on items during specific operations.  \nThese enchantments are not shown in the item's tooltip and are purely functional.\rThe property evaluates enchantment levels dynamically using the `[old_level]` placeholder, which allows referencing prior levels in the calculation.\rOnce the property is removed, the enchantments no longer affect the item.\r",
-                  "java": "common/src/main/java/smartin/miapi/modules/properties/enchanment/FakeEnchantmentProperty.java",
-                  "data": {
-                    "enchantment": " The fake enchantment being applied (Holder<Enchantment>).",
-                    "value": " DoubleOperationResolvable, which defines how the level of the fake enchantment is calculated."
-                  },
+                  "description": "The **Fake Enchantment Property** allows the simulation of enchantment levels on items during specific operations.  \rThese enchantments behave as if they were real but are **not visible in the item's tooltip** and are **purely functional**.\r\rOnce the property is removed, the fake enchantments no longer affect the item and **do not persist** beyond their activation.\r\r---\r\r## Description\r\rThe property evaluates enchantment levels dynamically using the `[old_level]` placeholder.  \rThis placeholder allows referencing previous enchantment levels when calculating the new fake level.\r\r---\r\r## Data Structure\r\r| Key | Type | Description |\r|-----|------|--------------|\r| `enchantment` | `Holder<Enchantment>` | The fake enchantment being applied. |\r| `value` | `DoubleOperationResolvable` | Defines how the level of the fake enchantment is calculated. |\r\r---\r\r## Example Usage\r\r```json\r\"fake_enchants\": {\r    \"minecraft:fortune\": \"[old_level]+1\"\r}",
+                  "data": {},
                   "key_words": []
                 }
               }
@@ -859,7 +861,7 @@
                 },
                 "immolate": {
                   "header": "Immolate Property",
-                  "description": "  \nThis is currently not implemented\r",
+                  "description": " Increases Damage to target on fire.  \nDecreases Damage while self on fire.\r",
                   "java": "common/src/main/java/smartin/miapi/modules/properties/onHit/ImmolateProperty.java",
                   "data": {
                     "value": ""

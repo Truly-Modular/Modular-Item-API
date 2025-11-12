@@ -1,0 +1,6 @@
+# Advanced Component Property
+
+## Description
+
+The `Advanced ComponentProperty` works similar to the basic Component Property, just with some additional features.---- resolve disables |||miapi.evalute if set to false. defaults to true- overwrite determines the behaviour if a component is already set on them item. if true the component is freshly set.if false it will not set if the component exist. defaults to true## 📂 JSON Structure```json{  "advanced_components": {    "namespace:component_id": {         "overwrite": false,        "data": "Super ComplexData"    },    "minecraft:custom_name": {        "data": "|||miapi.evaluate<expression>",        "overwrite": false,        "resolve": true    },    "minecraft:lore": {        "overwrite": true,        "data": [            { "text": "Line 1" },            { "text": "Line 2" }        ]    }  }}```this allows for dynamic resolving as well```json{    "advanced_components": {        "create:banktank_air": {            "overwrite": false,            "data": "|||miapi.evaluate[material.hardness]"        }    }}```To start the custom resolver start a string with `|||miapi.evaluate`The rest of the string will be evaluated and the whole string will be replaced with a number.
+

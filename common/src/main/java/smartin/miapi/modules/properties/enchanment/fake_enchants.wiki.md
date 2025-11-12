@@ -1,0 +1,32 @@
+@header Fake Enchantment Property  
+@path /data_types/properties/enchantments/fake_enchants
+
+The **Fake Enchantment Property** allows the simulation of enchantment levels on items during specific operations.  
+These enchantments behave as if they were real but are **not visible in the item's tooltip** and are **purely functional**.
+
+Once the property is removed, the fake enchantments no longer affect the item and **do not persist** beyond their activation.
+
+---
+
+## Description
+
+The property evaluates enchantment levels dynamically using the `[old_level]` placeholder.  
+This placeholder allows referencing previous enchantment levels when calculating the new fake level.
+
+---
+
+## Data Structure
+
+| Key | Type | Description |
+|-----|------|--------------|
+| `enchantment` | `Holder<Enchantment>` | The fake enchantment being applied. |
+| `value` | `DoubleOperationResolvable` | Defines how the level of the fake enchantment is calculated. |
+
+---
+
+## Example Usage
+
+```json
+"fake_enchants": {
+    "minecraft:fortune": "[old_level]+1"
+}
