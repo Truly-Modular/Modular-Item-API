@@ -13,8 +13,7 @@ if false it will not set if the component exist. defaults to true
 
 ```json
 {
-  "advanced_components": {
-    "namespace:component_id": { 
+    "namespace:component_id": {
         "overwrite": false,
         "data": "Super ComplexData"
     },
@@ -26,11 +25,14 @@ if false it will not set if the component exist. defaults to true
     "minecraft:lore": {
         "overwrite": true,
         "data": [
-            { "text": "Line 1" },
-            { "text": "Line 2" }
+            {
+                "text": "Line 1"
+            },
+            {
+                "text": "Line 2"
+            }
         ]
     }
-  }
 }
 ```
 

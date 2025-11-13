@@ -15,6 +15,7 @@
 - fixed bug where a load fail module extension would also unload the module
 - fixed global loot modularisation  
 - fixed issues with fake enchants on neoforge
+- fixed issue where cratAble portion of "crafting_condition" would skip non-module properties
 ### Editor
 - reloading now closes ui to prevent crashes
 - fixed some crashes related to material editing

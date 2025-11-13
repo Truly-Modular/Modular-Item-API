@@ -32,8 +32,7 @@ import java.util.Map;
 /**
  * @header Crafting Condition Property
  * @path /data_types/properties/crafting_condition
- * @description_start
- * The CraftingConditionProperty defines conditions for crafting modules, including whether they are visible, selectable, and
+ * @description_start The CraftingConditionProperty defines conditions for crafting modules, including whether they are visible, selectable, and
  * craftable. Conditions are evaluated using {@link ModuleCondition} instances, which can be customized for different scenarios.
  * The property also supports event-based evaluations to manage crafting permissions dynamically.
  * @description_end
@@ -41,7 +40,6 @@ import java.util.Map;
  * @data visible: (optional) that determines if the module is visible for crafting.
  * @data selectAble: (optional) that determines if the module can be selected for crafting.
  * @data craftAble: (optional) that determines if the module can be crafted.
- *
  * @see CodecProperty
  * @see CraftingConditionJson
  * @see CanCraft
@@ -103,18 +101,23 @@ public class CraftingConditionProperty extends CodecProperty<CraftingConditionPr
 
     @Override
     public boolean canPerform(ItemStack old, ItemStack crafting, ModularWorkBenchEntity bench, Player player, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<ResourceLocation, JsonElement> data) {
-        CraftingConditionJson json = module != null ? (CraftingConditionJson) module.properties().get(property) : null;
         if (module == null) {
-            module = ItemModule.empty;
+            return true;
         }
+        var optional = getData(craftAction.getModifyingModuleInstance(crafting));
+        ;
+        if (optional.isEmpty()) {
+            return true;
+        }
+        CraftingConditionJson json = optional.get();
         BlockPos pos = new BlockPos(0, 0, 0);
         if (bench != null) {
             pos = bench.getBlockPos();
         } else {
             Miapi.LOGGER.error("bench is null. this should never happen");
         }
-        ConditionManager.ConditionContext context = ConditionManager.fullContext(new ModuleInstance(module), pos, player, module.properties());
-        return json == null || json.craftAble.isAllowed(context);
+        ConditionManager.ConditionContext context = ConditionManager.fullContext(craftAction.getModifyingModuleInstance(crafting), pos, player, module.properties());
+        return json.craftAble.isAllowed(context);
     }
 
     @Override

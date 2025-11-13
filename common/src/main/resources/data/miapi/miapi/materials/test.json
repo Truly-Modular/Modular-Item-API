@@ -1,0 +1,48 @@
+{
+	"icon": {
+		"type": "item",
+		"item": "minecraft:dirt"
+	},
+	"groups": ["fabric", "stone"],
+
+	"hardness": 6,
+	"density": 2,
+	"flexibility": 5,
+	"durability": 275,
+	"armor_durability_offset": 0,
+	"enchantability": 5,
+	"tier": 3,
+	"color": "2e2e2e",
+	"color_palette": {
+		"type": "image_generated_item",
+		"item": "minecraft:dirt"
+	},
+	"textures": ["shiny", "rough"],
+	"properties": {
+		"default": {
+			"crafting_condition": {
+				"craftAble": {
+					"type": "not",
+					"conditions": [
+						{
+							"type": "tag",
+							"tag": "handle_tool"
+						},
+						{
+							"type": "tag",
+							"tag": "armor"
+						}
+					]
+				}
+			}
+		}
+	},
+	"mining_speed": 10,
+	"mining_level": "minecraft:incorrect_for_iron_tool",
+	"items": [
+		{
+			"item": "minecraft:dirt",
+			"value": 1.0
+		}
+	]
+}
