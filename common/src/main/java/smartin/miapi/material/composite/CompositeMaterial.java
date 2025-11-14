@@ -29,22 +29,6 @@ import java.util.Optional;
 
 import static smartin.miapi.material.MaterialProperty.MATERIAL_REGISTRY;
 
-/**
- * This Property defines composite materials, which are a list of composites that augment the base material to return a full material.
- *
- * @header Composite Material
- * @description_start The Composite Material allows defining a material as a combination of multiple composites. Each composite modifies the base material in a specific way,
- * such as changing its color, name, or attributes. This enables dynamic material creation by layering different modifications.
- * <p>
- * A composite material consists of a base material and a list of composite modifications that transform the base into a fully functional material.
- * These composites can adjust properties like durability, visual appearance or any other Material based system.
- * <p>
- * <p>
- * The final material is computed by applying the list of composites in sequence to an initial default material.
- * @description_end
- * @path /datapack/material/composites
- * @data composite_material: A list of composite modifications that define how the material is built from its base.
- */
 
 public class CompositeMaterial extends DelegatingMaterial {
     public static ResourceLocation KEY = Miapi.id("composite_material");

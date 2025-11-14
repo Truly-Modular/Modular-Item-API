@@ -2,7 +2,8 @@
 @path /datapack/material/component
 
 Component Materials use a special components for simply runtime Materials.
-Its called ``modular_material``.
+It uses a component to allow for a variant of an existing json material. 
+  
 Example:
 ```json
 {
@@ -19,6 +20,19 @@ Example:
 - ``"cost"`` The value of this item as Ingredient, defaults to 1.
 - ``"overwrite"`` The json to overwrite material data of its parent. Works the same a a Material Extension.
 
+Example command
+```
+/give @p minecraft:stone[miapi:modular_material={
+    "parent":"miapi:metal/iron",
+    "overwrite":
+        {
+            "icon":{"type":"item","item":"minecraft:dirt"},
+            "translation":"Dirt ",
+            "color_palette":{"type":"image_generated_item","item":"minecraft:dirt"}
+        }
+    }
+]
+```
 
 Overall, a better structure for this are Composite Materials, as they offer greater flexibility in most scenarios.
 But for quick testing this still offers some value.

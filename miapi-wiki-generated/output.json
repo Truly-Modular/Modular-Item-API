@@ -32,18 +32,11 @@
           "sub_pages": {
             "component": {
               "header": "Component Material",
-              "description": "Component Materials use a special components for simply runtime Materials.\rIts called ``modular_material``.\rExample:\r```json\r{\r    \"modular_material\": {\r        \"parent\": \"miapi:metal/iron\",\r        \"cost\": 1,\r        \"overwrite\": {\r            \"hardness\": 5\r        }\r    }\r}\r```\r- ``\"parent\"`` Needs to refer to a json controlled material.\r- ``\"cost\"`` The value of this item as Ingredient, defaults to 1.\r- ``\"overwrite\"`` The json to overwrite material data of its parent. Works the same a a Material Extension.\r\r\rOverall, a better structure for this are Composite Materials, as they offer greater flexibility in most scenarios.\rBut for quick testing this still offers some value.",
+              "description": "Component Materials use a special components for simply runtime Materials.\rIt uses a component to allow for a variant of an existing json material. \r  \rExample:\r```json\r{\r    \"modular_material\": {\r        \"parent\": \"miapi:metal/iron\",\r        \"cost\": 1,\r        \"overwrite\": {\r            \"hardness\": 5\r        }\r    }\r}\r```\r- ``\"parent\"`` Needs to refer to a json controlled material.\r- ``\"cost\"`` The value of this item as Ingredient, defaults to 1.\r- ``\"overwrite\"`` The json to overwrite material data of its parent. Works the same a a Material Extension.\r\rExample command\r```\r/give @p minecraft:stone[miapi:modular_material={\r    \"parent\":\"miapi:metal/iron\",\r    \"overwrite\":\r        {\r            \"icon\":{\"type\":\"item\",\"item\":\"minecraft:dirt\"},\r            \"translation\":\"Dirt \",\r            \"color_palette\":{\"type\":\"image_generated_item\",\"item\":\"minecraft:dirt\"}\r        }\r    }\r]\r```\r\rOverall, a better structure for this are Composite Materials, as they offer greater flexibility in most scenarios.\rBut for quick testing this still offers some value.",
               "data": {},
               "key_words": []
             },
             "composites": {
-              "header": "Composite Material",
-              "description": " The Composite Material allows defining a material as a combination of multiple composites. Each composite modifies the base material in a specific way,  \nsuch as changing its color, name, or attributes. This enables dynamic material creation by layering different modifications.\r<p>\rA composite material consists of a base material and a list of composite modifications that transform the base into a fully functional material.\rThese composites can adjust properties like durability, visual appearance or any other Material based system.\r<p>\r<p>\rThe final material is computed by applying the list of composites in sequence to an initial default material.\r",
-              "java": "common/src/main/java/smartin/miapi/material/composite/CompositeMaterial.java",
-              "data": {
-                "composite_material": " A list of composite modifications that define how the material is built from its base."
-              },
-              "key_words": [],
               "sub_pages": {
                 "any_ingredient": {
                   "header": "Any Ingredient Composite",
