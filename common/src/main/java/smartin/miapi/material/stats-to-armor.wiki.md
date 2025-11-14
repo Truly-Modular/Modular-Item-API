@@ -1,4 +1,4 @@
-@header MIAPI Armor Calculation Tables
+@header Armor Calculation Tables
 @path /data_types/properties/material/armor_stat_helper
 ## Armor Points
 ### Helmet
