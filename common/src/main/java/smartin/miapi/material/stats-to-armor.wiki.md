@@ -1,5 +1,5 @@
 @header Armor Calculation Tables
-@path /data_types/properties/material/armor_stat_helper
+@path /datapack/material//armor_stat_helper
 ## Armor Points
 ### Helmet
 | Hardness | Armor Points |
