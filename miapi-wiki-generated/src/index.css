@@ -76,7 +76,7 @@ pre {
 }
 
 code {
-	background-color: black;
+	background-color: rgba(0, 0, 0, 0);
 	padding: 4px;
 	white-space: pre-wrap; /* Allow inline wrapping if needed */
 }
