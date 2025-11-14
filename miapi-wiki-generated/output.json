@@ -37,6 +37,10 @@
               "key_words": []
             },
             "composites": {
+              "header": "Composite Material",
+              "description": "Composite Materials allow you to build a material by stacking multiple composites, each of which modifies the base material in some way.\rThis enables dynamic, data-driven creation of new materials that combine visual, statistical, and functional traits.\r\rHow It Works\r\rA CompositeMaterial consists of:\rBase Material (starts as DefaultMaterial)\r\rList of Composite Modifiers\r- These can change:\r- Color & palette\r- Name & UI grouping\r- Stats (add, multiply, set)\r- Ingredient behavior\r- Material properties\rAnd more\r\rComposites are applied in order, transforming the base material step-by-step into the final result.\r\rComposite materials are serialized using the /datapack/material/composites path, using the codec:\r\r```\r{\r  \"composites\": [\r    {\r      \"type\": \"miapi:material_color\",\r      \"color\": \"#FF00FF\"\r    },\r    {\r      \"type\": \"miapi:material_name\",\r      \"name\": \"My Fancy Material\"\r    }\r  ]\r}\r\r```\r\rWhen using Composite Materials, it is technically possible to write every composite directly onto an ItemStack.\rWhile this is useful for testing or quick comparisons, it is *not recommended* for regular gameplay or for\rlarge-scale datapack usage, because the full composite data is stored directly on each item and increases NBT size.\r\rFor production use, we strongly recommend the **Datapack Composite** system (`miapi:data_composite`).  \rA Datapack Composite allows you to define a complete composite setup inside a datapack and reference it by ID in-game.\rThis significantly reduces the amount of data written to each ItemStack and keeps your content clean and modular.\r\rA Datapack Composite must be placed under:\r``mod-id:miapi/data_composites``\r\rEach entry there defines a composite “template” consisting of any number of composite modifiers.\r\rYou can study a real example here:  \r[Modular Material Datapack](\rhttps://github.com/Truly-Modular/Modular-Item-API/blob/release/1.21-mojmaps/modular_material/data/modular-material/miapi/data_composite/line.json)\r\rTo use a Datapack Composite in an item, reference it via the composite type:\r``miapi:data_composite``\r\r\rThis also enables *dynamic material inheritance*:  \rThe data Composite has a field for a material, if this is set its in-datapack defined composites to the same materials if they don't specify one.  \rThe Modular Material Datapack makes strong use of this feature.",
+              "data": {},
+              "key_words": [],
               "sub_pages": {
                 "any_ingredient": {
                   "header": "Any Ingredient Composite",
@@ -146,8 +150,8 @@
               }
             },
             "parent": {
-              "header": "header is missing! Report this to a developer to fix this",
-              "description": "@Header Material Inheritance\r\rMaterial inheritance allows you to base materials of other materials, copying all things abt them.\r\rExample\r```json\r{\r    \"parent\": \"miapi:metal/iron\",\r    \"data\": {\r        \"mining_speed\": 0,\r        \"mining_level\": \"minecraft:incorrect_for_diamond_tool\",\r        \"items\": [\r            {\r                \"item\": \"minecraft:blue_ice\",\r                \"value\": 0.1\r            }\r        ]\r    }\r}\r```\rThis example uses extends iron and increases its mining level to diamond and adding blue ice as ingredient.",
+              "header": "Material Inheritance",
+              "description": "Material inheritance allows you to base materials of other materials, copying all things abt them.\r\rExample\r```json\r{\r    \"parent\": \"miapi:metal/iron\",\r    \"data\": {\r        \"mining_speed\": 0,\r        \"mining_level\": \"minecraft:incorrect_for_diamond_tool\",\r        \"items\": [\r            {\r                \"item\": \"minecraft:blue_ice\",\r                \"value\": 0.1\r            }\r        ]\r    }\r}\r```\rThis example uses extends iron and increases its mining level to diamond and adding blue ice as ingredient.",
               "data": {},
               "key_words": []
             },

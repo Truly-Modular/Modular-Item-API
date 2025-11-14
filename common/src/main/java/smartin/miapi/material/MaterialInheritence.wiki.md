@@ -1,4 +1,4 @@
-@Header Material Inheritance
+@header Material Inheritance
 @path /datapack/material/parent
 
 Material inheritance allows you to base materials of other materials, copying all things abt them.

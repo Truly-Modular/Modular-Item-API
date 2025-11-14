@@ -1,3 +1,5 @@
+@header Composite Material
+@path /datapack/material/composites
 
 Composite Materials allow you to build a material by stacking multiple composites, each of which modifies the base material in some way.
 This enables dynamic, data-driven creation of new materials that combine visual, statistical, and functional traits.
