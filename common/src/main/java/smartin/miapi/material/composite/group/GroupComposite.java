@@ -17,6 +17,7 @@ import java.util.List;
  *
  * @header Group Modification Composite
  * @description_start
+ * its type is "miapi:normal_group"
  * The GroupComposite allows you to modify the groups of a material by either clearing the existing groups or adjusting them by removing and adding specific groups.
  * You can choose to clear the groups, then remove certain groups and add others. If no groups are specified, the existing groups will be used.
  * @description_end

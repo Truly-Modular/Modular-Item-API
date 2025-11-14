@@ -17,7 +17,9 @@ import java.util.Objects;
  * This Composite allows a material to be replaced with another material.
  *
  * @header Material Copy Composite
- * @description_start The Material Copy Composite replaces the current material with a specified base material.
+ * @description_start
+ * its type is "miapi:normal_palette"
+ * The Material Copy Composite replaces the current material with a specified base material.
  * This allows for direct substitution of one material with another, maintaining all properties
  * and behaviors of the target material.
  * @description_end

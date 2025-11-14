@@ -17,6 +17,7 @@ import java.util.Objects;
  *
  * @header Percent Stats Composite
  * @description_start
+ * its type is "miapi:percent_stat"
  * The PercentStatComposite allows you to modify specific stats by providing a map of stat names and their respective percentage values.
  * The values are multiplied with the existing stats of the parent material. If the stat is not found in the map, the parent's stat value is used.
  * @description_end

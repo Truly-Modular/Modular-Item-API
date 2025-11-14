@@ -38,7 +38,7 @@
             },
             "composites": {
               "header": "Composite Material",
-              "description": "Composite Materials allow you to build a material by stacking multiple composites, each of which modifies the base material in some way.\rThis enables dynamic, data-driven creation of new materials that combine visual, statistical, and functional traits.\r\rHow It Works\r\rA CompositeMaterial consists of:\rBase Material (starts as DefaultMaterial)\r\rList of Composite Modifiers\r- These can change:\r- Color & palette\r- Name & UI grouping\r- Stats (add, multiply, set)\r- Ingredient behavior\r- Material properties\rAnd more\r\rComposites are applied in order, transforming the base material step-by-step into the final result.\r\rComposite materials are serialized using the /datapack/material/composites path, using the codec:\r\r```\r{\r  \"composites\": [\r    {\r      \"type\": \"miapi:material_color\",\r      \"color\": \"#FF00FF\"\r    },\r    {\r      \"type\": \"miapi:material_name\",\r      \"name\": \"My Fancy Material\"\r    }\r  ]\r}\r\r```\r\rWhen using Composite Materials, it is technically possible to write every composite directly onto an ItemStack.\rWhile this is useful for testing or quick comparisons, it is *not recommended* for regular gameplay or for\rlarge-scale datapack usage, because the full composite data is stored directly on each item and increases NBT size.\r\rFor production use, we strongly recommend the **Datapack Composite** system (`miapi:data_composite`).  \rA Datapack Composite allows you to define a complete composite setup inside a datapack and reference it by ID in-game.\rThis significantly reduces the amount of data written to each ItemStack and keeps your content clean and modular.\r\rA Datapack Composite must be placed under:\r``mod-id:miapi/data_composites``\r\rEach entry there defines a composite “template” consisting of any number of composite modifiers.\r\rYou can study a real example here:  \r[Modular Material Datapack](\rhttps://github.com/Truly-Modular/Modular-Item-API/blob/release/1.21-mojmaps/modular_material/data/modular-material/miapi/data_composite/line.json)\r\rTo use a Datapack Composite in an item, reference it via the composite type:\r``miapi:data_composite``\r\r\rThis also enables *dynamic material inheritance*:  \rThe data Composite has a field for a material, if this is set its in-datapack defined composites to the same materials if they don't specify one.  \rThe Modular Material Datapack makes strong use of this feature.",
+              "description": "Composite Materials allow you to build a material by stacking multiple composites, each of which modifies the base material in some way.\rThis enables dynamic, data-driven creation of new materials that combine visual, statistical, and functional traits.\r\rHow It Works\r\rA CompositeMaterial consists of:\rBase Material (starts as DefaultMaterial)\r\rList of Composite Modifiers\r- These can change:\r- Color & palette\r- Name & UI grouping\r- Stats (add, multiply, set)\r- Ingredient behavior\r- Material properties\rAnd more\r\rComposites are applied in order, transforming the base material step-by-step into the final result.\r\r```json\r{\r  \"composites\": [\r    {\r      \"type\": \"miapi:material_color\",\r      \"color\": \"#FF00FF\"\r    },\r    {\r      \"type\": \"miapi:material_name\",\r      \"name\": \"My Fancy Material\"\r    }\r  ]\r}\r```\r\rWhen using Composite Materials, it is technically possible to write every composite directly onto an ItemStack.\rWhile this is useful for testing or quick comparisons, it is *not recommended* for regular gameplay or for\rlarge-scale datapack usage, because the full composite data is stored directly on each item and increases NBT size.\r\rFor production use, we strongly recommend the **Datapack Composite** system (`miapi:data_composite`).  \rA Datapack Composite allows you to define a complete composite setup inside a datapack and reference it by ID in-game.\rThis significantly reduces the amount of data written to each ItemStack and keeps your content clean and modular.\r\rA Datapack Composite must be placed under:\r``mod-id:miapi/data_composites``\r\rEach entry there defines a composite “template” consisting of any number of composite modifiers.\r\rYou can study a real example here:  \r[Modular Material Datapack](\rhttps://github.com/Truly-Modular/Modular-Item-API/blob/release/1.21-mojmaps/modular_material/data/modular-material/miapi/data_composite/line.json)\r\rTo use a Datapack Composite in an item, reference it via the composite type:\r``miapi:data_composite``\r\r\rThis also enables *dynamic material inheritance*:  \rThe data Composite has a field for a material, if this is set its in-datapack defined composites to the same materials if they don't specify one.  \rThe Modular Material Datapack makes strong use of this feature.",
               "data": {},
               "key_words": [],
               "sub_pages": {
@@ -71,7 +71,7 @@
                 },
                 "group_modification": {
                   "header": "Group Modification Composite",
-                  "description": "  \nThe GroupComposite allows you to modify the groups of a material by either clearing the existing groups or adjusting them by removing and adding specific groups.\rYou can choose to clear the groups, then remove certain groups and add others. If no groups are specified, the existing groups will be used.\r",
+                  "description": "  \nits type is \"miapi:normal_group\"\rThe GroupComposite allows you to modify the groups of a material by either clearing the existing groups or adjusting them by removing and adding specific groups.\rYou can choose to clear the groups, then remove certain groups and add others. If no groups are specified, the existing groups will be used.\r",
                   "java": "common/src/main/java/smartin/miapi/material/composite/group/GroupComposite.java",
                   "data": {
                     "clear": " A boolean value that determines if the existing groups should be cleared before applying the modifications.",
@@ -82,7 +82,7 @@
                 },
                 "gui_group_modification": {
                   "header": "GUI Group Modification Composite",
-                  "description": "  \nThe GuiGroupComposite allows you to modify the GUI groups of a material by either clearing the existing groups or adjusting them by removing and adding specific groups.\rYou can choose to clear the GUI groups, then remove certain groups and add others. If no groups are specified, the existing groups will be used.\r",
+                  "description": "  \nits type is \"miapi:gui_group\"\rThe GuiGroupComposite allows you to modify the GUI groups of a material by either clearing the existing groups or adjusting them by removing and adding specific groups.\rYou can choose to clear the GUI groups, then remove certain groups and add others. If no groups are specified, the existing groups will be used.\r",
                   "java": "common/src/main/java/smartin/miapi/material/composite/group/GuiGroupComposite.java",
                   "data": {
                     "clear": " A boolean value that determines if the existing GUI groups should be cleared before applying the modifications.",
@@ -93,7 +93,7 @@
                 },
                 "hidden_group_modification": {
                   "header": "Hidden Group Modification Composite",
-                  "description": "  \nThe HiddenGroupComposite allows you to modify the hidden groups of a material by either clearing the existing groups or adjusting them by removing and adding specific groups.\rYou can choose to clear the hidden groups, then remove certain groups and add others. If no groups are specified, the existing hidden groups will be used.\r",
+                  "description": "  \nits type is \"miapi:hidden_group\"\rThe HiddenGroupComposite allows you to modify the hidden groups of a material by either clearing the existing groups or adjusting them by removing and adding specific groups.\rYou can choose to clear the hidden groups, then remove certain groups and add others. If no groups are specified, the existing hidden groups will be used.\r",
                   "java": "common/src/main/java/smartin/miapi/material/composite/group/HiddenGroupComposite.java",
                   "data": {
                     "clear": " A boolean value that determines if the existing hidden groups should be cleared before applying the modifications.",
@@ -104,7 +104,7 @@
                 },
                 "material_copy": {
                   "header": "Material Copy Composite",
-                  "description": " The Material Copy Composite replaces the current material with a specified base material.  \nThis allows for direct substitution of one material with another, maintaining all properties\rand behaviors of the target material.\r",
+                  "description": "  \nits type is \"miapi:material_replace\"\rThe Material Copy Composite replaces the current material with a specified base material.\rThis allows for direct substitution of one material with another, maintaining all properties\rand behaviors of the target material.\r",
                   "java": "common/src/main/java/smartin/miapi/material/composite/material/MaterialCopyComposite.java",
                   "data": {
                     "material": " The material that replaces the current material."
@@ -131,7 +131,7 @@
                 },
                 "increase_stats": {
                   "header": "Add Stats Composite",
-                  "description": "  \nThe IncreaseStatsComposite allows you to increase specific stats by providing a map of stat names and their respective values.\rThe values are added to the existing stats of the parent material. If the stat is not found in the map, the parent's stat value is used.\r",
+                  "description": "  \nits type is \"miapi:add_stat\"\rThe IncreaseStatsComposite allows you to increase specific stats by providing a map of stat names and their respective values.\rThe values are added to the existing stats of the parent material. If the stat is not found in the map, the parent's stat value is used.\r",
                   "java": "common/src/main/java/smartin/miapi/material/composite/stat/IncreaseStatsComposite.java",
                   "data": {
                     "stats": " A map of stat names (String) and their increase values (Double) to apply to the parent material."
@@ -140,10 +140,19 @@
                 },
                 "percent_stats": {
                   "header": "Percent Stats Composite",
-                  "description": "  \nThe PercentStatComposite allows you to modify specific stats by providing a map of stat names and their respective percentage values.\rThe values are multiplied with the existing stats of the parent material. If the stat is not found in the map, the parent's stat value is used.\r",
+                  "description": "  \nits type is \"miapi:percent_stat\"\rThe PercentStatComposite allows you to modify specific stats by providing a map of stat names and their respective percentage values.\rThe values are multiplied with the existing stats of the parent material. If the stat is not found in the map, the parent's stat value is used.\r",
                   "java": "common/src/main/java/smartin/miapi/material/composite/stat/PercentStatComposite.java",
                   "data": {
                     "stats": " A map of stat names (String) and their percentage increase values (Double) to apply to the parent material."
+                  },
+                  "key_words": []
+                },
+                "set_stats": {
+                  "header": "Percent Stats Composite",
+                  "description": "  \nits type is \"miapi:set_stat\"\rsets material number stats.\r",
+                  "java": "common/src/main/java/smartin/miapi/material/composite/stat/SetStatComposite.java",
+                  "data": {
+                    "stats": " A map of stat names (String) and their values (Double) to apply."
                   },
                   "key_words": []
                 }

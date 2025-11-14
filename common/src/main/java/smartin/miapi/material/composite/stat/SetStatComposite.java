@@ -12,6 +12,17 @@ import smartin.miapi.material.composite.Composite;
 import java.util.Map;
 import java.util.Objects;
 
+/**
+ * This Composite modifies specific stats by applying a percentage increase to the existing values.
+ *
+ * @header Percent Stats Composite
+ * @description_start
+ * its type is "miapi:set_stat"
+ * sets material number stats.
+ * @description_end
+ * @path /datapack/material/composites/set_stats
+ * @data stats: A map of stat names (String) and their values (Double) to apply.
+ */
 public record SetStatComposite(Map<String, Double> stats) implements Composite {
     public static final ResourceLocation ID = Miapi.id("set_stat");
     public static final MapCodec<SetStatComposite> MAP_CODEC = RecordCodecBuilder.mapCodec((instance) ->

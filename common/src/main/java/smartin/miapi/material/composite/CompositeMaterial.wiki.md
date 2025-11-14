@@ -20,9 +20,7 @@ And more
 
 Composites are applied in order, transforming the base material step-by-step into the final result.
 
-Composite materials are serialized using the /datapack/material/composites path, using the codec:
-
-```
+```json
 {
   "composites": [
     {
@@ -35,7 +33,6 @@ Composite materials are serialized using the /datapack/material/composites path,
     }
   ]
 }
-
 ```
 
 When using Composite Materials, it is technically possible to write every composite directly onto an ItemStack.

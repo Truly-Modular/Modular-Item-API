@@ -17,6 +17,7 @@ import java.util.Objects;
  *
  * @header Add Stats Composite
  * @description_start
+ * its type is "miapi:add_stat"
  * The IncreaseStatsComposite allows you to increase specific stats by providing a map of stat names and their respective values.
  * The values are added to the existing stats of the parent material. If the stat is not found in the map, the parent's stat value is used.
  * @description_end
