@@ -31,7 +31,8 @@ many items have issues with this type of ability copy, since the ability is stil
 {
   "ability_context": {
     "copy_item": {
-      "id": "minecraft:flint_and_steel"
+      "id": "minecraft:flint_and_steel",
+      "cooldown": 100
     }
   }
 }

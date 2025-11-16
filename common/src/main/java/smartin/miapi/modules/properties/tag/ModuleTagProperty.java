@@ -22,24 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Allows the Modules to define tags to identify each other and materials
- *
- * @header Tag Property
- * @path /data_types/properties/tag
- * @description_start The TagProperty allows modules to define and associate tags with themselves. These tags can be used
- * to categorize and identify modules based on their associated tags.
- * <p>
- * Tags are represented as a list of strings and can be used to filter or group items and modules. For example,
- * you could use tags to identify items that belong to a certain category or have specific properties, or to
- * find modules that share common attributes.
- * <p>
- * Material Properties also filter for these tags when looking how to apply
- * <p>
- * Tags are mostly meant to be targeted by synergies.
- * @description_end
- * @data module_tag: A list of strings representing the tags associated with an item or module.
- */
+
 public class ModuleTagProperty extends CodecProperty<List<String>> {
     public static final ResourceLocation KEY = Miapi.id("module_tag");
     public static ModuleTagProperty property;

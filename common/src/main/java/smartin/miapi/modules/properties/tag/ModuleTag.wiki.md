@@ -1,0 +1,20 @@
+@header Tag Property
+@path /data_types/properties/tag
+
+The **TagProperty** allows modules to define and associate **tags** with themselves. These tags can be used to categorize and identify modules based on shared characteristics.
+
+Tags are stored as a list of strings and may be used for:
+
+- Filtering or grouping items/modules
+- Identifying modules that belong to a specific category
+- Finding modules that share common attributes
+
+Material properties may also filter using these tags when determining how they should apply.
+
+Tags are primarily intended to be used by **synergies**.
+
+---
+
+### **Data Structure**
+
+- **`module_tag`** — A list of strings representing the tags associated with an item or module.

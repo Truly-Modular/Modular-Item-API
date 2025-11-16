@@ -19,11 +19,14 @@ import smartin.miapi.Miapi;
 import smartin.miapi.MixinContextFlags;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;
-import smartin.miapi.modules.abilities.util.ItemUseAbility;
+import smartin.miapi.modules.abilities.util.ItemUseDefaultCooldownAbility;
+import smartin.miapi.modules.abilities.util.ItemUseMinHoldAbility;
+import smartin.miapi.modules.properties.util.DoubleOperationResolvable;
 
 import java.util.function.Supplier;
 
-public class CopyItemAbility implements ItemUseAbility<CopyItemAbility.ItemContext> {
+public class CopyItemAbility implements ItemUseDefaultCooldownAbility<CopyItemAbility.ItemContext>,
+        ItemUseMinHoldAbility<CopyItemAbility.ItemContext> {
     public static CopyItemAbility ability;
     public static String KEY = "copy_item";
 
@@ -97,7 +100,7 @@ public class CopyItemAbility implements ItemUseAbility<CopyItemAbility.ItemConte
     public boolean useOnRelease(ItemStack stack, ItemContext context) {
         Boolean result = withFlag(stack, getSpecialContext(stack),
                 () -> getSpecialContext(stack).item.useOnRelease(stack));
-        return result != null ? result : ItemUseAbility.super.useOnRelease(stack, context);
+        return result != null ? result : ItemUseMinHoldAbility.super.useOnRelease(stack, context);
     }
 
     @Override
@@ -107,9 +110,43 @@ public class CopyItemAbility implements ItemUseAbility<CopyItemAbility.ItemConte
     }
 
     @Override
+    public int getCooldown(ItemStack itemStack) {
+        return (int) getSpecialContext(itemStack).cooldown.getValue();
+    }
+
+    @Override
+    public int getMinHoldTime(ItemStack itemStack) {
+        return (int) getSpecialContext(itemStack).minHold.getValue();
+    }
+
+
+    @Override
+    public void onStoppedUsingAfter(ItemStack stack, Level world, LivingEntity user, int remainingUseTicks, ItemContext context) {
+        if (!(user instanceof Player player)) return;
+
+        int used = getMaxUseTime(stack, user, context) - remainingUseTicks;
+        if (used < context.minHold.getValue()) {
+            // Released too early → do nothing
+            return;
+        }
+
+        // Normal finishUsing behavior (proxy)
+        withFlag(stack, context, () -> {
+            Item result = context.item;
+            result.finishUsingItem(stack, world, user);
+        });
+
+        // Apply cooldown
+        if (!world.isClientSide) {
+            player.getCooldowns().addCooldown(stack.getItem(), (int) context.cooldown.getValue());
+        }
+    }
+
+
+    @Override
     public void onStoppedHolding(ItemStack stack, Level world, LivingEntity user, ItemContext context) {
         withFlag(stack, getSpecialContext(stack),
-                () -> ItemUseAbility.super.onStoppedHolding(stack, world, user, context));
+                () -> ItemUseMinHoldAbility.super.onStoppedHolding(stack, world, user, context));
     }
 
     @Override
@@ -124,7 +161,7 @@ public class CopyItemAbility implements ItemUseAbility<CopyItemAbility.ItemConte
             withFlag(stack, getSpecialContext(stack),
                             () ->getSpecialContext(stack).item.onUseTick(world, user, stack, remainingUseTicks));
         } else {
-            ItemUseAbility.super.usageTick(world, user, stack, remainingUseTicks, context);
+            ItemUseMinHoldAbility.super.usageTick(world, user, stack, remainingUseTicks, context);
         }
     }
 
@@ -139,8 +176,13 @@ public class CopyItemAbility implements ItemUseAbility<CopyItemAbility.ItemConte
         itemContext.id = data.id;
         itemContext.item = BuiltInRegistries.ITEM.get(data.id);
         itemContext.fakeItemIdentity = data.fakeItemIdentity;
+
+        itemContext.minHold = data.minHold.initialize(moduleInstance);
+        itemContext.cooldown = data.cooldown.initialize(moduleInstance);
+
         return itemContext;
     }
+
 
     @Override
     public ItemContext getDefaultContext() {
@@ -154,6 +196,13 @@ public class CopyItemAbility implements ItemUseAbility<CopyItemAbility.ItemConte
         @CodecBehavior.Optional
         @AutoCodec.Name("fake_item_identity")
         public boolean fakeItemIdentity = false;
+        @CodecBehavior.Optional
+        @AutoCodec.Name("min_hold")
+        public DoubleOperationResolvable minHold = new DoubleOperationResolvable(0);
+
+        @CodecBehavior.Optional
+        public DoubleOperationResolvable cooldown = new DoubleOperationResolvable(20);
+
 
         public void initialize() {
             item = BuiltInRegistries.ITEM.get(id);

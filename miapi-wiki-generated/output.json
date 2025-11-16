@@ -1199,11 +1199,8 @@
             },
             "tag": {
               "header": "Tag Property",
-              "description": " The TagProperty allows modules to define and associate tags with themselves. These tags can be used  \nto categorize and identify modules based on their associated tags.\r<p>\rTags are represented as a list of strings and can be used to filter or group items and modules. For example,\ryou could use tags to identify items that belong to a certain category or have specific properties, or to\rfind modules that share common attributes.\r<p>\rMaterial Properties also filter for these tags when looking how to apply\r<p>\rTags are mostly meant to be targeted by synergies.\r",
-              "java": "common/src/main/java/smartin/miapi/modules/properties/tag/ModuleTagProperty.java",
-              "data": {
-                "module_tag": " A list of strings representing the tags associated with an item or module."
-              },
+              "description": "The **TagProperty** allows modules to define and associate **tags** with themselves. These tags can be used to categorize and identify modules based on shared characteristics.\r\rTags are stored as a list of strings and may be used for:\r\r- Filtering or grouping items/modules\r- Identifying modules that belong to a specific category\r- Finding modules that share common attributes\r\rMaterial properties may also filter using these tags when determining how they should apply.\r\rTags are primarily intended to be used by **synergies**.\r\r---\r\r### **Data Structure**\r\r- **`module_tag`** — A list of strings representing the tags associated with an item or module.",
+              "data": {},
               "key_words": []
             },
             "tool_or_weapon": {
@@ -1243,7 +1240,7 @@
             },
             "copy_item": {
               "header": "Copy Item Ability",
-              "description": "The **Copy Item Ability** allows a modular item to behave exactly like another item. When activated, it mimics the right-click behavior, animations, and usage duration of the target item.\r\rThis is useful for replicating functionality from vanilla or custom items while still using the modular item system.\r\r---\r\r### Behavior\r\r- When right-clicked, the modular item performs the same actions as the target item it is mimicking.\r- All interactions (e.g., block use, entity use, item finish, ticking) are delegated to the target item.\r- The copied item must be specified by its item ID (`id` field).\r**Warning**\rmany items have issues with this type of ability copy, since the ability is still being executed by the modular item!\r\r---\r\r### Fields\r\r- **`id`** *(string, resource location)*:  \r  The item ID of the target item to copy. This must be a valid item registered in the game.  \r  Example: `\"minecraft:flint_and_steel\"`, `\"modid:custom_tool\"`\r\r---\r\r### Example\r\r```json\r{\r  \"ability_context\": {\r    \"copy_item\": {\r      \"id\": \"minecraft:flint_and_steel\"\r    }\r  }\r}\r```\r\rThis configuration:\r- Makes the modular item behave like a vanilla bow,\r- Triggers bow behavior, including charging and firing, when used.",
+              "description": "The **Copy Item Ability** allows a modular item to behave exactly like another item. When activated, it mimics the right-click behavior, animations, and usage duration of the target item.\r\rThis is useful for replicating functionality from vanilla or custom items while still using the modular item system.\r\r---\r\r### Behavior\r\r- When right-clicked, the modular item performs the same actions as the target item it is mimicking.\r- All interactions (e.g., block use, entity use, item finish, ticking) are delegated to the target item.\r- The copied item must be specified by its item ID (`id` field).\r**Warning**\rmany items have issues with this type of ability copy, since the ability is still being executed by the modular item!\r\r---\r\r### Fields\r\r- **`id`** *(string, resource location)*:  \r  The item ID of the target item to copy. This must be a valid item registered in the game.  \r  Example: `\"minecraft:flint_and_steel\"`, `\"modid:custom_tool\"`\r\r---\r\r### Example\r\r```json\r{\r  \"ability_context\": {\r    \"copy_item\": {\r      \"id\": \"minecraft:flint_and_steel\",\r      \"cooldown\": 100\r    }\r  }\r}\r```\r\rThis configuration:\r- Makes the modular item behave like a vanilla bow,\r- Triggers bow behavior, including charging and firing, when used.",
               "data": {},
               "key_words": []
             },

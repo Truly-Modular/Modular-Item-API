@@ -1,5 +1,6 @@
 package smartin.miapi.mixin.enchant;
 
+import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import net.minecraft.core.component.DataComponentType;
@@ -16,6 +17,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.item.modular.ModularItem;
+import smartin.miapi.modules.properties.LuminousLearningProperty;
 
 @Mixin(EnchantmentHelper.class)
 public abstract class EnchantmentHelperMixin {
@@ -25,6 +27,7 @@ public abstract class EnchantmentHelperMixin {
             MiapiEvents.MODULAR_ITEM_DAMAGE.invoker().durability(damage, stack, level);
         }
     }
+
     // ---- 1) If the component is null but we have fakes, return a non-null placeholder
     @WrapOperation(
             method = "runIterationOnItem(Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/entity/EquipmentSlot;Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/world/item/enchantment/EnchantmentHelper$EnchantmentInSlotVisitor;)V",
@@ -71,6 +74,15 @@ public abstract class EnchantmentHelperMixin {
         return vanillaEmpty;
     }
 
+    @ModifyReturnValue(method = "Lnet/minecraft/world/item/enchantment/EnchantmentHelper;processBlockExperience(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/item/ItemStack;I)I", at = @At(value = "RETURN"))
+    private static int miapi$adjustSupportedItem(int original, ServerLevel level, ItemStack stack, int experience) {
+        return LuminousLearningProperty.property.getAdjustedXp(original, level, stack, experience);
+    }
 
-
+    /*
+    @ModifyReturnValue(method = "Lnet/minecraft/world/item/enchantment/EnchantmentHelper;processMobExperience(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/entity/Entity;Lnet/minecraft/world/entity/Entity;I)I", at = @At(value = "RETURN"))
+    private static int miapi$adjustSupportedItem(int original, ServerLevel level, @Nullable Entity killer, Entity mob, int experience) {
+        return LuminousLearningProperty.property.getAdjustedXp(original, level, stack, experience);
+    }
+     */
 }
