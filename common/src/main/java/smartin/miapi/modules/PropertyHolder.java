@@ -48,7 +48,7 @@ public class PropertyHolder {
                                 }
                                 return a.decodeAndLoad(json);
                             } catch (RuntimeException e) {
-                                throw new RuntimeException("Failed to decode and load JSON for property: " + a, e);
+                                throw new RuntimeException("Failed to decode and load JSON for property: " + a + " " + e.getMessage(), e);
                             }
                         },
                         obj -> {

@@ -28,6 +28,7 @@ import smartin.miapi.registries.MiapiRegistry;
 import smartin.miapi.registries.RegistryInventory;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -131,8 +132,8 @@ public class ReloadHelpers {
                 CodecModuleExtension.CODEC,
                 RegistryInventory.ITEM_MODULE_MIAPI_REGISTRY::clear,
                 (isClient, path, data, registryAccess) -> {
-                    data = new ItemModule(path,data.properties());
-                    RegistryInventory.ITEM_MODULE_MIAPI_REGISTRY.register(path,data);
+                    data = new ItemModule(path, data.properties());
+                    RegistryInventory.ITEM_MODULE_MIAPI_REGISTRY.register(path, data);
                 },
                 -0.5f
         );
@@ -176,6 +177,31 @@ public class ReloadHelpers {
             float priority) {
         registerReloadHandler(event, location, true, beforeLoop, bl -> {
         }, handler, priority);
+    }
+
+    public static void registerReloadHandler(
+            ReloadEvents.ReloadEvent event,
+            String location,
+            boolean syncToClient,
+            Consumer<Boolean> beforeLoop,
+            BiConsumer<Boolean, RegistryAccess> afterLoop,
+            SingleFileHandler handler,
+            float priority) {
+        if (syncToClient)
+            ReloadEvents.registerDataPackPathToSync(Miapi.MOD_ID, location);
+        event.subscribe((isClient, registryAccess) -> {
+            beforeLoop.accept(isClient);
+            ReloadEvents.DATA_PACKS.forEach((path, data) -> {
+                if (path.getPath().startsWith(location + "/")) {
+                    try {
+                        handler.reloadFile(isClient, path, data, registryAccess);
+                    } catch (RuntimeException e) {
+                        Miapi.LOGGER.warn("could not load " + path, e);
+                    }
+                }
+            });
+            afterLoop.accept(isClient, registryAccess);
+        }, priority);
     }
 
     public static void registerReloadHandler(
@@ -230,7 +256,7 @@ public class ReloadHelpers {
                     T decoded = decoder.decode(isClient, shortened, element, registryAccess);
                     onDecode.reloadFile(isClient, shortened, decoded, registryAccess);
                 } catch (RuntimeException e) {
-                    Miapi.LOGGER.error("could not decode " + path + " for full-path " + path + e.getMessage());
+                    Miapi.LOGGER.error("could not decode " + path + " for full-path " + path + " " + e.getMessage());
                     if (MiapiConfig.getServerConfig().other.verboseLogging) {
                         Miapi.LOGGER.error("", e);
                         Miapi.LOGGER.error("raw data :");
@@ -370,38 +396,78 @@ public class ReloadHelpers {
 
         Codec<BaseOrExtension<B, E>> unionCodec = createCodec(baseCodec, extCodec);
 
-        // Phase 1: collect
-        registerReloadHandler(location, clear,
-                () -> {
-                    // Phase 2a: register bases
-                    for (var entry : pendingBase.entrySet()) {
-                        baseHandler.reloadFile(false, entry.getKey(), entry.getValue(), null);
-                    }
-
-                    // Phase 2b: register extensions
-                    for (var entry : pendingExts.entrySet()) {
-                        E ext = entry.getValue();
-                        extensionHandler.reloadFile(false, entry.getKey(), ext, null);
-                        B base = pendingBase.get(ext.target());
-                        if (base == null) {
-                            Miapi.LOGGER.error("Missing base {} for extension {}", ext.target(), entry.getKey());
-                            continue;
-                        }
-                        B extended = ext.applyTo(base);
-                        baseHandler.reloadFile(false, entry.getKey(), extended, null);
-                    }
-
-                    pendingBase.clear();
-                    pendingExts.clear();
-                },
+        // Phase 1: collect all files
+        SingleFileHandler collectHandler = new CodecOptimisedFileHandler<>(
+                unionCodec,
                 (isClient, id, decoded, registryAccess) -> {
                     if (decoded instanceof BaseOrExtension.Base<B, E> b) {
-                        pendingBase.put(id, b.base());
+                        pendingBase.put(Miapi.id(id.toString().replaceFirst(location + "/", "").replaceFirst(".json", "")), b.base());
                     } else if (decoded instanceof BaseOrExtension.Ext<B, E> e) {
-                        pendingExts.put(id, e.extension());
+                        pendingExts.put(Miapi.id(id.toString().replaceFirst(location + "/", "").replaceFirst(".json", "")), e.extension());
                     }
                 },
-                unionCodec,
+                location
+        );
+
+        // Phase 2: process collected data with proper isClient and registryAccess
+        BiConsumer<Boolean, RegistryAccess> afterLoop = (isClient, registryAccess) -> {
+            // Process all collected base modules first
+            for (var entry : pendingBase.entrySet()) {
+                baseHandler.reloadFile(isClient, entry.getKey(), entry.getValue(), registryAccess);
+            }
+
+            // Then process extensions
+            Map<ResourceLocation, E> remaining = new HashMap<>(pendingExts);
+            boolean progressMade = true;
+
+            while (progressMade) {
+                progressMade = false;
+
+                Iterator<Map.Entry<ResourceLocation, E>> it = remaining.entrySet().iterator();
+                while (it.hasNext()) {
+                    var entry = it.next();
+                    ResourceLocation id = entry.getKey();
+                    E ext = entry.getValue();
+
+                    B base = pendingBase.get(ext.target());
+                    if (base == null) {
+                        // Parent not loaded yet — skip for now
+                        continue;
+                    }
+
+                    extensionHandler.reloadFile(isClient, id, ext, registryAccess);
+                    B extended = ext.applyTo(base);
+                    baseHandler.reloadFile(isClient, id, extended, registryAccess);
+
+                    pendingBase.put(id, extended);
+
+                    it.remove();
+                    progressMade = true;
+                }
+            }
+
+// After loop: all remaining entries are unresolved (missing parents / cycles)
+            for (var entry : remaining.entrySet()) {
+                var ext = entry.getValue();
+                Miapi.LOGGER.error(
+                        "Unresolved extension {} for target {} (missing or cyclic dependency)",
+                        entry.getKey(),
+                        ext.target()
+                );
+            }
+
+
+            pendingBase.clear();
+            pendingExts.clear();
+        };
+
+        registerReloadHandler(
+                ReloadEvents.MAIN,
+                location,
+                true,
+                (isClient) -> clear.run(),
+                afterLoop,
+                collectHandler,
                 priority
         );
     }

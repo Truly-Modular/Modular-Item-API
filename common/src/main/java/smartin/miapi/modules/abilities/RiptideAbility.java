@@ -3,7 +3,6 @@ package smartin.miapi.modules.abilities;
 import com.mojang.serialization.Codec;
 import com.redpxnda.nucleus.codec.auto.AutoCodec;
 import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
-import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -19,7 +18,6 @@ import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.UseAnim;
-import net.minecraft.world.item.enchantment.EnchantmentEffectComponents;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
@@ -74,40 +72,80 @@ public class RiptideAbility implements ItemUseDefaultCooldownAbility<RiptideAbil
         return RiptideAbility.CODEC;
     }
 
-    public void onStoppedUsingAfter(ItemStack stack, Level level, LivingEntity livingEntity, int timeCharged, RiptideContextJson context) {
-        if (livingEntity instanceof Player player) {
-            int var6 = this.getMaxUseTime(stack, livingEntity, context) - timeCharged;
-            if (var6 >= 10) {
-                float f = EnchantmentHelper.getTridentSpinAttackStrength(stack, player);
-                if (player.isInWaterOrRain()) {
-                    if (!isTooDamagedToUse(stack)) {
-                        Holder<SoundEvent> holder = (Holder) EnchantmentHelper.pickHighestLevel(stack, EnchantmentEffectComponents.TRIDENT_SOUND).orElse(SoundEvents.TRIDENT_THROW);
-                        player.awardStat(Stats.ITEM_USED.get(stack.getItem()));
-                        if (f > 0.0F) {
-                            float g = player.getYRot();
-                            float h = player.getXRot();
-                            float j = -Mth.sin(g * 0.017453292F) * Mth.cos(h * 0.017453292F);
-                            float k = -Mth.sin(h * 0.017453292F);
-                            float l = Mth.cos(g * 0.017453292F) * Mth.cos(h * 0.017453292F);
-                            float m = Mth.sqrt(j * j + k * k + l * l);
-                            j *= f / m;
-                            k *= f / m;
-                            l *= f / m;
-                            player.push((double) j, (double) k, (double) l);
-                            player.startAutoSpinAttack(20, 8.0F, stack);
-                            if (player.onGround()) {
-                                float n = 1.1999999F;
-                                player.move(MoverType.SELF, new Vec3(0.0, 1.1999999284744263, 0.0));
-                            }
-
-                            level.playSound((Player) null, player, (SoundEvent) holder.value(), SoundSource.PLAYERS, 1.0F, 1.0F);
-                        }
-
-                    }
-                }
-            }
+    @Override
+    public void onStoppedUsingAfter(ItemStack stack, Level level, LivingEntity entity, int timeCharged, RiptideContextJson context) {
+        if (!(entity instanceof Player player)) {
+            return; // Server-side only
         }
+
+        int useTime = this.getMaxUseTime(stack, entity, context);
+        int chargeDuration = useTime - timeCharged;
+
+        // Minimum charge threshold (vanilla is 10 ticks)
+        if (chargeDuration < 10) {
+            return;
+        }
+
+        // Base enchant-derived riptide push strength (0, 1.5, 2.0, 2.5)
+        float vanillaStrength = EnchantmentHelper.getTridentSpinAttackStrength(stack, player);
+
+        // Final strength = apply DoubleOperationResolvable modifiers
+        double evaluatedStrength = context.riptideStrength.evaluate(vanillaStrength).orElse((double)vanillaStrength);
+        float finalPushStrength = (float) evaluatedStrength;
+
+        // Can only riptide in water / rain
+        if (!player.isInWaterOrRain()) {
+            return;
+        }
+
+        if (isTooDamagedToUse(stack)) {
+            return;
+        }
+
+        // Sound selection
+        int riptideLevel = (int) vanillaStrength; // vanilla: 1, 2, 3
+        SoundEvent sound = context.resolveSoundEvent(riptideLevel);
+
+        player.awardStat(Stats.ITEM_USED.get(stack.getItem()));
+
+        // No push if final velocity is zero
+        if (finalPushStrength <= 0f) {
+            return;
+        }
+
+        // ---------------------------------------------------------
+        // Compute directional impulse (same as vanilla)
+        // ---------------------------------------------------------
+        float yaw = player.getYRot();
+        float pitch = player.getXRot();
+
+        float xRaw = -Mth.sin(yaw * Mth.DEG_TO_RAD) * Mth.cos(pitch * Mth.DEG_TO_RAD);
+        float yRaw = -Mth.sin(pitch * Mth.DEG_TO_RAD);
+        float zRaw =  Mth.cos(yaw * Mth.DEG_TO_RAD) * Mth.cos(pitch * Mth.DEG_TO_RAD);
+
+        float len = Mth.sqrt(xRaw * xRaw + yRaw * yRaw + zRaw * zRaw);
+        float x = xRaw * (finalPushStrength / len);
+        float y = yRaw * (finalPushStrength / len);
+        float z = zRaw * (finalPushStrength / len);
+
+        // ---------------------------------------------------------
+        // Apply push + spinning attack (server-side)
+        // ---------------------------------------------------------
+        player.push(x, y, z);
+        //player.move(MoverType.SELF,new Vec3(x * 100, y * 100, z * 100));
+
+        float spinDurationTicks = (float) context.spinDuration.getValue(); // configurably scaled
+        player.startAutoSpinAttack((int) spinDurationTicks, 8.0F, stack);
+
+        // Ground jump boost (vanilla)
+        if (player.onGround()) {
+            player.move(MoverType.SELF, new Vec3(0.0, 1.2, 0.0));
+        }
+
+        // Play riptide sound
+        level.playSound(null, player, sound, SoundSource.PLAYERS, 1.0F, 1.0F);
     }
+
 
     private static boolean isTooDamagedToUse(ItemStack stack) {
         return stack.getDamageValue() >= stack.getMaxDamage() - 1;

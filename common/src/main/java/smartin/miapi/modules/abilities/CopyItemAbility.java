@@ -92,8 +92,12 @@ public class CopyItemAbility implements ItemUseDefaultCooldownAbility<CopyItemAb
 
     @Override
     public ItemStack finishUsing(ItemStack stack, Level world, LivingEntity user, ItemContext context) {
-        return withFlag(stack, getSpecialContext(stack),
+        ItemStack result = withFlag(stack, getSpecialContext(stack),
                 () -> getSpecialContext(stack).item.finishUsingItem(stack, world, user));
+        if (!world.isClientSide && user instanceof Player player) {
+            player.getCooldowns().addCooldown(stack.getItem(), (int) context.cooldown.getValue());
+        }
+        return result;
     }
 
     @Override
@@ -151,15 +155,19 @@ public class CopyItemAbility implements ItemUseDefaultCooldownAbility<CopyItemAb
 
     @Override
     public InteractionResult useOnBlock(UseOnContext context, ItemContext abilityContext) {
-        return withFlag(context.getItemInHand(), getSpecialContext(context.getItemInHand()),
+        InteractionResult result = withFlag(context.getItemInHand(), getSpecialContext(context.getItemInHand()),
                 () -> getSpecialContext(context.getItemInHand()).item.useOn(context));
+        if (!context.getLevel().isClientSide && result.indicateItemUse() && context.getPlayer() != null) {
+            context.getPlayer().getCooldowns().addCooldown(context.getItemInHand().getItem(), (int) abilityContext.cooldown.getValue());
+        }
+        return result;
     }
 
     @Override
     public void usageTick(Level world, LivingEntity user, ItemStack stack, int remainingUseTicks, ItemContext context) {
         if (getSpecialContext(stack).item != null) {
             withFlag(stack, getSpecialContext(stack),
-                            () ->getSpecialContext(stack).item.onUseTick(world, user, stack, remainingUseTicks));
+                    () -> getSpecialContext(stack).item.onUseTick(world, user, stack, remainingUseTicks));
         } else {
             ItemUseMinHoldAbility.super.usageTick(world, user, stack, remainingUseTicks, context);
         }
