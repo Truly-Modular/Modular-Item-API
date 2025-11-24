@@ -29,12 +29,17 @@ This ability allows the player to **summon lightning bolts** at a targeted locat
 ### Example
 ```json
 {
-  "ability_context": {
-    "cast_lighting": {
-        "lighting": "[material.tier]",
-        "cooldown": "[material.density]*20"
-    }
-  }
+    "ability_context": [
+        {
+            "id": "addon:test",
+            "type": "miapi:cast_lighting",
+            "priority": 0,
+            "data": {
+                "lighting": "[material.tier]",
+                "cooldown": "[material.density]*20"
+            }
+        }
+    ]
 }
 ```
 

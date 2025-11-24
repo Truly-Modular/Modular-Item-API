@@ -8,7 +8,7 @@
     "density": 2.9,
     "flexibility": 0,
     "durability": 830,
-    "armor_durability_offset": -400,
+    "armor_durability": 23,
     "mining_speed": 7.5,
     "tier": 4,
     "mining_level": "minecraft:incorrect_for_diamond_tool",

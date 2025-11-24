@@ -29,12 +29,17 @@ many items have issues with this type of ability copy, since the ability is stil
 
 ```json
 {
-  "ability_context": {
-    "copy_item": {
-      "id": "minecraft:flint_and_steel",
-      "cooldown": 100
+  "ability_context": [
+    {
+      "id": "addon:test",
+      "type": "miapi:copy_item",
+      "priority": 0,
+      "data": {
+        "id": "minecraft:flint_and_steel",
+        "cooldown": 100
+      }
     }
-  }
+  ]
 }
 ```
 

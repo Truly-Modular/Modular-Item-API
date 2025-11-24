@@ -1,18 +1,24 @@
 package smartin.miapi.modules.properties;
 
+import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.EquipmentSlotGroup;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import smartin.miapi.Miapi;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.material.AllowedMaterial;
+import smartin.miapi.modules.properties.attributes.AttributeProperty;
 import smartin.miapi.modules.properties.util.CodecProperty;
 import smartin.miapi.modules.properties.util.DoubleOperationResolvable;
 import smartin.miapi.modules.properties.util.MergeAble;
 import smartin.miapi.modules.properties.util.MergeType;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -21,6 +27,10 @@ import java.util.Map;
  * @description_start The ModuleStats property allows for the specification of various statistics associated with a module, where each statistic
  * is represented by a key-value pair.
  * This property is integrated with the Stat Resolver and can be queried by using [module.custom_stat_name].
+ * cost refers to the module cost [module.cost]
+ * and [module.attribute.minecraft:generic.attack_damage] can be used to refer to the *Modules* attack damage attributes
+ * If you want to adjust attributes based on other attributes we heavily recommend the attribute split property instead,
+ * as using this can cause circular dependencies in the math.
  * @description_end
  * @data stats: A {@link Map} where each entry consists of a {@link String} key and a {@link Double} value, representing different
  * statistics related to the module. The statistics can include metrics like "cost" and other module-specific data.
@@ -40,6 +50,25 @@ public class ModuleStats extends CodecProperty<Map<String, DoubleOperationResolv
             }
             if ("cost".equals(data)) {
                 return AllowedMaterial.getMaterialCost(instance);
+            }
+            if (data != null && data.startsWith("attribute.")) {
+                ResourceLocation id = ResourceLocation.parse(
+                        data.replaceFirst("attribute\\.", "")
+                );
+
+                Map<ResourceLocation, Map<AttributeModifier.Operation, Map<Either<EquipmentSlotGroup, Boolean>, DoubleOperationResolvable>>> attributeData = AttributeProperty.property.getData(instance).orElse(Map.of());
+                List<DoubleOperationResolvable.IndividualOperation> operations = new ArrayList<>();
+                attributeData.getOrDefault(id, Map.of()).forEach((operation, innerMap) -> {
+                    innerMap.values().forEach(resolvable -> operations.add(
+                            new DoubleOperationResolvable.IndividualOperation(
+                                    resolvable.getValue(),
+                                    switch (operation) {
+                                        case ADD_VALUE -> DoubleOperationResolvable.IndividualOperation.Operation.ADD_VALUE;
+                                        case ADD_MULTIPLIED_BASE -> DoubleOperationResolvable.IndividualOperation.Operation.ADD_MULTIPLIED_BASE;
+                                        case ADD_MULTIPLIED_TOTAL -> DoubleOperationResolvable.IndividualOperation.Operation.ADD_MULTIPLIED_TOTAL;
+                                    })));
+                });
+                return new DoubleOperationResolvable(operations).getValue();
             }
             DoubleOperationResolvable resolvable = getData(instance).orElse(new HashMap<>()).get(data);
             if (resolvable != null) {

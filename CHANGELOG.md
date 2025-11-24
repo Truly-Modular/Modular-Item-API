@@ -16,6 +16,10 @@
 - fixed global loot modularisation  
 - fixed issues with fake enchants on neoforge
 - fixed issue where cratAble portion of "crafting_condition" would skip non-module properties
+- fixed issues related to module and material extensions
+- fixed issues where riptide wouldn't work at all
+- added attribute support to module resolver [module.attribute.minecraft:generic.attack_damage]  
+ use sparingly to avoid circular dependencies! if you want to adjust attributes use attribute split property instead!
 ### Editor
 - reloading now closes ui to prevent crashes
 - fixed some crashes related to material editing
