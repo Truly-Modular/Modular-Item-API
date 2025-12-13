@@ -1,26 +1,27 @@
-## v2.2 (1.21)
+## v2.2.0 (1.21)
 - reduced logging of failed number evaluations
 - rebalanced emeralds to give luck instead of fortune
 - minor performance improvements related to rendering
-- new trim render mode - icons and all 3D aspects should work now (compat with advanced trim mods is still impossible)
-- fixed Projectile Piercing Attribute
+- improved handheld feedback, it now cleanly tells the players it gives a 25% bonus attack speed when dual wielded
+- added new trim render mode - icons and all 3D aspects should work now (compat with advanced trim mods is still impossible)
+- added module inheritance system
+- added toughness stat for materials
 - added Combo Property and System -> successive hits deal more damage with the property
 - added Inertia Property to deal more damage with player speed.
-- improved handheld feedback, it now cleanly tells the players it gives a 25% bonus attack speed when dual wielded
-- implemented module inheritance system
+- added attribute support to module resolver [module.attribute.minecraft:generic.attack_damage]  
+  use sparingly to avoid circular dependencies! if you want to adjust attributes use attribute split property instead!
 - fixed/reworked immolate -> bonus damage if self or target is on fire and damage reduction while on fire.
 - fixed bug related to attribute merging
 - fixed bug related to rendering multiple banners at once (having 2 arm patches now works)
 - fixed issues with crossbow animations desyncing/playing wrong
 - fixed bug where a load fail module extension would also unload the module
-- fixed global loot modularisation  
+- fixed global loot modularisation
 - fixed issues with fake enchants on neoforge
 - fixed issue where cratAble portion of "crafting_condition" would skip non-module properties
 - fixed issues related to module and material extensions
 - fixed issues where riptide wouldn't work at all
-- introduced toughness stat for materials
-- added attribute support to module resolver [module.attribute.minecraft:generic.attack_damage]  
- use sparingly to avoid circular dependencies! if you want to adjust attributes use attribute split property instead!
+- fixed issues with swim attribute on fabric
+- fixed Projectile Piercing Attribute
 ### Editor
 - reloading now closes ui to prevent crashes
 - fixed some crashes related to material editing
