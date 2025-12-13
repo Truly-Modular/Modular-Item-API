@@ -18,6 +18,7 @@ import java.util.Map;
 
 @Mixin(LivingEntity.class)
 abstract class LivingEntityMixin {
+
     @Inject(
             method = "collectEquipmentChanges",
             at = @At("RETURN"))
@@ -38,7 +39,6 @@ abstract class LivingEntityMixin {
             cir.setReturnValue(false);
         }
     }
-
 
     @Inject(method = "tick", at = @At(value = "TAIL"))
     private void miapi$adjustElytraSpeed(CallbackInfo ci) {

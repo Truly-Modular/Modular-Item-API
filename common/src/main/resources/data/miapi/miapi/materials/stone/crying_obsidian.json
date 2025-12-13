@@ -7,9 +7,10 @@
         "stone"
     ],
     "hardness": 5,
-    "density": 8,
+    "density": 5,
     "flexibility": 0,
     "enchantability": 13,
+    "toughness": 1,
     "tier": 2,
     "durability": 2596,
     "armor_durability_offset": -1800,

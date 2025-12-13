@@ -153,20 +153,9 @@ public class GeneratedMaterial implements Material {
             key = Miapi.id("generated/" + mainIngredient.getDescriptionId() + swordItem.getDescriptionId());
             double swordAttackDmg = AttributeUtil.getActualValue(swordItem.getDefaultInstance(), EquipmentSlot.MAINHAND, Attributes.ATTACK_DAMAGE.value(), 0.0);
             double axeAttackDmg = AttributeUtil.getActualValue(axeItem.getDefaultInstance(), EquipmentSlot.MAINHAND, Attributes.ATTACK_DAMAGE.value(), 0.0);
-            double calculatedDamage = Math.floor(Math.pow((swordAttackDmg - 3.4) * 2.3, 1.0 / 3.0)) + 7;
+
             stats.put("hardness", swordAttackDmg);
-
-            if (groups.contains("stone")) {
-                stats.put("density", swordAttackDmg / 1.5);
-            } else if (groups.contains("crystal")) {
-                stats.put("density", swordAttackDmg / 2.5);
-            } else {
-                stats.put("density", swordAttackDmg / 2);
-            }
-
-            if (Math.abs(calculatedDamage - axeAttackDmg) > 0.1) {
-                stats.put("axe_damage", (calculatedDamage - axeAttackDmg));
-            }
+            stats.put("density", Math.max(0, axeAttackDmg + swordAttackDmg));
 
             if (groups.contains("crystal") || groups.contains("gemstone")) {
                 stats.put("flexibility", 0.0);

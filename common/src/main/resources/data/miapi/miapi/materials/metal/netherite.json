@@ -7,10 +7,11 @@
         "netherite"
     ],
     "hardness": 7,
-    "density": 2.8,
+    "density": 2,
     "flexibility": 3,
     "enchantability": 15,
     "durability": 2016,
+    "toughness": 3,
     "tier": 5,
     "armor_durability": 37,
     "color": "695e5f",

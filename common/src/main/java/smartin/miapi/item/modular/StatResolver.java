@@ -457,7 +457,7 @@ public class StatResolver {
             Expression e = new Expression(string, configuration);
             return e.evaluate().getNumberValue().doubleValue();
         } catch (Exception e) {
-            Miapi.LOGGER.error("could not evaluate " + string + " from original" + original, e.getMessage());
+            Miapi.LOGGER.error("could not evaluate " + string + " from original" + original + " " + e.getMessage());
             return 0;
         }
     }

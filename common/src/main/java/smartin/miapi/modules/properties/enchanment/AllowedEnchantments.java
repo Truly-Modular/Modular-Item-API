@@ -113,8 +113,6 @@ public class AllowedEnchantments extends CodecProperty<AllowedEnchantments.Allow
         access.registry(Registries.ENCHANTMENT).get().forEach(enchantment -> {
             ResourceLocation enchantmentID = access.registry(Registries.ENCHANTMENT).get().getKey(enchantment);
 
-            Miapi.LOGGER.info("testing " + enchantment.description().getString());
-
             if (allSupportEnchantment(sharp, enchantment)) {
                 enchantmentExtentionsMap.computeIfAbsent(ResourceLocation.parse("minecraft:enchantable/sharp_weapon"),(s)->new ArrayList<>()).add(enchantmentID);
             } else if (allSupportEnchantment(weapons, enchantment)) {

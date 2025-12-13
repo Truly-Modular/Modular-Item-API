@@ -7,10 +7,11 @@
         "stone"
     ],
     "hardness": 4,
-    "density": 3,
+    "density": 4,
     "flexibility": 0,
     "enchantability": 5,
     "durability": 131,
+    "toughness": 1,
     "tier": 2,
     "color": "9A9A9A",
     "color_palette": {

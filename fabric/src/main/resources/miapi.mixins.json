@@ -10,7 +10,6 @@
         "ItemEnchantmentsMixin"
     ],
     "client": [
-        "EntityMixin",
         "TextMixin",
         "client.BuiltinModelItemRendererMixin",
         "client.InGameHudMixin",

@@ -90,9 +90,7 @@ public class PropertyHolder {
         replace.forEach((p, data) -> {
             try {
                 p.load(id, p.encodeCast(data), true);
-            } catch (RuntimeException e) {
-
-            } catch (Exception e) {
+            } catch (Exception ignored) {
             }
         });
     }

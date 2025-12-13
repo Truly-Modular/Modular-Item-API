@@ -5,11 +5,12 @@
         "gem"
     ],
     "hardness": 6,
-    "density": 3.0,
+    "density": 2.0,
     "flexibility": 0,
     "durability": 1546,
     "armor_durability": 33,
     "mining_speed": 8,
+    "toughness": 2,
     "tier": 4,
     "mining_level": "minecraft:incorrect_for_diamond_tool",
     "enchantability": 10,

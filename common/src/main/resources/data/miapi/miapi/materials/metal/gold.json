@@ -4,12 +4,13 @@
     ],
     "icon": "textures/item/gold_ingot.png",
     "hardness": 4,
-    "density": 4.6,
+    "density": 3.5,
     "flexibility": 1,
     "durability": 38,
     "armor_durability": 7,
     "armor_toughness": 0.1,
     "enchantability": 22,
+    "toughness": 0,
     "tier": 3,
     "axe_damage": -2,
     "color": "FFD700",
@@ -42,6 +43,16 @@
                 "operation": "**",
                 "value": "0.10"
             }
+        },
+        "axe": {
+            "attributes": [
+                {
+                    "attribute": "generic.attack_damage",
+                    "value": "-1.5",
+                    "operation": "+",
+                    "slot": "mainhand"
+                }
+            ]
         }
     },
     "textures": [

@@ -1,4 +1,4 @@
-## v2.1.2 (1.21)
+## v2.2 (1.21)
 - reduced logging of failed number evaluations
 - rebalanced emeralds to give luck instead of fortune
 - minor performance improvements related to rendering
@@ -18,6 +18,7 @@
 - fixed issue where cratAble portion of "crafting_condition" would skip non-module properties
 - fixed issues related to module and material extensions
 - fixed issues where riptide wouldn't work at all
+- introduced toughness stat for materials
 - added attribute support to module resolver [module.attribute.minecraft:generic.attack_damage]  
  use sparingly to avoid circular dependencies! if you want to adjust attributes use attribute split property instead!
 ### Editor

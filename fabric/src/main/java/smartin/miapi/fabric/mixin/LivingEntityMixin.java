@@ -3,15 +3,20 @@ package smartin.miapi.fabric.mixin;
 import dev.architectury.event.EventResult;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Arrow;
+import net.minecraft.world.level.material.FluidState;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import smartin.miapi.attributes.AttributeRegistry;
@@ -24,11 +29,14 @@ public abstract class LivingEntityMixin {
     @Shadow
     public abstract void stopRiding();
 
+    @Shadow
+    public abstract void forceAddEffect(MobEffectInstance instance, @Nullable Entity entity);
+
     private float storedValue;
     private DamageSource storedDamageSource;
     private MiapiEvents.LivingHurtEvent lastEvent;
 
-    @Inject(method = "hurt", at = @At(value = "HEAD"),cancellable = true)
+    @Inject(method = "hurt", at = @At(value = "HEAD"), cancellable = true)
     private void miapi$damageEvent(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
         MiapiEvents.LivingHurtEvent livingHurtEvent = new MiapiEvents.LivingHurtEvent((LivingEntity) (Object) this, source.getEntity(), source, amount);
         if (source.getEntity() instanceof Player entity) {
@@ -102,5 +110,32 @@ public abstract class LivingEntityMixin {
     @ModifyVariable(method = "hurt", at = @At(value = "HEAD"), ordinal = 0)
     private DamageSource miapi$damageEventSource(DamageSource value) {
         return storedDamageSource;
+    }
+
+    @ModifyArg(
+            method = "travel",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/world/entity/LivingEntity;moveRelative(FLnet/minecraft/world/phys/Vec3;)V"
+            ),
+            index = 0
+    )
+    private float modifySwimAcceleration(float original) {
+        LivingEntity self = (LivingEntity) (Object) this;
+
+        if (!self.isInWater() || !self.isControlledByLocalInstance()) {
+            return original;
+        }
+        FluidState fluidState = self.level().getFluidState(self.blockPosition());
+        if (!(
+                self.isInWater() &&
+                ((LivingEntityAccessor) self).callIsAffectedByFluidsMiapi() &&
+                !self.canStandOnFluid(fluidState))) {
+            return original;
+        }
+
+        double swimSpeed = self.getAttributeValue(AttributeRegistry.SWIM_SPEED);
+
+        return (float)(original * swimSpeed);
     }
 }

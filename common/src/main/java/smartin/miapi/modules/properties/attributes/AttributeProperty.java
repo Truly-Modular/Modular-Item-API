@@ -163,7 +163,7 @@ public class AttributeProperty extends
                         EquipmentSlotGroup slotGroup = EquipmentSlotProperty.getSlot(itemStack);
                         if (slot.left().isPresent()) slotGroup = slot.left().get();
                         if (slotGroup == null) slotGroup = EquipmentSlotGroup.ANY;
-                        resolvableMap.merge(slotGroup,expression,(a,b)-> DoubleOperationResolvable.merge(a,b,MergeType.SMART));
+                        resolvableMap.merge(slotGroup, expression, (a, b) -> DoubleOperationResolvable.merge(a, b, MergeType.SMART));
                     }
                     resolvableMap.forEach((group, op) -> {
                         ResourceLocation slotId = AttributeUtil.getIDForSlot(group, attribute, operation);

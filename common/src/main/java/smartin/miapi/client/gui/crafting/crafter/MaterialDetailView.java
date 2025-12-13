@@ -34,10 +34,13 @@ public class MaterialDetailView extends InteractAbleWidget {
                 new NumberBuilder("hardness")
         );
         registerBuilder(
-                new NumberBuilder("flexibility")
+                new NumberBuilder("density")
         );
         registerBuilder(
-                new NumberBuilder("density")
+                new NumberBuilder("toughness")
+        );
+        registerBuilder(
+                new NumberBuilder("flexibility")
         );
         registerBuilder(
                 new NumberBuilder("durability").setMax(2000).setFormat("##")

@@ -1,5 +1,6 @@
 package smartin.miapi.registries;
 
+import dev.architectury.platform.Platform;
 import net.minecraft.world.entity.ai.attributes.RangedAttribute;
 
 import static smartin.miapi.attributes.AttributeRegistry.*;
@@ -13,6 +14,11 @@ public class AttributeRegistry {
         }
         init = true;
         //ATTRIBUTE
+        if(Platform.isFabric()){
+            RegistryInventory.registerAtt("generic.swim_speed", true, () ->
+                            new RangedAttribute("miapi.attribute.name.swim_speed", 1.0, 0.01, 1024.0).setSyncable(true),
+                    att -> SWIM_SPEED = att);
+        }
 
         // mining
         RegistryInventory.registerAtt("remove.mining_speed.pickaxe", false, () ->

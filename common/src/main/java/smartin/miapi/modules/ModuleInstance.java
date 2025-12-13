@@ -14,12 +14,12 @@ import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.protocol.game.ClientboundSetEntityMotionPacket;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
+import smartin.miapi.config.MiapiServerConfig;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.item.modular.PropertyResolver;
 import smartin.miapi.item.modular.StatResolver;
@@ -218,10 +218,6 @@ public class ModuleInstance {
         if (!mutable) {
             throw new RuntimeException(new UnsupportedOperationException("cannot modify Modules on ItemStacks. call copy first!"));
         }
-        ModuleInstance oldModule = subModules.get(id);
-        if (oldModule != null) {
-            //oldModule.parent = null;
-        }
         subModules.remove(id);
         getRoot().clearCaches();
     }
@@ -235,8 +231,8 @@ public class ModuleInstance {
     }
 
     protected Map<String, ModuleInstance> getSubModuleMapForSave() {
-        if (this.parent == null && subModules.isEmpty()) {
-            //Miapi.LOGGER.warn("potential encoding issue!");
+        if (this.parent == null && subModules.isEmpty() && MiapiServerConfig.INSTANCE.other.verboseLogging) {
+            Miapi.LOGGER.warn("potential encoding issue!");
         }
         return new LinkedHashMap<>(subModules);
     }
@@ -506,6 +502,7 @@ public class ModuleInstance {
         return StatResolver.translateAndResolve(Miapi.MOD_ID + ".module." + moduleName + ".description", this);
     }
 
+    @SuppressWarnings("unused")
     public Optional<ModuleInstance> parseTo(String[] data) {
         if (data.length == 0) {
             return Optional.of(this);
@@ -528,6 +525,7 @@ public class ModuleInstance {
         return Optional.empty();
     }
 
+    @SuppressWarnings("unused")
     public String[] getStringPosition() {
         List<String> position = new ArrayList<>();
         ModuleInstance parser = this;
@@ -585,6 +583,7 @@ public class ModuleInstance {
      * @param <T>       the type inside the cache
      * @return the cached value
      */
+    @SuppressWarnings("unused")
     public <T> T getFromCache(String key, ItemStack itemStack, T fallback) {
         return ModularItemCache.get(itemStack, key, fallback);
     }
@@ -598,6 +597,7 @@ public class ModuleInstance {
      * @param <T>       the type inside the cache
      * @return the cached value
      */
+    @SuppressWarnings("unused")
     public <T> T getFromCache(String key, ItemStack itemStack, Supplier<T> fallback) {
         return ModularItemCache.get(itemStack, key, fallback);
     }
@@ -667,11 +667,8 @@ public class ModuleInstance {
     @Override
     public boolean equals(Object object) {
         if (this == object) return true; // Check for object identity first
-        if (!(object instanceof ModuleInstance)) return false; // Ensure the object is of type ModuleInstance
+        if (!(object instanceof ModuleInstance other)) return false; // Ensure the object is of type ModuleInstance
 
-        ClientboundSetEntityMotionPacket packet;
-
-        ModuleInstance other = (ModuleInstance) object;
         this.getSubModuleMap();
         other.getSubModuleMap();
 

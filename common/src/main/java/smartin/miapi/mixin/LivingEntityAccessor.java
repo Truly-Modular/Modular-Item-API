@@ -27,4 +27,7 @@ public interface LivingEntityAccessor {
 
     @Accessor("lastHurtByMobTimestamp")
     int getLastAttackedTime();
+
+    @Invoker("isAffectedByFluids")
+    boolean callIsAffectedByFluidsMiapi();
 }

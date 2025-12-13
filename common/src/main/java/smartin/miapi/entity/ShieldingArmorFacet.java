@@ -25,6 +25,35 @@ public class ShieldingArmorFacet implements EntityFacet<CompoundTag> {
         this.livingEntity = entity;
     }
 
+    @Override
+    public CompoundTag toNbt() {
+        CompoundTag compound = new CompoundTag();
+        compound.putFloat("miapi:shielding_armor_current", getCurrentAmount());
+        return compound;
+    }
+
+    @Override
+    public void sendToClient(Entity capHolder, ServerPlayer player) {
+        if (player != null && player.connection != null && player.level() != null) {
+            try {
+                //createPacket(capHolder).send(player);
+            } catch (RuntimeException e) {
+                Miapi.LOGGER.error("facet sync issue", e);
+            }
+        }
+    }
+
+    @Override
+    public void loadNbt(CompoundTag nbt) {
+        currentAmount = nbt.getFloat("miapi:shielding_armor_current");
+    }
+
+    @Override
+    public PlayerSendable createPacket(Entity target) {
+        // The FacetSyncPacket requires 3 things: the entity holding the facet, the facet key, and the facet instance.
+        return new FacetSyncPacket<>(target, KEY, this);
+    }
+
     /**
      * return the damage that pierces Shielding Armor
      *
@@ -64,35 +93,5 @@ public class ShieldingArmorFacet implements EntityFacet<CompoundTag> {
 
     public float getMaxAmount() {
         return (float) livingEntity.getAttributeValue(AttributeRegistry.SHIELDING_ARMOR);
-    }
-
-
-    @Override
-    public CompoundTag toNbt() {
-        CompoundTag compound = new CompoundTag();
-        compound.putFloat("miapi:shielding_armor_current", getCurrentAmount());
-        return compound;
-    }
-
-    @Override
-    public void sendToClient(Entity capHolder, ServerPlayer player) {
-        if (player != null && player.connection != null && player.level() != null) {
-            try {
-                //createPacket(capHolder).send(player);
-            } catch (RuntimeException e) {
-                Miapi.LOGGER.error("facet sync issue", e);
-            }
-        }
-    }
-
-    @Override
-    public void loadNbt(CompoundTag nbt) {
-        currentAmount = nbt.getFloat("miapi:shielding_armor_current");
-    }
-
-    @Override
-    public PlayerSendable createPacket(Entity target) {
-        // The FacetSyncPacket requires 3 things: the entity holding the facet, the facet key, and the facet instance.
-        return new FacetSyncPacket<>(target, KEY, this);
     }
 }

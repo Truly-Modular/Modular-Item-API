@@ -11,7 +11,6 @@ import net.fabricmc.fabric.api.util.TriState;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.packs.PackType;
-import net.minecraft.world.entity.ai.attributes.RangedAttribute;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunction;
 import smartin.miapi.Environment;
 import smartin.miapi.Miapi;
@@ -23,7 +22,6 @@ import smartin.miapi.mixin.OptionsAccessor;
 import smartin.miapi.mixin.client.KeyMappingAccessor;
 import smartin.miapi.modules.properties.attributes.AttributeProperty;
 import smartin.miapi.modules.properties.enchanment.AllowedEnchantments;
-import smartin.miapi.registries.RegistryInventory;
 
 import java.util.*;
 
@@ -81,9 +79,6 @@ public class MiapiFabric implements ModInitializer {
         });
 
         //ATTRIBUTE REPLACEMENT
-        RegistryInventory.registerAtt("generic.swim_speed", true, () ->
-                        new RangedAttribute("miapi.attribute.name.swim_speed", 1.0, 0.0, 1024.0).setSyncable(true),
-                att -> SWIM_SPEED = att);
         ResourceManagerHelper.get(PackType.SERVER_DATA).registerReloadListener(new IdentifiableMiapiReloadListenerFixed());
         ServerLifecycleEvents.START_DATA_PACK_RELOAD.register((minecraftServer, manager) -> {
             IdentifiableMiapiReloadListenerFixed.access = minecraftServer.reloadableRegistries().get();

@@ -10,6 +10,7 @@
     "density": 2,
     "flexibility": 0,
     "tier": 1,
+    "toughness": 1,
     "enchantability": 11,
     "durability": 37,
     "color": "FF7C26",

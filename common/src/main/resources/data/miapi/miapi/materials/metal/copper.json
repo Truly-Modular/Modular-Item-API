@@ -10,6 +10,7 @@
     "armor_durability": 12,
     "armor_toughness": 0.1,
     "enchantability": 13,
+    "toughness": 1,
     "tier": 2,
     "color": "E47B55",
     "color_palette": {
