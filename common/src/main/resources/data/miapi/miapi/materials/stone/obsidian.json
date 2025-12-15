@@ -6,8 +6,8 @@
     "groups": [
         "stone"
     ],
-    "hardness": 5,
-    "density": 5,
+    "hardness": 4.5,
+    "density": 4.5,
     "flexibility": 0,
     "enchantability": 9,
     "toughness": 1,
@@ -37,6 +37,16 @@
                 {
                     "attribute": "generic.attack_speed",
                     "value": "-0.02",
+                    "operation": "**",
+                    "slot": "mainhand"
+                }
+            ]
+        },
+        "axe": {
+            "attributes": [
+                {
+                    "attribute": "generic.attack_speed",
+                    "value": "-0.1",
                     "operation": "**",
                     "slot": "mainhand"
                 }
