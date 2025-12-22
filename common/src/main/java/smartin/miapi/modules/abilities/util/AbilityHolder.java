@@ -100,7 +100,7 @@ public record AbilityHolder<T>(ItemUseAbility<T> ability, T context) {
      * @param user  The entity holding the item.
      */
     public void onStoppedHolding(ItemStack stack, Level world, LivingEntity user) {
-
+        ability().onStoppedHolding(stack, world, user, context());
     }
 
     public EquipmentSlot getEquipmentSlot(InteractionHand hand) {

@@ -18,6 +18,6 @@ include("neoforge")
 
 if (true) {
     includeBuild("./archery")
-    includeBuild("./armory")
+    //includeBuild("./armory")
     includeBuild("./arsenal")
 }

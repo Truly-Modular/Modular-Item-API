@@ -22,6 +22,8 @@
 - fixed issues where riptide wouldn't work at all
 - fixed issues with swim attribute on fabric
 - fixed Projectile Piercing Attribute
+- fixed issues where in some rare cases module position math would fail
+- fixed gay flag being generic rainbow flag
 ### Editor
 - reloading now closes ui to prevent crashes
 - fixed some crashes related to material editing

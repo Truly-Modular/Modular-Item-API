@@ -121,6 +121,7 @@ dependencies {
 
     modLocalRuntime files('libs/arsenal-local.jar')
     modLocalRuntime files('libs/archery-local.jar')
+    modCompileOnly files('libs/archery-local.jar')
     modLocalRuntime files('libs/armory-local.jar')
 
 

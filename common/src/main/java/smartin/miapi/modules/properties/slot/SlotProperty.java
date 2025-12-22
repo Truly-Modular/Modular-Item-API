@@ -87,13 +87,16 @@ public class SlotProperty extends CodecProperty<Map<String, SlotProperty.ModuleS
                 mergedTransform.set(stack.primary, mergedTransform.get(null));
                 mergedTransform.set(null, Transform.IDENTITY);
             }
-            mergedTransform = TransformMap.merge(stack, mergedTransform);
+            mergedTransform = TransformMap.merge(mergedTransform,stack);
             current = current.getParent();
         }
         if (!mergedTransform.isPresent("item")) {
             mergedTransform.set("item", mergedTransform.get(null));
+            mergedTransform = TransformMap.merge(moduleSlot.getTransformStack(), mergedTransform);
+            mergedTransform.set("item", mergedTransform.get(null));
+        } else {
+            mergedTransform = TransformMap.merge(moduleSlot.getTransformStack(), mergedTransform);
         }
-        mergedTransform = TransformMap.merge(moduleSlot.getTransformStack(), mergedTransform);
         return mergedTransform;
     }
 

@@ -12,12 +12,14 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunction;
+import smartin.archery.Archery;
 import smartin.miapi.Environment;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.MiapiClient;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.item.modular.ModularItem;
+import smartin.miapi.material.AllowedMaterial;
 import smartin.miapi.mixin.OptionsAccessor;
 import smartin.miapi.mixin.client.KeyMappingAccessor;
 import smartin.miapi.modules.properties.attributes.AttributeProperty;
@@ -37,6 +39,8 @@ public class MiapiFabric implements ModInitializer {
             MiapiEvents.DEFAULT_LOOT_FUNCTIONS.invoker().adjust(functions);
             functions.forEach(tableBuilder::apply);
         });
+        Archery archery;
+        AllowedMaterial.AllowedMaterialData data;
         //DATA
         if (Environment.isClient()) {
             MiapiClientFabric.setupClient();
