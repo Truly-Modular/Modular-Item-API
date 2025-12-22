@@ -20,7 +20,7 @@ def enableAddons = providers
         .orElse(false)
         .get()
 
-if (enableAddons) {
+if (enableAddons && System.getenv("JITPACK") == null) {
     includeBuild("./archery")
     includeBuild("./arsenal")
     // includeBuild("./armory")
