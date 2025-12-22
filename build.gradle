@@ -67,158 +67,160 @@ tasks.register('buildBoth') {
     }
 }
 
-tasks.register('rebuildArsenal') {
-    if (rootProject.run_addons) {
-        ext.projectName = "arsenal"
-        def project = gradle.includedBuild("arsenal")
-        dependsOn project.task(":buildBoth")
-        group = '_tm_tasks'
-        doLast {
-            def mergedBuildDir = rootProject.file(ext.projectName + '/Merged')
-            println mergedBuildDir
-            def fabricJars = mergedBuildDir.listFiles().findAll { it.name.endsWith("fabric.jar") }
-            def forgeJars = mergedBuildDir.listFiles().findAll { it.name.endsWith("forge.jar") }
+if (run_addons == "true") {
+    tasks.register('rebuildArsenal') {
+        if (rootProject.run_addons) {
+            ext.projectName = "arsenal"
+            def project = gradle.includedBuild("arsenal")
+            dependsOn project.task(":buildBoth")
+            group = '_tm_tasks'
+            doLast {
+                def mergedBuildDir = rootProject.file(ext.projectName + '/Merged')
+                println mergedBuildDir
+                def fabricJars = mergedBuildDir.listFiles().findAll { it.name.endsWith("fabric.jar") }
+                def forgeJars = mergedBuildDir.listFiles().findAll { it.name.endsWith("forge.jar") }
 
-            def fabricJar = fabricJars.max { it.lastModified() }
-            def forgeJar = forgeJars.max { it.lastModified() }
+                def fabricJar = fabricJars.max { it.lastModified() }
+                def forgeJar = forgeJars.max { it.lastModified() }
 
-            if (forgeJar) {
-                copy {
-                    from forgeJar
-                    into rootProject.file('neoforge/libs')
-                    rename { fileName -> projectName + "-local.jar" }
+                if (forgeJar) {
+                    copy {
+                        from forgeJar
+                        into rootProject.file('neoforge/libs')
+                        rename { fileName -> projectName + "-local.jar" }
+                    }
+                    copy {
+                        from forgeJar
+                        into rootProject.file('Merged')
+                    }
+                    copy {
+                        from forgeJar
+                        into rootProject.file('common/libs')
+                        rename { fileName -> projectName + "-local.jar" }
+                    }
                 }
-                copy {
-                    from forgeJar
-                    into rootProject.file('Merged')
+                if (fabricJar) {
+                    copy {
+                        from fabricJar
+                        into rootProject.file('fabric/libs')
+                        rename { fileName -> projectName + "-local.jar" }
+                    }
+                    copy {
+                        from fabricJar
+                        into rootProject.file('Merged')
+                    }
+                    copy {
+                        from fabricJar
+                        into rootProject.file('common/libs')
+                        rename { fileName -> projectName + "-local.jar" }
+                    }
                 }
-                copy {
-                    from forgeJar
-                    into rootProject.file('common/libs')
-                    rename { fileName -> projectName + "-local.jar" }
-                }
+                println "Builds Copied"
             }
-            if (fabricJar) {
-                copy {
-                    from fabricJar
-                    into rootProject.file('fabric/libs')
-                    rename { fileName -> projectName + "-local.jar" }
-                }
-                copy {
-                    from fabricJar
-                    into rootProject.file('Merged')
-                }
-                copy {
-                    from fabricJar
-                    into rootProject.file('common/libs')
-                    rename { fileName -> projectName + "-local.jar" }
-                }
-            }
-            println "Builds Copied"
         }
     }
-}
 
-tasks.register('rebuildArchery') {
-    if (rootProject.run_addons) {
-        ext.projectName = "archery"
-        def project = gradle.includedBuild("archery")
-        dependsOn project.task(":buildBoth")
-        group = '_tm_tasks'
-        doLast {
-            def mergedBuildDir = rootProject.file(ext.projectName + '/Merged')
-            println mergedBuildDir
-            def fabricJars = mergedBuildDir.listFiles().findAll { it.name.endsWith("fabric.jar") }
-            def forgeJars = mergedBuildDir.listFiles().findAll { it.name.endsWith("forge.jar") }
+    tasks.register('rebuildArchery') {
+        if (rootProject.run_addons) {
+            ext.projectName = "archery"
+            def project = gradle.includedBuild("archery")
+            dependsOn project.task(":buildBoth")
+            group = '_tm_tasks'
+            doLast {
+                def mergedBuildDir = rootProject.file(ext.projectName + '/Merged')
+                println mergedBuildDir
+                def fabricJars = mergedBuildDir.listFiles().findAll { it.name.endsWith("fabric.jar") }
+                def forgeJars = mergedBuildDir.listFiles().findAll { it.name.endsWith("forge.jar") }
 
-            def fabricJar = fabricJars.max { it.lastModified() }
-            def forgeJar = forgeJars.max { it.lastModified() }
+                def fabricJar = fabricJars.max { it.lastModified() }
+                def forgeJar = forgeJars.max { it.lastModified() }
 
-            if (forgeJar) {
-                copy {
-                    from forgeJar
-                    into rootProject.file('neoforge/libs')
-                    rename { fileName -> projectName + "-local.jar" }
+                if (forgeJar) {
+                    copy {
+                        from forgeJar
+                        into rootProject.file('neoforge/libs')
+                        rename { fileName -> projectName + "-local.jar" }
+                    }
+                    copy {
+                        from forgeJar
+                        into rootProject.file('Merged')
+                    }
+                    copy {
+                        from forgeJar
+                        into rootProject.file('common/libs')
+                        rename { fileName -> projectName + "-local.jar" }
+                    }
                 }
-                copy {
-                    from forgeJar
-                    into rootProject.file('Merged')
+                if (fabricJar) {
+                    copy {
+                        from fabricJar
+                        into rootProject.file('fabric/libs')
+                        rename { fileName -> projectName + "-local.jar" }
+                    }
+                    copy {
+                        from fabricJar
+                        into rootProject.file('Merged')
+                    }
+                    copy {
+                        from fabricJar
+                        into rootProject.file('common/libs')
+                        rename { fileName -> projectName + "-local.jar" }
+                    }
                 }
-                copy {
-                    from forgeJar
-                    into rootProject.file('common/libs')
-                    rename { fileName -> projectName + "-local.jar" }
-                }
+                println "Builds Copied"
             }
-            if (fabricJar) {
-                copy {
-                    from fabricJar
-                    into rootProject.file('fabric/libs')
-                    rename { fileName -> projectName + "-local.jar" }
-                }
-                copy {
-                    from fabricJar
-                    into rootProject.file('Merged')
-                }
-                copy {
-                    from fabricJar
-                    into rootProject.file('common/libs')
-                    rename { fileName -> projectName + "-local.jar" }
-                }
-            }
-            println "Builds Copied"
         }
     }
-}
 
-tasks.register('rebuildArmory') {
-    if(rootProject.run_addons) {
-        ext.projectName = "armory"
-        def project = gradle.includedBuild("armory")
-        dependsOn project.task(":buildBoth")
-        group = '_tm_tasks'
-        doLast {
-            def mergedBuildDir = rootProject.file(ext.projectName + '/Merged')
-            println mergedBuildDir
-            def fabricJars = mergedBuildDir.listFiles().findAll { it.name.endsWith("fabric.jar") }
-            def forgeJars = mergedBuildDir.listFiles().findAll { it.name.endsWith("forge.jar") }
+    tasks.register('rebuildArmory') {
+        if (rootProject.run_addons) {
+            ext.projectName = "armory"
+            def project = run_addons ? gradle.includedBuild("armory") : null
+            dependsOn project.task(":buildBoth")
+            group = '_tm_tasks'
+            doLast {
+                def mergedBuildDir = rootProject.file(ext.projectName + '/Merged')
+                println mergedBuildDir
+                def fabricJars = mergedBuildDir.listFiles().findAll { it.name.endsWith("fabric.jar") }
+                def forgeJars = mergedBuildDir.listFiles().findAll { it.name.endsWith("forge.jar") }
 
-            def fabricJar = fabricJars.max { it.lastModified() }
-            def forgeJar = forgeJars.max { it.lastModified() }
+                def fabricJar = fabricJars.max { it.lastModified() }
+                def forgeJar = forgeJars.max { it.lastModified() }
 
-            if (forgeJar) {
-                copy {
-                    from forgeJar
-                    into rootProject.file('neoforge/libs')
-                    rename { fileName -> projectName + "-local.jar" }
+                if (forgeJar) {
+                    copy {
+                        from forgeJar
+                        into rootProject.file('neoforge/libs')
+                        rename { fileName -> projectName + "-local.jar" }
+                    }
+                    copy {
+                        from forgeJar
+                        into rootProject.file('Merged')
+                    }
+                    copy {
+                        from forgeJar
+                        into rootProject.file('common/libs')
+                        rename { fileName -> projectName + "-local.jar" }
+                    }
                 }
-                copy {
-                    from forgeJar
-                    into rootProject.file('Merged')
+                if (fabricJar) {
+                    copy {
+                        from fabricJar
+                        into rootProject.file('fabric/libs')
+                        rename { fileName -> projectName + "-local.jar" }
+                    }
+                    copy {
+                        from fabricJar
+                        into rootProject.file('Merged')
+                    }
+                    copy {
+                        from fabricJar
+                        into rootProject.file('common/libs')
+                        rename { fileName -> projectName + "-local.jar" }
+                    }
                 }
-                copy {
-                    from forgeJar
-                    into rootProject.file('common/libs')
-                    rename { fileName -> projectName + "-local.jar" }
-                }
+                println "Builds Copied"
             }
-            if (fabricJar) {
-                copy {
-                    from fabricJar
-                    into rootProject.file('fabric/libs')
-                    rename { fileName -> projectName + "-local.jar" }
-                }
-                copy {
-                    from fabricJar
-                    into rootProject.file('Merged')
-                }
-                copy {
-                    from fabricJar
-                    into rootProject.file('common/libs')
-                    rename { fileName -> projectName + "-local.jar" }
-                }
-            }
-            println "Builds Copied"
         }
     }
 }
@@ -260,6 +262,12 @@ subprojects {
         options.encoding = "UTF-8"
         options.release = 21
     }
+
+    tasks.withType(Javadoc).configureEach {
+        options.addStringOption('Xdoclint:none', '-quiet')
+        failOnError = false
+    }
+
 
     processResources {
         def expandProps = [

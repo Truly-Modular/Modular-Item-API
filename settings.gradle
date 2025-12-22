@@ -17,7 +17,7 @@ include("neoforge")
 def enableAddons = providers
         .gradleProperty("run_addons")
         .map { it.toBoolean() }
-        .orElse(true)
+        .orElse(false)
         .get()
 
 if (enableAddons) {

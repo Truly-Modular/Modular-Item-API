@@ -23,7 +23,6 @@ public class PropertyResolver {
      * Resolves {@link ModuleProperty} maps for an {@link ModuleInstance}
      *
      * @param moduleInstance the {@link ModuleInstance} to resolve for
-     * @return a map of {@link ModuleProperty} and their related Data
      */
     public static void resolve(ModuleInstance moduleInstance) {
         if (moduleInstance.properties == null) {

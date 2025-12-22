@@ -62,7 +62,7 @@ public abstract class InteractAbleWidget extends AbstractWidget implements Rende
      *
      * @param drawContext The drawContext used.
      * @param x           top left Corner x
-     * @param y           top Left Corner <
+     * @param y           top Left Corner y
      * @param width       width of the square
      * @param height      height of the square
      * @param borderWidth with of the border, border is drawn inwards

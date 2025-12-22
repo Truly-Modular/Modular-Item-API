@@ -403,7 +403,7 @@ public class ReloadEvents {
          * Notifies all registered event listeners that a datapack has been reloaded.
          * This method is not intended to be called manually, and is called automatically by the system.
          *
-         * @param dataPack the datapack in a <Path,Data> map
+         * @param dataPack the datapack in a Path,Data map
          */
         public static void trigger(Map<ResourceLocation, String> dataPack) {
             for (EventListener listener : listeners) {
@@ -422,7 +422,7 @@ public class ReloadEvents {
             /**
              * Called when a datapack is reloaded.
              *
-             * @param dataPack the datapack in a <Path,Data> map
+             * @param dataPack the datapack in a Path,Data map
              */
             void onEvent(Map<ResourceLocation, String> dataPack);
         }
