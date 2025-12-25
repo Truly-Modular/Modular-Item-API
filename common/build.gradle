@@ -56,6 +56,12 @@ repositories {
     }
 }
 
+def enableAddons = providers
+        .gradleProperty("run_addons")
+        .map { it.toBoolean() }
+        .orElse(false)
+        .get()
+
 loom {
     accessWidenerPath = file("src/main/resources/miapi.accesswidener")
 }
@@ -72,8 +78,10 @@ dependencies {
     modApi "com.redpxnda.nucleus:nucleus-config-common:${rootProject.minecraft_version}+${rootProject.nucleus_config_version}"
     modApi "com.redpxnda.nucleus:nucleus-pose-common:${rootProject.minecraft_version}+${rootProject.nucleus_pose_version}"
     modApi "com.redpxnda.nucleus:nucleus-facet-common:${rootProject.minecraft_version}+${rootProject.nucleus_facet_version}"
-    modApi "com.redpxnda.nucleus:nucleus-editor-common:${rootProject.minecraft_version}+${rootProject.nucleus_editor_version}"
-    modImplementation("net.fabricmc:fabric-language-kotlin:1.13.6+kotlin.2.2.20")
+    if (enableAddons) {
+        modApi "com.redpxnda.nucleus:nucleus-editor-common:${rootProject.minecraft_version}+${rootProject.nucleus_editor_version}"
+        modImplementation("net.fabricmc:fabric-language-kotlin:1.13.6+kotlin.2.2.20")
+    }
 
     /*
     modImplementation("foundry.veil:veil-common-1.21.1:${project.veil_version}") {
@@ -86,9 +94,6 @@ dependencies {
     //https://modrinth.com/mod/treechop/version/tIdTnzkf
 
     modCompileOnly "maven.modrinth:treechop:${rootProject.fabric_treechop_version}"
-    modCompileOnly "maven.modrinth:treechop:${rootProject.fabric_treechop_version}"
-    modCompileOnly("maven.modrinth:immediatelyfast:1.6.5+1.21.1-fabric")
-    modCompileOnly("maven.modrinth:iris:1.8.8+1.21.1-fabric")
     modApi files("libs/sodium.jar")
 
     //modImplementation files('libs/arsenal-local.jar')
@@ -100,26 +105,32 @@ dependencies {
     //modApi files('libs/nucleus-core-local.jar')
     //modApi files('libs/nucleus-facet-local.jar')
     //modApi files('libs/nucleus-pose-local.jar')
-    modApi files('libs/veil.jar')
-
-    modCompileOnly("dev.onyxstudios.cardinal-components-api:cardinal-components-base:${cca_version}") {
-        exclude(group: "net.fabricmc.fabric-api")
-    }
-    modCompileOnly("dev.onyxstudios.cardinal-components-api:cardinal-components-entity:${cca_version}") {
-        exclude(group: "net.fabricmc.fabric-api")
+    if (enableAddons) {
+        modCompileOnly("maven.modrinth:immediatelyfast:1.6.5+1.21.1-fabric")
+        modCompileOnly("maven.modrinth:iris:1.8.8+1.21.1-fabric")
+        modApi files('libs/veil.jar')
     }
 
-    modCompileOnly "com.github.apace100:calio:1.13.0"
+    //modCompileOnly("dev.onyxstudios.cardinal-components-api:cardinal-components-base:${cca_version}") {
+    //    exclude(group: "net.fabricmc.fabric-api")
+    //}
+    //modCompileOnly("dev.onyxstudios.cardinal-components-api:cardinal-components-entity:${cca_version}") {
+    //    exclude(group: "net.fabricmc.fabric-api")
+    //}
+
+    //modCompileOnly "com.github.apace100:calio:1.13.0"
     modCompileOnly "com.github.apace100:apoli:${project.fabric_apoli_version}"
     //include "com.github.apace100:apoli:${project.fabric_apoli_version}"
 
-    modCompileOnly "dev.latvian.mods:rhino:${rootProject.rhino_version}"
+    //modCompileOnly "dev.latvian.mods:rhino:${rootProject.rhino_version}"
     modCompileOnly "dev.latvian.mods:kubejs-neoforge:${rootProject.kjs_version}"
 
     modCompileOnlyApi "software.bernie.geckolib:geckolib-fabric-1.20.1:${geckolib_version}"
 
-    modCompileOnly 'dev.kosmx.player-anim:player-animation-lib-fabric:2.0.0-alpha1+1.21'
-    modCompileOnly "curse.maven:bettercombat-639842:6092862"
+    if (enableAddons) {
+        modCompileOnly 'dev.kosmx.player-anim:player-animation-lib-fabric:2.0.0-alpha1+1.21'
+        modCompileOnly "curse.maven:bettercombat-639842:6092862"
+    }
 
     if ("${rootProject.run_with_bettercombat}" == "true") {
         modLocalRuntime 'dev.kosmx.player-anim:player-animation-lib-fabric:2.0.0-alpha1+1.21'
