@@ -70,3 +70,4 @@ dependencies {
 ```
 miapi_version inclues the minecraft version. check https://github.com/Truly-Modular/Modular-Item-API/releases for exact release tags,  
 alternativly github commit hashes can be used - but buids can take a couple minutes and make your gradle build fail the first time.
+The build progress on Jitpack can be checked here: https://jitpack.io/#Truly-Modular/Modular-Item-API
