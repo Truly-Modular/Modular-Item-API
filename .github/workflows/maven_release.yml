@@ -110,3 +110,13 @@ jobs:
           file: build/repository/com/Truly-Modular/Modular-Item-API/Truly-Modular-miapi-common/${{ steps.all.outputs.mod_version }}-${{ steps.all.outputs.minecraft_version }}/Truly-Modular-miapi-common-${{ steps.all.outputs.mod_version }}-${{ steps.all.outputs.minecraft_version }}.pom
           tag: ${{ steps.all.outputs.mod_version }}-${{ steps.all.outputs.minecraft_version }}
           overwrite: true
+
+      - name: Trigger JitPack build for release
+        run: |
+          TAG="${{ steps.all.outputs.mod_version }}-${{ steps.all.outputs.minecraft_version }}"
+          echo "Waiting 15 seconds for GitHub to finish publishing..."
+          sleep 15
+          echo "Requesting JitPack build..."
+          curl -s "https://jitpack.io/com/github/Truly-Modular/Modular-Item-API/$TAG/" > /dev/null
+          echo "JitPack build requested for version $TAG"
+
