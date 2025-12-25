@@ -16,7 +16,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-//DIsabled for now, not sure if this makes sense with component logic to have
 public class MaterialInscribeProperty extends CodecProperty<String> {
     public static final String KEY = "inscribe_on_craft";
     public static MaterialInscribeProperty property;

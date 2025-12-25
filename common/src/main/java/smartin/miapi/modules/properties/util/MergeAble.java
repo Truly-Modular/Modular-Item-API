@@ -2,10 +2,7 @@ package smartin.miapi.modules.properties.util;
 
 import org.apache.commons.lang3.function.TriFunction;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Merge able is a common interface to merge incoming data from different sources.
@@ -82,7 +79,16 @@ public interface MergeAble<T> {
      * Simply decides between to optiions
      * !!!WARNING!!! make sure to only use this for Immutable Objects!!!
      */
+    @SuppressWarnings("unchecked")
     static <K> K decideLeftRight(K right, K left, MergeType mergeType) {
+        if (right instanceof Optional<?> r && left instanceof Optional<?> l) {
+            if (r.isEmpty() && l.isPresent()) {
+                return (K) l;
+            }
+            if (r.isPresent() && l.isEmpty()) {
+                return (K) r;
+            }
+        }
         if (MergeType.EXTEND.equals(mergeType)) {
             return right;
         } else {

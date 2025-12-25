@@ -579,6 +579,7 @@ public class RegistryInventory {
             registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, ComponentProperty.KEY, new ComponentProperty());
             //registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, AdvancedComponentProperty.KEY, new AdvancedComponentProperty());
             registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, MaterialInscribeProperty.KEY, new MaterialInscribeProperty());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, MaterialInscribeModuleProperty.KEY, new MaterialInscribeModuleProperty());
             registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, DrawTimeProperty.KEY, new DrawTimeProperty());
             registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, MaterialOverwriteProperty.KEY, new MaterialOverwriteProperty());
             registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, CopyItemOnHit.KEY, new CopyItemOnHit());
@@ -605,6 +606,8 @@ public class RegistryInventory {
             registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, ComboProperty.KEY, new ComboProperty());
             registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, ComboTimeProperty.KEY, new ComboTimeProperty());
             registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, InertiaProperty.KEY, new InertiaProperty());
+
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, ReturnIngredientProperty.KEY, new ReturnIngredientProperty());
             //compat
             //registerMiapi(moduleProperties, BetterCombatProperty.KEY, new BetterCombatProperty());
             BetterCombatHelper.setup();
