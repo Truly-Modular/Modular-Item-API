@@ -102,10 +102,10 @@ dependencies {
     //modApi files('libs/nucleus-pose-local.jar')
     modApi files('libs/veil.jar')
 
-    modCompileOnlyApi("dev.onyxstudios.cardinal-components-api:cardinal-components-base:${cca_version}") {
+    modCompileOnly("dev.onyxstudios.cardinal-components-api:cardinal-components-base:${cca_version}") {
         exclude(group: "net.fabricmc.fabric-api")
     }
-    modCompileOnlyApi("dev.onyxstudios.cardinal-components-api:cardinal-components-entity:${cca_version}") {
+    modCompileOnly("dev.onyxstudios.cardinal-components-api:cardinal-components-entity:${cca_version}") {
         exclude(group: "net.fabricmc.fabric-api")
     }
 
