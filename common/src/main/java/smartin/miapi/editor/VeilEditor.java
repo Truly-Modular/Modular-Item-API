@@ -1,13 +1,8 @@
 package smartin.miapi.editor;
 
-import foundry.veil.api.client.editor.Inspector;
-import foundry.veil.api.client.render.VeilRenderSystem;
-import foundry.veil.platform.VeilEventPlatform;
-import net.minecraft.client.Minecraft;
-import net.minecraft.network.chat.Component;
-
 public class VeilEditor {
     public static void setup() {
+        /*
         VeilEventPlatform.INSTANCE.onVeilRendererAvailable((renderer) -> {
             if (VeilRenderSystem.hasImGui()) {
                 Inspector inspector = new Inspector() {
@@ -36,5 +31,7 @@ public class VeilEditor {
             }
 
         });
+
+         */
     }
 }
