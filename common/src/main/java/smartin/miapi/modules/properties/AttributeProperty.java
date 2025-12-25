@@ -1,11 +1,17 @@
 package smartin.miapi.modules.properties;
 
-import com.google.common.collect.*;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.LinkedListMultimap;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.Multimaps;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.architectury.event.EventResult;
 import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.attribute.*;
+import net.minecraft.entity.attribute.EntityAttribute;
+import net.minecraft.entity.attribute.EntityAttributeModifier;
+import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.item.Equipment;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
@@ -464,12 +470,12 @@ public class AttributeProperty implements ModuleProperty {
         ItemModule.ModuleInstance rootInstance = ItemModule.getModules(itemStack);
         Multimap<EntityAttribute, EntityAttributeModifierHolder> attributeModifiers = ArrayListMultimap.create();
         for (ItemModule.ModuleInstance instance : rootInstance.allSubModules()) {
-            getAttributeModifiers(defaultUUID,itemStack, instance, attributeModifiers);
+            getAttributeModifiers(defaultUUID, itemStack, instance, attributeModifiers);
         }
         return attributeModifiers;
     }
 
-    public static void getAttributeModifiers(UUIDGetter defaultUUID,ItemStack stack, ItemModule.ModuleInstance instance, Multimap<EntityAttribute, EntityAttributeModifierHolder> attributeModifiers) {
+    public static void getAttributeModifiers(UUIDGetter defaultUUID, ItemStack stack, ItemModule.ModuleInstance instance, Multimap<EntityAttribute, EntityAttributeModifierHolder> attributeModifiers) {
         JsonElement element = instance.getProperties().get(property);
         if (element == null) {
             return;
@@ -480,10 +486,10 @@ public class AttributeProperty implements ModuleProperty {
             assert attributeJson.value != null;
             assert attributeJson.operation != null;
             EquipmentSlot slot;
-            if(attributeJson.slot!=null && attributeJson.slot.equals("item")){
-                slot = EquipmentSlotProperty.getSlot(stack);
-            }else{
-                slot = (attributeJson.slot != null) ? getSlot(attributeJson.slot) : EquipmentSlot.MAINHAND;
+            if (attributeJson.slot != null && attributeJson.slot.equals("item")) {
+                slot = getItemSlot(stack);
+            } else {
+                slot = (attributeJson.slot != null) ? getSlot(attributeJson.slot) : getItemSlot(stack);
             }
             String attributeName = attributeJson.attribute;
             double value = StatResolver.resolveDouble(attributeJson.value, instance);
@@ -504,6 +510,19 @@ public class AttributeProperty implements ModuleProperty {
                 attributeModifiers.put(attribute, new EntityAttributeModifierHolder(new EntityAttributeModifier(uuid, attributeName, value, operation), slot, attributeJson.seperateOnItem, baseTarget));
             }
         }
+    }
+
+    private static EquipmentSlot getItemSlot(ItemStack stack) {
+        EquipmentSlot slot;
+        slot = EquipmentSlotProperty.getSlot(stack);
+        if (slot == null) {
+            if (stack.getItem() instanceof Equipment equipment) {
+                return equipment.getSlotType();
+            } else {
+                return EquipmentSlot.MAINHAND;
+            }
+        }
+        return slot;
     }
 
     /**
@@ -594,7 +613,7 @@ public class AttributeProperty implements ModuleProperty {
 
     public static EquipmentSlot getSlot(String slotString) {
         if (slotString != null && !slotString.isEmpty()) {
-            if(slotString.equals("item")){
+            if (slotString.equals("item")) {
                 return EquipmentSlot.MAINHAND;
             }
             try {

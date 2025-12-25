@@ -8,6 +8,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.AxeItem;
 import net.minecraft.registry.Registries;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.util.math.MathHelper;
@@ -37,9 +38,11 @@ import smartin.miapi.entity.ShieldingArmorFacet;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.forge.compat.epic_fight.EpicFightCompat;
 import smartin.miapi.forge.compat.quark.QuarkCompat;
+import smartin.miapi.modules.abilities.toolabilities.AxeAbility;
 import smartin.miapi.modules.properties.AttributeProperty;
 import smartin.miapi.registries.RegistryInventory;
 
+import java.util.Optional;
 import java.util.function.Consumer;
 
 import static smartin.miapi.Miapi.MOD_ID;
@@ -50,7 +53,7 @@ public class TrulyModularForge {
     public static IEventBus trulyModularEventBus;
 
     public TrulyModularForge() {
-        // Submit our event bus to let architectury register our content on the right time
+        AxeAbility.forgeStripStateGetter = (state) -> Optional.ofNullable(AxeItem.getAxeStrippingState(state));
 
         trulyModularEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         EventBuses.registerModEventBus(MOD_ID, trulyModularEventBus);

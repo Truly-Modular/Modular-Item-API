@@ -201,7 +201,7 @@ public class Miapi {
         }));
     }
 
-    public static Identifier MiapiIdentifier(String string) {
+    public static Identifier id(String string) {
         String[] parts = string.split(":");
         if (parts.length > 1) {
             return new Identifier(parts[0], parts[1]);
@@ -209,7 +209,7 @@ public class Miapi {
         return new Identifier(Miapi.MOD_ID, string);
     }
 
-    public static Identifier MiapiIdentifier(String namespace, String id) {
+    public static Identifier id(String namespace, String id) {
         return new Identifier(namespace, id);
     }
 

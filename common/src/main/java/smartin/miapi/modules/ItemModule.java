@@ -126,7 +126,7 @@ public class ItemModule {
 
             moduleRegistry.register(name, new ItemModule(name, moduleProperties));
         } catch (Exception e) {
-            LOGGER.warn("Could not load Module " + path, e);
+            LOGGER.warn("Could not load Module {}", path, e);
         }
     }
 
@@ -138,7 +138,6 @@ public class ItemModule {
      */
     public static void loadModuleExtension(String path, String moduleJsonString, boolean isClient) {
         try {
-            //TODO:rework this into SynergyManagers implementation
             JsonObject moduleJson = gson.fromJson(moduleJsonString, JsonObject.class);
             String name = moduleJson.get("name").getAsString();
             ItemModule module = moduleRegistry.get(name);
@@ -146,39 +145,44 @@ public class ItemModule {
                 LOGGER.warn("module not found to be extended! " + name);
                 return;
             }
-            Map<String, JsonElement> moduleProperties = new HashMap<>(module.getProperties());
-            if (moduleJson.has("remove")) {
-                moduleJson.get("remove").getAsJsonArray().forEach(jsonElement -> {
-                    try {
-                        moduleProperties.remove(jsonElement.getAsString());
-                    } catch (Exception e) {
-                    }
-                });
-            }
-            if (moduleJson.has("merge")) {
-                Map<String, JsonElement> rawMergeProperties = getPropertiesFromJsonString(moduleJson.get("merge"), path, isClient);
-                rawMergeProperties.forEach((key, element) -> {
-                    if (moduleProperties.containsKey(key)) {
-                        ModuleProperty property = RegistryInventory.moduleProperties.get(key);
-                        if (property != null) {
-                            moduleProperties.put(key, property.merge(moduleProperties.get(key), element, MergeType.SMART));
-                        }
-                    } else {
-                        moduleProperties.put(key, element);
-                    }
-                });
-            }
-            if (moduleJson.has("replace")) {
-                Map<String, JsonElement> rawReplaceProperties = getPropertiesFromJsonString(moduleJson.get("replace"), path, isClient);
-                moduleProperties.putAll(rawReplaceProperties);
-            }
-            moduleRegistry.getFlatMap().remove(name);
-            moduleRegistry.register(name, new ItemModule(name, moduleProperties));
+            loadModuleExtension(path, module,moduleJson,isClient);
         } catch (Exception e) {
             LOGGER.warn("Could not load Module to extend " + path, e);
         }
     }
 
+    public static void loadModuleExtension(String path, ItemModule module,JsonObject moduleJson,boolean isClient) {
+        Map<String, JsonElement> moduleProperties = new HashMap<>(module.getProperties());
+        if (moduleJson.has("remove")) {
+            moduleJson.get("remove").getAsJsonArray().forEach(jsonElement -> {
+                try {
+                    moduleProperties.remove(jsonElement.getAsString());
+                } catch (Exception ignored) {
+                }
+            });
+        }
+        if (moduleJson.has("merge")) {
+            Map<String, JsonElement> rawMergeProperties = getPropertiesFromJsonString(moduleJson.get("merge"), path, isClient);
+            rawMergeProperties.forEach((key, element) -> {
+                if (moduleProperties.containsKey(key)) {
+                    ModuleProperty property = RegistryInventory.moduleProperties.get(key);
+                    if (property != null) {
+                        moduleProperties.put(key, property.merge(moduleProperties.get(key), element, MergeType.SMART));
+                    }
+                } else {
+                    moduleProperties.put(key, element);
+                }
+            });
+        }
+        if (moduleJson.has("replace")) {
+            Map<String, JsonElement> rawReplaceProperties = getPropertiesFromJsonString(moduleJson.get("replace"), path, isClient);
+            moduleProperties.putAll(rawReplaceProperties);
+        }
+        moduleRegistry.getFlatMap().remove(module.name);
+        moduleRegistry.register(module.name, new ItemModule(module.name, moduleProperties));
+    }
+
+    @SuppressWarnings("unused")
     protected static Map<String, JsonElement> getPropertiesFromJsonString(String jsonString, String debugPath, boolean isClient) {
         Map<String, JsonElement> moduleProperties = new HashMap<>();
         Type type = new TypeToken<Map<String, JsonElement>>() {
@@ -214,6 +218,7 @@ public class ItemModule {
      * @param path             the path of the JSON file
      * @param rawString        the raw JSON string
      */
+    @SuppressWarnings("unused")
     protected static void processModuleJsonElement(JsonElement element, Map<String, JsonElement> moduleProperties, String name, String path, String rawString, boolean isClient) {
         if (element.isJsonObject()) {
             JsonObject jsonObject = element.getAsJsonObject();
@@ -248,16 +253,11 @@ public class ItemModule {
      * @return true if the module property is valid and can be loaded, false otherwise
      * @throws RuntimeException if an error occurs during loading
      */
-    protected static boolean isValidProperty(String key, String moduleKey, JsonElement data, boolean isClient) {
+    protected static boolean isValidProperty(String key, String moduleKey, JsonElement data,@SuppressWarnings("unused") boolean isClient) {
         ModuleProperty property = RegistryInventory.moduleProperties.get(key);
         if (property != null) {
             try {
                 return property.load(moduleKey, data);
-                //if (!(property instanceof RenderProperty) || isClient) {
-                //    return property.load(moduleKey, data, isClient);
-                //} else {
-                //    return true;
-                //}
             } catch (Exception e) {
                 RuntimeException exception = new RuntimeException("Failure during moduleLoad, Error in Module " + moduleKey + " with property " + key + " with data " + data + " with error " + e.getLocalizedMessage());
                 exception.addSuppressed(e);
@@ -279,7 +279,7 @@ public class ItemModule {
     public static ModuleInstance getModules(ItemStack stack) {
         if (ReloadEvents.isInReload()) {
             if (MiapiConfig.INSTANCE.server.other.verboseLogging) {
-                //LOGGER.info("Item cannot have modules during a reload.");
+                LOGGER.info("Item cannot have modules during a reload.");
             }
             return new ModuleInstance(new ItemModule("empty", new HashMap<>()));
         }
@@ -298,16 +298,14 @@ public class ItemModule {
     /**
      * Gets a map of unmerged module properties for the given module instance.
      *
-     * @param modules the module instance to getRaw the unmerged module properties from
+     * @param module the module instance to getRaw the unmerged module properties from
      * @return a map of unmerged module properties
      */
-    public static Map<ItemModule, List<JsonElement>> getUnmergedProperties(ModuleInstance modules) {
-        Map<ItemModule, List<JsonElement>> unmergedProperties = new HashMap<>();
-        for (ModuleInstance module : modules.subModules.values()) {
-            module.getProperties().forEach((property, data) -> {
-                unmergedProperties.getOrDefault(property, new ArrayList<>()).add(data);
-            });
-        }
+    public static Map<ModuleProperty, List<JsonElement>> getUnmergedProperties(ModuleInstance module) {
+        Map<ModuleProperty, List<JsonElement>> unmergedProperties = new HashMap<>();
+        module.getProperties().forEach((property, data) -> {
+            unmergedProperties.computeIfAbsent(property, (k) -> new ArrayList<>()).add(data);
+        });
         return unmergedProperties;
     }
 
@@ -425,14 +423,12 @@ public class ItemModule {
             if (value.module.name != null) {
                 out.name("module").value(value.module.name);
                 if (value.moduleData != null) {
-                    //out.name("moduleData").jsonValue(gson.toJson(value.moduleData));
                     out.name("moduleData");
                     gson.toJson(value.moduleData, Map.class, out);
                 } else {
                     Map<String, String> moduleData = new HashMap<>();
-                    //out.name("moduleData").jsonValue(gson.toJson(moduleData));
                     out.name("moduleData");
-                    gson.toJson( moduleData, Map.class, out);
+                    gson.toJson(moduleData, Map.class, out);
                 }
                 if (value.subModules != null) {
                     out.name("subModules");
@@ -509,11 +505,7 @@ public class ItemModule {
          * @param module the item module for the module instance
          */
         public ModuleInstance(ItemModule module) {
-            if (module == null) {
-                this.module = ItemModule.empty;
-            } else {
-                this.module = module;
-            }
+            this.module = Objects.requireNonNullElse(module, ItemModule.empty);
         }
 
         /**
@@ -543,6 +535,7 @@ public class ItemModule {
          *
          * @return a map of module properties and their associated JSON elements, keyed by property name
          */
+        @SuppressWarnings("unused")
         public Map<String, JsonElement> getKeyedProperties() {
             Map<String, JsonElement> map = new HashMap<>();
             getProperties().forEach((property, jsonElement) -> {
@@ -565,7 +558,7 @@ public class ItemModule {
                         try {
                             map.put(property, property.merge(map.get(property), element, MergeType.SMART));
                         } catch (Exception e) {
-                            LOGGER.error("coudlnt merge " + property, e);
+                            LOGGER.error("couldn't merge " + property, e);
                             map.put(property, element);
                         }
                     } else {
@@ -697,7 +690,6 @@ public class ItemModule {
             if (stack.getOrCreateNbt().contains(MODULE_KEY)) {
                 stack.getOrCreateNbt().remove(MODULE_KEY);
             }
-            //stack.getOrCreateNbt().putString(ItemModule.MODULE_KEY, this.toString());
             if (clearCache) {
                 ModularItemCache.clearUUIDFor(stack);
             }
@@ -729,6 +721,7 @@ public class ItemModule {
         }
 
         @Nullable
+        @SuppressWarnings("unused")
         public ModuleInstance parseTo(String[] data) {
             if (data.length == 0) {
                 return this;

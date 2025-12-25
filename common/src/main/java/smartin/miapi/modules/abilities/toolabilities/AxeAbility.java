@@ -16,14 +16,17 @@ import smartin.miapi.mixin.AxeItemAccessor;
 import smartin.miapi.modules.abilities.ToolAbilities;
 
 import java.util.Optional;
+import java.util.function.Function;
 
 public class AxeAbility extends ToolAbilities {
 
     public final static String KEY = "axe_ability";
 
+    public static Function<BlockState, Optional<BlockState>> forgeStripStateGetter = (s) -> Optional.empty();
+
     @Override
     public Optional<BlockState> getBlockState(BlockState blockState, ItemUsageContext context) {
-        Optional<BlockState> optional = this.getStrippedState(blockState);
+        Optional<BlockState> optional = this.getStrippedState(blockState).or(() -> forgeStripStateGetter.apply(blockState));
         Optional<BlockState> optional2 = Oxidizable.getDecreasedOxidationState(blockState);
         Optional<BlockState> optional3 = Optional.ofNullable((Block) ((BiMap) HoneycombItem.WAXED_TO_UNWAXED_BLOCKS.get()).get(blockState.getBlock())).map((block) -> {
             return block.getStateWithProperties(blockState);

@@ -34,7 +34,8 @@ public class MaterialAtlasManager extends SpriteAtlasHolder {
     }
 
     public void addSpriteToLoad(Identifier id) {
-        addedSprites.add(new AddedSpriteEntry(id, s -> {}));
+        addedSprites.add(new AddedSpriteEntry(id, s -> {
+        }));
     }
 
     public void addSpriteToLoad(Identifier id, Consumer<SpriteContents> onAdded) {
@@ -66,6 +67,7 @@ public class MaterialAtlasManager extends SpriteAtlasHolder {
                 Miapi.LOGGER.error("Failed to add sprite '" + id + "' to material atlas!", e);
             }
         }
+        materialSprites.add(MissingSprite.createSpriteContents());
         Executor executor = newSingleThreadExecutor();
 
         int shortMax = 32766;
@@ -91,8 +93,12 @@ public class MaterialAtlasManager extends SpriteAtlasHolder {
         if (sprite == null) {
             sprite = getSprite(BASE_MATERIAL_ID);
         }
+        if (sprite != null && sprite.getContents().getId().equals(MissingSprite.getMissingSpriteId())) {
+            return null;
+        }
         return sprite;
     }
 
-    public record AddedSpriteEntry(Identifier id, Consumer<SpriteContents> onCreated) {}
+    public record AddedSpriteEntry(Identifier id, Consumer<SpriteContents> onCreated) {
+    }
 }

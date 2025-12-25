@@ -19,4 +19,6 @@
         }
     }
 ```
-
+- fixed equipment slot related issues with attribute property
+- adjusted axe strip behaviour
+- fixed compat with Factory API

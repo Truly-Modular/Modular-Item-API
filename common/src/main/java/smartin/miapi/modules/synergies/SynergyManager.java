@@ -12,6 +12,7 @@ import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.conditions.ConditionManager;
 import smartin.miapi.modules.conditions.ModuleCondition;
+import smartin.miapi.modules.conditions.TrueCondition;
 import smartin.miapi.modules.material.Material;
 import smartin.miapi.modules.material.MaterialProperty;
 import smartin.miapi.modules.properties.TagProperty;
@@ -33,7 +34,7 @@ public class SynergyManager {
     public static void setup() {
         Miapi.registerReloadHandler(ReloadEvents.MAIN, "synergies", maps, (isClient, path, data) -> {
             try {
-                load(data);
+                load(data, isClient);
             } catch (RuntimeException e) {
                 Miapi.LOGGER.error("Could not load Synergy " + path, e);
             }
@@ -48,7 +49,7 @@ public class SynergyManager {
     }
 
 
-    public static void load(String data) {
+    public static void load(String data, boolean isClient) {
         JsonObject element = Miapi.gson.fromJson(data, JsonObject.class);
         element.getAsJsonObject().entrySet().forEach((entry) -> {
             if (element.has("type")) {
@@ -59,7 +60,7 @@ public class SynergyManager {
                         if (itemModule == null) {
                             Miapi.LOGGER.warn("Module does not exist " + entry.getKey() + " cannot load synergy");
                         } else {
-                            loadSynergy(itemModule, entry.getValue().getAsJsonObject());
+                            loadSynergy(itemModule, entry.getValue().getAsJsonObject(), isClient);
                         }
                     });
                 }
@@ -75,28 +76,29 @@ public class SynergyManager {
                 if (type.equals("all")) {
                     if (entry.getValue().isJsonObject()) {
                         RegistryInventory.modules.getFlatMap().forEach((id, module) -> {
-                            loadSynergy(module, entry.getValue().getAsJsonObject());
+                            loadSynergy(module, entry.getValue().getAsJsonObject(), isClient);
                         });
                     }
                 }
             } else {
-                if (entry.getKey().contains("great")) {
-                    Miapi.LOGGER.error("greatsword");
-                }
                 ItemModule module = RegistryInventory.modules.get(entry.getKey());
                 JsonObject entryData = entry.getValue().getAsJsonObject();
                 if (module == null) {
                     Miapi.LOGGER.warn("ItemModule does not exist " + entry.getKey() + " cannot load synergy");
                 } else {
-                    loadSynergy(module, entryData);
+                    loadSynergy(module, entryData, isClient);
                 }
             }
         });
     }
 
-    public static void loadSynergy(ItemModule itemModule, JsonObject entryData) {
+    public static void loadSynergy(ItemModule itemModule, JsonObject entryData, boolean isClient) {
         Synergy synergy = new Synergy();
         synergy.condition = ConditionManager.get(entryData.get("condition"));
+        if (synergy.condition instanceof TrueCondition) {
+            //ItemModule.loadModuleExtension("created from synergy", itemModule, entryData, isClient);
+            //return;
+        }
         List<Synergy> synergies = maps.computeIfAbsent(itemModule, (module) -> {
             return new ArrayList<>();
         });
