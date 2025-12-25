@@ -31,10 +31,7 @@ the miapi_version needed is the same as the github release tag
 ## Common
 ```js
 repositories {
-    maven {
-        url 'http://trulymodular.dedyn.io/maven'
-        allowInsecureProtocol = true
-    }
+    maven { url 'https://jitpack.io' }
     maven { url 'https://maven.uuid.gg/releases' }
     maven { url 'https://maven.terraformersmc.com/' }
     maven { url 'https://maven.theillusivec4.top/' }
@@ -46,30 +43,29 @@ repositories {
     }
 }
 ```
-incase dedyn is ever unresponsive you can try to use
-http://trulymodular.dedyn.io/maven instead
 ```js
 dependencies {
-    modApi("com.Truly-Modular.Modular-Item-API:Truly-Modular-miapi-common:${rootProject.miapi_version}")
+    modApi("com.github.Truly-Modular.Modular-Item-API:Truly-Modular-miapi-common:${rootProject.miapi_version}")
 }
 ```
 ## Fabric
 ```js
 dependencies {
-    modApi("com.Truly-Modular.Modular-Item-API:Truly-Modular-miapi-fabric:${rootProject.miapi_version}")
+    modApi("com.github.Truly-Modular.Modular-Item-API:Truly-Modular-miapi-fabric:${rootProject.miapi_version}")
 }
 ```
 ## Forge (1.20 only)
 ```js
 dependencies {
-    modApi("com.Truly-Modular.Modular-Item-API:Truly-Modular-miapi-forge:${rootProject.miapi_version}")
+    modApi("com.github.Truly-Modular.Modular-Item-API:Truly-Modular-miapi-forge:${rootProject.miapi_version}")
 }
 ```
 
 ## Neoforge (1.21.1 only)
 ```js
 dependencies {
-    modApi("com.Truly-Modular.Modular-Item-API:Truly-Modular-miapi-neoforge:${rootProject.miapi_version}")
+    modApi("com.github.Truly-Modular.Modular-Item-API:Truly-Modular-miapi-neoforge:${rootProject.miapi_version}")
 }
 ```
-miapi_version inclues the minecraft version. check https://github.com/Truly-Modular/Modular-Item-API/releases for exact release tags
+miapi_version inclues the minecraft version. check https://github.com/Truly-Modular/Modular-Item-API/releases for exact release tags,  
+alternativly github commit hashes can be used - but buids can take a couple minutes and make your gradle build fail the first time.
