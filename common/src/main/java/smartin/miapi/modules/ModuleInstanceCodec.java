@@ -5,6 +5,8 @@ import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceLocation;
 import smartin.miapi.Miapi;
@@ -91,8 +93,22 @@ public class ModuleInstanceCodec implements Codec<ModuleInstance> {
         Codec<ModuleInstance> base = new ModuleInstanceCodec();
         return registrySavingCodec(base, (m, l) -> {
             setupModule(m, l);
+            checkRegistryLookup(m, l, Miapi.registryAccess);
+            checkRegistryLookup(m, l, Miapi.clientRegistryAccess);
             ComponentApplyProperty.trySetup(m);
         });
+    }
+
+    private static void checkRegistryLookup(ModuleInstance m, RegistryOps.RegistryInfoLookup l, RegistryAccess server) {
+        if (server != null) {
+            if (server.registry(Registries.ENCHANTMENT).isPresent() && l.lookup(Registries.ENCHANTMENT).isPresent()) {
+                if (server.registry(Registries.ENCHANTMENT).get().equals(l.lookup(Registries.ENCHANTMENT).get())) {
+                    if (l.lookup(Registries.ENCHANTMENT).get().owner().canSerializeIn(server.registry(Registries.ENCHANTMENT).get().holderOwner())) {
+                        m.registryAccess = server;
+                    }
+                }
+            }
+        }
     }
 
     private static void setupModule(ModuleInstance moduleInstance, RegistryOps.RegistryInfoLookup lookup) {

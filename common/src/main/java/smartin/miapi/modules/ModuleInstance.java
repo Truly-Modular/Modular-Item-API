@@ -154,11 +154,12 @@ public class ModuleInstance {
      *
      * @param module the item module for the module instance
      */
-    public ModuleInstance(ItemModule module) {
+    public ModuleInstance(ItemModule module, RegistryAccess access) {
         this.moduleID = module.id();
         this.module = module;
         ModularItemCache.modules.addInstance(this);
         isAdded = true;
+        this.registryAccess = access;
     }
 
     /**
@@ -166,7 +167,7 @@ public class ModuleInstance {
      *
      * @param module the item module for the module instance
      */
-    public ModuleInstance(ResourceLocation module, Map<String, ModuleInstance> subModules, Map<ResourceLocation, JsonElement> data) {
+    protected ModuleInstance(ResourceLocation module, Map<String, ModuleInstance> subModules, Map<ResourceLocation, JsonElement> data) {
         this.moduleID = module;
         this.subModules = subModules;
         this.moduleData = new HashMap<>(data);
@@ -406,7 +407,7 @@ public class ModuleInstance {
      * @return The copied module instance.
      */
     private ModuleInstance deepCopy() {
-        ModuleInstance copy = new ModuleInstance(this.getModule());
+        ModuleInstance copy = new ModuleInstance(this.getModule(), registryAccess);
         copy.moduleID = moduleID;
         copy.registryAccess = this.registryAccess;
         copy.moduleData = new HashMap<>(this.moduleData);
@@ -694,6 +695,6 @@ public class ModuleInstance {
 
     @Override
     public int hashCode() {
-        return this.moduleID.hashCode() * subModules.hashCode()*13+moduleData.hashCode();
+        return this.moduleID.hashCode() * subModules.hashCode() * 13 + moduleData.hashCode();
     }
 }

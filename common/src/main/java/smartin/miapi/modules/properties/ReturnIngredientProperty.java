@@ -5,6 +5,7 @@ import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 import com.redpxnda.nucleus.codec.auto.AutoCodec;
+import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -21,7 +22,6 @@ import smartin.miapi.modules.properties.util.MergeType;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * Saves exactly one ingredient when applied and returns it on removal/replacement (if player != null).
@@ -30,9 +30,10 @@ import java.util.Optional;
 public class ReturnIngredientProperty extends CodecProperty<ReturnIngredientProperty.StoredIngredientData> implements CraftingProperty {
     public static final String KEY = "return_ingredient_on_remove";
     public static ReturnIngredientProperty property;
+    public static final Codec<StoredIngredientData> CODEC = AutoCodec.of(StoredIngredientData.class).codec();
 
     public ReturnIngredientProperty() {
-        super(StoredIngredientData.CODEC);
+        super(CODEC);
         property = this;
     }
 
@@ -40,8 +41,10 @@ public class ReturnIngredientProperty extends CodecProperty<ReturnIngredientProp
      * The only saved data: a single consumed item.
      * Any fallbacks or metadata are runtime values only.
      */
-    public record StoredIngredientData(List<ItemStack> given, List<ItemStack> fallback, Optional<Boolean> ingredient) {
-        public static final Codec<StoredIngredientData> CODEC = AutoCodec.of(StoredIngredientData.class).codec();
+    public static class StoredIngredientData {
+        public List<ItemStack> given = List.of();
+        public List<ItemStack> fallback = List.of();
+        public @CodecBehavior.Optional boolean ingredient = true;
     }
 
     @Override
@@ -81,7 +84,7 @@ public class ReturnIngredientProperty extends CodecProperty<ReturnIngredientProp
         if (inventory.size() < 2 || inventory.get(1).isEmpty()) return;
 
         getData(instance).ifPresent(data -> {
-            if (data.ingredient().orElse(true)) {
+            if (data.ingredient) {
                 instance.moduleData.put(Miapi.id(KEY), ItemStack.CODEC.encodeStart(JsonOps.INSTANCE, inventory.get(1).copy()).getOrThrow());
                 instance.getRoot().writeToItem(crafted);
             }
@@ -104,10 +107,10 @@ public class ReturnIngredientProperty extends CodecProperty<ReturnIngredientProp
 
     @Override
     public StoredIngredientData merge(StoredIngredientData left, StoredIngredientData right, MergeType mergeType) {
-        return new StoredIngredientData(
-                MergeAble.mergeList(left.given(), right.given(), mergeType),
-                MergeAble.mergeList(left.fallback(), right.fallback(), mergeType).reversed(),
-                MergeAble.decideLeftRight(left.ingredient(), right.ingredient(), mergeType)
-        );
+        StoredIngredientData data = new StoredIngredientData();
+        data.given = MergeAble.mergeList(left.given, right.given, mergeType);
+        data.fallback = MergeAble.mergeList(left.fallback, right.fallback, mergeType).reversed();
+        data.ingredient = MergeAble.decideLeftRight(left.ingredient, right.ingredient, mergeType);
+        return data;
     }
 }

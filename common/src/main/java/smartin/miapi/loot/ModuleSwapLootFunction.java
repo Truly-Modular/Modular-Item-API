@@ -179,7 +179,7 @@ public record ModuleSwapLootFunction(
 
         // Select a random substitute from the list
         int randomIndex = randomSource.nextInt(possibleSubstitutes.size());
-        ModuleInstance moduleInstance = new ModuleInstance(possibleSubstitutes.get(randomIndex));
+        ModuleInstance moduleInstance = new ModuleInstance(possibleSubstitutes.get(randomIndex), module.registryAccess);
         moduleInstance.moduleData = new HashMap<>(module.moduleData);
         module.subModules.forEach(moduleInstance::setSubModule);
         moduleInstance.clearCaches();

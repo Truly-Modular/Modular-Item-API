@@ -3,6 +3,7 @@ package smartin.miapi.client.gui.crafting.crafter.replace;
 import com.google.gson.JsonElement;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import smartin.miapi.Miapi;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
 
@@ -22,6 +23,6 @@ public record CraftOption(
      */
     public CraftOption(ItemModule module,
                        Map<ResourceLocation, JsonElement> data, double priority) {
-        this(module, () -> data, priority, new ModuleInstance(module).getModuleName());
+        this(module, () -> data, priority, new ModuleInstance(module, Miapi.registryAccess).getModuleName());
     }
 }

@@ -2,6 +2,7 @@ package smartin.miapi.modules.properties.util;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import smartin.miapi.Miapi;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
 
@@ -38,7 +39,7 @@ public abstract class ComplexBooleanProperty extends DoubleProperty {
     public boolean isTrue(ItemModule module) {
         Optional<DoubleOperationResolvable> optional = getData(module);
         if (optional.isPresent()) {
-            optional = Optional.of(optional.get().initialize(new ModuleInstance(module)));
+            optional = Optional.of(optional.get().initialize(new ModuleInstance(module, Miapi.registryAccess)));
         }
         return optional.map(doubleOperationResolvable -> doubleOperationResolvable.evaluate(0.0, 0.0) > 0).orElseGet(() -> defaultValue);
     }

@@ -12,11 +12,9 @@ import java.util.Optional;
 /**
  * @header UI Priority Property
  * @path /data_types/properties/priority
- * @description_start
- * The PriorityProperty affects the ordering of items or modules within the GUI. This property assigns a priority value
+ * @description_start The PriorityProperty affects the ordering of items or modules within the GUI. This property assigns a priority value
  * to each item or module, which influences its placement or sorting in graphical user interfaces where multiple items
  * or modules are displayed. A lower value will be placed first in the list and higher values at the end.
- *
  * @description_end
  * @data priority: the priority for sorting
  */
@@ -32,7 +30,7 @@ public class PriorityProperty extends DoubleProperty {
     }
 
     public static double getFor(ItemModule module) {
-        Optional<DoubleOperationResolvable> resolvable = property.getData(new ModuleInstance(module));
+        Optional<DoubleOperationResolvable> resolvable = property.getData(new ModuleInstance(module, Miapi.registryAccess));
         if (resolvable.isPresent()) {
             return resolvable.get().getValue();
         }

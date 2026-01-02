@@ -64,7 +64,7 @@ public class MaterialStatWidget extends InteractAbleWidget {
     }
 
     private static @NotNull ItemStack getDisplayStack(Material original, String propertyKey) {
-        ModuleInstance moduleInstance = new ModuleInstance(ItemModule.internal);
+        ModuleInstance moduleInstance = new ModuleInstance(ItemModule.internal, Miapi.clientRegistryAccess);
         ItemStack compareMaterial = RegistryInventory.modularStackableItem.getDefaultInstance();
         ModuleDataPropertiesManager.setProperties(moduleInstance, original.getDisplayMaterialProperties(propertyKey));
         moduleInstance.clearCaches();

@@ -191,7 +191,7 @@ public class AllowedEnchantments extends CodecProperty<AllowedEnchantments.Allow
             access = null;
         }
         return optional.map(allowedEnchantsData -> allowedEnchantsData
-                        .isSupported(enchantment, access, Miapi.registryAccess)
+                        .isSupported(enchantment, access, access)
                         .orElse(oldValue && MiapiConfig.getServerConfig().enchants.lenientEnchantments))
                 .orElse(oldValue);
     }

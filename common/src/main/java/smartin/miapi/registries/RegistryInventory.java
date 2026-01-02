@@ -607,7 +607,7 @@ public class RegistryInventory {
             registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, ComboTimeProperty.KEY, new ComboTimeProperty());
             registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, InertiaProperty.KEY, new InertiaProperty());
 
-            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, ReturnIngredientProperty.KEY, new ReturnIngredientProperty());
+            //registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, ReturnIngredientProperty.KEY, new ReturnIngredientProperty());
             //compat
             //registerMiapi(moduleProperties, BetterCombatProperty.KEY, new BetterCombatProperty());
             BetterCombatHelper.setup();

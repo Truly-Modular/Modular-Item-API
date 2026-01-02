@@ -83,7 +83,7 @@ public class MaterialDetailView extends InteractAbleWidget {
         this.addChild(list);
         if (back != null) {
             this.addChild(new SimpleButton<>(
-                    x + width -  buttonWidth, y,
+                    x + width - buttonWidth, y,
                     buttonWidth, 18,
                     Component.translatable("miapi.ui.back"),
                     () -> back.accept(null)));
@@ -206,7 +206,7 @@ public class MaterialDetailView extends InteractAbleWidget {
 
         @Override
         public InteractAbleWidget build(int x, int y, int width, int spacer, Material material) {
-            return new ColorWidget(x,y,width,spacer,material.getColor(new ModuleInstance(ItemModule.empty)));
+            return new ColorWidget(x, y, width, spacer, material.getColor(new ModuleInstance(ItemModule.empty, Miapi.clientRegistryAccess)));
         }
     }
 

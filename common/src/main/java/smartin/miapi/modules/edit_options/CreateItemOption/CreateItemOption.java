@@ -2,6 +2,7 @@ package smartin.miapi.modules.edit_options.CreateItemOption;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
@@ -49,7 +50,11 @@ public class CreateItemOption implements EditOption {
         int count = buffer.readInt();
         ItemStack itemStack = new ItemStack(BuiltInRegistries.ITEM.get(ResourceLocation.parse(itemID)));
         itemStack.setCount(count);
-        ModuleInstance instance = new ModuleInstance(RegistryInventory.ITEM_MODULE_MIAPI_REGISTRY.get(module));
+        RegistryAccess access = Miapi.registryAccess;
+        if (editContext.getPlayer() != null && editContext.getPlayer().level() != null) {
+            access = editContext.getPlayer().level().registryAccess();
+        }
+        ModuleInstance instance = new ModuleInstance(RegistryInventory.ITEM_MODULE_MIAPI_REGISTRY.get(module), access);
         instance.writeToItem(itemStack);
         CraftAction action = new CraftAction(buffer, editContext.getWorkbench(), editContext.getScreenHandler());
         Container inventory = editContext.getLinkedInventory();
@@ -72,7 +77,7 @@ public class CreateItemOption implements EditOption {
         int count = buffer.readInt();
         ItemStack itemStack = new ItemStack(BuiltInRegistries.ITEM.get(ResourceLocation.parse(itemID)));
         itemStack.setCount(count);
-        ModuleInstance instance = new ModuleInstance(RegistryInventory.ITEM_MODULE_MIAPI_REGISTRY.get(module));
+        ModuleInstance instance = new ModuleInstance(RegistryInventory.ITEM_MODULE_MIAPI_REGISTRY.get(module), Miapi.registryAccess);
         instance.writeToItem(itemStack);
         CraftAction action = new CraftAction(buffer, editContext.getWorkbench(), editContext.getScreenHandler());
         action.setItem(itemStack);
@@ -141,7 +146,7 @@ public class CreateItemOption implements EditOption {
 
             @Override
             public @Nullable ModuleInstance getInstance() {
-                return new ModuleInstance(item.getBaseModule());
+                return new ModuleInstance(item.getBaseModule(), Miapi.registryAccess);
             }
 
             @Override

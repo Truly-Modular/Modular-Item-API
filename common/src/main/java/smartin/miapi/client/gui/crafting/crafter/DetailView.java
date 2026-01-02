@@ -5,6 +5,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.FastColor;
+import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.ScrollList;
 import smartin.miapi.client.gui.ScrollingTextWidget;
@@ -23,7 +24,6 @@ import java.util.function.Consumer;
 
 /**
  * This Widget displays the Treelike Structure of the modular Item
- *
  */
 @Environment(EnvType.CLIENT)
 public class DetailView extends InteractAbleWidget {
@@ -94,7 +94,7 @@ public class DetailView extends InteractAbleWidget {
             ModuleInstance moduleInstance = slot.inSlot;
             boolean hasNoModule = moduleInstance == null;
             if (hasNoModule) {
-                moduleInstance = new ModuleInstance(ItemModule.empty);
+                moduleInstance = new ModuleInstance(ItemModule.empty, Miapi.clientRegistryAccess);
             }
             Component materialNameText = moduleInstance.getModuleName();
             material = MaterialProperty.getMaterial(moduleInstance);
@@ -134,7 +134,7 @@ public class DetailView extends InteractAbleWidget {
             if (this.slot == selectedSlot) {
                 return true;
             }
-            if(this.slot != null && slot.equals(selectedSlot)){
+            if (this.slot != null && slot.equals(selectedSlot)) {
                 return true;
             }
             return false;

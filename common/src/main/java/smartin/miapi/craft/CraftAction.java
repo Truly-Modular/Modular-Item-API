@@ -4,6 +4,7 @@ import com.google.gson.JsonElement;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.JsonOps;
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.RegistryOps;
@@ -172,6 +173,13 @@ public class CraftAction {
         return Pair.of(map, test.get());
     }
 
+    protected RegistryAccess getAccess() {
+        if (player != null && player.level() != null) {
+            return player.level().registryAccess();
+        }
+        return Miapi.registryAccess;
+    }
+
     /**
      * Updates the NBT data of an ItemStack with the given module instance.
      *
@@ -258,7 +266,7 @@ public class CraftAction {
                 return ItemStack.EMPTY;
             }
             subModuleMap = oldBaseModule.getSubModuleMap();
-            ModuleInstance newModule = new ModuleInstance(toAdd);
+            ModuleInstance newModule = new ModuleInstance(toAdd, getAccess());
             subModuleMap.forEach((id, module) -> {
                 SlotProperty.ModuleSlot slot = SlotProperty.getSlots(newModule).get(id);
                 if (slot != null && slot.allowedIn(module)) {
@@ -288,7 +296,7 @@ public class CraftAction {
                 parsingInstance != null) {
             parsingInstance.removeSubModule(slotLocation.getFirst());
         } else {
-            ModuleInstance newModule = new ModuleInstance(toAdd);
+            ModuleInstance newModule = new ModuleInstance(toAdd, getAccess());
             ModuleInstance moduleMapInstance = parsingInstance.getSubModule(slotLocation.getFirst());
             if (moduleMapInstance != null) {
                 subModuleMap = moduleMapInstance.getSubModuleMap();

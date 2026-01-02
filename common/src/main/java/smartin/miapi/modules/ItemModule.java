@@ -139,7 +139,7 @@ public record ItemModule(ResourceLocation id, Map<ModuleProperty<?>, Object> pro
             if (root != null) {
                 root.clearCaches();
             }
-            return new ModuleInstance(ItemModule.empty);
+            return new ModuleInstance(ItemModule.empty, root.registryAccess);
         }
         if (VisualModularItem.isVisualModularItem(stack) && !ReloadEvents.isInReload()) {
             ModuleInstance root = stack.get(ModuleInstance.MODULE_INSTANCE_COMPONENT);
@@ -168,7 +168,7 @@ public record ItemModule(ResourceLocation id, Map<ModuleProperty<?>, Object> pro
                 return root;
             }
         }
-        return new ModuleInstance(ItemModule.empty);
+        return new ModuleInstance(ItemModule.empty, Miapi.registryAccess);
     }
 
     /**

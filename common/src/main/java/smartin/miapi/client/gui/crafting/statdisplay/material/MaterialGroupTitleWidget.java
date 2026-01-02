@@ -6,6 +6,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
+import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.ScrollingTextWidget;
 import smartin.miapi.client.gui.crafting.statdisplay.SingleStatDisplay;
@@ -32,7 +33,7 @@ public class MaterialGroupTitleWidget extends InteractAbleWidget {
         }
         scrollingTextWidget = new ScrollingTextWidget(x, y + 2, width,
                 module != null ?
-                        new ModuleInstance(module).getModuleName() :
+                        new ModuleInstance(module, Miapi.clientRegistryAccess).getModuleName() :
                         Component.translatableWithFallback("miapi.material_property.category." + materialKey, materialKey));
         scrollingTextWidget.setOrientation(ScrollingTextWidget.Orientation.CENTERED);
         hoverDescription =

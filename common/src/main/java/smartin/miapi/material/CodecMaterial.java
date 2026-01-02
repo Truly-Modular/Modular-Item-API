@@ -152,7 +152,7 @@ public class CodecMaterial implements Material {
             ResourceLocation.CODEC.optionalFieldOf("mining_level").forGetter(material -> Optional.of(material.getIncorrectBlocksForDrops().location())),
             ComponentSerialization.CODEC.optionalFieldOf("translation").forGetter(material -> material.translation),
             Codec.STRING.optionalFieldOf("color")
-                    .forGetter(m -> Optional.of(Long.toHexString(((long) m.getColor(new ModuleInstance(ItemModule.empty))) & 0xFFFFFFFF))),
+                    .forGetter(m -> Optional.of(Long.toHexString(((long) m.getColor(new ModuleInstance(ItemModule.empty, Miapi.registryAccess))) & 0xFFFFFFFF))),
             IngredientWithCount.CODEC.listOf().optionalFieldOf("items", new ArrayList<>()).forGetter(material -> material.items),
             Codec.either(
                     Miapi.FIXED_BOOL_CODEC,
@@ -222,7 +222,7 @@ public class CodecMaterial implements Material {
         }
     }
 
-    public void setup(){
+    public void setup() {
         if (smartin.miapi.Environment.isClient()) {
             clientSetup(iconJson, paletteJson, dyePaletteJson);
         }
@@ -319,7 +319,7 @@ public class CodecMaterial implements Material {
             this.palette = MaterialRenderControllers.creators.get(this.paletteJson.get().getAsJsonObject().get("type").getAsString()).createPalette(this.paletteJson.get(), this);
         }
 
-        if(material.dyePaletteJson.isPresent()){
+        if (material.dyePaletteJson.isPresent()) {
             this.dyePaletteJson = material.paletteJson;
             this.dyeAblePalette = MaterialRenderControllers.creators.get(this.dyePaletteJson.get().getAsJsonObject().get("type").getAsString()).createPalette(this.dyePaletteJson.get(), this);
         }

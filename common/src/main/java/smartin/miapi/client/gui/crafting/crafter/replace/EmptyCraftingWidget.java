@@ -6,6 +6,7 @@ import net.minecraft.Util;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.FastColor;
+import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.MultiLineTextWidget;
 import smartin.miapi.client.gui.ScrollingTextWidget;
@@ -27,7 +28,7 @@ public class EmptyCraftingWidget extends InteractAbleWidget {
     public EmptyCraftingWidget(int x, int y, int width, int height, CraftAction action) {
         super(x, y, width, height, Component.empty());
 
-        ModuleInstance moduleInstance = new ModuleInstance(action.toAdd);
+        ModuleInstance moduleInstance = new ModuleInstance(action.toAdd, Miapi.clientRegistryAccess);
         Component displayText = moduleInstance.getModuleName();
         Component descriptionText = moduleInstance.getModuleDescription();
 

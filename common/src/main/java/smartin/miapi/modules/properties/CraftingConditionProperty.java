@@ -59,7 +59,7 @@ public class CraftingConditionProperty extends CodecProperty<CraftingConditionPr
     public static boolean isVisible(SlotProperty.ModuleSlot slot, ItemModule module, Player entity, BlockPos pos) {
         CraftingConditionJson json = (CraftingConditionJson) module.properties().get(property);
         if (json != null) {
-            return json.visible.isAllowed(ConditionManager.fullContext(new ModuleInstance(module), pos, entity, module.properties()));
+            return json.visible.isAllowed(ConditionManager.fullContext(new ModuleInstance(module, Miapi.registryAccess), pos, entity, module.properties()));
         }
         return true;
     }
@@ -69,7 +69,7 @@ public class CraftingConditionProperty extends CodecProperty<CraftingConditionPr
         if (module == null) {
             module = ItemModule.empty;
         }
-        ConditionManager.ConditionContext context = ConditionManager.fullContext(new ModuleInstance(module), pos, entity, module.properties());
+        ConditionManager.ConditionContext context = ConditionManager.fullContext(new ModuleInstance(module, Miapi.registryAccess), pos, entity, module.properties());
         if (json != null && !json.selectAble.isAllowed(context.copy())) {
             return false;
         }
@@ -82,7 +82,7 @@ public class CraftingConditionProperty extends CodecProperty<CraftingConditionPr
             module = ItemModule.empty;
         }
         List<Component> reasons = new ArrayList<>();
-        ConditionManager.ConditionContext context = ConditionManager.fullContext(new ModuleInstance(module), pos, entity, module.properties());
+        ConditionManager.ConditionContext context = ConditionManager.fullContext(new ModuleInstance(module, Miapi.registryAccess), pos, entity, module.properties());
         ConditionManager.ConditionContext secondContext = context.copy();
         if (json != null) {
             json.selectAble.isAllowed(context);

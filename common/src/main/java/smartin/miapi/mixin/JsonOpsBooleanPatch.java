@@ -6,18 +6,15 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.Lifecycle;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(JsonOps.class)
 public abstract class JsonOpsBooleanPatch {
-    @Shadow
-    public abstract JsonElement remove(JsonElement input, String key);
 
     @ModifyReturnValue(
             method = "Lcom/mojang/serialization/JsonOps;getBooleanValue(Lcom/google/gson/JsonElement;)Lcom/mojang/serialization/DataResult;",
             at = @At("RETURN"),
-            remap = true,
+            remap = false,
             require = -1)
     private DataResult<Boolean> miapi$allowForNBTWeirdnessConversion(DataResult<Boolean> original, final JsonElement input) {
         if (original.isError()) {
