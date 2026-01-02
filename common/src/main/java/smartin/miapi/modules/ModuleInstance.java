@@ -162,6 +162,10 @@ public class ModuleInstance {
         this.registryAccess = access;
     }
 
+    public ModuleInstance(ItemModule module) {
+        this(module, Miapi.registryAccess);
+    }
+
     /**
      * Constructs a new module instance with the given item module.
      *

@@ -12,6 +12,7 @@ import smartin.miapi.modules.properties.slot.SlotProperty;
 import smartin.miapi.registries.RegistryInventory;
 
 import java.util.*;
+import java.util.function.Function;
 
 public class CraftActionPipeline {
 
@@ -54,13 +55,16 @@ public class CraftActionPipeline {
         if (stack != null && !stack.isEmpty()) {
             this.itemBase = stack.copy();
         } else {
-            this.baseItem(null);
+            this.itemBase = null;
         }
         return this;
     }
 
     public CraftActionPipeline itemCount(int count) {
         this.itemCount = Math.max(1, Math.min(64, count));
+        if (itemBase != null) {
+            itemBase.setCount(itemCount);
+        }
         return this;
     }
 
@@ -144,9 +148,17 @@ public class CraftActionPipeline {
     }
 
     public ItemStack preview() {
-        ItemStack working = getBaseStack();
+        return craft(CraftAction::getPreview);
+    }
+
+    protected ItemStack craft(Function<CraftAction, ItemStack> craft) {
+        ItemStack working = getBaseStack().copy();
+        working.setCount(Math.min(working.getCount(), calculateMaxProduction()));
 
         for (PipelineEntry e : entries) {
+            if (allowEmptyModules && calculateAvailableForEntry(e) == 0) {
+                continue;
+            }
             ItemStack input = e.container.getItem(e.slotIndex);
 
             if (input.isEmpty() && !allowEmptyModules) {
@@ -163,7 +175,7 @@ public class CraftActionPipeline {
                 continue;
             }
 
-            working = action.getPreview();
+            working = craft.apply(action);
             if (working.isEmpty() && isNormalOrStrict()) {
                 return ItemStack.EMPTY;
             }
@@ -172,6 +184,10 @@ public class CraftActionPipeline {
     }
 
     public int calculateMaxProduction() {
+        return calculateMaxProduction(getBaseStack().getCount());
+    }
+
+    public int calculateMaxProduction(int fallback) {
         List<Integer> results = new ArrayList<>();
 
         for (PipelineEntry e : entries) {
@@ -179,7 +195,12 @@ public class CraftActionPipeline {
         }
 
         // Final output is governed by minimum limiting factor
-        int min = results.stream().min(Integer::compareTo).orElse(0);
+        int min = results.stream().filter(i -> {
+            if (allowEmptyModules) {
+                return i != 0;
+            }
+            return true;
+        }).min(Integer::compareTo).orElse(fallback);
         if (min == 0 && FailureMode.STRICT == failureMode) {
             return 0;
         }
@@ -228,28 +249,7 @@ public class CraftActionPipeline {
     }
 
     public ItemStack perform() {
-        ItemStack working = getBaseStack();
-
-        for (PipelineEntry e : entries) {
-            ItemStack input = e.container.getItem(e.slotIndex);
-
-            if (input.isEmpty() && !allowEmptyModules) {
-                if (isNormalOrStrict()) return working;
-                continue;
-            }
-            if (input.isEmpty()) continue;
-
-            CraftAction action = createAction(working, e);
-            action.linkInventory(e.container, e.slotIndex);
-
-            if (!action.canPerform()) {
-                if (isNormalOrStrict()) return working;
-                continue;
-            }
-
-            working = action.perform();
-        }
-        return working;
+        return craft(CraftAction::perform);
     }
 
     /* -----------------------------------------------------------
@@ -261,7 +261,7 @@ public class CraftActionPipeline {
         ItemStack item;
         if (itemBase == null) {
             item = new ItemStack(RegistryInventory.modularItem);
-            item.setCount(calculateMaxProduction());
+            item.setCount(calculateMaxProduction(1));
         } else {
             item = itemBase.copy();
         }

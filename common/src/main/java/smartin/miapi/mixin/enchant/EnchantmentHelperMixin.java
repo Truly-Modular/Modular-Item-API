@@ -69,7 +69,7 @@ public abstract class EnchantmentHelperMixin {
     ) {
         boolean vanillaEmpty = original.call(self);
         if (vanillaEmpty && ModularItem.isModularItem(stack)) {
-            return false; // let the loop run; your entrySet() mixin will inject fakes
+            return false;
         }
         return vanillaEmpty;
     }

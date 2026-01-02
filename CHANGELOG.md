@@ -1,4 +1,4 @@
-## v2.2.0 (1.21)
+## v2.2.1 (1.21)
 - reduced logging of failed number evaluations
 - rebalanced emeralds to give luck instead of fortune
 - minor performance improvements related to rendering
