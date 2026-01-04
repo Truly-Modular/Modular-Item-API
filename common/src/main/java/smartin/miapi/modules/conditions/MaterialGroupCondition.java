@@ -11,15 +11,15 @@ import smartin.miapi.modules.properties.util.ModuleProperty;
 import java.util.List;
 import java.util.Map;
 
-public class MaterialCondition implements ModuleCondition {
+public class MaterialGroupCondition implements ModuleCondition {
     public String material = "";
     public Text error = Text.translatable(Miapi.MOD_ID + ".condition.material.error");
 
-    public MaterialCondition() {
+    public MaterialGroupCondition() {
 
     }
 
-    public MaterialCondition(String material) {
+    public MaterialGroupCondition(String material) {
         this.material = material;
     }
 
@@ -34,7 +34,7 @@ public class MaterialCondition implements ModuleCondition {
                 return false;
             }
             Material material1 = MaterialProperty.getMaterial(data);
-            if (material1 != null && material1.getKey().equals(material)) {
+            if (material1 != null && material1.getGroups().contains(material)) {
                 return true;
             }
             reasons.add(error);
@@ -45,7 +45,7 @@ public class MaterialCondition implements ModuleCondition {
     @Override
     public ModuleCondition load(JsonElement element) {
         JsonObject object = element.getAsJsonObject();
-        MaterialCondition condition = new MaterialCondition(object.get("material").getAsString());
+        MaterialGroupCondition condition = new MaterialGroupCondition(object.get("material_group").getAsString());
         condition.error = ModuleProperty.getText(object, "error", Text.translatable(Miapi.MOD_ID + ".condition.material.error"));
 
         return condition;

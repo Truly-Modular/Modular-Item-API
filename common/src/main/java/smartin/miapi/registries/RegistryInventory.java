@@ -441,6 +441,7 @@ public class RegistryInventory {
             registerMiapi(moduleConditionRegistry, "otherModule", new OtherModuleModuleCondition());
             registerMiapi(moduleConditionRegistry, "module", new ModuleTypeCondition());
             registerMiapi(moduleConditionRegistry, "material", new MaterialCondition());
+            registerMiapi(moduleConditionRegistry, "material_group", new MaterialCondition());
             registerMiapi(moduleConditionRegistry, "material_count", new MaterialCountCondition());
             registerMiapi(moduleConditionRegistry, "tag", new TagCondition());
             registerMiapi(moduleConditionRegistry, "miapi_perm", new MiapiPerm());
