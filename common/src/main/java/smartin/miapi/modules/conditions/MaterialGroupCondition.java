@@ -14,13 +14,13 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * @header Material Condition
- * @description_start this condition checks if this Module has a certain material
+ * @header Material Grpup Condition
+ * @description_start this condition checks if the material of the module has a certain group
  * Supports custom error
  * @desciption_end
- * @path /data_types/condition/material
- * @data type:material
- * @data material:the material to be checked
+ * @path /data_types/condition/material_group
+ * @data type:material_group
+ * @data material_group: the group to be checked
  */
 public class MaterialGroupCondition implements ModuleCondition {
     public static Codec<MaterialGroupCondition> CODEC = RecordCodecBuilder.create((instance) ->

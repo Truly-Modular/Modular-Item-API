@@ -13,17 +13,20 @@
 - fixed/reworked immolate -> bonus damage if self or target is on fire and damage reduction while on fire.
 - fixed bug related to attribute merging
 - fixed bug related to rendering multiple banners at once (having 2 arm patches now works)
-- fixed issues with crossbow animations desyncing/playing wrong
 - fixed bug where a load fail module extension would also unload the module
 - fixed global loot modularisation
-- fixed issues with fake enchants on neoforge
 - fixed issue where cratAble portion of "crafting_condition" would skip non-module properties
+- fixed issues with fake enchants on neoforge
 - fixed issues related to module and material extensions
 - fixed issues where riptide wouldn't work at all
 - fixed issues with swim attribute on fabric
-- fixed Projectile Piercing Attribute
 - fixed issues where in some rare cases module position math would fail
+- fixed issues with crossbow animations desyncing/playing wrong
+- fixed Projectile Piercing Attribute
 - fixed gay flag being generic rainbow flag
+- fixed issue with material decoding that could brick worlds with removed materials
+- fixed issue where sometimes the attributes of items wouldnt work correctly after reloading/entering a world
+- fixed shields not working with attachments
 ### Editor
 - reloading now closes ui to prevent crashes
 - fixed some crashes related to material editing

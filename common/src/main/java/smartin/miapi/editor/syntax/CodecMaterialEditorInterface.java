@@ -7,12 +7,9 @@ import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.material.CodecMaterial;
 import smartin.miapi.modules.properties.util.EditorError;
+import smartin.miapi.registries.JsonOpsBooleanPatched;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 public class CodecMaterialEditorInterface implements EditorInterface {
     private final ResourceLocation id;
@@ -32,8 +29,8 @@ public class CodecMaterialEditorInterface implements EditorInterface {
 
         try {
             var result = CodecMaterial.CODEC.decode(
-                    com.mojang.serialization.JsonOps.INSTANCE,
-                    CodecMaterial.CODEC.encodeStart(com.mojang.serialization.JsonOps.INSTANCE, new CodecMaterial(
+                    JsonOpsBooleanPatched.INSTANCE,
+                    CodecMaterial.CODEC.encodeStart(JsonOpsBooleanPatched.INSTANCE, new CodecMaterial(
                             Optional.empty(),
                             Optional.empty(),
                             Optional.empty(),

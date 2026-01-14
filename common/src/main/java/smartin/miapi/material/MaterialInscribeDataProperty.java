@@ -2,7 +2,6 @@ package smartin.miapi.material;
 
 import com.google.gson.JsonElement;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.JsonOps;
 import dev.architectury.event.EventResult;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -12,6 +11,7 @@ import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.util.CodecProperty;
 import smartin.miapi.modules.properties.util.MergeAble;
 import smartin.miapi.modules.properties.util.MergeType;
+import smartin.miapi.registries.JsonOpsBooleanPatched;
 
 import java.util.Optional;
 
@@ -42,7 +42,7 @@ public class MaterialInscribeDataProperty extends CodecProperty<String> {
     }
 
     public static void inscribeModuleInstance(ModuleInstance moduleInstance, ItemStack itemStack, String key) {
-        JsonElement element = ItemStack.CODEC.encodeStart(JsonOps.INSTANCE, itemStack).getOrThrow();
+        JsonElement element = ItemStack.CODEC.encodeStart(JsonOpsBooleanPatched.INSTANCE, itemStack).getOrThrow();
         moduleInstance.moduleData.put(Miapi.id(key), element);
     }
 
@@ -50,7 +50,7 @@ public class MaterialInscribeDataProperty extends CodecProperty<String> {
         JsonElement element = moduleInstance.moduleData.get(Miapi.id(key));
         if (element!= null) {
             try {
-                return ItemStack.CODEC.decode(JsonOps.INSTANCE, element).getOrThrow().getFirst();
+                return ItemStack.CODEC.decode(JsonOpsBooleanPatched.INSTANCE, element).getOrThrow().getFirst();
 
             } catch (RuntimeException ignored) {
                 Miapi.LOGGER.error("failed to read item-data from moduledata " + key, ignored);

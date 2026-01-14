@@ -1,6 +1,5 @@
 package smartin.miapi.upgrade;
 
-import com.mojang.serialization.JsonOps;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
@@ -16,6 +15,7 @@ import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.conditions.ConditionManager;
 import smartin.miapi.modules.edit_options.EditOption;
 import smartin.miapi.modules.properties.tag.ModuleTagProperty;
+import smartin.miapi.registries.JsonOpsBooleanPatched;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -125,7 +125,7 @@ public class UpgradeEditView extends InteractAbleWidget {
             List<Upgrade> existingUpgrades = new ArrayList<>();
             if (instance.moduleData.containsKey(Upgrade.upgradeId)) {
                 var decodeResult = Upgrade.MODULE_UPGRADE_ID_CODEC
-                        .decode(JsonOps.INSTANCE, instance.moduleData.get(Upgrade.upgradeId))
+                        .decode(JsonOpsBooleanPatched.INSTANCE, instance.moduleData.get(Upgrade.upgradeId))
                         .result();
                 if (decodeResult.isPresent()) {
                     upgradeMap = decodeResult.get().getFirst();

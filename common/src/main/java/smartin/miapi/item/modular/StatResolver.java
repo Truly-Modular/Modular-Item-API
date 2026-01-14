@@ -7,15 +7,15 @@ import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
-import com.mojang.serialization.JsonOps;
 import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
 import com.redpxnda.nucleus.codec.misc.CustomIntermediateCodec;
 import com.redpxnda.nucleus.codec.misc.IntermediateCodec;
 import net.minecraft.network.chat.Component;
 import smartin.miapi.Miapi;
-import smartin.miapi.modules.ModuleInstance;
-import smartin.miapi.material.base.Material;
 import smartin.miapi.material.MaterialProperty;
+import smartin.miapi.material.base.Material;
+import smartin.miapi.modules.ModuleInstance;
+import smartin.miapi.registries.JsonOpsBooleanPatched;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -57,16 +57,16 @@ public class StatResolver {
                     return DataResult.success(prefix);
                 }
                 try {
-                    return DataResult.success(JsonOps.INSTANCE.convertTo(ops, input));
+                    return DataResult.success(JsonOpsBooleanPatched.INSTANCE.convertTo(ops, input));
                 } catch (RuntimeException e) {
                     Miapi.LOGGER.info(input + "could not be converted!");
                 }
-                return DataResult.success(JsonOps.INSTANCE.convertTo(ops, input));
+                return DataResult.success(JsonOpsBooleanPatched.INSTANCE.convertTo(ops, input));
             }
 
             @Override
             public <T> DataResult<Pair<JsonElement, T>> decode(DynamicOps<T> ops, T input) {
-                return DataResult.success(new Pair<>(ops.convertTo(JsonOps.INSTANCE, input), input));
+                return DataResult.success(new Pair<>(ops.convertTo(JsonOpsBooleanPatched.INSTANCE, input), input));
             }
         };
     }

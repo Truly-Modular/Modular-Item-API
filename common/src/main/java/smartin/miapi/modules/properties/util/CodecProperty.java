@@ -3,7 +3,6 @@ package smartin.miapi.modules.properties.util;
 import com.google.gson.JsonElement;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DynamicOps;
-import com.mojang.serialization.JsonOps;
 import io.netty.handler.codec.DecoderException;
 import io.netty.handler.codec.EncoderException;
 import net.fabricmc.api.EnvType;
@@ -18,6 +17,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import smartin.miapi.Miapi;
 import smartin.miapi.modules.ModuleInstance;
+import smartin.miapi.registries.JsonOpsBooleanPatched;
 import smartin.miapi.registries.RegistryInventory;
 
 import java.util.List;
@@ -33,15 +33,15 @@ import java.util.List;
 public abstract class CodecProperty<T> implements ModuleProperty<T>, Validator<T> {
     protected final Codec<T> codec;
     public static RegistryOps<JsonElement> ops = RegistryOps.create(
-            JsonOps.INSTANCE,
+            JsonOpsBooleanPatched.INSTANCE,
             RegistryAccess.fromRegistryOfRegistries(BuiltInRegistries.REGISTRY));
-    public static DynamicOps<JsonElement> jsonOPs = JsonOps.INSTANCE;
+    public static DynamicOps<JsonElement> jsonOPs = JsonOpsBooleanPatched.INSTANCE;
 
 
     public static RegistryOps<JsonElement> getOps() {
         if (Miapi.registryAccess != null) {
             return RegistryOps.create(
-                    JsonOps.INSTANCE,
+                    JsonOpsBooleanPatched.INSTANCE,
                     Miapi.registryAccess);
         }
         return ops;
@@ -83,14 +83,14 @@ public abstract class CodecProperty<T> implements ModuleProperty<T>, Validator<T
             );
         }
         return codec.parse(
-                ops, JsonOps.INSTANCE.convertTo(NbtOps.INSTANCE, element)).getOrThrow((s) ->
+                ops, JsonOpsBooleanPatched.INSTANCE.convertTo(NbtOps.INSTANCE, element)).getOrThrow((s) ->
                 new DecoderException("could not decode CodecProperty " + this.getClass().getName() + " " + s));
     }
 
     @Environment(EnvType.CLIENT)
     private RegistryOps<JsonElement> clientCodec() {
         return RegistryOps.create(
-                JsonOps.INSTANCE,
+                JsonOpsBooleanPatched.INSTANCE,
                 Minecraft.getInstance().getConnection().registryAccess());
     }
 

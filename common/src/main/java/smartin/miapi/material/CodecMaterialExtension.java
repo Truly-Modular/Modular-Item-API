@@ -1,7 +1,6 @@
 package smartin.miapi.material;
 
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.netty.handler.codec.DecoderException;
 import net.minecraft.core.RegistryAccess;
@@ -9,6 +8,7 @@ import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceLocation;
 import smartin.miapi.Miapi;
 import smartin.miapi.datapack.ReloadHelpers;
+import smartin.miapi.registries.JsonOpsBooleanPatched;
 
 /**
  * A datapack-defined extension for an existing material.
@@ -43,7 +43,7 @@ public class CodecMaterialExtension implements ReloadHelpers.Extension<CodecMate
             ).apply(instance, CodecMaterialExtension::new));
 
     public static CodecMaterialExtension decode(String data, RegistryAccess registryAccess) {
-        var ops = RegistryOps.create(JsonOps.INSTANCE, registryAccess);
+        var ops = RegistryOps.create(JsonOpsBooleanPatched.INSTANCE, registryAccess);
         return CODEC.decode(ops, Miapi.gson.fromJson(data, com.google.gson.JsonObject.class))
                 .getOrThrow(err -> new DecoderException("Could not decode Material Extension: " + err))
                 .getFirst();

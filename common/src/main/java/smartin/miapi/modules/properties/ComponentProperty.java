@@ -5,7 +5,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.JsonOps;
 import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.component.DataComponentType;
@@ -22,6 +21,7 @@ import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.util.*;
+import smartin.miapi.registries.JsonOpsBooleanPatched;
 
 import java.util.List;
 import java.util.Map;
@@ -67,7 +67,7 @@ public class ComponentProperty extends CodecProperty<Map<ResourceLocation, JsonE
     }
 
     public <T> void update(DataComponentType<T> type, JsonElement element, ItemStack itemStack) {
-        var result = type.codec().decode(JsonOps.INSTANCE, element);
+        var result = type.codec().decode(JsonOpsBooleanPatched.INSTANCE, element);
         if (result.isError()) {
             throw new RuntimeException("Could not decode Data Component " + result.error().get().message());
         }

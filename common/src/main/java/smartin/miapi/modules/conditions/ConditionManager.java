@@ -5,7 +5,6 @@ import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
-import com.mojang.serialization.JsonOps;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -13,6 +12,7 @@ import net.minecraft.world.entity.player.Player;
 import smartin.miapi.Miapi;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.util.ModuleProperty;
+import smartin.miapi.registries.JsonOpsBooleanPatched;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -112,7 +112,7 @@ public class ConditionManager {
 
     public static ModuleCondition get(JsonElement element) {
         try {
-            return CONDITION_CODEC.parse(JsonOps.INSTANCE, element).getOrThrow();
+            return CONDITION_CODEC.parse(JsonOpsBooleanPatched.INSTANCE, element).getOrThrow();
         } catch (RuntimeException e) {
             Miapi.LOGGER.error("issue during condition decoding " + e);
             Miapi.LOGGER.error("" + element);

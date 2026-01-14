@@ -5,8 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.datafixers.util.Pair;
-import com.mojang.serialization.*;
+import com.mojang.serialization.Codec;
 import io.netty.handler.codec.DecoderException;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.HolderSet;
@@ -29,6 +28,7 @@ import smartin.miapi.modules.properties.util.CodecProperty;
 import smartin.miapi.modules.properties.util.MergeAble;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
+import smartin.miapi.registries.JsonOpsBooleanPatched;
 import smartin.miapi.registries.MiapiRegistry;
 import smartin.miapi.registries.RegistryInventory;
 
@@ -41,26 +41,7 @@ public class MaterialProperty extends CodecProperty<ResourceLocation> {
     public static final ResourceLocation KEY = Miapi.id("material");
     public static ModuleProperty property;
     public static MiapiRegistry<Material> MATERIAL_REGISTRY = MiapiRegistry.getInstance(Material.class);
-    public static Codec<Material> MATERIAL_CODEC = new Codec<>() {
-        @Override
-        public <T> DataResult<Pair<Material, T>> decode(DynamicOps<T> ops, T input) {
-            JsonElement element = ops.convertTo(JsonOps.INSTANCE, input);
-            Material material = getMaterial(element);
-            return new DataResult.Success<>(Pair.of(material, input), Lifecycle.stable());
-        }
-
-        @Override
-        public <T> DataResult<T> encode(Material input, DynamicOps<T> ops, T prefix) {
-            JsonElement element;
-            if (input.codec().isPresent()) {
-                element = encodeMaterial(input);
-            } else {
-                element = new JsonPrimitive(input.getID().toString());
-            }
-            T data = JsonOps.INSTANCE.convertTo(ops, element);
-            return DataResult.success(data);
-        }
-    };
+    public static Codec<Material> MATERIAL_CODEC = MaterialCodecs.MATERIAL_CODEC;
 
     public MaterialProperty() {
         super(ResourceLocation.CODEC);
@@ -120,7 +101,7 @@ public class MaterialProperty extends CodecProperty<ResourceLocation> {
             String idString = obj.get("key").getAsString();
             Material material = MATERIAL_REGISTRY.get(Miapi.id(idString));
             if (material != null && material instanceof CodecMaterial codecMaterial) {
-                CodecMaterial toMerge = CodecMaterial.CODEC.decode(RegistryOps.create(JsonOps.INSTANCE, registryAccess), obj).getOrThrow(s -> new DecoderException("Could not decode Material Extention " + s)).getFirst();
+                CodecMaterial toMerge = CodecMaterial.CODEC.decode(RegistryOps.create(JsonOpsBooleanPatched.INSTANCE, registryAccess), obj).getOrThrow(s -> new DecoderException("Could not decode Material Extention " + s)).getFirst();
                 codecMaterial.merge(toMerge);
             } else {
                 Miapi.LOGGER.error("Miapi could not find Material for Material extension " + idString + " " + path);
@@ -177,7 +158,7 @@ public class MaterialProperty extends CodecProperty<ResourceLocation> {
      * @return
      */
     @Nullable
-    public static Material getMaterial(JsonElement element) {
+    public static Material getMaterialOld(JsonElement element) {
         if (element.isJsonPrimitive()) {
             ResourceLocation materialID = Miapi.id(element.getAsString());
             Material material = MaterialProperty.MATERIAL_REGISTRY.get(materialID);
@@ -193,7 +174,9 @@ public class MaterialProperty extends CodecProperty<ResourceLocation> {
                     if (material.codec().isEmpty()) {
                         return material;
                     } else {
-                        material = material.codec().get().codec().decode(RegistryOps.create(JsonOps.INSTANCE, Miapi.registryAccess), materialSaveData).getOrThrow().getFirst();
+                        material = material.codec().get().codec().decode(
+                                RegistryOps.create(JsonOpsBooleanPatched.INSTANCE, Miapi.registryAccess),
+                                materialSaveData).getOrThrow().getFirst();
                         return material;
                     }
                 }
@@ -215,12 +198,18 @@ public class MaterialProperty extends CodecProperty<ResourceLocation> {
         return instance.getFromCache(KEY.toString(), () -> null);
     }
 
+    @Nullable
     private static Material getMaterialRaw(ModuleInstance instance) {
         if (instance.moduleData.containsKey(KEY)) {
             JsonElement element = instance.moduleData.get(KEY);
-            Material jsonMaterial = getMaterial(element);
-            if (jsonMaterial != null) {
-                return MaterialOverwriteProperty.property.adjustMaterial(instance, jsonMaterial.getMaterial(instance, instance.initializedProperties));
+            try {
+                Material jsonMaterial = MaterialProperty.MATERIAL_CODEC.decode(JsonOpsBooleanPatched.INSTANCE, element).getOrThrow().getFirst();
+                if (jsonMaterial != null) {
+                    return MaterialOverwriteProperty.property.adjustMaterial(instance, jsonMaterial.getMaterial(instance, instance.initializedProperties));
+                }
+                return jsonMaterial;
+            } catch (RuntimeException ignored) {
+
             }
         }
         if (property.getData(instance).isPresent()) {
@@ -260,23 +249,9 @@ public class MaterialProperty extends CodecProperty<ResourceLocation> {
         if (material.codec().isEmpty()) {
             instance.moduleData.put(KEY, new JsonPrimitive(material.getID().toString()));
         } else {
-            instance.moduleData.put(KEY, encodeMaterial(material));
+            instance.moduleData.put(KEY, MaterialProperty.MATERIAL_CODEC.encodeStart(JsonOpsBooleanPatched.INSTANCE, material).getOrThrow());
         }
         ModuleDataPropertiesManager.setProperty(instance, property, null);
         material.setMaterial(instance);
-    }
-
-    private static <T extends Material> JsonElement encodeMaterial(T material) {
-        // Retrieve the codec, ensuring it is present
-        MapCodec<? extends Material> codec = material.codec()
-                .orElseThrow(() -> new IllegalStateException("Material does not have a codec!"));
-
-        @SuppressWarnings("unchecked")
-        Codec<T> typedCodec = (Codec<T>) codec.codec();
-
-        JsonElement element = typedCodec.encodeStart(RegistryOps.create(JsonOps.INSTANCE, Miapi.registryAccess), material).getOrThrow();
-        JsonObject object = element.getAsJsonObject();
-        object.addProperty("type", material.getID().toString());
-        return object;
     }
 }

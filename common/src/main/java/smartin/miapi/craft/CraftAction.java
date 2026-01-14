@@ -2,7 +2,6 @@ package smartin.miapi.craft;
 
 import com.google.gson.JsonElement;
 import com.mojang.datafixers.util.Pair;
-import com.mojang.serialization.JsonOps;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.NbtOps;
@@ -23,6 +22,7 @@ import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.slot.SlotProperty;
 import smartin.miapi.modules.properties.util.ComponentApplyProperty;
 import smartin.miapi.modules.properties.util.CraftingProperty;
+import smartin.miapi.registries.JsonOpsBooleanPatched;
 import smartin.miapi.registries.RegistryInventory;
 
 import java.util.*;
@@ -239,7 +239,7 @@ public class CraftAction {
             craftingStack[0] = eventHandler.onCraft(old, craftingStack[0], parsingInstance);
         linkedInventory.setChanged();
         if (player != null && player.level() != null) {
-            var lookup = ((RegistryOpsAccessor) RegistryOps.create(JsonOps.INSTANCE, player.level().registryAccess())).getLookupProvider();
+            var lookup = ((RegistryOpsAccessor) RegistryOps.create(JsonOpsBooleanPatched.INSTANCE, player.level().registryAccess())).getLookupProvider();
             ItemModule.getModules(craftingStack[0]).allSubModules().forEach(m -> {
                 m.lookup = lookup;
                 m.registryAccess = player.level().registryAccess();

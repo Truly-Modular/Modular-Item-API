@@ -1,7 +1,6 @@
 package smartin.miapi.modules.abilities.shield;
 
 import com.mojang.serialization.MapCodec;
-import com.redpxnda.nucleus.codec.auto.AutoCodec;
 import com.redpxnda.nucleus.pose.server.ServerPoseFacet;
 import dev.architectury.event.EventResult;
 import dev.architectury.platform.Platform;
@@ -45,7 +44,7 @@ import static smartin.miapi.events.MiapiEvents.GET_ITEM_SHIELD_COOLDOWN;
 
 public class ParryBlock extends MinMaxCDAbility<BlockData> {
     public static final String KEY = "parry_block";
-    public static final MapCodec<BlockData> CODEC = AutoCodec.of(BlockData.class);
+    public static final MapCodec<BlockData> CODEC = BlockData.CODEC;
 
     public ParryBlock() {
         super(0, 7200, 30);

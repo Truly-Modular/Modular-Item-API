@@ -2,7 +2,6 @@ package smartin.miapi.modules.abilities.key;
 
 import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -10,6 +9,7 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import smartin.miapi.Miapi;
+import smartin.miapi.registries.JsonOpsBooleanPatched;
 
 import static smartin.miapi.Miapi.gson;
 
@@ -46,7 +46,7 @@ public class MiapiBinding {
 
     public static MiapiBinding decode(ResourceLocation id, String data) {
         JsonObject moduleJson = gson.fromJson(data, JsonObject.class);
-        MiapiBinding binding = CODEC.decode(JsonOps.INSTANCE, moduleJson).getOrThrow().getFirst();
+        MiapiBinding binding = CODEC.decode(JsonOpsBooleanPatched.INSTANCE, moduleJson).getOrThrow().getFirst();
         binding.setID(id);
         return binding;
     }

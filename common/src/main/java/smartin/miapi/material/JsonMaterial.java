@@ -4,7 +4,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-import com.mojang.serialization.JsonOps;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.GuiGraphics;
@@ -28,6 +27,7 @@ import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.registries.FakeTranslation;
+import smartin.miapi.registries.JsonOpsBooleanPatched;
 import smartin.miapi.registries.RegistryInventory;
 
 import java.util.ArrayList;
@@ -96,7 +96,7 @@ public class JsonMaterial implements Material {
                     break;
                 }
                 case "mining_level": {
-                    ResourceLocation id = ResourceLocation.CODEC.decode(JsonOps.INSTANCE, propertyElement).getOrThrow().getFirst();
+                    ResourceLocation id = ResourceLocation.CODEC.decode(JsonOpsBooleanPatched.INSTANCE, propertyElement).getOrThrow().getFirst();
                     var found = BuiltInRegistries.BLOCK.getTags().filter(pair -> pair.getFirst().location().equals(id)).findAny();
                     found.ifPresent(tagKeyNamedPair -> incorrectForTool = tagKeyNamedPair.getFirst());
                     break;
@@ -367,7 +367,7 @@ public class JsonMaterial implements Material {
                     }
                 }
             } else if (itemObj.has("ingredient")) {
-                Ingredient ingredient = Ingredient.CODEC.decode(JsonOps.INSTANCE, itemObj.get("ingredient")).getOrThrow().getFirst();
+                Ingredient ingredient = Ingredient.CODEC.decode(JsonOpsBooleanPatched.INSTANCE, itemObj.get("ingredient")).getOrThrow().getFirst();
                 if (ingredient.test(item)) {
                     try {
                         return itemObj.get("value").getAsDouble();
@@ -400,7 +400,7 @@ public class JsonMaterial implements Material {
                 JsonObject itemObj = element.getAsJsonObject();
 
                 if (itemObj.has("ingredient")) {
-                    Ingredient ingredient = Ingredient.CODEC.decode(JsonOps.INSTANCE, itemObj.get("ingredient")).getOrThrow().getFirst();
+                    Ingredient ingredient = Ingredient.CODEC.decode(JsonOpsBooleanPatched.INSTANCE, itemObj.get("ingredient")).getOrThrow().getFirst();
                     if (ingredient.test(itemStack)) {
                         return 5.0;
                     }

@@ -1,6 +1,5 @@
 package smartin.miapi.client.gui.crafting.statdisplay.material;
 
-import com.mojang.serialization.JsonOps;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.network.chat.Component;
@@ -17,6 +16,7 @@ import smartin.miapi.mixin.RegistryOpsAccessor;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleDataPropertiesManager;
 import smartin.miapi.modules.ModuleInstance;
+import smartin.miapi.registries.JsonOpsBooleanPatched;
 import smartin.miapi.registries.RegistryInventory;
 
 import java.util.ArrayList;
@@ -69,7 +69,7 @@ public class MaterialStatWidget extends InteractAbleWidget {
         ModuleDataPropertiesManager.setProperties(moduleInstance, original.getDisplayMaterialProperties(propertyKey));
         moduleInstance.clearCaches();
         moduleInstance.writeToItem(compareMaterial);
-        moduleInstance.lookup = ((RegistryOpsAccessor) RegistryOps.create(JsonOps.INSTANCE, Miapi.registryAccess)).getLookupProvider();
+        moduleInstance.lookup = ((RegistryOpsAccessor) RegistryOps.create(JsonOpsBooleanPatched.INSTANCE, Miapi.registryAccess)).getLookupProvider();
         moduleInstance.contextStack = compareMaterial;
         moduleInstance.registryAccess = Miapi.registryAccess;
         StatListWidget.setAttributeCaches(compareMaterial, compareMaterial);

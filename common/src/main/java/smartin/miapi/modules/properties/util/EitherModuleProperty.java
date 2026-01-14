@@ -3,13 +3,13 @@ package smartin.miapi.modules.properties.util;
 import com.google.gson.JsonElement;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.JsonOps;
 import io.netty.handler.codec.DecoderException;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.RegistryOps;
 import smartin.miapi.Miapi;
 import smartin.miapi.modules.ModuleInstance;
+import smartin.miapi.registries.JsonOpsBooleanPatched;
 
 /**
  * A Wrapper class to allow different Datatypes pre and Post ModuleInstance initialize
@@ -50,11 +50,11 @@ public abstract class EitherModuleProperty<T, K> implements ModuleProperty<Eithe
 
     public RegistryOps<JsonElement> getOps() {
         RegistryOps<JsonElement> ops = RegistryOps.create(
-                JsonOps.INSTANCE,
+                JsonOpsBooleanPatched.INSTANCE,
                 RegistryAccess.fromRegistryOfRegistries(BuiltInRegistries.REGISTRY));
         if (Miapi.registryAccess != null) {
             ops = RegistryOps.create(
-                    JsonOps.INSTANCE, Miapi.registryAccess
+                    JsonOpsBooleanPatched.INSTANCE, Miapi.registryAccess
             );
         }
         return ops;

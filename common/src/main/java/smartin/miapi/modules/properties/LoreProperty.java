@@ -247,7 +247,7 @@ public class LoreProperty extends CodecProperty<List<LoreProperty.Holder>> {
         public Component getText() {
             if (text != null) {
                 return text;
-                //return Codecs.TEXT.parse(JsonOps.INSTANCE, text).result().orElse(Text.empty());
+                //return Codecs.TEXT.parse(JsonOpsBooleanPatched.INSTANCE, text).result().orElse(Text.empty());
             }
             return net.minecraft.network.chat.Component.empty();
         }

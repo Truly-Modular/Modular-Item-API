@@ -2,11 +2,11 @@ package smartin.miapi.modules;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.mojang.serialization.JsonOps;
 import io.netty.handler.codec.DecoderException;
 import net.minecraft.resources.ResourceLocation;
 import smartin.miapi.Miapi;
 import smartin.miapi.modules.properties.tag.ModuleTagProperty;
+import smartin.miapi.registries.JsonOpsBooleanPatched;
 import smartin.miapi.registries.RegistryInventory;
 
 import java.util.List;
@@ -19,7 +19,7 @@ public record ItemModuleExtension(PropertyHolder holder, List<ItemModule> module
             JsonObject moduleJson = data.getAsJsonObject();
             PropertyHolder holder = PropertyHolder.MAP_CODEC
                     .codec()
-                    .decode(JsonOps.INSTANCE, moduleJson)
+                    .decode(JsonOpsBooleanPatched.INSTANCE, moduleJson)
                     .getOrThrow((s) -> new DecoderException("Failed to decode ItemModule Extension " + path + " " + s))
                     .getFirst();
             if (moduleJson.has("tag")) {

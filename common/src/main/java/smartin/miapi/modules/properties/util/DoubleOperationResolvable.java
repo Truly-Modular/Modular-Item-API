@@ -258,10 +258,11 @@ public class DoubleOperationResolvable implements SourceSetter<DoubleOperationRe
         List<IndividualOperation> operationList = new ArrayList<>(left.operations);
         operationList.addAll(right.operations);
         DoubleOperationResolvable resolvable = new DoubleOperationResolvable(operationList, functionTransformer);
+        resolvable.fallback = MergeAble.decideLeftRight(left.fallback, right.fallback, mergeType);
         if (left.initialized != null) {
             resolvable.initialize(left.initialized);
         }
-        return new DoubleOperationResolvable(operationList, functionTransformer);
+        return resolvable;
     }
 
     @Override

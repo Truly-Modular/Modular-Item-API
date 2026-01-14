@@ -3,12 +3,12 @@ package smartin.miapi.editor.renderers;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.redpxnda.nucleus.math.InterpolateMode;
-import com.mojang.serialization.JsonOps;
 import imgui.ImGui;
 import imgui.flag.ImGuiInputTextFlags;
 import imgui.type.ImFloat;
 import imgui.type.ImInt;
 import imgui.type.ImString;
+import smartin.miapi.registries.JsonOpsBooleanPatched;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -78,7 +78,7 @@ public class InterpolateModeEditor {
             if (ImGui.button("Apply Custom Interpolation")) {
                 try {
                     JsonElement parsed = JsonParser.parseString(customJson.get().trim());
-                    InterpolateMode customMode = InterpolateMode.codec.decode(JsonOps.INSTANCE, parsed)
+                    InterpolateMode customMode = InterpolateMode.codec.decode(JsonOpsBooleanPatched.INSTANCE, parsed)
                             .result().orElseThrow().getFirst();
                     mode = customMode;
                     onChange.accept(mode);

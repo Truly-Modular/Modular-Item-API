@@ -3,7 +3,6 @@ package smartin.miapi.material.palette;
 import com.google.gson.JsonElement;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.redpxnda.nucleus.util.Color;
@@ -22,6 +21,7 @@ import org.jetbrains.annotations.Nullable;
 import smartin.miapi.client.atlas.MaterialAtlasManager;
 import smartin.miapi.client.atlas.MaterialSpriteManager;
 import smartin.miapi.client.renderer.NativeImageGetter;
+import smartin.miapi.registries.JsonOpsBooleanPatched;
 
 import java.io.InputStream;
 import java.util.HashMap;
@@ -102,7 +102,7 @@ public class SpriteFromJson {
      */
 
     public static SpriteFromJson getFromJson(JsonElement element) {
-        return MAP_CODEC.codec().decode(JsonOps.INSTANCE, element).getOrThrow().getFirst();
+        return MAP_CODEC.codec().decode(JsonOpsBooleanPatched.INSTANCE, element).getOrThrow().getFirst();
     }
 
 

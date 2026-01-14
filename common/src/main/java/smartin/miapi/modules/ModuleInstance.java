@@ -7,7 +7,6 @@ import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
-import com.mojang.serialization.JsonOps;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.core.RegistryAccess;
@@ -31,6 +30,7 @@ import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.slot.SlotProperty;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
+import smartin.miapi.registries.JsonOpsBooleanPatched;
 import smartin.miapi.registries.RegistryInventory;
 
 import java.util.*;
@@ -444,7 +444,7 @@ public class ModuleInstance {
         if (clearCache) {
             this.clearCaches();
         }
-        JsonElement element = CODEC.encodeStart(JsonOps.INSTANCE, this).getOrThrow();
+        JsonElement element = CODEC.encodeStart(JsonOpsBooleanPatched.INSTANCE, this).getOrThrow();
         stack.set(ModuleInstance.MODULE_INSTANCE_COMPONENT, this.copy());
         stack.set(MODULE_BACKUP, element);
     }
@@ -666,7 +666,7 @@ public class ModuleInstance {
 
     @Override
     public String toString() {
-        return CODEC.encodeStart(JsonOps.INSTANCE, this).getOrThrow().toString();
+        return CODEC.encodeStart(JsonOpsBooleanPatched.INSTANCE, this).getOrThrow().toString();
     }
 
     @Override

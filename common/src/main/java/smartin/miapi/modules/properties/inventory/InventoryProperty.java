@@ -1,7 +1,6 @@
 package smartin.miapi.modules.properties.inventory;
 
 import com.google.gson.JsonElement;
-import com.mojang.serialization.JsonOps;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
@@ -11,6 +10,7 @@ import net.minecraft.world.item.ItemStack;
 import smartin.miapi.Miapi;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.util.DoubleProperty;
+import smartin.miapi.registries.JsonOpsBooleanPatched;
 
 import java.util.List;
 
@@ -29,7 +29,7 @@ public class InventoryProperty extends DoubleProperty {
         // Load stored data from the module instance
         JsonElement data = moduleInstance.moduleData.get(id);
         if (data != null && data.isJsonArray()) {
-            Tag tag = JsonOps.INSTANCE.convertTo(Miapi.BOOL_CORRECTED_OPS, data);
+            Tag tag = JsonOpsBooleanPatched.INSTANCE.convertTo(Miapi.BOOL_CORRECTED_OPS, data);
             if (tag instanceof CompoundTag compoundTag) {
                 ContainerHelper.loadAllItems(compoundTag, slots, moduleInstance.registryAccess);
             }

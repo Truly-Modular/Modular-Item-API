@@ -3,7 +3,6 @@ package smartin.miapi.material.palette;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.blaze3d.platform.NativeImage;
-import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.redpxnda.nucleus.util.Color;
@@ -13,9 +12,9 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.renderer.texture.SpriteContents;
 import net.minecraft.resources.ResourceLocation;
 import smartin.miapi.Miapi;
-import smartin.miapi.client.MiapiClient;
 import smartin.miapi.client.renderer.NativeImageGetter;
 import smartin.miapi.material.base.Material;
+import smartin.miapi.registries.JsonOpsBooleanPatched;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -115,7 +114,7 @@ public class MaskColorer extends SpriteColorer {
         JsonObject object = element.getAsJsonObject();
         String type = object.get("type").getAsString();
         ResourceLocation id = Miapi.id(type);
-        return MASKER_REGISTRY.get(id).codec().decode(JsonOps.INSTANCE, element).getOrThrow(s -> new DecoderException("could not decode mask " + s)).getFirst();
+        return MASKER_REGISTRY.get(id).codec().decode(JsonOpsBooleanPatched.INSTANCE, element).getOrThrow(s -> new DecoderException("could not decode mask " + s)).getFirst();
         //return maskerRegistry.get(type).fromJson(element);
     }
 

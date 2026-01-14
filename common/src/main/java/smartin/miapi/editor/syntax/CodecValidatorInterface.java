@@ -4,13 +4,13 @@ import com.google.gson.JsonElement;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
-import com.mojang.serialization.JsonOps;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.modules.properties.util.EditorError;
 import smartin.miapi.modules.properties.util.Validator;
+import smartin.miapi.registries.JsonOpsBooleanPatched;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -38,7 +38,7 @@ public class CodecValidatorInterface implements EditorInterface {
         }
 
         try {
-            DataResult<?> result = codec.decode(NbtOps.INSTANCE, JsonOps.INSTANCE.convertTo(NbtOps.INSTANCE, Miapi.gson.fromJson(rawContent, JsonElement.class)));
+            DataResult<?> result = codec.decode(NbtOps.INSTANCE, JsonOpsBooleanPatched.INSTANCE.convertTo(NbtOps.INSTANCE, Miapi.gson.fromJson(rawContent, JsonElement.class)));
             result.result().ifPresentOrElse(
                     value -> {
                         if(value instanceof Pair pair){

@@ -86,6 +86,11 @@ public class ReloadEvents {
     public static final ReloadEvent END = new ReloadEvent();
 
     /**
+     * At this point all caches are unsealed and the reload is done.
+     */
+    public static final ReloadEvent POST = new ReloadEvent();
+
+    /**
      * Sets up the class by registering the server-to-client reload packet and subscribing to the data pack loader.
      */
 
@@ -288,6 +293,7 @@ public class ReloadEvents {
             ReloadEvents.MAIN.fireEvent(true, access);
             ReloadEvents.END.fireEvent(true, access);
             reloadCounter--;
+            ReloadEvents.POST.fireEvent(true, access);
             Miapi.LOGGER.info("Client load took " + (double) (System.nanoTime() - clientReloadTimeStart) / 1000 / 1000 + " ms");
         });
     }

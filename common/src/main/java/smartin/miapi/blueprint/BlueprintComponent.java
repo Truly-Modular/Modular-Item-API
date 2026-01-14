@@ -3,7 +3,6 @@ package smartin.miapi.blueprint;
 import com.google.gson.JsonElement;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.network.chat.Component;
@@ -19,6 +18,7 @@ import smartin.miapi.client.gui.crafting.crafter.replace.CraftOption;
 import smartin.miapi.material.AllowedMaterial;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.slot.SlotProperty;
+import smartin.miapi.registries.JsonOpsBooleanPatched;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -146,10 +146,10 @@ public class BlueprintComponent {
     public static BlueprintComponent getBlueprint(Map<ResourceLocation, JsonElement> dataMap, CraftingScreenHandler screenHandler) {
         JsonElement json = dataMap.get(ID);
         if (json != null) {
-            var decodeResult = Codec.INT.decode(JsonOps.INSTANCE, json);
+            var decodeResult = Codec.INT.decode(JsonOpsBooleanPatched.INSTANCE, json);
             int id = -1;
             if (decodeResult.isError()) {
-                id = Integer.decode(Codec.STRING.decode(JsonOps.INSTANCE, json).getOrThrow().getFirst());
+                id = Integer.decode(Codec.STRING.decode(JsonOpsBooleanPatched.INSTANCE, json).getOrThrow().getFirst());
             } else {
                 id = decodeResult.getOrThrow().getFirst();
             }
@@ -183,8 +183,8 @@ public class BlueprintComponent {
                     if (optional.isPresent()) {
                         i = optional.get().index;
                     }
-                    JsonElement element = Codec.INT.encodeStart(JsonOps.INSTANCE, i).getOrThrow();
-                    JsonElement booleanElement = Miapi.FIXED_BOOL_CODEC.encodeStart(JsonOps.INSTANCE, useMaterialCrafting()).getOrThrow();
+                    JsonElement element = Codec.INT.encodeStart(JsonOpsBooleanPatched.INSTANCE, i).getOrThrow();
+                    JsonElement booleanElement = Miapi.FIXED_BOOL_CODEC.encodeStart(JsonOpsBooleanPatched.INSTANCE, useMaterialCrafting()).getOrThrow();
                     return Map.of(
                             ID, element,
                             AllowedMaterial.KEY, booleanElement);
@@ -196,8 +196,8 @@ public class BlueprintComponent {
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof BlueprintComponent blueprintComponent) {
-            String first = CODEC.encodeStart(JsonOps.INSTANCE, this).getOrThrow().toString();
-            String other = CODEC.encodeStart(JsonOps.INSTANCE, blueprintComponent).getOrThrow().toString();
+            String first = CODEC.encodeStart(JsonOpsBooleanPatched.INSTANCE, this).getOrThrow().toString();
+            String other = CODEC.encodeStart(JsonOpsBooleanPatched.INSTANCE, blueprintComponent).getOrThrow().toString();
             return first.equals(other);
         }
         return super.equals(obj);

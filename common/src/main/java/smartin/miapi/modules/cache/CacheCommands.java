@@ -110,6 +110,7 @@ public class CacheCommands {
             ReloadEvents.MAIN.fireEvent(false, Miapi.server.registryAccess());
             ReloadEvents.END.fireEvent(false, Miapi.server.registryAccess());
             ReloadEvents.reloadCounter = 0;
+            ReloadEvents.POST.fireEvent(false, Miapi.server.registryAccess());
             Miapi.server.getPlayerList().getPlayers().forEach(ReloadEvents::triggerReloadOnClient);
             MiapiEvents.POST_HOT_RELOAD.invoker().onReload();
             MiapiEvents.CLEAR_CACHE.invoker().onReload();

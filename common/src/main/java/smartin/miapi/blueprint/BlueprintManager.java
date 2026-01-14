@@ -1,7 +1,6 @@
 package smartin.miapi.blueprint;
 
 import com.google.gson.JsonElement;
-import com.mojang.serialization.JsonOps;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
@@ -10,6 +9,7 @@ import smartin.miapi.client.gui.crafting.crafter.replace.CraftOption;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.datapack.ReloadHelpers;
 import smartin.miapi.material.AllowedMaterial;
+import smartin.miapi.registries.JsonOpsBooleanPatched;
 import smartin.miapi.registries.MiapiRegistry;
 
 import java.util.Map;
@@ -39,8 +39,8 @@ public class BlueprintManager {
         return new CraftOption(
                 blueprint.toMerge.getModule(),
                 () -> {
-                    var decodeResult = ResourceLocation.CODEC.encodeStart(JsonOps.INSTANCE, location).getOrThrow();
-                    JsonElement booleanElement = Miapi.FIXED_BOOL_CODEC.encodeStart(JsonOps.INSTANCE, blueprint.useMaterialCrafting()).getOrThrow();
+                    var decodeResult = ResourceLocation.CODEC.encodeStart(JsonOpsBooleanPatched.INSTANCE, location).getOrThrow();
+                    JsonElement booleanElement = Miapi.FIXED_BOOL_CODEC.encodeStart(JsonOpsBooleanPatched.INSTANCE, blueprint.useMaterialCrafting()).getOrThrow();
                     return Map.of(
                             ID, decodeResult,
                             AllowedMaterial.KEY, booleanElement);
@@ -53,7 +53,7 @@ public class BlueprintManager {
     public static BlueprintComponent getBlueprint(Map<ResourceLocation, JsonElement> dataMap, CraftingScreenHandler screenHandler) {
         JsonElement json = dataMap.get(ID);
         if (json != null) {
-            var decodeResult = ResourceLocation.CODEC.decode(JsonOps.INSTANCE, json).getOrThrow().getFirst();
+            var decodeResult = ResourceLocation.CODEC.decode(JsonOpsBooleanPatched.INSTANCE, json).getOrThrow().getFirst();
             if (RELOADED_BLUEPRINTS.containsKey(decodeResult)) {
                 return RELOADED_BLUEPRINTS.get(decodeResult);
             }

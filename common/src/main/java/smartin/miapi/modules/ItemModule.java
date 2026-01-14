@@ -5,7 +5,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.JsonOps;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.resources.ResourceLocation;
@@ -16,6 +15,7 @@ import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.item.modular.VisualModularItem;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
+import smartin.miapi.registries.JsonOpsBooleanPatched;
 import smartin.miapi.registries.RegistryInventory;
 
 import java.lang.reflect.Type;
@@ -138,8 +138,9 @@ public record ItemModule(ResourceLocation id, Map<ModuleProperty<?>, Object> pro
             ModuleInstance root = stack.get(ModuleInstance.MODULE_INSTANCE_COMPONENT);
             if (root != null) {
                 root.clearCaches();
+                return new ModuleInstance(ItemModule.empty, root.registryAccess);
             }
-            return new ModuleInstance(ItemModule.empty, root.registryAccess);
+            return new ModuleInstance(ItemModule.empty, Miapi.registryAccess);
         }
         if (VisualModularItem.isVisualModularItem(stack) && !ReloadEvents.isInReload()) {
             ModuleInstance root = stack.get(ModuleInstance.MODULE_INSTANCE_COMPONENT);
@@ -150,7 +151,7 @@ public record ItemModule(ResourceLocation id, Map<ModuleProperty<?>, Object> pro
                 if (root.allSubModules().size() == 1) {
                     JsonElement compareToJson = stack.get(ModuleInstance.MODULE_BACKUP);
                     if (compareToJson != null) {
-                        ModuleInstance compareTo = ModuleInstance.CODEC.decode(JsonOps.INSTANCE, compareToJson).getOrThrow().getFirst();
+                        ModuleInstance compareTo = ModuleInstance.CODEC.decode(JsonOpsBooleanPatched.INSTANCE, compareToJson).getOrThrow().getFirst();
                         if (root.allSubModules().size() != compareTo.allSubModules().size()) {
                             LOGGER.error("MODULE DECODE ISSUE!?! " + root);
                             LOGGER.error("SHOULD HAVE BEEN" + compareTo);

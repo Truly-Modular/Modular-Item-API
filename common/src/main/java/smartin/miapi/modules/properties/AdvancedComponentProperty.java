@@ -5,7 +5,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.JsonOps;
 import com.redpxnda.nucleus.codec.auto.AutoCodec;
 import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
 import net.minecraft.core.RegistryAccess;
@@ -22,6 +21,7 @@ import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.util.*;
+import smartin.miapi.registries.JsonOpsBooleanPatched;
 
 import java.util.List;
 import java.util.Map;
@@ -69,7 +69,7 @@ public class AdvancedComponentProperty extends CodecProperty<Map<ResourceLocatio
     }
 
     public <T> void update(DataComponentType<T> type, ComponentData data, ItemStack itemStack) {
-        var result = type.codec().decode(JsonOps.INSTANCE, data.data());
+        var result = type.codec().decode(JsonOpsBooleanPatched.INSTANCE, data.data());
         if (result.isError()) {
             throw new RuntimeException("Could not decode Data Component " + type);
         }

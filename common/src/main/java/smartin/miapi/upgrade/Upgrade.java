@@ -1,7 +1,6 @@
 package smartin.miapi.upgrade;
 
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.netty.handler.codec.DecoderException;
 import net.minecraft.core.component.DataComponentType;
@@ -18,6 +17,7 @@ import smartin.miapi.modules.PropertyHolder;
 import smartin.miapi.modules.conditions.ConditionManager;
 import smartin.miapi.modules.conditions.ModuleCondition;
 import smartin.miapi.modules.properties.util.ModuleProperty;
+import smartin.miapi.registries.JsonOpsBooleanPatched;
 import smartin.miapi.registries.MiapiRegistry;
 import smartin.miapi.registries.RegistryInventory;
 
@@ -93,7 +93,7 @@ public record Upgrade(
             if (instance.moduleData.containsKey(Upgrade.upgradeId)) {
                 ResourceLocation id = Miapi.id(data.replaceFirst("\\.", ":"));
 
-                var levelMap = Upgrade.MODULE_UPGRADE_ID_CODEC.decode(JsonOps.INSTANCE, instance.moduleData.get(Upgrade.upgradeId)).getOrThrow(
+                var levelMap = Upgrade.MODULE_UPGRADE_ID_CODEC.decode(JsonOpsBooleanPatched.INSTANCE, instance.moduleData.get(Upgrade.upgradeId)).getOrThrow(
                         (s) -> new DecoderException("Could not decode UpgradeID " + s));
                 return levelMap.getFirst().getOrDefault(id, 0);
 
@@ -111,7 +111,7 @@ public record Upgrade(
             var json = moduleInstance.moduleData.get(upgradeId);
 
             if (json != null) {
-                MODULE_UPGRADE_ID_CODEC.parse(JsonOps.INSTANCE, json).result().ifPresent(upgrades -> {
+                MODULE_UPGRADE_ID_CODEC.parse(JsonOpsBooleanPatched.INSTANCE, json).result().ifPresent(upgrades -> {
                     for (ResourceLocation upgradeId : upgrades.keySet()) {
                         int level = upgrades.get(upgradeId);
                         Upgrade upgrade = UPGRADE_MIAPI_REGISTRY.get(upgradeId);

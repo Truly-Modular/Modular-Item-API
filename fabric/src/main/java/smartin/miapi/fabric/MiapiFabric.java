@@ -11,6 +11,7 @@ import net.fabricmc.fabric.api.util.TriState;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.packs.PackType;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunction;
 import smartin.archery.Archery;
 import smartin.miapi.Environment;
@@ -33,6 +34,7 @@ public class MiapiFabric implements ModInitializer {
 
     @Override
     public void onInitialize() {
+        Player player;
         Miapi.init();
         LootTableEvents.MODIFY.register((key, tableBuilder, source, registries) -> {
             List<LootItemFunction> functions = new ArrayList<>();

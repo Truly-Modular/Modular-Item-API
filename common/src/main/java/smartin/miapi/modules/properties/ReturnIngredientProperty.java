@@ -3,7 +3,6 @@ package smartin.miapi.modules.properties;
 import com.google.gson.JsonElement;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.JsonOps;
 import com.redpxnda.nucleus.codec.auto.AutoCodec;
 import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
 import net.minecraft.resources.ResourceLocation;
@@ -19,6 +18,7 @@ import smartin.miapi.modules.properties.util.CodecProperty;
 import smartin.miapi.modules.properties.util.CraftingProperty;
 import smartin.miapi.modules.properties.util.MergeAble;
 import smartin.miapi.modules.properties.util.MergeType;
+import smartin.miapi.registries.JsonOpsBooleanPatched;
 
 import java.util.List;
 import java.util.Map;
@@ -85,7 +85,7 @@ public class ReturnIngredientProperty extends CodecProperty<ReturnIngredientProp
 
         getData(instance).ifPresent(data -> {
             if (data.ingredient) {
-                instance.moduleData.put(Miapi.id(KEY), ItemStack.CODEC.encodeStart(JsonOps.INSTANCE, inventory.get(1).copy()).getOrThrow());
+                instance.moduleData.put(Miapi.id(KEY), ItemStack.CODEC.encodeStart(JsonOpsBooleanPatched.INSTANCE, inventory.get(1).copy()).getOrThrow());
                 instance.getRoot().writeToItem(crafted);
             }
         });
@@ -97,7 +97,7 @@ public class ReturnIngredientProperty extends CodecProperty<ReturnIngredientProp
         getData(instance).ifPresent(data -> {
             JsonElement element = instance.moduleData.get(Miapi.id(KEY));
             if (element != null) {
-                player.addItem(ItemStack.CODEC.decode(JsonOps.INSTANCE, element).result().map(Pair::getFirst).orElse(ItemStack.EMPTY));
+                player.addItem(ItemStack.CODEC.decode(JsonOpsBooleanPatched.INSTANCE, element).result().map(Pair::getFirst).orElse(ItemStack.EMPTY));
             } else {
                 data.fallback.forEach(player::addItem);
             }

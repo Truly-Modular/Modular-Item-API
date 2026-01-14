@@ -4,7 +4,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.mojang.serialization.DataResult;
-import com.mojang.serialization.JsonOps;
 import imgui.ImGui;
 import imgui.flag.ImGuiCond;
 import imgui.type.ImBoolean;
@@ -16,6 +15,7 @@ import smartin.miapi.Miapi;
 import smartin.miapi.editor.JsonEditor;
 import smartin.miapi.editor.MiapiEditor;
 import smartin.miapi.material.CodecMaterial;
+import smartin.miapi.registries.JsonOpsBooleanPatched;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -58,7 +58,7 @@ public class MaterialListViewer implements MiapiEditor {
                             newFile.createNewFile();
 
                             CodecMaterial newMaterial = CodecMaterial.CODEC
-                                    .decode(JsonOps.INSTANCE, new JsonObject())
+                                    .decode(JsonOpsBooleanPatched.INSTANCE, new JsonObject())
                                     .getOrThrow()
                                     .getFirst();
 
@@ -172,7 +172,7 @@ public class MaterialListViewer implements MiapiEditor {
     public static CodecMaterial readFromFile(File dataDir, File file) {
         try (FileReader reader = new FileReader(file)) {
             JsonElement json = JsonParser.parseReader(reader);
-            DataResult<CodecMaterial> result = CodecMaterial.CODEC.parse(JsonOps.INSTANCE, json);
+            DataResult<CodecMaterial> result = CodecMaterial.CODEC.parse(JsonOpsBooleanPatched.INSTANCE, json);
             CodecMaterial material = result.result().orElse(null);
 
             if (material != null) {
@@ -219,7 +219,7 @@ public class MaterialListViewer implements MiapiEditor {
 
     public static void writeToFile(CodecMaterial material, File file) {
         try (FileWriter writer = new FileWriter(file)) {
-            DataResult<JsonElement> encoded = CodecMaterial.CODEC.encodeStart(JsonOps.INSTANCE, material);
+            DataResult<JsonElement> encoded = CodecMaterial.CODEC.encodeStart(JsonOpsBooleanPatched.INSTANCE, material);
             JsonElement json = encoded.result().orElseThrow(() -> new IOException("Failed to encode CodecMaterial"));
             Miapi.gson.toJson(json, writer);
         } catch (IOException e) {

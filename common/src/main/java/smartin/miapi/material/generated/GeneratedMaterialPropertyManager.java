@@ -2,7 +2,6 @@ package smartin.miapi.material.generated;
 
 import com.google.gson.JsonElement;
 import com.mojang.datafixers.util.Either;
-import com.mojang.serialization.JsonOps;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
@@ -32,6 +31,7 @@ import smartin.miapi.modules.properties.enchanment.CraftingEnchantProperty;
 import smartin.miapi.modules.properties.onHit.CopyItemOnHit;
 import smartin.miapi.modules.properties.util.DoubleOperationResolvable;
 import smartin.miapi.modules.properties.util.ModuleProperty;
+import smartin.miapi.registries.JsonOpsBooleanPatched;
 
 import java.lang.reflect.Method;
 import java.util.*;
@@ -263,6 +263,6 @@ public class GeneratedMaterialPropertyManager {
     public static <T> JsonElement encode(TypedDataComponent<T> typedDataComponent) {
         DataComponentType<T> componentType = typedDataComponent.type();
         T data = typedDataComponent.value();
-        return componentType.codec().encodeStart(JsonOps.INSTANCE, data).getOrThrow();
+        return componentType.codec().encodeStart(JsonOpsBooleanPatched.INSTANCE, data).getOrThrow();
     }
 }

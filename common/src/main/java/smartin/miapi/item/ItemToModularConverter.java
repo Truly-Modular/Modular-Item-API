@@ -2,7 +2,6 @@ package smartin.miapi.item;
 
 import com.google.gson.JsonElement;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.JsonOps;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -12,6 +11,7 @@ import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.ItemIdProperty;
+import smartin.miapi.registries.JsonOpsBooleanPatched;
 import smartin.miapi.registries.RegistryInventory;
 
 import java.util.Map;
@@ -31,7 +31,7 @@ public class ItemToModularConverter implements ModularItemStackConverter.Modular
     public static void setupModularConverter(ResourceLocation path, String data) {
         try {
             JsonElement element = Miapi.gson.fromJson(data, JsonElement.class);
-            var decoded = CODEC.decode(JsonOps.INSTANCE, element);
+            var decoded = CODEC.decode(JsonOpsBooleanPatched.INSTANCE, element);
             if (decoded.isSuccess()) {
                 decoded.getOrThrow().getFirst().forEach((key, modules) -> {
                     ItemStack stack = new ItemStack(RegistryInventory.modularItem);

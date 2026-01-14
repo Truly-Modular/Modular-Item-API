@@ -4,7 +4,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.JsonOps;
 import io.netty.handler.codec.DecoderException;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.RegistryOps;
@@ -24,6 +23,7 @@ import smartin.miapi.modules.abilities.key.KeyBindManager;
 import smartin.miapi.modules.edit_options.CreateItemOption.CreateItemOption;
 import smartin.miapi.modules.edit_options.skins.SkinOptions;
 import smartin.miapi.modules.synergies.SynergyManager;
+import smartin.miapi.registries.JsonOpsBooleanPatched;
 import smartin.miapi.registries.MiapiRegistry;
 import smartin.miapi.registries.RegistryInventory;
 
@@ -53,7 +53,7 @@ public class ReloadHelpers {
                 (isClient, path, data, access) -> data.apply(), -0.4f);
         ReloadHelpers.registerReloadHandler("miapi/synergies",
                 SynergyManager::clear,
-                (isClient, path, data, access) -> SynergyManager.SYNERGY_CODEC.decode(JsonOps.INSTANCE, data).getOrThrow((string ->
+                (isClient, path, data, access) -> SynergyManager.SYNERGY_CODEC.decode(JsonOpsBooleanPatched.INSTANCE, data).getOrThrow((string ->
                         new DecoderException("Could not decode Synergy " + path + string)
                 )).getFirst(),
                 (isClient, path, data, access) -> data.register(), 2);
@@ -61,7 +61,7 @@ public class ReloadHelpers {
                     DocPage.PAGE_LOOKUP.clear();
                 }, ((isClient, path, data, registryAccess) ->
                         DocPage.CODEC.decode(
-                                JsonOps.INSTANCE,
+                                JsonOpsBooleanPatched.INSTANCE,
                                 data).getOrThrow(s -> new DecoderException("could not decode wiki info" + s)).getFirst()),
                 ((isClient, path, data, registryAccess) -> {
                     DocPage.setupLookup(data);
@@ -313,7 +313,7 @@ public class ReloadHelpers {
         public void reloadFile(boolean isClient, ResourceLocation path, String data, RegistryAccess registryAccess) {
             try {
                 var result = codec().decode(
-                        RegistryOps.create(JsonOps.INSTANCE, registryAccess),
+                        RegistryOps.create(JsonOpsBooleanPatched.INSTANCE, registryAccess),
                         Miapi.gson.fromJson(data, JsonElement.class));
                 handler().reloadFile(isClient, path, result.getOrThrow((s) -> new DecoderException("Could not decode " + path + " " + s)).getFirst(), registryAccess);
             } catch (RuntimeException e) {

@@ -3,7 +3,6 @@ package smartin.miapi.material;
 import com.google.gson.JsonElement;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.JsonOps;
 import dev.architectury.event.EventResult;
 import net.minecraft.world.item.ItemStack;
 import smartin.miapi.Miapi;
@@ -12,6 +11,7 @@ import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.util.CodecProperty;
 import smartin.miapi.modules.properties.util.MergeAble;
 import smartin.miapi.modules.properties.util.MergeType;
+import smartin.miapi.registries.JsonOpsBooleanPatched;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -39,10 +39,10 @@ public class MaterialInscribeModuleProperty extends CodecProperty<String> {
             JsonElement data = moduleInstance.moduleData.get(Miapi.id(KEY));
             Map<String, ItemStack> dataMap = new HashMap<>();
             if (data != null) {
-                dataMap = CODEC.decode(JsonOps.INSTANCE, data).result().map(Pair::getFirst).orElse(new HashMap<>());
+                dataMap = CODEC.decode(JsonOpsBooleanPatched.INSTANCE, data).result().map(Pair::getFirst).orElse(new HashMap<>());
             }
             dataMap.put(s, materialStack);
-            moduleInstance.moduleData.put(Miapi.id(KEY), CODEC.encodeStart(JsonOps.INSTANCE, dataMap).getOrThrow());
+            moduleInstance.moduleData.put(Miapi.id(KEY), CODEC.encodeStart(JsonOpsBooleanPatched.INSTANCE, dataMap).getOrThrow());
             moduleInstance.getRoot().writeToItem(raw);
         });
     }

@@ -10,7 +10,6 @@ import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.MapCodec;
 import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
 import com.redpxnda.nucleus.registry.NucleusNamespaces;
-import dev.architectury.event.EventResult;
 import dev.architectury.event.events.common.CommandRegistrationEvent;
 import dev.architectury.event.events.common.LifecycleEvent;
 import dev.architectury.event.events.common.PlayerEvent;
@@ -22,6 +21,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.EquipmentSlotGroup;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import smartin.miapi.attributes.AttributeRegistry;
@@ -46,7 +46,6 @@ import smartin.miapi.material.ComponentMaterial;
 import smartin.miapi.material.MaterialCommand;
 import smartin.miapi.material.MaterialIcons;
 import smartin.miapi.material.generated.GeneratedMaterialManager;
-import smartin.miapi.mixin.item.ItemStackAccessor;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.MiapiPermissions;
 import smartin.miapi.modules.ModuleDataPropertiesManager;
@@ -58,16 +57,14 @@ import smartin.miapi.modules.cache.CacheCommands;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.conditions.ConditionManager;
 import smartin.miapi.modules.conditions.ModuleCondition;
+import smartin.miapi.modules.properties.util.ComponentApplyProperty;
 import smartin.miapi.modules.properties.util.DoubleOperationResolvable;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.network.Networking;
 import smartin.miapi.network.NetworkingImplCommon;
 import smartin.miapi.registries.RegistryInventory;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -151,8 +148,8 @@ public class Miapi {
         }
 
 
-        ItemStackAccessor.setCODEC(ModuleInstance.registrySavingCodec(ItemStackAccessor.getCODEC(), (i, registryAccess) ->
-                ModularItemStackConverter.lookupMap.put(i, registryAccess)));
+        //ItemStackAccessor.setCODEC(ModuleInstance.registrySavingCodec(ItemStackAccessor.getCODEC(), (i, registryAccess) ->
+        //        ModularItemStackConverter.lookupMap.put(i, registryAccess)));
 
         MiapiConfig.setupConfigs();
         setupNetworking();
@@ -217,17 +214,23 @@ public class Miapi {
         });
         BlueprintManager.setup();
         LootHelper.setup();
-        MiapiEvents.POST_HOT_RELOAD.register(() -> {
-            if (Miapi.server != null) {
-                Miapi.server.getPlayerList().getPlayers().forEach(p -> {
-                    p.getInventory().setChanged();
-                    CompoundTag tag = new CompoundTag();
-                    if (p.save(tag)) {
-                        p.load(tag);
-                    }
-                });
+        ReloadEvents.POST.subscribe(new ReloadEvents.EventListener() {
+            @Override
+            public void onEvent(boolean isClient, @Nullable RegistryAccess registryAccess) {
+                if (Miapi.server != null) {
+                    Miapi.server.getPlayerList().getPlayers().forEach(p -> {
+                        p.getInventory().setChanged();
+                        CompoundTag tag = new CompoundTag();
+                        if (p.save(tag)) {
+                            p.load(tag);
+                        }
+                        Arrays.stream(EquipmentSlot.values()).forEach(equipmentSlot -> {
+                            ComponentApplyProperty.updateItemStack(p.getItemBySlot(equipmentSlot), p.registryAccess());
+                            p.equipmentHasChanged(p.getItemBySlot(equipmentSlot), p.getItemBySlot(equipmentSlot));
+                        });
+                    });
+                }
             }
-            return EventResult.pass();
         });
     }
 

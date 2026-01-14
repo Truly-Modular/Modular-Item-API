@@ -8,7 +8,6 @@ import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
-import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -41,6 +40,7 @@ import smartin.miapi.modules.conditions.ConditionManager;
 import smartin.miapi.modules.properties.render.ColorProperty;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
+import smartin.miapi.registries.JsonOpsBooleanPatched;
 
 import java.awt.*;
 import java.util.List;
@@ -83,7 +83,7 @@ public class CodecMaterial implements Material {
             Map<String, Double> doubleMap = new HashMap<>();
 
             try {
-                ops.convertTo(JsonOps.INSTANCE, input)
+                ops.convertTo(JsonOpsBooleanPatched.INSTANCE, input)
                         .getAsJsonObject()
                         .asMap()
                         .forEach((key, element) -> {
@@ -606,7 +606,7 @@ public class CodecMaterial implements Material {
 
     @Override
     public JsonObject getDebugJson() {
-        return CODEC.encodeStart(JsonOps.INSTANCE, this).getOrThrow().getAsJsonObject();
+        return CODEC.encodeStart(JsonOpsBooleanPatched.INSTANCE, this).getOrThrow().getAsJsonObject();
     }
 
     @Override

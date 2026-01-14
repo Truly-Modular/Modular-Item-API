@@ -40,7 +40,6 @@ import smartin.miapi.blueprint.BlueprintManager;
 import smartin.miapi.client.atlas.MaterialAtlasManager;
 import smartin.miapi.client.atlas.MaterialSpriteManager;
 import smartin.miapi.client.gui.crafting.CraftingScreen;
-import smartin.miapi.client.gui.crafting.MiapiConfigScreen;
 import smartin.miapi.client.gui.crafting.crafter.replace.CraftOption;
 import smartin.miapi.client.gui.crafting.crafter.replace.ReplaceView;
 import smartin.miapi.client.gui.crafting.statdisplay.StatListWidget;
@@ -179,11 +178,6 @@ public class MiapiClient {
                 clientReload();
             });
         }
-
-
-        ConfigManager.CONFIG_SCREENS_REGISTRY.register(registerer -> {
-            registerer.add(Miapi.MOD_ID, MiapiConfigScreen::new);
-        });
 
         //GlintShader.registerShaders();
         MaterialRenderControllers.setup();
@@ -334,6 +328,7 @@ public class MiapiClient {
             ReloadEvents.MAIN.fireEvent(true, Minecraft.getInstance().level.registryAccess());
             ReloadEvents.END.fireEvent(true, Minecraft.getInstance().level.registryAccess());
             ReloadEvents.reloadCounter--;
+            ReloadEvents.POST.fireEvent(true, Minecraft.getInstance().level.registryAccess());
             MiapiEvents.CLEAR_CACHE.invoker().onReload();
         }
     }

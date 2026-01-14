@@ -3,7 +3,6 @@ package smartin.miapi.material.generated;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Either;
-import com.mojang.serialization.JsonOps;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -12,6 +11,7 @@ import net.minecraft.world.item.crafting.Ingredient;
 import smartin.miapi.blueprint.IngredientWithCount;
 import smartin.miapi.material.CodecMaterial;
 import smartin.miapi.modules.PropertyHolder;
+import smartin.miapi.registries.JsonOpsBooleanPatched;
 
 import java.util.*;
 
@@ -45,7 +45,7 @@ public class MaterialHelper {
         // 5. Properties → convert to Map<String, JsonElement>
         Map<String, JsonElement> property = new HashMap<>();
         mat.properties.forEach((key, valueMap) -> {
-            property.put(key, PropertyHolder.PROPERTY_MAP_CODEC.encodeStart(JsonOps.INSTANCE, valueMap).result().get());
+            property.put(key, PropertyHolder.PROPERTY_MAP_CODEC.encodeStart(JsonOpsBooleanPatched.INSTANCE, valueMap).result().get());
         });
         Map<String, JsonElement> visualProperty = Map.of();
         Map<String, JsonElement> hiddenProperty = Map.of();

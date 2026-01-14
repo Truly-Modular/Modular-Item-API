@@ -1,6 +1,5 @@
 package smartin.miapi.upgrade;
 
-import com.mojang.serialization.JsonOps;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.network.FriendlyByteBuf;
@@ -17,6 +16,7 @@ import smartin.miapi.modules.edit_options.EditOption;
 import smartin.miapi.modules.edit_options.EditOptionIcon;
 import smartin.miapi.modules.properties.util.ComponentApplyProperty;
 import smartin.miapi.network.Networking;
+import smartin.miapi.registries.JsonOpsBooleanPatched;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -43,7 +43,7 @@ public class UpgradeEditOption implements EditOption {
 
         Map<ResourceLocation, Integer> rawUpgradeMap = new HashMap<>();
         if (instance.moduleData.containsKey(Upgrade.upgradeId)) {
-            Upgrade.MODULE_UPGRADE_ID_CODEC.decode(JsonOps.INSTANCE, instance.moduleData.get(Upgrade.upgradeId))
+            Upgrade.MODULE_UPGRADE_ID_CODEC.decode(JsonOpsBooleanPatched.INSTANCE, instance.moduleData.get(Upgrade.upgradeId))
                     .result().ifPresent(pair -> rawUpgradeMap.putAll(pair.getFirst()));
         }
 
@@ -67,7 +67,7 @@ public class UpgradeEditOption implements EditOption {
 
         instance.moduleData.put(
                 Upgrade.upgradeId,
-                Upgrade.MODULE_UPGRADE_ID_CODEC.encodeStart(JsonOps.INSTANCE, rawUpgradeMap).getOrThrow()
+                Upgrade.MODULE_UPGRADE_ID_CODEC.encodeStart(JsonOpsBooleanPatched.INSTANCE, rawUpgradeMap).getOrThrow()
         );
 
         instance.getRoot().writeToItem(itemStack);
@@ -119,7 +119,7 @@ public class UpgradeEditOption implements EditOption {
         for (ModuleInstance instance : ItemModule.getModules(stack).allSubModules()) {
             if (instance.moduleData.containsKey(Upgrade.upgradeId)) {
                 var decodeResult = Upgrade.MODULE_UPGRADE_ID_CODEC
-                        .decode(JsonOps.INSTANCE, instance.moduleData.get(Upgrade.upgradeId))
+                        .decode(JsonOpsBooleanPatched.INSTANCE, instance.moduleData.get(Upgrade.upgradeId))
                         .result();
                 if (decodeResult.isPresent()) {
                     Map<ResourceLocation, Integer> map = decodeResult.get().getFirst();

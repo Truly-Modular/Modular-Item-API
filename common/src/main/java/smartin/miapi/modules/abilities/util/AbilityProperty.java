@@ -201,7 +201,6 @@ public class AbilityProperty extends CodecProperty<List<AbilityProperty.AbilityC
             return codec;
         }
 
-        @SuppressWarnings("unchecked")
         public static <T> void registerAbilityCodec(ResourceLocation type, ItemUseAbility<T> ability) {
             MapCodec<AbilityContext<T>> codec = RecordCodecBuilder.mapCodec(instance -> instance.group(
                     Miapi.ID_CODEC.fieldOf("id")

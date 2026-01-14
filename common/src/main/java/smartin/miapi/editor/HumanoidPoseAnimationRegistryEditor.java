@@ -1,7 +1,6 @@
 package smartin.miapi.editor;
 
 import com.google.gson.JsonObject;
-import com.mojang.serialization.JsonOps;
 import com.redpxnda.nucleus.pose.client.HumanoidPoseAnimation;
 import com.redpxnda.nucleus.pose.client.PoseAnimationResourceListener;
 import imgui.ImGui;
@@ -12,6 +11,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import smartin.miapi.Miapi;
+import smartin.miapi.registries.JsonOpsBooleanPatched;
 
 import java.util.Map;
 
@@ -80,7 +80,7 @@ public class HumanoidPoseAnimationRegistryEditor implements MiapiEditor {
     private void createExample() {
         // Decode an empty/default animation
         HumanoidPoseAnimation animation = HumanoidPoseAnimation.codec
-                .decode(JsonOps.INSTANCE, new JsonObject())
+                .decode(JsonOpsBooleanPatched.INSTANCE, new JsonObject())
                 .getOrThrow()
                 .getFirst();
 
@@ -107,7 +107,7 @@ public class HumanoidPoseAnimationRegistryEditor implements MiapiEditor {
 
     private void exportAnimation(String key, HumanoidPoseAnimation animation) {
         String data = HumanoidPoseAnimation.codec
-                .encodeStart(JsonOps.INSTANCE, animation)
+                .encodeStart(JsonOpsBooleanPatched.INSTANCE, animation)
                 .getOrThrow()
                 .toString();
 

@@ -8,6 +8,7 @@ import com.redpxnda.nucleus.config.ConfigType;
 import net.fabricmc.api.EnvType;
 import smartin.miapi.Environment;
 import smartin.miapi.Miapi;
+import smartin.miapi.client.gui.crafting.MiapiConfigScreen;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.loot.LootHelper;
 import smartin.miapi.modules.abilities.key.KeyBindManager;
@@ -85,5 +86,9 @@ public class MiapiConfig {
                     KeyBindManager.configLoad(MiapiConfig.getClientConfig().other.bindings);
                     MiapiEvents.CLEAR_CACHE.invoker().onReload();
                 }));
+
+        ConfigManager.CONFIG_SCREENS_REGISTRY.register(registerer -> {
+            registerer.add(Miapi.MOD_ID, MiapiConfigScreen::new);
+        });
     }
 }

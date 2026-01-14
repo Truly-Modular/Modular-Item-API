@@ -4,7 +4,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-import com.mojang.serialization.JsonOps;
 import io.netty.handler.codec.DecoderException;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
@@ -17,6 +16,7 @@ import smartin.miapi.modules.PropertyHolder;
 import smartin.miapi.modules.conditions.ConditionManager;
 import smartin.miapi.modules.conditions.ModuleCondition;
 import smartin.miapi.modules.properties.tag.ModuleTagProperty;
+import smartin.miapi.registries.JsonOpsBooleanPatched;
 import smartin.miapi.registries.RegistryInventory;
 
 import java.util.ArrayList;
@@ -43,11 +43,11 @@ public class Skin {
             skin.module = itemModule;
             skin.condition = ConditionManager.get(jsonObject.get("condition"));
             skin.path = jsonObject.get("path").getAsString();
-            skin.propertyHolder = PropertyHolder.MAP_CODEC.codec().decode(JsonOps.INSTANCE, jsonObject).getOrThrow((s) -> new DecoderException("Failed to decode skin !" + s)).getFirst();
+            skin.propertyHolder = PropertyHolder.MAP_CODEC.codec().decode(JsonOpsBooleanPatched.INSTANCE, jsonObject).getOrThrow((s) -> new DecoderException("Failed to decode skin !" + s)).getFirst();
             skin.textureOptions = TextureOptions.fromJson(jsonObject.get("texture"), Miapi.id("textures/gui/skin/skin_button.png"), 100, 16, 3, FastColor.ARGB32.color(255, 255, 255, 255));
             if (jsonObject.has("hover")) {
                 skin.hoverDescription = ComponentSerialization.CODEC.parse(
-                        JsonOps.INSTANCE,
+                        JsonOpsBooleanPatched.INSTANCE,
                         jsonObject.getAsJsonObject("hover")).result().orElse(Component.empty());
             }
             if (jsonObject.has("type")) {

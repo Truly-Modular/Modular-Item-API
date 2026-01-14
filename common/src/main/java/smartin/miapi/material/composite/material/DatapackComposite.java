@@ -1,13 +1,13 @@
 package smartin.miapi.material.composite.material;
 
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.resources.ResourceLocation;
 import smartin.miapi.Miapi;
 import smartin.miapi.material.base.Material;
 import smartin.miapi.material.composite.Composite;
+import smartin.miapi.registries.JsonOpsBooleanPatched;
 
 import java.util.HashMap;
 import java.util.List;
@@ -44,7 +44,7 @@ public class DatapackComposite extends BasicOtherMaterialComposite {
     }
 
     public static List<Composite> copy(List<Composite> copies) {
-        return Composite.CODEC.listOf().decode(JsonOps.INSTANCE, Composite.CODEC.listOf().encodeStart(JsonOps.INSTANCE, copies).getOrThrow()).getOrThrow().getFirst();
+        return Composite.CODEC.listOf().decode(JsonOpsBooleanPatched.INSTANCE, Composite.CODEC.listOf().encodeStart(JsonOpsBooleanPatched.INSTANCE, copies).getOrThrow()).getOrThrow().getFirst();
     }
 
     @Override
