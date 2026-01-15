@@ -24,6 +24,7 @@
 - fixed issues with crossbow animations desyncing/playing wrong
 - fixed Projectile Piercing Attribute
 - fixed gay flag being generic rainbow flag
+- fixed crash with accessories
 - fixed issue with material decoding that could brick worlds with removed materials
 - fixed issue where sometimes the attributes of items wouldnt work correctly after reloading/entering a world
 - fixed shields not working with attachments
