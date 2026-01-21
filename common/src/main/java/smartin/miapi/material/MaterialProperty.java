@@ -3,7 +3,6 @@ package smartin.miapi.material;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.google.gson.JsonPrimitive;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.serialization.Codec;
 import io.netty.handler.codec.DecoderException;
@@ -151,42 +150,6 @@ public class MaterialProperty extends CodecProperty<ResourceLocation> {
         }
     }
 
-    /**
-     * This call should only used if no valid moduleinstance is known and only the Key of the material is important
-     *
-     * @param element
-     * @return
-     */
-    @Nullable
-    public static Material getMaterialOld(JsonElement element) {
-        if (element.isJsonPrimitive()) {
-            ResourceLocation materialID = Miapi.id(element.getAsString());
-            Material material = MaterialProperty.MATERIAL_REGISTRY.get(materialID);
-            if (material != null) {
-                return material;
-            }
-        } else {
-            try {
-                JsonObject materialSaveData = element.getAsJsonObject();
-                ResourceLocation materialID = Miapi.id(materialSaveData.get("type").getAsString());
-                Material material = MaterialProperty.MATERIAL_REGISTRY.get(materialID);
-                if (material != null) {
-                    if (material.codec().isEmpty()) {
-                        return material;
-                    } else {
-                        material = material.codec().get().codec().decode(
-                                RegistryOps.create(JsonOpsBooleanPatched.INSTANCE, Miapi.registryAccess),
-                                materialSaveData).getOrThrow().getFirst();
-                        return material;
-                    }
-                }
-            } catch (RuntimeException exception) {
-                Miapi.LOGGER.error("Failed complex material decoding with error", exception);
-            }
-        }
-        return null;
-    }
-
     @Nullable
     /**
      * Gets the used Material of a ModuleInstance
@@ -246,11 +209,7 @@ public class MaterialProperty extends CodecProperty<ResourceLocation> {
      * @param material
      */
     public static void setMaterial(ModuleInstance instance, Material material) {
-        if (material.codec().isEmpty()) {
-            instance.moduleData.put(KEY, new JsonPrimitive(material.getID().toString()));
-        } else {
-            instance.moduleData.put(KEY, MaterialProperty.MATERIAL_CODEC.encodeStart(JsonOpsBooleanPatched.INSTANCE, material).getOrThrow());
-        }
+        instance.moduleData.put(KEY, MaterialProperty.MATERIAL_CODEC.encodeStart(JsonOpsBooleanPatched.INSTANCE, material).getOrThrow());
         ModuleDataPropertiesManager.setProperty(instance, property, null);
         material.setMaterial(instance);
     }

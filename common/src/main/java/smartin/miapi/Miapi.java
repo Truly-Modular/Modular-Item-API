@@ -21,6 +21,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.EquipmentSlotGroup;
+import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,6 +37,7 @@ import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.item.ItemToModularConverter;
 import smartin.miapi.item.ModularItemStackConverter;
 import smartin.miapi.item.PoseCommands;
+import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.PropertyResolver;
 import smartin.miapi.item.modular.Transform;
 import smartin.miapi.item.modular.VisualModularItem;
@@ -225,8 +227,11 @@ public class Miapi {
                             p.load(tag);
                         }
                         Arrays.stream(EquipmentSlot.values()).forEach(equipmentSlot -> {
-                            ComponentApplyProperty.updateItemStack(p.getItemBySlot(equipmentSlot), p.registryAccess());
-                            p.equipmentHasChanged(p.getItemBySlot(equipmentSlot), p.getItemBySlot(equipmentSlot));
+                            ItemStack stack = p.getItemBySlot(equipmentSlot);
+                            if (ModularItem.isModularItem(stack)) {
+                                ComponentApplyProperty.updateItemStack(stack, p.registryAccess());
+                                p.equipmentHasChanged(p.getItemBySlot(equipmentSlot), p.getItemBySlot(equipmentSlot));
+                            }
                         });
                     });
                 }

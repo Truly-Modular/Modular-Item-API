@@ -20,6 +20,7 @@ import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.config.MiapiServerConfig;
 import smartin.miapi.datapack.ReloadEvents;
+import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.PropertyResolver;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.material.MaterialProperty;
@@ -437,10 +438,25 @@ public class ModuleInstance {
     /**
      * Writes the module to the item using the current module.
      *
+     * @param stack The ItemStack to encode the module to.
+     */
+    public void writeToItem(ItemStack stack, boolean clearCache) {
+        this.clearCaches();
+        writeToItem(stack, clearCache, false);
+    }
+
+    /**
+     * Writes the module to the item using the current module.
+     *
      * @param stack      The ItemStack to encode the module to.
      * @param clearCache Determines whether to clear the cache after writing the module.
      */
-    public void writeToItem(ItemStack stack, boolean clearCache) {
+    public void writeToItem(ItemStack stack, boolean clearCache, boolean writeOnNonModular) {
+        if (!writeOnNonModular) {
+            if(!ModularItem.isModularItem(stack)){
+                return;
+            }
+        }
         if (clearCache) {
             this.clearCaches();
         }
