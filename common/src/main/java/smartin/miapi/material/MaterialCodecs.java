@@ -50,8 +50,11 @@ public final class MaterialCodecs {
                 @Override
                 public <T> DataResult<T> encode(Material input, DynamicOps<T> ops, T prefix) {
                     // Route encoding explicitly
-                    if (input.codec().isPresent() && input.codec().get() != null) {
+                    if (input.codec().isPresent() && input.codec().get() == null) {
                         Miapi.LOGGER.error("Material Codec is null but reported as present!");
+                        if (input != null) {
+                            Miapi.LOGGER.error(input.getClass().getName());
+                        }
                         return SIMPLE.encode(input, ops, prefix);
                     } else if (input.codec().isPresent()) {
                         return COMPLEX.encode(input, ops, prefix);

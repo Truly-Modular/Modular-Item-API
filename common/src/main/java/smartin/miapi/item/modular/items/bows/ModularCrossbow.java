@@ -112,7 +112,7 @@ public class ModularCrossbow extends CrossbowItem implements PlatformModularItem
 
     @Override
     public void inventoryTick(ItemStack stack, Level level, Entity entity, int slotId, boolean isSelected) {
-        MiapiEvents.INVENTORY_TICK.invoker().tick(stack,level,entity,slotId,isSelected);
+        MiapiEvents.INVENTORY_TICK.invoker().tick(stack, level, entity, slotId, isSelected);
         super.inventoryTick(stack, level, entity, slotId, isSelected);
     }
 
@@ -137,6 +137,18 @@ public class ModularCrossbow extends CrossbowItem implements PlatformModularItem
 
     @Override
     protected Projectile createProjectile(Level level, LivingEntity shooter, ItemStack weapon, ItemStack ammo, boolean isCrit) {
+        if (IsCrossbowShootAble.canCrossbowShoot(ammo) &&
+            ammo.getItem() instanceof ProjectileItem projectileItem &&
+            !(ammo.getItem() instanceof ArrowItem) &&
+            ModularItem.isModularItem(ammo)
+        ) {
+            Projectile projectile = projectileItem.asProjectile(level, shooter.position(), ammo, shooter.getDirection());
+            if (projectile instanceof ItemProjectileEntity projectileEntity) {
+                projectileEntity.setCritArrow(isCrit);
+                ((ProjectileWithBow) projectile).setBowItem(weapon);
+                return projectile;
+            }
+        }
         if (IsCrossbowShootAble.canCrossbowShoot(ammo) && ammo.getItem() instanceof ProjectileItem projectileItem) {
             Projectile projectile = super.createProjectile(level, shooter, weapon, ammo, isCrit);
             if (projectile instanceof ItemProjectileEntity projectileEntity) {
@@ -256,7 +268,7 @@ public class ModularCrossbow extends CrossbowItem implements PlatformModularItem
             }
 
         }
-        super.appendHoverText(stack,context,tooltipComponents,tooltipFlag);
+        super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
     }
 
     private static float getShootingPower(ChargedProjectiles projectile) {

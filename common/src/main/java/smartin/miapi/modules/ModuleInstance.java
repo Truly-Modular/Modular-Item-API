@@ -453,9 +453,13 @@ public class ModuleInstance {
      */
     public void writeToItem(ItemStack stack, boolean clearCache, boolean writeOnNonModular) {
         if (!writeOnNonModular) {
-            if(!ModularItem.isModularItemNoComponent(stack)){
+            if (!ModularItem.isModularItemNoComponent(stack)) {
                 return;
             }
+        }
+        if (this.getModule() == null) {
+            Miapi.LOGGER.error("Refusing to write empty module data onto Item!");
+            return;
         }
         if (clearCache) {
             this.clearCaches();

@@ -68,9 +68,14 @@ public class ItemProjectileEntity extends AbstractArrow {
         this.thrownStack = stack;
         this.entityData.set(THROWING_STACK, thrownStack);
         this.entityData.set(LOYALTY, this.getLoyaltyFromItem(stack));
+        ((AbstractArrowAccessor) this).setPickupItemStack(itemStack);
         this.entityData.set(ENCHANTED, stack.hasFoil());
+        this.entityData.set(WATER_DRAG, waterDrag);
+        this.entityData.set(SPEED_DAMAGE, true);
+        this.entityData.set(PREFERRED_SLOT, -1);
         this.checkDespawn();
         setup();
+        MiapiProjectileEvents.MODULAR_PROJECTILE_DATA_TRACKER_SET.invoker().dataTracker(this, this.getEntityData());
     }
 
     public ItemProjectileEntity(Level world, LivingEntity owner, ItemStack itemStack, ItemStack weapon) {

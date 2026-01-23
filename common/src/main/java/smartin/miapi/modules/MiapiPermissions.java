@@ -73,14 +73,14 @@ public class MiapiPermissions {
                             playerPerms.put(playerUUID, new ArrayList<>(List.of("broken", "user")));
                         }
                     } catch (Exception e) {
-                        Miapi.LOGGER.warn("Failed to parse Miapi Permissions for UUID " + playerUUID, e);
+                        Miapi.LOGGER.warn("Failed to parse Miapi Permissions for UUID " + playerUUID);
                         playerPerms.put(playerUUID, new ArrayList<>(List.of("broken", "user")));
                     } finally {
                         loadingPerms.remove(playerUUID);
                     }
                 })
                 .exceptionally(e -> {
-                    Miapi.LOGGER.warn("Could not retrieve Miapi Permissions for UUID " + playerUUID, e);
+                    Miapi.LOGGER.warn("Could not retrieve Miapi Permissions for UUID " + playerUUID);
                     playerPerms.put(playerUUID, new ArrayList<>(List.of("broken", "user")));
                     loadingPerms.remove(playerUUID);
                     return null;
