@@ -453,7 +453,7 @@ public class ModuleInstance {
      */
     public void writeToItem(ItemStack stack, boolean clearCache, boolean writeOnNonModular) {
         if (!writeOnNonModular) {
-            if(!ModularItem.isModularItem(stack)){
+            if(!ModularItem.isModularItemNoComponent(stack)){
                 return;
             }
         }
