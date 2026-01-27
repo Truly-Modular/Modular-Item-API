@@ -11,6 +11,7 @@ import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
 import com.redpxnda.nucleus.codec.misc.CustomIntermediateCodec;
 import com.redpxnda.nucleus.codec.misc.IntermediateCodec;
 import net.minecraft.network.chat.Component;
+import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.material.MaterialProperty;
 import smartin.miapi.material.base.Material;
@@ -440,6 +441,14 @@ public class StatResolver {
          */
         double resolveDouble(String data, ModuleInstance instance);
 
+        default ResolvedDouble resolveWithTrace(String data, ModuleInstance instance) {
+            double value = resolveDouble(data, instance);
+            return new ResolvedDouble(
+                    value,
+                    new TraceValue(value, Component.literal(data))
+            );
+        }
+
         /**
          * Resolves a string value from the given data string.
          *
@@ -461,4 +470,110 @@ public class StatResolver {
             return 0;
         }
     }
+
+
+    public static ResolvedDouble resolveDoubleWithTrace(String raw, ModuleInstance instance) {
+        try {
+
+            String resolvedExpression = raw;
+            List<TraceNode> references = new ArrayList<>();
+
+            Pattern pattern = Pattern.compile("\\[(.*?)\\]");
+            Matcher matcher = pattern.matcher(raw);
+
+            while (matcher.find()) {
+                String match = matcher.group(1);
+                String[] parts = match.split("\\.");
+
+                if (parts.length >= 2) {
+                    String resolverKey = parts[0];
+                    String resolverData = String.join(".", Arrays.copyOfRange(parts, 1, parts.length));
+
+                    Resolver resolver = resolverMap.get(resolverKey);
+
+                    if (resolver != null) {
+                        ResolvedDouble resolved = resolver.resolveWithTrace(resolverData, instance);
+
+                        resolvedExpression = resolvedExpression.replace(
+                                "[" + match + "]",
+                                String.valueOf(resolved.value())
+                        );
+
+                        references.add(
+                                resolved.trace
+                        );
+                    } else {
+                        Miapi.LOGGER.error("material resolver for id " + resolverKey + " was not found!");
+                        resolvedExpression = resolvedExpression.replace("[" + match + "]", "0");
+
+                        references.add(
+                                new TraceReference(
+                                        match,
+                                        0,
+                                        new TraceValue(0, Component.literal("missing resolver"))
+                                )
+                        );
+                    }
+                }
+            }
+
+            double finalValue = resolveCalculation(resolvedExpression, raw);
+
+            return new ResolvedDouble(
+                    finalValue,
+                    new TraceOperation(
+                            raw,
+                            finalValue,
+                            references
+                    )
+            );
+        } catch (Exception ignored) {
+            double literal = Double.parseDouble(raw);
+            return new ResolvedDouble(
+                    literal,
+                    new TraceValue(literal, Component.literal(raw))
+            );
+        }
+    }
+
+    public record ResolvedDouble(
+            double value,
+            @Nullable TraceNode trace
+    ) {
+    }
+
+    public sealed interface TraceNode permits
+            TraceValue,
+            TraceValueWithSource,
+            TraceOperation,
+            TraceReference {
+    }
+
+    public record TraceValueWithSource(
+            double value,
+            Component label,
+            Component source
+    ) implements TraceNode {
+    }
+
+    public record TraceValue(
+            double value,
+            Component label
+    ) implements TraceNode {
+    }
+
+    public record TraceOperation(
+            String expression,
+            double result,
+            List<TraceNode> children
+    ) implements TraceNode {
+    }
+
+    public record TraceReference(
+            String key,
+            double resolvedValue,
+            TraceNode resolvedFrom
+    ) implements TraceNode {
+    }
+
 }

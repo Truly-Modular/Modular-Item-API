@@ -78,6 +78,9 @@ public class GeneratedMaterial implements Material {
                     Codec.list(ItemStack.CODEC)
                             .fieldOf("toolItems")
                             .forGetter(m -> m.toolItems.stream().map(Item::getDefaultInstance).toList()),
+                    Codec.list(ItemStack.CODEC)
+                            .fieldOf("armorItems")
+                            .forGetter(m -> m.toolItems.stream().map(Item::getDefaultInstance).toList()),
                     Codec.FLOAT
                             .optionalFieldOf("armor_hardness")
                             .forGetter(m -> m.armorHardness),
@@ -87,9 +90,14 @@ public class GeneratedMaterial implements Material {
                     ItemStack.CODEC
                             .optionalFieldOf("smithing_template", ItemStack.EMPTY)
                             .forGetter(m -> m.swordItem.getDefaultInstance())
-            ).apply(instance, (itemstack, additionalIngredient, swordItem, ingredient_toolItems, armor, smithingKey, smithingItem) -> {
+            ).apply(instance, (itemstack, additionalIngredient, swordItem, toolItems, armorItems, armor, smithingKey, smithingItem) -> {
                 GeneratedMaterial material = new GeneratedMaterial(itemstack, additionalIngredient, ((SwordItem) (swordItem.getItem())).getTier(),
-                        ingredient_toolItems.stream().map(itemStack -> (TieredItem) itemStack.getItem()).toList()
+                        toolItems.stream()
+                                .filter(stack -> stack.getItem() instanceof TieredItem)
+                                .map(itemStack -> (TieredItem) itemStack.getItem()).toList(),
+                        armorItems.stream()
+                                .filter(stack -> stack.getItem() instanceof ArmorItem)
+                                .map(itemStack -> (ArmorItem) itemStack.getItem()).toList()
                 );
                 if (smithingKey != null && smithingKey.isPresent()) {
                     material.setSmithingMaterial(smithingKey.get(), Ingredient.of(smithingItem));
@@ -107,8 +115,9 @@ public class GeneratedMaterial implements Material {
      * @param sourceTier     the {@link Tier} itself
      * @param toolItems      all the assosiated Tooltitems of the {@link Tier}
      */
-    public GeneratedMaterial(ItemStack mainIngredient, Ingredient ingredient, Tier sourceTier, List<TieredItem> toolItems) {
+    public GeneratedMaterial(ItemStack mainIngredient, Ingredient ingredient, Tier sourceTier, List<TieredItem> toolItems, List<ArmorItem> armorlItems) {
         key = Miapi.id("generated/" + mainIngredient.getDescriptionId() + toolItems.getFirst().getDescriptionId());
+        this.armorItems = armorlItems;
         this.toolMaterial = sourceTier;
         this.ingredient = ingredient;
         this.toolItems = toolItems;
@@ -164,15 +173,6 @@ public class GeneratedMaterial implements Material {
             }
             stats.put("tier", (double) getEstimatedTier(toolMaterial.getIncorrectBlocksForDrops()));
             armorItems = findRelatedArmorItems();
-            if (armorItems.size() == 4) {
-                double totalArmor = (int) armorItems.stream().collect(Collectors.summarizingInt(ArmorItem::getDefense)).getSum();
-                double desiredHardness = (totalArmor + (stats.get("flexibility") / 4) + (stats.get("density") / 4) - 1) / 4.05;
-                double max = Math.max(totalArmor, desiredHardness);
-                if (!(Math.abs(totalArmor - desiredHardness) <= (15 / 100.0) * max)) {
-                    Miapi.LOGGER.info("replacement hardness " + desiredHardness + " original " + stats.get("hardness"));
-                    stats.put("armor_hardness", desiredHardness);
-                }
-            }
             properties = GeneratedMaterialPropertyManager.setup(getID(), swordItem, axeItem, toolMaterials, armorItems, Map.of());
             return true;
         }

@@ -1,3 +1,4 @@
-## v2.2.3 (1.21)
-- hotfix api no longer creating new working modular items
-- fixed modular crossbows not correctly shooting throwing knifes
+## v2.2.4 (1.21)
+- fixed minor issues with generated materials causing stat displays to fail
+- fixed generated materials not having toughness
+- improved shift+alt stat display

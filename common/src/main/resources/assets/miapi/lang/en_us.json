@@ -7,7 +7,6 @@
     "tag.block.minecraft.incorrect_for_netherite_tool": "Incorrect for Netherite Tools",
     "miapi.material.mining_level.description": "Blacklisted Blocks:",
     "miapi.material.mining_level.pickaxe.description": "Same Mining Level as:",
-
     "item.tag.miapi.armor": "Modular Armor",
     "item.tag.miapi.axes": "Modular Axes",
     "item.tag.miapi.boots": "Modular Boots",
@@ -23,7 +22,6 @@
     "item.tag.miapi.shovels": "Modular Shovels",
     "item.tag.miapi.swords": "Modular Swords",
     "item.tag.miapi.tools": "Modular Tools",
-
     "item.tag.c.armor": "Armor",
     "item.tag.c.boots": "Boots",
     "item.tag.c.chestplates": "Chestplates",
@@ -34,7 +32,6 @@
     "item.tag.c.leggings": "Leggings",
     "item.tag.c.tools.knife": "Knifes",
     "item.tag.c.tools.knifes": "Knifes",
-
     "item.tag.minecraft.armor": "Armor",
     "item.tag.minecraft.boots": "Boots",
     "item.tag.minecraft.bows": "Bows",
@@ -43,7 +40,6 @@
     "item.tag.minecraft.helmets": "Helmets",
     "item.tag.minecraft.knifes": "Knives",
     "item.tag.minecraft.leggings": "Leggings",
-
     "tag.entity_type.minecraft.aquatic": "Aquatic",
     "tag.entity_type.minecraft.arrows": "Arrows",
     "tag.entity_type.minecraft.arthropod": "Arthropods",
@@ -78,19 +74,14 @@
     "tag.entity_type.minecraft.undead": "Undead",
     "tag.entity_type.minecraft.wither_friends": "Wither Allies",
     "tag.entity_type.minecraft.zombies": "Zombies",
-
-
-
     "tag.item.miapi.armor": "Modular Armor",
     "tag.item.miapi.helmets": "Modular Helmets",
     "tag.item.miapi.chestplates": "Modular Chestplates",
     "tag.item.miapi.leggings": "Modular Leggings",
     "tag.item.miapi.boots": "Modular Boots",
-
     "tag.item.miapi.bows": "Modular Bows",
     "tag.item.miapi.crossbows": "Modular Crossbows",
     "tag.item.miapi.arrows": "Modular Arrows",
-
     "tag.item.miapi.swords": "Modular Swords",
     "tag.item.miapi.pickaxes": "Modular Pickaxes",
     "tag.item.miapi.axes": "Modular Axes",
@@ -98,9 +89,7 @@
     "tag.item.miapi.hoes": "Modular Hoes",
     "tag.item.miapi.tools": "Modular Tools",
     "tag.item.miapi.knifes": "Modular Knifes",
-
     "miapi.fake_enchant.desc": "%s enchantment level adjusted\n%s",
-
     "miapi.config_screen.title": "Miapi Config",
     "miapi.config_screen.client": "Client Config",
     "miapi.config_screen.server": "Server Config",
@@ -127,6 +116,8 @@
     "miapi.ui.craft.back": "Back",
     "miapi.ui.back": "Back",
     "miapi.ui.next": "Next",
+    "miapi.ui.stat_detail.shift_alt_depth": "  ",
+    "miapi.ui.stat_detail.shift_alt_depth_more": "    ",
     "miapi.part.name": "Modular Part: %s",
     "miapi.part.name.desc_1": "Modular Part",
     "miapi.part.name.desc_2": "Unlocks more Options when in inventory",
@@ -162,9 +153,9 @@
     "miapi.ui.boolean.true": "True",
     "miapi.ui.apply": "Apply",
     "miapi.ui.boolean.false": "False",
-    "miapi.property.source.material":" From %s Material",
-    "miapi.property.source.synergy":" From unnamed synergy",
-    "miapi.property.source.skin":" From Skin %s",
+    "miapi.property.source.material": " From %s Material",
+    "miapi.property.source.synergy": " From unnamed synergy",
+    "miapi.property.source.skin": " From Skin %s",
     "miapi.lore.draw_time.tooltip": "%ss Draw Time",
     "miapi.lore.empty": "",
     "miapi.lore.nemesis.0": "§6Nemesis! §7Slain %s %s",
@@ -262,7 +253,6 @@
     "miapi.application_target.redirect.attacking": "Victim",
     "miapi.application_target.redirect_possession": "'s %s",
     "miapi.application_target.description.hurt_victim": "victims when you attack with this item.",
-
     "miapi.stat.miapi.combo": "Combo",
     "miapi.stat.miapi.combo.description": "Combo increases by 5% per successive hit up to %s.\nHits need to be within %s seconds",
     "miapi.stat.miapi.ability.blocking.block": "Blocking",
@@ -281,7 +271,6 @@
     "miapi.stat.miapi.ability.blocking.min_use.description": "How long until the shield is actually up\nDefaults to 0",
     "miapi.stat.miapi.ability.blocking.max_use": "Blocking maximum hold",
     "miapi.stat.miapi.ability.blocking.max_use.description": "How long a shield can be kept up.\nDefaults to infinite.",
-
     "miapi.stat.miapi.is_piglin_gold": "Golden",
     "miapi.stat.miapi.is_piglin_gold.description": "Piglins will not attack you while wearing this Armor",
     "miapi.stat.miapi.rapid_fire_crossbow": "Magazine",
@@ -416,6 +405,7 @@
     "miapi.stat.miapi.handheld_item.description": "25% Attack Speed while dual wielding.",
     "miapi.stat.miapi.inertia_damage": "Inertia",
     "miapi.stat.miapi.inertia_damage.description": "Inertia increases damage based on velocity.\nScales logarithmicly with speed.",
+    "miapi.material_stat.toughness": "Toughness",
     "miapi.material_stat.color": "Color",
     "miapi.material_stat.flexibility": "Flexibility",
     "miapi.material_stat.tier": "Tier",
@@ -555,17 +545,15 @@
     "miapi.material.miapi.stone.purpur_block": "Purpur",
     "miapi.material.miapi.custom.banners.material": "Banner Material",
     "miapi.material.miapi.component_runtime_material": "Component Runtime Material",
-
     "miapi.material_indication.header": "Used material stats :",
     "miapi.material_indication.default.durability": "Increases modules durability",
     "miapi.material_indication.default.hardness": "Increases modules main stat",
     "miapi.material_indication.default.mining_speed": "The tools mining speed and level is set by this material",
-
     "block.miapi.modular_work_bench": "Modular Workbench",
     "miapi.module.miapi.empty": "Empty Slot",
     "miapi.module.miapi.empty.name": "Empty Slot",
     "miapi.module.miapi.empty.description": "An empty slot, crafting this will remove this module",
-    "miapi.module.miapi.empty.short_description":  "An empty slot, crafting this will remove this module",
+    "miapi.module.miapi.empty.short_description": "An empty slot, crafting this will remove this module",
     "miapi.module.miapi.banners.1x2": "Banner Cosmetic",
     "miapi.module.miapi.banners.1x2.name": "Banner Cosmetic",
     "miapi.module.miapi.banners.1x2.description": "A cosmetic banner option",
@@ -612,7 +600,6 @@
     "miapi.material_property.category.pants.description": "Pants Modules are all modules for pants armor.",
     "miapi.material_property.category.boot": "Boots Modules",
     "miapi.material_property.category.boot.description": "Boots Modules are all modules for boots armor.",
-
     "miapi.property.entity.source": "Applies to the following Entities:",
     "miapi.property.entity.armor.default": "%sprotection",
     "miapi.property.entity.armor.description": "Reduces damage by %s%%\nCaps out at 80%% reduction. \nHas diminishing returns.",

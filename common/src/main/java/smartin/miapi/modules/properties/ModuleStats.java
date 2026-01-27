@@ -2,14 +2,15 @@ package smartin.miapi.modules.properties;
 
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import smartin.miapi.Miapi;
 import smartin.miapi.item.modular.StatResolver;
+import smartin.miapi.material.AllowedMaterial;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
-import smartin.miapi.material.AllowedMaterial;
 import smartin.miapi.modules.properties.attributes.AttributeProperty;
 import smartin.miapi.modules.properties.util.CodecProperty;
 import smartin.miapi.modules.properties.util.DoubleOperationResolvable;
@@ -44,39 +45,171 @@ public class ModuleStats extends CodecProperty<Map<String, DoubleOperationResolv
     public ModuleStats() {
         super(CODEC);
         property = this;
-        StatResolver.registerResolver("module", (data, instance) -> {
-            if (instance.getModule().equals(ItemModule.internal)) {
-                return 1.0;
-            }
-            if ("cost".equals(data)) {
-                return AllowedMaterial.getMaterialCost(instance);
-            }
-            if (data != null && data.startsWith("attribute.")) {
-                ResourceLocation id = ResourceLocation.parse(
-                        data.replaceFirst("attribute\\.", "")
-                );
+        StatResolver.registerResolver("module", new StatResolver.Resolver() {
 
-                Map<ResourceLocation, Map<AttributeModifier.Operation, Map<Either<EquipmentSlotGroup, Boolean>, DoubleOperationResolvable>>> attributeData = AttributeProperty.property.getData(instance).orElse(Map.of());
-                List<DoubleOperationResolvable.IndividualOperation> operations = new ArrayList<>();
-                attributeData.getOrDefault(id, Map.of()).forEach((operation, innerMap) -> {
-                    innerMap.values().forEach(resolvable -> operations.add(
-                            new DoubleOperationResolvable.IndividualOperation(
-                                    resolvable.getValue(),
-                                    switch (operation) {
-                                        case ADD_VALUE -> DoubleOperationResolvable.IndividualOperation.Operation.ADD_VALUE;
-                                        case ADD_MULTIPLIED_BASE -> DoubleOperationResolvable.IndividualOperation.Operation.ADD_MULTIPLIED_BASE;
-                                        case ADD_MULTIPLIED_TOTAL -> DoubleOperationResolvable.IndividualOperation.Operation.ADD_MULTIPLIED_TOTAL;
-                                    })));
-                });
-                return new DoubleOperationResolvable(operations).getValue();
+            @Override
+            public double resolveDouble(String data, ModuleInstance instance) {
+                if (instance.getModule().equals(ItemModule.internal)) {
+                    return 1.0;
+                }
+                if ("cost".equals(data)) {
+                    return AllowedMaterial.getMaterialCost(instance);
+                }
+                if (data != null && data.startsWith("attribute.")) {
+                    ResourceLocation id = ResourceLocation.parse(
+                            data.replaceFirst("attribute\\.", "")
+                    );
+
+                    Map<ResourceLocation, Map<AttributeModifier.Operation, Map<Either<EquipmentSlotGroup, Boolean>, DoubleOperationResolvable>>> attributeData = AttributeProperty.property.getData(instance).orElse(Map.of());
+                    List<DoubleOperationResolvable.IndividualOperation> operations = new ArrayList<>();
+                    attributeData.getOrDefault(id, Map.of()).forEach((operation, innerMap) -> {
+                        innerMap.values().forEach(resolvable -> operations.add(
+                                new DoubleOperationResolvable.IndividualOperation(
+                                        resolvable.getValue(),
+                                        switch (operation) {
+                                            case ADD_VALUE ->
+                                                    DoubleOperationResolvable.IndividualOperation.Operation.ADD_VALUE;
+                                            case ADD_MULTIPLIED_BASE ->
+                                                    DoubleOperationResolvable.IndividualOperation.Operation.ADD_MULTIPLIED_BASE;
+                                            case ADD_MULTIPLIED_TOTAL ->
+                                                    DoubleOperationResolvable.IndividualOperation.Operation.ADD_MULTIPLIED_TOTAL;
+                                        })));
+                    });
+                    return new DoubleOperationResolvable(operations).getValue();
+                }
+                DoubleOperationResolvable resolvable = getData(instance).orElse(new HashMap<>()).get(data);
+                if (resolvable != null) {
+                    return resolvable.getValue();
+                } else {
+                    return 0;
+                }
             }
-            DoubleOperationResolvable resolvable = getData(instance).orElse(new HashMap<>()).get(data);
-            if (resolvable != null) {
-                return resolvable.getValue();
-            } else {
-                return 0;
+
+            @Override
+            public StatResolver.ResolvedDouble resolveWithTrace(String data, ModuleInstance instance) {
+                return ModuleStats.this.resolveWithTrace(data, instance);
             }
         });
+    }
+
+    public StatResolver.ResolvedDouble resolveWithTrace(String data, ModuleInstance instance) {
+
+        // ─────────────────────────────────────────
+        // Internal module shortcut
+        // ─────────────────────────────────────────
+        if (instance.getModule().equals(ItemModule.internal)) {
+            return new StatResolver.ResolvedDouble(
+                    1.0,
+                    new StatResolver.TraceValue(1.0, Component.literal("module.internal"))
+            );
+        }
+
+        // ─────────────────────────────────────────
+        // Cost
+        // ─────────────────────────────────────────
+        if ("cost".equals(data)) {
+            double value = AllowedMaterial.getMaterialCost(instance);
+            return new StatResolver.ResolvedDouble(
+                    value,
+                    new StatResolver.TraceReference(
+                            "module.cost",
+                            value,
+                            new StatResolver.TraceValue(value, Component.literal("AllowedMaterial.getMaterialCost"))
+                    )
+            );
+        }
+
+        // ─────────────────────────────────────────
+        // Attribute passthrough
+        // module.attribute.minecraft:generic.armor
+        // ─────────────────────────────────────────
+        if (data != null && data.startsWith("attribute.")) {
+
+            ResourceLocation id = ResourceLocation.parse(
+                    data.replaceFirst("attribute\\.", "")
+            );
+
+            Map<ResourceLocation,
+                    Map<AttributeModifier.Operation,
+                            Map<Either<EquipmentSlotGroup, Boolean>, DoubleOperationResolvable>>> attributeData =
+                    AttributeProperty.property.getData(instance).orElse(Map.of());
+
+            List<StatResolver.TraceNode> operationTraces = new ArrayList<>();
+            List<DoubleOperationResolvable.IndividualOperation> operations = new ArrayList<>();
+
+            attributeData.getOrDefault(id, Map.of()).forEach((operation, innerMap) -> {
+                innerMap.values().forEach(resolvable -> {
+
+                    double value = resolvable.getValue();
+
+                    DoubleOperationResolvable.IndividualOperation.Operation op =
+                            switch (operation) {
+                                case ADD_VALUE -> DoubleOperationResolvable.IndividualOperation.Operation.ADD_VALUE;
+                                case ADD_MULTIPLIED_BASE ->
+                                        DoubleOperationResolvable.IndividualOperation.Operation.ADD_MULTIPLIED_BASE;
+                                case ADD_MULTIPLIED_TOTAL ->
+                                        DoubleOperationResolvable.IndividualOperation.Operation.ADD_MULTIPLIED_TOTAL;
+                            };
+
+                    operations.add(
+                            new DoubleOperationResolvable.IndividualOperation(value, op)
+                    );
+
+                    operationTraces.add(
+                            new StatResolver.TraceOperation(
+                                    op.name(),
+                                    value,
+                                    List.of(
+                                            new StatResolver.TraceValue(
+                                                    value,
+                                                    Component.literal(resolvable.toString())
+                                            )
+                                    )
+                            )
+                    );
+                });
+            });
+
+            double finalValue = new DoubleOperationResolvable(operations).getValue();
+
+            return new StatResolver.ResolvedDouble(
+                    finalValue,
+                    new StatResolver.TraceOperation(
+                            "module.attribute." + id,
+                            finalValue,
+                            operationTraces
+                    )
+            );
+        }
+
+        // ─────────────────────────────────────────
+        // Module stat lookup (module.armor, etc.)
+        // ─────────────────────────────────────────
+        DoubleOperationResolvable resolvable =
+                getData(instance).orElse(Map.of()).get(data);
+
+        if (resolvable != null) {
+            double value = resolvable.getValue();
+
+
+
+            return new StatResolver.ResolvedDouble(
+                    value,
+                    new StatResolver.TraceOperation(
+                            "module." + data,
+                            value,
+                            resolvable.getResolvedTrace()
+                    )
+            );
+        }
+
+        // ─────────────────────────────────────────
+        // Fallback
+        // ─────────────────────────────────────────
+        return new StatResolver.ResolvedDouble(
+                0,
+                new StatResolver.TraceValue(0, Component.literal("module." + data + " (missing)"))
+        );
     }
 
     @Override

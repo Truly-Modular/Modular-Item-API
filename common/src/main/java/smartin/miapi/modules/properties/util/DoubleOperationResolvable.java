@@ -271,6 +271,20 @@ public class DoubleOperationResolvable implements SourceSetter<DoubleOperationRe
         return data;
     }
 
+    public List<StatResolver.TraceNode> getResolvedTrace() {
+        List<StatResolver.TraceNode> children = new ArrayList<>();
+
+        for (IndividualOperation op : operations) {
+            StatResolver.TraceNode node;
+            node = op.asNode();
+            children.add(
+                    node
+            );
+        }
+        return children;
+    }
+
+
     public static class IndividualOperation {
 
 
@@ -373,6 +387,15 @@ public class DoubleOperationResolvable implements SourceSetter<DoubleOperationRe
             }
             String transformed = transformer.apply(new Pair<>(value, instance)).replace("[old_value]", "" + oldValue);
             return StatResolver.resolveDouble(transformed, instance);
+        }
+
+        public StatResolver.TraceNode asNode() {
+            return StatResolver.resolveDoubleWithTrace(this.value, this.instance).trace();
+            /*
+            return this.source.map(component ->
+                    (StatResolver.TraceNode) new StatResolver.TraceValueWithSource(this.solve(), Component.literal(toCodecString(attributeOperation) + " " + this.value), component)).orElseGet(() ->
+                    new StatResolver.TraceValue(this.solve(), Component.literal(attributeOperation.name + " " + this.value)));
+             */
         }
 
         public static Operation getOperation(String operationString) {

@@ -1,9 +1,7 @@
 package smartin.miapi.client.gui.crafting.statdisplay;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -12,9 +10,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FastColor;
 import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.Nullable;
 import smartin.miapi.client.gui.InteractAbleWidget;
-import smartin.miapi.client.gui.ParentHandledScreen;
 import smartin.miapi.client.gui.ScrollingTextWidget;
 import smartin.miapi.client.gui.StatBar;
 import smartin.miapi.client.gui.crafting.CraftingScreen;
@@ -29,7 +25,7 @@ import java.util.List;
 import java.util.Locale;
 
 @Environment(EnvType.CLIENT)
-public abstract class SingleStatDisplayDouble extends InteractAbleWidget implements SingleStatDisplay, Renderable {
+public abstract class SingleStatDisplayDouble extends InteractAbleWidget implements SingleStatDisplay, Renderable, DoubleResolveableDisplay {
     public ResourceLocation texture = CraftingScreen.BACKGROUND_TEXTURE;
     public ItemStack original = ItemStack.EMPTY;
     public ItemStack compareTo = ItemStack.EMPTY;
@@ -201,28 +197,6 @@ public abstract class SingleStatDisplayDouble extends InteractAbleWidget impleme
         return hoverFormat;
     }
 
-    public List<Component> getLinesForDouble(@Nullable DoubleOperationResolvable resolvable) {
-        List<Component> list = new ArrayList();
-        if(resolvable!=null){
-            if (ParentHandledScreen.hasShiftDown()) {
-                if (resolvable != null) {
-                    resolvable.operations.forEach(operation1 -> {
-                        if (operation1.solve() != 0) {
-                            list.add(Component.literal(SinglePropertyStatDisplay.stringForOperation(getHoverFormat(), operation1)).withStyle(ChatFormatting.GRAY));
-                            if (ParentHandledScreen.hasAltDown()) {
-                                operation1.source.ifPresent(list::add);
-                                list.add(Component.literal("  " + operation1.value).withStyle(ChatFormatting.DARK_GRAY));
-                            }
-                        }
-                    });
-                }
-                list.add(Component.translatable("miapi.ui.stat_detail.shift_alt").withStyle(ChatFormatting.DARK_GRAY));
-            } else {
-                list.add(Component.translatable("miapi.ui.stat_detail.shift").withStyle(ChatFormatting.DARK_GRAY));
-            }
-        }
-        return list;
-    }
 
     public InteractAbleWidget getHoverWidget() {
         return null;

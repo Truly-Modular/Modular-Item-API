@@ -76,6 +76,7 @@ public class GeneratedMaterialManager {
                             Miapi.LOGGER.info("Client received " + data.size() + " complex materials");
                         }
                         for (GeneratedMaterial material : data) {
+                            MiapiEvents.GENERATE_MATERIAL_CONVERTERS.invoker().generated(material, material.toolItems, material.armorItems, smartin.miapi.Environment.isClient());
                             material.setupClient();
                             if (verboseLogging()) {
                                 Miapi.LOGGER.info("complex " + material.getTranslation().getString());
@@ -182,7 +183,8 @@ public class GeneratedMaterialManager {
                                 mainIngredient,
                                 tier.getRepairIngredient(),
                                 tier,
-                                tieredItems
+                                tieredItems,
+                                new ArrayList<>()
                         );
                         if (generatedMaterial.isValid()) {
                             if (verboseLogging()) {
@@ -282,9 +284,9 @@ public class GeneratedMaterialManager {
                         });
             }
             SmithingRecipeUtil.setupSmithingRecipe(generatedMaterials, false, (material -> {
-                if(material!=null){
+                if (material != null) {
                     MATERIAL_REGISTRY.register(material.getID(), material);
-                    MiapiEvents.GENERATE_MATERIAL_CONVERTERS.invoker().generated(material, material.toolItems, material.armorItems, smartin.miapi.Environment.isClient());
+                    MiapiEvents.GENERATE_MATERIAL_CONVERTERS.invoker().generated(material, material.toolItems, material.armorItems, false);
                 }
             }), access, null);
             if (verboseLogging()) {
