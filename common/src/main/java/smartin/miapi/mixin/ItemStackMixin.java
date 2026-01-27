@@ -62,19 +62,13 @@ abstract class ItemStackMixin {
 
     @Inject(
             method = "setNbt(Lnet/minecraft/nbt/NbtCompound;)V",
-            at = @At("TAIL"),
-            cancellable = true)
-    private void miapi$cacheMaintanaince(NbtCompound nbt, CallbackInfo ci) {
-        ItemStack stack = (ItemStack) (Object) this;
-        ModularItemCache.clearUUIDFor(stack);
-    }
-
-    @Inject(
-            method = "setNbt(Lnet/minecraft/nbt/NbtCompound;)V",
             at = @At("HEAD"),
             cancellable = true)
     private void miapi$cacheMaintanaince2(NbtCompound nbt, CallbackInfo ci) {
         ItemStack stack = (ItemStack) (Object) this;
+        if (MiapiConfig.INSTANCE.server.other.suppressFrequentItems) {
+            return;
+        }
         ModularItemCache.clearUUIDFor(stack);
     }
 

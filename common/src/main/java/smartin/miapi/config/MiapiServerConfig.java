@@ -49,6 +49,12 @@ public class MiapiServerConfig {
         public boolean verboseLogging = false;
 
         @Comment("""
+                Surpress frequent item updates
+                can lead to item issues""")
+        @AutoCodec.Name("suppress_frequent_items")
+        public boolean suppressFrequentItems = true;
+
+        @Comment("""
                 If this is on the Block Teleports effect of Truly Modular will block most teleports,
                 if false it will only block default Enderman,Chorus fruit and Ender Pearls""")
 

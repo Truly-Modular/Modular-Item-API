@@ -22,3 +22,5 @@
 - fixed equipment slot related issues with attribute property
 - adjusted axe strip behaviour
 - fixed compat with Factory API
+- backported material_group condition
+- started suppressing frequent item updates. if this causes issues for you, disable it in the config.
