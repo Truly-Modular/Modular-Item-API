@@ -142,6 +142,11 @@ public class LoreProperty implements ModuleProperty {
                 String groupId = material.getGuiGroups().get(i);
                 lines.add(gray(Text.literal(" - " + HoverMaterialList.getTranslation(groupId).getString())));
             }
+            if (MiapiConfig.INSTANCE.client.other.showMaterialStats) {
+                for (String stat : MiapiConfig.INSTANCE.client.other.shownMaterialStats) {
+                    lines.add(Text.translatable("miapi.ui.material_desc_stat_line", Text.translatable("miapi.material_stat."+stat), material.getDouble(stat)));
+                }
+            }
         }
         return lines;
     }

@@ -25,6 +25,7 @@
     "miapi.ui.material_desc_alt": "Modular Material (alt for details)",
     "miapi.ui.material_desc_alt_2": "Types:",
     "miapi.ui.material_desc": "Modular Material",
+    "miapi.ui.material_desc_stat_line": " * %s: §6%s",
     "miapi.ui.search_placeholder": " search...",
     "miapi.ui.edit.header": "Select thing to Edit:",
     "miapi.ui.replace": "Replace",

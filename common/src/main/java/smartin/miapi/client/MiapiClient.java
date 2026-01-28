@@ -24,6 +24,7 @@ import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
+import org.lwjgl.glfw.GLFW;
 import smartin.miapi.Miapi;
 import smartin.miapi.blocks.ModularWorkBenchRenderer;
 import smartin.miapi.client.atlas.MaterialAtlasManager;
@@ -62,6 +63,7 @@ public class MiapiClient {
     public static boolean sodiumLoaded = isSodiumLoaded();
     public static boolean jerLoaded = Platform.isModLoaded("jeresources");
     public static final MiapiRegistry<KeyBinding> KEY_BINDINGS = MiapiRegistry.getInstance(KeyBinding.class);
+    public static final KeyBinding MATERIAL_DEBUG_KEY = KEY_BINDINGS.register("debug_key", new KeyBinding("miapi.ui.materia.debug", GLFW.GLFW_KEY_LEFT_CONTROL, "miapi"));
     //public static final KeyBinding HOVER_DETAIL_BINDING = KEY_BINDINGS.register("miapi:hover_detail", new KeyBinding("miapi.gui.item_detail", 42, "miapi.keybinds"));
 
     private MiapiClient() {

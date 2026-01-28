@@ -24,3 +24,4 @@
 - fixed compat with Factory API
 - backported material_group condition
 - started suppressing frequent item updates. if this causes issues for you, disable it in the config.
+- added `showMaterialStats` to toggle and `shownMaterialStats` (string list) to config to enhance additional alt info in material tooltips

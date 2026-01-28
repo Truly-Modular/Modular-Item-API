@@ -62,6 +62,14 @@ public class MiapiClientConfig {
         @Comment("Speed of Color Change on enchanting Glint")
         @AutoCodec.Name("enchanting_glint_speed")
         public float enchantingGlintSpeed = 1.0f;
+
+        @Comment("Show Material stats on ALT as well")
+        @AutoCodec.Name("show_material_stats")
+        public boolean showMaterialStats = false;
+
+        @Comment("Enable Item stat list button in UI")
+        @AutoCodec.Name("shownMaterialStats")
+        public List<String> shownMaterialStats = List.of("hardness", "density", "flexibility", "durability", "mining_level", "mining_speed");
     }
 
     @ConfigAutoCodec.ConfigClassMarker
