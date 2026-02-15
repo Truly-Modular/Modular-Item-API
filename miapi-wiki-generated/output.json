@@ -371,7 +371,7 @@
                 },
                 "equipment_slot": {
                   "header": "Equipment Slot Property",
-                  "description": "  \nIt is recommneded to use the correct Item as well as this for better mod compatibility\r",
+                  "description": " It is recommneded to use the correct Item as well as this for better mod compatibility  \n",
                   "java": "common/src/main/java/smartin/miapi/modules/properties/armor/EquipmentSlotProperty.java",
                   "data": {
                     "equipment_slot": "the preferred Equipment Slot Group"
@@ -787,7 +787,7 @@
                 },
                 "bludgeon": {
                   "header": "Bludgeon Property",
-                  "description": " The BludgeonProperty introduces additional blunt damage to attacks based on the equipped item.  \nThis property calculates bludgeoning damage and applies it as bonus damage during melee combat,\rfactoring in the target's **Armor Toughness** to determine the effectiveness.\r *\rThe applied bonus damage is the bludgeon value but capped at the targets Armor Thoughness.\r",
+                  "description": " The BludgeonProperty introduces additional blunt damage to attacks based on the equipped item.  \nThis property calculates bludgeoning damage and applies it as bonus damage during melee combat,\rfactoring in the target's **Armor Toughness** to determine the effectiveness.\r<p>\rThe applied bonus damage is the bludgeon value but capped at the targets Armor Thoughness.\r",
                   "java": "common/src/main/java/smartin/miapi/modules/properties/onHit/BludgeonProperty.java",
                   "data": {
                     "bludgeon": " A double value indicating the amount of blunt (impact) damage the item can deal."
@@ -960,7 +960,7 @@
             },
             "priority": {
               "header": "UI Priority Property",
-              "description": "  \nThe PriorityProperty affects the ordering of items or modules within the GUI. This property assigns a priority value\rto each item or module, which influences its placement or sorting in graphical user interfaces where multiple items\ror modules are displayed. A lower value will be placed first in the list and higher values at the end.\r *\r",
+              "description": " The PriorityProperty affects the ordering of items or modules within the GUI. This property assigns a priority value  \nto each item or module, which influences its placement or sorting in graphical user interfaces where multiple items\ror modules are displayed. A lower value will be placed first in the list and higher values at the end.\r",
               "java": "common/src/main/java/smartin/miapi/modules/properties/PriorityProperty.java",
               "data": {
                 "priority": " the priority for sorting"
@@ -1042,6 +1042,12 @@
                   },
                   "key_words": []
                 },
+                "transform": {
+                  "header": "Projectile Render Transform",
+                  "description": "# Projectile Render Transform\r\rSimply transforms the projectiles visuals\r```json\r{\r    \"projectile_transform\": {\r                \"rotation\": {\r                    \"x\": 0,\r                    \"y\": 180,\r                    \"z\": 60\r                },\r                \"translation\": {\r                    \"x\": 0,\r                    \"y\": 0,\r                    \"z\": 0\r                },\r                \"scale\": {\r                    \"x\": 1,\r                    \"y\": 1,\r                    \"z\": 1\r                }\r    }\r}\r```",
+                  "data": {},
+                  "key_words": []
+                },
                 "crossbow_ammunition": {
                   "header": "Crossbow Shootable Property",
                   "description": "  \nThe Crossbow Shootable Property allows non-arrow items to be used as ammunition for crossbows. If this property is\rset to true on an item, it can be fired from a crossbow.\r",
@@ -1069,12 +1075,27 @@
                   },
                   "key_words": []
                 },
+                "anim": {
+                  "header": "Projectile Render Animations",
+                  "description": "Projectile render animations allow items thrown as modular projectiles to apply **data-driven visual transforms** during rendering.\r\rThese animations are purely client-side and affect only how the projectile item is displayed — they do **not** modify physics or gameplay behavior.\r\r## JSON Structure\r\rAll projectile animations use a **type-dispatch format**.\r\r### Basic format\r\r```json\r{\r  \"projectile_animation\": {\r    \"type\": \"miapi:simple_rotation\",\r    \"axis\": \"VELOCITY\",\r    \"degrees_per_tick\": 20,\r    \"offset\": 0\r  }\r}\r```\r\r---\r\r## Built-in Animations\r\r---\r\r# Simple Rotation Animation\r\r**Registry ID:**\r\r```\rmiapi:simple_rotation\r```\r\rThis animation applies a constant spin to the rendered projectile.\r\rIt is intended for:\r\r* Thrown knives\r* Axes\r* or Rotating magical projectiles\r\r---\r\r## Fields\r\r### `axis` (required)\r\rSpecifies the axis the projectile rotates around.\r\r| Value      | Behavior                                |\r| ---------- | --------------------------------------- |\r| `X`        | Rotates around local X axis             |\r| `Y`        | Rotates around local Y axis             |\r| `Z`        | Rotates around local Z axis             |\r| `VELOCITY` | Rotates around current motion direction |\r\rExample:\r\r```json\r\"axis\": \"VELOCITY\"\r```\r\rThis is the most common setting for thrown weapons.\r\r---\r\r### `degrees_per_tick` (optional)\r\rDefault: `20`\r\rDefines how fast the item spins.\rSpin speed also is scaled with projectile velocity\r\rUnits:\r\r```\rdegrees per game tick\r```\r\rHigher values = faster rotation.\r\rExample:\r\r```json\r\"degrees_per_tick\": 40\r```\r\r---\r\r### `offset` (optional)\r\rDefault: `0`\r\rAdds a static rotation offset in degrees.\r\rUseful for:\r\r* Adjusting model alignment\r* Randomizing spin phase\r* Preventing identical visuals across projectiles\r\rExample:\r\r```json\r\"offset\": 15\r```\r\r### Heavy Axe\r\rSlow heavy rotation.\r\r```json\r{\r  \"projectile_animation\": {\r    \"type\": \"miapi:simple_rotation\",\r    \"axis\": \"VELOCITY\",\r    \"degrees_per_tick\": 12\r  }\r}\r```\r\r## Performance Notes\r\rThis animation is extremely lightweight:\r\r* Stateless\r* No allocations per frame\r* Uses only a single quaternion transform\r\rIt is safe to use on large numbers of projectiles.\r\r---\r\r## Extending the System (Java)\r\rTo add custom animations:\r\r1. Implement `RenderAnimation`\r2. Provide a `MapCodec`\r3. Register in `ProjectileRenderAnimation.REGISTRY`\r\rYour animation will automatically become usable in JSON.\r\r---",
+                  "data": {},
+                  "key_words": []
+                },
                 "rapid_fire_crossbow": {
                   "header": "Rapid Fire Crossbow Property",
                   "description": " The Rapid Fire Crossbow Property controls how many projectiles can be loaded and fired from a modular crossbow in quick succession.  \nThe number of shots is determined by the property value, and additional projectiles can be loaded from the player's inventory.\r",
                   "java": "common/src/main/java/smartin/miapi/modules/properties/projectile/RapidfireCrossbowProperty.java",
                   "data": {
                     "rapid_fire_crossbow": " A double value representing the number of projectiles that can be shot."
+                  },
+                  "key_words": []
+                },
+                "shot_velocity": {
+                  "header": "Shot Velocity Offset",
+                  "description": "  \nThis property is a complex double allowing to adjust the speed a projectile is shot from a crossbow.\rTHis exists to allow a difference in shot and thrown velocity for items than can do both\r",
+                  "java": "common/src/main/java/smartin/miapi/modules/properties/projectile/ShotVelocityOffsetProperty.java",
+                  "data": {
+                    "shot_velocity ": " offset to initial velocity."
                   },
                   "key_words": []
                 },
@@ -1113,6 +1134,12 @@
               "data": {},
               "key_words": [],
               "sub_pages": {
+                "trail": {
+                  "header": "Dynamic Trail Model",
+                  "description": "This property defines **dynamic trail rendering** for a module.\rThe JSON value can be **a single object** or **a list of objects**.\r\r---\r\r## Basic Structure\r\r```json\r\"trail\": {\r  \"maxPoints\": 255,\r  \"pointLifetime\": 0.5,\r  \"sampleInterval\": 0.0,\r  \"thickness\": 0.02,\r  \"color\": \"#FFFFFFFF\",\r  \"transform\": {},\r  \"texture\": \"miapi:item/trail\",\r  \"debug\": false,\r  \"color_provider\": \"material\",\r  \"display_contest\": [\r    \"THIRD_PERSON_LEFT_HAND\",\r    \"THIRD_PERSON_RIGHT_HAND\",\r    \"GROUND\"\r  ]\r}\r```\r\rYou may also supply an array:\r\r```json\r\"trail\": [ { ... }, { ... } ]\r```\r\r---\r\r## Fields\r\r### Rendering Behavior\r\r| Field            | Type  | Default | Description                 |\r| ---------------- | ----- | ------- | --------------------------- |\r| `maxPoints`      | int   | `255`   | Maximum stored trail points |\r| `pointLifetime`  | float | `0.5`   | Seconds each point remains  |\r| `sampleInterval` | float | `0.0`   | Time between trail samples  |\r| `thickness`      | float | `0.02`  | Trail width                 |\r\r---\r\r### Visuals\r\r| Field            | Type        | Default            | Description                                  |\r|------------------|-------------|--------------------|----------------------------------------------|\r| `color`          | color       | white              | Base trail color                             |\r| `texture`        | resource id | `miapi:item/trail` | Trail texture                                |\r| `color_provider` | string      | `\"material\"`       | Dynamic color source, same as Model Property |\r| `transform`      | object      | identity           | Model transform applied to trail             |\r\r---\r\r### Debug\r\r| Field   | Type    | Default | Description            |\r| ------- | ------- | ------- | ---------------------- |\r| `debug` | boolean | `false` | Shows debug trail info |\r\r---\r\r### Display Context Filter\r\rControls where the trail renders.\r\r| Field             | Type | Default                     |\r|-------------------| ---- | --------------------------- |\r| `display_context` | list | third-person hands + ground |\r\rValid values:\r\r* `FIRST_PERSON_LEFT_HAND`\r* `FIRST_PERSON_RIGHT_HAND`\r* `THIRD_PERSON_LEFT_HAND`\r* `THIRD_PERSON_RIGHT_HAND`\r* `GROUND`\r* `GUI`\r* `HEAD`\r* `FIXED`\r\r---",
+                  "data": {},
+                  "key_words": []
+                },
                 "emissive": {
                   "header": "Emissivity Property",
                   "description": "  \nThe EmissivityProperty defines the emissive light levels for an item or block. Emissive properties affect how much light\ran item or block emits.\rThese values are applied to the item or block to control its visual appearance in lighting conditions.\rThis can also be used in a mcmeta for models under \"miapi_model_data\" \"lightValues\"\r *\r",
@@ -1345,6 +1372,16 @@
                 "type": "material_count",
                 "material": "the material to be checked",
                 "count": "how often the material is used"
+              },
+              "key_words": []
+            },
+            "material_group": {
+              "header": "Material Grpup Condition",
+              "description": " this condition checks if the material of the module has a certain group  \nSupports custom error\r",
+              "java": "common/src/main/java/smartin/miapi/modules/conditions/MaterialGroupCondition.java",
+              "data": {
+                "type": "material_group",
+                "material_group": " the group to be checked"
               },
               "key_words": []
             },
