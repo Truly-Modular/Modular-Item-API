@@ -73,6 +73,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static smartin.miapi.blueprint.BlueprintComponent.BLUEPRINT_COMPONENT;
 
@@ -88,6 +89,7 @@ public class MiapiClient {
     public static boolean EMI_LOADED = Platform.isModLoaded("emi");
     public static boolean JER_LOADED = Platform.isModLoaded("jeresources");
     public static final MiapiRegistry<KeyMapping> KEY_BINDINGS = MiapiRegistry.getInstance(KeyMapping.class);
+    public static volatile AtomicInteger tick = new AtomicInteger(0);
     //public static final KeyBinding HOVER_DETAIL_BINDING = KEY_BINDINGS.register("miapi:hover_detail", new KeyBinding("miapi.gui.item_detail", 42, "miapi.keybinds"));
 
     private MiapiClient() {
@@ -125,6 +127,7 @@ public class MiapiClient {
         RegistryInventory.MODULAR_ITEMS.addCallback((MiapiClient::registerAnimations));
         //BoomerangClientRendering.setup();
         ClientTickEvent.CLIENT_PRE.register((instance -> {
+            tick.addAndGet(1);
 
             if (MiapiConfig.getClientConfig().other.animatedMaterials) {
                 Minecraft.getInstance().getProfiler().push("miapiMaterialAnimations");

@@ -43,14 +43,14 @@ public class PotionColorProvider implements ColorProvider {
 
     @Override
     public ColorProvider getInstance(ItemStack stack, ModuleInstance instance, TrimRenderer.TrimMode trimMode) {
-        return new smartin.miapi.modules.properties.render.colorproviders.PotionColorProvider(stack);
+        return new PotionColorProvider(stack);
     }
 
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
         if (obj == null || getClass() != obj.getClass()) return false;
-        smartin.miapi.modules.properties.render.colorproviders.PotionColorProvider that = (smartin.miapi.modules.properties.render.colorproviders.PotionColorProvider) obj;
+        PotionColorProvider that = (PotionColorProvider) obj;
         return java.util.Objects.equals(potioncolor, that.potioncolor);
     }
 

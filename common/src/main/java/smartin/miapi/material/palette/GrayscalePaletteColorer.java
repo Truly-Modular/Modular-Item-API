@@ -132,7 +132,13 @@ public class GrayscalePaletteColorer extends SpritePixelReplacer {
     @Override
     public int getReplacementColor(int pixelX, int pixelY, int previousAbgr) {
         int red = FastColor.ABGR32.red(previousAbgr);
-        return colors[red];
+        int newColor = colors[red];
+        int newAlpha = (FastColor.ABGR32.alpha(newColor) * FastColor.ABGR32.alpha(previousAbgr)) / 255;
+        return setAlpha(newColor, newAlpha);
+    }
+
+    public static int setAlpha(int color, int alpha) {
+        return (color & 0x00FFFFFF) | (alpha << 24);
     }
 
     @Override

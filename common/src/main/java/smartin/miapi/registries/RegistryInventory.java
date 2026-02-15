@@ -109,6 +109,7 @@ import smartin.miapi.modules.properties.potion.OnHitOffensiveEffects;
 import smartin.miapi.modules.properties.potion.OnKillEffects;
 import smartin.miapi.modules.properties.projectile.*;
 import smartin.miapi.modules.properties.render.*;
+import smartin.miapi.modules.properties.render.baked.ModelProperty;
 import smartin.miapi.modules.properties.slot.*;
 import smartin.miapi.modules.properties.tag.ModuleTagLegacyProperty;
 import smartin.miapi.modules.properties.tag.ModuleTagMaterialLegacyProperty;
@@ -482,6 +483,7 @@ public class RegistryInventory {
                 registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, CrystalModelProperty.KEY, new CrystalModelProperty());
                 registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, ConduitModelProperty.KEY, new ConduitModelProperty());
                 //registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, OverlayModelProperty.KEY, new OverlayModelProperty());
+                registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, ProjectileRenderAnimation.KEY, new ProjectileRenderAnimation());
                 registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY,
                         smartin.miapi.modules.properties.render.overlay.OverlayModelProperty.KEY,
                         new smartin.miapi.modules.properties.render.overlay.OverlayModelProperty());
@@ -498,7 +500,9 @@ public class RegistryInventory {
                 registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, "entity_model", new ServerReplaceProperty());
                 registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, "conduit_model", new ServerReplaceProperty());
                 registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, "overlay_texture_model", new ServerReplaceProperty());
+                registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, "projectile_animation", new ServerReplaceProperty());
             }
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, InAirProjectileTransform.KEY, new InAirProjectileTransform());
             registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, CanChildBeEmpty.KEY, new CanChildBeEmpty());
             registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, LoreProperty.KEY, new LoreProperty());
             registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, OldNameProperty.KEY, new OldNameProperty());
@@ -606,6 +610,9 @@ public class RegistryInventory {
             registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, ComboProperty.KEY, new ComboProperty());
             registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, ComboTimeProperty.KEY, new ComboTimeProperty());
             registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, InertiaProperty.KEY, new InertiaProperty());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, ChainModelProperty.KEY, new ChainModelProperty());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, DynamicTrailModelProperty.KEY, new DynamicTrailModelProperty());
+            registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, ShotVelocityOffsetProperty.KEY, new ShotVelocityOffsetProperty());
 
             //registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, ReturnIngredientProperty.KEY, new ReturnIngredientProperty());
             //compat

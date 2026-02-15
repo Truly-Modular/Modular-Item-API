@@ -202,7 +202,7 @@ public class MaterialSpriteManager {
                     spriteSlot.updateSprite();
                 }
             }
-            if (spriteSlot != null && spriteSlot.used < 4) {
+            if (spriteSlot != null && spriteSlot.used < 5) {
                 return getBlockAtlasVertexConsumer(vertexConsumers, originalSprite, holder, spriteSlot);
             }
         }

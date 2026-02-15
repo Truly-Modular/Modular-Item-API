@@ -20,7 +20,7 @@ import smartin.miapi.client.model.module.BakedMiapiModel;
 import smartin.miapi.client.renderer.TrimRenderer;
 import smartin.miapi.material.MaterialProperty;
 import smartin.miapi.modules.ModuleInstance;
-import smartin.miapi.modules.properties.render.ModelProperty;
+import smartin.miapi.modules.properties.render.baked.ModelProperty;
 import smartin.miapi.modules.properties.render.colorproviders.ColorProvider;
 import smartin.miapi.modules.properties.render.colorproviders.MaterialColorProvider;
 

@@ -33,7 +33,7 @@ public class MiapiItemModel implements MiapiModel {
     private static final String CACHE_KEY = "miapi_model_rework";
     public final DualKeyCache<String, ItemDisplayContext, List<ModelTransformer>> transformerCache = new DualKeyCache<>();
     public final DualKeyCache<String, ItemDisplayContext, ModuleModel> modelCache = new DualKeyCache<>();
-    public static final WeakHashMap<ItemStack, MiapiItemModel> fallbackLookup = new WeakHashMap<>();
+    public static WeakHashMap<ItemStack, MiapiItemModel> fallbackLookup = new WeakHashMap<>();
 
     static {
         ModularItemCache.setSupplier(CACHE_KEY, (s) -> {
@@ -51,7 +51,7 @@ public class MiapiItemModel implements MiapiModel {
                     moduleInstance.clearCaches();
                 }
             });
-            MiapiItemModel.fallbackLookup.clear();
+            MiapiItemModel.fallbackLookup = new WeakHashMap<>();
             return EventResult.pass();
         });
     }
@@ -72,8 +72,8 @@ public class MiapiItemModel implements MiapiModel {
     }
 
     @Override
-    public void render(PoseStack matrices, ItemStack stack, ItemDisplayContext mode, float tickDelta, MultiBufferSource vertexConsumers, LivingEntity entity, int light, int overlay) {
-        render(null, stack, matrices, mode, tickDelta, vertexConsumers, entity, light, overlay);
+    public void render(RenderContext context) {
+        render(null, context.stack(), context.matrices(), context.transformationMode(), context.tickDelta(), context.vertexConsumers(), context.entity(), context.light(), context.overlay());
     }
 
     public void render(String modelType, ItemStack stack, PoseStack matrices, ItemDisplayContext mode, float tickDelta, MultiBufferSource vertexConsumers, int light, int overlay) {
@@ -87,7 +87,7 @@ public class MiapiItemModel implements MiapiModel {
             ItemDisplayContext mode,
             float tickDelta,
             MultiBufferSource vertexConsumers,
-            LivingEntity entity,
+            @Nullable LivingEntity entity,
             int light,
             int overlay) {
         if (ReloadEvents.isInReload()) {
@@ -109,16 +109,20 @@ public class MiapiItemModel implements MiapiModel {
             matrices = transformer.transform(matrices, tickDelta);
         }
         Minecraft.getInstance().getProfiler().pop();
-        if (entity == null) {
-            //needed because otherwise overwrites dont work
-            entity = Minecraft.getInstance().player;
-        }
         Minecraft.getInstance().getProfiler().push("glint-setup");
         GlintShader.setupItem(matrices.last().pose());
         Minecraft.getInstance().getProfiler().pop();
         Minecraft.getInstance().getProfiler().pop();
         //IconRenderProperty.property.renderIcon(ItemModule.getModules(stack), matrices, tickDelta, vertexConsumers, entity, light, overlay);
-        rootModel.render(modelType, stack, matrices, mode, tickDelta, vertexConsumers, entity, light, overlay);
+        rootModel.render(new RenderContext(modelType,
+                matrices,
+                stack,
+                mode,
+                tickDelta,
+                vertexConsumers,
+                entity,
+                light,
+                overlay));
         matrices.popPose();
         matrices.last().pose().invert();
         Minecraft.getInstance().getProfiler().pop();
@@ -133,11 +137,6 @@ public class MiapiItemModel implements MiapiModel {
             }
         });
         return transformersList;
-    }
-
-    @Override
-    public @Nullable Matrix4f subModuleMatrix() {
-        return null;
     }
 
     public interface ModelSupplier {

@@ -13,6 +13,7 @@
         "EnderpearlEntityMixin",
         "EntityMixin",
         "FireworkRocketEntityMixin",
+        "GameRendererAccessor",
         "IngredientMixin",
         "ItemCooldownsAccessor",
         "LivingEntityAccessor",

@@ -1,6 +1,7 @@
 package smartin.miapi.registries;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.resources.ResourceLocation;
 import org.apache.logging.log4j.util.InternalApi;
 import org.jetbrains.annotations.Nullable;
@@ -9,6 +10,7 @@ import smartin.miapi.Miapi;
 import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -36,10 +38,18 @@ public class MiapiRegistry<T> {
 
     protected final Map<ResourceLocation, Supplier<T>> suppliers = Collections.synchronizedMap(new LinkedHashMap<>());
 
+    @Nullable
+    protected final Class<T> tClass;
+
     /**
      * Protected constructor to prevent direct instantiation of the registry.
      */
+    protected MiapiRegistry(Class<T> tClass) {
+        this.tClass = tClass;
+    }
+
     protected MiapiRegistry() {
+        this.tClass = null;
     }
 
     /**
@@ -51,7 +61,7 @@ public class MiapiRegistry<T> {
      */
     public static <T> MiapiRegistry<T> getInstance(Class<T> clazz) {
         if (!REGISTRY_MAP.containsKey(clazz)) {
-            MiapiRegistry<T> instance = new MiapiRegistry<>();
+            MiapiRegistry<T> instance = new MiapiRegistry<>(clazz);
             REGISTRY_MAP.put(clazz, instance);
             return instance;
         }
@@ -86,13 +96,13 @@ public class MiapiRegistry<T> {
     public static <T> MiapiRegistry<T> getInstance(Class<T> clazz, List<Consumer<T>> callbacks) {
         MiapiRegistry<T> instance;
         if (!REGISTRY_MAP.containsKey(clazz)) {
-            instance = new MiapiRegistry<T>();
+            instance = new MiapiRegistry<T>(clazz);
             REGISTRY_MAP.put(clazz, instance);
         }
         instance = (MiapiRegistry<T>) REGISTRY_MAP.get(clazz);
         MiapiRegistry<T> finalInstance = instance;
         callbacks.forEach(finalInstance::addCallback);
-        return (MiapiRegistry<T>) REGISTRY_MAP.computeIfAbsent(clazz, (T) -> new MiapiRegistry<T>());
+        return (MiapiRegistry<T>) REGISTRY_MAP.computeIfAbsent(clazz, (T) -> new MiapiRegistry<T>(clazz));
     }
 
     /**
@@ -249,5 +259,25 @@ public class MiapiRegistry<T> {
                 this::get,
                 this::findKey
         );
+    }
+
+    public Codec<T> dispatchCodec(Function<T, MapCodec<? extends T>> codecFunction) {
+        return ResourceLocation.CODEC.dispatch((a -> {
+            ResourceLocation id = findKey(a);
+            if (id == null) {
+                throw new IllegalArgumentException("Unknown type: " + a.toString() + " for Type " + this.getName());
+            }
+            return findKey(a);
+        }), (id -> {
+            T data = get(id);
+            if (data == null) {
+                throw new IllegalArgumentException("Unknown type: " + id + " for Type " + this.getName());
+            }
+            MapCodec<? extends T> codec = codecFunction.apply(data);
+            if (codec == null) {
+                throw new IllegalArgumentException("Could not encode: " + id + " for Type " + this.getName());
+            }
+            return codec;
+        }));
     }
 }

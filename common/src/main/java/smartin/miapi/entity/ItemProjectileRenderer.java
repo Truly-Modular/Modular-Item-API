@@ -11,6 +11,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
+import smartin.miapi.events.MiapiProjectileEvents;
 
 public class ItemProjectileRenderer extends EntityRenderer<ItemProjectileEntity> {
 
@@ -36,6 +37,17 @@ public class ItemProjectileRenderer extends EntityRenderer<ItemProjectileEntity>
                 //Transform transform;
                 //transform.toMatrix();
                 //matrixStack.multiplyPositionMatrix(transform.toMatrix());
+                if(
+                        MiapiProjectileEvents
+                                .ClientEvents
+                                .MODULAR_PROJECTILE_RENDER_EVENT
+                                .invoker()
+                                .hit(
+                                        this, itemStack, entity, yaw, tickDelta, matrixStack, vertexConsumers, light)
+                                .interruptsFurtherEvaluation()){
+                    matrixStack.popPose();
+                    return;
+                }
                 Minecraft.getInstance().getItemRenderer().renderStatic(
                         itemStack, ItemDisplayContext.GROUND, light,
                         OverlayTexture.NO_OVERLAY, matrixStack, vertexConsumers,

@@ -1,0 +1,36 @@
+{
+    "trail": [
+        {
+            "maxPoints": 1000,
+            "pointLifetime": 4,
+            "sampleInterval": 0.0,
+            "thickness": 0.3,
+            "texture": "miapi:item/trail_2",
+            "debug": false,
+            "color_provider": "material",
+            "color": {
+                "r": 255.0,
+                "g": 255.0,
+                "b": 255.0,
+                "a": 70.0
+            },
+            "transform": {
+                "rotation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": -45
+                },
+                "translation": {
+                    "x": 0.25,
+                    "y": 0.25,
+                    "z": 0.5
+                },
+                "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                }
+            }
+        }
+    ]
+}

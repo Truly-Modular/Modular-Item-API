@@ -34,7 +34,7 @@ public class InstantMiningMode implements MiningMode {
 
     @CodecBehavior.Optional
     @AutoCodec.Name("durability_break_chance")
-    public double durabilityBreakChance = 1.0;
+    public double durabilityBreakChance = 0.0;
 
     @Override
     public void execute(List<BlockPos> posList, Level world, ServerPlayer player, BlockPos origin, ItemStack itemStack) {

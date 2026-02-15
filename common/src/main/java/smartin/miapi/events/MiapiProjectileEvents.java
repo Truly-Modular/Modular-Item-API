@@ -1,7 +1,11 @@
 package smartin.miapi.events;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.redpxnda.nucleus.event.PrioritizedEvent;
 import dev.architectury.event.EventResult;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -14,6 +18,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.entity.ItemProjectileEntity;
+import smartin.miapi.entity.ItemProjectileRenderer;
 
 public final class MiapiProjectileEvents {
     public static final PrioritizedEvent<ModularProjectileEntityHit> MODULAR_PROJECTILE_ENTITY_HIT = PrioritizedEvent.createEventResult();
@@ -37,6 +42,10 @@ public final class MiapiProjectileEvents {
 
     public static final PrioritizedEvent<ModularBowShot> MODULAR_BOW_SHOT = PrioritizedEvent.createEventResult();
     public static final PrioritizedEvent<ModularBowShot> MODULAR_BOW_POST_SHOT = PrioritizedEvent.createEventResult();
+    @Environment(EnvType.CLIENT)
+    public static class ClientEvents{
+        public static final PrioritizedEvent<ModularProjectileRenderEvent> MODULAR_PROJECTILE_RENDER_EVENT = PrioritizedEvent.createEventResult();
+    }
 
     public static class ModularProjectileEntityHitEvent {
         public EntityHitResult entityHitResult;
@@ -113,6 +122,11 @@ public final class MiapiProjectileEvents {
 
     public interface ModularProjectileBlockHit {
         EventResult hit(ModularProjectileBlockHitEvent event);
+    }
+
+    @Environment(EnvType.CLIENT)
+    public interface ModularProjectileRenderEvent {
+        EventResult hit(ItemProjectileRenderer renderer,ItemStack stack, ItemProjectileEntity entity, float yaw, float tickDelta, PoseStack matrixStack, MultiBufferSource vertexConsumers, int light);
     }
 
     public interface ModularProjectileTick {

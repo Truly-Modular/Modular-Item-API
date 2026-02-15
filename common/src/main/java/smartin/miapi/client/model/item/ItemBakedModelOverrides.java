@@ -9,7 +9,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.client.model.DynamicBakery;
-import smartin.miapi.modules.properties.render.ModelProperty;
+import smartin.miapi.modules.properties.render.baked.ModelProperty;
 
 import java.util.ArrayList;
 

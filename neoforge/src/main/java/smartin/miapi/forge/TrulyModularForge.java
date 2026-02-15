@@ -56,7 +56,7 @@ import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.forge.compat.epic_fight.EpicFightCompat;
 import smartin.miapi.item.modular.VisualModularItem;
 import smartin.miapi.modules.properties.attributes.AttributeProperty;
-import smartin.miapi.modules.properties.render.ModelProperty;
+import smartin.miapi.modules.properties.render.baked.ModelProperty;
 import smartin.miapi.registries.RegistryInventory;
 
 import java.util.List;
@@ -208,7 +208,17 @@ public class TrulyModularForge {
                                 //Lighting.setupForFlatItems();
                                 MiapiModel model = MiapiItemModel.getItemModel(stack);
                                 if (model != null) {
-                                    model.render(poseStack, stack, displayContext, 0, buffer, null, packedLight, packedOverlay);
+                                    model.render(new MiapiModel.RenderContext(
+                                            null,
+                                            poseStack,
+                                            stack,
+                                            displayContext,
+                                            0.0f,
+                                            buffer,
+                                            null,
+                                            packedLight,
+                                            packedOverlay
+                                            ));
                                 }
                                 if (buffer instanceof MultiBufferSource.BufferSource multiBufferSource) {
                                     multiBufferSource.endBatch();

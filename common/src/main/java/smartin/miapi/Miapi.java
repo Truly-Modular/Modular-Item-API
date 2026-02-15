@@ -59,6 +59,7 @@ import smartin.miapi.modules.cache.CacheCommands;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.conditions.ConditionManager;
 import smartin.miapi.modules.conditions.ModuleCondition;
+import smartin.miapi.modules.properties.render.baked.ModelData;
 import smartin.miapi.modules.properties.util.ComponentApplyProperty;
 import smartin.miapi.modules.properties.util.DoubleOperationResolvable;
 import smartin.miapi.modules.properties.util.ModuleProperty;
@@ -145,6 +146,7 @@ public class Miapi {
         CodecBehavior.registerClass(EquipmentSlot.class, EquipmentSlot.CODEC);
         CodecBehavior.registerClass(MaterialSwapLootFunction.class, MaterialSwapLootFunction.CODEC.codec());
         CodecBehavior.registerClass(ModuleSwapLootFunction.class, ModuleSwapLootFunction.CODEC.codec());
+        CodecBehavior.registerClass(ModelData.class, ModelData.CODEC);
         if (Environment.isClient()) {
             CodecBehavior.registerClass(MiapiBinding.class, MiapiBinding.CODEC);
         }

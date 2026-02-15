@@ -45,7 +45,7 @@ public class StaggeredMiningMode implements MiningMode {
     public DoubleOperationResolvable speed = new DoubleOperationResolvable(1.0);
     @CodecBehavior.Optional
     @AutoCodec.Name("durability_break_chance")
-    public DoubleOperationResolvable durabilityBreakChance = new DoubleOperationResolvable(1.0);
+    public DoubleOperationResolvable durabilityBreakChance = new DoubleOperationResolvable(0.0);
 
     @Override
     public void execute(List<BlockPos> posList, Level world, ServerPlayer player, BlockPos origin, ItemStack itemStack) {

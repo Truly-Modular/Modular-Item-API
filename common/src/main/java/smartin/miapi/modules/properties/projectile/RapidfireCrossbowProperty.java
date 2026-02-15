@@ -97,7 +97,7 @@ public class RapidfireCrossbowProperty extends DoubleProperty {
             }
             return EventResult.pass();
         });
-        LoreProperty.loreSuppliers.add((stack, tooltip, context, info) -> {
+        LoreProperty.loreSuppliers.addFirst((stack, tooltip, context, info) -> {
             if (ModularItem.isModularItem(stack)) {
                 List<ItemStack> projectiles = getSavedProjectilesOnCrossbow(stack);
                 for (ItemStack projectile : projectiles) {

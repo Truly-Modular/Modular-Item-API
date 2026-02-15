@@ -1,6 +1,5 @@
 package smartin.miapi.client.model.module;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import net.fabricmc.api.EnvType;
@@ -11,14 +10,10 @@ import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EndCrystalRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.ItemDisplayContext;
-import net.minecraft.world.item.ItemStack;
 import org.joml.Quaternionf;
 import smartin.miapi.client.model.MiapiModel;
 
@@ -43,38 +38,38 @@ public class CrystalModel implements MiapiModel {
     }
 
     @Override
-    public void render(PoseStack matrixStack, ItemStack stack, ItemDisplayContext transformationMode, float tickDelta, MultiBufferSource vertexConsumers, LivingEntity entity, int light, int overlay) {
+    public void render(RenderContext context) {
         age++;
-        matrixStack.pushPose();
-        matrixStack.translate(0.5, 0.5, 0.5);
+        context.matrices().pushPose();
+        context.matrices().translate(0.5, 0.5, 0.5);
         float scale = 1.0f / 16.0f;
-        matrixStack.scale(scale, scale, scale);
+        context.matrices().scale(scale, scale, scale);
         float h = 0.5f;
-        float j = (age + tickDelta);
-        VertexConsumer vertexConsumer = vertexConsumers.getBuffer(END_CRYSTAL);
-        matrixStack.pushPose();
-        matrixStack.scale(2.0F, 2.0F, 2.0F);
-        matrixStack.translate(0.0F, -0.5F, 0.0F);
+        float j = (age + context.tickDelta());
+        VertexConsumer vertexConsumer = context.vertexConsumers().getBuffer(END_CRYSTAL);
+        context.matrices().pushPose();
+        context.matrices().scale(2.0F, 2.0F, 2.0F);
+        context.matrices().translate(0.0F, -0.5F, 0.0F);
         int k = OverlayTexture.NO_OVERLAY;
         //if (endCrystalEntity.shouldShowBottom()) {
-        //this.bottom.render(matrixStack, vertexConsumer, i, k);
+        //this.bottom.render(context.matrices(), vertexConsumer, i, k);
         //}
 
-        matrixStack.mulPose(Axis.YP.rotationDegrees(j));
-        matrixStack.translate(0.0F, 1.5F + h / 2.0F, 0.0F);
-        matrixStack.mulPose((new Quaternionf()).setAngleAxis(1.0471976F, SINE_45_DEGREES, 0.0F, SINE_45_DEGREES));
-        this.frame.render(matrixStack, vertexConsumer, light, k);
+        context.matrices().mulPose(Axis.YP.rotationDegrees(j));
+        context.matrices().translate(0.0F, 1.5F + h / 2.0F, 0.0F);
+        context.matrices().mulPose((new Quaternionf()).setAngleAxis(1.0471976F, SINE_45_DEGREES, 0.0F, SINE_45_DEGREES));
+        this.frame.render(context.matrices(), vertexConsumer, context.light(), k);
         float l = 0.875F;
-        matrixStack.scale(0.875F, 0.875F, 0.875F);
-        matrixStack.mulPose((new Quaternionf()).setAngleAxis(1.0471976F, SINE_45_DEGREES, 0.0F, SINE_45_DEGREES));
-        matrixStack.mulPose(Axis.YP.rotationDegrees(j));
-        this.frame.render(matrixStack, vertexConsumer, light, k);
-        matrixStack.scale(0.875F, 0.875F, 0.875F);
-        matrixStack.mulPose((new Quaternionf()).setAngleAxis(1.0471976F, SINE_45_DEGREES, 0.0F, SINE_45_DEGREES));
-        matrixStack.mulPose(Axis.YP.rotationDegrees(j));
-        this.core.render(matrixStack, vertexConsumer, light, k);
-        matrixStack.popPose();
-        matrixStack.popPose();
+        context.matrices().scale(0.875F, 0.875F, 0.875F);
+        context.matrices().mulPose((new Quaternionf()).setAngleAxis(1.0471976F, SINE_45_DEGREES, 0.0F, SINE_45_DEGREES));
+        context.matrices().mulPose(Axis.YP.rotationDegrees(j));
+        this.frame.render(context.matrices(), vertexConsumer, context.light(), k);
+        context.matrices().scale(0.875F, 0.875F, 0.875F);
+        context.matrices().mulPose((new Quaternionf()).setAngleAxis(1.0471976F, SINE_45_DEGREES, 0.0F, SINE_45_DEGREES));
+        context.matrices().mulPose(Axis.YP.rotationDegrees(j));
+        this.core.render(context.matrices(), vertexConsumer, context.light(), k);
+        context.matrices().popPose();
+        context.matrices().popPose();
     }
 
     public static LayerDefinition getTexturedModelData() {

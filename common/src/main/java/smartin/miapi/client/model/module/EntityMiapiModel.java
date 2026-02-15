@@ -1,15 +1,10 @@
 package smartin.miapi.client.model.module;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LightTexture;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.ItemDisplayContext;
-import net.minecraft.world.item.ItemStack;
 import smartin.miapi.client.model.MiapiModel;
 import smartin.miapi.item.modular.Transform;
 import smartin.miapi.material.MaterialIcons;
@@ -29,29 +24,30 @@ public class EntityMiapiModel implements MiapiModel {
     }
 
     @Override
-    public void render(PoseStack matrixStack, ItemStack stack, ItemDisplayContext transformationMode, float tickDelta, MultiBufferSource vertexConsumers, LivingEntity entity, int light, int overlay) {
+    public void render(RenderContext context) {
+        int light = context.light();
         if (doTick) {
-            lastTick += tickDelta;
+            lastTick += context.tickDelta();
             if (lastTick > 1) {
                 //i dont like this tick code, its bad but functional
                 toRenderEntity.tick();
                 lastTick -= 1;
             }
         }
-        matrixStack.pushPose();
-        transform.applyPosition(matrixStack);
+        context.matrices().pushPose();
+        transform.applyPosition(context.matrices());
         if (spinSettings != null) {
-            spinSettings.multiplyMatrices(matrixStack);
+            spinSettings.multiplyMatrices(context.matrices());
         }
         if (fullBright) {
             light = LightTexture.FULL_BRIGHT;
         }
         Minecraft.getInstance().getEntityRenderDispatcher().render(
                 toRenderEntity, 0, 0, 0, 0,
-                tickDelta,
-                matrixStack,
-                vertexConsumers,
+                context.tickDelta(),
+                context.matrices(),
+                context.vertexConsumers(),
                 light);
-        matrixStack.popPose();
+        context.matrices().popPose();
     }
 }

@@ -2,3 +2,13 @@
 - fixed minor issues with generated materials causing stat displays to fail
 - fixed generated materials not having toughness
 - improved shift+alt stat display
+- fixed crossbows shooting from feet sometimes
+- improved rendering logic for more dynamic models
+- added trail rendering
+  - fully data-driven model type
+  - added 2 base trail models to be used
+- added prototype chain/rope rendering
+- added in-air model transformation for projectiles
+- added in-air render animations for projectiles (spinning daggers)
+- changed texture recoloring logic to allow for alpha pass through from original textures
+- added "shot_velocity" property to adjust velocity when shot and not thrown

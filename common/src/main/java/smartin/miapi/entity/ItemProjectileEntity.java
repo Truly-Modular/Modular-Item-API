@@ -193,6 +193,10 @@ public class ItemProjectileEntity extends AbstractArrow {
         }
     }
 
+    public int inGroundTick(){
+        return inGroundTime;
+    }
+
     protected void tickDespawn() {
         ++this.tickCount;
         if (this.tickCount >= 1200 * 20) {

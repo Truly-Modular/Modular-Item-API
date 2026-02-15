@@ -12,6 +12,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import smartin.miapi.client.MiapiClient;
 import smartin.miapi.client.model.MiapiItemModel;
+import smartin.miapi.client.model.MiapiModel;
 import smartin.miapi.client.model.item.ItemBakedModelReplacement;
 import smartin.miapi.item.modular.VisualModularItem;
 
@@ -28,7 +29,15 @@ public class BuiltinModelItemRendererMixin {
         if (!MiapiClient.shaderModLoaded && VisualModularItem.isVisualModularItem(stack)) {
             MiapiItemModel miapiModel = MiapiItemModel.getItemModel(stack);
             if (miapiModel != null) {
-                miapiModel.render(matrices, stack, mode, Minecraft.getInstance().getTimer().getGameTimeDeltaTicks(), vertexConsumers, ItemBakedModelReplacement.currentEntity, light, overlay);
+                miapiModel.render(new MiapiModel.RenderContext(null,
+                        matrices,
+                        stack,
+                        mode,
+                        Minecraft.getInstance().getTimer().getGameTimeDeltaTicks(),
+                        vertexConsumers,
+                        ItemBakedModelReplacement.currentEntity,
+                        light,
+                        overlay));
                 ItemBakedModelReplacement.currentEntity = null;
                 ci.cancel();
             }

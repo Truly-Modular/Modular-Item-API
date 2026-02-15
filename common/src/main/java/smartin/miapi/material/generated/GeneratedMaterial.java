@@ -164,7 +164,7 @@ public class GeneratedMaterial implements Material {
             double axeAttackDmg = AttributeUtil.getActualValue(axeItem.getDefaultInstance(), EquipmentSlot.MAINHAND, Attributes.ATTACK_DAMAGE.value(), 0.0);
 
             stats.put("hardness", swordAttackDmg);
-            stats.put("density", Math.max(0, axeAttackDmg + swordAttackDmg));
+            stats.put("density", Math.max(0, axeAttackDmg - swordAttackDmg));
 
             if (groups.contains("crystal") || groups.contains("gemstone")) {
                 stats.put("flexibility", 0.0);

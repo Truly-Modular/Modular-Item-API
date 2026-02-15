@@ -1,6 +1,5 @@
 package smartin.miapi.client.model.module;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -9,14 +8,11 @@ import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BannerRenderer;
 import net.minecraft.client.resources.model.ModelBakery;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.BannerItem;
 import net.minecraft.world.item.DyeColor;
-import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BannerPatternLayers;
 import org.jetbrains.annotations.Nullable;
@@ -58,68 +54,68 @@ public class BannerMiapiModel implements MiapiModel {
     }
 
     @Override
-    public void render(PoseStack matrices, ItemStack stack, ItemDisplayContext transformationMode, float tickDelta, MultiBufferSource vertexConsumers, LivingEntity entity, int light, int overlay) {
-        matrices.pushPose();
+    public void render(RenderContext context) {
+        context.matrices().pushPose();
         switch (mode) {
             case ITEM -> {
-                matrices.scale(1 / 16f, -1 / 16f, -1 / 16f);
-                matrices.pushPose();
-                matrices.translate(8, -8, -8.75);
-                matrices.scale(1, 1, -1);
-                matrices.mulPose(transform);
-                //matrices.last().normal().mul(transform.get3x3(new Matrix3f()));
-                matrices.scale(16f, 16f, 1f);
-                matrices.scale(1 / 20f, 1 / 20f, 2f);
-                BannerRenderer.renderPatterns(matrices, vertexConsumers, light, overlay, banner, ModelBakery.BANNER_BASE, true, baseColor, patterns);
-                matrices.popPose();
+                context.matrices().scale(1 / 16f, -1 / 16f, -1 / 16f);
+                context.matrices().pushPose();
+                context.matrices().translate(8, -8, -8.75);
+                context.matrices().scale(1, 1, -1);
+                context.matrices().mulPose(transform);
+                //context.matrices().last().normal().mul(transform.get3x3(new Matrix3f()));
+                context.matrices().scale(16f, 16f, 1f);
+                context.matrices().scale(1 / 20f, 1 / 20f, 2f);
+                BannerRenderer.renderPatterns(context.matrices(), context.vertexConsumers(), context.light(), context.overlay(), banner, ModelBakery.BANNER_BASE, true, baseColor, patterns);
+                context.matrices().popPose();
 
-                matrices.pushPose();
-                matrices.translate(8, -8, -7.25);
-                matrices.scale(1, 1, 1);
-                matrices.mulPose(transform);
-                //matrices.last().normal().mul(transform.get3x3(new Matrix3f()));
-                matrices.scale(16f, 16f, 1f);
-                matrices.scale(1 / 20f, 1 / 20f, 2f);
-                BannerRenderer.renderPatterns(matrices, vertexConsumers, light, overlay, banner, ModelBakery.BANNER_BASE, true, baseColor, patterns);
-                matrices.popPose();
+                context.matrices().pushPose();
+                context.matrices().translate(8, -8, -7.25);
+                context.matrices().scale(1, 1, 1);
+                context.matrices().mulPose(transform);
+                //context.matrices().last().normal().mul(transform.get3x3(new Matrix3f()));
+                context.matrices().scale(16f, 16f, 1f);
+                context.matrices().scale(1 / 20f, 1 / 20f, 2f);
+                BannerRenderer.renderPatterns(context.matrices(), context.vertexConsumers(), context.light(), context.overlay(), banner, ModelBakery.BANNER_BASE, true, baseColor, patterns);
+                context.matrices().popPose();
             }
             case ITEM_ALT -> {
-                matrices.scale(1 / 16f, -1 / 16f, -1 / 16f);
-                matrices.pushPose();
-                matrices.translate(8, -8, -8.75);
-                matrices.scale(1, 1, -1);
-                matrices.mulPose(transform);
-                matrices.mulPose(Axis.XP.rotationDegrees(10));
-                matrices.scale(16f, 16f, 1f);
-                matrices.scale(1 / 20f, 1 / 20f, 2f);
-                BannerRenderer.renderPatterns(matrices, vertexConsumers, light, overlay, banner, ModelBakery.BANNER_BASE, true, baseColor, patterns);
-                matrices.popPose();
+                context.matrices().scale(1 / 16f, -1 / 16f, -1 / 16f);
+                context.matrices().pushPose();
+                context.matrices().translate(8, -8, -8.75);
+                context.matrices().scale(1, 1, -1);
+                context.matrices().mulPose(transform);
+                context.matrices().mulPose(Axis.XP.rotationDegrees(10));
+                context.matrices().scale(16f, 16f, 1f);
+                context.matrices().scale(1 / 20f, 1 / 20f, 2f);
+                BannerRenderer.renderPatterns(context.matrices(), context.vertexConsumers(), context.light(), context.overlay(), banner, ModelBakery.BANNER_BASE, true, baseColor, patterns);
+                context.matrices().popPose();
 
-                matrices.pushPose();
-                matrices.translate(8, -8, -7.25);
-                matrices.scale(1, 1, 1);
-                matrices.mulPose(transform);
-                matrices.mulPose(Axis.XP.rotationDegrees(10));
-                matrices.scale(16f, 16f, 1f);
-                matrices.scale(1 / 20f, 1 / 20f, 1f);
-                BannerRenderer.renderPatterns(matrices, vertexConsumers, light, overlay, banner, ModelBakery.BANNER_BASE, true, baseColor, patterns);
-                matrices.popPose();
+                context.matrices().pushPose();
+                context.matrices().translate(8, -8, -7.25);
+                context.matrices().scale(1, 1, 1);
+                context.matrices().mulPose(transform);
+                context.matrices().mulPose(Axis.XP.rotationDegrees(10));
+                context.matrices().scale(16f, 16f, 1f);
+                context.matrices().scale(1 / 20f, 1 / 20f, 1f);
+                BannerRenderer.renderPatterns(context.matrices(), context.vertexConsumers(), context.light(), context.overlay(), banner, ModelBakery.BANNER_BASE, true, baseColor, patterns);
+                context.matrices().popPose();
             }
             default -> {
-                matrices.pushPose();
-                matrices.scale(1 / 16f, -1 / 16f, -1 / 16f);
-                matrices.translate(0, -1, 0);
-                matrices.pushPose();
-                matrices.mulPose(new Matrix4f(transform));
-                //matrices.last().normal().mul(transform.get3x3(new Matrix3f()));
-                matrices.scale(16f, 16f, 16f);
-                matrices.scale(1 / 20f, 1 / 20f, 1 / 20f);
-                BannerRenderer.renderPatterns(matrices, vertexConsumers, light, overlay, banner, ModelBakery.BANNER_BASE, true, baseColor, patterns);
-                matrices.popPose();
-                matrices.popPose();
+                context.matrices().pushPose();
+                context.matrices().scale(1 / 16f, -1 / 16f, -1 / 16f);
+                context.matrices().translate(0, -1, 0);
+                context.matrices().pushPose();
+                context.matrices().mulPose(new Matrix4f(transform));
+                //context.matrices().last().normal().mul(transform.get3x3(new Matrix3f()));
+                context.matrices().scale(16f, 16f, 16f);
+                context.matrices().scale(1 / 20f, 1 / 20f, 1 / 20f);
+                BannerRenderer.renderPatterns(context.matrices(), context.vertexConsumers(), context.light(), context.overlay(), banner, ModelBakery.BANNER_BASE, true, baseColor, patterns);
+                context.matrices().popPose();
+                context.matrices().popPose();
             }
         }
-        matrices.popPose();
+        context.matrices().popPose();
     }
 
     public static BannerMode getMode(String key) {

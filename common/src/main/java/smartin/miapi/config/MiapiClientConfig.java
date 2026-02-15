@@ -4,6 +4,7 @@ import com.redpxnda.nucleus.codec.auto.AutoCodec;
 import com.redpxnda.nucleus.codec.auto.ConfigAutoCodec;
 import com.redpxnda.nucleus.util.Color;
 import com.redpxnda.nucleus.util.Comment;
+import dev.architectury.platform.Platform;
 import net.minecraft.resources.ResourceLocation;
 import smartin.miapi.modules.abilities.key.MiapiBinding;
 
@@ -74,8 +75,14 @@ public class MiapiClientConfig {
                 new CacheSprites(64, 64, 10),
                 new CacheSprites(128, 128, 10));
 
+        @Comment("""
+                requires resource pack reload to be enabled
+                might break in development mode - if stuff stops rendering set this to true""")
         @AutoCodec.Name("disable_fast_render")
-        public boolean disableFastRender = false;
+        public boolean disableFastRender = Platform.isDevelopmentEnvironment();
+
+        @AutoCodec.Name("disable_recolor")
+        public boolean disableRecolor = false;
 
         @AutoCodec.Name("disable_fast_trim")
         public boolean disableFastTrim = false;

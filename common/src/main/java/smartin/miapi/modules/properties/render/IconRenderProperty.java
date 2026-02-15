@@ -12,6 +12,7 @@ import net.minecraft.world.item.ItemStack;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import smartin.miapi.Miapi;
+import smartin.miapi.client.model.MiapiModel;
 import smartin.miapi.client.model.ModuleModel;
 import smartin.miapi.item.modular.Transform;
 import smartin.miapi.modules.ModuleInstance;
@@ -68,7 +69,7 @@ public class IconRenderProperty extends CodecProperty<String> {
                            int overlay) {
         RenderContext model = stack.getFromCache(CACHE_KEY, () -> new RenderContext(new Matrix4f(), "item", new ModuleModel(stack, ItemStack.EMPTY, "item", ItemDisplayContext.GUI)));
         matrices.mulPose(model.matrix4f());
-        model.model().render(model.type(), ItemStack.EMPTY, matrices, ItemDisplayContext.GUI, tickDelta, vertexConsumers, entity, light, overlay);
+        model.model().render(new MiapiModel.RenderContext(model.type(), matrices, ItemStack.EMPTY, ItemDisplayContext.GUI, tickDelta, vertexConsumers, entity, light, overlay));
     }
 
     public RenderContext getContext(ModuleInstance moduleInstance) {

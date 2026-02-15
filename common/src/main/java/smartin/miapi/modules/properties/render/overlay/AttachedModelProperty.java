@@ -13,7 +13,8 @@ import smartin.miapi.client.model.MiapiModel;
 import smartin.miapi.client.model.ModelHolder;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
-import smartin.miapi.modules.properties.render.ModelProperty;
+import smartin.miapi.modules.properties.render.baked.ModelData;
+import smartin.miapi.modules.properties.render.baked.ModelProperty;
 import smartin.miapi.modules.properties.util.CodecProperty;
 import smartin.miapi.modules.properties.util.MergeAble;
 import smartin.miapi.modules.properties.util.MergeType;
@@ -37,12 +38,12 @@ public abstract class AttachedModelProperty<T extends AttachedModelProperty.Cust
 
             for (ModuleInstance source : ItemModule.getModules(stack).allSubModules()) {
                 for (ModelPredicate<T> predicate : getData(source).orElse(List.of())) {
-                    List<ModelProperty.ModelData> modelList =
+                    List<ModelData> modelList =
                             ModelProperty.property.getData(module).orElse(List.of());
 
-                    for (ModelProperty.ModelData modelJson : modelList) {
+                    for (ModelData modelJson : modelList) {
                         if (predicate.isValid(modelJson)) {
-                            ModelHolder baseHolder = ModelProperty.bakedModel(module, modelJson, stack, key);
+                            ModelHolder baseHolder = ModelHolder.bakedModel(module, modelJson, stack, key);
                             if (baseHolder != null) {
                                 List<MiapiModel> model = predicate.data.createModel(stack, module, source, baseHolder);
                                 if (model != null)
@@ -122,7 +123,7 @@ public abstract class AttachedModelProperty<T extends AttachedModelProperty.Cust
             this.pattern = Pattern.compile(modelTargetInfo);
         }
 
-        public boolean isValid(ModelProperty.ModelData modelJson) {
+        public boolean isValid(ModelData modelJson) {
             return switch (modelTargetType) {
                 case "id" -> pattern.matcher(modelJson.id).find();
                 case "path" -> pattern.matcher(modelJson.path).find();

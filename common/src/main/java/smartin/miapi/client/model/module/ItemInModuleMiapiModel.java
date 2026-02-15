@@ -1,12 +1,9 @@
 package smartin.miapi.client.model.module;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.FireworkRocketItem;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
@@ -27,24 +24,24 @@ public class ItemInModuleMiapiModel implements MiapiModel {
     }
 
     @Override
-    public void render(PoseStack matrices, ItemStack stack, ItemDisplayContext transformationMode, float tickDelta, MultiBufferSource vertexConsumers, LivingEntity entity, int light, int overlay) {
+    public void render(RenderContext context) {
         Minecraft.getInstance().getProfiler().push("ItemOnTopRendering");
-        matrices.pushPose();
-        matrices.mulPose(matrix4f);
+        context.matrices().pushPose();
+        context.matrices().mulPose(matrix4f);
         ItemStack modelStack = stackSupplier.get();
         if(modelStack.getItem() instanceof FireworkRocketItem){
-            matrices.mulPose(Axis.ZP.rotationDegrees(45));
+            context.matrices().mulPose(Axis.ZP.rotationDegrees(45));
         }
         Minecraft.getInstance().getItemRenderer().renderStatic(
                 modelStack,
                 ItemDisplayContext.FIXED,
-                light,
-                overlay,
-                matrices,
-                vertexConsumers,
+                context.light(),
+                context.overlay(),
+                context.matrices(),
+                context.vertexConsumers(),
                 Minecraft.getInstance().level,
                 0);
-        matrices.popPose();
+        context.matrices().popPose();
         Minecraft.getInstance().getProfiler().pop();
     }
 }

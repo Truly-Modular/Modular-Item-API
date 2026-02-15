@@ -39,7 +39,15 @@ public class ItemRendererMixin {
         if (MiapiClient.shaderModLoaded && VisualModularItem.isVisualModularItem(stack)) {
             MiapiItemModel miapiModel = MiapiItemModel.getItemModel(stack);
             if (miapiModel != null) {
-                miapiModel.render(matrices, stack, renderMode, Minecraft.getInstance().getTimer().getRealtimeDeltaTicks(), vertexConsumers, ItemBakedModelReplacement.currentEntity, light, overlay);
+                miapiModel.render(null,
+                        stack,
+                        matrices,
+                        renderMode,
+                        Minecraft.getInstance().getTimer().getRealtimeDeltaTicks(),
+                        vertexConsumers,
+                        ItemBakedModelReplacement.currentEntity,
+                        light,
+                        overlay);
             }
             ItemBakedModelReplacement.currentEntity = null;
         }

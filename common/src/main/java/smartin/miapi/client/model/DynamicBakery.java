@@ -21,7 +21,7 @@ import smartin.miapi.Miapi;
 import smartin.miapi.client.model.item.BakedSingleModel;
 import smartin.miapi.client.model.item.BakedSingleModelOverrides;
 import smartin.miapi.item.modular.Transform;
-import smartin.miapi.modules.properties.render.ModelProperty;
+import smartin.miapi.modules.properties.render.baked.ModelProperty;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;

@@ -1,12 +1,9 @@
 package smartin.miapi.item.modular.items.bows;
 
 
-import com.google.common.collect.Lists;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.ChatFormatting;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -42,7 +39,9 @@ import smartin.miapi.modules.properties.attributes.AttributeUtil;
 import smartin.miapi.modules.properties.enchanment.EnchantAbilityProperty;
 import smartin.miapi.modules.properties.projectile.DrawTimeProperty;
 import smartin.miapi.modules.properties.projectile.IsCrossbowShootAble;
+import smartin.miapi.modules.properties.projectile.ShotVelocityOffsetProperty;
 import smartin.miapi.modules.properties.util.ComponentApplyProperty;
+import smartin.miapi.modules.properties.util.DoubleOperationResolvable;
 
 import java.util.List;
 import java.util.function.Predicate;
@@ -145,6 +144,7 @@ public class ModularCrossbow extends CrossbowItem implements PlatformModularItem
             Projectile projectile = projectileItem.asProjectile(level, shooter.position(), ammo, shooter.getDirection());
             if (projectile instanceof ItemProjectileEntity projectileEntity) {
                 projectileEntity.setCritArrow(isCrit);
+                projectile.setPos(shooter.getEyePosition());
                 ((ProjectileWithBow) projectile).setBowItem(weapon);
                 return projectile;
             }
@@ -183,6 +183,9 @@ public class ModularCrossbow extends CrossbowItem implements PlatformModularItem
         if (chargedProjectiles != null && !chargedProjectiles.isEmpty()) {
             float divergence = (float) Math.pow(12.0, -AttributeUtil.getActualValue(crossbow, EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_ACCURACY.value()));
             float speed = (float) Math.max(0.1, AttributeUtil.getActualValue(crossbow, EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_SPEED.value()) + getShootingPower(chargedProjectiles));
+            double offset = ShotVelocityOffsetProperty.property.getData(chargedProjectiles.getItems().getFirst()).map(DoubleOperationResolvable::getValue).orElse(0.0);
+            speed = (float) Math.max(0.1, speed + offset);
+
             if (MiapiProjectileEvents.MODULAR_CROSSBOW_PRE_SHOT.invoker().shoot(player, crossbow).interruptsFurtherEvaluation()) {
                 return InteractionResultHolder.consume(crossbow);
             }
@@ -250,8 +253,8 @@ public class ModularCrossbow extends CrossbowItem implements PlatformModularItem
 
     @Override
     public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
+        /*
         ChargedProjectiles chargedProjectiles = stack.get(DataComponents.CHARGED_PROJECTILES);
-        LoreProperty.appendLoreTop(stack, tooltipComponents, context, tooltipFlag);
         if (chargedProjectiles != null && !chargedProjectiles.isEmpty()) {
             ItemStack itemStack = chargedProjectiles.getItems().getFirst();
             tooltipComponents.add(Component.translatable("item.minecraft.crossbow.projectile").append(CommonComponents.SPACE).append(itemStack.getDisplayName()));
@@ -266,9 +269,10 @@ public class ModularCrossbow extends CrossbowItem implements PlatformModularItem
                     tooltipComponents.addAll(list);
                 }
             }
-
         }
+         */
         super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
+        LoreProperty.appendLoreTop(stack, tooltipComponents, context, tooltipFlag);
     }
 
     private static float getShootingPower(ChargedProjectiles projectile) {

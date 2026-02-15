@@ -1,0 +1,76 @@
+{
+    "flail_model": {
+        "chainLength": 0.1,
+        "segments": 40,
+        "chainRadius": 0.2,
+        "debug": true,
+        "transform": {
+            "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "translation": {
+                "x": 0.25,
+                "y": 0.25,
+                "z": 0.5
+            },
+            "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+            }
+        },
+        "baseSegments": [
+            {
+                "collide": true,
+                "gravity": 0.5,
+                "model": {
+                    "path": "miapi:models/item/chain.json",
+                    "color_provider": "parent",
+                    "transform": {
+                        "rotation": {
+                            "x": 90,
+                            "y": 0,
+                            "z": 0
+                        },
+                        "translation": {
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 0
+                        },
+                        "scale": {
+                            "x": 1,
+                            "y": 1,
+                            "z": 1
+                        }
+                    }
+                }
+            },
+            {
+                "collide": true,
+                "gravity": 0.5,
+                "model": {
+                    "path": "miapi:models/item/chain.json",
+                    "transform": {
+                        "rotation": {
+                            "x": 90,
+                            "y": 90,
+                            "z": 0
+                        },
+                        "translation": {
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 0
+                        },
+                        "scale": {
+                            "x": 1,
+                            "y": 1,
+                            "z": 1
+                        }
+                    }
+                }
+            }
+        ]
+    }
+}
