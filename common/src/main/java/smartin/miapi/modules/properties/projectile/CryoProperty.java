@@ -40,7 +40,7 @@ public class CryoProperty extends DoubleProperty {
         });*/
         MiapiProjectileEvents.MODULAR_PROJECTILE_ENTITY_HIT.register((modularProjectileEntityHitEvent) -> {
             if (modularProjectileEntityHitEvent.entityHitResult.getEntity() instanceof LivingEntity target && target.level() instanceof ServerLevel) {
-                double strength = getValue(modularProjectileEntityHitEvent.projectile.getPickupItem()).orElse(0.0);
+                double strength = getValue(modularProjectileEntityHitEvent.projectile.getProjectileItem()).orElse(0.0);
 
                 if (strength > 0) {
                     int potionStrength = (int) Math.ceil(strength / 3);

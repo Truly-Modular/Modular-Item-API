@@ -13,6 +13,7 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
+import smartin.miapi.client.MiapiClient;
 import smartin.miapi.client.model.module.dynamic.ChainModel;
 import smartin.miapi.client.model.module.dynamic.DynamicModel;
 import smartin.miapi.client.model.module.dynamic.MatrixHelper;
@@ -82,8 +83,7 @@ public class DynamicTrailModel extends DynamicModel<TrailState> {
         }
         pose.pushPose();
         pose.mulPose(transform.toMatrix());
-        float currentTime = state.lastSpawnTime + delta;
-        Minecraft.getInstance().getTimer().getGameTimeDeltaTicks();
+        float currentTime = (float) MiapiClient.currentTickFull();
 
         Iterator<TrailState.TrailPoint> it = state.points.iterator();
         while (it.hasNext()) {
@@ -93,7 +93,7 @@ public class DynamicTrailModel extends DynamicModel<TrailState> {
                 it.remove();
             }
         }
-        if (delta < sampleInterval) {
+        if (currentTime - state.lastSpawnTime < sampleInterval) {
             pose.popPose();
             return;
         }

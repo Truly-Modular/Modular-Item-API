@@ -12,3 +12,5 @@
 - added in-air render animations for projectiles (spinning daggers)
 - changed texture recoloring logic to allow for alpha pass through from original textures
 - added "shot_velocity" property to adjust velocity when shot and not thrown
+- fixed broken items removing their module information
+- force disable glint while VulkanMod is present to allow for compat

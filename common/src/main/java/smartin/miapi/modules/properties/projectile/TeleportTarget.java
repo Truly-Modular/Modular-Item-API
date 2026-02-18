@@ -34,7 +34,7 @@ public class TeleportTarget extends ComplexBooleanProperty {
         property = this;
         MiapiProjectileEvents.MODULAR_PROJECTILE_ENTITY_HIT.register(event -> {
             ItemStack itemStack = new ItemStack(Items.CHORUS_FRUIT);
-            if (isTrue(event.projectile.getPickupItem()) && event.entityHitResult.getEntity() instanceof LivingEntity livingEntity) {
+            if (isTrue(event.projectile.getProjectileItem()) && event.entityHitResult.getEntity() instanceof LivingEntity livingEntity) {
                 Items.CHORUS_FRUIT.finishUsingItem(itemStack, event.projectile.level(), livingEntity);
                 if (!event.projectile.level().isClientSide()) {
                     event.projectile.discard();

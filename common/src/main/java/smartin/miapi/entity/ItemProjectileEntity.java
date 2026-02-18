@@ -28,6 +28,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.config.MiapiConfig;
@@ -48,6 +49,7 @@ public class ItemProjectileEntity extends AbstractArrow {
     public static final EntityDataAccessor<Boolean> ENCHANTED = SynchedEntityData.defineId(ItemProjectileEntity.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Boolean> SPEED_DAMAGE = SynchedEntityData.defineId(ItemProjectileEntity.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<ItemStack> THROWING_STACK = SynchedEntityData.defineId(ItemProjectileEntity.class, EntityDataSerializers.ITEM_STACK);
+    public static final EntityDataAccessor<ItemStack> PICKUP_STACK = SynchedEntityData.defineId(ItemProjectileEntity.class, EntityDataSerializers.ITEM_STACK);
     public static final EntityDataAccessor<Float> WATER_DRAG = SynchedEntityData.defineId(ItemProjectileEntity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Integer> PREFERRED_SLOT = SynchedEntityData.defineId(ItemProjectileEntity.class, EntityDataSerializers.INT);
     public ItemStack thrownStack = ItemStack.EMPTY;
@@ -67,6 +69,7 @@ public class ItemProjectileEntity extends AbstractArrow {
         stack.setCount(1);
         this.thrownStack = stack;
         this.entityData.set(THROWING_STACK, thrownStack);
+        this.entityData.set(PICKUP_STACK, thrownStack);
         this.entityData.set(LOYALTY, this.getLoyaltyFromItem(stack));
         ((AbstractArrowAccessor) this).setPickupItemStack(itemStack);
         this.entityData.set(ENCHANTED, stack.hasFoil());
@@ -74,6 +77,7 @@ public class ItemProjectileEntity extends AbstractArrow {
         this.entityData.set(SPEED_DAMAGE, true);
         this.entityData.set(PREFERRED_SLOT, -1);
         this.checkDespawn();
+        this.setPos(position.x(), position.y(), position.z());
         setup();
         MiapiProjectileEvents.MODULAR_PROJECTILE_DATA_TRACKER_SET.invoker().dataTracker(this, this.getEntityData());
     }
@@ -87,16 +91,17 @@ public class ItemProjectileEntity extends AbstractArrow {
         this.entityData.set(LOYALTY, this.getLoyaltyFromItem(stack));
         this.entityData.set(ENCHANTED, stack.hasFoil());
         this.entityData.set(THROWING_STACK, thrownStack);
+        this.entityData.set(PICKUP_STACK, thrownStack);
         this.entityData.set(WATER_DRAG, waterDrag);
         this.entityData.set(SPEED_DAMAGE, true);
-        this.entityData.set(PREFERRED_SLOT, -1);
+        this.entityData.set(PREFERRED_SLOT, -2);
         setup();
         MiapiProjectileEvents.MODULAR_PROJECTILE_DATA_TRACKER_SET.invoker().dataTracker(this, this.getEntityData());
 
     }
 
     private void setup() {
-        ItemStack projectileStack = this.getPickupItem();
+        ItemStack projectileStack = this.entityData.get(THROWING_STACK);
         this.setBaseDamage(AttributeUtil.getActualValue(projectileStack, EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_DAMAGE.value()));
         if (projectileStack.getItem() instanceof ArrowItem arrowItem) {
             this.setSpeedDamage(true);
@@ -123,6 +128,7 @@ public class ItemProjectileEntity extends AbstractArrow {
         builder.define(LOYALTY, (byte) 0);
         builder.define(ENCHANTED, false);
         builder.define(THROWING_STACK, ItemStack.EMPTY);
+        builder.define(PICKUP_STACK, ItemStack.EMPTY);
         builder.define(WATER_DRAG, 0.99f);
         builder.define(SPEED_DAMAGE, true);
         builder.define(PREFERRED_SLOT, 0);
@@ -139,7 +145,7 @@ public class ItemProjectileEntity extends AbstractArrow {
 
     @Override
     public void tick() {
-        ItemStack asItem = getPickupItem();
+        ItemStack asItem = getProjectileItem();
         if (MiapiProjectileEvents.MODULAR_PROJECTILE_TICK.invoker().tick(this).interruptsFurtherEvaluation()) {
             return;
         }
@@ -193,10 +199,11 @@ public class ItemProjectileEntity extends AbstractArrow {
         }
     }
 
-    public int inGroundTick(){
+    public int inGroundTick() {
         return inGroundTime;
     }
 
+    @Override
     protected void tickDespawn() {
         ++this.tickCount;
         if (this.tickCount >= 1200 * 20) {
@@ -214,7 +221,7 @@ public class ItemProjectileEntity extends AbstractArrow {
     }
 
     @Override
-    public ItemStack getDefaultPickupItem() {
+    public @NotNull ItemStack getDefaultPickupItem() {
         return this.entityData.get(THROWING_STACK).copy();
     }
 
@@ -226,7 +233,7 @@ public class ItemProjectileEntity extends AbstractArrow {
 
     @Override
     public void shoot(double x, double y, double z, float velocity, float inaccuracy) {
-        ItemStack projectileStack = this.getPickupItem();
+        ItemStack projectileStack = this.getProjectileItem();
         velocity = (float) Math.max(0.1, velocity + AttributeUtil.getActualValue(projectileStack, EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_SPEED.value()));
         inaccuracy *= (float) Math.pow(12.0, -AttributeUtil.getActualValue(projectileStack, EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_ACCURACY.value()));
         Vec3 vec3 = this.getMovementToShoot(x, y, z, velocity, inaccuracy);
@@ -280,7 +287,7 @@ public class ItemProjectileEntity extends AbstractArrow {
                 this.doPostHurtEffects(victim);
             }
         }
-        if (ChannelingProperty.hasChanneling(this.getPickupItem())) {
+        if (ChannelingProperty.hasChanneling(this.getProjectileItem())) {
             LightningBolt lightningEntity = EntityType.LIGHTNING_BOLT.create(this.level());
             assert lightningEntity != null;
             lightningEntity.moveTo(Vec3.atBottomCenterOf(entityHitResult.getEntity().getOnPos()));
@@ -306,13 +313,27 @@ public class ItemProjectileEntity extends AbstractArrow {
         this.playSound(this.hitEntitySound.event(), this.hitEntitySound.volume(), this.hitEntitySound.pitch());
     }
 
-    public ItemStack getPickupItem() {
+    public @NotNull ItemStack getPickupItem() {
+        ItemStack stack = this.entityData.get(PICKUP_STACK);
+        //ItemStack stack = this.entityData.get(THROWING_STACK);
+        if (stack != null && !stack.isEmpty()) {
+            return stack;
+        }
+        return ItemStack.EMPTY;
+        //return super.getPickupItem();
+    }
+
+    public @NotNull ItemStack getProjectileItem() {
         ItemStack stack = this.entityData.get(THROWING_STACK);
         if (stack != null && !stack.isEmpty()) {
             return stack;
         }
         return ItemStack.EMPTY;
         //return super.getPickupItem();
+    }
+
+    public void setPickupItem(ItemStack itemStack) {
+        this.entityData.set(PICKUP_STACK, itemStack);
     }
 
     @Override
@@ -335,7 +356,7 @@ public class ItemProjectileEntity extends AbstractArrow {
         hitEntitySound = new WrappedSoundEvent(this.getDefaultHitGroundSoundEvent(), 1.0f, 1.0f);
         ((AbstractArrowAccessor) this).setSoundEvent(hitEntitySound.event());
         HitResult.Type hitresult$type = result.getType();
-        boolean makeEvent = MakesImpactSoundProperty.property.isTrue(getPickupItem());
+        boolean makeEvent = MakesImpactSoundProperty.property.isTrue(getProjectileItem());
         if (hitresult$type == HitResult.Type.ENTITY) {
             EntityHitResult entityhitresult = (EntityHitResult) result;
             Entity entity = entityhitresult.getEntity();
@@ -345,7 +366,6 @@ public class ItemProjectileEntity extends AbstractArrow {
             }
 
             this.onHitEntity(entityhitresult);
-            getPickupItem();
             if (makeEvent) {
                 this.level().gameEvent(GameEvent.PROJECTILE_LAND, result.getLocation(), GameEvent.Context.of(this, (BlockState) null));
             }
@@ -380,7 +400,7 @@ public class ItemProjectileEntity extends AbstractArrow {
                 return false;
             }
             case CREATIVE_ONLY -> {
-                if (getLoyaltyFromItem(this.getPickupItem()) > 0 && this.ownedBy(player)) {
+                if (getLoyaltyFromItem(this.getProjectileItem()) > 0 && this.ownedBy(player)) {
                     return true;
                 }
                 return player.getAbilities().instabuild;
@@ -413,7 +433,7 @@ public class ItemProjectileEntity extends AbstractArrow {
 
     @Override
     protected SoundEvent getDefaultHitGroundSoundEvent() {
-        boolean makeEvent = MakesImpactSoundProperty.property.isTrue(getPickupItem());
+        boolean makeEvent = MakesImpactSoundProperty.property.isTrue(getProjectileItem());
         if (!makeEvent) {
             return SoundEvents.EMPTY;
         }
@@ -442,6 +462,12 @@ public class ItemProjectileEntity extends AbstractArrow {
             this.thrownStack = ItemStack.EMPTY;
             this.entityData.set(THROWING_STACK, ItemStack.EMPTY);
         }
+        if (nbt.contains("PickUpItem", 10)) {
+            ItemStack pickup = ItemStack.parse(registryAccess(), nbt.getCompound("PickUpItem")).get();
+            this.entityData.set(THROWING_STACK, pickup);
+        } else {
+            this.entityData.set(PICKUP_STACK, thrownStack);
+        }
         if (nbt.contains("WaterDrag")) {
             this.entityData.set(WATER_DRAG, nbt.getFloat("WaterDrag"));
         }
@@ -462,6 +488,10 @@ public class ItemProjectileEntity extends AbstractArrow {
         super.addAdditionalSaveData(nbt);
         if (!thrownStack.isEmpty()) {
             nbt.put("ThrownItem", this.thrownStack.save(this.registryAccess(), new CompoundTag()));
+        }
+        ItemStack pickup = this.entityData.get(THROWING_STACK);
+        if (!pickup.isEmpty()) {
+            nbt.put("PickUpItem", this.thrownStack.save(this.registryAccess(), new CompoundTag()));
         }
         nbt.putBoolean("DealtDamage", this.dealtDamage);
         nbt.putFloat("WaterDrag", this.entityData.get(WATER_DRAG));

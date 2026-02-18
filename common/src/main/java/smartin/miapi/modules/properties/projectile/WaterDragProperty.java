@@ -35,7 +35,7 @@ public class WaterDragProperty extends DoubleProperty {
 
          */
         MiapiProjectileEvents.MODULAR_PROJECTILE_DATA_TRACKER_SET.register((projectile, nbtCompound) -> {
-            float waterDrag = getValue(projectile.getPickupItem()).orElse(1.0).floatValue();
+            float waterDrag = getValue(projectile.getProjectileItem()).orElse(1.0).floatValue();
             nbtCompound.set(ItemProjectileEntity.WATER_DRAG, waterDrag);
             projectile.waterDrag = waterDrag;
             return EventResult.pass();

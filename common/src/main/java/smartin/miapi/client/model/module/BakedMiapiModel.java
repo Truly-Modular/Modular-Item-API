@@ -163,7 +163,7 @@ public class BakedMiapiModel implements MiapiModel {
         Minecraft.getInstance().getProfiler().push("BakedModel Glint");
 
         //render normally
-        if (context.stack().hasFoil() && MiapiConfig.getClientConfig().enchantingGlint.enabled) {
+        if (context.stack().hasFoil() && MiapiConfig.getClientConfig().enchantingGlint.shouldRenderGlint()) {
             try {
                 VertexConsumer altConsumer = context.vertexConsumers().getBuffer(GlintShader.modularItemGlint);
                 for (Direction dir : Direction.values()) {

@@ -81,14 +81,18 @@ public class ThrowingAbility implements ItemUseDefaultCooldownAbility<ThrowingAb
                 if (world instanceof ServerLevel serverWorld) {
                     EquipmentSlot equipmentSlot = getEquipmentSlot(user.getUsedItemHand());
                     stack.hurtAndBreak(1, playerEntity, equipmentSlot);
-
-                    ItemProjectileEntity projectileEntity = new ItemProjectileEntity(world, playerEntity, stack, stack);
                     float divergence = (float) AttributeUtil.getActualValue(stack, EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_ACCURACY.value());
                     float speed = (float) AttributeUtil.getActualValue(stack, EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_SPEED.value());
                     float damage = (float) AttributeUtil.getActualValue(stack, EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_DAMAGE.value());
+                    //stack = user.getItemBySlot(equipmentSlot);
+
+                    ItemProjectileEntity projectileEntity = new ItemProjectileEntity(world, playerEntity, stack, stack);
                     damage = damage / speed;
                     if (ModularItem.isModularItem(stack)) {
                         speed = 0.5f;
+                    }
+                    if (stack.has(ModularItem.IS_VISUAL_ONLY)) {
+                        projectileEntity.setPickupItem(ModularItem.convertToBroken(stack));
                     }
                     projectileEntity.shootFromRotation(playerEntity, playerEntity.getXRot(), playerEntity.getYRot(), 0.0F, speed, divergence);
                     projectileEntity.setBaseDamage(damage);

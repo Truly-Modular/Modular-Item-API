@@ -28,12 +28,10 @@ import smartin.miapi.item.FakeItemManager;
 import smartin.miapi.item.ModularItemStackConverter;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.VisualModularItem;
-import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.AssumeItemIdentityProperty;
 import smartin.miapi.modules.properties.FakeItemTagProperty;
 import smartin.miapi.modules.properties.LoreProperty;
 import smartin.miapi.modules.properties.enchanment.FakeEnchantmentManager;
-import smartin.miapi.registries.RegistryInventory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -143,10 +141,7 @@ public abstract class MiapiItemStackMixin {
                 if (damage + current.getDamageValue() >= current.getMaxDamage()) {
                     for (EquipmentSlot slot : EquipmentSlot.values()) {
                         if (player.getItemBySlot(slot).equals(current)) {
-                            ItemStack broken = new ItemStack(RegistryInventory.brokenModualrItem);
-                            ItemModule.getModules(current).writeToItem(broken);
-                            broken.set(DataComponents.DAMAGE, current.get(DataComponents.DAMAGE));
-                            broken.set(DataComponents.MAX_DAMAGE, current.get(DataComponents.MAX_DAMAGE));
+                            ItemStack broken = ModularItem.convertToBroken(current);
                             player.setItemSlot(slot, broken);
                             ci.cancel();
                         }
@@ -160,15 +155,12 @@ public abstract class MiapiItemStackMixin {
             method = "hurtAndBreak(ILnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/world/entity/EquipmentSlot;)V",
             at = @At("HEAD"),
             cancellable = true)
-    public <T> void miapi$preventFullBreak(int amount, LivingEntity entity, EquipmentSlot slot, CallbackInfo ci) {
+    public void miapi$preventFullBreak(int amount, LivingEntity entity, EquipmentSlot slot, CallbackInfo ci) {
         ItemStack current = (ItemStack) (Object) this;
         if (isModularItem(current) && current.isDamageableItem() && !MiapiConfig.getServerConfig().other.fullBreakModularItems) {
             if (entity != null && !entity.hasInfiniteMaterials()) {
                 if (amount + current.getDamageValue() >= current.getMaxDamage()) {
-                    ItemStack broken = new ItemStack(RegistryInventory.brokenModualrItem);
-                    ItemModule.getModules(current).writeToItem(broken);
-                    broken.set(DataComponents.DAMAGE, current.get(DataComponents.DAMAGE));
-                    broken.set(DataComponents.MAX_DAMAGE, current.get(DataComponents.MAX_DAMAGE));
+                    ItemStack broken = ModularItem.convertToBroken(current);
                     entity.setItemSlot(slot, broken);
                     ci.cancel();
                 }

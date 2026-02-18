@@ -51,6 +51,7 @@ import smartin.miapi.effects.StunStatusEffect;
 import smartin.miapi.effects.TeleportBlockEffect;
 import smartin.miapi.entity.ItemProjectileEntity;
 import smartin.miapi.item.MaterialSmithingRecipe;
+import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.ModularItemPart;
 import smartin.miapi.item.modular.PropertyResolver;
 import smartin.miapi.item.modular.items.BrokenModularVisualOnlyItem;
@@ -283,6 +284,9 @@ public class RegistryInventory {
                 Miapi.id("gun_magazine"), () -> GunMagazineComponent.STACK_STORAGE_COMPONENT);
         RegistryInventory.COMPONENT_TYPE_REGISTRAR.register(
                 Miapi.id("module_fallback"), () -> ModuleInstance.MODULE_BACKUP);
+        RegistryInventory.COMPONENT_TYPE_REGISTRAR.register(
+                Miapi.id("force_visual_only"), () -> ModularItem.IS_VISUAL_ONLY);
+
 
         RegistryInventory.LOOT_ITEM_FUNCTION_TYPE_REGISTRAR.register(
                 Miapi.id("module_swap"), () -> moduleSwapLootFunctionLootItemFunctionType);

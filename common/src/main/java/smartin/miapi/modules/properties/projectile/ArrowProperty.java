@@ -32,18 +32,18 @@ public class ArrowProperty extends ComplexBooleanProperty {
         super(KEY, false);
         property = this;
         MiapiProjectileEvents.MODULAR_PROJECTILE_DATA_TRACKER_SET.register((projectile, nbtCompound) -> {
-            if (isTrue(projectile.getPickupItem())) {
+            if (isTrue(projectile.getProjectileItem())) {
                 nbtCompound.set(ItemProjectileEntity.SPEED_DAMAGE, true);
             }
             return EventResult.pass();
         });
         MiapiProjectileEvents.MODULAR_PROJECTILE_ENTITY_HIT.register(event -> {
             if (
-                    isTrue(event.projectile.getPickupItem()) &&
+                    isTrue(event.projectile.getProjectileItem()) &&
                     event.entityHitResult.getEntity() instanceof LivingEntity livingEntity &&
                     livingEntity.level() instanceof ServerLevel serverWorld
             ) {
-                if (event.projectile.getOwner() != null && EnchantmentHelper.getTridentReturnToOwnerAcceleration(serverWorld, event.projectile.getPickupItem(), event.projectile.getOwner()) > 0) {
+                if (event.projectile.getOwner() != null && EnchantmentHelper.getTridentReturnToOwnerAcceleration(serverWorld, event.projectile.getProjectileItem(), event.projectile.getOwner()) > 0) {
 
                 } else {
                     event.projectile.projectileHitBehaviour = entityStickBehaviour;

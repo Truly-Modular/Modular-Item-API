@@ -6,6 +6,7 @@ import com.redpxnda.nucleus.util.Color;
 import com.redpxnda.nucleus.util.Comment;
 import dev.architectury.platform.Platform;
 import net.minecraft.resources.ResourceLocation;
+import smartin.miapi.client.MiapiClient;
 import smartin.miapi.modules.abilities.key.MiapiBinding;
 
 import java.util.ArrayList;
@@ -111,6 +112,10 @@ public class MiapiClientConfig {
                 Disable this if your having issues with glint""")
         @AutoCodec.Name("enabled")
         public boolean enabled = true;
+
+        public boolean shouldRenderGlint(){
+            return enabled && !MiapiClient.VULKAN_MOD_LOADED;
+        }
 
         @Comment("""
                 Overwrites other glint settings, forces glint to be rendered like vanilla.

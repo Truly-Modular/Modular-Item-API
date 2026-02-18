@@ -20,9 +20,6 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.storage.loot.predicates.EnchantmentActiveCheck;
-import net.minecraft.world.level.storage.loot.providers.number.EnchantmentLevelProvider;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -75,9 +72,6 @@ public class TrulyModularForge {
     public TrulyModularForge() {
         NeoForge.EVENT_BUS.register(new ServerEvents());
         Miapi.init();
-        EnchantmentActiveCheck activeCheck;
-        EnchantmentLevelProvider enchantmentLevelProvider;
-        Block block;
 
 
         //RegistryInventory.moduleProperties.register(EpicFightCompatProperty.KEY, new EpicFightCompatProperty())
@@ -307,7 +301,7 @@ public class TrulyModularForge {
         @SubscribeEvent
         public void onRenderGameOverlayEventPre(RenderGuiEvent event) {
             DrawContext context = event.getGuiGraphics();
-            PlayerEntity playerEntity = MinecraftClient.getInstance().player;
+            PlayerEntity playerEntity = MinecraftClient.getInstRance().player;
             if (playerEntity.isCreative()) {
                 return;
             }

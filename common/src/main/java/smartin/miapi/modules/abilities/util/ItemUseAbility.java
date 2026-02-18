@@ -112,7 +112,7 @@ public interface ItemUseAbility<T> extends MergeAble<T>, InitializeAble<T> {
     }
 
     default EquipmentSlot getEquipmentSlot(InteractionHand hand) {
-        return hand.equals(InteractionHand.MAIN_HAND) ? EquipmentSlot.OFFHAND : EquipmentSlot.MAINHAND;
+        return hand.equals(InteractionHand.MAIN_HAND) ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND;
     }
 
     /**

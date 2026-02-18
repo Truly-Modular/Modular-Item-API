@@ -23,6 +23,7 @@ import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.PropertyResolver;
 import smartin.miapi.item.modular.StatResolver;
+import smartin.miapi.item.modular.VisualModularItem;
 import smartin.miapi.material.MaterialProperty;
 import smartin.miapi.material.base.Material;
 import smartin.miapi.mixin.RegistryOpsAccessor;
@@ -453,7 +454,7 @@ public class ModuleInstance {
      */
     public void writeToItem(ItemStack stack, boolean clearCache, boolean writeOnNonModular) {
         if (!writeOnNonModular) {
-            if (!ModularItem.isModularItemNoComponent(stack)) {
+            if (!ModularItem.isModularItemNoComponent(stack) && !VisualModularItem.isModularItemNoComponent(stack)) {
                 return;
             }
         }

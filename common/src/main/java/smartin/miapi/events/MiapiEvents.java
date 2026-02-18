@@ -143,7 +143,7 @@ public class MiapiEvents {
                     return bow;
                 }
                 if (projectile instanceof ItemProjectileEntity itemProjectile) {
-                    return itemProjectile.getPickupItem();
+                    return itemProjectile.getProjectileItem();
                 }
             } else if (damageSource.getEntity() instanceof LivingEntity attacker) {
                 return attacker.getMainHandItem();
@@ -177,7 +177,7 @@ public class MiapiEvents {
                     itemStacks.add(bow);
                 }
                 if (projectile instanceof ItemProjectileEntity itemProjectile) {
-                    itemStacks.add(itemProjectile.getPickupItem());
+                    itemStacks.add(itemProjectile.getProjectileItem());
                 }
             }
             if (damageSource.getEntity() instanceof LivingEntity attacker) {

@@ -93,7 +93,7 @@ public class EnderpearlProperty extends ComplexBooleanProperty {
     }
 
     public static boolean isEnderPearl(ItemProjectileEntity projectile) {
-        return isEnderPearl(projectile.getPickupItem());
+        return isEnderPearl(projectile.getProjectileItem());
     }
 
     public static boolean isEnderPearl(ItemStack itemStack) {

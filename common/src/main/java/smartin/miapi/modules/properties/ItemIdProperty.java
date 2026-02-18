@@ -1,6 +1,7 @@
 package smartin.miapi.modules.properties;
 
 import com.google.gson.JsonElement;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -9,6 +10,7 @@ import smartin.miapi.Miapi;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
 import smartin.miapi.craft.CraftAction;
 import smartin.miapi.datapack.ReloadEvents;
+import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.VisualModularItem;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
@@ -65,6 +67,10 @@ public class ItemIdProperty extends CodecProperty<ResourceLocation> implements C
                 root.clearCaches();
                 ItemStack newStack = new ItemStack(item);
                 newStack.applyComponents(itemStack.getComponentsPatch());
+                if (newStack.has(ModularItem.IS_VISUAL_ONLY)) {
+                    itemStack.remove(ModularItem.IS_VISUAL_ONLY);
+                    itemStack.remove(DataComponents.UNBREAKABLE);
+                }
                 newStack.setCount(itemStack.getCount());
                 ModuleInstance newRoot = root.copy();
                 newRoot.writeToItem(newStack);

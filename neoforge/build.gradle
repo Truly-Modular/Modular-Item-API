@@ -66,6 +66,10 @@ dependencies {
 
     modCompileOnly "maven.modrinth:epic-fight:21.11.0.5"
 
+
+    //modCompileOnly "maven.modrinth:irons-rpg-tweaks:2.2.0"
+    //modLocalRuntime "maven.modrinth:irons-rpg-tweaks:2.2.0"
+
     if ("${rootProject.run_with_efm}" == "true") {
         modLocalRuntime "maven.modrinth:epic-fight:21.11.0.5"
     }

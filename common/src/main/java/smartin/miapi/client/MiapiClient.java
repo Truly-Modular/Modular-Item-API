@@ -85,12 +85,19 @@ public class MiapiClient {
             Platform.isModLoaded("optifabric") ||
             Platform.isModLoaded("oculus");
     public static boolean VEIL_LOADED = Platform.isModLoaded("veil");
+    public static boolean VULKAN_MOD_LOADED = Platform.isModLoaded("vulkanmod");
     public static boolean SODIUM_LOADED = isSodiumLoaded();
     public static boolean EMI_LOADED = Platform.isModLoaded("emi");
     public static boolean JER_LOADED = Platform.isModLoaded("jeresources");
     public static final MiapiRegistry<KeyMapping> KEY_BINDINGS = MiapiRegistry.getInstance(KeyMapping.class);
     public static volatile AtomicInteger tick = new AtomicInteger(0);
     //public static final KeyBinding HOVER_DETAIL_BINDING = KEY_BINDINGS.register("miapi:hover_detail", new KeyBinding("miapi.gui.item_detail", 42, "miapi.keybinds"));
+
+    public static double currentTickFull() {
+        double current = tick.get();
+        current += Minecraft.getInstance().getTimer().getGameTimeDeltaTicks();
+        return current;
+    }
 
     private MiapiClient() {
     }
@@ -396,6 +403,7 @@ public class MiapiClient {
     protected static void clientLevelLoad(ClientLevel clientWorld) {
         SpriteLoader.clientStart();
         MiapiEvents.CLEAR_CACHE.invoker().onReload();
+        tick.set(0);
     }
 
     public static void registerScreenHandler() {

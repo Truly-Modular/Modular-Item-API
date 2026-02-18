@@ -26,7 +26,7 @@ public class ItemProjectileRenderer extends EntityRenderer<ItemProjectileEntity>
 
     @Override
     public void render(ItemProjectileEntity entity, float yaw, float tickDelta, PoseStack matrixStack, MultiBufferSource vertexConsumers, int light) {
-        ItemStack itemStack = entity.getPickupItem();
+        ItemStack itemStack = entity.getProjectileItem();
         if (itemStack != null && !itemStack.isEmpty()) {
             matrixStack.pushPose();
             matrixStack.last().pose().scale(2);
