@@ -113,8 +113,8 @@ public class MiapiClientConfig {
         @AutoCodec.Name("enabled")
         public boolean enabled = true;
 
-        public boolean shouldRenderGlint(){
-            return enabled && !MiapiClient.VULKAN_MOD_LOADED;
+        public boolean shouldRenderGlint() {
+            return enabled && MiapiClient.CUSTOM_SHADER_LOADED;
         }
 
         @Comment("""
@@ -137,6 +137,12 @@ public class MiapiClientConfig {
                 """)
         @AutoCodec.Name("enchanting_glint_speed")
         public float enchantingGlintSpeed = 1.0f;
+
+        @Comment("""
+                Adjusting the Alpha for armor rendering
+                """)
+        @AutoCodec.Name("armor_alpha_adjust")
+        public float armorEnchantmentAlphaAdjust = 0.8f;
 
         @Comment("""
                 Default speed of Color Change on enchanting Glint

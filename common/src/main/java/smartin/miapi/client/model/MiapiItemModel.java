@@ -13,7 +13,6 @@ import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
-import smartin.miapi.client.GlintShader;
 import smartin.miapi.client.model.item.DualKeyCache;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.events.MiapiEvents;
@@ -110,7 +109,6 @@ public class MiapiItemModel implements MiapiModel {
         }
         Minecraft.getInstance().getProfiler().pop();
         Minecraft.getInstance().getProfiler().push("glint-setup");
-        GlintShader.setupItem(matrices.last().pose());
         Minecraft.getInstance().getProfiler().pop();
         Minecraft.getInstance().getProfiler().pop();
         //IconRenderProperty.property.renderIcon(ItemModule.getModules(stack), matrices, tickDelta, vertexConsumers, entity, light, overlay);

@@ -95,6 +95,7 @@ dependencies {
 
     //modLocalRuntime files("libs/sodium.jar")
     //modApi files("libs/sodium.jar")
+    //modImplementation "maven.modrinth:vulkanmod:0.5.5"
 
     include api("com.ezylang:EvalEx:${rootProject.eval_ex_version}")
     //include modApi("com.jamieswhiteshirt:reach-entity-attributes:$rootProject.fabric_reach_range_version")

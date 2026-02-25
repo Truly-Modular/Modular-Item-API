@@ -61,7 +61,7 @@ public class AttributeProperty extends
                     EquipmentSlotGroup equipmentSlotGroup = attributeJson.slot;
                     DoubleOperationResolvable.IndividualOperation doubleOperation = new DoubleOperationResolvable.IndividualOperation(attributeJson.value);
                     if (targetOperation.equals(AttributeModifier.Operation.ADD_MULTIPLIED_BASE)) {
-                        if (operation.equals(AttributeModifier.Operation.ADD_MULTIPLIED_BASE)) {
+                        if (operation.equals(DoubleOperationResolvable.IndividualOperation.Operation.ADD_MULTIPLIED_BASE)) {
                             operation = DoubleOperationResolvable.IndividualOperation.Operation.ADD_VALUE;
                         } else {
                             operation = DoubleOperationResolvable.IndividualOperation.Operation.ADD_MULTIPLIED_TOTAL;
@@ -167,6 +167,7 @@ public class AttributeProperty extends
                     }
                     resolvableMap.forEach((group, op) -> {
                         ResourceLocation slotId = AttributeUtil.getIDForSlot(group, attribute, operation);
+                        op.clearCache();
                         double value = op.evaluate(attribute.getDefaultValue()).orElse(0.0)
                                        - attribute.getDefaultValue();
                         mergedEntries.put(

@@ -30,9 +30,9 @@ public interface MiapiModel {
         return false;
     }
 
-
     record RenderContext(@Nullable String modelType,
                          PoseStack matrices,
+                         Matrix4f objectSpace,
                          ItemStack stack,
                          ItemDisplayContext transformationMode,
                          float tickDelta,
@@ -40,6 +40,18 @@ public interface MiapiModel {
                          @Nullable LivingEntity entity,
                          int light,
                          int overlay) {
+
+        public RenderContext(@Nullable String modelType,
+                             PoseStack matrices,
+                             ItemStack stack,
+                             ItemDisplayContext transformationMode,
+                             float tickDelta,
+                             MultiBufferSource vertexConsumers,
+                             @Nullable LivingEntity entity,
+                             int light,
+                             int overlay) {
+            this(modelType, matrices, matrices.last().pose(), stack, transformationMode, tickDelta, vertexConsumers, entity, light, overlay);
+        }
 
         @Nullable
         public LivingEntity entity() {

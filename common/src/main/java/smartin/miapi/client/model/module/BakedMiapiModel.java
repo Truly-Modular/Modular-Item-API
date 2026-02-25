@@ -9,6 +9,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.ItemOverrides;
 import net.minecraft.client.renderer.entity.ItemRenderer;
@@ -26,10 +27,12 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.GlintShader;
+import smartin.miapi.client.MiapiClient;
 import smartin.miapi.client.atlas.MaterialSpriteManager;
 import smartin.miapi.client.model.MiapiModel;
 import smartin.miapi.client.model.ModelHolder;
 import smartin.miapi.client.model.ModelTransformer;
+import smartin.miapi.client.renderer.ObjectUVVertexConsumer;
 import smartin.miapi.client.renderer.RescaledVertexConsumer;
 import smartin.miapi.client.renderer.TrimRenderer;
 import smartin.miapi.config.MiapiConfig;
@@ -165,11 +168,36 @@ public class BakedMiapiModel implements MiapiModel {
         //render normally
         if (context.stack().hasFoil() && MiapiConfig.getClientConfig().enchantingGlint.shouldRenderGlint()) {
             try {
-                VertexConsumer altConsumer = context.vertexConsumers().getBuffer(GlintShader.modularItemGlint);
+                VertexConsumer altConsumer;
+                if (MiapiClient.CUSTOM_SHADER_LOADED) {
+                    altConsumer = new ObjectUVVertexConsumer(
+                            context.vertexConsumers().getBuffer(GlintShader.modularItemGlint),
+                            context.objectSpace(), true,1.0f
+                    );
+                } else {
+                    altConsumer = new ObjectUVVertexConsumer(
+                            context.vertexConsumers().getBuffer(RenderType.entityGlintDirect()),
+                            context.objectSpace(), false,1.0f
+                    );
+                }
+                float alphaAdjust;
+                if (
+                        context.transformationMode() == ItemDisplayContext.HEAD
+                    //context.modelType() != null &&
+                    //!("item".equals(context.modelType()))
+                ) {
+                    alphaAdjust = MiapiConfig.getClientConfig().enchantingGlint.armorEnchantmentAlphaAdjust;
+                } else {
+                    alphaAdjust = 1.0f;
+                }
                 for (Direction dir : Direction.values()) {
                     currentModel.getQuads(null, dir, RandomSource.create()).forEach(quad -> {
                         Color glintColor = settings.getColor();
-                        altConsumer.putBulkData(context.matrices().last(), quad, glintColor.redAsFloat(), glintColor.greenAsFloat(), glintColor.blueAsFloat(), alpha, light, context.overlay());
+                        altConsumer.putBulkData(context.matrices().last(), quad,
+                                glintColor.redAsFloat(),
+                                glintColor.greenAsFloat(),
+                                glintColor.blueAsFloat(),
+                                glintColor.alphaAsFloat() * alpha * alphaAdjust, light, context.overlay());
 
                     });
                 }
@@ -224,7 +252,7 @@ public class BakedMiapiModel implements MiapiModel {
     }
 
     public VertexConsumer getConsumer(ColorProvider provider, TextureAtlasSprite sprite, MultiBufferSource source, ItemStack itemStack, ModuleInstance instance, ItemDisplayContext context) {
-        if(MiapiConfig.getClientConfig().other.disableRecolor){
+        if (MiapiConfig.getClientConfig().other.disableRecolor) {
             return ItemRenderer.getFoilBufferDirect(source, ItemBlockRenderTypes.getRenderType(ItemStack.EMPTY, false), true, false);
         }
         if (provider.equals(lastColor) && sprite.equals(textureAtlasSprite) && isStillValid(lastVC)) {

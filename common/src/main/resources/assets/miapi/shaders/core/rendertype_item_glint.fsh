@@ -15,17 +15,17 @@ uniform float GlintAlpha;
 in float vertexDistance;
 in vec4 vertexColor;
 in vec2 texCoord0;
-in vec2 localUVs;
+in vec2 texCoord1;
 in vec4 normal;
 
 out vec4 fragColor;
 
 void main() {
-    vec4 color = texture(CustomGlintTexture, localUVs) * ColorModulator * vertexColor;
-    vec4 realcolor = texture(Sampler0, texCoord0);
+    vec4 color = texture(CustomGlintTexture, texCoord0) * vertexColor;
+    vec4 realcolor = texture(Sampler0, texCoord1);
     if (realcolor.a < 0.1) {
         discard;
     }
     float fade = linear_fog_fade(vertexDistance, FogStart, FogEnd) * GlintAlpha * GlintStrength;
-    fragColor = vec4(color.rgb * fade * 2, color.a*vertexColor.a-0.001);
+    fragColor = vec4(color.rgb * fade * 2 * vertexColor.a, vertexColor.a);
 }

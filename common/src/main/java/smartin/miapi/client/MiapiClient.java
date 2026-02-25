@@ -90,6 +90,7 @@ public class MiapiClient {
     public static boolean EMI_LOADED = Platform.isModLoaded("emi");
     public static boolean JER_LOADED = Platform.isModLoaded("jeresources");
     public static final MiapiRegistry<KeyMapping> KEY_BINDINGS = MiapiRegistry.getInstance(KeyMapping.class);
+    public static boolean CUSTOM_SHADER_LOADED = true;
     public static volatile AtomicInteger tick = new AtomicInteger(0);
     //public static final KeyBinding HOVER_DETAIL_BINDING = KEY_BINDINGS.register("miapi:hover_detail", new KeyBinding("miapi.gui.item_detail", 42, "miapi.keybinds"));
 
@@ -310,7 +311,16 @@ public class MiapiClient {
             });
             return options;
         });
-        GlintShader.registerShaders();
+        if (VULKAN_MOD_LOADED) {
+            CUSTOM_SHADER_LOADED = false;
+        } else {
+            try {
+                GlintShader.registerShaders();
+            } catch (RuntimeException e) {
+                CUSTOM_SHADER_LOADED = false;
+                Miapi.LOGGER.error("failed to load custom shaders", e);
+            }
+        }
 
         if (Platform.getEnv() == EnvType.CLIENT) {
             EditorCommands.registerClient();

@@ -210,6 +210,14 @@ public class DynamicTrailModel extends DynamicModel<TrailState> {
         float uu = u == 0 ? texture.getU0() : texture.getU1();
         float vv = v == 0 ? texture.getV0() : texture.getV1();
         Vector3f actualPos = poseStack.last().pose().transformPosition(pos, new Vector3f());
-        vc.addVertex(actualPos.x, actualPos.y, actualPos.z, color.withAlpha(alpha * color.alphaAsFloat()).abgr(), uu, vv, context.overlay(), context.light(), 0, 0, -1);
+        vc.addVertex(
+                actualPos.x, actualPos.y, actualPos.z,
+                color.withAlpha(alpha * color.alphaAsFloat()).abgr(),
+                uu, vv,
+                context.overlay(),
+                context.light(),
+                0,
+                0,
+                -1);
     }
 }

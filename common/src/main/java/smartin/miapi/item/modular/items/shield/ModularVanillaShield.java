@@ -73,7 +73,7 @@ public class ModularVanillaShield extends ShieldItem implements ModularItem {
 
     @Override
     public int getBarWidth(ItemStack stack) {
-        return Math.round(13.0F - stack.getDamageValue() * 13.0F / ModularItem.getDurability(stack));
+        return Math.round(13.0F - stack.getDamageValue() * 13.0F / stack.getMaxDamage());
     }
 
     @Override

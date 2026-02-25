@@ -7,14 +7,11 @@ import com.mojang.blaze3d.vertex.VertexFormatElement;
 import com.redpxnda.nucleus.impl.ShaderRegistry;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.Util;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.resources.ResourceLocation;
-import org.joml.Matrix4f;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.atlas.MaterialAtlasManager;
 
@@ -29,7 +26,14 @@ public class GlintShader {
     public static ShaderInstance entityTranslucentMaterialShader;
     public static ShaderInstance glintShader;
 
-    public static VertexFormat GLINT_VERTEX_FORMAT = VertexFormat.builder().add("Position", VertexFormatElement.POSITION).add("Color", VertexFormatElement.COLOR).add("UV0", VertexFormatElement.UV0).add("UV1", VertexFormatElement.UV1).add("UV2", VertexFormatElement.UV2).add("Normal", VertexFormatElement.NORMAL).padding(1).build();
+    public static VertexFormat GLINT_VERTEX_FORMAT = VertexFormat.builder()
+            .add("Position", VertexFormatElement.POSITION)
+            .add("Color", VertexFormatElement.COLOR)
+            .add("UV0", VertexFormatElement.UV0)
+            .add("UV1", VertexFormatElement.UV1)
+            .add("UV2", VertexFormatElement.UV2)
+            .add("Normal", VertexFormatElement.NORMAL)
+            .padding(1).build();
 
     public static final RenderType modularItemGlint = RenderType.create(
             "miapi_glint_direct|immediatelyfast:renderlast",
@@ -53,9 +57,12 @@ public class GlintShader {
                         //NativeImage.
                         return glintShader;
                     }))
-                    .setTextureState(RenderStateShard.MultiTextureStateShard.builder().add(TextureAtlas.LOCATION_BLOCKS, false, false)
-                            .add(MaterialAtlasManager.MATERIAL_ID, false, false).build())
+                    .setTextureState(RenderStateShard.MultiTextureStateShard.builder()
+                            .add(TextureAtlas.LOCATION_BLOCKS, false, false)
+                            .add(MaterialAtlasManager.MATERIAL_ID, false, false)
+                            .build())
                     .setDepthTestState(EQUAL_DEPTH_TEST)
+                    //.setDepthTestState(NO_DEPTH_TEST)
                     .setTransparencyState(GLINT_TRANSPARENCY)
                     .setLightmapState(LIGHTMAP)
                     //.cull(DISABLE_CULLING)
@@ -69,20 +76,6 @@ public class GlintShader {
             0x200000, true, true, RenderType.CompositeState.builder()
                     .setLightmapState(LIGHTMAP).setShaderState(RENDERTYPE_TRANSLUCENT_SHADER).setTextureState(BLOCK_SHEET_MIPPED).setTransparencyState(TRANSLUCENT_TRANSPARENCY)
                     .setOutputState(TRANSLUCENT_TARGET).setCullState(NO_CULL).createCompositeState(true));
-
-    private static void setupGlintTexturing(float scale) {
-        long l = (long) ((double) Util.getMillis() * Minecraft.getInstance().options.glintSpeed().get() * 8.0);
-        float f = (float) (l % 110000L) / 110000.0f;
-        float g = (float) (l % 30000L) / 30000.0f;
-        Matrix4f matrix4f = new Matrix4f().translation(-f, g, 0.0f);
-        matrix4f.rotateZ(0.17453292f).scale(scale);
-        RenderSystem.setTextureMatrix(matrix4f);
-    }
-
-    public static void setupItem(Matrix4f matrix4f) {
-        //TODO:rework glint rendering as a whole
-        GlintShader.glintShader.safeGetUniform("ModelMat").set(new Matrix4f(matrix4f));
-    }
 
     public static void registerShaders() {
         /*ShaderRegistry.register(

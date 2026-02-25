@@ -71,7 +71,7 @@ public class ModularChestPlate extends ArmorItem implements PlatformModularItemM
 
     @Override
     public int getBarWidth(ItemStack stack) {
-        return Math.round(13.0F - stack.getDamageValue() * 13.0F / ModularItem.getDurability(stack));
+        return Math.round(13.0F - stack.getDamageValue() * 13.0F / stack.getMaxDamage());
     }
 
     @Override
