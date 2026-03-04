@@ -21,6 +21,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import smartin.miapi.Miapi;
+import smartin.miapi.entity.ArrowStorageFacet;
 import smartin.miapi.entity.ItemProjectileEntity;
 import smartin.miapi.entity.ShieldingArmorFacet;
 import smartin.miapi.entity.StunHealthFacet;
@@ -41,7 +42,7 @@ public class AttributeRegistry {
     /**
      * Idk, this is kinda bad but i couldnt do it in the mixin
      */
-    public static Map<Player, Boolean> hasCrittedLast =  Collections.synchronizedMap(new WeakHashMap<>());
+    public static Map<Player, Boolean> hasCrittedLast = Collections.synchronizedMap(new WeakHashMap<>());
 
     public static Holder<Attribute> SWIM_SPEED;
 
@@ -96,6 +97,8 @@ public class AttributeRegistry {
                 attacher.add(KeyBindFacet.KEY, keyBindFacet);
                 ComboFacet comboFacet = new ComboFacet(livingEntity);
                 attacher.add(ComboFacet.KEY, comboFacet);
+                ArrowStorageFacet arrowStorageFacet = new ArrowStorageFacet(livingEntity);
+                attacher.add(ArrowStorageFacet.KEY, arrowStorageFacet);
             }
         });
         MiapiProjectileEvents.MODULAR_PROJECTILE_DATA_TRACKER_SET.register(new MiapiProjectileEvents.ItemProjectileDataTracker() {
@@ -236,8 +239,7 @@ public class AttributeRegistry {
         MiapiProjectileEvents.MODULAR_PROJECTILE_ENTITY_HIT.register(listener -> {
             ItemProjectileEntity projectile = listener.projectile;
             if (projectile.isCritArrow()) {
-                //TODO:rework projectile logic as a whole
-                //listener.damage = (float) (listener.damage * AttributeProperty.getActualValue(projectile.getPickupItem(), EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_CRIT_MULTIPLIER));
+                listener.damage = (float) (listener.damage * AttributeUtil.getActualValue(projectile.getPickupItem(), EquipmentSlot.MAINHAND, AttributeRegistry.CRITICAL_DAMAGE.value(), 1.5));
             }
             return EventResult.pass();
         });

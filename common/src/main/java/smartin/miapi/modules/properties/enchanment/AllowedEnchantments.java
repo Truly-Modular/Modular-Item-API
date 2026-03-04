@@ -44,7 +44,7 @@ import java.util.*;
  * @data forbidden: a list of forbidden enchantments (ResourceLocation).
  */
 
-public class AllowedEnchantments extends CodecProperty<AllowedEnchantments.AllowedEnchantsData> implements CraftingProperty {
+public class    AllowedEnchantments extends CodecProperty<AllowedEnchantments.AllowedEnchantsData> implements CraftingProperty {
     public static final ResourceLocation KEY = Miapi.id("enchantments");
     public static AllowedEnchantments property;
     public static Map<ResourceLocation, List<ResourceLocation>> enchantmentExtentionsMap = new HashMap<>();

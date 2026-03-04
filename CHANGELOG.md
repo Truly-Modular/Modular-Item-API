@@ -11,10 +11,16 @@
     - fallback now looks much better then previously
 - fixed issue where durability is rendered wrongly if other mods modify maxDamage
 - fixed crossbows shooting from feet sometimes
+- fixed arrows not critting correctly.
+- bow enchantments not working on modular arrows
 ### Changes
 - changed texture recoloring logic to allow for alpha pass through from original
 - improved shift+alt stat display
 - improved rendering logic for more dynamic models
+- added new properties to replace most projectile attributes
+  - this includes new tooltips for arrows, bows, crossbows and throwables
+  - the old attributes are still implemented and work, but will be fully removed in the future
+- made bow and thrown items enchantments apply damage and post-hit enchantments (this includes sharpness on thrown items).
 ### Additions
 - added trail rendering
   - fully data-driven model type
@@ -22,4 +28,9 @@
 - added prototype chain/rope rendering
 - added in-air model transformation for projectiles
 - added in-air render animations for projectiles (spinning daggers)
-- added "shot_velocity" property to adjust velocity when shot and not thrown
+- reworked entire projectile logic
+  - added bow speed and accuracy property
+  - added projectile damage, speed and accuracy property
+  - added throw damage and speed property
+  - added arrow retrieval property
+  - added new tooltip system to simplify 

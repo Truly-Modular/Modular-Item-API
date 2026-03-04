@@ -1,11 +1,13 @@
 {
     "icon": "textures/item/phantom_membrane.png",
     "groups": [
-        "fabric"
+        "fabric",
+        "sinew",
+        "leather"
     ],
-    "hardness": 2,
+    "hardness": 5,
     "density": 1.5,
-    "flexibility": 6.8,
+    "flexibility": 7,
     "enchantability": 18,
     "tier": 1,
     "durability": 432,

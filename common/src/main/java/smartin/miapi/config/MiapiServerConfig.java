@@ -124,13 +124,6 @@ public class MiapiServerConfig {
         public boolean fullBreakModularItems = true;
 
         @Comment("""
-                Whether a miapi reload should be automatically forced on server start
-                This is enabled for compat reasons, sometimes scanning recipes and other stuff during a reload isnt stable
-                """)
-        @AutoCodec.Name("reload_on_server_start")
-        public boolean doubleReload = true;
-
-        @Comment("""
                 How much of a Modules Durability is used to repair the Item
                 """)
         @AutoCodec.Name("repair_ratio")
@@ -143,6 +136,7 @@ public class MiapiServerConfig {
                 """)
         @AutoCodec.Name("live_update")
         public boolean liveUpdate = Platform.isDevelopmentEnvironment();
+
     }
 
     @ConfigAutoCodec.ConfigClassMarker

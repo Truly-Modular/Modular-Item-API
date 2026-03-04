@@ -77,6 +77,7 @@ public class SinglePropertyStatDisplay extends SingleStatDisplayDouble {
         public double max = 100;
         public boolean inverse = false;
         public BiFunction<ItemStack, ItemStack, Boolean> condition = (old, compare) -> true;
+        public Component postFix = Component.empty();
 
         private Builder(DoubleProperty property) {
             this.property = property;
@@ -139,6 +140,11 @@ public class SinglePropertyStatDisplay extends SingleStatDisplayDouble {
             return this;
         }
 
+        public Builder setPostFix(Component format) {
+            this.postFix = format;
+            return this;
+        }
+
         public Builder setHoverFormat(String format) {
             hoverFormat = Util.make(new DecimalFormat(format), (decimalFormat) -> {
                 decimalFormat.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ROOT));
@@ -162,6 +168,7 @@ public class SinglePropertyStatDisplay extends SingleStatDisplayDouble {
             display.modifierFormat = modifierFormat;
             display.inverse = inverse;
             display.condition = condition;
+            display.postfix = postFix;
             if (hoverFormat == null) {
                 hoverFormat = modifierFormat;
             }

@@ -39,8 +39,6 @@ import smartin.miapi.registries.JsonOpsBooleanPatched;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static smartin.miapi.material.generated.TierManager.getEstimatedTier;
-
 public class GeneratedMaterial implements Material {
     ItemStack mainIngredient = ItemStack.EMPTY;
     Ingredient ingredient = Ingredient.EMPTY;
@@ -171,7 +169,7 @@ public class GeneratedMaterial implements Material {
             } else {
                 stats.put("flexibility", (double) (toolMaterial.getSpeed() / 4));
             }
-            stats.put("tier", (double) getEstimatedTier(toolMaterial.getIncorrectBlocksForDrops()));
+            stats.put("tier", swordAttackDmg - 2);
             armorItems = findRelatedArmorItems();
             properties = GeneratedMaterialPropertyManager.setup(getID(), swordItem, axeItem, toolMaterials, armorItems, Map.of());
             return true;

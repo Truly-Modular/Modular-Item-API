@@ -3,8 +3,8 @@
     "groups": [
         "flint"
     ],
-    "hardness": 3.7,
-    "density": 3,
+    "hardness": 4,
+    "density": 2,
     "flexibility": 0,
     "durability": 90,
     "enchantability": 4,

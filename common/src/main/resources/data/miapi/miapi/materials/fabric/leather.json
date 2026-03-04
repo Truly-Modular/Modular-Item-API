@@ -1,7 +1,9 @@
 {
     "icon": "textures/item/leather.png",
     "groups": [
-        "fabric"
+        "fabric",
+        "sinew",
+        "leather"
     ],
     "hardness": 3,
     "density": 1.5,

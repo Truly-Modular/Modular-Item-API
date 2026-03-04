@@ -44,6 +44,7 @@ public abstract class SingleStatDisplayDouble extends InteractAbleWidget impleme
     public boolean inverse = false;
     double oldValue = 0;
     double compareToValue = 0;
+    public boolean percent = false;
 
     protected SingleStatDisplayDouble(int x, int y, int width, int height, StatListWidget.TextGetter title, StatListWidget.TextGetter hover) {
         super(x, y, width, height, Component.empty());

@@ -40,7 +40,7 @@ public class QuarkCompat {
                             }
 
                             @Override
-                            public float getSpeed() {
+                            public float getSpeedModifier() {
                                 return 0.5f;
                             }
 

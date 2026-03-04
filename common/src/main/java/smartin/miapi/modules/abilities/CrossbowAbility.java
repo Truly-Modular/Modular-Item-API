@@ -15,13 +15,11 @@ import net.minecraft.world.item.component.ChargedProjectiles;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import smartin.miapi.MixinContextFlags;
-import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.events.MiapiProjectileEvents;
 import smartin.miapi.item.modular.items.bows.ModularCrossbow;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;
 import smartin.miapi.modules.abilities.util.ItemUseAbility;
-import smartin.miapi.modules.properties.attributes.AttributeUtil;
-import smartin.miapi.modules.properties.projectile.DrawTimeProperty;
+import smartin.miapi.modules.properties.projectile.stat.bow.BowDrawTimeProperty;
 
 import java.util.List;
 import java.util.function.Supplier;
@@ -60,10 +58,6 @@ public class CrossbowAbility implements ItemUseAbility<CrossbowAbility.Context> 
         ChargedProjectiles charged = crossbow.get(DataComponents.CHARGED_PROJECTILES);
 
         if (charged != null && !charged.isEmpty()) {
-            // Already charged → shoot
-            float divergence = (float) Math.pow(12.0, -AttributeUtil.getActualValue(crossbow, EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_ACCURACY.value()));
-            float speed = (float) Math.max(0.1, AttributeUtil.getActualValue(crossbow, EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_SPEED.value()) + getShootingPower(charged));
-
             if (MiapiProjectileEvents.MODULAR_CROSSBOW_PRE_SHOT.invoker().shoot(player, crossbow).interruptsFurtherEvaluation()) {
                 return InteractionResultHolder.consume(crossbow);
             }
@@ -122,7 +116,7 @@ public class CrossbowAbility implements ItemUseAbility<CrossbowAbility.Context> 
     }
 
     private static int getChargeDuration(ItemStack stack, LivingEntity shooter) {
-        double drawTime = DrawTimeProperty.property.getValue(stack).orElse(0.25);
+        double drawTime = BowDrawTimeProperty.property.getValue(stack).orElse(0.25);
         float f = EnchantmentHelper.modifyCrossbowChargingTime(stack, shooter, (float) drawTime);
         return (int) (f * 20.0F);
     }

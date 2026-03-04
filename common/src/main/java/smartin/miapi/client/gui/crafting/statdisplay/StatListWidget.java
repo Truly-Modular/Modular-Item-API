@@ -37,6 +37,14 @@ import smartin.miapi.modules.properties.onHit.entity.IllagerBane;
 import smartin.miapi.modules.properties.onHit.entity.SmiteDamage;
 import smartin.miapi.modules.properties.onHit.entity.SpiderDamage;
 import smartin.miapi.modules.properties.projectile.*;
+import smartin.miapi.modules.properties.projectile.stat.bow.BowAccuracyProperty;
+import smartin.miapi.modules.properties.projectile.stat.bow.BowDrawTimeProperty;
+import smartin.miapi.modules.properties.projectile.stat.bow.BowSpeedProperty;
+import smartin.miapi.modules.properties.projectile.stat.projectile.ProjectileAccuracyProperty;
+import smartin.miapi.modules.properties.projectile.stat.projectile.ProjectileDamageProperty;
+import smartin.miapi.modules.properties.projectile.stat.projectile.ProjectileSpeedProperty;
+import smartin.miapi.modules.properties.projectile.stat.throwable.ThrowDamageProperty;
+import smartin.miapi.modules.properties.projectile.stat.throwable.ThrowSpeedProperty;
 import smartin.miapi.modules.properties.util.GuiWidgetSupplier;
 import smartin.miapi.registries.RegistryInventory;
 
@@ -272,11 +280,59 @@ public class StatListWidget extends InteractAbleWidget {
                 .setMin(0).build());
 
         addStatDisplay(SinglePropertyStatDisplay
-                .builder(DrawTimeProperty.property)
+                .builder(BowDrawTimeProperty.property)
                 .setMax(2.5)
                 .setFormat("##.##")
                 .setInverse(true)
-                .setTranslationKey(DrawTimeProperty.KEY).build());
+                .setTranslationKey(BowDrawTimeProperty.KEY).build());
+        addStatDisplay(SinglePropertyStatDisplay
+                .builder(BowAccuracyProperty.property)
+                .setMax(0.5)
+                .setFormat("0.##")
+                .setPostFix(Component.literal(("%")))
+                .setTranslationKey(BowAccuracyProperty.KEY).build());
+        addStatDisplay(SinglePropertyStatDisplay
+                .builder(BowSpeedProperty.property)
+                .setMax(0.5)
+                .setFormat("0.##")
+                .setPostFix(Component.literal(("%")))
+                .setTranslationKey(BowSpeedProperty.KEY).build());
+
+        addStatDisplay(SinglePropertyStatDisplay
+                .builder(ProjectileAccuracyProperty.property)
+                .setMax(0.5)
+                .setFormat("0.##")
+                .setPostFix(Component.literal(("%")))
+                .setTranslationKey(ProjectileAccuracyProperty.KEY).build());
+        addStatDisplay(SinglePropertyStatDisplay
+                .builder(ProjectileDamageProperty.property)
+                .setMax(0.5)
+                .setFormat("0.##")
+                .setPostFix(Component.literal(("%")))
+                .setTranslationKey(ProjectileDamageProperty.KEY).build());
+        addStatDisplay(SinglePropertyStatDisplay
+                .builder(ProjectileSpeedProperty.property)
+                .setMax(1.0)
+                .setFormat("0.##")
+                .setPostFix(Component.literal(("%")))
+                .setTranslationKey(ProjectileSpeedProperty.KEY).build());
+
+        addStatDisplay(SinglePropertyStatDisplay
+                .builder(ThrowSpeedProperty.property)
+                .setMax(5.0)
+                .setFormat("##.##")
+                .setTranslationKey(ThrowSpeedProperty.KEY).build());
+        addStatDisplay(SinglePropertyStatDisplay
+                .builder(ThrowDamageProperty.property)
+                .setMax(6)
+                .setFormat("##.##")
+                .setTranslationKey(ThrowDamageProperty.KEY).build());
+
+        addStatDisplay(SinglePropertyStatDisplay
+                .builder(ArrowRetrievalProperty.property)
+                .setMax(1.0)
+                .setFormat("0%")
+                .setTranslationKey(ArrowRetrievalProperty.KEY).build());
 
         addStatDisplay(SinglePropertyStatDisplay
                 .builder(IllagerBane.property)

@@ -10,7 +10,6 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
@@ -21,7 +20,6 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import org.lwjgl.system.NonnullDefault;
 import smartin.miapi.Miapi;
-import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.client.model.ModularModelPredicateProvider;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.item.FakeItemManager;
@@ -30,9 +28,10 @@ import smartin.miapi.item.modular.PlatformModularItemMethods;
 import smartin.miapi.modules.properties.DisplayNameProperty;
 import smartin.miapi.modules.properties.LoreProperty;
 import smartin.miapi.modules.properties.RepairPriority;
-import smartin.miapi.modules.properties.attributes.AttributeUtil;
 import smartin.miapi.modules.properties.enchanment.EnchantAbilityProperty;
-import smartin.miapi.modules.properties.projectile.DrawTimeProperty;
+import smartin.miapi.modules.properties.projectile.stat.bow.BowAccuracyProperty;
+import smartin.miapi.modules.properties.projectile.stat.bow.BowDrawTimeProperty;
+import smartin.miapi.modules.properties.projectile.stat.bow.BowSpeedProperty;
 import smartin.miapi.modules.properties.util.ComponentApplyProperty;
 
 import java.util.List;
@@ -122,8 +121,8 @@ public class ModularBow extends BowItem implements PlatformModularItemMethods, M
                     List<ItemStack> list = draw(stack, itemStack, player);
                     if (level instanceof ServerLevel serverLevel) {
                         if (!list.isEmpty()) {
-                            float divergence = (float) Math.pow(12.0, -AttributeUtil.getActualValue(stack, EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_ACCURACY.value()));
-                            float speed = (float) Math.max(0.1, AttributeUtil.getActualValue(stack, EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_SPEED.value()) + 3.0);
+                            float divergence = (float) BowAccuracyProperty.getDivergence(stack);
+                            float speed = (float) BowSpeedProperty.getSpeedModifier(stack,3.0);
                             this.shoot(serverLevel, player, player.getUsedItemHand(), stack, list, f * speed, divergence, f == 1.0F, null);
                         }
                     }
@@ -156,7 +155,7 @@ public class ModularBow extends BowItem implements PlatformModularItemMethods, M
     }
 
     public static float getPowerForTime(int charge, ItemStack itemStack, LivingEntity livingEntity) {
-        double drawTime = DrawTimeProperty.property.getValue(itemStack).orElse(0.25);
+        double drawTime = BowDrawTimeProperty.property.getValue(itemStack).orElse(0.25);
         float maxLevel = Math.max(1.0f, (float) drawTime * 20);
         float f = (float) charge / maxLevel;
         f = (f * f + f * 2.0F) / 3.0F;

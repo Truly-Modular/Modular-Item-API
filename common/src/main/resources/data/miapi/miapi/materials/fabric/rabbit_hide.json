@@ -1,11 +1,13 @@
 {
     "icon": "textures/item/rabbit_hide.png",
     "groups": [
-        "fabric"
+        "fabric",
+        "sinew",
+        "leather"
     ],
-    "hardness": 1.8,
+    "hardness": 4,
     "density": 1.2,
-    "flexibility": 7,
+    "flexibility": 6,
     "enchantability": 15,
     "tier": 1,
     "durability": 125,

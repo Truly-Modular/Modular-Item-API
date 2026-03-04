@@ -13,7 +13,11 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.*;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LightningBolt;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.entity.projectile.Projectile;
@@ -30,7 +34,6 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.entity.arrowhitbehaviours.EntityBounceBehaviour;
 import smartin.miapi.entity.arrowhitbehaviours.EntityPierceBehaviour;
@@ -38,10 +41,12 @@ import smartin.miapi.entity.arrowhitbehaviours.ProjectileHitBehaviour;
 import smartin.miapi.events.MiapiProjectileEvents;
 import smartin.miapi.mixin.projectile.AbstractArrowAccessor;
 import smartin.miapi.modules.abilities.util.WrappedSoundEvent;
-import smartin.miapi.modules.properties.attributes.AttributeUtil;
 import smartin.miapi.modules.properties.projectile.AirDragProperty;
 import smartin.miapi.modules.properties.projectile.ChannelingProperty;
 import smartin.miapi.modules.properties.projectile.MakesImpactSoundProperty;
+import smartin.miapi.modules.properties.projectile.stat.projectile.ProjectileAccuracyProperty;
+import smartin.miapi.modules.properties.projectile.stat.projectile.ProjectileDamageProperty;
+import smartin.miapi.modules.properties.projectile.stat.projectile.ProjectileSpeedProperty;
 import smartin.miapi.registries.RegistryInventory;
 
 public class ItemProjectileEntity extends AbstractArrow {
@@ -102,10 +107,13 @@ public class ItemProjectileEntity extends AbstractArrow {
 
     private void setup() {
         ItemStack projectileStack = this.entityData.get(THROWING_STACK);
-        this.setBaseDamage(AttributeUtil.getActualValue(projectileStack, EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_DAMAGE.value()));
-        if (projectileStack.getItem() instanceof ArrowItem arrowItem) {
+        this.setBaseDamage(
+                ProjectileDamageProperty.getDamage(projectileStack)
+        );
+        if (projectileStack.getItem() instanceof ArrowItem) {
             this.setSpeedDamage(true);
         }
+        this.setSpeedDamage(true);
     }
 
     private byte getLoyaltyFromItem(ItemStack stack) {
@@ -234,8 +242,8 @@ public class ItemProjectileEntity extends AbstractArrow {
     @Override
     public void shoot(double x, double y, double z, float velocity, float inaccuracy) {
         ItemStack projectileStack = this.getProjectileItem();
-        velocity = (float) Math.max(0.1, velocity + AttributeUtil.getActualValue(projectileStack, EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_SPEED.value()));
-        inaccuracy *= (float) Math.pow(12.0, -AttributeUtil.getActualValue(projectileStack, EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_ACCURACY.value()));
+        velocity *= (float) ProjectileSpeedProperty.getSpeedModifier(projectileStack);
+        inaccuracy *= (float) ProjectileAccuracyProperty.getDivergence(projectileStack);
         Vec3 vec3 = this.getMovementToShoot(x, y, z, velocity, inaccuracy);
         this.setDeltaMovement(vec3);
         this.hasImpulse = true;
@@ -256,13 +264,24 @@ public class ItemProjectileEntity extends AbstractArrow {
         } else {
             projectileHitBehaviour = new EntityBounceBehaviour();
         }
-
         Entity owner = this.getOwner();
+        DamageSource damageSource = this.damageSources().arrow(this, owner);
+        ItemStack weapon = this.getWeaponItem();
+        if (level() instanceof ServerLevel serverLevel) {
+            if (weapon != null) {
+                damage = EnchantmentHelper.modifyDamage(serverLevel, weapon, defender, damageSource, damage);
+                if (!ItemStack.isSameItemSameComponents(weapon, this.getProjectileItem())) {
+                    damage = EnchantmentHelper.modifyDamage(serverLevel, this.getProjectileItem(), defender, damageSource, damage);
+                }
+            }else{
+                damage = EnchantmentHelper.modifyDamage(serverLevel, this.getProjectileItem(), defender, damageSource, damage);
+            }
+        }
         MiapiProjectileEvents.ModularProjectileEntityHitEvent event =
                 new MiapiProjectileEvents.ModularProjectileEntityHitEvent(
                         entityHitResult,
                         this,
-                        this.damageSources().arrow(this, owner),
+                        damageSource,
                         damage);
         EventResult result = MiapiProjectileEvents.MODULAR_PROJECTILE_ENTITY_HIT.invoker().hit(event);
         if (result.interruptsFurtherEvaluation()) {
@@ -279,7 +298,14 @@ public class ItemProjectileEntity extends AbstractArrow {
             }
 
             if (level() instanceof ServerLevel serverLevel) {
-                EnchantmentHelper.doPostAttackEffectsWithItemSource(serverLevel, defender, event.damageSource, this.getWeaponItem());
+                if (weapon != null) {
+                    EnchantmentHelper.doPostAttackEffectsWithItemSource(serverLevel, defender, event.damageSource, weapon);
+                    if (!ItemStack.isSameItemSameComponents(weapon, this.getProjectileItem())) {
+                        EnchantmentHelper.doPostAttackEffectsWithItemSource(serverLevel, defender, event.damageSource, this.getProjectileItem());
+                    }
+                }else{
+                    EnchantmentHelper.doPostAttackEffectsWithItemSource(serverLevel, defender, event.damageSource, this.getProjectileItem());
+                }
             }
 
             if (defender instanceof LivingEntity victim) {
@@ -353,10 +379,14 @@ public class ItemProjectileEntity extends AbstractArrow {
 
     @Override
     protected void onHit(HitResult result) {
+        boolean makeEvent = MakesImpactSoundProperty.property.isTrue(getProjectileItem());
+        if (makeEvent) {
+            super.onHit(result);
+            return;
+        }
         hitEntitySound = new WrappedSoundEvent(this.getDefaultHitGroundSoundEvent(), 1.0f, 1.0f);
         ((AbstractArrowAccessor) this).setSoundEvent(hitEntitySound.event());
         HitResult.Type hitresult$type = result.getType();
-        boolean makeEvent = MakesImpactSoundProperty.property.isTrue(getProjectileItem());
         if (hitresult$type == HitResult.Type.ENTITY) {
             EntityHitResult entityhitresult = (EntityHitResult) result;
             Entity entity = entityhitresult.getEntity();

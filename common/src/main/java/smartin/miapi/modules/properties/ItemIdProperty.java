@@ -6,6 +6,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
 import smartin.miapi.craft.CraftAction;
@@ -14,7 +15,10 @@ import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.VisualModularItem;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
-import smartin.miapi.modules.properties.util.*;
+import smartin.miapi.modules.properties.util.CodecProperty;
+import smartin.miapi.modules.properties.util.CraftingProperty;
+import smartin.miapi.modules.properties.util.EditorError;
+import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.registries.RegistryInventory;
 
 import java.util.List;
@@ -59,26 +63,36 @@ public class ItemIdProperty extends CodecProperty<ResourceLocation> implements C
 
 
     public static ItemStack changeId(ItemStack itemStack) {
-        ModuleInstance root = ItemModule.getModules(itemStack);
         Optional<ResourceLocation> optional = property.getData(itemStack);
         if (optional.isPresent()) {
-            Item item = RegistryInventory.MODULAR_ITEMS.get(optional.get().toString());
-            if (item != null) {
-                root.clearCaches();
-                ItemStack newStack = new ItemStack(item);
-                newStack.applyComponents(itemStack.getComponentsPatch());
-                if (newStack.has(ModularItem.IS_VISUAL_ONLY)) {
-                    itemStack.remove(ModularItem.IS_VISUAL_ONLY);
-                    itemStack.remove(DataComponents.UNBREAKABLE);
-                }
-                newStack.setCount(itemStack.getCount());
-                ModuleInstance newRoot = root.copy();
-                newRoot.writeToItem(newStack);
-                newRoot.clearCaches();
-                return newStack;
-            }
+            ItemStack newStack = changeId(itemStack, optional.get());
+            if (newStack != null) return newStack;
         }
         return itemStack.copy();
+    }
+
+    public static @Nullable ItemStack changeId(ItemStack itemStack, ResourceLocation id) {
+        Item item = RegistryInventory.MODULAR_ITEMS.get(id.toString());
+        if (item != null) {
+            return changeId(itemStack, item);
+        }
+        return null;
+    }
+
+    public static ItemStack changeId(ItemStack itemStack, Item item) {
+        ModuleInstance root = ItemModule.getModules(itemStack);
+        root.clearCaches();
+        ItemStack newStack = new ItemStack(item);
+        newStack.applyComponents(itemStack.getComponentsPatch());
+        if (newStack.has(ModularItem.IS_VISUAL_ONLY)) {
+            itemStack.remove(ModularItem.IS_VISUAL_ONLY);
+            itemStack.remove(DataComponents.UNBREAKABLE);
+        }
+        newStack.setCount(itemStack.getCount());
+        ModuleInstance newRoot = root.copy();
+        newRoot.writeToItem(newStack);
+        newRoot.clearCaches();
+        return newStack;
     }
 
     @Override

@@ -17,13 +17,16 @@ import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.level.Level;
-import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.entity.ItemProjectileEntity;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.modules.ModuleInstance;
-import smartin.miapi.modules.abilities.util.*;
+import smartin.miapi.modules.abilities.util.AbilityProperty;
+import smartin.miapi.modules.abilities.util.ItemAbilityManager;
+import smartin.miapi.modules.abilities.util.ItemUseDefaultCooldownAbility;
+import smartin.miapi.modules.abilities.util.ItemUseMinHoldAbility;
 import smartin.miapi.modules.properties.LoreProperty;
-import smartin.miapi.modules.properties.attributes.AttributeUtil;
+import smartin.miapi.modules.properties.projectile.stat.throwable.ThrowDamageProperty;
+import smartin.miapi.modules.properties.projectile.stat.throwable.ThrowSpeedProperty;
 import smartin.miapi.modules.properties.util.DoubleOperationResolvable;
 import smartin.miapi.modules.properties.util.MergeType;
 
@@ -78,26 +81,19 @@ public class ThrowingAbility implements ItemUseDefaultCooldownAbility<ThrowingAb
             int i = this.getMaxUseTime(stack, user, context) - remainingUseTicks;
             if (i >= 10) {
                 playerEntity.awardStat(Stats.ITEM_USED.get(stack.getItem()));
-                if (world instanceof ServerLevel serverWorld) {
+                if (world instanceof ServerLevel) {
                     EquipmentSlot equipmentSlot = getEquipmentSlot(user.getUsedItemHand());
                     stack.hurtAndBreak(1, playerEntity, equipmentSlot);
-                    float divergence = (float) AttributeUtil.getActualValue(stack, EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_ACCURACY.value());
-                    float speed = (float) AttributeUtil.getActualValue(stack, EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_SPEED.value());
-                    float damage = (float) AttributeUtil.getActualValue(stack, EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_DAMAGE.value());
-                    //stack = user.getItemBySlot(equipmentSlot);
+                    float speed = (float) ThrowSpeedProperty.getThrowSpeed(stack);
+                    float damage = (float) ThrowDamageProperty.getDamage(stack);
 
                     ItemProjectileEntity projectileEntity = new ItemProjectileEntity(world, playerEntity, stack, stack);
                     damage = damage / speed;
-                    if (ModularItem.isModularItem(stack)) {
-                        speed = 0.5f;
-                    }
                     if (stack.has(ModularItem.IS_VISUAL_ONLY)) {
                         projectileEntity.setPickupItem(ModularItem.convertToBroken(stack));
                     }
-                    projectileEntity.shootFromRotation(playerEntity, playerEntity.getXRot(), playerEntity.getYRot(), 0.0F, speed, divergence);
+                    projectileEntity.shootFromRotation(playerEntity, playerEntity.getXRot(), playerEntity.getYRot(), 0.0F, speed, 1);
                     projectileEntity.setBaseDamage(damage);
-                    //TODO:figure out a way to control piercing level again
-                    //projectileEntity.setPierceLevel((byte) (int) AttributeUtil.getActualValue(stack, EquipmentSlot.MAINHAND, AttributeRegistry.PROJECTILE_PIERCING));
                     projectileEntity.setSpeedDamage(true);
                     if (user.getUsedItemHand() == InteractionHand.OFF_HAND) {
                         projectileEntity.setPreferredSlot(-2);

@@ -10,7 +10,7 @@
     "toughness": 0,
     "durability": 1,
     "armor_durability": 1,
-    "tier": 3,
+    "tier": 1,
     "color": "F4F2EF",
     "color_palette": {
         "type": "grayscale_map",
