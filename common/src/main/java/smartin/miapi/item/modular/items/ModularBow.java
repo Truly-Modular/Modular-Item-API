@@ -3,6 +3,7 @@ package smartin.miapi.item.modular.items;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.item.TooltipContext;
+import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.EquipmentSlot;
@@ -11,6 +12,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.item.*;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.Registries;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
@@ -100,24 +102,35 @@ public class ModularBow extends BowItem implements PlatformModularItemMethods, M
         PlayerEntity playerEntity = (PlayerEntity) user;
         boolean consumeArrow = !playerEntity.getAbilities().creativeMode;
         ItemStack projectileStack = playerEntity.getProjectileType(bowStack);
-        if (
-                EnchantmentHelper.getLevel(Enchantments.INFINITY, bowStack) > 0 &&
-                (
-                        projectileStack.isEmpty() ||
-                        (projectileStack.getItem() instanceof ArrowItem &&
-                         projectileStack.hasNbt() &&
-                         projectileStack.getOrCreateNbt().isEmpty()))) {
-            if (projectileStack.isEmpty() || projectileStack.getItem() == Items.ARROW) {
+        if (EnchantmentHelper.getLevel(Enchantments.INFINITY, bowStack) > 0) {
+            if (!projectileStack.isEmpty() && projectileStack.isOf(Items.ARROW)) {
+                //infinity with arrow present
+                consumeArrow = false;
+                projectileStack = new ItemStack(Items.ARROW);
+                projectileStack.setCount(1);
+            }
+            if (
+                    consumeArrow &&
+                    MiapiConfig.INSTANCE.server.enchants.betterInfinity &&
+                    projectileStack.isEmpty()) {
+                //Infinity present and no arrow but config option for better infinity
                 consumeArrow = false;
                 projectileStack = new ItemStack(Items.ARROW);
                 projectileStack.setCount(1);
             }
         }
-        if (projectileStack.isEmpty() && consumeArrow && !MiapiConfig.INSTANCE.server.enchants.betterInfinity) {
-            return;
+        Enchantment apoth = Registries.ENCHANTMENT.get(Identifier.of("apotheosis", "endless_quiver"));
+        if (
+                apoth != null &&
+                EnchantmentHelper.getLevel(apoth, bowStack) > 0 &&
+                consumeArrow && !projectileStack.isEmpty()) {
+            //arrow would still be consumed but apoth enchantment is present, copy arrow and disable pickup instead
+            consumeArrow = false;
+            projectileStack = projectileStack.copy();
+            projectileStack.setCount(1);
         }
         if (projectileStack.isEmpty()) {
-            projectileStack = new ItemStack(Items.ARROW);
+            return;
         }
         float pullProgress = getPullProgress(bowStack.getItem().getMaxUseTime(bowStack) - remainingUseTicks, bowStack);
         if (pullProgress < 0.1) {

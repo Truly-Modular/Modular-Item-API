@@ -1,0 +1,28 @@
+{
+    "key": "website-irons_spellbooks_mithril_ingot",
+    "translation": "miapi.material.website-irons_spellbooks_mithril_ingot",
+    "icon": {
+        "type": "item",
+        "item": "irons_spellbooks:mithril_ingot"
+    },
+    "fake_translation": "Mithril ",
+    "groups": [
+        "metal"
+    ],
+    "color_palette": {
+        "type": "image_generated_item",
+        "item": "irons_spellbooks:mithril_ingot"
+    },
+    "items": [
+        {
+            "item": "irons_spellbooks:mithril_ingot",
+            "value": 1
+        }
+    ],
+    "hardness": 9,
+    "density": 2.45,
+    "flexibility": 3,
+    "durability": 427,
+    "mining_level": 2,
+    "mining_speed": 5
+}

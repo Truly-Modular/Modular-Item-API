@@ -214,6 +214,9 @@ public class CraftViewRework extends InteractAbleWidget {
         }
         //only previewStack on inventory change?
         // Add the initial GUI to the screen
+        if(children.contains(fallbackCraftingWidget)){
+            removeChild(fallbackCraftingWidget);
+        }
         if (!craftingGuis.isEmpty()) {
             addGui(craftingGuis.get(currentGuiIndex));
         } else {
