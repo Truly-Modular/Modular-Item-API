@@ -4,6 +4,7 @@ import dev.architectury.event.EventResult;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import smartin.miapi.Miapi;
+import smartin.miapi.entity.EntityHelper;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.modules.properties.util.DoubleProperty;
 
@@ -31,7 +32,7 @@ public class LeechingProperty extends DoubleProperty {
         MiapiEvents.LIVING_HURT_AFTER .register((event) -> {
             if (!event.defender.level().isClientSide()) {
                 if (event.damageSource.getEntity() instanceof LivingEntity livingEntity) {
-                    double totalLevel = getForItems(livingEntity.getAllSlots());
+                    double totalLevel = getForItems(EntityHelper.getAllEquipedItems(livingEntity));
                     if (totalLevel > 0) {
                         double healAmount = event.amount * totalLevel / 100;
                         livingEntity.heal((float) healAmount);

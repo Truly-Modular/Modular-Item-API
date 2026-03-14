@@ -6,6 +6,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import smartin.miapi.Miapi;
+import smartin.miapi.entity.EntityHelper;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.LoreProperty;
@@ -39,7 +40,7 @@ public class OnHitDefensiveEffects extends CodecProperty<List<PossibleEffect>> {
         MiapiEvents.LIVING_HURT.register((listener) -> {
             if (listener.damageSource.getEntity() instanceof LivingEntity attacker && !attacker.level().isClientSide()) {
                 LivingEntity defender = listener.defender;
-                PossibleEffect.applyEffects(attacker, defender, defender.getAllSlots(), defender, i -> getData(i).orElse(new ArrayList<>()));
+                PossibleEffect.applyEffects(attacker, defender, EntityHelper.getAllEquipedItems(defender), defender, i -> getData(i).orElse(new ArrayList<>()));
             }
             return EventResult.pass();
         });

@@ -29,6 +29,7 @@ import smartin.miapi.blocks.ModularWorkBenchEntity;
 import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
 import smartin.miapi.craft.CraftAction;
 import smartin.miapi.craft.stat.StatProvidersMap;
+import smartin.miapi.entity.EntityHelper;
 import smartin.miapi.entity.ItemProjectileEntity;
 import smartin.miapi.entity.ProjectileWithBow;
 import smartin.miapi.material.base.Material;
@@ -181,7 +182,7 @@ public class MiapiEvents {
                 }
             }
             if (damageSource.getEntity() instanceof LivingEntity attacker) {
-                attacker.getArmorSlots().forEach(itemStacks::add);
+                EntityHelper.getAllEquipedItems(attacker).forEach(itemStacks::add);
                 itemStacks.add(attacker.getMainHandItem());
             }
             return itemStacks;

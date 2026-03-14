@@ -7,6 +7,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import smartin.miapi.Miapi;
+import smartin.miapi.entity.EntityHelper;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.LoreProperty;
 import smartin.miapi.modules.properties.util.CodecProperty;
@@ -37,7 +38,7 @@ public class OnKillEffects extends CodecProperty<List<PossibleEffect>> {
         EntityEvent.LIVING_DEATH.register(((entity, source) -> {
             if (!entity.level().isClientSide()) {
                 if (source.getEntity() instanceof LivingEntity livingEntity) {
-                    PossibleEffect.applyEffects(livingEntity,livingEntity, livingEntity.getAllSlots(), livingEntity, i -> getData(i).orElse(new ArrayList<>()));
+                    PossibleEffect.applyEffects(livingEntity,livingEntity, EntityHelper.getAllEquipedItems(livingEntity), livingEntity, i -> getData(i).orElse(new ArrayList<>()));
                 }
             }
             return EventResult.pass();

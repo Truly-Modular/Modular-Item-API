@@ -4,6 +4,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import smartin.miapi.Miapi;
+import smartin.miapi.entity.EntityHelper;
 import smartin.miapi.modules.properties.util.DoubleProperty;
 
 /**
@@ -26,7 +27,7 @@ public class ExhaustionProperty extends DoubleProperty {
 
     public static void step(Entity entity){
         if (entity instanceof Player playerEntity && playerEntity.isControlledByLocalInstance()) {
-            double getValue = property.getForItems(playerEntity.getArmorSlots());
+            double getValue = property.getForItems(EntityHelper.getEquipedNonHandItems(playerEntity));
             if (playerEntity.getRandom().nextDouble() < 0.05 && getValue > 0.2) {
                 playerEntity.getFoodData().addExhaustion((float) (getValue / 100.0f));
             }

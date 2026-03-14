@@ -8,6 +8,7 @@ import net.minecraft.world.entity.LightningBolt;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
 import smartin.miapi.Miapi;
+import smartin.miapi.entity.EntityHelper;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.modules.properties.util.DoubleProperty;
 
@@ -33,7 +34,7 @@ public class LightningOnHit extends DoubleProperty {
         property = this;
         MiapiEvents.LIVING_HURT.register((listener) -> {
             if (!listener.defender.level().isClientSide() && listener.damageSource.getEntity() instanceof LivingEntity attacker) {
-                double lightningStrength = getForItems(attacker.getAllSlots());
+                double lightningStrength = getForItems(EntityHelper.getAllEquipedItems(attacker));
                 for (int i = 0; i < lightningStrength; i++) {
                     LightningBolt lightningEntity = EntityType.LIGHTNING_BOLT.create(listener.defender.level());
                     assert lightningEntity != null;

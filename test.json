@@ -1,0 +1,19 @@
+{
+    "trinket_slots": [
+        "belt"
+    ],
+    "attributes": [
+        {
+            "attribute": "miapi:generic.attack_range",
+            "value": "20",
+            "operation": "+",
+            "slot": "trinket"
+        },
+        {
+            "attribute": "minecraft:generic.movement_speed",
+            "value": "20",
+            "operation": "+",
+            "slot": "trinket"
+        }
+    ]
+}

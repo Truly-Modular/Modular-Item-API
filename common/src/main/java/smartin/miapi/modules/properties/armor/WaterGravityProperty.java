@@ -3,6 +3,7 @@ package smartin.miapi.modules.properties.armor;
 import dev.architectury.event.EventResult;
 import net.minecraft.resources.ResourceLocation;
 import smartin.miapi.Miapi;
+import smartin.miapi.entity.EntityHelper;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.modules.properties.util.DoubleProperty;
 
@@ -24,7 +25,7 @@ public class WaterGravityProperty extends DoubleProperty {
         property = this;
         MiapiEvents.PLAYER_TICK_START.register((player -> {
             if (player.isUnderWater() && player.isControlledByLocalInstance()) {
-                double speed = property.getForItems(player.getAllSlots()) / 100;
+                double speed = property.getForItems(EntityHelper.getAllEquipedItems(player)) / 100;
                 if (player.getDeltaMovement().y < speed) {
                     player.push(0, -speed / 20, 0);
                 }

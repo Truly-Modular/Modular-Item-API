@@ -5,6 +5,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import smartin.miapi.Miapi;
+import smartin.miapi.entity.EntityHelper;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.modules.properties.onHit.entity.IllagerBane;
 import smartin.miapi.modules.properties.util.DoubleProperty;
@@ -30,7 +31,7 @@ public class PillagesGuard extends DoubleProperty {
             if (livingHurtEvent.damageSource.getEntity() instanceof LivingEntity living) {
                 if (IllagerBane.isIllagerType(living) && !living.level().isClientSide()) {
                     double level = 1;
-                    for (ItemStack itemStack : livingHurtEvent.defender.getArmorSlots()) {
+                    for (ItemStack itemStack : EntityHelper.getEquipedNonHandItems(livingHurtEvent.defender)) {
                         level -= (1 - valueRemap(getValue(itemStack).orElse(0.0)));
                     }
                     livingHurtEvent.amount *= (float) level;

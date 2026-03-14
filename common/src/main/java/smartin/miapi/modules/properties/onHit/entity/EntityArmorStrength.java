@@ -5,6 +5,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import smartin.miapi.Miapi;
+import smartin.miapi.entity.EntityHelper;
 import smartin.miapi.events.MiapiEvents;
 
 public class EntityArmorStrength extends GenericEntityStrengthProperty {
@@ -19,7 +20,7 @@ public class EntityArmorStrength extends GenericEntityStrengthProperty {
                     double strength =
                             strengthForEntity(
                                     event.attacker.getType().arch$holder(),
-                                    event.defender.getArmorAndBodyArmorSlots());
+                                    EntityHelper.getEquipedNonHandItems(event.defender));
                     event.amount *= (1 - (float) valueRemap(strength));
                 }
                 return EventResult.pass();

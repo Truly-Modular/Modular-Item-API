@@ -10,6 +10,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 import smartin.miapi.Miapi;
+import smartin.miapi.entity.EntityHelper;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.modules.properties.util.DoubleProperty;
 
@@ -37,7 +38,7 @@ public class LuminousLearningProperty extends DoubleProperty {
             if (entity.level() instanceof ServerLevel serverWorld && source.getEntity() instanceof LivingEntity attacker) {
                 int xp = entity.getExperienceReward(serverWorld, source.getEntity());
                 double value = (
-                                       getForItems(attacker.getAllSlots())
+                                       getForItems(EntityHelper.getAllEquipedItems(attacker))
                                ) / 2.5;
                 while (value > 0) {
                     if (Math.random() < value) {
