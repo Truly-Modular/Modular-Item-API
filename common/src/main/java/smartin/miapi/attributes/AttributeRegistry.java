@@ -6,13 +6,18 @@ import dev.architectury.event.events.common.PlayerEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.Holder;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.protocol.game.ClientboundAnimatePacket;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.DamageTypeTags;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageType;
+import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
@@ -21,14 +26,10 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import smartin.miapi.Miapi;
-import smartin.miapi.entity.ArrowStorageFacet;
-import smartin.miapi.entity.ItemProjectileEntity;
-import smartin.miapi.entity.ShieldingArmorFacet;
-import smartin.miapi.entity.StunHealthFacet;
-import smartin.miapi.events.MeleeModularAttackEvents;
+import smartin.miapi.entity.*;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.events.MiapiProjectileEvents;
-import smartin.miapi.mixin.LivingEntityAccessor;
+import smartin.miapi.mixin.entity.LivingEntityAccessor;
 import smartin.miapi.mixin.projectile.AbstractArrowAccessor;
 import smartin.miapi.modules.abilities.key.KeyBindFacet;
 import smartin.miapi.modules.properties.attributes.AttributeUtil;
@@ -52,6 +53,7 @@ public class AttributeRegistry {
     public static Holder<Attribute> MINING_SPEED_HOE;
 
     public static Holder<Attribute> MAGIC_DAMAGE;
+    public static Holder<Attribute> TRUE_DAMAGE;
     public static Holder<Attribute> STUN_DAMAGE;
 
     public static Holder<Attribute> STUN_MAX_HEALTH;
@@ -99,12 +101,16 @@ public class AttributeRegistry {
                 attacher.add(ComboFacet.KEY, comboFacet);
                 ArrowStorageFacet arrowStorageFacet = new ArrowStorageFacet(livingEntity);
                 attacher.add(ArrowStorageFacet.KEY, arrowStorageFacet);
+                HurtTimerFacet hurtFacet = new HurtTimerFacet(livingEntity);
+                attacher.add(HurtTimerFacet.KEY, hurtFacet);
             }
         });
+        registerAttributeAdditionalDamage(Miapi.id("true_damage"), ResourceKey.create(Registries.DAMAGE_TYPE, Miapi.id("true_damage")), TRUE_DAMAGE);
+        registerAttributeAdditionalDamage(Miapi.id("magic_damage"), DamageTypes.MAGIC, MAGIC_DAMAGE);
         MiapiProjectileEvents.MODULAR_PROJECTILE_DATA_TRACKER_SET.register(new MiapiProjectileEvents.ItemProjectileDataTracker() {
             @Override
             public EventResult dataTracker(ItemProjectileEntity projectile, SynchedEntityData nbtCompound) {
-                if (projectile.level() instanceof ServerLevel level) {
+                if (projectile.level() instanceof ServerLevel) {
                     ItemStack projectileStack = projectile.thrownStack;
                     nbtCompound.set(AbstractArrowAccessor.getPerceLevelDataPublic(),
                             (byte) (AttributeUtil.getActualValue(projectileStack, EquipmentSlot.MAINHAND, PROJECTILE_PIERCING.value(), 0.0)
@@ -158,6 +164,14 @@ public class AttributeRegistry {
                     Miapi.LOGGER.warn("facet error", e);
                 }
             }
+            HurtTimerFacet hurtTimerFacet = HurtTimerFacet.KEY.get(entity);
+            if (hurtTimerFacet != null && !entity.level().isClientSide()) {
+                try {
+                    hurtTimerFacet.tick();
+                } catch (RuntimeException e) {
+                    Miapi.LOGGER.warn("facet error", e);
+                }
+            }
             return EventResult.pass();
         });
 
@@ -171,15 +185,6 @@ public class AttributeRegistry {
             }
             return EventResult.pass();
         }));
-        MeleeModularAttackEvents.HURT_ENEMY.register((stack, defender, attacker) -> {
-            if (attacker != null && defender != null && attacker.getAttributes().hasAttribute(MAGIC_DAMAGE)) {
-                double value = attacker.getAttributeValue(MAGIC_DAMAGE);
-                if (value > 0) {
-                    defender.hurt(attacker.damageSources().magic(), (float) value);
-                }
-            }
-            return EventResult.pass();
-        });
         MiapiEvents.LIVING_HURT.register((livingHurtEvent -> {
             if (
                     livingHurtEvent.damageSource != null &&
@@ -290,6 +295,26 @@ public class AttributeRegistry {
                 event.damage = event.damage * (float) (critModifier / 1.5);
             }
             return EventResult.pass();
+        });
+    }
+
+    private static void registerAttributeAdditionalDamage(ResourceLocation id, ResourceKey<DamageType> damageType, Holder<Attribute> holder) {
+        EntityDamageSystem.REGISTRY.register(id, new EntityDamageSystem.AdditionalDamageEffect() {
+            @Override
+            public void apply(LivingEntity defender, DamageSource originalSource, float originalAmount, boolean didDamage) {
+                if (originalSource.getEntity() instanceof LivingEntity attacker) {
+                    double damage = attacker.getAttributeValue(holder);
+                    if (originalSource.getDirectEntity() instanceof ItemProjectileEntity entity) {
+                        damage += AttributeUtil.getActualValue(entity.getProjectileItem(), EquipmentSlot.MAINHAND, holder.value());
+                    }
+                    if (damage > 0) {
+                        defender.hurt(
+                                attacker.damageSources().source(damageType, originalSource.getEntity(), originalSource.getDirectEntity()),
+                                (float) damage
+                        );
+                    }
+                }
+            }
         });
     }
 

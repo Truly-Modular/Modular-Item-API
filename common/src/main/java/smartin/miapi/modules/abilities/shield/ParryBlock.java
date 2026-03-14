@@ -29,7 +29,7 @@ import smartin.miapi.events.ClientEvents;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.mixin.CooldownInstanceAccessor;
-import smartin.miapi.mixin.ItemCooldownsAccessor;
+import smartin.miapi.mixin.entity.ItemCooldownsAccessor;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;

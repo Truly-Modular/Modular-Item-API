@@ -9,7 +9,6 @@ import dev.architectury.event.EventResult;
 import dev.architectury.event.events.client.ClientLifecycleEvent;
 import dev.architectury.event.events.client.ClientPlayerEvent;
 import dev.architectury.event.events.client.ClientReloadShadersEvent;
-import dev.architectury.event.events.client.ClientTickEvent;
 import dev.architectury.impl.NetworkAggregator;
 import dev.architectury.networking.NetworkManager;
 import dev.architectury.platform.Platform;
@@ -51,6 +50,7 @@ import smartin.miapi.editor.EditorCommands;
 import smartin.miapi.editor.LiveDataPackManager;
 import smartin.miapi.effects.CryoStatusEffect;
 import smartin.miapi.entity.ItemProjectileRenderer;
+import smartin.miapi.events.ClientEvents;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.material.MaterialCommand;
 import smartin.miapi.material.MaterialIcons;
@@ -61,6 +61,7 @@ import smartin.miapi.material.palette.MaterialRenderControllers;
 import smartin.miapi.modules.MiapiPermissions;
 import smartin.miapi.modules.abilities.key.ClientKeybinding;
 import smartin.miapi.modules.cache.CacheCommands;
+import smartin.miapi.modules.properties.inventory.screen.ParentHandledScreen;
 import smartin.miapi.modules.properties.render.colorproviders.ColorProvider;
 import smartin.miapi.modules.properties.slot.AllowedSlots;
 import smartin.miapi.network.Networking;
@@ -134,7 +135,7 @@ public class MiapiClient {
         }
         RegistryInventory.MODULAR_ITEMS.addCallback((MiapiClient::registerAnimations));
         //BoomerangClientRendering.setup();
-        ClientTickEvent.CLIENT_PRE.register((instance -> {
+        ClientEvents.CLIENT_TICK.register((instance -> {
             tick.addAndGet(1);
 
             if (MiapiConfig.getClientConfig().other.animatedMaterials) {
@@ -418,6 +419,10 @@ public class MiapiClient {
 
     public static void registerScreenHandler() {
         MenuRegistry.registerScreenFactory(RegistryInventory.craftingScreenHandler, CraftingScreen::new);
+    }
+
+    public static void registerBackPackHandler() {
+        MenuRegistry.registerScreenFactory(RegistryInventory.backpackScreenHandler, ParentHandledScreen::new);
     }
 
     public static void registerEntityRenderer() {

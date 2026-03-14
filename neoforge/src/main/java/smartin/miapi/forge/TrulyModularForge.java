@@ -82,6 +82,7 @@ public class TrulyModularForge {
         //use explicit classpath to prevent accidental class loading
         loadCompat("quark", smartin.miapi.forge.compat.QuarkCompat::setup);
         loadCompat("apotheosis", smartin.miapi.forge.compat.ApotheosisCompat::setup);
+        //loadCompat("minecolonies", smartin.miapi.forge.compat.minecolonies.MineColoniesCompat::setup);
 
 
         LifecycleEvent.SERVER_STARTING.register((instance -> setupAttributes()));

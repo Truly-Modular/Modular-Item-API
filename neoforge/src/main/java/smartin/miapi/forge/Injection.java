@@ -113,12 +113,12 @@ public class Injection {
             return false;
         }
 
-        private static boolean canMine(ItemStack stack, String type) {
+        static boolean canMine(ItemStack stack, String type) {
             var optional = MiningLevelProperty.property.getData(stack);
             return optional.map(stringMiningRuleMap -> stringMiningRuleMap.containsKey(type)).orElse(false);
         }
 
-        private static boolean hasRightClickBehaviour(ItemStack stack, Predicate<? super ItemUseAbility> predicate) {
+        static boolean hasRightClickBehaviour(ItemStack stack, Predicate<? super ItemUseAbility> predicate) {
             //var optional = AbilityMangerProperty.property.getData(stack);
             //return optional.map(itemUseAbilityObjectMap -> itemUseAbilityObjectMap.keySet().stream().anyMatch(predicate)).orElse(false);
             return AbilityProperty.property.getData(stack).map(abilities -> abilities.stream().anyMatch(a -> predicate.test(a.ability))).orElse(false);

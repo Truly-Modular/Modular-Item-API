@@ -68,7 +68,7 @@ import smartin.miapi.item.modular.items.shield.TowerShieldComponent;
 import smartin.miapi.item.modular.items.tools.*;
 import smartin.miapi.loot.*;
 import smartin.miapi.loot.condition.LootTableCondition;
-import smartin.miapi.material.*;
+import smartin.miapi.material.ComponentMaterial;
 import smartin.miapi.material.base.Material;
 import smartin.miapi.material.composite.CompositeMaterial;
 import smartin.miapi.modules.ItemModule;
@@ -90,9 +90,11 @@ import smartin.miapi.modules.edit_options.CreateItemOption.CreateItemOption;
 import smartin.miapi.modules.edit_options.material.MaterialViewer;
 import smartin.miapi.modules.edit_options.skins.SkinOptions;
 import smartin.miapi.modules.properties.compat.better_combat.BetterCombatHelper;
-import smartin.miapi.modules.properties.onHit.*;
-import smartin.miapi.modules.properties.projectile.*;
-import smartin.miapi.modules.properties.render.*;
+import smartin.miapi.modules.properties.inventory.InventoryComponent;
+import smartin.miapi.modules.properties.inventory.screen.DefaultInventoryScreenHandler;
+import smartin.miapi.modules.properties.onHit.NemesisProperty;
+import smartin.miapi.modules.properties.projectile.RapidfireCrossbowProperty;
+import smartin.miapi.modules.properties.render.ItemModelProperty;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.modules.synergies.SynergyManager;
 
@@ -226,16 +228,21 @@ public class RegistryInventory {
     }
 
     public static MenuType<CraftingScreenHandler> craftingScreenHandler;
-    public static MenuType<CraftingScreenHandler> backpackScreenHandler;
+    public static MenuType<DefaultInventoryScreenHandler> backpackScreenHandler;
 
     public static void setup() {
-
         //SCREEN
         register(MENU_TYPE_REGISTRAR, "default_crafting", () ->
                         new MenuType<>(CraftingScreenHandler::new, FeatureFlagSet.of()),
                 scr -> {
                     RegistryInventory.craftingScreenHandler = scr;
                     if (Platform.getEnvironment() == Env.CLIENT) MiapiClient.registerScreenHandler();
+                });
+        register(MENU_TYPE_REGISTRAR, "inventory", () ->
+                        new MenuType<>(DefaultInventoryScreenHandler::new, FeatureFlagSet.of()),
+                scr -> {
+                    RegistryInventory.backpackScreenHandler = scr;
+                    if (Platform.getEnvironment() == Env.CLIENT) MiapiClient.registerBackPackHandler();
                 });
 
         RegistryInventory.LOOT_ITEM_CONDITION_TYPE_REGISTRAR.register(
@@ -265,6 +272,8 @@ public class RegistryInventory {
                 Miapi.id("module_fallback"), () -> ModuleInstance.MODULE_BACKUP);
         RegistryInventory.COMPONENT_TYPE_REGISTRAR.register(
                 Miapi.id("force_visual_only"), () -> ModularItem.IS_VISUAL_ONLY);
+        RegistryInventory.COMPONENT_TYPE_REGISTRAR.register(
+                Miapi.id("inventory"), () -> InventoryComponent.ITEM_INVENTORIES);
 
 
         RegistryInventory.LOOT_ITEM_FUNCTION_TYPE_REGISTRAR.register(

@@ -34,6 +34,7 @@ import smartin.miapi.modules.properties.slot.*;
 import smartin.miapi.modules.properties.tag.ModuleTagLegacyProperty;
 import smartin.miapi.modules.properties.tag.ModuleTagMaterialLegacyProperty;
 import smartin.miapi.modules.properties.tag.ModuleTagProperty;
+import smartin.miapi.modules.properties.trinket.TrinketSlotProperty;
 
 public class PropertyRegistry {
     static void registerProperties() {
@@ -201,5 +202,8 @@ public class PropertyRegistry {
         RegistryInventory.registerMiapi(RegistryInventory.MODULE_PROPERTY_MIAPI_REGISTRY, ComboProperty.KEY, new ComboProperty());
         RegistryInventory.registerMiapi(RegistryInventory.MODULE_PROPERTY_MIAPI_REGISTRY, ComboTimeProperty.KEY, new ComboTimeProperty());
         RegistryInventory.registerMiapi(RegistryInventory.MODULE_PROPERTY_MIAPI_REGISTRY, InertiaProperty.KEY, new InertiaProperty());
+
+        RegistryInventory.registerMiapi(RegistryInventory.MODULE_PROPERTY_MIAPI_REGISTRY, TrinketSlotProperty.KEY, TrinketSlotProperty.property);
+
     }
 }

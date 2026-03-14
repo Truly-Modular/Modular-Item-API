@@ -1,0 +1,22 @@
+{
+    "attributes": [
+        {
+            "attribute": "generic.attack_damage",
+            "value": "12",
+            "operation": "+",
+            "slot": "mainhand"
+        },
+        {
+            "attribute": "miapi:generic.true_damage",
+            "value": "12",
+            "operation": "+",
+            "slot": "mainhand"
+        },
+        {
+            "attribute": "miapi:generic.magic_damage",
+            "value": "12",
+            "operation": "+",
+            "slot": "mainhand"
+        }
+    ]
+}

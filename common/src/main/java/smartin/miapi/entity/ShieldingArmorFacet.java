@@ -12,7 +12,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import smartin.miapi.Miapi;
 import smartin.miapi.attributes.AttributeRegistry;
-import smartin.miapi.mixin.LivingEntityAccessor;
+import smartin.miapi.mixin.entity.LivingEntityAccessor;
 
 
 public class ShieldingArmorFacet implements EntityFacet<CompoundTag> {

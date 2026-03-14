@@ -1,6 +1,5 @@
 package smartin.miapi.modules.properties.attributes;
 
-import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.architectury.event.EventResult;
@@ -100,7 +99,7 @@ public class AttributeSplitProperty extends CodecProperty<Map<AttributeSplitProp
     public AttributeSplitProperty() {
         super(CODEC);
         AttributeUtil.ITEM_ATTRIBUTE_ADJUST.register((attributeContext, itemStack) -> {
-            Map<ResourceLocation, Map<AttributeModifier.Operation, Map<Either<EquipmentSlotGroup, Boolean>, DoubleOperationResolvable>>> map = new HashMap<>(attributeContext.map);
+            Map<ResourceLocation, Map<AttributeModifier.Operation, Map<EquipmentSlotGroupWrapper, DoubleOperationResolvable>>> map = new HashMap<>(attributeContext.map);
             Map<Context, List<SplitContext>> replaceMap = getData(itemStack).orElse(new HashMap<>());
 
             for (Map.Entry<Context, List<SplitContext>> entry : replaceMap.entrySet()) {
@@ -117,22 +116,22 @@ public class AttributeSplitProperty extends CodecProperty<Map<AttributeSplitProp
                     continue;
                 }
 
-                Map<AttributeModifier.Operation, Map<Either<EquipmentSlotGroup, Boolean>, DoubleOperationResolvable>> operationMap = map.get(attributeKey);
-                Map<Either<EquipmentSlotGroup, Boolean>, DoubleOperationResolvable> addValueMap = operationMap.get(AttributeModifier.Operation.ADD_VALUE);
+                Map<AttributeModifier.Operation, Map<EquipmentSlotGroupWrapper, DoubleOperationResolvable>> operationMap = map.get(attributeKey);
+                Map<EquipmentSlotGroupWrapper, DoubleOperationResolvable> addValueMap = operationMap.get(AttributeModifier.Operation.ADD_VALUE);
                 if (addValueMap == null) {
                     continue;
                 }
 
                 double totalValue = addValueMap.entrySet().stream()
-                        .filter(entrySet -> entrySet.getKey().left().isPresent() && entrySet.getKey().left().get().equals(equipmentSlot))
+                        .filter(entrySet -> entrySet.getKey().group().isPresent() && entrySet.getKey().group().get().equals(equipmentSlot))
                         .mapToDouble(entrySet -> entrySet.getValue().getValue())
                         .sum();
 
                 for (SplitContext splitContext : ratios) {
                     EquipmentSlotGroup targetGroup = splitContext.target() == null ? equipmentSlot : splitContext.target();
-                    Either<EquipmentSlotGroup, Boolean> targetKey = Either.left(targetGroup);
+                    EquipmentSlotGroupWrapper equipmentSlotGroupWrapper = new EquipmentSlotGroupWrapper(targetGroup);
 
-                    var resolveAble = addValueMap.get(targetKey);
+                    var resolveAble = addValueMap.get(equipmentSlotGroupWrapper);
                     if (resolveAble != null) {
                         var operation = new DoubleOperationResolvable.IndividualOperation(totalValue * splitContext.percent().getValue() / 100.0, DoubleOperationResolvable.IndividualOperation.Operation.ADD_VALUE.ADD_VALUE);
                         operation.instance = splitContext.moduleInstance;
@@ -144,7 +143,7 @@ public class AttributeSplitProperty extends CodecProperty<Map<AttributeSplitProp
                     } else {
                         resolveAble = new DoubleOperationResolvable(List.of(new DoubleOperationResolvable.IndividualOperation(totalValue * splitContext.percent().getValue() / 100.0,DoubleOperationResolvable.IndividualOperation.Operation.ADD_VALUE)));
                         resolveAble = resolveAble.initialize(splitContext.moduleInstance);
-                        addValueMap.put(targetKey, resolveAble);
+                        addValueMap.put(equipmentSlotGroupWrapper, resolveAble);
                     }
                 }
             }

@@ -21,7 +21,9 @@ public class SpriteSourceListMixin {
     private static ResourceLocation blockAtlas = ResourceLocation.fromNamespaceAndPath("minecraft", "blocks");
 
 
-    @ModifyReturnValue(method = "load(Lnet/minecraft/server/packs/resources/ResourceManager;Lnet/minecraft/resources/ResourceLocation;)Lnet/minecraft/client/renderer/texture/atlas/SpriteSourceList;", at = @At("RETURN"))
+    @ModifyReturnValue(
+            method = "load(Lnet/minecraft/server/packs/resources/ResourceManager;Lnet/minecraft/resources/ResourceLocation;)Lnet/minecraft/client/renderer/texture/atlas/SpriteSourceList;",
+            at = @At("RETURN"))
     private static SpriteSourceList miapi$insertSprites(SpriteSourceList original, ResourceManager resourceManager, ResourceLocation sprite) {
         if (sprite != null && sprite.equals(blockAtlas) && !MiapiConfig.getClientConfig().other.disableFastRender) {
             List<SpriteSource> list = new ArrayList<>(((SpriteSourceListAccessor) original).getSourcesMiapi());

@@ -1,10 +1,8 @@
 package smartin.miapi.modules.properties;
 
-import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import smartin.miapi.Miapi;
 import smartin.miapi.item.modular.StatResolver;
@@ -12,6 +10,7 @@ import smartin.miapi.material.AllowedMaterial;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.attributes.AttributeProperty;
+import smartin.miapi.modules.properties.attributes.EquipmentSlotGroupWrapper;
 import smartin.miapi.modules.properties.util.CodecProperty;
 import smartin.miapi.modules.properties.util.DoubleOperationResolvable;
 import smartin.miapi.modules.properties.util.MergeAble;
@@ -60,7 +59,7 @@ public class ModuleStats extends CodecProperty<Map<String, DoubleOperationResolv
                             data.replaceFirst("attribute\\.", "")
                     );
 
-                    Map<ResourceLocation, Map<AttributeModifier.Operation, Map<Either<EquipmentSlotGroup, Boolean>, DoubleOperationResolvable>>> attributeData = AttributeProperty.property.getData(instance).orElse(Map.of());
+                    Map<ResourceLocation, Map<AttributeModifier.Operation, Map<EquipmentSlotGroupWrapper, DoubleOperationResolvable>>> attributeData = AttributeProperty.property.getData(instance).orElse(Map.of());
                     List<DoubleOperationResolvable.IndividualOperation> operations = new ArrayList<>();
                     attributeData.getOrDefault(id, Map.of()).forEach((operation, innerMap) -> {
                         innerMap.values().forEach(resolvable -> operations.add(
@@ -131,7 +130,7 @@ public class ModuleStats extends CodecProperty<Map<String, DoubleOperationResolv
 
             Map<ResourceLocation,
                     Map<AttributeModifier.Operation,
-                            Map<Either<EquipmentSlotGroup, Boolean>, DoubleOperationResolvable>>> attributeData =
+                            Map<EquipmentSlotGroupWrapper, DoubleOperationResolvable>>> attributeData =
                     AttributeProperty.property.getData(instance).orElse(Map.of());
 
             List<StatResolver.TraceNode> operationTraces = new ArrayList<>();
@@ -190,7 +189,6 @@ public class ModuleStats extends CodecProperty<Map<String, DoubleOperationResolv
 
         if (resolvable != null) {
             double value = resolvable.getValue();
-
 
 
             return new StatResolver.ResolvedDouble(

@@ -107,13 +107,16 @@ public class ArrowStorageFacet implements EntityFacet<CompoundTag> {
 
         for (int i = 0; i < list.size(); i++) {
             CompoundTag tag = list.getCompound(i);
-
-            ItemStack stack = ItemStack.CODEC.decode(
+            var dataResult = ItemStack.CODEC.decode(
                     RegistryOps.create(NbtOps.INSTANCE, entity.registryAccess()),
-                    tag).getOrThrow().getFirst();
-            int addedTick = tag.getInt("addedTick");
-
-            storedArrows.add(new StoredArrow(stack, addedTick));
+                    tag.get("stack"));
+            if (dataResult.isSuccess()) {
+                ItemStack stack = dataResult.getOrThrow().getFirst();
+                int addedTick = tag.getInt("addedTick");
+                storedArrows.add(new StoredArrow(stack, addedTick));
+            } else {
+                Miapi.LOGGER.error(dataResult.error().get().message());
+            }
         }
     }
 

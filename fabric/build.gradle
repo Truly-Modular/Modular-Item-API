@@ -32,13 +32,7 @@ repositories {
             includeGroup("com.eliotlash.mclib")
         }
     }
-    /*maven {
-        // saps.dev Maven (KubeJS and Rhino)
-        url "https://maven.saps.dev/minecraft"
-        content {
-            includeGroup "dev.latvian.mods"
-        }
-    }*/
+    maven { url 'https://maven.wispforest.io/releases' }
 }
 architectury {
     platformSetupLoomIde()
@@ -113,7 +107,10 @@ dependencies {
     modApi(include("com.redpxnda.nucleus:nucleus-config-fabric:${rootProject.minecraft_version}+${rootProject.nucleus_config_version}"))
     modApi(include("com.redpxnda.nucleus:nucleus-pose-fabric:${rootProject.minecraft_version}+${rootProject.nucleus_pose_version}"))
     modApi(include("com.redpxnda.nucleus:nucleus-facet-fabric:${rootProject.minecraft_version}+${rootProject.nucleus_facet_version}"))
+    modApi(include("com.redpxnda.nucleus:nucleus-trinket-fabric:${rootProject.minecraft_version}+${rootProject.nucleus_trinket_version}"))
     modApi("com.redpxnda.nucleus:nucleus-editor-fabric:${rootProject.minecraft_version}+${rootProject.nucleus_editor_version}")
+
+    modImplementation("io.wispforest:accessories-fabric:1.1.0-beta.7+1.21.1")
 
 
     //modLocalRuntime tasks.getByName("buildWithArsenal").outputs.files

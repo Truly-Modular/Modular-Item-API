@@ -3,9 +3,13 @@ package smartin.miapi.mixin.client;
 
 import net.minecraft.client.Minecraft;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import smartin.miapi.events.ClientEvents;
 
 @Mixin(Minecraft.class)
-public class MinecraftMixin {
+public abstract class MinecraftMixin {
 
 
     /*
@@ -22,4 +26,10 @@ public class MinecraftMixin {
     }
 
      */
+
+    @Inject(method = "Lnet/minecraft/client/Minecraft;runTick(Z)V", at = @At("HEAD"))
+    public void miapi$modelLoad(boolean renderLevel, CallbackInfo ci) {
+        Minecraft minecraft = (Minecraft) (Object) this;
+        ClientEvents.CLIENT_TICK.invoker().register(minecraft);
+    }
 }

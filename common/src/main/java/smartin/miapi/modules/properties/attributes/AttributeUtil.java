@@ -2,7 +2,6 @@ package smartin.miapi.modules.properties.attributes;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
-import com.mojang.datafixers.util.Either;
 import com.redpxnda.nucleus.event.PrioritizedEvent;
 import dev.architectury.event.EventResult;
 import net.minecraft.core.component.DataComponents;
@@ -161,7 +160,7 @@ public class AttributeUtil {
     }
 
     public static class AttributeContext {
-        Map<ResourceLocation, Map<AttributeModifier.Operation, Map<Either<EquipmentSlotGroup, Boolean>, DoubleOperationResolvable>>> map;
+        Map<ResourceLocation, Map<AttributeModifier.Operation, Map<EquipmentSlotGroupWrapper, DoubleOperationResolvable>>> map;
     }
 
 

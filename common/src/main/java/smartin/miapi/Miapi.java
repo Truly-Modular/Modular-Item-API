@@ -2,6 +2,7 @@ package smartin.miapi;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.datafixers.util.Either;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
@@ -13,14 +14,21 @@ import com.redpxnda.nucleus.registry.NucleusNamespaces;
 import dev.architectury.event.events.common.CommandRegistrationEvent;
 import dev.architectury.event.events.common.LifecycleEvent;
 import dev.architectury.event.events.common.PlayerEvent;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.EquipmentSlotGroup;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -59,6 +67,8 @@ import smartin.miapi.modules.cache.CacheCommands;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.conditions.ConditionManager;
 import smartin.miapi.modules.conditions.ModuleCondition;
+import smartin.miapi.modules.properties.attributes.EquipmentSlotGroupWrapper;
+import smartin.miapi.modules.properties.inventory.screen.DefaultInventoryScreenHandler;
 import smartin.miapi.modules.properties.render.baked.ModelData;
 import smartin.miapi.modules.properties.util.ComponentApplyProperty;
 import smartin.miapi.modules.properties.util.DoubleOperationResolvable;
@@ -89,8 +99,8 @@ public class Miapi {
     public static final Logger DEBUG_LOGGER = LoggerFactory.getLogger("miapi debug");
     public static NetworkingImplCommon networkingImplementation;
     public static MinecraftServer server;
-    public static RegistryAccess registryAccess;
-    public static RegistryAccess clientRegistryAccess;
+    public static @Nullable RegistryAccess registryAccess;
+    public static @Nullable RegistryAccess clientRegistryAccess;
     /**
      * idk, sometimes in networking booleans seem to become 0 and 1, default codec cant deal with that,
      * this one can
@@ -143,6 +153,7 @@ public class Miapi {
         CodecBehavior.registerClass(CompoundTag.class, CompoundTag.CODEC);
         CodecBehavior.registerClass(MaterialIcons.SpinSettings.class, MaterialIcons.SpinSettings.CODEC);
         CodecBehavior.registerClass(EquipmentSlotGroup.class, EquipmentSlotGroup.CODEC);
+        CodecBehavior.registerClass(EquipmentSlotGroupWrapper.class, EquipmentSlotGroupWrapper.CODEC);
         CodecBehavior.registerClass(EquipmentSlot.class, EquipmentSlot.CODEC);
         CodecBehavior.registerClass(MaterialSwapLootFunction.class, MaterialSwapLootFunction.CODEC.codec());
         CodecBehavior.registerClass(ModuleSwapLootFunction.class, ModuleSwapLootFunction.CODEC.codec());
@@ -215,6 +226,25 @@ public class Miapi {
             CacheCommands.register(serverCommandSourceCommandDispatcher);
             PoseCommands.register(serverCommandSourceCommandDispatcher);
             EditorCommands.register(serverCommandSourceCommandDispatcher);
+            LiteralArgumentBuilder<CommandSourceStack> runPose = Commands.literal("miapi")
+                    .then(Commands.literal("backpack")
+                            .then(Commands.literal("debug")
+                                    .executes((context -> {
+                                        context.getSource().getPlayer().openMenu(new MenuProvider() {
+                                            @Override
+                                            public Component getDisplayName() {
+                                                return Component.literal("testing");
+                                            }
+
+                                            @Nullable
+                                            @Override
+                                            public AbstractContainerMenu createMenu(int i, Inventory inventory, Player player) {
+                                                return new DefaultInventoryScreenHandler(i, inventory);
+                                            }
+                                        });
+                                        return 1;
+                                    }))));
+            serverCommandSourceCommandDispatcher.register(runPose);
         });
         BlueprintManager.setup();
         LootHelper.setup();

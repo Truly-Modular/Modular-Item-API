@@ -1,7 +1,6 @@
 package smartin.miapi.client.gui.crafting.statdisplay;
 
 import com.google.common.collect.Multimap;
-import com.mojang.datafixers.util.Either;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.Util;
@@ -19,6 +18,7 @@ import net.minecraft.world.item.component.ItemAttributeModifiers;
 import smartin.miapi.Miapi;
 import smartin.miapi.modules.properties.attributes.AttributeProperty;
 import smartin.miapi.modules.properties.attributes.AttributeUtil;
+import smartin.miapi.modules.properties.attributes.EquipmentSlotGroupWrapper;
 import smartin.miapi.modules.properties.util.DoubleOperationResolvable;
 
 import java.text.DecimalFormat;
@@ -144,26 +144,26 @@ public class AttributeSingleDisplay extends SingleStatDisplayDouble {
     }
 
     public DoubleOperationResolvable getResolvable(ItemStack stack) {
-        Optional<Map<ResourceLocation, Map<AttributeModifier.Operation, Map<Either<EquipmentSlotGroup, Boolean>, DoubleOperationResolvable>>>> optional =
+        Optional<Map<ResourceLocation, Map<AttributeModifier.Operation, Map<EquipmentSlotGroupWrapper, DoubleOperationResolvable>>>> optional =
                 AttributeProperty.property.getData(stack);
 
         if (optional.isPresent()) {
-            Map<ResourceLocation, Map<AttributeModifier.Operation, Map<Either<EquipmentSlotGroup, Boolean>, DoubleOperationResolvable>>> attributeMap = optional.get();
+            Map<ResourceLocation, Map<AttributeModifier.Operation, Map<EquipmentSlotGroupWrapper, DoubleOperationResolvable>>> attributeMap = optional.get();
 
             ResourceLocation attributeKey = BuiltInRegistries.ATTRIBUTE.getKey(attribute);
             if (attributeKey != null) {
-                Map<AttributeModifier.Operation, Map<Either<EquipmentSlotGroup, Boolean>, DoubleOperationResolvable>> operationMap =
+                Map<AttributeModifier.Operation, Map<EquipmentSlotGroupWrapper, DoubleOperationResolvable>> operationMap =
                         attributeMap.get(attributeKey);
 
                 if (operationMap != null) {
-                    Map<Either<EquipmentSlotGroup, Boolean>, DoubleOperationResolvable> resolvableMap = operationMap.get(operation);
+                    Map<EquipmentSlotGroupWrapper, DoubleOperationResolvable> resolvableMap = operationMap.get(operation);
 
                     if (resolvableMap != null) {
-                        for (Map.Entry<Either<EquipmentSlotGroup, Boolean>, DoubleOperationResolvable> entry : resolvableMap.entrySet()) {
-                            Either<EquipmentSlotGroup, Boolean> either = entry.getKey();
+                        for (Map.Entry<EquipmentSlotGroupWrapper, DoubleOperationResolvable> entry : resolvableMap.entrySet()) {
+                            EquipmentSlotGroupWrapper either = entry.getKey();
 
-                            if (either.left().isPresent()) {
-                                EquipmentSlotGroup group = either.left().get();
+                            if (either.group().isPresent()) {
+                                EquipmentSlotGroup group = either.group().get();
                                 if (this.slot == null || group.test(this.slot)) {
                                     return entry.getValue();
                                 }

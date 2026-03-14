@@ -1,6 +1,5 @@
 package smartin.miapi.modules.properties.attributes;
 
-import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.redpxnda.nucleus.codec.auto.AutoCodec;
 import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
@@ -26,14 +25,14 @@ import java.util.*;
 import java.util.function.Supplier;
 
 public class AttributeProperty extends
-        CodecProperty<Map<ResourceLocation, Map<AttributeModifier.Operation, Map<Either<EquipmentSlotGroup, Boolean>, DoubleOperationResolvable>>>>
-        implements ComponentApplyProperty, SourceSetter<Map<ResourceLocation, Map<AttributeModifier.Operation, Map<Either<EquipmentSlotGroup, Boolean>, DoubleOperationResolvable>>>> {
+        CodecProperty<Map<ResourceLocation, Map<AttributeModifier.Operation, Map<EquipmentSlotGroupWrapper, DoubleOperationResolvable>>>>
+        implements ComponentApplyProperty, SourceSetter<Map<ResourceLocation, Map<AttributeModifier.Operation, Map<EquipmentSlotGroupWrapper, DoubleOperationResolvable>>>> {
     public static final ResourceLocation KEY = Miapi.id("attributes");
     public static AttributeProperty property;
     public static final Map<String, Supplier<Attribute>> replaceMap = new HashMap<>();
     public static final Map<Attribute, Float> priorityMap = new HashMap<>();
     public static Codec<List<AttributeJson>> OLD_CODEC = Codec.list(AutoCodec.of(AttributeJson.class).codec());
-    public static Codec<Map<ResourceLocation, Map<AttributeModifier.Operation, Map<Either<EquipmentSlotGroup, Boolean>, DoubleOperationResolvable>>>> NEW_CODEC =
+    public static Codec<Map<ResourceLocation, Map<AttributeModifier.Operation, Map<EquipmentSlotGroupWrapper, DoubleOperationResolvable>>>> NEW_CODEC =
             Codec.unboundedMap(
                     ResourceLocation.CODEC.xmap(id -> {
                         if (replaceMap.containsKey(id.toString())) {
@@ -44,11 +43,11 @@ public class AttributeProperty extends
                     Codec.unboundedMap(
                             AttributeModifier.Operation.CODEC,
                             Codec.unboundedMap(
-                                    Codec.either(EquipmentSlotGroup.CODEC, Codec.STRING.xmap(a -> true, b -> "true")),
+                                    EquipmentSlotGroupWrapper.CODEC,
                                     DoubleOperationResolvable.CODEC)));
-    public static Codec<Map<ResourceLocation, Map<AttributeModifier.Operation, Map<Either<EquipmentSlotGroup, Boolean>, DoubleOperationResolvable>>>> CODEC = Codec.withAlternative(NEW_CODEC,
+    public static Codec<Map<ResourceLocation, Map<AttributeModifier.Operation, Map<EquipmentSlotGroupWrapper, DoubleOperationResolvable>>>> CODEC = Codec.withAlternative(NEW_CODEC,
             OLD_CODEC.xmap(list -> {
-                Map<ResourceLocation, Map<AttributeModifier.Operation, Map<Either<EquipmentSlotGroup, Boolean>, DoubleOperationResolvable>>> map = new LinkedHashMap<>();
+                Map<ResourceLocation, Map<AttributeModifier.Operation, Map<EquipmentSlotGroupWrapper, DoubleOperationResolvable>>> map = new LinkedHashMap<>();
                 list.forEach(attributeJson -> {
                     ResourceLocation id;
                     if (replaceMap.containsKey(attributeJson.attribute)) {
@@ -58,7 +57,7 @@ public class AttributeProperty extends
                     }
                     DoubleOperationResolvable.IndividualOperation.Operation operation = DoubleOperationResolvable.IndividualOperation.getOperation(attributeJson.operation);
                     AttributeModifier.Operation targetOperation = getOperation(attributeJson.targetOperation == null ? "+" : attributeJson.targetOperation);
-                    EquipmentSlotGroup equipmentSlotGroup = attributeJson.slot;
+                    EquipmentSlotGroupWrapper equipmentSlotGroup = attributeJson.slot;
                     DoubleOperationResolvable.IndividualOperation doubleOperation = new DoubleOperationResolvable.IndividualOperation(attributeJson.value);
                     if (targetOperation.equals(AttributeModifier.Operation.ADD_MULTIPLIED_BASE)) {
                         if (operation.equals(DoubleOperationResolvable.IndividualOperation.Operation.ADD_MULTIPLIED_BASE)) {
@@ -74,7 +73,7 @@ public class AttributeProperty extends
 
                     map.computeIfAbsent(id, i -> new LinkedHashMap<>())
                             .computeIfAbsent(targetOperation, t -> new LinkedHashMap<>())
-                            .compute(equipmentSlotGroup != null ? Either.left(equipmentSlotGroup) : Either.right(true), (e, resolvable1) -> {
+                            .compute(equipmentSlotGroup, (e, resolvable1) -> {
                                 if (resolvable1 == null) {
                                     return new DoubleOperationResolvable(List.of(doubleOperation));
                                 }
@@ -156,14 +155,16 @@ public class AttributeProperty extends
                     AttributeModifier.Operation operation = opEntry.getKey();
 
                     for (var slotEntry : opEntry.getValue().entrySet()) {
-                        Either<EquipmentSlotGroup, Boolean> slot = slotEntry.getKey();
+                        EquipmentSlotGroupWrapper slot = slotEntry.getKey();
                         DoubleOperationResolvable expression = slotEntry.getValue();
 
                         // Determine effective slot
                         EquipmentSlotGroup slotGroup = EquipmentSlotProperty.getSlot(itemStack);
-                        if (slot.left().isPresent()) slotGroup = slot.left().get();
-                        if (slotGroup == null) slotGroup = EquipmentSlotGroup.ANY;
-                        resolvableMap.merge(slotGroup, expression, (a, b) -> DoubleOperationResolvable.merge(a, b, MergeType.SMART));
+                        if (slot.group().isPresent()) {
+                            resolvableMap.merge(slot.group.get(), expression, (a, b) -> DoubleOperationResolvable.merge(a, b, MergeType.SMART));
+                        } else if (slot.raw().equals("slot")) {
+                            resolvableMap.merge(EquipmentSlotProperty.getSlot(itemStack), expression, (a, b) -> DoubleOperationResolvable.merge(a, b, MergeType.SMART));
+                        }
                     }
                     resolvableMap.forEach((group, op) -> {
                         ResourceLocation slotId = AttributeUtil.getIDForSlot(group, attribute, operation);
@@ -187,6 +188,7 @@ public class AttributeProperty extends
         AttributeUtil.ItemVanillaAttributeContext context = new AttributeUtil.ItemVanillaAttributeContext();
         context.list = finalList;
         AttributeUtil.VANILLA_ITEM_ATTRIBUTE_ADJUST.invoker().adjust(context, itemStack);
+        context.list.sort(Comparator.comparingDouble(e -> priorityMap.getOrDefault(e.attribute().value(), 0.0f)));
 
         itemStack.set(DataComponents.ATTRIBUTE_MODIFIERS, new ItemAttributeModifiers(context.list, true));
     }
@@ -201,9 +203,9 @@ public class AttributeProperty extends
     }
 
     @Override
-    public Map<ResourceLocation, Map<AttributeModifier.Operation, Map<Either<EquipmentSlotGroup, Boolean>, DoubleOperationResolvable>>> merge(
-            Map<ResourceLocation, Map<AttributeModifier.Operation, Map<Either<EquipmentSlotGroup, Boolean>, DoubleOperationResolvable>>> left,
-            Map<ResourceLocation, Map<AttributeModifier.Operation, Map<Either<EquipmentSlotGroup, Boolean>, DoubleOperationResolvable>>> right,
+    public Map<ResourceLocation, Map<AttributeModifier.Operation, Map<EquipmentSlotGroupWrapper, DoubleOperationResolvable>>> merge(
+            Map<ResourceLocation, Map<AttributeModifier.Operation, Map<EquipmentSlotGroupWrapper, DoubleOperationResolvable>>> left,
+            Map<ResourceLocation, Map<AttributeModifier.Operation, Map<EquipmentSlotGroupWrapper, DoubleOperationResolvable>>> right,
             MergeType mergeType) {
         return MergeAble.mergeMap(left, right, mergeType, (id, leftMap, rightMap) -> {
             return MergeAble.mergeMap(leftMap, rightMap, mergeType, (operation, leftOperationMap, rightOperationMap) -> {
@@ -214,8 +216,8 @@ public class AttributeProperty extends
         });
     }
 
-    public Map<ResourceLocation, Map<AttributeModifier.Operation, Map<Either<EquipmentSlotGroup, Boolean>, DoubleOperationResolvable>>> initialize(Map<ResourceLocation, Map<AttributeModifier.Operation, Map<Either<EquipmentSlotGroup, Boolean>, DoubleOperationResolvable>>> map, ModuleInstance moduleInstance) {
-        Map<ResourceLocation, Map<AttributeModifier.Operation, Map<Either<EquipmentSlotGroup, Boolean>, DoubleOperationResolvable>>> init = new LinkedHashMap<>();
+    public Map<ResourceLocation, Map<AttributeModifier.Operation, Map<EquipmentSlotGroupWrapper, DoubleOperationResolvable>>> initialize(Map<ResourceLocation, Map<AttributeModifier.Operation, Map<EquipmentSlotGroupWrapper, DoubleOperationResolvable>>> map, ModuleInstance moduleInstance) {
+        Map<ResourceLocation, Map<AttributeModifier.Operation, Map<EquipmentSlotGroupWrapper, DoubleOperationResolvable>>> init = new LinkedHashMap<>();
         map.forEach((id, attributeOpMap) -> {
             attributeOpMap.forEach((op, groupMap) -> {
                 groupMap.forEach((slot, resolveAble) -> {
@@ -233,9 +235,9 @@ public class AttributeProperty extends
     }
 
     @Override
-    public Map<ResourceLocation, Map<AttributeModifier.Operation, Map<Either<EquipmentSlotGroup, Boolean>, DoubleOperationResolvable>>> setSource(
-            Map<ResourceLocation, Map<AttributeModifier.Operation, Map<Either<EquipmentSlotGroup, Boolean>, DoubleOperationResolvable>>> map, Component source) {
-        Map<ResourceLocation, Map<AttributeModifier.Operation, Map<Either<EquipmentSlotGroup, Boolean>, DoubleOperationResolvable>>> init = new LinkedHashMap<>();
+    public Map<ResourceLocation, Map<AttributeModifier.Operation, Map<EquipmentSlotGroupWrapper, DoubleOperationResolvable>>> setSource(
+            Map<ResourceLocation, Map<AttributeModifier.Operation, Map<EquipmentSlotGroupWrapper, DoubleOperationResolvable>>> map, Component source) {
+        Map<ResourceLocation, Map<AttributeModifier.Operation, Map<EquipmentSlotGroupWrapper, DoubleOperationResolvable>>> init = new LinkedHashMap<>();
         map.forEach((id, attributeOpMap) -> {
             attributeOpMap.forEach((op, groupMap) -> {
                 groupMap.forEach((slot, resolveAble) -> {
@@ -261,7 +263,7 @@ public class AttributeProperty extends
         public String value;
         public String operation;
         @CodecBehavior.Optional
-        public EquipmentSlotGroup slot = null;
+        public EquipmentSlotGroupWrapper slot = new EquipmentSlotGroupWrapper("slot");
         @CodecBehavior.Optional
         @AutoCodec.Name("target_operation")
         public String targetOperation;

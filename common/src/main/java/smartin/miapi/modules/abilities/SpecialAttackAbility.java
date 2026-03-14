@@ -17,7 +17,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.EntityHitResult;
-import smartin.miapi.mixin.LivingEntityAccessor;
+import smartin.miapi.mixin.entity.LivingEntityAccessor;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.abilities.util.*;
 import smartin.miapi.modules.properties.LoreProperty;

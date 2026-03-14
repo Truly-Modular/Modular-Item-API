@@ -1,5 +1,6 @@
 package smartin.miapi.entity;
 
+import com.redpxnda.nucleus.codec.auto.AutoCodec;
 import com.redpxnda.nucleus.facet.FacetKey;
 import com.redpxnda.nucleus.facet.FacetRegistry;
 import com.redpxnda.nucleus.facet.entity.EntityFacet;
@@ -14,13 +15,15 @@ import net.minecraft.world.entity.LivingEntity;
 import smartin.miapi.Miapi;
 import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.config.MiapiConfig;
-import smartin.miapi.mixin.LivingEntityAccessor;
+import smartin.miapi.mixin.entity.LivingEntityAccessor;
 import smartin.miapi.registries.RegistryInventory;
 
 
 public class StunHealthFacet implements EntityFacet<CompoundTag> {
     private final LivingEntity livingEntity;
     private float currentAmount = 20;
+    @AutoCodec.Ignored
+    private float lastSynced = 0;
     public static final ResourceLocation facetIdentifier = Miapi.id("stun_current_health");
     public static FacetKey<StunHealthFacet> KEY = FacetRegistry.register(facetIdentifier, StunHealthFacet.class);
 
@@ -51,7 +54,10 @@ public class StunHealthFacet implements EntityFacet<CompoundTag> {
         if (livingEntity.tickCount % 5 == 4) {
             currentAmount = Math.min(getCurrentStunHealth() + 2.0f, getMaxAmount());
             if (livingEntity instanceof ServerPlayer serverPlayerEntity && serverPlayerEntity.connection != null) {
-                this.sendToClient(serverPlayerEntity);
+                if (lastSynced != currentAmount) {
+                    lastSynced = currentAmount;
+                    this.sendToClient(serverPlayerEntity);
+                }
             }
         }
     }

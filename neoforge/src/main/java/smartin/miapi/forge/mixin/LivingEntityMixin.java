@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.events.MiapiEvents;
-import smartin.miapi.mixin.LivingEntityAccessor;
+import smartin.miapi.mixin.entity.LivingEntityAccessor;
 
 @Mixin(LivingEntity.class)
 public class LivingEntityMixin {
