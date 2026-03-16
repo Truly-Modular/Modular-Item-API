@@ -12,7 +12,6 @@
     "enchantability": 22,
     "toughness": 0,
     "tier": 3,
-    "axe_damage": -2,
     "color": "FFD700",
     "color_palette": {
         "type": "grayscale_map",

@@ -1,5 +1,8 @@
 {
-    "icon": "textures/item/heart_of_the_sea.png",
+    "icon": {
+        "type": "item",
+        "item": "minecraft:conduit"
+    },
     "enchantability": 30,
     "color_palette": {
         "type": "grayscale_map",

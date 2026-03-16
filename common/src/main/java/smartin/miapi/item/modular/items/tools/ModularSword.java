@@ -100,12 +100,12 @@ public class ModularSword extends SwordItem implements PlatformModularItemMethod
 
     @Override
     public int getBarWidth(ItemStack stack) {
-        return Math.round(13.0F - stack.getDamageValue() * 13.0F / stack.getMaxDamage());
+        return Math.max(0, Math.round(13.0F - stack.getDamageValue() * 13.0F / stack.getMaxDamage()));
     }
 
     @Override
     public int getBarColor(ItemStack stack) {
-        float f = Math.max(0.0F, ((float) ModularItem.getDurability(stack) - stack.getDamageValue()) / ModularItem.getDurability(stack));
+        float f = Math.max(0.0F, ((float) ModularItem.getDurability(stack) - stack.getDamageValue()) / stack.getMaxDamage());
         return Mth.hsvToRgb(f / 3.0F, 1.0F, 1.0F);
     }
 

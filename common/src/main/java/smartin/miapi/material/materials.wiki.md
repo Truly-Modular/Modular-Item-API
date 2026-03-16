@@ -110,8 +110,18 @@ This mask between two other Color Palettes via a Texture. Example:
 }
 ```
 
-
-
-# Component Materials
-TODO: they might get reworked.
-TODO: decide and document them
+## Stats
+Materials also can set any number of stats.
+Any other key used that doesnt hold a more special place like properties converts to a stat.
+By default the api uses the following common ones:
+ - hardness used for sword damage
+ - density used to offset axe from sword damage and other heavy attack weapons
+ - flexibility used to scale bows and other light weapons
+ - toughness used to scale armor toughness and similar stats
+ - durability base durability of tools
+Uncommon ones, used for more internal behaviour
+ - enchantability sets how good the enchantments are, check the minecraft wiki for more info on how this behaves
+ - armor_durability used to more accuratly set armor durability. is a base value multiplied later. check other materials for references
+ - armor_toughness directly overwrites armor toughness value
+ - armor_knockback_ressistance directly overwrites armor knockback ressistance
+ - tier used to set the rough tier of an material, used when late game materials are requested for something
