@@ -31,7 +31,7 @@ public class KeyBindManager {
                 ItemAbilityManager.serverKeyBindID.put(player, id);
             }
         });
-        ReloadEvents.END.subscribe((isClient, registryAccess) -> {
+        ReloadEvents.END.subscribe((isClient, registryAccess, worker) -> {
             if (isClient && MiapiConfig.clientConfigObject != null) {
                 MiapiConfig.clientConfigObject.save();
             }

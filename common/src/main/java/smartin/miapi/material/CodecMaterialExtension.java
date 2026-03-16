@@ -7,7 +7,7 @@ import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceLocation;
 import smartin.miapi.Miapi;
-import smartin.miapi.datapack.ReloadHelpers;
+import smartin.miapi.datapack.HierarchicalReloadBuilder;
 import smartin.miapi.registries.JsonOpsBooleanPatched;
 
 /**
@@ -15,7 +15,7 @@ import smartin.miapi.registries.JsonOpsBooleanPatched;
  * It references a "parent" material and merges additional fields into it,
  * producing a new CodecMaterial.
  */
-public class CodecMaterialExtension implements ReloadHelpers.Extension<CodecMaterial> {
+public class CodecMaterialExtension implements HierarchicalReloadBuilder.Extension<CodecMaterial> {
     private final ResourceLocation parent;
     private final CodecMaterial extension;
 

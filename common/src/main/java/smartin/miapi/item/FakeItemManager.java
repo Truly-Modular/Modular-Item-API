@@ -15,7 +15,7 @@ public class FakeItemManager {
     private static final Map<Item, ItemStack> LONG_CACHE = new ConcurrentHashMap<>();
 
     static {
-        ReloadEvents.START.subscribe((isClient, registryAccess) -> {
+        ReloadEvents.START.subscribe((isClient, registryAccess, worker) -> {
             SHORT_CACHE = ThreadLocal.withInitial(HashMap::new);
             LONG_CACHE.clear();
         });

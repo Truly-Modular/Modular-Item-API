@@ -9,7 +9,7 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ExtraCodecs;
 import smartin.miapi.Miapi;
-import smartin.miapi.datapack.ReloadHelpers;
+import smartin.miapi.datapack.ReloadHandlerBuilder;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.item.modular.PropertyResolver;
 import smartin.miapi.item.modular.StatResolver;
@@ -80,12 +80,9 @@ public record Upgrade(
     }
 
     public static void setup() {
-        ReloadHelpers.registerReloadHandler(
-                "miapi/upgrade",
-                UPGRADE_MIAPI_REGISTRY,
-                CODEC,
-                0.0f
-        );
+        ReloadHandlerBuilder.builder("miapi/upgrade")
+                .clear(UPGRADE_MIAPI_REGISTRY::clear)
+                .codec(CODEC, (isClient, path, data, registryAccess) -> UPGRADE_MIAPI_REGISTRY.register(path, data));
 
         RegistryInventory.EDIT_OPTION_MIAPI_REGISTRY.register(Miapi.id("module_upgrades"), new UpgradeEditOption());
 

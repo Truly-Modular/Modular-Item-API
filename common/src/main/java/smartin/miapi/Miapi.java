@@ -78,7 +78,9 @@ import smartin.miapi.network.NetworkingImplCommon;
 import smartin.miapi.registries.RegistryInventory;
 
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
 
 /**
  * The following docs are used for automatic wiki generation
@@ -184,7 +186,7 @@ public class Miapi {
             registryAccess = minecraftServer.reloadableRegistries().get();
         });
         PlayerEvent.PLAYER_JOIN.register((player -> new Thread(() -> MiapiPermissions.getPerms(player)).start()));
-        ReloadEvents.END.subscribe((isClient, registryAccess) -> {
+        ReloadEvents.END.subscribe((isClient, registryAccess, worker) -> {
             RegistryInventory.ITEM_MODULE_MIAPI_REGISTRY.register(ItemModule.empty.id(), ItemModule.empty);
             RegistryInventory.ITEM_MODULE_MIAPI_REGISTRY.register(ItemModule.internal.id(), ItemModule.internal);
             Miapi.LOGGER.info("Loaded " + RegistryInventory.ITEM_MODULE_MIAPI_REGISTRY.getFlatMap().size() + " Modules");
@@ -250,7 +252,7 @@ public class Miapi {
         LootHelper.setup();
         ReloadEvents.POST.subscribe(new ReloadEvents.EventListener() {
             @Override
-            public void onEvent(boolean isClient, @Nullable RegistryAccess registryAccess) {
+            public void onEvent(boolean isClient, @Nullable RegistryAccess registryAccess, Consumer<CompletableFuture<?>> worker) {
                 if (Miapi.server != null) {
                     Miapi.server.getPlayerList().getPlayers().forEach(p -> {
                         p.getInventory().setChanged();

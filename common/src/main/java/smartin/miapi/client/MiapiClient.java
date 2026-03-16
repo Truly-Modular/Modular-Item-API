@@ -243,7 +243,7 @@ public class MiapiClient {
             ModularModelPredicateProvider.registerModelOverride(item, Miapi.id("use"), (stack, world, entity, seed) -> entity.isUsingItem() && stack.equals(entity.getUseItem()) ? 1.0F : 0.0F);
             ModularModelPredicateProvider.registerModelOverride(item, Miapi.id("use_ticks"), (stack, world, entity, seed) -> entity.isUsingItem() && stack.equals(entity.getUseItem()) ? entity.getTicksUsingItem() : 0.0f);
         }));
-        ReloadEvents.START.subscribe((isClient, registryAccess) ->
+        ReloadEvents.START.subscribe((isClient, registryAccess, worker) ->
 
         {
             if (isClient) {
@@ -257,7 +257,7 @@ public class MiapiClient {
 
             }
         });
-        ReloadEvents.END.subscribe((isClient, registryAccess) ->
+        ReloadEvents.END.subscribe((isClient, registryAccess, worker) ->
 
         {
             if (isClient) {

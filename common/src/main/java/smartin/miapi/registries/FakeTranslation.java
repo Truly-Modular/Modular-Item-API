@@ -12,7 +12,7 @@ public class FakeTranslation {
     public static Map<String, String> translations = new HashMap<>();
 
     static {
-        ReloadEvents.START.subscribe((isClient, registryAccess) -> {
+        ReloadEvents.START.subscribe((isClient, registryAccess, worker) -> {
             if (isClient) {
                 translations.clear();
             }

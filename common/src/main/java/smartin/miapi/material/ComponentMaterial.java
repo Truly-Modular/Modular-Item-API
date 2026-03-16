@@ -97,7 +97,7 @@ public class ComponentMaterial extends JsonMaterial {
     }
 
     public static void setup() {
-        ReloadEvents.MAIN.subscribe((isClient, registryAccess) -> {
+        ReloadEvents.MAIN.subscribe((isClient, registryAccess, worker) -> {
             JsonObject object = new JsonObject();
             MATERIAL_REGISTRY.register(
                     KEY,

@@ -43,7 +43,7 @@ public class CompositeMaterial extends DelegatingMaterial {
             ).apply(instance, CompositeMaterial::getFromComposites));
 
     static {
-        ReloadEvents.MAIN.subscribe((isClient, registryAccess) -> {
+        ReloadEvents.MAIN.subscribe((isClient, registryAccess, worker) -> {
             MATERIAL_REGISTRY.register(
                     KEY,
                     new CompositeMaterial(new DefaultMaterial(), List.of()));

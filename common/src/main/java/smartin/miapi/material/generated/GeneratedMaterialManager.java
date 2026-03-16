@@ -8,12 +8,12 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
-import net.minecraft.tags.TagManager;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.crafting.Ingredient;
 import smartin.miapi.Miapi;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.datapack.ReloadEvents;
+import smartin.miapi.datapack.sync.StreamCodecSyncer;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.material.MaterialProperty;
 import smartin.miapi.material.base.Material;
@@ -31,7 +31,7 @@ public class GeneratedMaterialManager {
     public static List<GeneratedMaterialFromCopy.GeneratedMaterialCopy> TO_GENERATE = new ArrayList<>();
 
     public static void setup() {
-        ReloadEvents.MAIN.subscribe((isClient, registryAccess) -> {
+        ReloadEvents.MAIN.subscribe((isClient, registryAccess, worker) -> {
             if (!isClient) {
                 onReloadServer(registryAccess);
             } else {
@@ -64,7 +64,7 @@ public class GeneratedMaterialManager {
             }
         }, -1);
         ReloadEvents.DATA_SYNCER_REGISTRY.register(Miapi.id("generated_materials"),
-                new ReloadEvents.SimpleSyncer<>(ByteBufCodecs.fromCodec(Codec.list(GeneratedMaterial.CODEC))) {
+                new StreamCodecSyncer<>(ByteBufCodecs.fromCodec(Codec.list(GeneratedMaterial.CODEC))) {
                     @Override
                     public List<GeneratedMaterial> getDataServer() {
                         return generatedMaterials;
@@ -87,7 +87,7 @@ public class GeneratedMaterialManager {
                     }
                 });
         ReloadEvents.DATA_SYNCER_REGISTRY.register(Miapi.id("generated_simple_materials"),
-                new ReloadEvents.SimpleSyncer<>(ByteBufCodecs.fromCodec(Codec.list(GeneratedMaterialFromCopy.CODEC))) {
+                new StreamCodecSyncer<>(ByteBufCodecs.fromCodec(Codec.list(GeneratedMaterialFromCopy.CODEC))) {
                     @Override
                     public List<GeneratedMaterialFromCopy.GeneratedMaterialCopy> getDataServer() {
                         return basicGeneratedMaterials.stream().map(a -> new GeneratedMaterialFromCopy.GeneratedMaterialCopy(a.mainIngredient, a.source.getID())).toList();
@@ -105,7 +105,6 @@ public class GeneratedMaterialManager {
 
     public static Registry<Item> getRegistry() {
         if (Miapi.registryAccess == null) {
-            TagManager m;
             return BuiltInRegistries.ITEM;
         }
         return Miapi.registryAccess.registry(Registries.ITEM).get();

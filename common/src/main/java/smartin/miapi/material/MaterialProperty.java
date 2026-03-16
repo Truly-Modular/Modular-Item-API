@@ -72,7 +72,7 @@ public class MaterialProperty extends CodecProperty<ResourceLocation> {
                 return "";
             }
         });
-        ReloadEvents.END.subscribe((isClient, registryAccess) -> {
+        ReloadEvents.END.subscribe((isClient, registryAccess, worker) -> {
             if (isClient) {
                 Minecraft.getInstance().execute(() -> {
                     RenderSystem.assertOnRenderThread();
@@ -81,7 +81,7 @@ public class MaterialProperty extends CodecProperty<ResourceLocation> {
 
             }
         }, 1);
-        ReloadEvents.END.subscribe(((isClient, registryAccess) -> {
+        ReloadEvents.END.subscribe(((isClient, registryAccess, worker) -> {
             HolderSet.Named<Item> named = BuiltInRegistries.ITEM.getOrCreateTag(RegistryInventory.MIAPI_MATERIALS);
             if (named instanceof NamedAccessor namedAccessor) {
                 MATERIAL_REGISTRY.getFlatMap().forEach((id, material) -> {

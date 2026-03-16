@@ -53,7 +53,7 @@ public class MiapiFabric implements ModInitializer {
 
                 }
             });
-            ReloadEvents.END.subscribe((isClient, registryAccess) -> {
+            ReloadEvents.END.subscribe((isClient, registryAccess, worker) -> {
                 List<KeyMapping> mappings = new ArrayList<>(Arrays.stream(Minecraft.getInstance().options.keyMappings).toList());
                 MiapiClient.KEY_BINDINGS.getFlatMap().forEach((id, key) -> {
                     if (!mappings.contains(key)) {

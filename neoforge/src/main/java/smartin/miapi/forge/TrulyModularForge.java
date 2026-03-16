@@ -86,7 +86,7 @@ public class TrulyModularForge {
 
 
         LifecycleEvent.SERVER_STARTING.register((instance -> setupAttributes()));
-        ReloadEvents.START.subscribe((isClient, access) -> setupAttributes());
+        ReloadEvents.START.subscribe((isClient, access, worker) -> setupAttributes());
         //TODO: why no worky
         if (Platform.getEnv() == Dist.CLIENT) {
             //KEY_BINDINGS.addCallback((KeyBindingRegistryImpl::registerKeyBinding));

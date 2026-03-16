@@ -6,8 +6,7 @@ import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
 import smartin.miapi.client.gui.crafting.crafter.replace.CraftOption;
-import smartin.miapi.datapack.ReloadEvents;
-import smartin.miapi.datapack.ReloadHelpers;
+import smartin.miapi.datapack.ReloadHandlerBuilder;
 import smartin.miapi.material.AllowedMaterial;
 import smartin.miapi.registries.JsonOpsBooleanPatched;
 import smartin.miapi.registries.MiapiRegistry;
@@ -19,20 +18,19 @@ public class BlueprintManager {
     public static ResourceLocation ID = Miapi.id("reloaded_blueprint");
 
     public static void setup() {
-        ReloadHelpers.registerReloadHandler(
-                "miapi/blueprint",
-                () -> RELOADED_BLUEPRINTS.clear(),
-                (id, blueprint) -> {
+        ReloadHandlerBuilder.builder("miapi/blueprint")
+                .clear(RELOADED_BLUEPRINTS::clear)
+                .priority(5)
+                .codec(BlueprintComponent.CODEC, (isClient, path, blueprint, registryAccess) -> {
                     if (blueprint.ingredient.left().isPresent() && blueprint.ingredient.left().get()) {
                         Miapi.LOGGER.warn("Datapack Blueprints cannot set the Ingredient to True!, either use false ur a Ingredient with count");
                     } else {
-                        RELOADED_BLUEPRINTS.register(id, blueprint);
+                        RELOADED_BLUEPRINTS.register(path, blueprint);
                     }
-                },
-                BlueprintComponent.CODEC,
-                5.0f
-        );
-        ReloadEvents.END.subscribe((isClient, registryAccess) -> Miapi.LOGGER.info("Loaded " + RELOADED_BLUEPRINTS.getFlatMap().size() + " Blueprints"));
+                })
+                .afterLoop(((isClient, registryAccess, worker) -> {
+                    Miapi.LOGGER.info("Loaded " + RELOADED_BLUEPRINTS.getFlatMap().size() + " Blueprints");
+                }));
     }
 
     public static CraftOption asCraftOption(CraftingScreenHandler screenHandler, ResourceLocation location, BlueprintComponent blueprint) {

@@ -62,7 +62,7 @@ public class SynergyManager {
             return oldMap;
         });
 
-        ReloadEvents.END.subscribe((isClient, registryAccess) -> {
+        ReloadEvents.END.subscribe((isClient, registryAccess, worker) -> {
             int totalSynergies = moduleSynergies.values().stream()
                                          .mapToInt(List::size)
                                          .sum() + materialSynergies.values().stream()

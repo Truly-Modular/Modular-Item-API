@@ -16,6 +16,8 @@ import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Environment;
 import smartin.miapi.Miapi;
+import smartin.miapi.datapack.sync.DataSyncer;
+import smartin.miapi.datapack.sync.StreamCodecSyncer;
 import smartin.miapi.modules.cache.CacheCommands;
 import smartin.miapi.network.Networking;
 import smartin.miapi.registries.MiapiRegistry;
@@ -23,6 +25,8 @@ import smartin.miapi.registries.MiapiRegistry;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 
 /**
  * A utility class that handles event-based reloading of data packs and caches.
@@ -123,7 +127,7 @@ public class ReloadEvents {
         Codec<Map<ResourceLocation, String>> codec = Codec.unboundedMap(ResourceLocation.CODEC, Miapi.CHUNKED_STRING_CODEC);
         StreamCodec<ByteBuf, Map<ResourceLocation, String>> streamCodec = ByteBufCodecs.fromCodecTrusted(codec);
 
-        DATA_SYNCER_REGISTRY.register(Miapi.id("data_packs"), new SimpleSyncer<Map<ResourceLocation, String>>(streamCodec) {
+        DATA_SYNCER_REGISTRY.register(Miapi.id("data_packs"), new StreamCodecSyncer<Map<ResourceLocation, String>>(streamCodec) {
             @Override
             public Map<ResourceLocation, String> getDataServer() {
                 Map<ResourceLocation, String> toSend;
@@ -149,10 +153,10 @@ public class ReloadEvents {
         PlayerEvent.PLAYER_JOIN.register((ReloadEvents::triggerReloadOnClient));
 
 
-        START.subscribe((isClient, registryAccess) -> {
+        START.subscribe((isClient, registryAccess, worker) -> {
             reloadCounter++;
         });
-        END.subscribe((isClient, registryAccess) -> {
+        END.subscribe((isClient, registryAccess, worker) -> {
             reloadCounter--;
         });
 
@@ -310,72 +314,11 @@ public class ReloadEvents {
          * Called when a reload event occurs.
          *
          * @param isClient a boolean indicating whether the reload event occurred on the client side (true) or the server side (false)
+         * @param worker
          */
-        void onEvent(boolean isClient, @Nullable RegistryAccess registryAccess);
+        void onEvent(boolean isClient, @Nullable RegistryAccess registryAccess, Consumer<CompletableFuture<?>> worker);
     }
 
-
-    /**
-     * A class for handling reload events. Instances of this class represent specific stages of the reload process, and
-     * can be subscribed to using the {@link #subscribe(EventListener)} and {@link #subscribe(EventListener, float)} methods.
-     * When a reload event is fired using the {@link #fireEvent(boolean, RegistryAccess)} method, the registered listeners will be called in
-     * order of their priority (with lower-priority listeners being called first).
-     */
-    public static class ReloadEvent {
-        private final Map<EventListener, Float> mainListeners = new HashMap<>();
-
-        /**
-         * Subscribes the given listener to this reload event, with the given priority. Listeners with lower priorities will
-         * be called first when this event is fired.
-         *
-         * @param listener the listener to subscribe
-         * @param priority the priority of the listener
-         */
-        public void subscribe(EventListener listener, float priority) {
-            mainListeners.put(listener, priority);
-        }
-
-        /**
-         * Subscribes the given listener to this reload event, with a default priority of 0. Listeners with lower priorities
-         * will be called first when this event is fired.
-         *
-         * @param listener the listener to subscribe
-         */
-        public void subscribe(EventListener listener) {
-            subscribe(listener, 0);
-        }
-
-        /**
-         * Unsubscribes the given listener from this reload event.
-         *
-         * @param listener the listener to unsubscribe
-         */
-        public void unsubscribe(EventListener listener) {
-            mainListeners.remove(listener);
-        }
-
-        /**
-         * Fires this reload event, calling all registered listeners in order of their priority (with lower-priority
-         * listeners being called first). The {@code isClient} parameter indicates whether the event is occurring on the
-         * client side (true) or the server side (false).
-         *
-         * @param isClient a boolean indicating whether the event is occurring on the client side (true) or the server side (false)
-         */
-        public void fireEvent(boolean isClient, @Nullable RegistryAccess registryAccess) {
-            try {
-                mainListeners.entrySet().stream()
-                        .sorted(Map.Entry.comparingByValue()).forEach(eventListenerFloatEntry -> {
-                            try {
-                                eventListenerFloatEntry.getKey().onEvent(isClient, registryAccess);
-                            } catch (RuntimeException e) {
-                                Miapi.LOGGER.error("Exception during reload", e);
-                            }
-                        });
-            } catch (RuntimeException e) {
-                Miapi.LOGGER.error("Exception during Reload!", e);
-            }
-        }
-    }
 
     /**
      * The DataPackLoader class is responsible for loading and managing datapacks.
@@ -434,49 +377,4 @@ public class ReloadEvents {
         }
     }
 
-    /**
-     * This interface can be used to sync custom data from server to client within Truly Modular reload logic to ensure the sync happens at a predictable time
-     */
-    public interface DataSyncer<T> {
-        /**
-         * This will be called when truly modular syncs its data to the client
-         *
-         * @return the PacketBuffer to be synced
-         */
-        FriendlyByteBuf createDataServer();
-
-        /**
-         * Be aware that this will trigger between the
-         * {@link ReloadEvents#START} and {@link ReloadEvents#MAIN}
-         * This should be used to set up data and not process the data.
-         * For processing the data {@link ReloadEvents#MAIN} should be used
-         * <p>
-         * !Be aware this is executed on the Networking thread!
-         *
-         * @param buf the buffer received from the server
-         */
-        void interpretDataClient(FriendlyByteBuf buf);
-    }
-
-    public abstract static class SimpleSyncer<T> implements DataSyncer {
-        public StreamCodec<ByteBuf, T> streamCodec;
-
-        public SimpleSyncer(StreamCodec<ByteBuf, T> streamCodec) {
-            this.streamCodec = streamCodec;
-        }
-
-        public abstract T getDataServer();
-
-        public abstract void interpretData(T data);
-
-        public FriendlyByteBuf createDataServer() {
-            FriendlyByteBuf buf = Networking.createBuffer();
-            streamCodec.encode(buf, getDataServer());
-            return buf;
-        }
-
-        public void interpretDataClient(FriendlyByteBuf buf) {
-            interpretData(streamCodec.decode(buf));
-        }
-    }
 }

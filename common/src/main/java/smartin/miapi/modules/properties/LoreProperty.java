@@ -72,7 +72,7 @@ public class LoreProperty extends CodecProperty<List<LoreProperty.Holder>> {
             }
             getHolders(itemStack).stream().filter(h -> h.position.equals("top")).forEach(holder -> tooltip.add(holder.getText()));
         });
-        ReloadEvents.END.subscribe((isClient, registryAccess) -> {
+        ReloadEvents.END.subscribe((isClient, registryAccess, worker) -> {
             try {
                 smithingTemplate.clear();
                 var recipeManager = SmithingRecipeUtil.findManager(isClient);

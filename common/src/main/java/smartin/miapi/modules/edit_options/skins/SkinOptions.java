@@ -42,7 +42,7 @@ public class SkinOptions implements EditOption {
             }
             return oldMap;
         }, List.of(Miapi.id("synergy")));
-        ReloadEvents.END.subscribe(((isClient, registryAccess) -> {
+        ReloadEvents.END.subscribe(((isClient, registryAccess, worker) -> {
             int size = 0;
             for (Map<String, Skin> skinMap : skins.values()) {
                 size += skinMap.size();
