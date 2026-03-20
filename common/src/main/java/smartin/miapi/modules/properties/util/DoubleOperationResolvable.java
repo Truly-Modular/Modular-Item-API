@@ -416,7 +416,7 @@ public class DoubleOperationResolvable implements SourceSetter<DoubleOperationRe
             };
         }
 
-        public static enum Operation implements StringRepresentable {
+        public enum Operation implements StringRepresentable {
             ADD_VALUE("add_value", 0),
             ADD_MULTIPLIED_BASE("add_multiplied_base", 1),
             ADD_MULTIPLIED_TOTAL("add_multiplied_total", 2),

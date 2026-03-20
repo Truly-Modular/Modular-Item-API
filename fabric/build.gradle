@@ -110,7 +110,7 @@ dependencies {
     modApi(include("com.redpxnda.nucleus:nucleus-trinket-fabric:${rootProject.minecraft_version}+${rootProject.nucleus_trinket_version}"))
     modApi("com.redpxnda.nucleus:nucleus-editor-fabric:${rootProject.minecraft_version}+${rootProject.nucleus_editor_version}")
 
-    modImplementation("io.wispforest:accessories-fabric:1.1.0-beta.7+1.21.1")
+    //modImplementation("io.wispforest:accessories-fabric:1.1.0-beta.7+1.21.1")
 
 
     //modLocalRuntime tasks.getByName("buildWithArsenal").outputs.files

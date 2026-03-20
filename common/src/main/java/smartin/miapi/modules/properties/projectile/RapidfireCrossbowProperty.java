@@ -40,7 +40,7 @@ public class RapidfireCrossbowProperty extends DoubleProperty {
     public static RapidfireCrossbowProperty property;
     public static DataComponentType<List<ItemStack>> ADDITIONAL_PROJECTILES_COMPONENT = DataComponentType.<List<ItemStack>>builder()
             .persistent(Codec.list(ItemStack.CODEC))
-            .networkSynchronized(ByteBufCodecs.fromCodec(Codec.list(ItemStack.CODEC)))
+            .networkSynchronized(ByteBufCodecs.fromCodecWithRegistriesTrusted(Codec.list(ItemStack.CODEC)))
             .build();
 
     public RapidfireCrossbowProperty() {

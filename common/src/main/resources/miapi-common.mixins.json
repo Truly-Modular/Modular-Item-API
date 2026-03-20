@@ -6,6 +6,7 @@
     "mixins": [
         "ApoliStackPowerMixin",
         "BufferBuilderAccessor",
+        "CodecBehaviorAccessor",
         "CooldownInstanceAccessor",
         "CraftingResultInventorMixin",
         "DataResultErrorMixin",
@@ -27,7 +28,6 @@
         "enchant.EnchantmentMutableMixin",
         "enchant.ItemEnchantmentsMixin",
         "enchant.MiapiEnchantItemstackMixin",
-        "entity.LivingEntityMixin",
         "entity.EndermanEntityMixin",
         "entity.EnderpearlEntityMixin",
         "entity.EntityMixin",

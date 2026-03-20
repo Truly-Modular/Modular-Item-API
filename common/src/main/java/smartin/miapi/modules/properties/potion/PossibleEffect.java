@@ -120,11 +120,24 @@ public record PossibleEffect(Holder<MobEffect> potion,
         return components;
     }
 
-    public static void applyEffects(LivingEntity target, LivingEntity selfTarget, Iterable<ItemStack> items, LivingEntity causer, Function<ItemStack, List<PossibleEffect>> effectGetter) {
+    public static void applyEffects(
+            LivingEntity target,
+            LivingEntity selfTarget,
+            Iterable<ItemStack> items,
+            LivingEntity causer,
+            Function<ItemStack, List<PossibleEffect>> effectGetter
+    ) {
+        List<PossibleEffect> mergedEffects = new ArrayList<>();
+
         for (ItemStack item : items) {
-            effectGetter.apply(item).forEach(possibleEffect -> {
-                possibleEffect.apply(causer, causer.level().getRandom(), null, target, selfTarget);
-            });
+            List<PossibleEffect> itemEffects = effectGetter.apply(item);
+            mergedEffects = merge(mergedEffects, itemEffects, MergeType.SMART);
+        }
+
+        RandomSource random = causer.level().getRandom();
+
+        for (PossibleEffect effect : mergedEffects) {
+            effect.apply(causer, random, null, target, selfTarget);
         }
     }
 

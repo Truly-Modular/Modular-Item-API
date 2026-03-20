@@ -89,7 +89,7 @@ public class ReloadHandlerBuilder {
     }
 
     public ReloadHandlerBuilder handler(SingleFileHandler handler) {
-        handler(handler, true);
+        handler(handler, false);
         return this;
     }
 

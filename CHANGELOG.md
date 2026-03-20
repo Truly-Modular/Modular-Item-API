@@ -13,6 +13,7 @@
 - fixed crossbows shooting from feet sometimes
 - fixed arrows not critting correctly.
 - bow enchantments not working on modular arrows
+- improved reload logics performance
 ### Changes
 - changed texture recoloring logic to allow for alpha pass through from original
 - improved shift+alt stat display
@@ -34,3 +35,7 @@
   - added throw damage and speed property
   - added arrow retrieval property
   - added new tooltip system to simplify 
+- added curio/accessories support for modular items
+  - support for curio/accessori attributes by using "trinket" as equipmentslot in attribute property
+  - added "trinket_slots" property setting allowed slots for an item
+  - properties that work on armor items work on curio as well

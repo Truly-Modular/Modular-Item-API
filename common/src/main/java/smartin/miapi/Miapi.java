@@ -61,7 +61,6 @@ import smartin.miapi.modules.MiapiPermissions;
 import smartin.miapi.modules.ModuleDataPropertiesManager;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.abilities.key.KeyBindManager;
-import smartin.miapi.modules.abilities.key.MiapiBinding;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;
 import smartin.miapi.modules.cache.CacheCommands;
 import smartin.miapi.modules.cache.ModularItemCache;
@@ -160,9 +159,6 @@ public class Miapi {
         CodecBehavior.registerClass(MaterialSwapLootFunction.class, MaterialSwapLootFunction.CODEC.codec());
         CodecBehavior.registerClass(ModuleSwapLootFunction.class, ModuleSwapLootFunction.CODEC.codec());
         CodecBehavior.registerClass(ModelData.class, ModelData.CODEC);
-        if (Environment.isClient()) {
-            CodecBehavior.registerClass(MiapiBinding.class, MiapiBinding.CODEC);
-        }
 
 
         //ItemStackAccessor.setCODEC(ModuleInstance.registrySavingCodec(ItemStackAccessor.getCODEC(), (i, registryAccess) ->

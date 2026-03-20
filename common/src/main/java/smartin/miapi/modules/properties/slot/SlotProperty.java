@@ -234,8 +234,6 @@ public class SlotProperty extends CodecProperty<Map<String, SlotProperty.ModuleS
         @CodecBehavior.Optional
         public List<String> allowed = new ArrayList<>();
         @CodecBehavior.Optional
-        public List<String> allowedMerge = new ArrayList<>();
-        @CodecBehavior.Optional
         public double priority = 0.0;
         @AutoCodec.Ignored
         public String id;
@@ -318,7 +316,6 @@ public class SlotProperty extends CodecProperty<Map<String, SlotProperty.ModuleS
             }
             copied.allowed = new ArrayList<>(allowed);
             copied.id = id;
-            copied.allowedMerge = new ArrayList<>(allowedMerge);
             copied.priority = priority;
             copied.slotType = slotType;
             copied.transform = transform.copy();
