@@ -159,6 +159,7 @@ public class Miapi {
         CodecBehavior.registerClass(MaterialSwapLootFunction.class, MaterialSwapLootFunction.CODEC.codec());
         CodecBehavior.registerClass(ModuleSwapLootFunction.class, ModuleSwapLootFunction.CODEC.codec());
         CodecBehavior.registerClass(ModelData.class, ModelData.CODEC);
+        //RegistryInventory.LOADABLE_DATAPACK_REGISTRY.register(Miapi.id("extendo"), new DatapackHolder(Component.literal("extendo"), false));
 
 
         //ItemStackAccessor.setCODEC(ModuleInstance.registrySavingCodec(ItemStackAccessor.getCODEC(), (i, registryAccess) ->

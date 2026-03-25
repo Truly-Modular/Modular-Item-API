@@ -6,6 +6,8 @@ import net.fabricmc.api.Environment;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
@@ -147,7 +149,19 @@ public class ModularCrossbow extends CrossbowItem implements PlatformModularItem
             ItemStack converted = ItemIdProperty.changeId(ammo, RegistryInventory.modularArrow);
             Projectile projectile = super.createProjectile(level, shooter, weapon, converted, isCrit);
             if (projectile instanceof ItemProjectileEntity entity) {
-                entity.setPickupItem(ammo);
+                if (ammo.isDamageableItem()) {
+                    ItemStack pickup = ammo.copy();
+                    entity.setPickupItem(pickup);
+                    if (shooter instanceof ServerPlayer serverPlayer && shooter.level() instanceof ServerLevel serverLevel) {
+                        pickup.hurtAndBreak(1, serverLevel, serverPlayer, (i -> {
+                            entity.setPickupItem(new ItemStack(i));
+                        }));
+                    } else {
+                        pickup.hurtAndBreak(1, shooter, EquipmentSlot.MAINHAND);
+                    }
+                } else {
+                    entity.setPickupItem(ammo);
+                }
             }
             ((ProjectileWithBow) projectile).setBowItem(weapon);
             return projectile;

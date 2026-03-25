@@ -15,13 +15,14 @@ import static smartin.miapi.client.model.module.dynamic.ChainCollisionUtil.colli
 public class VerletIntegrator {
 
     public static void runVerlet(Level level, float delta, ChainSimulationState sim, Vector3f gravity, int passes, boolean ui, Vec3 camPos) {
+        // constraint passes
         VerletIntegrator.solveInitVelocity(sim, delta, gravity, ui);
 
-        // constraint passes
         for (int i = 0; i < passes; i++) {
-            boolean stable = VerletIntegrator.integrate(sim, level, ui);
+            boolean stable = VerletIntegrator.integrate(sim, level,false, ui);
             if (stable) break;
         }
+        //VerletIntegrator.integrate(sim, level,true, ui);
     }
 
     private static void solveInitVelocity(
@@ -53,6 +54,7 @@ public class VerletIntegrator {
     private static boolean integrate(
             ChainSimulationState s,
             Level level,
+            boolean fixSolve,
             boolean ui
     ) {
         s.nodes[0].pos.set(s.handlePos);
@@ -72,16 +74,22 @@ public class VerletIntegrator {
 
             float diff = (dist - seg.restLength) / dist;
             delta.mul(diff);
-
-            if (na.locked && !nb.locked) {
-                nb.pos.sub(delta);
-            } else if (!na.locked && nb.locked) {
-                na.pos.add(delta);
-            } else if (!na.locked) {
-                delta.mul(0.5f);
-                na.pos.add(delta);
-                nb.pos.sub(delta);
+            if (fixSolve) {
+                if (!nb.locked) {
+                    nb.pos.sub(delta);
+                }
+            } else {
+                if (na.locked && !nb.locked) {
+                    nb.pos.sub(delta);
+                } else if (!na.locked && nb.locked) {
+                    na.pos.add(delta);
+                } else if (!na.locked) {
+                    delta.mul(0.5f);
+                    na.pos.add(delta);
+                    nb.pos.sub(delta);
+                }
             }
+
 
             // --- collision ---
             if (!ui) {
@@ -92,7 +100,7 @@ public class VerletIntegrator {
                     nb.hadCollision |= collideNodeWithWorld(level, nb.pos, seg.radius);
             }
         }
-        return notWorked;
+        return notWorked || true;
     }
 
     public static void computeSegmentRotations(

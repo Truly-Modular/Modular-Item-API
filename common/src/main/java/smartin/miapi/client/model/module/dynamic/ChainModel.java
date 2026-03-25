@@ -62,8 +62,6 @@ public class ChainModel extends DynamicModel<ChainModel.ChainState> {
 
             int nodeCount = chain.size() + 1;
             sim.nodes = new ChainNode[nodeCount];
-
-            // World-space anchor
             Vector3f localOrigin = new Vector3f(0, 0, 0);
             Vector3f worldOrigin = MatrixHelper.translateVectorToWorldSpace(context.matrices(), localOrigin, cameraPos);
 
@@ -71,8 +69,6 @@ public class ChainModel extends DynamicModel<ChainModel.ChainState> {
                 sim.nodes[i] = new ChainNode();
                 sim.nodes[i].pos.set(worldOrigin);
             }
-
-            // Anchor node
             sim.nodes[0].locked = true;
 
             Vector3f cursor = new Vector3f(worldOrigin);
@@ -86,8 +82,6 @@ public class ChainModel extends DynamicModel<ChainModel.ChainState> {
                 next.gravity = e.gravity;
 
                 float dir = (i % 2 == 0) ? 1f : -1f;
-
-                // ---- WORLD SPACE LENGTH DERIVATION ----
                 Vector3f localOffset = new Vector3f(0, e.length * dir, 0);
                 Vector3f worldOffset =
                         MatrixHelper.translateVectorToWorldSpace(context.matrices(), localOffset, cameraPos)
@@ -96,8 +90,6 @@ public class ChainModel extends DynamicModel<ChainModel.ChainState> {
                 cursor.add(worldOffset);
                 next.pos.set(cursor);
             }
-
-            // Create segments with WORLD lengths
             sim.segments = new ChainSegment[chain.size()];
             for (int i = 0; i < chain.size(); i++) {
                 ChainEntry e = chain.get(i);
@@ -127,7 +119,6 @@ public class ChainModel extends DynamicModel<ChainModel.ChainState> {
     ) {
         Vector3f currentPos = MatrixHelper.translatePositionToWorldSpace(pose, new Vector3f(0, 0, 0), state.cameraPose);
         ChainSimulationState sim = state.sim;
-        // handle stays at origin in local model space
         sim.prevHandlePos.set(sim.handlePos);
         sim.handlePos.set(currentPos.x, currentPos.y, currentPos.z);
 
@@ -170,12 +161,8 @@ public class ChainModel extends DynamicModel<ChainModel.ChainState> {
     protected Matrix4f computeEnd(ChainState state, PoseStack poseStack) {
 
         int count = state.sim.nodes.length;
-
-        // World-space end
         Vector3f endWorld =
                 new Vector3f(state.sim.nodes[count - 1].pos);
-
-        // Convert to local/model space
         Vector3f endLocal =
                 MatrixHelper.translatePositionToLocalSpace(
                         poseStack, endWorld, state.cameraPose
@@ -187,11 +174,6 @@ public class ChainModel extends DynamicModel<ChainModel.ChainState> {
                 .translation(endLocal);
 
     }
-
-
-
-
-    /* ---------------- RENDER ---------------- */
 
     @Override
     public void render(
@@ -233,12 +215,10 @@ public class ChainModel extends DynamicModel<ChainModel.ChainState> {
 
         float dot = from.dot(to);
 
-        // Nearly identical
         if (dot > 0.9999f) {
             return new Quaternionf();
         }
 
-        // Opposite direction (rare but important)
         if (dot < -0.9999f) {
             Vector3f axis = new Vector3f(0, 1, 0).cross(from);
             if (axis.lengthSquared() < 1e-6f) {
@@ -261,19 +241,18 @@ public class ChainModel extends DynamicModel<ChainModel.ChainState> {
             ChainState state
     ) {
         context.matrices().pushPose();
-
-        // Initial direction
         Vector3f p0 = state.sim.nodes[0].pos;
         Vector3f p1 = state.sim.nodes[1].pos;
 
         Vector3f prevDir = new Vector3f(p1).sub(p0).normalize();
 
-        // Initial orientation (model forward = +Z)
-        Quaternionf orientation = new Quaternionf()
-                .rotateTo(new Vector3f(0, 0, 1), prevDir);
+        Vector3f prevUp = new Vector3f(0, 1, 0);
+
+        if (Math.abs(prevDir.dot(prevUp)) > 0.999f) {
+            prevUp.set(1, 0, 0);
+        }
 
         for (int i = 0; i < chain.size(); i++) {
-
             Vector3f a = state.sim.nodes[i].pos;
             Vector3f b = state.sim.nodes[i + 1].pos;
 
@@ -281,9 +260,21 @@ public class ChainModel extends DynamicModel<ChainModel.ChainState> {
             if (dir.lengthSquared() < 1e-6f) continue;
             dir.normalize();
 
-            // Minimal rotation from previous direction
-            Quaternionf delta = rotationBetween(prevDir, dir);
-            orientation.mul(delta);
+            Vector3f right = new Vector3f(dir).cross(prevUp);
+
+            if (right.lengthSquared() < 1e-6f) {
+                Vector3f temp = Math.abs(dir.y) > 0.999f
+                        ? new Vector3f(1, 0, 0)
+                        : new Vector3f(0, 1, 0);
+
+                right = new Vector3f(dir).cross(temp);
+            }
+
+            right.normalize();
+
+            Vector3f up = new Vector3f(dir).cross(right).normalize();
+
+            Quaternionf orientation = fromBasis(right, up, dir);
 
             context.matrices().pushPose();
             renderSegment(
@@ -295,13 +286,21 @@ public class ChainModel extends DynamicModel<ChainModel.ChainState> {
                     state.cameraPose
             );
             context.matrices().popPose();
-
+            prevUp.set(up);
             prevDir.set(dir);
         }
 
         context.matrices().popPose();
     }
 
+    private Quaternionf fromBasis(Vector3f right, Vector3f up, Vector3f forward) {
+        Matrix3f m = new Matrix3f(
+                right.x, up.x, forward.x,
+                right.y, up.y, forward.y,
+                right.z, up.z, forward.z
+        );
+        return new Quaternionf().setFromNormalized(m);
+    }
 
 
     private void renderSegment(

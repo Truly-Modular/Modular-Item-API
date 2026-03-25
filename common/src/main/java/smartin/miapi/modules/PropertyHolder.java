@@ -108,6 +108,7 @@ public class PropertyHolder {
     }
 
     public Map<ModuleProperty<?>, Object> applyHolder(Map<ModuleProperty<?>, Object> oldMap, Optional<Component> component) {
+        //Map<ModuleProperty<?>, Object> oldMap = new HashMap<>(oldMap2);
         remove.forEach(oldMap::remove);
         PropertyResolver.setSource(merge, component).forEach((key, value) -> {
             if (oldMap.containsKey(key)) {

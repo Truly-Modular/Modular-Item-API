@@ -78,6 +78,7 @@
         "client.FeatureRendererAccessor",
         "client.GuiMixin",
         "client.GuiSpritesManagerMixin",
+        "client.InGameHudMixin",
         "client.ItemRendererAccessor",
         "client.ItemRendererMixin",
         "client.KeyMappingAccessor",

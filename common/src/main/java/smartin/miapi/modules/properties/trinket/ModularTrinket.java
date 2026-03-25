@@ -20,7 +20,7 @@ public class ModularTrinket implements Trinket {
         Multimap<Holder<Attribute>, AttributeModifier> finishedMap = ArrayListMultimap.create();
         AttributeProperty.property.getData(stack).ifPresent(resourceLocationMapMap -> {
             resourceLocationMapMap.forEach((attributeID, map) -> {
-                Attribute attribute = AttributeProperty.property.findAttribute(attributeID);
+                Attribute attribute = AttributeProperty.findAttribute(attributeID);
                 Holder<Attribute> attributeHolder = BuiltInRegistries.ATTRIBUTE.wrapAsHolder(attribute);
                 map.forEach((op, a) -> {
                     a.forEach((group, resolveable) -> {

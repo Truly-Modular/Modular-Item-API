@@ -9,5 +9,9 @@ import java.util.Map;
 
 public class StackStorageComponent {
     public static Codec<Map<String, ItemStack>> CODEC = Codec.unboundedMap(Codec.STRING, ItemStack.CODEC);
-    public static DataComponentType<Map<String, ItemStack>> STACK_STORAGE_COMPONENT = DataComponentType .<Map<String, ItemStack>>builder().persistent(CODEC).networkSynchronized(ByteBufCodecs.fromCodec(CODEC)).build();
+    public static DataComponentType<Map<String, ItemStack>> STACK_STORAGE_COMPONENT =
+            DataComponentType .<Map<String, ItemStack>>builder()
+                    .persistent(CODEC)
+                    .networkSynchronized(ByteBufCodecs.fromCodecWithRegistriesTrusted(CODEC))
+                    .build();
 }

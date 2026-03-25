@@ -33,6 +33,10 @@ import java.util.function.Consumer;
  */
 public class ReloadEvents {
     /**
+     * Mod IDs to scan for internal datapacks
+     */
+    public static final List<String> MOD_IDS_TO_SCAN = new ArrayList<>(List.of("miapi","tm_arsenal","tm_archery","tm_armory"));
+    /**
      * This is to register DataSyncer. This can be used by addons to sync their own data from the server to the client.
      * This class will deal with all the default logic to sync the packet
      */

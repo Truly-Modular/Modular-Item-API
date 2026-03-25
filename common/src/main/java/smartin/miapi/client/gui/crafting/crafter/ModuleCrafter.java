@@ -180,11 +180,11 @@ public class ModuleCrafter extends InteractAbleWidget {
     }
 
     public enum Mode {
-        DETAIL,
-        EDIT,
-        REPLACE,
-        CRAFT,
-        MATERIAL,
-        HELP
+        DETAIL,   //default module list
+        EDIT,     //some editOption is opened
+        REPLACE,  //the edit option to replace modules is open
+        CRAFT,    //creating a new mdoule
+        MATERIAL, //material info and debug screen
+        HELP //Help screen
     }
 }

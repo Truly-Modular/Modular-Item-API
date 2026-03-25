@@ -8,6 +8,7 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
+import smartin.miapi.client.MiapiClient;
 import smartin.miapi.client.model.MiapiModel;
 
 import java.util.EnumMap;
@@ -37,7 +38,7 @@ public abstract class DynamicModel<S extends SimulationState>
         S state = getState(context);
 
 
-        double now = Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true) + ((Minecraft.getInstance().player != null) ? Minecraft.getInstance().player.tickCount : 0.0f);
+        double now = MiapiClient.currentTickFull();;
 
         double delta = now - state.lastTime;
         state.lastTime = now;

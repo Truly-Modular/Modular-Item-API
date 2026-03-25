@@ -17,6 +17,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 import smartin.miapi.Miapi;
 import smartin.miapi.modules.properties.attributes.AttributeProperty;
+import smartin.miapi.modules.properties.attributes.AttributeToolTipHelper;
 import smartin.miapi.modules.properties.attributes.AttributeUtil;
 import smartin.miapi.modules.properties.attributes.EquipmentSlotGroupWrapper;
 import smartin.miapi.modules.properties.util.DoubleOperationResolvable;
@@ -71,6 +72,7 @@ public class AttributeSingleDisplay extends SingleStatDisplayDouble {
 
     public double getValueFunction(ItemStack stack) {
         Map<EquipmentSlot, Multimap<Attribute, AttributeModifier>> attributeCache = compareItemCache;
+        List<AttributeProperty.MiapiAttributeModifier> cache = AttributeProperty.buildMiapiModifiers(stack);
         if (stack.equals(original)) {
             attributeCache = oldItemCache;
         }
@@ -85,7 +87,9 @@ public class AttributeSingleDisplay extends SingleStatDisplayDouble {
                             for (AttributeModifier modifier : currentSlot.get(attribute).stream().filter(a -> a.operation().equals(operation)).toList()) {
                                 value += modifier.amount();
                             }
-                            return value;
+                            if (value != 0) {
+                                return value;
+                            }
                         }
                         case ADD_MULTIPLIED_BASE -> {
                             value = 0.0;
@@ -95,15 +99,34 @@ public class AttributeSingleDisplay extends SingleStatDisplayDouble {
                             for (AttributeModifier modifier : currentSlot.get(attribute).stream().filter(a -> a.operation().equals(ADD_MULTIPLIED_TOTAL)).toList()) {
                                 value = (value + 1) * (modifier.amount() + 1) - 1;
                             }
-                            return value * 100;
+                            if (value != 0) {
+                                return value * 100;
+                            }
                         }
                         case ADD_MULTIPLIED_TOTAL -> {
                             value = 1.0;
                             for (AttributeModifier modifier : currentSlot.get(attribute).stream().filter(a -> a.operation().equals(operation)).toList()) {
                                 value = value * modifier.amount();
                             }
-                            return value * 100;
+                            if (value != 0) {
+                                return value * 100;
+                            }
                         }
+                    }
+                }
+            }
+            for (String customSlot : AttributeToolTipHelper.customSlots) {
+                double attributeValue = cache.stream()
+                        .filter(m ->
+                                m.attribute() == this.attribute &&
+                                m.slot().raw().equals(customSlot) &&
+                                m.operation() == this.operation)
+                        .mapToDouble(m -> m.value().getValue()).sum();
+                if (attributeValue != 0) {
+                    if (operation.equals(AttributeModifier.Operation.ADD_VALUE)) {
+                        return attributeValue;
+                    } else {
+                        return attributeValue * 100;
                     }
                 }
             }
@@ -123,14 +146,18 @@ public class AttributeSingleDisplay extends SingleStatDisplayDouble {
 
     public boolean hasAttribute(ItemStack itemStack) {
         return itemStack.getOrDefault(DataComponents.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.EMPTY)
-                .modifiers()
-                .stream()
-                .anyMatch(a ->
-                        a.attribute().value().equals(attribute) &&
-                        a.modifier().amount() != 0 &&
-                        (a.modifier().operation().equals(operation) ||
-                         (operation.equals(ADD_MULTIPLIED_BASE) && a.modifier().operation().equals(ADD_MULTIPLIED_TOTAL)))
-                );
+                       .modifiers()
+                       .stream()
+                       .anyMatch(a ->
+                               a.attribute().value().equals(attribute) &&
+                               a.modifier().amount() != 0 &&
+                               (a.modifier().operation().equals(operation) ||
+                                (operation.equals(ADD_MULTIPLIED_BASE) && a.modifier().operation().equals(ADD_MULTIPLIED_TOTAL)))
+                       ) || AttributeProperty.buildMiapiModifiers(itemStack).stream()
+                       .anyMatch(m ->
+                               m.attribute().equals(attribute) &&
+                               m.operation() == operation &&
+                               m.value().getValue() != 0);
     }
 
     public boolean hasValue(Collection<AttributeModifier> list) {
@@ -165,7 +192,8 @@ public class AttributeSingleDisplay extends SingleStatDisplayDouble {
                             if (either.group().isPresent()) {
                                 EquipmentSlotGroup group = either.group().get();
                                 if (this.slot == null || group.test(this.slot)) {
-                                    return entry.getValue();
+                                    if (entry.getValue().getValue() != 0)
+                                        return entry.getValue();
                                 }
                             }
                         }
@@ -173,8 +201,14 @@ public class AttributeSingleDisplay extends SingleStatDisplayDouble {
                 }
             }
         }
+        var internal = AttributeProperty.buildMiapiModifiers(stack).stream()
+                .filter(m ->
+                        m.attribute().equals(attribute) &&
+                        m.operation().equals(operation) &&
+                        m.value().getValue() != 0
+                ).findFirst();
+        return internal.map(AttributeProperty.MiapiAttributeModifier::value).orElse(null);
 
-        return null;
     }
 
     public static Builder builder(Holder<Attribute> attribute) {

@@ -26,7 +26,7 @@ public class BowSpeedProperty extends BowStatProperty {
             double speed = property.getData(itemStack).map(DoubleOperationResolvable::getValue).orElse(0.0);
             if (speed < 0) {
                 //when positive, every 100% half the divergence
-                return (1.0 - Math.pow(0.5, -speed / 100.0)) * baseValue;
+                return (2.0 - Math.pow(0.5, -speed / 100.0)) * baseValue;
             } else {
                 //when negative, every 100% increase by 1%
                 return (speed * 0.01 + 1) * baseValue;

@@ -26,6 +26,7 @@ import smartin.miapi.item.modular.VisualModularItem;
 import smartin.miapi.material.MaterialProperty;
 import smartin.miapi.material.base.Material;
 import smartin.miapi.material.generated.SmithingRecipeUtil;
+import smartin.miapi.modules.properties.attributes.AttributeToolTipHelper;
 import smartin.miapi.modules.properties.util.CodecProperty;
 import smartin.miapi.modules.properties.util.MergeAble;
 import smartin.miapi.modules.properties.util.MergeType;
@@ -93,6 +94,7 @@ public class LoreProperty extends CodecProperty<List<LoreProperty.Holder>> {
                 Miapi.LOGGER.error("could not setup smithing lore injection", e);
             }
         });
+        AttributeToolTipHelper.addToolTip("projectile");
     }
 
     public List<Holder> getHolders(ItemStack itemStack) {

@@ -1,5 +1,6 @@
 package smartin.miapi.fabric;
 
+import dev.architectury.event.events.common.LifecycleEvent;
 import dev.architectury.platform.Platform;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
@@ -7,25 +8,28 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.item.v1.EnchantmentEvents;
 import net.fabricmc.fabric.api.loot.v3.LootTableEvents;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
+import net.fabricmc.fabric.api.resource.ResourcePackActivationType;
 import net.fabricmc.fabric.api.util.TriState;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.packs.PackType;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunction;
-import smartin.archery.Archery;
 import smartin.miapi.Environment;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.MiapiClient;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.item.modular.ModularItem;
-import smartin.miapi.material.AllowedMaterial;
 import smartin.miapi.mixin.OptionsAccessor;
 import smartin.miapi.mixin.client.KeyMappingAccessor;
 import smartin.miapi.modules.properties.attributes.AttributeProperty;
 import smartin.miapi.modules.properties.enchanment.AllowedEnchantments;
+import smartin.miapi.registries.DatapackHolder;
+import smartin.miapi.registries.RegistryInventory;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.*;
 
 import static smartin.miapi.attributes.AttributeRegistry.SWIM_SPEED;
@@ -34,15 +38,40 @@ public class MiapiFabric implements ModInitializer {
 
     @Override
     public void onInitialize() {
-        Player player;
+        LifecycleEvent.SETUP.register(() -> {
+            ReloadEvents.MOD_IDS_TO_SCAN.forEach(id -> {
+                FabricLoader.getInstance().getModContainer(id).ifPresent(modContainer -> {
+                    modContainer.findPath("resourcepacks").ifPresent(path -> {
+                        try (var datapacks = Files.list(path)) {
+                            datapacks.forEach(dataPath -> {
+                                ResourceManagerHelper.registerBuiltinResourcePack(
+                                        Miapi.id(id, dataPath.getFileName().toString()),
+                                        modContainer,
+                                        DatapackHolder.shouldEnableByDefault(dataPath) ? ResourcePackActivationType.DEFAULT_ENABLED : ResourcePackActivationType.NORMAL
+                                );
+                            });
+                        } catch (IOException ignored) {
+
+                        }
+                    });
+                });
+            });
+            RegistryInventory.LOADABLE_DATAPACK_REGISTRY.addCallback((id, a) -> {
+                FabricLoader.getInstance().getModContainer(id.getNamespace()).ifPresent(modContainer -> {
+                    ResourceManagerHelper.registerBuiltinResourcePack(
+                            id,
+                            modContainer,
+                            ResourcePackActivationType.NORMAL
+                    );
+                });
+            });
+        });
         Miapi.init();
         LootTableEvents.MODIFY.register((key, tableBuilder, source, registries) -> {
             List<LootItemFunction> functions = new ArrayList<>();
             MiapiEvents.DEFAULT_LOOT_FUNCTIONS.invoker().adjust(functions);
             functions.forEach(tableBuilder::apply);
         });
-        Archery archery;
-        AllowedMaterial.AllowedMaterialData data;
         //DATA
         if (Environment.isClient()) {
             MiapiClientFabric.setupClient();

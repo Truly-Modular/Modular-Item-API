@@ -68,6 +68,23 @@ public class AttributeUtil {
         return getActualValue(modifiers, fallback);
     }
 
+    public static double getActualValue(ItemStack stack, String miapiSlot, Attribute entityAttribute, double fallback) {
+        if (entityAttribute == null) {
+            return fallback;
+        }
+        List<AttributeModifier> modifiers = new ArrayList<>();
+        AttributeProperty.buildMiapiModifiers(stack).forEach(m -> {
+            if(m.slot().raw().equals(miapiSlot)){
+                modifiers.add(new AttributeModifier(
+                        Miapi.id("test-attribute"),
+                        m.value().getValue(),
+                        m.operation()
+                ));
+            }
+        });
+        return getActualValue(modifiers, fallback);
+    }
+
     public static double getActualValue(Multimap<Attribute, AttributeModifier> map, Attribute entityAttribute, double fallback) {
         Collection<AttributeModifier> attributes = map.get(entityAttribute);
         return getActualValue(attributes, fallback);
@@ -142,6 +159,17 @@ public class AttributeUtil {
      * @param equipmentSlot
      * @return a unique ID for the slot
      */
+    public static ResourceLocation getIDForSlot(String equipmentSlot, Attribute attribute, AttributeModifier.Operation operation) {
+        String slotidString = equipmentSlot + "-" + attribute.getDescriptionId() + "-" + equipmentSlot + "-0-" + operation.toString();
+        return getIDForSlot(slotidString);
+    }
+
+    /**
+     * Generates a unique id for the slot to prevent collisions
+     *
+     * @param equipmentSlot
+     * @return a unique ID for the slot
+     */
     public static ResourceLocation getIDForSlot(EquipmentSlotGroup equipmentSlot, Attribute attribute, AttributeModifier.Operation operation, String context) {
         String slotidString = equipmentSlot.getSerializedName() + "-" + attribute.getDescriptionId() + "-" + equipmentSlot.name() + "-" + equipmentSlot.ordinal() + "-" + operation.toString() + context;
         return getIDForSlot(slotidString);
@@ -160,7 +188,7 @@ public class AttributeUtil {
     }
 
     public static class AttributeContext {
-        Map<ResourceLocation, Map<AttributeModifier.Operation, Map<EquipmentSlotGroupWrapper, DoubleOperationResolvable>>> map;
+        public Map<ResourceLocation, Map<AttributeModifier.Operation, Map<EquipmentSlotGroupWrapper, DoubleOperationResolvable>>> map;
     }
 
 

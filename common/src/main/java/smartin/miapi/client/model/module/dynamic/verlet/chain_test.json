@@ -1,7 +1,7 @@
 {
     "flail_model": {
         "chainLength": 0.1,
-        "segments": 40,
+        "segments": 30,
         "chainRadius": 0.2,
         "debug": true,
         "transform": {
@@ -30,7 +30,7 @@
                     "color_provider": "parent",
                     "transform": {
                         "rotation": {
-                            "x": 90,
+                            "x": 0,
                             "y": 0,
                             "z": 0
                         },
@@ -54,7 +54,7 @@
                     "path": "miapi:models/item/chain.json",
                     "transform": {
                         "rotation": {
-                            "x": 90,
+                            "x": 0,
                             "y": 90,
                             "z": 0
                         },

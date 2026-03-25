@@ -1,4 +1,5 @@
 {
+    "item.miapi.modifiers.projectile": "As Projectile",
     "tag.block.minecraft.incorrect_for_wooden_tool": "Incorrect for Wooden Tools",
     "tag.block.minecraft.incorrect_for_stone_tool": "Incorrect for Stone Tools",
     "tag.block.minecraft.incorrect_for_gold_tool": "Incorrect for Gold Tools",
@@ -414,7 +415,7 @@
     "miapi.stat.miapi.swim_speed": "Swim Speed",
     "miapi.stat.miapi.swim_speed.description": "How fast you swim in liquids\n0 means you cannot move\n1 is the default swim speed",
     "miapi.stat.miapi.shielding_armor": "Shielding Armor",
-    "miapi.stat.miapi.shielding_armor.description": "Shield that takes damage before your hearts. Regenerates over time.",
+    "miapi.stat.miapi.shielding_armor.description": "Shield that takes physical damage before your hearts.\nRegenerates over time.",
     "miapi.stat.miapi.magic_damage": "Magic Damage",
     "miapi.stat.miapi.magic_damage.description": "Magical damage inflicted by the weapon,\nthat bypasses armor points\nLess effective against targets wearing armor enchanted with Protection",
     "miapi.stat.miapi.dps": "DPS",

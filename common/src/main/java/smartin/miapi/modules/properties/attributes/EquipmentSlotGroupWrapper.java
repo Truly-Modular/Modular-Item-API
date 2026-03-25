@@ -3,10 +3,11 @@ package smartin.miapi.modules.properties.attributes;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.entity.EquipmentSlotGroup;
 
+import java.util.Objects;
 import java.util.Optional;
 
 public class EquipmentSlotGroupWrapper {
@@ -69,5 +70,18 @@ public class EquipmentSlotGroupWrapper {
 
     public boolean isValid() {
         return group.isPresent();
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof EquipmentSlotGroupWrapper that)) return false;
+        return Objects.equals(this.raw, that.raw);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(raw);
     }
 }

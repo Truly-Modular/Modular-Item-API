@@ -18,6 +18,7 @@ import net.minecraft.world.item.component.ItemAttributeModifiers;
 import smartin.miapi.Miapi;
 import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.modules.ModuleInstance;
+import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.armor.EquipmentSlotProperty;
 import smartin.miapi.modules.properties.util.*;
 
@@ -124,10 +125,10 @@ public class AttributeProperty extends
         AttributeProperty.replaceMap.put("forge:entity_reach", Attributes.ENTITY_INTERACTION_RANGE::value);
         AttributeProperty.replaceMap.put("reach-entity-attributes:reach", Attributes.BLOCK_INTERACTION_RANGE::value);
         AttributeProperty.replaceMap.put("reach-entity-attributes:attack_range", Attributes.ENTITY_INTERACTION_RANGE::value);
+        ModularItemCache.setSupplier(KEY + "miapi_attribute_list", AttributeProperty::buildMiapiModifiersCache);
     }
 
-    @Override
-    public void updateComponent(ItemStack itemStack, RegistryAccess registryAccess) {
+    public void updateComponentold(ItemStack itemStack, RegistryAccess registryAccess) {
         var attributes = itemStack.getOrDefault(DataComponents.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.EMPTY);
         Map<ResourceLocation, ItemAttributeModifiers.Entry> mergedEntries = new HashMap<>();
 
@@ -193,8 +194,92 @@ public class AttributeProperty extends
         itemStack.set(DataComponents.ATTRIBUTE_MODIFIERS, new ItemAttributeModifiers(context.list, true));
     }
 
+    @Override
+    public void updateComponent(ItemStack itemStack, RegistryAccess registryAccess) {
+        List<ItemAttributeModifiers.Entry> finalList = new ArrayList<>();
+        buildMiapiModifiers(itemStack).forEach(miapiAttributeModifier -> {
+            miapiAttributeModifier.slot.group().ifPresent(group -> {
+                finalList.add(new ItemAttributeModifiers.Entry(
+                        BuiltInRegistries.ATTRIBUTE.wrapAsHolder(miapiAttributeModifier.attribute),
+                        new AttributeModifier(
+                                miapiAttributeModifier.id,
+                                miapiAttributeModifier.value.getValue(),
+                                miapiAttributeModifier.operation
+                        ),
+                        group
+                ));
+            });
+        });
+        AttributeUtil.ItemVanillaAttributeContext context = new AttributeUtil.ItemVanillaAttributeContext();
+        AttributeUtil.VANILLA_ITEM_ATTRIBUTE_ADJUST.invoker().adjust(context, itemStack);
+        context.list = finalList;
+        context.list.sort(Comparator.comparingDouble(e -> priorityMap.getOrDefault(e.attribute().value(), 0.0f)));
+        itemStack.set(DataComponents.ATTRIBUTE_MODIFIERS, new ItemAttributeModifiers(context.list, true));
+    }
 
-    public Attribute findAttribute(ResourceLocation id) {
+    public static List<MiapiAttributeModifier> buildMiapiModifiers(ItemStack stack) {
+        return ModularItemCache.get(stack,KEY + "miapi_attribute_list",List.of());
+    }
+
+    private static List<MiapiAttributeModifier> buildMiapiModifiersCache(ItemStack stack) {
+        List < MiapiAttributeModifier > result = new ArrayList<>();
+
+        var optional = property.getData(stack);
+        if (optional.isEmpty()) return result;
+
+        var idMap = optional.get();
+
+        AttributeUtil.AttributeContext context = new AttributeUtil.AttributeContext();
+        context.map = idMap;
+        AttributeUtil.ITEM_ATTRIBUTE_ADJUST.invoker().adjust(context, stack);
+        idMap = context.map;
+
+        for (var entry : idMap.entrySet()) {
+            Attribute attribute = findAttribute(entry.getKey());
+            if (attribute == null) continue;
+
+            for (var opEntry : entry.getValue().entrySet()) {
+                AttributeModifier.Operation operation = opEntry.getKey();
+
+                for (var slotEntry : opEntry.getValue().entrySet()) {
+                    EquipmentSlotGroupWrapper slot = slotEntry.getKey();
+                    DoubleOperationResolvable expression = slotEntry.getValue();
+                    if (slot.group().isPresent()) {
+                        result.add(new MiapiAttributeModifier(
+                                AttributeUtil.getIDForSlot(slot.group().get(), attribute, operation),
+                                attribute,
+                                operation,
+                                slot,
+                                expression
+                        ));
+                    } else if ("slot".equals(slot.raw()) && EquipmentSlotProperty.getSlot(stack) != null) {
+                        EquipmentSlotGroup resolved = EquipmentSlotProperty.getSlot(stack);
+
+                        result.add(new MiapiAttributeModifier(
+                                AttributeUtil.getIDForSlot(resolved, attribute, operation),
+                                attribute,
+                                operation,
+                                new EquipmentSlotGroupWrapper(resolved.getSerializedName(), Optional.of(resolved)),
+                                expression
+                        ));
+                    } else {
+                        result.add(new MiapiAttributeModifier(
+                                AttributeUtil.getIDForSlot(slot.raw, attribute, operation),
+                                attribute,
+                                operation,
+                                slot,
+                                expression
+                        ));
+                    }
+                }
+            }
+        }
+        result.sort(Comparator.comparingDouble(e -> priorityMap.getOrDefault(e.attribute(), 0.0f)));
+
+        return result;
+    }
+
+    public static Attribute findAttribute(ResourceLocation id) {
         var replacement = replaceMap.get(id.toString());
         if (replacement != null) {
             return replacement.get();
@@ -267,5 +352,14 @@ public class AttributeProperty extends
         @CodecBehavior.Optional
         @AutoCodec.Name("target_operation")
         public String targetOperation;
+    }
+
+    public record MiapiAttributeModifier(
+            ResourceLocation id,
+            Attribute attribute,
+            AttributeModifier.Operation operation,
+            EquipmentSlotGroupWrapper slot,
+            DoubleOperationResolvable value
+    ) {
     }
 }

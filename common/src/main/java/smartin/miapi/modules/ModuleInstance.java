@@ -229,7 +229,7 @@ public class ModuleInstance {
         getRoot().clearCaches();
     }
 
-    public Map<String, ModuleInstance> getSubModuleMap() {
+    public SequencedMap<String, ModuleInstance> getSubModuleMap() {
         if (!sortedSubmodules) {
             sortSubModule();
             sortedSubmodules = true;
@@ -237,7 +237,7 @@ public class ModuleInstance {
         return new LinkedHashMap<>(subModules);
     }
 
-    protected Map<String, ModuleInstance> getSubModuleMapForSave() {
+    protected SequencedMap<String, ModuleInstance> getSubModuleMapForSave() {
         if (this.parent == null && subModules.isEmpty() && MiapiServerConfig.INSTANCE.other.verboseLogging) {
             Miapi.LOGGER.warn("potential encoding issue!");
         }
@@ -395,7 +395,7 @@ public class ModuleInstance {
 
     public void sortSubModule() {
         SlotProperty.getInstance().getData(this.getModule());
-        Map<String, ModuleInstance> sortedMap = new LinkedHashMap<>();
+        SequencedMap<String, ModuleInstance> sortedMap = new LinkedHashMap<>();
         SlotProperty.asSortedList(SlotProperty.getInstance().getData(this.getModule()).orElse(new LinkedHashMap<>())).forEach(slot -> {
             ModuleInstance moduleInstance = subModules.get(slot.id);
             if (moduleInstance != null) {

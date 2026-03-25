@@ -151,6 +151,9 @@ processResources {
     filesMatching("fabric.mod.json") {
         expand "version": project.version
     }
+    from(project(":common").sourceSets.main.resources) {
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    }
 }
 
 shadowJar {

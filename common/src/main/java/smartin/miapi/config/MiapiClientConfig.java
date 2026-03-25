@@ -9,7 +9,6 @@ import net.minecraft.resources.ResourceLocation;
 import smartin.miapi.client.MiapiClient;
 import smartin.miapi.modules.abilities.key.MiapiBinding;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -182,17 +181,8 @@ public class MiapiClientConfig {
 
     @ConfigAutoCodec.ConfigClassMarker
     public static class ShieldingArmorCategory {
-        @Comment("If the Health bar is used to offset the Armor Shielding Bar")
-        @AutoCodec.Name("respect_health")
-        public boolean respectHealth = true;
-        @Comment("If the Health bar is used to offset the Armor Shielding Bar")
-        @AutoCodec.Name("respect_armor")
-        public boolean respectArmor = true;
         @Comment("the amount of other bars to be offset by")
         @AutoCodec.Name("other_offset")
         public int otherOffsets = 0;
-        @Comment("other attributes that if the player has more than 0 will offset the Armor shielding for every 20")
-        @AutoCodec.Name("other_attributes")
-        public List<ResourceLocation> attributesSingleLine = new ArrayList<>();
     }
 }

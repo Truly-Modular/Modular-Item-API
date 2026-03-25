@@ -22,6 +22,7 @@
   - this includes new tooltips for arrows, bows, crossbows and throwables
   - the old attributes are still implemented and work, but will be fully removed in the future
 - made bow and thrown items enchantments apply damage and post-hit enchantments (this includes sharpness on thrown items).
+- more important modules are in the UI now above less important modules
 ### Additions
 - added trail rendering
   - fully data-driven model type

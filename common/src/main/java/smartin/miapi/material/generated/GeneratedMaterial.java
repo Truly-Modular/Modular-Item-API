@@ -97,9 +97,7 @@ public class GeneratedMaterial implements Material {
                                 .filter(stack -> stack.getItem() instanceof ArmorItem)
                                 .map(itemStack -> (ArmorItem) itemStack.getItem()).toList()
                 );
-                if (smithingKey != null && smithingKey.isPresent()) {
-                    material.setSmithingMaterial(smithingKey.get(), Ingredient.of(smithingItem));
-                }
+                smithingKey.ifPresent(location -> material.setSmithingMaterial(location, Ingredient.of(smithingItem)));
                 armor.ifPresent(aFloat -> material.stats.put("armor_hardness", (double) aFloat));
                 return material;
             }));
@@ -228,9 +226,9 @@ public class GeneratedMaterial implements Material {
         if (GeneratedMaterialManager.verboseLogging()) {
             Miapi.LOGGER.info("other mat for smithing test " + otherMat);
         }
+        this.addSmithingGroup();
         if (otherMat == null || this.equals(otherMat) || otherMat.getID().equals(this.getID())) {
             smithingMode = SmithingMode.INGREDIENT;
-            this.groups = List.of("smithing");
         } else {
             smithingMode = SmithingMode.TEMPLATE;
             if (otherMat != null) {
@@ -249,7 +247,7 @@ public class GeneratedMaterial implements Material {
 
     public void addSmithingGroup() {
         if (!groups.contains("smithing")) {
-            groups = new ArrayList<>(List.of("smithing"));
+            groups = new ArrayList<>(List.of(key.toString(),"smithing"));
         }
     }
 

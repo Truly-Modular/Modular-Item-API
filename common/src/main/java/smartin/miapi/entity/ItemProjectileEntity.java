@@ -14,10 +14,8 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LightningBolt;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.entity.projectile.Projectile;
@@ -34,6 +32,7 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.lwjgl.system.NonnullDefault;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.entity.arrowhitbehaviours.EntityBounceBehaviour;
 import smartin.miapi.entity.arrowhitbehaviours.EntityPierceBehaviour;
@@ -41,6 +40,7 @@ import smartin.miapi.entity.arrowhitbehaviours.ProjectileHitBehaviour;
 import smartin.miapi.events.MiapiProjectileEvents;
 import smartin.miapi.mixin.projectile.AbstractArrowAccessor;
 import smartin.miapi.modules.abilities.util.WrappedSoundEvent;
+import smartin.miapi.modules.properties.attributes.AttributeUtil;
 import smartin.miapi.modules.properties.projectile.AirDragProperty;
 import smartin.miapi.modules.properties.projectile.ChannelingProperty;
 import smartin.miapi.modules.properties.projectile.MakesImpactSoundProperty;
@@ -49,6 +49,7 @@ import smartin.miapi.modules.properties.projectile.stat.projectile.ProjectileDam
 import smartin.miapi.modules.properties.projectile.stat.projectile.ProjectileSpeedProperty;
 import smartin.miapi.registries.RegistryInventory;
 
+@NonnullDefault
 public class ItemProjectileEntity extends AbstractArrow {
     public static final EntityDataAccessor<Byte> LOYALTY = SynchedEntityData.defineId(ItemProjectileEntity.class, EntityDataSerializers.BYTE);
     public static final EntityDataAccessor<Boolean> ENCHANTED = SynchedEntityData.defineId(ItemProjectileEntity.class, EntityDataSerializers.BOOLEAN);
@@ -56,13 +57,19 @@ public class ItemProjectileEntity extends AbstractArrow {
     public static final EntityDataAccessor<ItemStack> THROWING_STACK = SynchedEntityData.defineId(ItemProjectileEntity.class, EntityDataSerializers.ITEM_STACK);
     public static final EntityDataAccessor<ItemStack> PICKUP_STACK = SynchedEntityData.defineId(ItemProjectileEntity.class, EntityDataSerializers.ITEM_STACK);
     public static final EntityDataAccessor<Float> WATER_DRAG = SynchedEntityData.defineId(ItemProjectileEntity.class, EntityDataSerializers.FLOAT);
+    public static final EntityDataAccessor<Float> GRAVITY = SynchedEntityData.defineId(ItemProjectileEntity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Integer> PREFERRED_SLOT = SynchedEntityData.defineId(ItemProjectileEntity.class, EntityDataSerializers.INT);
+    //-1 disable, 0-infinite try that inf slot -2 is offhand
     public ItemStack thrownStack = ItemStack.EMPTY;
     protected boolean dealtDamage;
     public int returnTimer;
     public float waterDrag = 0.99f;
     public WrappedSoundEvent hitEntitySound = new WrappedSoundEvent(this.getDefaultHitGroundSoundEvent(), 1.0f, 1.0f);
     public ProjectileHitBehaviour projectileHitBehaviour = new EntityBounceBehaviour();
+
+    static {
+
+    }
 
     public ItemProjectileEntity(EntityType<? extends Entity> entityType, Level world) {
         super((EntityType<? extends AbstractArrow>) entityType, world);
@@ -81,6 +88,7 @@ public class ItemProjectileEntity extends AbstractArrow {
         this.entityData.set(WATER_DRAG, waterDrag);
         this.entityData.set(SPEED_DAMAGE, true);
         this.entityData.set(PREFERRED_SLOT, -1);
+        this.entityData.set(GRAVITY, 0.05f);
         this.checkDespawn();
         this.setPos(position.x(), position.y(), position.z());
         setup();
@@ -99,7 +107,8 @@ public class ItemProjectileEntity extends AbstractArrow {
         this.entityData.set(PICKUP_STACK, thrownStack);
         this.entityData.set(WATER_DRAG, waterDrag);
         this.entityData.set(SPEED_DAMAGE, true);
-        this.entityData.set(PREFERRED_SLOT, -2);
+        this.entityData.set(PREFERRED_SLOT, -1);
+        this.entityData.set(GRAVITY, 0.05f);
         setup();
         MiapiProjectileEvents.MODULAR_PROJECTILE_DATA_TRACKER_SET.invoker().dataTracker(this, this.getEntityData());
 
@@ -114,6 +123,12 @@ public class ItemProjectileEntity extends AbstractArrow {
             this.setSpeedDamage(true);
         }
         this.setSpeedDamage(true);
+        this.entityData.set(GRAVITY,
+                (float) AttributeUtil.getActualValue(
+                        projectileStack,
+                        "projectile",
+                        Attributes.GRAVITY.value(),
+                        0.05));
     }
 
     private byte getLoyaltyFromItem(ItemStack stack) {
@@ -139,7 +154,8 @@ public class ItemProjectileEntity extends AbstractArrow {
         builder.define(PICKUP_STACK, ItemStack.EMPTY);
         builder.define(WATER_DRAG, 0.99f);
         builder.define(SPEED_DAMAGE, true);
-        builder.define(PREFERRED_SLOT, 0);
+        builder.define(PREFERRED_SLOT, -1);
+        builder.define(GRAVITY, 0.05f);
         MiapiProjectileEvents.MODULAR_PROJECTILE_DATA_TRACKER_INIT.invoker().dataTracker(builder);
     }
 
@@ -205,6 +221,11 @@ public class ItemProjectileEntity extends AbstractArrow {
         if (tickCount == 20 * 15) {
 
         }
+    }
+
+    @Override
+    protected double getDefaultGravity() {
+        return this.getEntityData().get(GRAVITY);
     }
 
     public int inGroundTick() {
@@ -273,7 +294,7 @@ public class ItemProjectileEntity extends AbstractArrow {
                 if (!ItemStack.isSameItemSameComponents(weapon, this.getProjectileItem())) {
                     damage = EnchantmentHelper.modifyDamage(serverLevel, this.getProjectileItem(), defender, damageSource, damage);
                 }
-            }else{
+            } else {
                 damage = EnchantmentHelper.modifyDamage(serverLevel, this.getProjectileItem(), defender, damageSource, damage);
             }
         }
@@ -303,7 +324,7 @@ public class ItemProjectileEntity extends AbstractArrow {
                     if (!ItemStack.isSameItemSameComponents(weapon, this.getProjectileItem())) {
                         EnchantmentHelper.doPostAttackEffectsWithItemSource(serverLevel, defender, event.damageSource, this.getProjectileItem());
                     }
-                }else{
+                } else {
                     EnchantmentHelper.doPostAttackEffectsWithItemSource(serverLevel, defender, event.damageSource, this.getProjectileItem());
                 }
             }
@@ -494,7 +515,7 @@ public class ItemProjectileEntity extends AbstractArrow {
         }
         if (nbt.contains("PickUpItem", 10)) {
             ItemStack pickup = ItemStack.parse(registryAccess(), nbt.getCompound("PickUpItem")).get();
-            this.entityData.set(THROWING_STACK, pickup);
+            this.entityData.set(PICKUP_STACK, pickup);
         } else {
             this.entityData.set(PICKUP_STACK, thrownStack);
         }
@@ -519,9 +540,9 @@ public class ItemProjectileEntity extends AbstractArrow {
         if (!thrownStack.isEmpty()) {
             nbt.put("ThrownItem", this.thrownStack.save(this.registryAccess(), new CompoundTag()));
         }
-        ItemStack pickup = this.entityData.get(THROWING_STACK);
+        ItemStack pickup = this.entityData.get(PICKUP_STACK);
         if (!pickup.isEmpty()) {
-            nbt.put("PickUpItem", this.thrownStack.save(this.registryAccess(), new CompoundTag()));
+            nbt.put("PickUpItem", pickup.save(this.registryAccess(), new CompoundTag()));
         }
         nbt.putBoolean("DealtDamage", this.dealtDamage);
         nbt.putFloat("WaterDrag", this.entityData.get(WATER_DRAG));

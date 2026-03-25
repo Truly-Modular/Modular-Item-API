@@ -100,8 +100,8 @@ public class SlotProperty extends CodecProperty<Map<String, SlotProperty.ModuleS
         return mergedTransform;
     }
 
-    public static Map<String, ModuleSlot> getSlots(ModuleInstance instance) {
-        Map<String, ModuleSlot> slots = new LinkedHashMap<>(getInstance().getData(instance).orElse(new LinkedHashMap<>()));
+    public static SequencedMap<String, ModuleSlot> getSlots(ModuleInstance instance) {
+        SequencedMap<String, ModuleSlot> slots = new LinkedHashMap<>(getInstance().getData(instance).orElse(new LinkedHashMap<>()));
         instance.getSubModuleMap().forEach((id, module) -> {
             if (slots.containsKey(id)) {
                 slots.get(id).parent = instance;

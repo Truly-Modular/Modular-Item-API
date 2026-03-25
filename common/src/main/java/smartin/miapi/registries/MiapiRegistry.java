@@ -5,13 +5,11 @@ import com.mojang.serialization.MapCodec;
 import net.minecraft.resources.ResourceLocation;
 import org.apache.logging.log4j.util.InternalApi;
 import org.jetbrains.annotations.Nullable;
+import oshi.annotation.concurrent.NotThreadSafe;
 import smartin.miapi.Miapi;
 
 import java.util.*;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Supplier;
+import java.util.function.*;
 
 /**
  * A generic registry class that can be used to store and retrieve entries by name.
@@ -138,6 +136,33 @@ public class MiapiRegistry<T> {
     }
 
     /**
+     * Threadsave replacing an existing entry
+     *
+     * @param id       the name of the entry to be registered
+     * @param newEntry the new entry to be registered
+     */
+    public void replace(ResourceLocation id, T newEntry) {
+        entries.compute(id, (i, old) -> newEntry);
+        callbacks.forEach(callback -> callback.accept(newEntry));
+        idCallbacks.forEach(callback -> callback.accept(id, newEntry));
+    }
+
+    /**
+     * Threadsave replacing an existing entry
+     *
+     * @param id                the name of the entry to be registered
+     * @param remappingFunction remapping function, old entry can be null!
+     */
+    public void replace(ResourceLocation id, BiFunction<ResourceLocation, ? super T, ? extends T> remappingFunction) {
+        entries.compute(id, (i,entry)->{
+            T newEntry = remappingFunction.apply(i,entry);
+            callbacks.forEach(callback -> callback.accept(newEntry));
+            idCallbacks.forEach(callback -> callback.accept(id, newEntry));
+            return newEntry;
+        });
+    }
+
+    /**
      * Registers a new entry with the given name and value to this registry. If an entry with the same name already exists, an
      * IllegalArgumentException is thrown. Calls all the callbacks associated with the class type.
      *
@@ -247,9 +272,11 @@ public class MiapiRegistry<T> {
     /**
      * Returns a flat map of all entries in this registry, with the entry names as keys and the entry values as values.
      * this is the registries internal map, so this can be used to edit the entries.
+     * WARNING! calling entry() or similar iterators is not threadsve
      *
      * @return a map of all entries in this registry
      */
+    @NotThreadSafe
     public Map<ResourceLocation, T> getFlatMap() {
         return entries;
     }

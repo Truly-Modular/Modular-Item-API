@@ -29,6 +29,7 @@ import smartin.miapi.modules.properties.FireProof;
 import smartin.miapi.modules.properties.HandheldItemProperty;
 import smartin.miapi.modules.properties.LuminousLearningProperty;
 import smartin.miapi.modules.properties.armor.*;
+import smartin.miapi.modules.properties.attributes.AttributeProperty;
 import smartin.miapi.modules.properties.attributes.AttributeUtil;
 import smartin.miapi.modules.properties.mining.MiningTelekinesisProperty;
 import smartin.miapi.modules.properties.onHit.*;
@@ -233,6 +234,10 @@ public class StatListWidget extends InteractAbleWidget {
                 .builder(Attributes.ARMOR_TOUGHNESS)
                 .setTranslationKey("minecraft.armor_toughness")
                 .setMax(3).build());
+        addStatDisplay(AttributeSingleDisplay
+                .builder(AttributeRegistry.SHIELDING_ARMOR)
+                .setTranslationKey("miapi.shielding_armor")
+                .setMax(4).build());
         addStatDisplay(AttributeSingleDisplay
                 .builder(Attributes.KNOCKBACK_RESISTANCE)
                 .setTranslationKey("minecraft.knockback_resistance")
@@ -503,6 +508,9 @@ public class StatListWidget extends InteractAbleWidget {
             Multimap<Attribute, AttributeModifier> compAttr = AttributeUtil.getAttribute(compareTo, equipmentSlot);
             AttributeSingleDisplay.oldItemCache.put(equipmentSlot, oldAttr);
             AttributeSingleDisplay.compareItemCache.put(equipmentSlot, compAttr);
+            AttributeSingleDisplay.internalAttributeCache = AttributeProperty.buildMiapiModifiers(original);
+            AttributeSingleDisplay.compareInternalAttributeCache = AttributeProperty.buildMiapiModifiers(compareTo);
+
         }
     }
 

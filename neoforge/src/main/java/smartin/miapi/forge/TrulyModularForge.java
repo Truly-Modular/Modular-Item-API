@@ -14,6 +14,16 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.resources.model.ModelResourceLocation;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.PackLocationInfo;
+import net.minecraft.server.packs.PackSelectionConfig;
+import net.minecraft.server.packs.PackType;
+import net.minecraft.server.packs.PathPackResources;
+import net.minecraft.server.packs.repository.BuiltInPackSource;
+import net.minecraft.server.packs.repository.KnownPack;
+import net.minecraft.server.packs.repository.Pack;
+import net.minecraft.server.packs.repository.PackSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
@@ -24,6 +34,8 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.InterModComms;
+import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.ModList;
 import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
@@ -34,10 +46,12 @@ import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.NeoForgeMod;
+import net.neoforged.neoforge.event.AddPackFindersEvent;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeModificationEvent;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import net.neoforged.neoforge.registries.RegisterEvent;
+import net.neoforged.neoforgespi.language.IModInfo;
 import org.apache.commons.lang3.mutable.MutableInt;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
@@ -54,12 +68,18 @@ import smartin.miapi.forge.compat.epic_fight.EpicFightCompat;
 import smartin.miapi.item.modular.VisualModularItem;
 import smartin.miapi.modules.properties.attributes.AttributeProperty;
 import smartin.miapi.modules.properties.render.baked.ModelProperty;
+import smartin.miapi.registries.DatapackHolder;
 import smartin.miapi.registries.RegistryInventory;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.WeakHashMap;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 import static smartin.miapi.Miapi.MOD_ID;
 import static smartin.miapi.events.MiapiEvents.GET_ITEM_SHIELD_COOLDOWN;
@@ -72,9 +92,6 @@ public class TrulyModularForge {
     public TrulyModularForge() {
         NeoForge.EVENT_BUS.register(new ServerEvents());
         Miapi.init();
-
-
-        //RegistryInventory.moduleProperties.register(EpicFightCompatProperty.KEY, new EpicFightCompatProperty())
         loadCompat("epicfight", () -> {
             EpicFightCompat.setup();
         });
@@ -111,7 +128,7 @@ public class TrulyModularForge {
                         cooldown.getValue() == 0 &&
                         attacker instanceof LivingEntity livingAttacker &&
                         (attacking.canDisableShield(shield, defender, livingAttacker) ||
-                        attacking.canDisableShield(Items.SHIELD.getDefaultInstance(), defender, livingAttacker))) {
+                         attacking.canDisableShield(Items.SHIELD.getDefaultInstance(), defender, livingAttacker))) {
                     cooldown.setValue(100);
                 }
             }
@@ -135,6 +152,93 @@ public class TrulyModularForge {
         @SubscribeEvent
         public static void register(RegisterEvent event) {
             event.register(NeoForgeRegistries.GLOBAL_LOOT_MODIFIER_SERIALIZERS.key(), Miapi.id("global_loot_mod"), () -> MiapiGlobalLootModifier.CODEC);
+        }
+
+
+        @SubscribeEvent
+        public static void addPackFinders(AddPackFindersEvent event) {
+            RegistryInventory.LOADABLE_DATAPACK_REGISTRY.getFlatMap().forEach((id, data) -> {
+                if (event.getPackType() == PackType.SERVER_DATA) {
+                    ResourceLocation packLocation = ResourceLocation.fromNamespaceAndPath(id.getNamespace(), "resourcepacks/" + id.getPath());
+                    Optional<? extends ModContainer> info = ModList.get().getModContainerById(packLocation.getNamespace());
+                    if (info.isEmpty()) {
+                        Miapi.LOGGER.error("could not find " + id.getNamespace() + " mod container");
+                        return;
+                    }
+
+                    IModInfo modInfo = info
+                            .orElseThrow(() -> new IllegalArgumentException("Mod not found: " + packLocation.getNamespace())).getModInfo();
+
+                    var resourcePath = modInfo.getOwningFile().getFile().findResource(packLocation.getPath());
+
+                    var version = modInfo.getVersion();
+
+                    var pack = Pack.readMetaAndCreate(
+                            new PackLocationInfo(packLocation.toString(), data.forgeName(), data.defaultEnabled() ? PackSource.DEFAULT : PackSource.FEATURE, Optional.of(new KnownPack("neoforge", "mod/" + packLocation, version.toString()))),
+                            BuiltInPackSource.fromName((path) -> new PathPackResources(path, resourcePath)),
+                            PackType.SERVER_DATA,
+                            new PackSelectionConfig(false, Pack.Position.TOP, false));
+                    if (pack != null) {
+                        event.addRepositorySource((packConsumer) -> packConsumer.accept(pack));
+                    } else {
+                        Miapi.LOGGER.error("could not register internal optional datapack from miapi!");
+                    }
+                }
+            });
+            ReloadEvents.MOD_IDS_TO_SCAN.forEach(targetModId -> {
+                var modOpt = ModList.get().getModContainerById(targetModId);
+
+                if (modOpt.isEmpty()) {
+                    Miapi.LOGGER.warn("Mod {} not found for datapack scan", targetModId);
+                    return;
+                }
+
+                var modInfo = modOpt.get().getModInfo();
+                var modFile = modInfo.getOwningFile().getFile();
+
+                var root = modFile.findResource("resourcepacks");
+
+                if (!Files.exists(root)) return;
+                try (Stream<Path> paths = Files.list(root)) {
+                    paths.forEach(packDir -> {
+                        if (!Files.isDirectory(packDir)) return;
+                        String packName = packDir.getFileName().toString();
+                        ResourceLocation packId = ResourceLocation.fromNamespaceAndPath(targetModId, packName);
+                        var packInfo = new PackLocationInfo(
+                                packId.toString(),
+                                Component.literal(packName),
+                                DatapackHolder.shouldEnableByDefault(packDir) ? PackSource.BUILT_IN : PackSource.FEATURE,
+                                Optional.of(new KnownPack("neoforge", "mod/" + packId, modInfo.getVersion().toString()))
+                        );
+                        var resources = BuiltInPackSource.fromName(path -> new PathPackResources(path, packDir));
+                        if (Files.exists(packDir.resolve("data"))) {
+                            var pack = Pack.readMetaAndCreate(
+                                    packInfo,
+                                    resources,
+                                    PackType.SERVER_DATA,
+                                    new PackSelectionConfig(false, Pack.Position.TOP, false)
+                            );
+
+                            if (pack != null) {
+                                event.addRepositorySource(consumer -> consumer.accept(pack));
+                            }
+                        }
+                        if (Files.exists(packDir.resolve("assets"))) {
+                            var pack = Pack.readMetaAndCreate(
+                                    packInfo,
+                                    resources,
+                                    PackType.CLIENT_RESOURCES,
+                                    new PackSelectionConfig(false, Pack.Position.TOP, false)
+                            );
+                            if (pack != null) {
+                                event.addRepositorySource(consumer -> consumer.accept(pack));
+                            }
+                        }
+                    });
+                } catch (IOException e) {
+                    Miapi.LOGGER.error("Failed scanning resourcepacks for mod {}", targetModId, e);
+                }
+            });
         }
 
         @SubscribeEvent
@@ -213,7 +317,7 @@ public class TrulyModularForge {
                                             null,
                                             packedLight,
                                             packedOverlay
-                                            ));
+                                    ));
                                 }
                                 if (buffer instanceof MultiBufferSource.BufferSource multiBufferSource) {
                                     multiBufferSource.endBatch();

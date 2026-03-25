@@ -12,7 +12,6 @@
     "client": [
         "TextMixin",
         "client.BuiltinModelItemRendererMixin",
-        "client.InGameHudMixin",
         "client.ShaderRegistryNucleusMixin",
         "client.ItemRendererMixin"
     ],

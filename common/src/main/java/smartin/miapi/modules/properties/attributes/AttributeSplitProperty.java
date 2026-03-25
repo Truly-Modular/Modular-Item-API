@@ -99,7 +99,7 @@ public class AttributeSplitProperty extends CodecProperty<Map<AttributeSplitProp
     public AttributeSplitProperty() {
         super(CODEC);
         AttributeUtil.ITEM_ATTRIBUTE_ADJUST.register((attributeContext, itemStack) -> {
-            Map<ResourceLocation, Map<AttributeModifier.Operation, Map<EquipmentSlotGroupWrapper, DoubleOperationResolvable>>> map = new HashMap<>(attributeContext.map);
+            Map<ResourceLocation, Map<AttributeModifier.Operation, Map<EquipmentSlotGroupWrapper, DoubleOperationResolvable>>> map = attributeContext.map;
             Map<Context, List<SplitContext>> replaceMap = getData(itemStack).orElse(new HashMap<>());
 
             for (Map.Entry<Context, List<SplitContext>> entry : replaceMap.entrySet()) {
@@ -131,7 +131,13 @@ public class AttributeSplitProperty extends CodecProperty<Map<AttributeSplitProp
                     EquipmentSlotGroup targetGroup = splitContext.target() == null ? equipmentSlot : splitContext.target();
                     EquipmentSlotGroupWrapper equipmentSlotGroupWrapper = new EquipmentSlotGroupWrapper(targetGroup);
 
-                    var resolveAble = addValueMap.get(equipmentSlotGroupWrapper);
+                    Map<AttributeModifier.Operation, Map<EquipmentSlotGroupWrapper, DoubleOperationResolvable>> operationMapTarget = map.computeIfAbsent(splitContext.entityAttribute,(i)-> new HashMap<>());
+                    Map<EquipmentSlotGroupWrapper, DoubleOperationResolvable> addValueMapTarget = operationMapTarget.computeIfAbsent(AttributeModifier.Operation.ADD_VALUE,(i)-> new HashMap<>());
+                    if (addValueMap == null) {
+                        continue;
+                    }
+
+                    var resolveAble = addValueMapTarget.get(equipmentSlotGroupWrapper);
                     if (resolveAble != null) {
                         var operation = new DoubleOperationResolvable.IndividualOperation(totalValue * splitContext.percent().getValue() / 100.0, DoubleOperationResolvable.IndividualOperation.Operation.ADD_VALUE.ADD_VALUE);
                         operation.instance = splitContext.moduleInstance;
@@ -141,9 +147,12 @@ public class AttributeSplitProperty extends CodecProperty<Map<AttributeSplitProp
                         resolveAble.clearCache();
                         resolveAble.getValue();
                     } else {
-                        resolveAble = new DoubleOperationResolvable(List.of(new DoubleOperationResolvable.IndividualOperation(totalValue * splitContext.percent().getValue() / 100.0,DoubleOperationResolvable.IndividualOperation.Operation.ADD_VALUE)));
+                        resolveAble = new DoubleOperationResolvable(List.of(new DoubleOperationResolvable.IndividualOperation(totalValue * splitContext.percent().getValue() / 100.0, DoubleOperationResolvable.IndividualOperation.Operation.ADD_VALUE)));
                         resolveAble = resolveAble.initialize(splitContext.moduleInstance);
-                        addValueMap.put(equipmentSlotGroupWrapper, resolveAble);
+                        double value = resolveAble.getValue();
+                        if (value != 0) {
+                            addValueMapTarget.put(equipmentSlotGroupWrapper, resolveAble);
+                        }
                     }
                 }
             }
