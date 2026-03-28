@@ -15,6 +15,7 @@ import org.jetbrains.annotations.Nullable;
 import smartin.miapi.material.base.Material;
 import smartin.miapi.material.palette.MaterialRenderController;
 import smartin.miapi.modules.ModuleInstance;
+import smartin.miapi.modules.MutableModuleInstance;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.List;
@@ -61,7 +62,7 @@ public class DelegatingMaterial implements Material {
     }
 
     @Override
-    public void setMaterial(ModuleInstance moduleInstance) {
+    public void setMaterial(MutableModuleInstance moduleInstance) {
         parent.setMaterial(moduleInstance);
     }
 

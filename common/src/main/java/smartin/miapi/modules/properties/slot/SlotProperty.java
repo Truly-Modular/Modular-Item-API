@@ -102,7 +102,7 @@ public class SlotProperty extends CodecProperty<Map<String, SlotProperty.ModuleS
 
     public static SequencedMap<String, ModuleSlot> getSlots(ModuleInstance instance) {
         SequencedMap<String, ModuleSlot> slots = new LinkedHashMap<>(getInstance().getData(instance).orElse(new LinkedHashMap<>()));
-        instance.getSubModuleMap().forEach((id, module) -> {
+        instance.cache().getSubModules().forEach((id, module) -> {
             if (slots.containsKey(id)) {
                 slots.get(id).parent = instance;
                 slots.get(id).inSlot = module;
@@ -119,7 +119,7 @@ public class SlotProperty extends CodecProperty<Map<String, SlotProperty.ModuleS
     public static String getSlotID(ModuleInstance instance) {
         if (instance.getParent() != null) {
             AtomicReference<String> id = new AtomicReference<>("primary");
-            instance.getParent().getSubModuleMap().forEach((number, module) -> {
+            instance.getParent().cache().getSubModules().forEach((number, module) -> {
                 if (instance == module) {
                     id.set(number);
                 }
@@ -191,8 +191,8 @@ public class SlotProperty extends CodecProperty<Map<String, SlotProperty.ModuleS
         if (moduleInstance != null) {
             for (int i = 0; i < slotLocation.size(); i++) {
                 String id = slotLocation.get(slotLocation.size() - i - 1);
-                if (moduleInstance.getSubModule(id) != null) {
-                    moduleInstance = moduleInstance.getSubModule(id);
+                if (moduleInstance.children().get(id) != null) {
+                    moduleInstance = moduleInstance.children().get(id);
                 } else if (slotLocation.size() == i - 1) {
                     return Optional.ofNullable(getSlots(moduleInstance).getOrDefault(id, new ModuleSlot(moduleInstance, null, id)));
                 }
@@ -283,7 +283,7 @@ public class SlotProperty extends CodecProperty<Map<String, SlotProperty.ModuleS
         }
 
         public void initialize(ModuleInstance moduleInstance) {
-            inSlot = moduleInstance.getSubModule(id);
+            inSlot = moduleInstance.children().get(id);
             parent = moduleInstance;
         }
 
@@ -305,7 +305,7 @@ public class SlotProperty extends CodecProperty<Map<String, SlotProperty.ModuleS
                     parsing = parsing.getParent();
                 }
             }
-            return location;
+            return location.reversed();
         }
 
         public ModuleSlot copy(boolean copyModules) {

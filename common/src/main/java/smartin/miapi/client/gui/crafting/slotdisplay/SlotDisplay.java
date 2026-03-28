@@ -131,7 +131,7 @@ public class SlotDisplay extends InteractAbleWidget {
         });
         buttonMap.clear();
         if (baseSlot != null && baseSlot.inSlot != null) {
-            baseSlot.inSlot.allSubModules().forEach(moduleInstances -> {
+            baseSlot.inSlot.cache().getSortedChildren().forEach(moduleInstances -> {
                 SlotProperty.getSlots(moduleInstances).forEach((number, slot) -> {
                     buttonMap.computeIfAbsent(slot, newSlot -> {
                         ModuleButton newButton = new ModuleButton(0, 0, 10, 10, newSlot);

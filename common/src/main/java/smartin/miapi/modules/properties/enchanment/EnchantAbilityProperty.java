@@ -44,7 +44,7 @@ public class EnchantAbilityProperty extends DoubleProperty {
         if (moduleInstance == null || moduleInstance.getModule().isEmpty()) {
             return 15;
         }
-        List<ModuleInstance> moduleInstances = moduleInstance.allSubModules();
+        List<ModuleInstance> moduleInstances = moduleInstance.getFlatList();
         List<Double> enchantAbilities = moduleInstances.stream().map(EnchantAbilityProperty::getEnchantAbility).sorted().collect(Collectors.toList());
         if (enchantAbilities.isEmpty()) {
             return 15.0;

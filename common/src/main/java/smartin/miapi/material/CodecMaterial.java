@@ -152,7 +152,7 @@ public class CodecMaterial implements Material {
             ResourceLocation.CODEC.optionalFieldOf("mining_level").forGetter(material -> Optional.of(material.getIncorrectBlocksForDrops().location())),
             ComponentSerialization.CODEC.optionalFieldOf("translation").forGetter(material -> material.translation),
             Codec.STRING.optionalFieldOf("color")
-                    .forGetter(m -> Optional.of(Long.toHexString(((long) m.getColor(new ModuleInstance(ItemModule.empty, Miapi.registryAccess))) & 0xFFFFFFFF))),
+                    .forGetter(m -> Optional.of(Long.toHexString(((long) m.getColor(new ModuleInstance(ItemModule.empty.id(), Miapi.registryAccess))) & 0xFFFFFFFF))),
             IngredientWithCount.CODEC.listOf().optionalFieldOf("items", new ArrayList<>()).forGetter(material -> material.items),
             Codec.either(
                     Miapi.FIXED_BOOL_CODEC,
@@ -560,8 +560,8 @@ public class CodecMaterial implements Material {
     @Environment(EnvType.CLIENT)
     @Override
     public MaterialRenderController getRenderController(ModuleInstance context, ItemDisplayContext mode) {
-        if (context.contextStack != null && dyeAblePalette != null &&
-            ColorProperty.hasColor(context.contextStack, context)) {
+        if (context.cache().getStack() != null && dyeAblePalette != null &&
+            ColorProperty.hasColor(context.cache().getStack(), context)) {
             return dyeAblePalette;
         }
         if (palette == null) {

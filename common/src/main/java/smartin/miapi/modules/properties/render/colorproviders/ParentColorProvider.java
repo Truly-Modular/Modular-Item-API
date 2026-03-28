@@ -37,8 +37,8 @@ public class ParentColorProvider extends MaterialColorProvider {
     }
 
     public ModuleInstance adapt(ModuleInstance moduleInstance) {
-        if (moduleInstance.parent != null) {
-            return moduleInstance.parent;
+        if (moduleInstance.getParent() != null) {
+            return moduleInstance.getParent();
         }
         return moduleInstance;
     }

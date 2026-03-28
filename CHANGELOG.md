@@ -1,4 +1,4 @@
-## v2.2.4 (1.21)
+## v2.3.0 (1.21)
 ### Bugfixes
 - fixed minor issues with generated materials causing stat displays to fail
 - fixed generated materials not having toughness
@@ -23,6 +23,7 @@
   - the old attributes are still implemented and work, but will be fully removed in the future
 - made bow and thrown items enchantments apply damage and post-hit enchantments (this includes sharpness on thrown items).
 - more important modules are in the UI now above less important modules
+- changed internal module data handling to prevent access and write errors
 ### Additions
 - added trail rendering
   - fully data-driven model type

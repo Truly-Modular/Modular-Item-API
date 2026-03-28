@@ -99,7 +99,7 @@ public interface ModuleProperty<T> extends MergeAble<T>, InitializeAble<T> {
         if (baseModule == null || baseModule.getModule() == ItemModule.empty) {
             return Optional.empty();
         }
-        return Optional.ofNullable(baseModule.getPropertyItemStack(this));
+        return Optional.ofNullable(baseModule.cache().getPropertyItemStack(this));
     }
 
     @SuppressWarnings("unchecked")

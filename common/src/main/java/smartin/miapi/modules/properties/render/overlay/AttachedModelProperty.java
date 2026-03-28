@@ -36,7 +36,7 @@ public abstract class AttachedModelProperty<T extends AttachedModelProperty.Cust
         MiapiItemModel.modelSuppliers.add((key, context, module, stack) -> {
             List<MiapiModel> models = new ArrayList<>();
 
-            for (ModuleInstance source : ItemModule.getModules(stack).allSubModules()) {
+            for (ModuleInstance source : ItemModule.getModules(stack).getFlatList()) {
                 for (ModelPredicate<T> predicate : getData(source).orElse(List.of())) {
                     List<ModelData> modelList =
                             ModelProperty.property.getData(module).orElse(List.of());

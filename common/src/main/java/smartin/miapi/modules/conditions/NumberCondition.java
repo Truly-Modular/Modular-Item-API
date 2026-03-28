@@ -36,7 +36,7 @@ public record NumberCondition(String condition, Component error) implements Modu
         Optional<ModuleInstance> moduleInstance = conditionContext.getContext(ConditionManager.MODULE_CONDITION_CONTEXT);
         if (moduleInstance.isPresent()) {
             double result = StatResolver.resolveDouble(condition, moduleInstance.get());
-            moduleInstance.get().clearCachesSoftOnlyThis();
+            moduleInstance.get().cache().clear();
             if (result > 0) {
                 return true;
             }

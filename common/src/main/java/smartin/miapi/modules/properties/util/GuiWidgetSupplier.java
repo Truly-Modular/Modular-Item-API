@@ -5,7 +5,7 @@ import net.fabricmc.api.Environment;
 import smartin.miapi.client.gui.crafting.statdisplay.SingleStatDisplayDouble;
 import smartin.miapi.client.gui.crafting.statdisplay.StatListWidget;
 
-public interface GuiWidgetSupplier {
+public interface GuiWidgetSupplier extends ModuleProperty {
 
     @Environment(EnvType.CLIENT)
     StatListWidget.TextGetter getTitle();

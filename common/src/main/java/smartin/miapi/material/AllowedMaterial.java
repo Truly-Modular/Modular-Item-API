@@ -22,6 +22,7 @@ import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.material.base.Material;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
+import smartin.miapi.modules.MutableModuleInstance;
 import smartin.miapi.modules.properties.DurabilityProperty;
 import smartin.miapi.modules.properties.util.CodecProperty;
 import smartin.miapi.modules.properties.util.CraftingProperty;
@@ -130,7 +131,7 @@ public class AllowedMaterial extends CodecProperty<AllowedMaterial.AllowedMateri
 
     @Override
     public ItemStack preview(ItemStack old, ItemStack crafting, Player player, ModularWorkBenchEntity bench, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<ResourceLocation, JsonElement> data) {
-        ModuleInstance newModule = craftAction.getModifyingModuleInstance(crafting);
+        MutableModuleInstance newModule = craftAction.getModifyingModuleInstance(crafting).asMutable();
         Optional<AllowedMaterialData> optional = getData(module);
         ItemStack input = inventory.get(0);
         ItemStack materialStack = input.copy();
@@ -145,7 +146,7 @@ public class AllowedMaterial extends CodecProperty<AllowedMaterial.AllowedMateri
                 MiapiEvents.MaterialCraftEventData eventData = new MiapiEvents.MaterialCraftEventData(crafting, materialStack, material, newModule, craftAction);
                 MiapiEvents.MATERIAL_CRAFT_EVENT.invoker().craft(eventData);
                 crafting = eventData.crafted;
-                newModule.getRoot().writeToItem(crafting);
+                newModule.toRecord().cache().getRoot().writeToItem(crafting);
             }
         }
         if (crafting.isDamageableItem() && crafting.getDamageValue() > 0) {
@@ -162,7 +163,7 @@ public class AllowedMaterial extends CodecProperty<AllowedMaterial.AllowedMateri
 
     @Override
     public List<ItemStack> performCraftAction(ItemStack old, ItemStack crafting, Player player, ModularWorkBenchEntity bench, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<ResourceLocation, JsonElement> data) {
-        ModuleInstance newModule = craftAction.getModifyingModuleInstance(crafting);
+        MutableModuleInstance newModule = craftAction.getModifyingModuleInstance(crafting).asMutable();
         //AllowedMaterialJson json = Miapi.gson.decode()
         List<ItemStack> results = new ArrayList<>();
         ItemStack input = inventory.get(0);
@@ -183,7 +184,7 @@ public class AllowedMaterial extends CodecProperty<AllowedMaterial.AllowedMateri
             }
             assert newModule != null;
             MaterialProperty.setMaterial(newModule, material);
-            newModule.getRoot().writeToItem(crafting);
+            newModule.toRecord().cache().getRoot().writeToItem(crafting);
             //materialStack.setCount(1);
             MiapiEvents.MaterialCraftEventData eventData = new MiapiEvents.MaterialCraftEventData(crafting, materialStack, material, newModule, craftAction);
             MiapiEvents.MATERIAL_CRAFT_EVENT.invoker().craft(eventData);

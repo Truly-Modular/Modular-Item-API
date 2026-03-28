@@ -2,7 +2,9 @@ package smartin.miapi.item;
 
 import com.google.gson.JsonElement;
 import com.mojang.serialization.Codec;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import org.apache.commons.lang3.mutable.MutableObject;
@@ -28,10 +30,10 @@ public class ItemToModularConverter implements ModularItemStackConverter.Modular
         }));
     }
 
-    public static void setupModularConverter(ResourceLocation path, String data) {
+    public static void setupModularConverter(ResourceLocation path, String data, RegistryAccess registryAccess) {
         try {
             JsonElement element = Miapi.gson.fromJson(data, JsonElement.class);
-            var decoded = CODEC.decode(JsonOpsBooleanPatched.INSTANCE, element);
+            var decoded = CODEC.decode(RegistryOps.create(JsonOpsBooleanPatched.INSTANCE, registryAccess), element);
             if (decoded.isSuccess()) {
                 decoded.getOrThrow().getFirst().forEach((key, modules) -> {
                     ItemStack stack = new ItemStack(RegistryInventory.modularItem);
@@ -47,7 +49,7 @@ public class ItemToModularConverter implements ModularItemStackConverter.Modular
     }
 
     public boolean preventConvert(ItemStack itemStack) {
-        if(itemStack.is(RegistryInventory.MIAPI_FORBIDDEN_TAG)){
+        if (itemStack.is(RegistryInventory.MIAPI_FORBIDDEN_TAG)) {
             return true;
         }
         return false;

@@ -19,6 +19,7 @@ import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.material.base.Material;
 import smartin.miapi.modules.ModuleInstance;
+import smartin.miapi.modules.MutableModuleInstance;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.Map;
@@ -108,28 +109,28 @@ public class ComponentMaterial extends JsonMaterial {
         MiapiEvents.MATERIAL_CRAFT_EVENT.register(data -> {
             if (data.material instanceof ComponentMaterial componentMaterial) {
                 componentMaterial.writeMaterial(data.moduleInstance);
-                data.moduleInstance.getRoot().writeToItem(data.crafted);
+                data.moduleInstance.toRecord().getRoot().writeToItem(data.crafted);
             }
             return EventResult.pass();
         });
     }
 
     public Material getMaterial(ModuleInstance moduleInstance, Map<ModuleProperty<?>, Object> properties) {
-        //JsonElement data = moduleInstance.moduleData.get(Miapi.id("nbt_material_data"));
-        //try {
-        //    Optional<Material> material = decode(data.getAsJsonObject());
-        //    return material.orElse(this);
-        //} catch (Exception e) {
-        //    Miapi.LOGGER.error("Could not find Material", e);
-        //}
+        JsonElement data = moduleInstance.data().get(Miapi.id("nbt_material_data"));
+        try {
+            Optional<Material> material = decode(data.getAsJsonObject());
+            return material.orElse(this);
+        } catch (Exception e) {
+            Miapi.LOGGER.error("Could not find Material", e);
+        }
         return this;
     }
 
-    public void writeMaterial(ModuleInstance moduleInstance) {
-        //JsonObject object1 = this.overWrite.deepCopy();
-        //object1.addProperty("parent", this.parent.getID().toString());
+    public void writeMaterial(MutableModuleInstance moduleInstance) {
+        JsonObject object1 = this.overWrite.deepCopy();
+        object1.addProperty("parent", this.parent.getID().toString());
 
-        //moduleInstance.moduleData.put(Miapi.id("nbt_material_data"), object1);
+        moduleInstance.setData(Miapi.id("nbt_material_data"), object1);
     }
 
     @Override

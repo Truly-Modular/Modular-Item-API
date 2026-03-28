@@ -37,7 +37,7 @@ import smartin.miapi.entity.ItemProjectileEntity;
 import smartin.miapi.entity.ProjectileWithBow;
 import smartin.miapi.material.base.Material;
 import smartin.miapi.material.generated.GeneratedMaterial;
-import smartin.miapi.modules.ModuleInstance;
+import smartin.miapi.modules.MutableModuleInstance;
 import smartin.miapi.modules.properties.util.ComponentApplyProperty;
 
 import java.util.ArrayList;
@@ -231,13 +231,13 @@ public class MiapiEvents {
         public ItemStack crafted;
         public final ItemStack materialStack;
         public Material material;
-        public ModuleInstance moduleInstance;
+        public MutableModuleInstance moduleInstance;
         CraftAction action;
 
         public MaterialCraftEventData(ItemStack crafted,
                                       ItemStack materialStack,
                                       Material material,
-                                      ModuleInstance moduleInstance,
+                                      MutableModuleInstance moduleInstance,
                                       CraftAction action) {
             this.crafted = crafted;
             this.material = material;

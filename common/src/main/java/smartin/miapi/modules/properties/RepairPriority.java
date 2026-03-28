@@ -63,7 +63,7 @@ public class RepairPriority extends DoubleProperty {
     private List<Material> getRepairMaterialsPrivate(ItemStack itemStack) {
         double lowest = Double.MAX_VALUE;
         List<Material> materials = new ArrayList<>();
-        for (ModuleInstance moduleInstance : ItemModule.getModules(itemStack).allSubModules()) {
+        for (ModuleInstance moduleInstance : ItemModule.getModules(itemStack).getFlatList()) {
             Optional<Double> optional = getValue(itemStack);
             if (optional.isPresent()) {
                 Material material = MaterialProperty.getMaterial(moduleInstance);
@@ -72,7 +72,7 @@ public class RepairPriority extends DoubleProperty {
                 }
             }
         }
-        for (ModuleInstance moduleInstance : ItemModule.getModules(itemStack).allSubModules()) {
+        for (ModuleInstance moduleInstance : ItemModule.getModules(itemStack).getFlatList()) {
             Optional<Double> optional = getValue(itemStack);
             if (optional.isPresent()) {
                 Material material = MaterialProperty.getMaterial(moduleInstance);
@@ -98,6 +98,6 @@ public class RepairPriority extends DoubleProperty {
         if (baseModule == null || baseModule.getModule() == ItemModule.empty) {
             return Optional.empty();
         }
-        return Optional.ofNullable(baseModule.getPropertyItemStack(this));
+        return Optional.ofNullable(baseModule.cache().getPropertyItemStack(this));
     }
 }

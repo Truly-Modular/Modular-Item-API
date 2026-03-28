@@ -25,17 +25,17 @@ public class PropertyResolver {
      * @param moduleInstance the {@link ModuleInstance} to resolve for
      */
     public static void resolve(ModuleInstance moduleInstance) {
-        if (moduleInstance.properties == null) {
-            moduleInstance.properties = new ConcurrentHashMap<>();
+        if (moduleInstance.cache().properties == null) {
+            moduleInstance.cache().properties = new ConcurrentHashMap<>();
         }
-        synchronized (moduleInstance.propertyThreadLock) {
+        synchronized (moduleInstance.cache()) {
             registry.forEach((pair) -> {
                 PropertyProvider propertyProvider = pair.getB();
-                moduleInstance.allSubModules().forEach(instance -> {
-                    if (instance.properties == null) {
-                        instance.properties = new ConcurrentHashMap<>();
+                moduleInstance.getFlatList().forEach(instance -> {
+                    if (instance.cache().properties == null) {
+                        instance.cache().properties = new ConcurrentHashMap<>();
                     }
-                    instance.properties.putAll(propertyProvider.resolve(instance, instance.properties));
+                    instance.cache().properties.putAll(propertyProvider.resolve(instance, instance.cache().properties));
                 });
             });
         }

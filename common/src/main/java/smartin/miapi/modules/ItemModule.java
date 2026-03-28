@@ -10,16 +10,11 @@ import net.minecraft.core.component.DataComponentType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import smartin.miapi.Miapi;
-import smartin.miapi.config.MiapiConfig;
-import smartin.miapi.datapack.ReloadEvents;
-import smartin.miapi.item.modular.VisualModularItem;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
-import smartin.miapi.registries.JsonOpsBooleanPatched;
 import smartin.miapi.registries.RegistryInventory;
 
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -131,45 +126,9 @@ public record ItemModule(ResourceLocation id, Map<ModuleProperty<?>, Object> pro
      * @return the module instance associated with the given ItemStack
      */
     public static ModuleInstance getModules(ItemStack stack) {
-        if (ReloadEvents.isInReload()) {
-            if (MiapiConfig.getServerConfig().other.verboseLogging) {
-                LOGGER.info("Item cannot have modules during a reload.");
-            }
-            ModuleInstance root = stack.get(ModuleInstance.MODULE_INSTANCE_COMPONENT);
-            if (root != null) {
-                root.clearCaches();
-                return new ModuleInstance(ItemModule.empty, root.registryAccess);
-            }
-            return new ModuleInstance(ItemModule.empty, Miapi.registryAccess);
-        }
-        if (VisualModularItem.isVisualModularItem(stack) && !ReloadEvents.isInReload()) {
-            ModuleInstance root = stack.get(ModuleInstance.MODULE_INSTANCE_COMPONENT);
-            if (root != null) {
-                for (ModuleInstance moduleInstance : root.allSubModules()) {
-                    moduleInstance.contextStack = stack;
-                }
-                if (root.allSubModules().size() == 1) {
-                    JsonElement compareToJson = stack.get(ModuleInstance.MODULE_BACKUP);
-                    if (compareToJson != null) {
-                        ModuleInstance compareTo = ModuleInstance.CODEC.decode(JsonOpsBooleanPatched.INSTANCE, compareToJson).getOrThrow().getFirst();
-                        if (root.allSubModules().size() != compareTo.allSubModules().size()) {
-                            LOGGER.error("MODULE DECODE ISSUE!?! " + root);
-                            LOGGER.error("SHOULD HAVE BEEN" + compareTo);
-                            LOGGER.error("ATTEMPTING AUTO FIX");
-                            compareTo.clearCaches();
-                            for (ModuleInstance moduleInstance : compareTo.allSubModules()) {
-                                moduleInstance.lookup = root.lookup;
-                                moduleInstance.registryAccess = root.registryAccess;
-                            }
-                            compareTo.writeToItem(stack);
-                            return compareTo.copy();
-                        }
-                    }
-                }
-                return root;
-            }
-        }
-        return new ModuleInstance(ItemModule.empty, Miapi.registryAccess);
+        ModuleInstance moduleInstance = stack.getOrDefault(ModuleInstance.MODULE_INSTANCE_COMPONENT, new ModuleInstance(empty.id(), Map.of(), Map.of(), Miapi.registryAccess));
+        moduleInstance.cache().confirmStack(stack);
+        return moduleInstance;
     }
 
     /**
@@ -179,25 +138,7 @@ public record ItemModule(ResourceLocation id, Map<ModuleProperty<?>, Object> pro
      * @return the flat list of all modules
      */
     public static List<ModuleInstance> createFlatList(ModuleInstance root) {
-        List<ModuleInstance> flatList = new ArrayList<>();
-        List<ModuleInstance> queue = new ArrayList<>();
-        queue.add(root);
-
-        while (!queue.isEmpty()) {
-            ModuleInstance module = queue.removeFirst();
-            if (module != null) {
-                flatList.add(module);
-
-                List<ModuleInstance> allSubModules = new ArrayList<>();
-                //TODO:add prioritized sorting into slot logic
-                module.subModules.keySet().stream().sorted().forEach(id -> {
-                    allSubModules.add(module.subModules.get(id));
-                });
-                queue.addAll(0, allSubModules);
-            }
-        }
-
-        return flatList;
+        return root.cache().allSubModules();
     }
 
 

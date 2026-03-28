@@ -16,13 +16,12 @@ import smartin.miapi.Miapi;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
 import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
 import smartin.miapi.item.ModularItemStackConverter;
-import smartin.miapi.mixin.RegistryOpsAccessor;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
+import smartin.miapi.modules.MutableModuleInstance;
 import smartin.miapi.modules.properties.slot.SlotProperty;
 import smartin.miapi.modules.properties.util.ComponentApplyProperty;
 import smartin.miapi.modules.properties.util.CraftingProperty;
-import smartin.miapi.registries.JsonOpsBooleanPatched;
 import smartin.miapi.registries.RegistryInventory;
 
 import java.util.*;
@@ -187,7 +186,7 @@ public class CraftAction {
      * @param instance the module instance to set.
      */
     protected void updateItem(ItemStack stack, ModuleInstance instance) {
-        instance.getRoot().writeToItem(stack);
+        instance.cache().getRoot().writeToItem(stack);
     }
 
     /**
@@ -228,23 +227,9 @@ public class CraftAction {
             }
         });
         ComponentApplyProperty.updateItemStack(craftingStack[0], player.level().registryAccess());
-        ModuleInstance parsingInstance = ItemModule.getModules(craftingStack[0]);
-        for (int i = slotLocation.size() - 1; i >= 0; i--) {
-            if (parsingInstance == null) {
-                return craftingStack[0];
-            }
-            parsingInstance = parsingInstance.getSubModuleMap().get(slotLocation.get(i));
-        }
         for (CraftingEvent eventHandler : events)
-            craftingStack[0] = eventHandler.onCraft(old, craftingStack[0], parsingInstance);
+            craftingStack[0] = eventHandler.onCraft(old, craftingStack[0], ItemModule.getModules(craftingStack[0]).getPosition(slotLocation));
         linkedInventory.setChanged();
-        if (player != null && player.level() != null) {
-            var lookup = ((RegistryOpsAccessor) RegistryOps.create(JsonOpsBooleanPatched.INSTANCE, player.level().registryAccess())).getLookupProvider();
-            ItemModule.getModules(craftingStack[0]).allSubModules().forEach(m -> {
-                m.lookup = lookup;
-                m.registryAccess = player.level().registryAccess();
-            });
-        }
         return craftingStack[0];
     }
 
@@ -254,65 +239,65 @@ public class CraftAction {
      * @return the crafted ItemStack.
      */
     private ItemStack craft() {
-        ItemStack craftingStack = old.copy();
-
-        //remove CacheKey so new cache gets Generated
-        ModuleInstance oldBaseModule = ItemModule.getModules(old);
-        ModuleInstance newBaseModule = oldBaseModule.copy();
-        Map<String, ModuleInstance> subModuleMap = new HashMap<>();
         if (slotLocation.isEmpty()) {
-            //a module already exists, replacing module 0
+            // ROOT CASE
             if (toAdd == null || toAdd == ItemModule.empty || toAdd.id().equals(Miapi.id("empty"))) {
                 return ItemStack.EMPTY;
             }
-            subModuleMap = oldBaseModule.getSubModuleMap();
-            ModuleInstance newModule = new ModuleInstance(toAdd, getAccess());
-            subModuleMap.forEach((id, module) -> {
-                SlotProperty.ModuleSlot slot = SlotProperty.getSlots(newModule).get(id);
-                if (slot != null && slot.allowedIn(module)) {
-                    newModule.setSubModule(id, module);
-                    newModule.sortSubModule();
-                }
-            });
-            newModule.writeToItem(craftingStack);
-            newModule.clearCaches();
+
+            ItemStack craftingStack = old.copy();
+
+            ModuleInstance oldBaseModule = ItemModule.getModules(old);
+            MutableModuleInstance mutableRoot = oldBaseModule.asMutable();
+
+            // Replace root module directly
+            mutableRoot.setModule(toAdd.id());
+
+            mutableRoot.toRecord().writeToItem(craftingStack);
             return craftingStack;
         }
-        ModuleInstance parsingInstance = newBaseModule;
-        for (int i = slotLocation.size() - 1; i > 0; i--) {
-            if (parsingInstance != null) {
-                parsingInstance = parsingInstance.getSubModule(slotLocation.get(i));
-            } else {
-                Miapi.LOGGER.error("Critical error in replace Logic!, step craft slot position of crafting was not found!");
-                slotLocation.forEach(slot -> {
-                    Miapi.LOGGER.error("slot id" + slot);
-                });
-                return old;
+
+        // NON-ROOT CASE (safe to assume slotLocation not empty)
+        ItemStack craftingStack = old.copy();
+
+        ModuleInstance oldBaseModule = ItemModule.getModules(old);
+        final MutableModuleInstance mutableRoot = oldBaseModule.asMutable();
+        MutableModuleInstance workingOnParent = mutableRoot;
+
+        if (slotLocation.size() > 1) {
+            List<String> slotLocationParent = slotLocation.subList(0, slotLocation.size() - 1);
+            workingOnParent = mutableRoot.getPosition(slotLocationParent);
+        }
+
+        if (workingOnParent == null) {
+            Miapi.LOGGER.error("could not modify module, parent of target module did not exist!");
+            return old;
+        }
+
+        String targetSlot = slotLocation.getLast();
+
+        if (workingOnParent.getChild(targetSlot) == null) {
+            // CREATE
+            workingOnParent.setChild(targetSlot,
+                    new MutableModuleInstance(toAdd.id(), this.player.level().registryAccess()));
+        } else {
+            // REPLACE
+            MutableModuleInstance changing = workingOnParent.getChild(targetSlot);
+            changing.setModule(toAdd.id());
+
+            for (var entry : changing.getChildren().entrySet()) {
+                ModuleInstance changingLive = changing.toRecord();
+                ModuleInstance child = entry.getValue().toRecord();
+
+                if (!SlotProperty.getSlots(changingLive)
+                        .get(entry.getKey())
+                        .allowedIn(child)) {
+                    changing.removeChild(entry.getKey());
+                }
             }
         }
 
-        if (
-                (toAdd == null || toAdd == ItemModule.empty || toAdd.id().equals(Miapi.id("empty"))) &&
-                parsingInstance != null) {
-            parsingInstance.removeSubModule(slotLocation.getFirst());
-        } else {
-            ModuleInstance newModule = new ModuleInstance(toAdd, getAccess());
-            ModuleInstance moduleMapInstance = parsingInstance.getSubModule(slotLocation.getFirst());
-            if (moduleMapInstance != null) {
-                subModuleMap = moduleMapInstance.getSubModuleMap();
-            }
-            subModuleMap.forEach((id, module) -> {
-                SlotProperty.ModuleSlot slot = SlotProperty.getSlots(newModule).get(id);
-                if (slot != null) {
-                    if (slot.allowedIn(module)) {
-                        newModule.setSubModule(id, module);
-                    }
-                }
-            });
-            parsingInstance.setSubModule(slotLocation.getFirst(), newModule);
-        }
-        newBaseModule.writeToItem(craftingStack);
-        craftingStack = craftingStack.copy();
+        mutableRoot.toRecord().writeToItem(craftingStack);
         return craftingStack;
     }
 
@@ -335,24 +320,9 @@ public class CraftAction {
                         inventory,
                         buffer)));
         ComponentApplyProperty.updateItemStack(craftingStack.get(), Miapi.registryAccess);
-        ModuleInstance parsingInstance = ItemModule.getModules(craftingStack.get());
-        for (int i = slotLocation.size() - 1; i >= 0; i--) {
-            if (parsingInstance == null) {
-                Miapi.LOGGER.error("Critical error in replace Logic!, step preview slot position of crafting was not found!");
-                slotLocation.forEach(slot -> {
-                    Miapi.LOGGER.error("slot id" + slot);
-                });
-                return old;
-            }
-            if (player != null && player.level() != null) {
-                parsingInstance.registryAccess = player.level().registryAccess();
-            }
-            parsingInstance = parsingInstance.getSubModule(slotLocation.get(i));
-        }
         for (CraftingEvent eventHandler : events) {
-            craftingStack.set(eventHandler.onPreview(old, craftingStack.get(), parsingInstance));
+            craftingStack.set(eventHandler.onPreview(old, craftingStack.get(), ItemModule.getModules(craftingStack.get()).getPosition(slotLocation)));
         }
-        ItemModule.getModules(craftingStack.get()).clearCaches();
         linkedInventory.setChanged();
         try {
             if (this.player != null && this.player.level() != null) {
@@ -379,18 +349,7 @@ public class CraftAction {
 
     @Nullable
     public ModuleInstance getModifyingModuleInstance(ItemStack itemStack) {
-        ModuleInstance parsingInstance = ItemModule.getModules(itemStack);
-        for (int i = slotLocation.size() - 1; i >= 0; i--) {
-            if (parsingInstance == null) {
-                Miapi.LOGGER.error("Critical error in replace Logic!, step modifiying module slot position of crafting was not found!");
-                slotLocation.forEach(slot -> {
-                    Miapi.LOGGER.error("slot id" + slot);
-                });
-                return parsingInstance;
-            }
-            parsingInstance = parsingInstance.getSubModule(slotLocation.get(i));
-        }
-        return parsingInstance;
+        return ItemModule.getModules(itemStack).getPosition(slotLocation);
     }
 
     /**
@@ -401,25 +360,11 @@ public class CraftAction {
      * @param propertyConsumer The {@link PropertyConsumer} to process each {@link CraftingProperty}.
      */
     public void forEachCraftingProperty(ItemStack crafted, PropertyConsumer propertyConsumer) {
-        ModuleInstance parsingInstance = ItemModule.getModules(crafted);
-        for (int i = slotLocation.size() - 1; i >= 0; i--) {
-            if (parsingInstance == null) {
-                Miapi.LOGGER.error("Critical error in replace Logic!, step crafting property slot position of crafting was not found!");
-                slotLocation.forEach(slot -> {
-                    Miapi.LOGGER.error("slot id" + slot);
-                });
-                return;
-            }
-            parsingInstance = parsingInstance.getSubModule(slotLocation.get(i));
-        }
-
         AtomicInteger integer = new AtomicInteger(inventoryOffset);
-
-        ModuleInstance newInstance = parsingInstance;
         List<CraftingProperty> sortedProperties =
                 RegistryInventory.MODULE_PROPERTY_MIAPI_REGISTRY.getFlatMap().values().stream()
                         .filter(CraftingProperty.class::isInstance)
-                        .filter(property -> ((CraftingProperty) property).shouldExecuteOnCraft(newInstance, ItemModule.getModules(crafted), crafted, this))
+                        .filter(property -> ((CraftingProperty) property).shouldExecuteOnCraft(ItemModule.getModules(crafted).getPosition(slotLocation), ItemModule.getModules(crafted), crafted, this))
                         .map(CraftingProperty.class::cast)
                         .sorted(Comparator.comparingDouble(CraftingProperty::getPriority))
                         .toList();
@@ -430,7 +375,7 @@ public class CraftAction {
             for (int i = startPos; i < endPos; i++) {
                 itemStacks.add(linkedInventory.getItem(i));
             }
-            propertyConsumer.accept(craftingProperty, newInstance, itemStacks, startPos, endPos, data);
+            propertyConsumer.accept(craftingProperty, ItemModule.getModules(crafted).getPosition(slotLocation), itemStacks, startPos, endPos, data);
             integer.set(endPos);
         }
     }

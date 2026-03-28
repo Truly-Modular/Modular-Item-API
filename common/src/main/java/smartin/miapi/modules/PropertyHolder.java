@@ -108,16 +108,16 @@ public class PropertyHolder {
     }
 
     public Map<ModuleProperty<?>, Object> applyHolder(Map<ModuleProperty<?>, Object> oldMap, Optional<Component> component) {
-        //Map<ModuleProperty<?>, Object> oldMap = new HashMap<>(oldMap2);
-        remove.forEach(oldMap::remove);
+        Map<ModuleProperty<?>, Object> newMap = new HashMap<>(oldMap);
+        remove.forEach(newMap::remove);
         PropertyResolver.setSource(merge, component).forEach((key, value) -> {
-            if (oldMap.containsKey(key)) {
-                oldMap.put(key, ItemModule.merge(key, oldMap.get(key), value, MergeType.SMART));
+            if (newMap.containsKey(key)) {
+                newMap.put(key, ItemModule.merge(key, newMap.get(key), value, MergeType.SMART));
             } else {
-                oldMap.put(key, value);
+                newMap.put(key, value);
             }
         });
-        oldMap.putAll(PropertyResolver.setSource(replace, component));
-        return oldMap;
+        newMap.putAll(PropertyResolver.setSource(replace, component));
+        return newMap;
     }
 }

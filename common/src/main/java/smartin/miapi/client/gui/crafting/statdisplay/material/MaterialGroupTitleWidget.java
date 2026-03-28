@@ -33,7 +33,7 @@ public class MaterialGroupTitleWidget extends InteractAbleWidget {
         }
         scrollingTextWidget = new ScrollingTextWidget(x, y + 2, width,
                 module != null ?
-                        new ModuleInstance(module, Miapi.clientRegistryAccess).getModuleName() :
+                        new ModuleInstance(module.id(), Miapi.clientRegistryAccess).cache().getModuleName() :
                         Component.translatableWithFallback("miapi.material_property.category." + materialKey, materialKey));
         scrollingTextWidget.setOrientation(ScrollingTextWidget.Orientation.CENTERED);
         hoverDescription =

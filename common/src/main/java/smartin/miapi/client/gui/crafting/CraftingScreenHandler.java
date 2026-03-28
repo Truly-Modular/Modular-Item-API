@@ -31,7 +31,6 @@ import smartin.miapi.network.Networking;
 import smartin.miapi.registries.RegistryInventory;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import static net.minecraft.world.inventory.InventoryMenu.BLOCK_ATLAS;
@@ -134,12 +133,14 @@ public class CraftingScreenHandler extends AbstractContainerMenu {
             Networking.registerC2SPacket(editPacketID, (buffer, player) -> {
                 String editOptionKey = buffer.readUtf();
                 EditOption option = RegistryInventory.EDIT_OPTION_MIAPI_REGISTRY.get(editOptionKey);
-                String[] array = buffer.readUtf().split("\n");
+                int size = buffer.readVarInt();
+                List<String> position = new ArrayList<>(size);
+                for (int i = 0; i < size; i++) {
+                    position.add(buffer.readUtf());
+                }
                 ItemStack stack = ModularItemStackConverter.getModularVersion(inventory.getItem(0));
                 ModuleInstance root = ItemModule.getModules(stack);
-                List<String> position = new ArrayList<>();
-                Collections.addAll(position, array);
-                ModuleInstance current = root.getPosition(position).copy();
+                ModuleInstance current = root.getPosition(position);
 
                 SlotProperty.ModuleSlot slot = SlotProperty.getSlotIn(current);
                 if (slot == null && current != null && current.getModule() != null) {

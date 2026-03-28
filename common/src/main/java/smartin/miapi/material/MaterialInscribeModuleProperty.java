@@ -7,7 +7,7 @@ import dev.architectury.event.EventResult;
 import net.minecraft.world.item.ItemStack;
 import smartin.miapi.Miapi;
 import smartin.miapi.events.MiapiEvents;
-import smartin.miapi.modules.ModuleInstance;
+import smartin.miapi.modules.MutableModuleInstance;
 import smartin.miapi.modules.properties.util.CodecProperty;
 import smartin.miapi.modules.properties.util.MergeAble;
 import smartin.miapi.modules.properties.util.MergeType;
@@ -33,17 +33,17 @@ public class MaterialInscribeModuleProperty extends CodecProperty<String> {
         });
     }
 
-    public static void inscribe(ModuleInstance moduleInstance, ItemStack raw, ItemStack materialStack) {
-        Optional<String> optional = property.getData(moduleInstance);
+    public static void inscribe(MutableModuleInstance moduleInstance, ItemStack raw, ItemStack materialStack) {
+        Optional<String> optional = property.getData(moduleInstance.toRecord());
         optional.ifPresent((s) -> {
-            JsonElement data = moduleInstance.moduleData.get(Miapi.id(KEY));
+            JsonElement data = moduleInstance.getData(Miapi.id(KEY));
             Map<String, ItemStack> dataMap = new HashMap<>();
             if (data != null) {
                 dataMap = CODEC.decode(JsonOpsBooleanPatched.INSTANCE, data).result().map(Pair::getFirst).orElse(new HashMap<>());
             }
             dataMap.put(s, materialStack);
-            moduleInstance.moduleData.put(Miapi.id(KEY), CODEC.encodeStart(JsonOpsBooleanPatched.INSTANCE, dataMap).getOrThrow());
-            moduleInstance.getRoot().writeToItem(raw);
+            moduleInstance.setData(Miapi.id(KEY), CODEC.encodeStart(JsonOpsBooleanPatched.INSTANCE, dataMap).getOrThrow());
+            moduleInstance.toRecord().getRoot().writeToItem(raw);
         });
     }
 

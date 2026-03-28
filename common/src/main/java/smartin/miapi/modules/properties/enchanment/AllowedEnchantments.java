@@ -5,11 +5,12 @@ import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.Holder;
-import net.minecraft.core.HolderSet;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -21,7 +22,6 @@ import smartin.miapi.blocks.ModularWorkBenchEntity;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.craft.CraftAction;
 import smartin.miapi.datapack.ReloadEvents;
-import smartin.miapi.mixin.NamedAccessor;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.util.CodecProperty;
@@ -44,7 +44,7 @@ import java.util.*;
  * @data forbidden: a list of forbidden enchantments (ResourceLocation).
  */
 
-public class    AllowedEnchantments extends CodecProperty<AllowedEnchantments.AllowedEnchantsData> implements CraftingProperty {
+public class AllowedEnchantments extends CodecProperty<AllowedEnchantments.AllowedEnchantsData> implements CraftingProperty {
     public static final ResourceLocation KEY = Miapi.id("enchantments");
     public static AllowedEnchantments property;
     public static Map<ResourceLocation, List<ResourceLocation>> enchantmentExtentionsMap = new HashMap<>();
@@ -108,19 +108,19 @@ public class    AllowedEnchantments extends CodecProperty<AllowedEnchantments.Al
         // Ranged
         List<Item> bows = List.of(Items.BOW);
         List<Item> crossbows = List.of(Items.CROSSBOW);
-        
+
 
         access.registry(Registries.ENCHANTMENT).get().forEach(enchantment -> {
             ResourceLocation enchantmentID = access.registry(Registries.ENCHANTMENT).get().getKey(enchantment);
 
             if (allSupportEnchantment(sharp, enchantment)) {
-                enchantmentExtentionsMap.computeIfAbsent(ResourceLocation.parse("minecraft:enchantable/sharp_weapon"),(s)->new ArrayList<>()).add(enchantmentID);
+                enchantmentExtentionsMap.computeIfAbsent(ResourceLocation.parse("minecraft:enchantable/sharp_weapon"), (s) -> new ArrayList<>()).add(enchantmentID);
             } else if (allSupportEnchantment(weapons, enchantment)) {
-                enchantmentExtentionsMap.computeIfAbsent(ResourceLocation.parse("minecraft:enchantable/weapon"),(s)->new ArrayList<>()).add(enchantmentID);
-                enchantmentExtentionsMap.computeIfAbsent(ResourceLocation.parse("c:enchantable/weapon"),(s)->new ArrayList<>()).add(enchantmentID);
+                enchantmentExtentionsMap.computeIfAbsent(ResourceLocation.parse("minecraft:enchantable/weapon"), (s) -> new ArrayList<>()).add(enchantmentID);
+                enchantmentExtentionsMap.computeIfAbsent(ResourceLocation.parse("c:enchantable/weapon"), (s) -> new ArrayList<>()).add(enchantmentID);
             } else if (allSupportEnchantment(swords, enchantment)) {
-                enchantmentExtentionsMap.computeIfAbsent(ResourceLocation.parse("minecraft:enchantable/sword"),(s)->new ArrayList<>()).add(enchantmentID);
-                enchantmentExtentionsMap.computeIfAbsent(ResourceLocation.parse("c:enchantable/sword"),(s)->new ArrayList<>()).add(enchantmentID);
+                enchantmentExtentionsMap.computeIfAbsent(ResourceLocation.parse("minecraft:enchantable/sword"), (s) -> new ArrayList<>()).add(enchantmentID);
+                enchantmentExtentionsMap.computeIfAbsent(ResourceLocation.parse("c:enchantable/sword"), (s) -> new ArrayList<>()).add(enchantmentID);
             }
 
             if (allSupportEnchantment(pickaxes, enchantment)) {
@@ -138,27 +138,27 @@ public class    AllowedEnchantments extends CodecProperty<AllowedEnchantments.Al
 
             // Armor stuff
             if (allSupportEnchantment(allArmor, enchantment)) {
-                enchantmentExtentionsMap.computeIfAbsent(ResourceLocation.parse("minecraft:enchantable/armor"),(s)->new ArrayList<>()).add(enchantmentID);
+                enchantmentExtentionsMap.computeIfAbsent(ResourceLocation.parse("minecraft:enchantable/armor"), (s) -> new ArrayList<>()).add(enchantmentID);
             }
             if (allSupportEnchantment(helmets, enchantment)) {
-                enchantmentExtentionsMap.computeIfAbsent(ResourceLocation.parse("minecraft:enchantable/head_armor"),(s)->new ArrayList<>()).add(enchantmentID);
+                enchantmentExtentionsMap.computeIfAbsent(ResourceLocation.parse("minecraft:enchantable/head_armor"), (s) -> new ArrayList<>()).add(enchantmentID);
             }
             if (allSupportEnchantment(chestplates, enchantment)) {
-                enchantmentExtentionsMap.computeIfAbsent(ResourceLocation.parse("minecraft:enchantable/chest_armor"),(s)->new ArrayList<>()).add(enchantmentID);
+                enchantmentExtentionsMap.computeIfAbsent(ResourceLocation.parse("minecraft:enchantable/chest_armor"), (s) -> new ArrayList<>()).add(enchantmentID);
             }
             if (allSupportEnchantment(leggings, enchantment)) {
-                enchantmentExtentionsMap.computeIfAbsent(ResourceLocation.parse("minecraft:enchantable/leg_armor"),(s)->new ArrayList<>()).add(enchantmentID);
+                enchantmentExtentionsMap.computeIfAbsent(ResourceLocation.parse("minecraft:enchantable/leg_armor"), (s) -> new ArrayList<>()).add(enchantmentID);
             }
             if (allSupportEnchantment(boots, enchantment)) {
-                enchantmentExtentionsMap.computeIfAbsent(ResourceLocation.parse("minecraft:enchantable/foot_armor"),(s)->new ArrayList<>()).add(enchantmentID);
+                enchantmentExtentionsMap.computeIfAbsent(ResourceLocation.parse("minecraft:enchantable/foot_armor"), (s) -> new ArrayList<>()).add(enchantmentID);
             }
 
             // Ranged stuff
             if (allSupportEnchantment(bows, enchantment)) {
-                enchantmentExtentionsMap.computeIfAbsent(ResourceLocation.parse("minecraft:enchantable/bow"),(s)->new ArrayList<>()).add(enchantmentID);
+                enchantmentExtentionsMap.computeIfAbsent(ResourceLocation.parse("minecraft:enchantable/bow"), (s) -> new ArrayList<>()).add(enchantmentID);
             }
             if (allSupportEnchantment(crossbows, enchantment)) {
-                enchantmentExtentionsMap.computeIfAbsent(ResourceLocation.parse("minecraft:enchantable/crossbow"),(s)->new ArrayList<>()).add(enchantmentID);
+                enchantmentExtentionsMap.computeIfAbsent(ResourceLocation.parse("minecraft:enchantable/crossbow"), (s) -> new ArrayList<>()).add(enchantmentID);
             }
         });
     }
@@ -183,30 +183,18 @@ public class    AllowedEnchantments extends CodecProperty<AllowedEnchantments.Al
      */
     public static boolean isSupported(ItemStack itemStack, Enchantment enchantment, boolean oldValue) {
         Optional<AllowedEnchantsData> optional = property.getData(itemStack);
-        RegistryAccess access;
         ModuleInstance moduleInstance = ItemModule.getModules(itemStack);
-        if (moduleInstance != null && moduleInstance.registryAccess != null) {
-            access = moduleInstance.registryAccess;
-        } else {
-            access = null;
-        }
         return optional.map(allowedEnchantsData -> allowedEnchantsData
-                        .isSupported(enchantment, access, access)
+                        .isSupported(enchantment, moduleInstance)
                         .orElse(oldValue && MiapiConfig.getServerConfig().enchants.lenientEnchantments))
                 .orElse(oldValue);
     }
 
     public static boolean canEnchant(ItemStack itemStack, Enchantment enchantment, boolean oldValue) {
         Optional<AllowedEnchantsData> optional = property.getData(itemStack);
-        RegistryAccess access;
         ModuleInstance moduleInstance = ItemModule.getModules(itemStack);
-        if (moduleInstance != null && moduleInstance.registryAccess != null) {
-            access = moduleInstance.registryAccess;
-        } else {
-            access = null;
-        }
         return optional.map(allowedEnchantsData -> allowedEnchantsData
-                        .canEnchant(enchantment, access, Miapi.registryAccess)
+                        .canEnchant(enchantment, moduleInstance)
                         .orElse(oldValue && MiapiConfig.getServerConfig().enchants.lenientEnchantments))
                 .orElse(oldValue);
     }
@@ -271,72 +259,46 @@ public class    AllowedEnchantments extends CodecProperty<AllowedEnchantments.Al
                         .apply(instance, AllowedEnchantsData::new));
 
 
-        Optional<Boolean> isSupported(Enchantment enchantment, RegistryAccess main, RegistryAccess fallback) {
-            if (contains(enchantment, forbidden(), main, fallback)) {
+        Optional<Boolean> isSupported(Enchantment enchantment, ModuleInstance moduleInstance) {
+            if (contains(enchantment, forbidden(), moduleInstance)) {
                 return Optional.of(false);
             }
-            if (contains(enchantment, allowed(), main, fallback)) {
+            if (contains(enchantment, allowed(), moduleInstance)) {
                 return Optional.of(true);
             }
-            if (contains(enchantment, anvilAllowed(), main, fallback)) {
+            if (contains(enchantment, anvilAllowed(), moduleInstance)) {
                 return Optional.of(true);
             }
             return Optional.empty();
         }
 
-        Optional<Boolean> canEnchant(Enchantment enchantment, RegistryAccess main, RegistryAccess fallback) {
-            if (contains(enchantment, forbidden(), main, fallback)) {
+        Optional<Boolean> canEnchant(Enchantment enchantment, ModuleInstance moduleInstance) {
+            if (contains(enchantment, forbidden(), moduleInstance)) {
                 return Optional.of(false);
             }
-            if (contains(enchantment, allowed(), main, fallback)) {
+            if (contains(enchantment, allowed(), moduleInstance)) {
                 return Optional.of(true);
             }
             return Optional.empty();
         }
 
-        private boolean contains(Enchantment enchantment, List<ResourceLocation> ids, RegistryAccess main, RegistryAccess fallback) {
-            ResourceLocation mainID = null;
-            Holder<Enchantment> enchantmentHolder = null;
-            if (main != null) {
-                mainID = main.registry(Registries.ENCHANTMENT).get().getKey(enchantment);
-                if (mainID == null) {
-                    var asd = main.registry(Registries.ENCHANTMENT).get().getHolder(mainID);
-                    if (asd.isPresent()) {
-                        enchantmentHolder = asd.get();
+        private boolean contains(Enchantment enchantment, List<ResourceLocation> ids, ModuleInstance moduleInstance) {
+            for (ResourceLocation id : ids) {
+                ResourceKey<Enchantment> idKey = ResourceKey.create(Registries.ENCHANTMENT, id);
+                if(moduleInstance.getter().lookup(Registries.ENCHANTMENT).isEmpty()){
+                    Miapi.LOGGER.error("item was not setup correctly, registry access isn't functional");
+                    return false;
+                }
+                var optionalEntry = moduleInstance.getter().lookup(Registries.ENCHANTMENT).get().getter().get(idKey);
+                if (optionalEntry.isPresent()) {
+                    if (optionalEntry.get() instanceof Holder.Reference<Enchantment>) {
+                        return true;
                     }
                 }
-            }
-            if (mainID == null && fallback != null) {
-                mainID = fallback.registry(Registries.ENCHANTMENT).get().getKey(enchantment);
-                var asd = fallback.registry(Registries.ENCHANTMENT).get().getHolder(mainID);
-                if (asd.isPresent()) {
-                    enchantmentHolder = asd.get();
-                }
-            }
-            if (mainID == null && fallback != null) {
-                mainID = Miapi.registryAccess.registry(Registries.ENCHANTMENT).get().getKey(enchantment);
-                var asd = Miapi.registryAccess.registry(Registries.ENCHANTMENT).get().getHolder(mainID);
-                if (asd.isPresent()) {
-                    enchantmentHolder = asd.get();
-                }
-            }
-            if (mainID == null && Miapi.clientRegistryAccess != null) {
-                mainID = Miapi.clientRegistryAccess.registry(Registries.ENCHANTMENT).get().getKey(enchantment);
-                var asd = Miapi.clientRegistryAccess.registry(Registries.ENCHANTMENT).get().getHolder(mainID);
-                if (asd.isPresent()) {
-                    enchantmentHolder = asd.get();
-                }
-            }
-            for (ResourceLocation id : ids) {
-                if (enchantmentHolder != null && enchantmentHolder.is(id)) {
-                    return true;
-                }
-                if (mainID != null && id.equals(mainID)) {
-                    return true;
-                }
-                if (enchantment.definition().supportedItems() instanceof HolderSet.Named<Item> set) {
-                    ResourceLocation tagID = ((NamedAccessor) set).getKey().location();
-                    if (tagID.equals(id)) {
+                TagKey<Enchantment> tagKey = TagKey.create(Registries.ENCHANTMENT, id);
+                var optionalTag = moduleInstance.getter().lookup(Registries.ENCHANTMENT).get().getter().get(tagKey);
+                if(optionalTag.isPresent()){
+                    if(optionalTag.get().stream().anyMatch(e->e.value().equals(enchantment))){
                         return true;
                     }
                 }

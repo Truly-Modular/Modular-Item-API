@@ -3,12 +3,8 @@ package smartin.miapi.modules.properties.util;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
-import smartin.miapi.Miapi;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.datapack.ReloadEvents;
-import smartin.miapi.modules.ItemModule;
-import smartin.miapi.modules.ModuleInstance;
-import smartin.miapi.registries.RegistryHelper;
 import smartin.miapi.registries.RegistryInventory;
 
 /**
@@ -40,20 +36,6 @@ public interface ComponentApplyProperty {
         if (ReloadEvents.isInReload()) {
             return;
         }
-        ModuleInstance module = ItemModule.getModules(toUpdate);
-        if (module == null) {
-            return;
-        }
-        toUpdate.getItemHolder();
-        if (registryAccess == null) {
-            if (module.lookup != null) {
-                module.registryAccess = RegistryHelper.tryFind(module.lookup);
-            }
-            registryAccess = Miapi.registryAccess;
-        }
-        if (module.registryAccess == null) {
-            module.registryAccess = registryAccess;
-        }
         RegistryInventory.MODULE_PROPERTY_MIAPI_REGISTRY
                 .getFlatMap()
                 .values()
@@ -61,13 +43,7 @@ public interface ComponentApplyProperty {
                 .filter(ComponentApplyProperty.class::isInstance)
                 .map(ComponentApplyProperty.class::cast)
                 .forEach(componentApplyProperty ->
-                        componentApplyProperty.updateComponent(toUpdate, module.registryAccess));
-    }
-
-    static void trySetup(ModuleInstance moduleInstance) {
-        if (moduleInstance.registryAccess == null && moduleInstance.lookup != null) {
-            moduleInstance.registryAccess = RegistryHelper.tryFind(moduleInstance.lookup);
-        }
+                        componentApplyProperty.updateComponent(toUpdate, registryAccess));
     }
 
     /**

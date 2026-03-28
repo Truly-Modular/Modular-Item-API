@@ -12,6 +12,7 @@ import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
+import smartin.miapi.modules.MutableModuleInstance;
 import smartin.miapi.modules.PropertyHolder;
 import smartin.miapi.modules.conditions.ConditionManager;
 import smartin.miapi.modules.conditions.ModuleCondition;
@@ -61,7 +62,7 @@ public class Skin {
     }
 
     public static List<Skin> getSkins(ModuleInstance moduleInstance) {
-        JsonElement element = moduleInstance.moduleData.get(Miapi.id("skin"));
+        JsonElement element = moduleInstance.data().get(Miapi.id("skin"));
         List<Skin> result = new ArrayList<>();
 
         if (element != null) {
@@ -92,24 +93,15 @@ public class Skin {
     }
 
 
-    public static void writeSkins(ModuleInstance moduleInstance, List<Skin> skinKeys) {
+    public static void writeSkins(MutableModuleInstance moduleInstance,List<Skin> skinKeys) {
         JsonArray array = new JsonArray();
         for (Skin key : skinKeys) {
             if (key != null && key.path != null) {
                 array.add(new JsonPrimitive(key.path));
             }
         }
-        moduleInstance.moduleData.put(Miapi.id("skin"), array);
+        moduleInstance.setData(Miapi.id("skin"), array);
     }
-
-    public static void writeSkinsKeys(ModuleInstance moduleInstance, List<String> skinKeys) {
-        JsonArray array = new JsonArray();
-        for (String key : skinKeys) {
-            array.add(new JsonPrimitive(key));
-        }
-        moduleInstance.moduleData.put(Miapi.id("skin"), array);
-    }
-
 
     public static List<ItemModule> getModules(JsonElement element) {
         JsonObject jsonObject = element.getAsJsonObject();

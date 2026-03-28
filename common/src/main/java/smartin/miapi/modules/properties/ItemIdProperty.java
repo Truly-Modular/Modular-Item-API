@@ -81,7 +81,7 @@ public class ItemIdProperty extends CodecProperty<ResourceLocation> implements C
 
     public static ItemStack changeId(ItemStack itemStack, Item item) {
         ModuleInstance root = ItemModule.getModules(itemStack);
-        root.clearCaches();
+        root.cache().clear();
         ItemStack newStack = new ItemStack(item);
         newStack.applyComponents(itemStack.getComponentsPatch());
         if (newStack.has(ModularItem.IS_VISUAL_ONLY)) {
@@ -91,7 +91,7 @@ public class ItemIdProperty extends CodecProperty<ResourceLocation> implements C
         newStack.setCount(itemStack.getCount());
         ModuleInstance newRoot = root.copy();
         newRoot.writeToItem(newStack);
-        newRoot.clearCaches();
+        newRoot.cache().clear();
         return newStack;
     }
 
@@ -119,6 +119,6 @@ public class ItemIdProperty extends CodecProperty<ResourceLocation> implements C
         if (baseModule == null || baseModule.getModule() == ItemModule.empty) {
             return Optional.empty();
         }
-        return Optional.ofNullable(baseModule.getPropertyItemStack(this));
+        return Optional.ofNullable(baseModule.cache().getPropertyItemStack(this));
     }
 }

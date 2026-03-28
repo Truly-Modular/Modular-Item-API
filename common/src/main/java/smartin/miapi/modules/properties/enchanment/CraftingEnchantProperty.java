@@ -81,27 +81,8 @@ public class CraftingEnchantProperty extends CodecProperty<Map<ResourceLocation,
     }
 
     public static Optional<Holder<Enchantment>> tryAndLookUp(ResourceLocation id, ModuleInstance reference) {
-        if (reference.registryAccess == null || reference.lookup == null) {
-            return Optional.empty();
-        }
-        var registry = reference.registryAccess.registry(Registries.ENCHANTMENT).get();
         ResourceKey<Enchantment> enchantmentResourceKey = ResourceKey.create(Registries.ENCHANTMENT, id);
-        var lookup = reference.lookup.lookup(Registries.ENCHANTMENT);
-        if (lookup.isEmpty()) {
-            Miapi.LOGGER.info("Enchantment Registry could not be found!");
-            return Optional.empty();
-        }
-        try {
-            var optional = lookup.get().getter().get(enchantmentResourceKey);
-            if (optional.isEmpty()) {
-                Miapi.LOGGER.info("could not find enchantment " + id);
-                return Optional.empty();
-            }
-            return Optional.of(lookup.get().getter().get(enchantmentResourceKey).get());
-        } catch (RuntimeException e) {
-            Miapi.LOGGER.warn("could not properly lookup enchantments!", e);
-        }
-        return Optional.empty();
+        return reference.getter().lookup(Registries.ENCHANTMENT).flatMap(e -> e.getter().get(enchantmentResourceKey));
     }
 
     public Map<ResourceLocation, DoubleOperationResolvable> initialize(Map<ResourceLocation, DoubleOperationResolvable> property, ModuleInstance context) {

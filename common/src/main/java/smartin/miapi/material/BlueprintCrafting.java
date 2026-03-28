@@ -110,8 +110,8 @@ public class BlueprintCrafting extends ServerReplaceProperty implements Crafting
         if (blueprintComponent != null) {
             ModuleInstance moduleInstance = craftAction.getModifyingModuleInstance(crafting);
             if (moduleInstance != null) {
-                blueprintComponent.apply(moduleInstance);
-                moduleInstance.getRoot().writeToItem(crafting);
+                blueprintComponent.apply(crafting,moduleInstance);
+                moduleInstance.cache().getRoot().writeToItem(crafting);
             }
         }
         return crafting;

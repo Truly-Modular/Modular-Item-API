@@ -19,6 +19,7 @@ import smartin.miapi.material.base.Material;
 import smartin.miapi.material.palette.FallbackColorer;
 import smartin.miapi.material.palette.MaterialRenderController;
 import smartin.miapi.modules.ModuleInstance;
+import smartin.miapi.modules.MutableModuleInstance;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.Collections;
@@ -59,7 +60,7 @@ public class DefaultMaterial implements Material {
     }
 
     @Override
-    public void setMaterial(ModuleInstance moduleInstance) {
+    public void setMaterial(MutableModuleInstance moduleInstance) {
         // No-op as it has no state to set
     }
 

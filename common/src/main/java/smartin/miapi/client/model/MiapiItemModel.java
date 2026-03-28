@@ -47,7 +47,7 @@ public class MiapiItemModel implements MiapiModel {
             new ArrayList<>(MiapiItemModel.fallbackLookup.keySet()).forEach(i ->{
                 ModuleInstance moduleInstance = ItemModule.getModules(i);
                 if (moduleInstance != null) {
-                    moduleInstance.clearCaches();
+                    moduleInstance.cache().clear();
                 }
             });
             MiapiItemModel.fallbackLookup = new WeakHashMap<>();
@@ -92,7 +92,7 @@ public class MiapiItemModel implements MiapiModel {
         if (ReloadEvents.isInReload()) {
             ModuleInstance instance = ItemModule.getModules(stack);
             if (instance != null) {
-                instance.clearCaches();
+                instance.cache().clear();
             }
             return;
         }

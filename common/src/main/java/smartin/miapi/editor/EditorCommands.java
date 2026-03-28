@@ -83,10 +83,6 @@ public class EditorCommands {
             ItemStack itemStack = context.getSource().getPlayer().getItemInHand(InteractionHand.MAIN_HAND);
             ModuleInstance moduleInstance = ItemModule.getModules(itemStack);
             if (moduleInstance != null) {
-                ModuleEditor moduleEditor = new ModuleEditor(moduleInstance.copy(), (m) -> {
-                    m.copy().writeToItem(itemStack);
-                });
-                editors.add(moduleEditor);
                 return 1;
             } else {
                 context.getSource().sendFailure(Component.literal("Hand Item is not a valid modular item!"));

@@ -160,14 +160,10 @@ public class EditView extends InteractAbleWidget {
                     if (toCrafter != null) {
                         toCrafter.calculatePosition(position);
                     }
-                    String sharedPos = "";
-                    if(!position.isEmpty()){
-                        sharedPos = position.removeFirst();
-                    }
+                    buf.writeVarInt(position.size());
                     for (String entry : position) {
-                        sharedPos = sharedPos + "\n" + entry;
+                        buf.writeUtf(entry);
                     }
-                    buf.writeUtf(sharedPos);
                     buf.writeBytes(packetByteBuf.copy());
                     Networking.sendC2S(screenHandler1.editPacketID, buf);
                 }

@@ -83,7 +83,7 @@ public class ModuleModel {
         //render submodules
         if (renderSubmodules) {
             if (simpleSubModules) {
-                instance.getSubModuleMap().forEach((id, instance1) -> {
+                instance.cache().getSubModules().forEach((id, instance1) -> {
                     Minecraft.getInstance().getProfiler().push("submodule-logic");
                     context.matrices().pushPose();
                     ModuleModel subModuleModel = subModuleModels.get(id);
@@ -96,7 +96,7 @@ public class ModuleModel {
                     context.matrices().popPose();
                 });
             }
-            instance.getSubModuleMap().forEach((id, instance1) -> {
+            instance.cache().getSubModules().forEach((id, instance1) -> {
                 Minecraft.getInstance().getProfiler().push("submodule-logic");
                 context.matrices().pushPose();
                 Transform.applyPosition(context.matrices(), submoduleMatrix);

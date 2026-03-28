@@ -18,6 +18,7 @@ import smartin.miapi.modules.ModuleInstance;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
+import java.util.Map;
 
 @Environment(EnvType.CLIENT)
 public class EmptyCraftingWidget extends InteractAbleWidget {
@@ -28,9 +29,9 @@ public class EmptyCraftingWidget extends InteractAbleWidget {
     public EmptyCraftingWidget(int x, int y, int width, int height, CraftAction action) {
         super(x, y, width, height, Component.empty());
 
-        ModuleInstance moduleInstance = new ModuleInstance(action.toAdd, Miapi.clientRegistryAccess);
-        Component displayText = moduleInstance.getModuleName();
-        Component descriptionText = moduleInstance.getModuleDescription();
+        ModuleInstance moduleInstance = new ModuleInstance(action.toAdd.id(),Map.of(), Map.of(),Miapi.clientRegistryAccess);
+        Component displayText = moduleInstance.cache().getModuleName();
+        Component descriptionText = moduleInstance.cache().getModuleDescription();
 
         float headerScale = 1.5f;
 

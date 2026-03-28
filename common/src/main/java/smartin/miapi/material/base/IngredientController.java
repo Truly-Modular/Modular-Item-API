@@ -4,6 +4,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.modules.ModuleInstance;
+import smartin.miapi.modules.MutableModuleInstance;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.Arrays;
@@ -67,7 +68,7 @@ public interface IngredientController {
      *
      * @param moduleInstance
      */
-    default void setMaterial(ModuleInstance moduleInstance) {
+    default void setMaterial(MutableModuleInstance moduleInstance) {
     }
 
     /**

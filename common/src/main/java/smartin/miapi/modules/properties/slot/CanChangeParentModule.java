@@ -37,7 +37,7 @@ public class CanChangeParentModule extends CodecProperty<ModuleCondition> {
         super(ConditionManager.CONDITION_CODEC_DIRECT);
         CraftingConditionProperty.CAN_CRAFT_SELECT_EVENT.register((slot, module, conditionContext) -> {
             if (slot != null && slot.inSlot != null && !module.isEmpty()) {
-                for (ModuleInstance moduleInstance : slot.inSlot.getSubModuleMap().values()) {
+                for (ModuleInstance moduleInstance : slot.inSlot.cache().getSubModules().values()) {
                     if (!canChangeParent(moduleInstance, conditionContext)) {
                         conditionContext.failReasons.add(Component.translatable("miapi.crafting_condition.cant_change_parent"));
                         return EventResult.interruptFalse();

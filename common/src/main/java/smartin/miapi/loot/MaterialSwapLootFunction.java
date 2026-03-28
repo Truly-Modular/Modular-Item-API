@@ -24,12 +24,11 @@ import smartin.miapi.material.MaterialProperty;
 import smartin.miapi.material.base.Material;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
+import smartin.miapi.modules.MutableModuleInstance;
 import smartin.miapi.modules.properties.ItemIdProperty;
 import smartin.miapi.registries.RegistryInventory;
 
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -111,12 +110,13 @@ public record MaterialSwapLootFunction(
                 return stack;
             }
             try {
-                ModuleInstance root = ItemModule.getModules(modular);
+                ModuleInstance immutable = ItemModule.getModules(modular);
+                MutableModuleInstance root = immutable.asMutable();
                 if (VisualModularItem.isVisualModularItem(stack)) {
                     return stack;
                 }
-                Material highestMaterial = MaterialProperty.getMaterial(root);
-                for (ModuleInstance module : root.allSubModules()) {
+                Material highestMaterial = MaterialProperty.getMaterial(immutable);
+                for (ModuleInstance module : immutable.getFlatList()) {
                     Material otherMaterial = MaterialProperty.getMaterial(module);
                     if (highestMaterial == null) {
                         highestMaterial = otherMaterial;
@@ -137,7 +137,7 @@ public record MaterialSwapLootFunction(
                 } catch (RuntimeException e) {
                     Miapi.LOGGER.error("error during material swap function", e);
                 }
-                root.writeToItem(modular);
+                root.toRecord().writeToItem(modular);
                 modular = ItemIdProperty.changeId(modular);
             } catch (RuntimeException e) {
                 Miapi.LOGGER.error("Issue during Material Swap", e);
@@ -146,31 +146,27 @@ public record MaterialSwapLootFunction(
         return modular;
     }
 
-    ModuleInstance randomizeMaterialAndChildren(ModuleInstance moduleInstance, Material fallBackMaterial, RandomSource randomSource) {
+    MutableModuleInstance randomizeMaterialAndChildren(MutableModuleInstance moduleInstance, Material fallBackMaterial, RandomSource randomSource) {
         if (randomSource.nextFloat() <= chance()) {
             try {
-                if (CopyParentMaterialProperty.property.getData(moduleInstance).isEmpty()) {
+                if (CopyParentMaterialProperty.property.getData(moduleInstance.toRecord()).isEmpty()) {
                     moduleInstance = attemptRandomizeMaterial(moduleInstance, fallBackMaterial, randomSource);
                 }
             } catch (RuntimeException runtimeException) {
                 Miapi.LOGGER.error("Issue during Material Swap", runtimeException);
             }
         }
-        Map<String, ModuleInstance> submodules = new LinkedHashMap<>(moduleInstance.getSubModuleMap());
-        for (var entry : submodules.entrySet()) {
-            moduleInstance.setSubModule(entry.getKey(), randomizeMaterialAndChildren(entry.getValue(), fallBackMaterial, randomSource));
-            moduleInstance.clearCaches();
-        }
         return moduleInstance;
     }
 
-    ModuleInstance attemptRandomizeMaterial(ModuleInstance module, Material fallBackMaterial, RandomSource randomSource) {
-        Material currentMaterial = MaterialProperty.getMaterial(module);
+    MutableModuleInstance attemptRandomizeMaterial(MutableModuleInstance module, Material fallBackMaterial, RandomSource randomSource) {
+        ModuleInstance immutable = module.toRecord();
+        Material currentMaterial = MaterialProperty.getMaterial(immutable);
         if (currentMaterial == null) {
             return module;
         }
-        if (AllowedMaterial.property.getData(module).isPresent() &&
-            !AllowedMaterial.property.getData(module).get().isValid(fallBackMaterial)) {
+        if (AllowedMaterial.property.getData(immutable).isPresent() &&
+            !AllowedMaterial.property.getData(immutable).get().isValid(fallBackMaterial)) {
             fallBackMaterial = currentMaterial;
         }
         Material finalFallBackMaterial = fallBackMaterial;
@@ -189,8 +185,8 @@ public record MaterialSwapLootFunction(
                             return false;
                         }
                     }
-                    if (AllowedMaterial.property.getData(module).isPresent() &&
-                        !AllowedMaterial.property.getData(module).get().isValid(m)) {
+                    if (AllowedMaterial.property.getData(immutable).isPresent() &&
+                        !AllowedMaterial.property.getData(immutable).get().isValid(m)) {
                         return false;
                     }
                     double difToFallback = isHigher(finalFallBackMaterial, m);

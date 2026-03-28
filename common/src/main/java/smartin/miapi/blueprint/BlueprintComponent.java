@@ -17,10 +17,10 @@ import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
 import smartin.miapi.client.gui.crafting.crafter.replace.CraftOption;
 import smartin.miapi.material.AllowedMaterial;
 import smartin.miapi.modules.ModuleInstance;
+import smartin.miapi.modules.MutableModuleInstance;
 import smartin.miapi.modules.properties.slot.SlotProperty;
 import smartin.miapi.registries.JsonOpsBooleanPatched;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -115,11 +115,11 @@ public class BlueprintComponent {
         return optional.map(Slot::getItem).orElse(ItemStack.EMPTY);
     }
 
-    public void apply(ModuleInstance old) {
-        old.setModule(this.toMerge.getModule());
-        old.moduleID = this.toMerge.moduleID;
-        old.moduleData = new HashMap<>(this.toMerge.moduleData);
-        this.toMerge.getSubModuleMap().forEach(old::setSubModule);
+    public void apply(ItemStack stack, ModuleInstance old) {
+        MutableModuleInstance mutableModuleInstance = old.asMutable();
+        mutableModuleInstance.setModule(this.toMerge.getModule().id());
+        mutableModuleInstance.setDataMap(this.toMerge.data());
+        mutableModuleInstance.toRecord().getRoot().writeToItem(stack);
     }
 
     public ItemStack adjustCost(ItemStack itemStack) {
@@ -169,7 +169,7 @@ public class BlueprintComponent {
     }
 
     public Component getName() {
-        return name.orElse(toMerge.getModuleName());
+        return name.orElse(toMerge.cache().getModuleName());
     }
 
     public CraftOption asCraftOption(CraftingScreenHandler screenHandler) {

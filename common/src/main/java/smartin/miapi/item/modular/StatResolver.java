@@ -186,7 +186,7 @@ public class StatResolver {
             public double resolveDouble(String data, ModuleInstance instance) {
                 if (data.contains(".")) {
                     String[] parts = data.split("\\.", 2);
-                    Stream<Double> numbers = instance.getRoot().allSubModules().stream().map(module -> StatResolver.resolveDouble("[" + parts[1] + "]", module));
+                    Stream<Double> numbers = instance.cache().getRoot().getFlatList().stream().map(module -> StatResolver.resolveDouble("[" + parts[1] + "]", module));
                     double result = 0;
                     switch (parts[0]) {
                         case "add":
@@ -255,7 +255,7 @@ public class StatResolver {
             @Override
             public double resolveDouble(String data, ModuleInstance instance) {
                 String[] parts = data.split("\\.", 2);
-                ModuleInstance module = instance.getSubModule(parts[0]);
+                ModuleInstance module = instance.children().get(parts[0]);
                 if (module != null) {
                     return StatResolver.resolveDouble(parts[1], module);
                 }
@@ -268,15 +268,15 @@ public class StatResolver {
                 double count = 0;
                 switch (data) {
                     case "module": {
-                        count = instance.getRoot().allSubModules().size();
+                        count = instance.cache().getRoot().getFlatList().size();
                         break;
                     }
                     case "submodule": {
-                        count = instance.allSubModules().size();
+                        count = instance.children().values().size();
                         break;
                     }
                     case "unique_materials": {
-                        count = instance.getRoot().allSubModules().stream()
+                        count = instance.cache().getRoot().getFlatList().stream()
                                 .filter(m -> MaterialProperty.getMaterial(m) != null)
                                 .map(MaterialProperty::getMaterial)
                                 .filter(Objects::nonNull).count();
@@ -284,12 +284,13 @@ public class StatResolver {
                     }
                     case "root_material_matches": {
                         Optional<Material> material =
-                                instance.getRoot().allSubModules().stream()
+                                instance.cache().getRoot().getFlatList().stream()
                                         .filter(m -> MaterialProperty.getMaterial(m) != null)
                                         .map(MaterialProperty::getMaterial)
+                                        .filter(Objects::nonNull)
                                         .findFirst();
                         if (material.isPresent()) {
-                            count = instance.getRoot().allSubModules().stream()
+                            count = instance.cache().getRoot().getFlatList().stream()
                                     .filter(m -> MaterialProperty.getMaterial(m) != null)
                                     .map(MaterialProperty::getMaterial)
                                     .filter(m -> material.get().equals(m)).count();
@@ -298,12 +299,12 @@ public class StatResolver {
                     }
                     case "material_matches": {
                         Optional<Material> material =
-                                instance.allSubModules().stream()
+                                instance.getFlatList().stream()
                                         .filter(m -> MaterialProperty.getMaterial(m) != null)
                                         .map(MaterialProperty::getMaterial)
                                         .findFirst();
                         if (material.isPresent()) {
-                            count = instance.getRoot().allSubModules().stream()
+                            count = instance.cache().getRoot().getFlatList().stream()
                                     .filter(m -> MaterialProperty.getMaterial(m) != null)
                                     .map(MaterialProperty::getMaterial)
                                     .filter(m -> material.get().equals(m)).count();

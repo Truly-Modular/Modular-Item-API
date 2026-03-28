@@ -29,7 +29,6 @@ import smartin.miapi.modules.properties.FireProof;
 import smartin.miapi.modules.properties.HandheldItemProperty;
 import smartin.miapi.modules.properties.LuminousLearningProperty;
 import smartin.miapi.modules.properties.armor.*;
-import smartin.miapi.modules.properties.attributes.AttributeProperty;
 import smartin.miapi.modules.properties.attributes.AttributeUtil;
 import smartin.miapi.modules.properties.mining.MiningTelekinesisProperty;
 import smartin.miapi.modules.properties.onHit.*;
@@ -51,6 +50,7 @@ import smartin.miapi.registries.RegistryInventory;
 
 import java.text.DecimalFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Environment(EnvType.CLIENT)
 public class StatListWidget extends InteractAbleWidget {
@@ -67,18 +67,15 @@ public class StatListWidget extends InteractAbleWidget {
         statWidgetSupplier.add(new StatWidgetSupplier() {
             @Override
             public <T extends InteractAbleWidget & SingleStatDisplay> List<T> currentList(ItemStack original, ItemStack compareTo) {
-                Set<GuiWidgetSupplier> suppliers = new HashSet<>();
-                suppliers.addAll(
-                        ItemModule.getModules(original).itemMergedProperties.keySet().stream()
-                                .filter(property -> property instanceof GuiWidgetSupplier)
-                                .map(property -> (GuiWidgetSupplier) property)
-                                .toList());
-                suppliers.addAll(
-                        ItemModule.getModules(compareTo).itemMergedProperties.keySet().stream()
-                                .filter(property -> property instanceof GuiWidgetSupplier)
-                                .map(property -> (GuiWidgetSupplier) property)
-                                .toList());
+                Set<GuiWidgetSupplier> suppliers =
+                        RegistryInventory.MODULE_PROPERTY_MIAPI_REGISTRY.getFlatMap().values().stream()
+                                .filter(p -> p instanceof GuiWidgetSupplier)
+                                .map(p -> (GuiWidgetSupplier) p).collect(Collectors.toSet());
                 return suppliers.stream()
+                        .filter(p ->
+                                ItemModule.getModules(original).cache().getPropertyItemStack(p) != null ||
+                                ItemModule.getModules(compareTo).cache().getPropertyItemStack(p) != null
+                        )
                         .map(guiWidgetSupplier -> (T)
                                 new JsonStatDisplay(
                                         guiWidgetSupplier.getTitle(),
@@ -408,13 +405,13 @@ public class StatListWidget extends InteractAbleWidget {
                 .builder(ComboProperty.property)
                 .setMax(10)
                 .setTranslationKey(ComboProperty.KEY)
-                .setHoverDescription(stack ->{
+                .setHoverDescription(stack -> {
                     DecimalFormat format = new DecimalFormat("##.##");
                     DecimalFormat intFormat = new DecimalFormat("##");
                     return Component.translatable(
                             Miapi.MOD_ID + ".stat." + Miapi.toLangString(ComboProperty.KEY),
                             intFormat.format(ComboProperty.property.getValue(stack).orElse(0.0)),
-                            format.format(ComboTimeProperty.property.getValue(stack).orElse(0.0)/20)
+                            format.format(ComboTimeProperty.property.getValue(stack).orElse(0.0) / 20)
                     );
                 })
                 .build());
@@ -508,8 +505,6 @@ public class StatListWidget extends InteractAbleWidget {
             Multimap<Attribute, AttributeModifier> compAttr = AttributeUtil.getAttribute(compareTo, equipmentSlot);
             AttributeSingleDisplay.oldItemCache.put(equipmentSlot, oldAttr);
             AttributeSingleDisplay.compareItemCache.put(equipmentSlot, compAttr);
-            AttributeSingleDisplay.internalAttributeCache = AttributeProperty.buildMiapiModifiers(original);
-            AttributeSingleDisplay.compareInternalAttributeCache = AttributeProperty.buildMiapiModifiers(compareTo);
 
         }
     }

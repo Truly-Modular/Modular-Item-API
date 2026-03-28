@@ -58,7 +58,7 @@ public class FakeItemTagProperty extends CodecProperty<List<String>> implements 
         ModuleInstance moduleInstance = ItemModule.getModules(itemStack);
         boolean dyeAble = false;
         List<String> list = property.getData(itemStack).orElse(new ArrayList<>());
-        for (ModuleInstance instance : moduleInstance.allSubModules()) {
+        for (ModuleInstance instance : moduleInstance.getFlatList()) {
             Material material = MaterialProperty.getMaterial(instance);
             if (material != null && material.canBeDyed()) {
                 dyeAble = true;

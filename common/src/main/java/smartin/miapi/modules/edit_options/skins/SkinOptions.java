@@ -13,6 +13,7 @@ import smartin.miapi.client.gui.crafting.CraftingScreen;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.item.modular.PropertyResolver;
 import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.MutableModuleInstance;
 import smartin.miapi.modules.edit_options.EditOption;
 import smartin.miapi.modules.edit_options.EditOptionIcon;
 import smartin.miapi.modules.edit_options.skins.gui.SkinGui;
@@ -77,29 +78,29 @@ public class SkinOptions implements EditOption {
         if (moduleSkins != null) {
             Skin skin = moduleSkins.get(skinString);
             if (context.getInstance() != null) {
+                MutableModuleInstance mutableModuleInstance = context.getInstance().asMutable();
                 if (skin == null || skin.type == null) {
-                    Skin.writeSkins(context.getInstance(), List.of());
-                }
-                List<Skin> skins = new ArrayList<>(
-                        Skin.getSkins(
-                                        context
-                                                .getInstance())
-                                .stream()
-                                .filter(s -> skin.type.equals("attachment") ||
-                                             s != null &&
-                                             !Objects.equals(s.type, skin.type)).toList());
-
-                if (skins.contains(skin)) {
-                    skins.remove(skin);
-                    Skin.writeSkins(context.getInstance(), skins);
-                } else {
-                    skins.add(skin);
-                    Skin.writeSkins(context.getInstance(), skins);
+                    Skin.writeSkins(mutableModuleInstance, List.of());
                 }
                 ItemStack stack = context.getItemstack().copy();
 
-                context.getInstance().getRoot().writeToItem(stack);
-                context.getInstance().clearCaches();
+                List<Skin> skins = new ArrayList<>(
+                        Skin.getSkins(
+                                       mutableModuleInstance.toRecord())
+                                .stream()
+                                .filter(s -> skin != null && skin.type.equals("attachment") ||
+                                        s != null &&
+                                        !Objects.equals(s.type, skin.type)).toList());
+
+                if (skins.contains(skin)) {
+                    skins.remove(skin);
+                    Skin.writeSkins(mutableModuleInstance, skins);
+                } else {
+                    skins.add(skin);
+                    Skin.writeSkins(mutableModuleInstance, skins);
+                }
+                mutableModuleInstance.toRecord().writeToItem(stack);
+
                 return stack;
             } else {
                 Miapi.LOGGER.error("could not set skin, no module found");

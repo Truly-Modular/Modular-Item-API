@@ -1,6 +1,5 @@
 package smartin.miapi.modules.edit_options.skins.gui;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Renderable;
@@ -34,7 +33,7 @@ class SkinButton extends InteractAbleWidget implements SkinGui.SortAble {
         this.skinPath = skinPath;
         this.skin = skin;
         if (skin.condition != null) {
-            isAllowed = skin.condition.isAllowed(ConditionManager.playerContext(skinGui.instance, Minecraft.getInstance().player, skinGui.instance.properties));
+            isAllowed = skin.condition.isAllowed(ConditionManager.playerContext(skinGui.instance, Minecraft.getInstance().player, skinGui.instance.cache().getInitializedProperties()));
         }
         String[] parts = skinPath.split("/");
         Component skinName;

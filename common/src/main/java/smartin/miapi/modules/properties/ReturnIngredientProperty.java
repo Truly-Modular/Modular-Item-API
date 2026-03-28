@@ -14,6 +14,7 @@ import smartin.miapi.blocks.ModularWorkBenchEntity;
 import smartin.miapi.craft.CraftAction;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
+import smartin.miapi.modules.MutableModuleInstance;
 import smartin.miapi.modules.properties.util.CodecProperty;
 import smartin.miapi.modules.properties.util.CraftingProperty;
 import smartin.miapi.modules.properties.util.MergeAble;
@@ -85,8 +86,9 @@ public class ReturnIngredientProperty extends CodecProperty<ReturnIngredientProp
 
         getData(instance).ifPresent(data -> {
             if (data.ingredient) {
-                instance.moduleData.put(Miapi.id(KEY), ItemStack.CODEC.encodeStart(JsonOpsBooleanPatched.INSTANCE, inventory.get(1).copy()).getOrThrow());
-                instance.getRoot().writeToItem(crafted);
+                MutableModuleInstance mutable = instance.asMutable();
+                mutable.setData(Miapi.id(KEY), ItemStack.CODEC.encodeStart(JsonOpsBooleanPatched.INSTANCE, inventory.get(1).copy()).getOrThrow());
+                mutable.toRecord().getRoot().writeToItem(crafted);
             }
         });
     }
@@ -95,7 +97,7 @@ public class ReturnIngredientProperty extends CodecProperty<ReturnIngredientProp
         if (player == null) return;
 
         getData(instance).ifPresent(data -> {
-            JsonElement element = instance.moduleData.get(Miapi.id(KEY));
+            JsonElement element = instance.data().get(Miapi.id(KEY));
             if (element != null) {
                 player.addItem(ItemStack.CODEC.decode(JsonOpsBooleanPatched.INSTANCE, element).result().map(Pair::getFirst).orElse(ItemStack.EMPTY));
             } else {

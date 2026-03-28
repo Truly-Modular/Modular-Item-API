@@ -23,6 +23,6 @@ public record CraftOption(
      */
     public CraftOption(ItemModule module,
                        Map<ResourceLocation, JsonElement> data, double priority) {
-        this(module, () -> data, priority, new ModuleInstance(module, Miapi.registryAccess).getModuleName());
+        this(module, () -> data, priority, new ModuleInstance(module.id(),Map.of(),Map.of(), Miapi.registryAccess).cache().getModuleName());
     }
 }

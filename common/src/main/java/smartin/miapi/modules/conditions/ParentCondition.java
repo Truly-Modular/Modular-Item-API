@@ -43,7 +43,7 @@ public class ParentCondition implements ModuleCondition {
             if (moduleInstance.getParent() != null) {
                 ConditionManager.ConditionContext copiedContext = conditionContext.copy();
                 copiedContext.setContext(ConditionManager.MODULE_CONDITION_CONTEXT, moduleInstance.getParent());
-                copiedContext.setContext(ConditionManager.MODULE_PROPERTIES, moduleInstance.getParent().properties);
+                copiedContext.setContext(ConditionManager.MODULE_PROPERTIES, moduleInstance.getParent().cache().properties);
                 return condition.isAllowed(copiedContext);
             }
         }

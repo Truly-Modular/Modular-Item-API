@@ -9,8 +9,8 @@ import net.minecraft.util.FastColor;
 import net.minecraft.world.item.ItemStack;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.*;
-import smartin.miapi.material.base.Material;
 import smartin.miapi.material.MaterialProperty;
+import smartin.miapi.material.base.Material;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
 
@@ -19,6 +19,7 @@ import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.function.Consumer;
 
 public class MaterialDetailView extends InteractAbleWidget {
@@ -206,7 +207,7 @@ public class MaterialDetailView extends InteractAbleWidget {
 
         @Override
         public InteractAbleWidget build(int x, int y, int width, int spacer, Material material) {
-            return new ColorWidget(x, y, width, spacer, material.getColor(new ModuleInstance(ItemModule.empty, Miapi.clientRegistryAccess)));
+            return new ColorWidget(x, y, width, spacer, material.getColor(new ModuleInstance(ItemModule.empty.id(), Map.of(), Map.of(), Miapi.clientRegistryAccess)));
         }
     }
 

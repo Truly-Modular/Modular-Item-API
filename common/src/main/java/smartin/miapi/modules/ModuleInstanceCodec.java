@@ -5,137 +5,122 @@ import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
-import net.minecraft.core.RegistryAccess;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceLocation;
 import smartin.miapi.Miapi;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.mixin.RegistryOpsAccessor;
-import smartin.miapi.modules.properties.util.ComponentApplyProperty;
 
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.function.BiConsumer;
 
 public class ModuleInstanceCodec implements Codec<ModuleInstance> {
+
     private final Codec<Map<ResourceLocation, JsonElement>> dataJsonCodec;
-    private final Codec<Map<String, ModuleInstance>> subModulesCodec;
+    private final Codec<Map<String, ModuleInstance>> childrenCodec;
 
     public ModuleInstanceCodec() {
-        // These should match what's used in the original recursive codec
-        this.dataJsonCodec = Codec.unboundedMap(Miapi.ID_CODEC, StatResolver.Codecs.JSONELEMENT_CODEC);
-        this.subModulesCodec = Codec.unboundedMap(Codec.STRING, this);
+        this.dataJsonCodec = Codec.unboundedMap(
+                Miapi.ID_CODEC,
+                StatResolver.Codecs.JSONELEMENT_CODEC
+        );
+
+        this.childrenCodec = Codec.unboundedMap(
+                Codec.STRING,
+                this
+        );
     }
 
     @Override
     public <T> DataResult<Pair<ModuleInstance, T>> decode(DynamicOps<T> ops, T input) {
-
+        RegistryOps.RegistryInfoLookup lookup;
+        if (ops instanceof RegistryOps<?> registryOps) {
+            lookup = ((RegistryOpsAccessor) registryOps).getLookupProvider();
+        }else{
+            lookup = new MiapiHolderLookupAdapter(Miapi.registryAccess);
+        }
         return ops.getMap(input).flatMap(map -> {
 
-            DataResult<ResourceLocation> keyResult = Miapi.ID_CODEC.parse(ops, map.get("key"));
-
-            DataResult<Map<String, ModuleInstance>> childResult;
-            T childData = map.get("child");
-            if (childData != null) {
-                childResult = subModulesCodec.parse(ops, childData);
-            } else {
-                childResult = DataResult.success(new HashMap<>());
-            }
+            DataResult<ResourceLocation> keyResult =
+                    Miapi.ID_CODEC.parse(ops, map.get("key"));
 
             DataResult<Map<ResourceLocation, JsonElement>> dataResult;
             T data = map.get("data");
+
             if (data != null) {
                 dataResult = dataJsonCodec.parse(ops, data);
             } else {
-                dataResult = DataResult.success(new HashMap<>());
+                dataResult = DataResult.success(new LinkedHashMap<>());
             }
+
+            DataResult<Map<String, ModuleInstance>> childrenResult;
+
+            T childData = map.get("child");
+            if (childData != null) {
+                childrenResult = childrenCodec.parse(ops, childData);
+            } else {
+                childrenResult = DataResult.success(new LinkedHashMap<>());
+            }
+
             return keyResult.flatMap(key ->
-                    childResult.flatMap(children ->
-                            dataResult.map(subData -> {
-                                ModuleInstance inst = new ModuleInstance(key, children, subData);
-                                return Pair.of(inst, input);
+                    dataResult.flatMap(dataMap ->
+                            childrenResult.map(children -> {
+
+                                ModuleInstance instance = new ModuleInstance(
+                                        key,
+                                        dataMap,
+                                        children,
+                                        lookup
+                                );
+                                return Pair.of(instance, input);
                             })
                     )
             );
         });
     }
 
-
     @Override
     public <T> DataResult<T> encode(ModuleInstance input, DynamicOps<T> ops, T prefix) {
+
         Map<T, T> values = new LinkedHashMap<>();
 
-        // Encode "key"
-        Miapi.ID_CODEC.encodeStart(ops, input.moduleID).resultOrPartial(Miapi.LOGGER::warn).
-                ifPresent(keyElement -> values.put(ops.createString("key"), keyElement));
+        // key
+        Miapi.ID_CODEC.encodeStart(ops, input.moduleId())
+                .resultOrPartial(Miapi.LOGGER::warn)
+                .ifPresent(keyElement ->
+                        values.put(ops.createString("key"), keyElement)
+                );
 
-        // Encode "child"
-        if (!input.subModules.isEmpty()) {
-            subModulesCodec.encodeStart(ops, input.getSubModuleMapForSave())
+        // children (String keyed map)
+        if (!input.children().isEmpty()) {
+            childrenCodec.encodeStart(ops, input.children())
                     .resultOrPartial(Miapi.LOGGER::warn)
-                    .ifPresent(childElement -> values.put(ops.createString("child"), childElement));
+                    .ifPresent(childElement ->
+                            values.put(ops.createString("child"), childElement)
+                    );
         }
 
-        // Encode "data"
-        if (!input.moduleData.isEmpty()) {
-            dataJsonCodec.encodeStart(ops, input.getSaveData())
+        // data
+        if (!input.data().isEmpty()) {
+            dataJsonCodec.encodeStart(ops, input.data())
                     .resultOrPartial(Miapi.LOGGER::warn)
-                    .ifPresent(dataElement -> values.put(ops.createString("data"), dataElement));
+                    .ifPresent(dataElement ->
+                            values.put(ops.createString("data"), dataElement)
+                    );
         }
-
 
         return DataResult.success(ops.createMap(values));
     }
 
-    public static Codec<ModuleInstance> createWrappedCodec() {
-        Codec<ModuleInstance> base = new ModuleInstanceCodec();
-        return registrySavingCodec(base, (m, l) -> {
-            setupModule(m, l);
-            checkRegistryLookup(m, l, Miapi.registryAccess);
-            checkRegistryLookup(m, l, Miapi.clientRegistryAccess);
-            ComponentApplyProperty.trySetup(m);
-        });
-    }
+    // ---- RegistryOps lookup extraction ----
 
-    private static void checkRegistryLookup(ModuleInstance m, RegistryOps.RegistryInfoLookup l, RegistryAccess server) {
-        if (server != null) {
-            if (server.registry(Registries.ENCHANTMENT).isPresent() && l.lookup(Registries.ENCHANTMENT).isPresent()) {
-                if (server.registry(Registries.ENCHANTMENT).get().equals(l.lookup(Registries.ENCHANTMENT).get())) {
-                    if (l.lookup(Registries.ENCHANTMENT).get().owner().canSerializeIn(server.registry(Registries.ENCHANTMENT).get().holderOwner())) {
-                        m.registryAccess = server;
-                    }
-                }
-            }
+    private static RegistryOps.RegistryInfoLookup getLookup(RegistryOps<?> ops) {
+        try {
+            var field = ops.getClass().getDeclaredField("lookupProvider");
+            field.setAccessible(true);
+            return (RegistryOps.RegistryInfoLookup) field.get(ops);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to extract RegistryInfoLookup from RegistryOps", e);
         }
-    }
-
-    private static void setupModule(ModuleInstance moduleInstance, RegistryOps.RegistryInfoLookup lookup) {
-        moduleInstance.lookup = lookup;
-        moduleInstance.mutable = false;
-        moduleInstance.getSubModuleMapForSave().values().forEach(m -> {
-            setupModule(m, lookup);
-        });
-    }
-
-    public static <T> Codec<T> registrySavingCodec(Codec<T> baseCodec, BiConsumer<T, RegistryOps.RegistryInfoLookup> applyLookup) {
-        return new Codec<T>() {
-            @Override
-            public <T1> DataResult<Pair<T, T1>> decode(DynamicOps<T1> ops, T1 input) {
-                var basicResult = baseCodec.decode(ops, input);
-                if (ops instanceof RegistryOps<T1> registryOps) {
-                    if (basicResult.isSuccess()) {
-                        applyLookup.accept(basicResult.getOrThrow().getFirst(), ((RegistryOpsAccessor) registryOps).getLookupProvider());
-                    }
-                }
-                return basicResult;
-            }
-
-            @Override
-            public <T1> DataResult<T1> encode(T input, DynamicOps<T1> ops, T1 prefix) {
-                return baseCodec.encode(input, ops, prefix);
-            }
-        };
     }
 }

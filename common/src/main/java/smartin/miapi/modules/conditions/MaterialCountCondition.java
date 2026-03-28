@@ -63,7 +63,7 @@ public class MaterialCountCondition implements ModuleCondition {
 
     public int getCount(ModuleInstance moduleInstance, Material material) {
         if (moduleInstance != null) {
-            List<ModuleInstance> moduleInstances = moduleInstance.getRoot().allSubModules().stream().filter(moduleInstance1 -> material.equals(MaterialProperty.getMaterial(moduleInstance1))).toList();
+            List<ModuleInstance> moduleInstances = moduleInstance.getRoot().getFlatList().stream().filter(moduleInstance1 -> material.equals(MaterialProperty.getMaterial(moduleInstance1))).toList();
             return moduleInstances.size();
         }
         return 0;

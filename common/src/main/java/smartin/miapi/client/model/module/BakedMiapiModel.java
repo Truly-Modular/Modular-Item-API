@@ -154,7 +154,7 @@ public class BakedMiapiModel implements MiapiModel {
             }
         } catch (RuntimeException e) {
             Miapi.LOGGER.error(
-                    "rendering error in module " + instance.moduleID + " " +
+                    "rendering error in module " + instance.moduleId() + " " +
                     MaterialProperty.getMaterial(instance),
                     e
             );
@@ -202,7 +202,7 @@ public class BakedMiapiModel implements MiapiModel {
                     });
                 }
             } catch (RuntimeException e) {
-                Miapi.LOGGER.error("rendering glint error in module " + instance.moduleID + " " + MaterialProperty.getMaterial(instance), e);
+                Miapi.LOGGER.error("rendering glint error in module " + instance.moduleId() + " " + MaterialProperty.getMaterial(instance), e);
             }
         }
         Minecraft.getInstance().getProfiler().pop();

@@ -21,6 +21,7 @@ import smartin.miapi.client.gui.crafting.CraftingScreen;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.modules.ModuleDataPropertiesManager;
 import smartin.miapi.modules.ModuleInstance;
+import smartin.miapi.modules.MutableModuleInstance;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.network.Networking;
 import smartin.miapi.registries.RegistryInventory;
@@ -53,12 +54,10 @@ public class PropertyInjectionDev implements EditOption {
             }
             try {
                 assert context.getInstance() != null;
-                ModuleInstance current = context.getInstance().copy();
+                MutableModuleInstance current = context.getInstance().asMutable();
                 ModuleDataPropertiesManager.setProperties(current, properties);
                 ItemStack stack1 = context.getItemstack().copy();
-                current.getRoot().writeToItem(stack1);
-                current.getRoot().clearCaches();
-
+                current.toRecord().getRoot().writeToItem(stack1);
                 return stack1;
 
             } catch (RuntimeException e) {
@@ -90,7 +89,7 @@ public class PropertyInjectionDev implements EditOption {
 
         public EditDevView(int x, int y, int width, int height, ItemStack stack, ModuleInstance moduleInstance, Consumer<FriendlyByteBuf> craft) {
             super(x, y, width, height, Component.empty());
-            JsonElement context = moduleInstance.moduleData.get(Miapi.id("properties"));
+            JsonElement context = moduleInstance.data().get(Miapi.id("properties"));
             if (context == null) {
                 context = new JsonObject();
             }
@@ -126,7 +125,9 @@ public class PropertyInjectionDev implements EditOption {
                             }
                         }
                         try {
-                            ModuleDataPropertiesManager.setProperties(moduleInstance.copy(), properties);
+                            MutableModuleInstance mutable = moduleInstance.asMutable();
+                            ModuleDataPropertiesManager.setProperties(mutable, properties);
+                            mutable.toRecord().getRoot().writeToItem(stack);
 
                         } catch (RuntimeException e) {
                             error.setText(Component.nullToEmpty(e.getMessage()));

@@ -23,6 +23,7 @@ import smartin.miapi.modules.edit_options.ReplaceOption;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
+import java.util.Map;
 
 @Environment(EnvType.CLIENT)
 public class MaterialCraftingWidget extends InteractAbleWidget {
@@ -44,9 +45,9 @@ public class MaterialCraftingWidget extends InteractAbleWidget {
             this.addChild(new MaterialStatPreview(x + getWidth() - 12, y + 12, 10, 10, action.toAdd));
         }
 
-        ModuleInstance moduleInstance = new ModuleInstance(action.toAdd, Miapi.clientRegistryAccess);
-        Component displayText = moduleInstance.getModuleName();
-        Component descriptionText = moduleInstance.getModuleDescription();
+        ModuleInstance moduleInstance = new ModuleInstance(action.toAdd.id(),Map.of(), Map.of(), Miapi.clientRegistryAccess);
+        Component displayText = moduleInstance.cache().getModuleName();
+        Component descriptionText = moduleInstance.cache().getModuleDescription();
 
         float headerScale = 1.5f;
 

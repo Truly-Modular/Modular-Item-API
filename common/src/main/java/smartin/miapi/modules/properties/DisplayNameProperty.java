@@ -61,7 +61,7 @@ public class DisplayNameProperty extends CodecProperty<Component> {
     private static Component resolveDisplayText(ItemStack itemStack) {
         Component name = Component.translatable("miapi.name.missing.nomodule");
         ModuleInstance root = ItemModule.getModules(itemStack);
-        for (ModuleInstance moduleInstance : root.allSubModules()) {
+        for (ModuleInstance moduleInstance : root.getFlatList()) {
             Optional<Component> componentOptional = property.getData(moduleInstance);
             if (componentOptional.isPresent()) {
                 Material material = MaterialProperty.getMaterial(moduleInstance);

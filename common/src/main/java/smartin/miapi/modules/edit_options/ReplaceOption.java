@@ -17,6 +17,7 @@ import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.material.base.Material;
 import smartin.miapi.material.MaterialProperty;
+import smartin.miapi.modules.MutableModuleInstance;
 import smartin.miapi.network.Networking;
 
 import java.util.ArrayList;
@@ -59,8 +60,9 @@ public class ReplaceOption implements EditOption {
                 ModuleInstance root = ItemModule.getModules(preview);
                 ModuleInstance editing = root.getPosition(position);
                 if (MaterialProperty.getMaterial(editing) == null) {
-                    MaterialProperty.setMaterial(editing, material);
-                    editing.getRoot().writeToItem(preview);
+                    MutableModuleInstance mutable = editing.asMutable();
+                    MaterialProperty.setMaterial(mutable, material);
+                    mutable.toRecord().getRoot().writeToItem(preview);
                 }
             }
         }

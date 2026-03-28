@@ -22,6 +22,8 @@ import smartin.miapi.material.base.Material;
 import smartin.miapi.mixin.NamedAccessor;
 import smartin.miapi.modules.ModuleDataPropertiesManager;
 import smartin.miapi.modules.ModuleInstance;
+import smartin.miapi.modules.ModuleInstanceLocalCache;
+import smartin.miapi.modules.MutableModuleInstance;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.util.CodecProperty;
 import smartin.miapi.modules.properties.util.MergeAble;
@@ -158,32 +160,32 @@ public class MaterialProperty extends CodecProperty<ResourceLocation> {
      * @return
      */
     public static Material getMaterial(ModuleInstance instance) {
-        return instance.getFromCache(KEY.toString(), () -> null);
+        return instance.cache().getFromCache(KEY.toString(), () -> null);
     }
 
     @Nullable
-    private static Material getMaterialRaw(ModuleInstance instance) {
-        if (instance.moduleData.containsKey(KEY)) {
-            JsonElement element = instance.moduleData.get(KEY);
+    private static Material getMaterialRaw(ModuleInstanceLocalCache instance) {
+        if (instance.owner().data().containsKey(KEY)) {
+            JsonElement element = instance.owner().data().get(KEY);
             try {
                 Material jsonMaterial = MaterialProperty.MATERIAL_CODEC.decode(JsonOpsBooleanPatched.INSTANCE, element).getOrThrow().getFirst();
                 if (jsonMaterial != null) {
-                    return MaterialOverwriteProperty.property.adjustMaterial(instance, jsonMaterial.getMaterial(instance, instance.initializedProperties));
+                    return MaterialOverwriteProperty.property.adjustMaterial(instance.owner(), jsonMaterial.getMaterial(instance.owner(), instance.owner().cache().getPropertiesRaw()));
                 }
                 return jsonMaterial;
             } catch (RuntimeException ignored) {
 
             }
         }
-        if (property.getData(instance).isPresent()) {
-            Material material = MaterialProperty.MATERIAL_REGISTRY.get((ResourceLocation) property.getData(instance).get());
+        if (property.getData(instance.owner()).isPresent()) {
+            Material material = MaterialProperty.MATERIAL_REGISTRY.get((ResourceLocation) property.getData(instance.owner()).get());
             if (material != null) {
-                material = material.getMaterial(instance, instance.initializedProperties);
-                return MaterialOverwriteProperty.property.adjustMaterial(instance, material);
+                material = material.getMaterial(instance.owner(), instance.owner().cache().getPropertiesRaw());
+                return MaterialOverwriteProperty.property.adjustMaterial(instance.owner(), material);
             }
         }
-        if (CopyParentMaterialProperty.property.isTrue(instance) && instance.getParent() != null) {
-            return MaterialOverwriteProperty.property.adjustMaterial(instance, getMaterial(instance.getParent()));
+        if (CopyParentMaterialProperty.property.isTrue(instance.owner()) && instance.getParent().isPresent()) {
+            return MaterialOverwriteProperty.property.adjustMaterial(instance.owner(), getMaterial(instance.owner().getParent()));
         }
         return null;
     }
@@ -208,8 +210,8 @@ public class MaterialProperty extends CodecProperty<ResourceLocation> {
      * @param instance
      * @param material
      */
-    public static void setMaterial(ModuleInstance instance, Material material) {
-        instance.moduleData.put(KEY, MaterialProperty.MATERIAL_CODEC.encodeStart(JsonOpsBooleanPatched.INSTANCE, material).getOrThrow());
+    public static void setMaterial(MutableModuleInstance instance, Material material) {
+        instance.setData(KEY, MaterialProperty.MATERIAL_CODEC.encodeStart(JsonOpsBooleanPatched.INSTANCE, material).getOrThrow());
         ModuleDataPropertiesManager.setProperty(instance, property, null);
         material.setMaterial(instance);
     }

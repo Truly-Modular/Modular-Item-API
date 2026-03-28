@@ -47,9 +47,9 @@ public class SinglePropertyStatDisplay extends SingleStatDisplayDouble {
         String number = "" + format.format(resolvable.solve());
         String operation = getStringName(resolvable.attributeOperation);
         if (operation.equals("+") && number.startsWith("-")) {
-            return number + " " + resolvable.instance.getModuleName().getString();
+            return number + " " + resolvable.instance.cache().getModuleName().getString();
         }
-        return operation + number + " " + resolvable.instance.getModuleName().getString();
+        return operation + number + " " + resolvable.instance.cache().getModuleName().getString();
     }
 
     public static String getStringName(DoubleOperationResolvable.IndividualOperation.Operation operation) {

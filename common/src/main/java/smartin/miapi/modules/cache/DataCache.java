@@ -1,7 +1,7 @@
 package smartin.miapi.modules.cache;
 
 import net.minecraft.world.item.ItemStack;
-import smartin.miapi.modules.ModuleInstance;
+import smartin.miapi.modules.ModuleInstanceLocalCache;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -36,8 +36,8 @@ public class DataCache {
         Object apply(ItemStack stack);
     }
 
-    public interface ModuleCacheSupplier extends Function<ModuleInstance, Object> {
+    public interface ModuleCacheSupplier extends Function<ModuleInstanceLocalCache, Object> {
         @Override
-        Object apply(ModuleInstance stack);
+        Object apply(ModuleInstanceLocalCache stack);
     }
 }

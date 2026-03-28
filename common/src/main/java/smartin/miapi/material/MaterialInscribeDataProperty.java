@@ -8,6 +8,7 @@ import net.minecraft.world.item.ItemStack;
 import smartin.miapi.Miapi;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.modules.ModuleInstance;
+import smartin.miapi.modules.MutableModuleInstance;
 import smartin.miapi.modules.properties.util.CodecProperty;
 import smartin.miapi.modules.properties.util.MergeAble;
 import smartin.miapi.modules.properties.util.MergeType;
@@ -33,21 +34,21 @@ public class MaterialInscribeDataProperty extends CodecProperty<String> {
 
     public static ItemStack inscribe(MiapiEvents.MaterialCraftEventData data) {
         ItemStack raw = data.crafted;
-        Optional<String> optional = property.getData(data.moduleInstance);
+        Optional<String> optional = property.getData(data.moduleInstance.toRecord());
         if (optional.isPresent()) {
             inscribeModuleInstance(data.moduleInstance, data.materialStack.copy(), optional.get());
-            data.moduleInstance.getRoot().writeToItem(data.crafted);
+            data.moduleInstance.toRecord().writeToItem(data.crafted);
         }
         return raw;
     }
 
-    public static void inscribeModuleInstance(ModuleInstance moduleInstance, ItemStack itemStack, String key) {
+    public static void inscribeModuleInstance(MutableModuleInstance moduleInstance, ItemStack itemStack, String key) {
         JsonElement element = ItemStack.CODEC.encodeStart(JsonOpsBooleanPatched.INSTANCE, itemStack).getOrThrow();
-        moduleInstance.moduleData.put(Miapi.id(key), element);
+        moduleInstance.setData(Miapi.id(key), element);
     }
 
     public static ItemStack readStackFromModuleInstance(ModuleInstance moduleInstance, String key) {
-        JsonElement element = moduleInstance.moduleData.get(Miapi.id(key));
+        JsonElement element = moduleInstance.data().get(Miapi.id(key));
         if (element!= null) {
             try {
                 return ItemStack.CODEC.decode(JsonOpsBooleanPatched.INSTANCE, element).getOrThrow().getFirst();

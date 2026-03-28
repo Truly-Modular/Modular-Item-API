@@ -41,9 +41,9 @@ public class IconRenderProperty extends CodecProperty<String> {
     public void setupClient() {
         ModularItemCache.MODULE_CACHE_SUPPLIER.put(CACHE_KEY, (m) -> {
             Matrix4f matrix4f = new Matrix4f();
-            boolean hasIcon = IconRenderProperty.property.getData(m).isPresent();
+            boolean hasIcon = IconRenderProperty.property.getData(m.owner()).isPresent();
             if (!hasIcon) {
-                Optional<GuiOffsetProperty.GuiOffsetData> optional = GuiOffsetProperty.property.getData(m);
+                Optional<GuiOffsetProperty.GuiOffsetData> optional = GuiOffsetProperty.property.getData(m.owner());
                 if (optional.isPresent()) {
                     Transform merge = new Transform(
                             new Vector3f(0, 0, 0),
@@ -52,8 +52,8 @@ public class IconRenderProperty extends CodecProperty<String> {
                     matrix4f = merge.toMatrix();
                 }
             }
-            String type = IconRenderProperty.property.getData(m).orElse("item");
-            ModuleModel model = new ModuleModel(m, ItemStack.EMPTY, type, ItemDisplayContext.GUI);
+            String type = IconRenderProperty.property.getData(m.owner()).orElse("item");
+            ModuleModel model = new ModuleModel(m.owner(), ItemStack.EMPTY, type, ItemDisplayContext.GUI);
             model.renderSubmodules = false;
             return new RenderContext(matrix4f, type, model);
         });
@@ -67,7 +67,7 @@ public class IconRenderProperty extends CodecProperty<String> {
                            LivingEntity entity,
                            int light,
                            int overlay) {
-        RenderContext model = stack.getFromCache(CACHE_KEY, () -> new RenderContext(new Matrix4f(), "item", new ModuleModel(stack, ItemStack.EMPTY, "item", ItemDisplayContext.GUI)));
+        RenderContext model = stack.cache().getFromCache(CACHE_KEY, () -> new RenderContext(new Matrix4f(), "item", new ModuleModel(stack, ItemStack.EMPTY, "item", ItemDisplayContext.GUI)));
         matrices.mulPose(model.matrix4f());
         model.model().render(new MiapiModel.RenderContext(model.type(), matrices, ItemStack.EMPTY, ItemDisplayContext.GUI, tickDelta, vertexConsumers, entity, light, overlay));
     }

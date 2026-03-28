@@ -32,6 +32,7 @@ import smartin.miapi.registries.MiapiRegistry;
 import smartin.miapi.registries.RegistryInventory;
 
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -54,7 +55,7 @@ public class CreateItemOption implements EditOption {
         if (editContext.getPlayer() != null && editContext.getPlayer().level() != null) {
             access = editContext.getPlayer().level().registryAccess();
         }
-        ModuleInstance instance = new ModuleInstance(RegistryInventory.ITEM_MODULE_MIAPI_REGISTRY.get(module), access);
+        ModuleInstance instance = new ModuleInstance(Miapi.id(module), Map.of(), Map.of(), access);
         instance.writeToItem(itemStack);
         CraftAction action = new CraftAction(buffer, editContext.getWorkbench(), editContext.getScreenHandler());
         Container inventory = editContext.getLinkedInventory();
@@ -77,7 +78,7 @@ public class CreateItemOption implements EditOption {
         int count = buffer.readInt();
         ItemStack itemStack = new ItemStack(BuiltInRegistries.ITEM.get(ResourceLocation.parse(itemID)));
         itemStack.setCount(count);
-        ModuleInstance instance = new ModuleInstance(RegistryInventory.ITEM_MODULE_MIAPI_REGISTRY.get(module), Miapi.registryAccess);
+        ModuleInstance instance = new ModuleInstance(Miapi.id(module), Map.of(), Map.of(), Miapi.registryAccess);
         instance.writeToItem(itemStack);
         CraftAction action = new CraftAction(buffer, editContext.getWorkbench(), editContext.getScreenHandler());
         action.setItem(itemStack);
@@ -146,7 +147,7 @@ public class CreateItemOption implements EditOption {
 
             @Override
             public @Nullable ModuleInstance getInstance() {
-                return new ModuleInstance(item.getBaseModule(), Miapi.registryAccess);
+                return new ModuleInstance(item.getBaseModule().id(), Map.of(), Map.of(), Miapi.registryAccess);
             }
 
             @Override

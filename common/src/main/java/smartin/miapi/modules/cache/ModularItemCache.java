@@ -49,7 +49,7 @@ public class ModularItemCache {
     public static <T> T get(ItemStack stack, String key, Supplier<T> fallback) {
         ModuleInstance moduleInstance = ItemModule.getModules(stack);
         if (moduleInstance != null) {
-            return moduleInstance.getFromCache(key, stack, supplierMap, fallback);
+            return moduleInstance.cache().getFromCache(key, stack, supplierMap, fallback);
         }
         return fallback.get();
     }
@@ -57,7 +57,7 @@ public class ModularItemCache {
     public static void clear(ItemStack stack, String key) {
         ModuleInstance moduleInstance = ItemModule.getModules(stack);
         if (moduleInstance != null) {
-            moduleInstance.cachedData.remove(key);
+            moduleInstance.cache().cachedData.remove(key);
         }
     }
 
@@ -71,10 +71,7 @@ public class ModularItemCache {
     public static void discardCache() {
         modules.getInstances().forEach((m) -> {
             if (m != null) {
-                m.clearCaches();
-                if (m.parent == null && m.contextStack != null) {
-                    m.writeToItem(m.contextStack);
-                }
+                m.cache().clear();
             }
         });
     }

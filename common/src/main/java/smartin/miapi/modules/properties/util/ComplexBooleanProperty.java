@@ -39,7 +39,7 @@ public abstract class ComplexBooleanProperty extends DoubleProperty {
     public boolean isTrue(ItemModule module) {
         Optional<DoubleOperationResolvable> optional = getData(module);
         if (optional.isPresent()) {
-            optional = Optional.of(optional.get().initialize(new ModuleInstance(module, Miapi.registryAccess)));
+            optional = Optional.of(optional.get().initialize(new ModuleInstance(module.id(), Miapi.registryAccess)));
         }
         return optional.map(doubleOperationResolvable -> doubleOperationResolvable.evaluate(0.0, 0.0) > 0).orElseGet(() -> defaultValue);
     }

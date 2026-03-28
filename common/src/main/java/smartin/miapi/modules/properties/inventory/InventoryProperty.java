@@ -5,7 +5,6 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.item.ItemStack;
 import smartin.miapi.Miapi;
 import smartin.miapi.modules.ModuleInstance;
@@ -27,11 +26,11 @@ public class InventoryProperty extends DoubleProperty {
         NonNullList<ItemStack> slots = NonNullList.withSize(slotCount, ItemStack.EMPTY);
 
         // Load stored data from the module instance
-        JsonElement data = moduleInstance.moduleData.get(id);
+        JsonElement data = moduleInstance.data().get(id);
         if (data != null && data.isJsonArray()) {
             Tag tag = JsonOpsBooleanPatched.INSTANCE.convertTo(Miapi.BOOL_CORRECTED_OPS, data);
             if (tag instanceof CompoundTag compoundTag) {
-                ContainerHelper.loadAllItems(compoundTag, slots, moduleInstance.registryAccess);
+                //ContainerHelper.loadAllItems(compoundTag, slots, moduleInstance.registryAccess);
             }
         }
         return slots;
@@ -43,6 +42,6 @@ public class InventoryProperty extends DoubleProperty {
         for (int i = 0; i < Math.min(slotCount, items.size()); i++) {
             slots.set(i, items.get(i));
         }
-        ContainerHelper.saveAllItems(new CompoundTag(), slots, moduleInstance.registryAccess);
+        //ContainerHelper.saveAllItems(new CompoundTag(), slots, moduleInstance.registryAccess);
     }
 }

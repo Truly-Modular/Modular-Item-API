@@ -25,7 +25,7 @@ public class ModuleDataPropertiesManager {
 
     public static Map<ModuleProperty<?>, Object> getProperties(ModuleInstance moduleInstance) {
         try {
-            JsonElement properties = moduleInstance.moduleData.get(Miapi.id("properties"));
+            JsonElement properties = moduleInstance.data().get(Miapi.id("properties"));
             return resolvePropertiesFromJson(properties);
         } catch (RuntimeException e) {
             Miapi.LOGGER.warn("could not decode properties", e);
@@ -79,23 +79,24 @@ public class ModuleDataPropertiesManager {
         return object;
     }
 
-    public static <T> void setProperty(ModuleInstance moduleInstance, ModuleProperty<T> property, @Nullable T propertyData) {
-        Map<ModuleProperty<?>, Object> map = getProperties(moduleInstance);
+    public static <T> MutableModuleInstance setProperty(MutableModuleInstance moduleInstance, ModuleProperty<T> property, @Nullable T propertyData) {
+        Map<ModuleProperty<?>, Object> map = getProperties(moduleInstance.toRecord());
         if (propertyData == null) {
             map.remove(property);
         } else {
             map.put(property, propertyData);
         }
-        setProperties(moduleInstance, map);
+        return setProperties(moduleInstance, map);
     }
 
-    public static void setProperties(ModuleInstance moduleInstance, Map<ModuleProperty<?>, Object> propertyMap) {
+    public static MutableModuleInstance setProperties(MutableModuleInstance moduleInstance, Map<ModuleProperty<?>, Object> propertyMap) {
         if (propertyMap.isEmpty()) {
-            moduleInstance.moduleData.remove(Miapi.id("properties"));
-            return;
+            moduleInstance.removeData(Miapi.id("properties"));
+            return moduleInstance;
         }
         JsonObject object = createJsonFromProperties(propertyMap);
-        moduleInstance.moduleData.put(Miapi.id("properties"), object);
+        moduleInstance.setData(Miapi.id("properties"), object);
+        return moduleInstance;
     }
 
     @SuppressWarnings("unchecked")

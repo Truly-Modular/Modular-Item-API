@@ -94,12 +94,12 @@ public class DetailView extends InteractAbleWidget {
             ModuleInstance moduleInstance = slot.inSlot;
             boolean hasNoModule = moduleInstance == null;
             if (hasNoModule) {
-                moduleInstance = new ModuleInstance(ItemModule.empty, Miapi.clientRegistryAccess);
+                moduleInstance = new ModuleInstance(ItemModule.empty.id(), Map.of(), Map.of(), Miapi.clientRegistryAccess);
             }
-            Component materialNameText = moduleInstance.getModuleName();
+            Component materialNameText = moduleInstance.cache().getModuleName();
             material = MaterialProperty.getMaterial(moduleInstance);
 
-            Component displayText = moduleInstance.getModuleName();
+            Component displayText = moduleInstance.cache().getModuleName();
             if (hasNoModule && slot.translationKey != null) {
                 displayText = Component.translatable(slot.translationKey);
             }

@@ -11,10 +11,7 @@ import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.crafting.CraftingScreen;
 import smartin.miapi.client.gui.crafting.crafter.glint.GlintEditView;
 import smartin.miapi.item.modular.VisualModularItem;
-import smartin.miapi.modules.ItemModule;
-import smartin.miapi.modules.MiapiPermissions;
-import smartin.miapi.modules.ModuleDataPropertiesManager;
-import smartin.miapi.modules.ModuleInstance;
+import smartin.miapi.modules.*;
 import smartin.miapi.modules.properties.GlintProperty;
 import smartin.miapi.network.Networking;
 
@@ -26,14 +23,15 @@ public class GlintEditOption implements EditOption {
 
     @Override
     public ItemStack preview(FriendlyByteBuf buffer, EditContext editContext) {
-        ModuleInstance moduleInstance = editContext.getInstance() == null ? ItemModule.getModules(editContext.getItemstack()) : editContext.getInstance();
-        if (moduleInstance == null) {
+        ModuleInstance immutable = editContext.getInstance() == null ? ItemModule.getModules(editContext.getItemstack()) : editContext.getInstance();
+        if (immutable == null) {
             return editContext.getItemstack();
         }
+        MutableModuleInstance moduleInstance = immutable.asMutable();
         GlintProperty.RainbowGlintSettings settings = CODEC.decode(buffer);
         boolean remove = settings.colors.length == 0;
         if (settings.isItem) {
-            moduleInstance.getRoot().allSubModules().forEach(module -> {
+            moduleInstance.getUnsortedList().forEach(module -> {
                 ModuleDataPropertiesManager.setProperty(
                         module,
                         GlintProperty.property,
@@ -48,7 +46,7 @@ public class GlintEditOption implements EditOption {
             );
         }
         ItemStack itemStack = editContext.getItemstack().copy();
-        moduleInstance.getRoot().writeToItem(itemStack);
+        moduleInstance.toRecord().getRoot().writeToItem(itemStack);
         return itemStack;
     }
 

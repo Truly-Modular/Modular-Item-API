@@ -106,7 +106,7 @@ public class ReloadHelpers {
         ReloadHandlerBuilder
                 .builder("miapi/modular_converter")
                 .clear(ItemToModularConverter.regexes::clear)
-                .handler((isClient, path, data, registryAccess) -> ItemToModularConverter.setupModularConverter(path, data))
+                .handler((isClient, path, data, registryAccess) -> ItemToModularConverter.setupModularConverter(path, data, registryAccess))
                 .priority(1)
                 .register();
     }

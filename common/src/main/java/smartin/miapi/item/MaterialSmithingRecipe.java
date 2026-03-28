@@ -17,6 +17,7 @@ import smartin.miapi.material.MaterialProperty;
 import smartin.miapi.material.base.Material;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
+import smartin.miapi.modules.MutableModuleInstance;
 import smartin.miapi.registries.RegistryInventory;
 
 /**
@@ -67,7 +68,7 @@ public class MaterialSmithingRecipe implements SmithingRecipe {
     public boolean isBaseIngredient(ItemStack stack) {
         if (stack.getItem() instanceof VisualModularItem) {
             ModuleInstance instance = ItemModule.getModules(stack);
-            return instance.allSubModules().stream().anyMatch(module -> {
+            return instance.getFlatList().stream().anyMatch(module -> {
                 Material material = MaterialProperty.getMaterial(module);
                 if (material != null) {
                     return material.getID().equals(startMaterial);
@@ -105,18 +106,17 @@ public class MaterialSmithingRecipe implements SmithingRecipe {
      * @return the crafted stack
      */
     @Override
-    public @NotNull ItemStack assemble(SmithingRecipeInput input, HolderLookup.@NotNull Provider registries) {
+    public @NotNull ItemStack assemble(SmithingRecipeInput input, HolderLookup.Provider registries) {
         ItemStack old = input.getItem(1).copy();
         if (old.getItem() instanceof VisualModularItem) {
-            ModuleInstance instance = ItemModule.getModules(old).copy();
-            instance.allSubModules().forEach(module -> {
-                Material material = MaterialProperty.getMaterial(module);
+            MutableModuleInstance instance = MutableModuleInstance.fromRecord(ItemModule.getModules(old));
+            instance.getChildren().forEach((id, child) -> {
+                Material material = MaterialProperty.getMaterial(child.toRecord());
                 if (material != null && material.getID().equals(startMaterial)) {
-                    MaterialProperty.setMaterial(module, MaterialProperty.MATERIAL_REGISTRY.get(resultMaterial));
+                    MaterialProperty.setMaterial(child, MaterialProperty.MATERIAL_REGISTRY.get(resultMaterial));
                 }
             });
-            instance.writeToItem(old);
-            //input.getItem(1).setCount(0);
+            instance.toRecord().writeToItem(old);
         }
         MiapiEvents.MaterialCraft data = new MiapiEvents.MaterialCraft(old);
         MiapiEvents.SMITHING_EVENT.invoker().craft(data);

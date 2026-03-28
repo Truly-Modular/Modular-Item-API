@@ -9,7 +9,6 @@ import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
-import smartin.miapi.modules.properties.util.ComponentApplyProperty;
 import smartin.miapi.registries.RegistryInventory;
 
 import java.util.ArrayList;
@@ -59,14 +58,6 @@ public class ModularItemStackConverter {
         }
         if (ModularItem.isModularItem(converted)) {
             ModuleInstance moduleInstance = ItemModule.getModules(converted);
-            if (moduleInstance.lookup == null) {
-                if (lookupMap.containsKey(original)) {
-                    moduleInstance.allSubModules().forEach(m -> m.lookup = lookupMap.get(original));
-                }
-            }
-            if (Miapi.registryAccess != null) {
-                ComponentApplyProperty.updateItemStack(converted, Miapi.registryAccess);
-            }
         }
         return converted;
     }

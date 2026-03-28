@@ -3,7 +3,6 @@ package smartin.miapi.client.gui.crafting.statdisplay.material;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.RegistryOps;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import smartin.miapi.Miapi;
@@ -12,11 +11,10 @@ import smartin.miapi.client.gui.ScrollList;
 import smartin.miapi.client.gui.crafting.statdisplay.StatListWidget;
 import smartin.miapi.material.MaterialProperty;
 import smartin.miapi.material.base.Material;
-import smartin.miapi.mixin.RegistryOpsAccessor;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleDataPropertiesManager;
 import smartin.miapi.modules.ModuleInstance;
-import smartin.miapi.registries.JsonOpsBooleanPatched;
+import smartin.miapi.modules.MutableModuleInstance;
 import smartin.miapi.registries.RegistryInventory;
 
 import java.util.ArrayList;
@@ -64,14 +62,10 @@ public class MaterialStatWidget extends InteractAbleWidget {
     }
 
     private static @NotNull ItemStack getDisplayStack(Material original, String propertyKey) {
-        ModuleInstance moduleInstance = new ModuleInstance(ItemModule.internal, Miapi.clientRegistryAccess);
+        MutableModuleInstance moduleInstance = MutableModuleInstance.fromRecord(new ModuleInstance(ItemModule.internal.id(), Miapi.clientRegistryAccess));
         ItemStack compareMaterial = RegistryInventory.modularStackableItem.getDefaultInstance();
         ModuleDataPropertiesManager.setProperties(moduleInstance, original.getDisplayMaterialProperties(propertyKey));
-        moduleInstance.clearCaches();
-        moduleInstance.writeToItem(compareMaterial);
-        moduleInstance.lookup = ((RegistryOpsAccessor) RegistryOps.create(JsonOpsBooleanPatched.INSTANCE, Miapi.registryAccess)).getLookupProvider();
-        moduleInstance.contextStack = compareMaterial;
-        moduleInstance.registryAccess = Miapi.registryAccess;
+        moduleInstance.toRecord().writeToItem(compareMaterial);
         StatListWidget.setAttributeCaches(compareMaterial, compareMaterial);
         return compareMaterial;
     }

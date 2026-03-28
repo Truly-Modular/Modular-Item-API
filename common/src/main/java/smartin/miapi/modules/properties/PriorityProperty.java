@@ -30,7 +30,7 @@ public class PriorityProperty extends DoubleProperty {
     }
 
     public static double getFor(ItemModule module) {
-        Optional<DoubleOperationResolvable> resolvable = property.getData(new ModuleInstance(module, Miapi.registryAccess));
+        Optional<DoubleOperationResolvable> resolvable = property.getData(new ModuleInstance(module.id(), Miapi.registryAccess));
         if (resolvable.isPresent()) {
             return resolvable.get().getValue();
         }

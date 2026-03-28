@@ -22,6 +22,7 @@ import smartin.miapi.material.MaterialProperty;
 import smartin.miapi.material.base.Material;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
+import smartin.miapi.modules.MutableModuleInstance;
 import smartin.miapi.modules.properties.AllowedInLootProperty;
 import smartin.miapi.modules.properties.ItemIdProperty;
 import smartin.miapi.modules.properties.slot.SlotProperty;
@@ -84,7 +85,7 @@ public record ModuleSwapLootFunction(
                 return stack;
             }
             Material highestMaterial = MaterialProperty.getMaterial(root);
-            for (ModuleInstance module : root.allSubModules()) {
+            for (ModuleInstance module : root.getFlatList()) {
                 Material otherMaterial = MaterialProperty.getMaterial(module);
                 if (highestMaterial == null) {
                     highestMaterial = otherMaterial;
@@ -100,14 +101,16 @@ public record ModuleSwapLootFunction(
                     highestMaterial = fromJson;
                 }
             }
-            root = randomizeModuleAndChildren(root, highestMaterial, lootContext.getRandom());
-            root.writeToItem(modular);
+            randomizeModuleAndChildren(
+                    root.asMutable(),
+                    highestMaterial,
+                    lootContext.getRandom()).toRecord().writeToItem(modular);
             modular = ItemIdProperty.changeId(modular);
         }
         return modular;
     }
 
-    ModuleInstance randomizeModuleAndChildren(ModuleInstance moduleInstance, Material fallBackMaterial, RandomSource randomSource) {
+    MutableModuleInstance randomizeModuleAndChildren(MutableModuleInstance moduleInstance, Material fallBackMaterial, RandomSource randomSource) {
         if (randomSource.nextFloat() <= chance()) {
             try {
                 moduleInstance = findPossibleSubstitute(moduleInstance, randomSource);
@@ -115,16 +118,12 @@ public record ModuleSwapLootFunction(
                 Miapi.LOGGER.error("could not randomize module", e);
             }
         }
-        Map<String, ModuleInstance> submodules = new LinkedHashMap<>(moduleInstance.getSubModuleMap());
-        for (var entry : submodules.entrySet()) {
-            moduleInstance.setSubModule(entry.getKey(), randomizeModuleAndChildren(entry.getValue(), fallBackMaterial, randomSource));
-            moduleInstance.clearCaches();
-        }
         return moduleInstance;
     }
 
-    ModuleInstance findPossibleSubstitute(ModuleInstance module, RandomSource randomSource) {
+    MutableModuleInstance findPossibleSubstitute(MutableModuleInstance module, RandomSource randomSource) {
         // Collect all possible substitute modules
+        ModuleInstance immutable = module.toRecord();
         List<ItemModule> possibleSubstitutes = RegistryInventory.ITEM_MODULE_MIAPI_REGISTRY.getFlatMap().values().stream()
                 .filter(m -> {
                     if (whitelist().isPresent()) {
@@ -142,23 +141,23 @@ public record ModuleSwapLootFunction(
                             return false;
                         }
                     }
-                    Map<String, SlotProperty.ModuleSlot> testSlots = SlotProperty.getSlots(module);
+                    Map<String, SlotProperty.ModuleSlot> testSlots = SlotProperty.getSlots(immutable);
                     Map<String, SlotProperty.ModuleSlot> slots = new LinkedHashMap<>(SlotProperty.getInstance().getData(m).orElse(new LinkedHashMap<>()));
                     for (String key : testSlots.keySet()) {
                         if (!slots.containsKey(key)) {
                             return false; // Slot missing in candidate module
                         } else {
-                            ModuleInstance subModule = module.getSubModule(key);
-                            if (subModule != null && !slots.get(key).allowedIn(subModule)) {
+                            MutableModuleInstance subModule = module.getChild(key);
+                            if (subModule != null && !slots.get(key).allowedIn(subModule.toRecord())) {
                                 return false; // Slot exists but subModule isn't allowed
                             }
                         }
                     }
-                    SlotProperty.ModuleSlot parentSlot = SlotProperty.getSlotIn(module);
+                    SlotProperty.ModuleSlot parentSlot = SlotProperty.getSlotIn(immutable);
                     if (parentSlot != null && !parentSlot.allowedIn(m)) {
                         return false;
                     }
-                    Material material1 = MaterialProperty.getMaterial(module);
+                    Material material1 = MaterialProperty.getMaterial(immutable);
                     var data = AllowedMaterial.property.getData(m);
                     if (material1 != null) {
                         if (data.isEmpty()) {
@@ -179,11 +178,8 @@ public record ModuleSwapLootFunction(
 
         // Select a random substitute from the list
         int randomIndex = randomSource.nextInt(possibleSubstitutes.size());
-        ModuleInstance moduleInstance = new ModuleInstance(possibleSubstitutes.get(randomIndex), module.registryAccess);
-        moduleInstance.moduleData = new HashMap<>(module.moduleData);
-        module.subModules.forEach(moduleInstance::setSubModule);
-        moduleInstance.clearCaches();
-        return moduleInstance;
+        module.setModule(possibleSubstitutes.get(randomIndex).id());
+        return module;
     }
 
 

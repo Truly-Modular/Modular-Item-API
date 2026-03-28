@@ -136,7 +136,7 @@ public class TrulyModularToolHelper extends TinkersToolProxy {
     public int getToolLevel(@NotNull final ItemStack stack) {
         if (!ModularItem.isModularItem(stack)) {
             int detected = -1;
-            for (ModuleInstance m : ItemModule.getModules(stack).allSubModules()) {
+            for (ModuleInstance m : ItemModule.getModules(stack).getFlatList()) {
                 Material material = MaterialProperty.getMaterial(m);
                 if (material != null) {
                     detected = (int) Math.floor(Math.max(detected, material.getDouble("hardness")));
