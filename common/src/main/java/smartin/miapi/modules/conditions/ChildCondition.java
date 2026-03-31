@@ -47,7 +47,7 @@ public class ChildCondition implements ModuleCondition {
                 assert otherInstance.getParent() != null;
                 ConditionManager.ConditionContext copiedContext = conditionContext.copy();
                 copiedContext.setContext(ConditionManager.MODULE_CONDITION_CONTEXT, otherInstance);
-                copiedContext.setContext(ConditionManager.MODULE_PROPERTIES, otherInstance.cache().properties);
+                copiedContext.setContext(ConditionManager.MODULE_PROPERTIES, otherInstance.cache().getPropertiesRaw(true));
                 if (condition.isAllowed(copiedContext)) {
                     return true;
                 }

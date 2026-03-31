@@ -11,6 +11,7 @@ import smartin.miapi.modules.ModuleInstance;
 
 import java.lang.ref.ReferenceQueue;
 import java.lang.ref.WeakReference;
+import java.time.Instant;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -20,6 +21,7 @@ import java.util.function.Supplier;
 
 public class ModularItemCache {
     protected static Map<String, CacheObjectSupplier> supplierMap = new ConcurrentHashMap<>();
+    public static long lastClearTimeStamp = 0;
     public static Map<String, DataCache.ModuleCacheSupplier> MODULE_CACHE_SUPPLIER = new ConcurrentHashMap<>();
     public static ConcurrentWeakInstanceTracker<ModuleInstance> modules = new ConcurrentWeakInstanceTracker<>();
 
@@ -32,6 +34,7 @@ public class ModularItemCache {
             @Override
             public EventResult onReload() {
                 discardCache();
+                lastClearTimeStamp = Instant.now().toEpochMilli();
                 return EventResult.pass();
             }
         });

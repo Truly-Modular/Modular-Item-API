@@ -45,7 +45,7 @@ public class OtherModuleModuleCondition implements ModuleCondition {
             for (ModuleInstance otherInstance : moduleInstance.getRoot().getFlatList()) {
                 ConditionManager.ConditionContext copiedContext = conditionContext.copy();
                 copiedContext.setContext(ConditionManager.MODULE_CONDITION_CONTEXT, otherInstance);
-                copiedContext.setContext(ConditionManager.MODULE_PROPERTIES, otherInstance.cache().getPropertiesRaw());
+                copiedContext.setContext(ConditionManager.MODULE_PROPERTIES, otherInstance.cache().getPropertiesRaw(true));
                 if (condition.isAllowed(copiedContext)) {
                     return true;
                 }

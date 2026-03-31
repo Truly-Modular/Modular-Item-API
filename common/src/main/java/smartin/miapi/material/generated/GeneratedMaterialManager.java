@@ -36,7 +36,6 @@ public class GeneratedMaterialManager {
                 onReloadServer(registryAccess);
             } else {
                 try {
-                    basicGeneratedMaterials.forEach(generatedMaterial -> MATERIAL_REGISTRY.register(generatedMaterial.getID(), generatedMaterial));
                     SmithingRecipeUtil.setupSmithingRecipe(generatedMaterials, true, (material) -> {
                         MATERIAL_REGISTRY.register(material.getID(), material);
                     }, registryAccess, null);
@@ -44,7 +43,6 @@ public class GeneratedMaterialManager {
                     Miapi.LOGGER.info("could not set up generated Materials on client!", e);
                 }
                 try {
-                    basicGeneratedMaterials.clear();
                     for (GeneratedMaterialFromCopy.GeneratedMaterialCopy copy : TO_GENERATE) {
                         Material baseMaterial = MaterialProperty.MATERIAL_REGISTRY.get(copy.fromMaterial());
                         if (baseMaterial == null) {
@@ -55,7 +53,7 @@ public class GeneratedMaterialManager {
                             if (verboseLogging()) {
                                 Miapi.LOGGER.info("wood/stone " + material.getTranslation().getString());
                             }
-                            basicGeneratedMaterials.add(material);
+                            MATERIAL_REGISTRY.register(material.getID(), material);
                         }
                     }
                 } catch (RuntimeException e) {

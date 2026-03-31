@@ -4,16 +4,17 @@
     "package": "smartin.miapi.fabric.mixin",
     "compatibilityLevel": "JAVA_17",
     "mixins": [
+        "EntityMixin",
+        "ItemEnchantmentsMixin",
         "LivingEntityMixin",
         "PlatformModularItemMethodsMixin",
-        "ReloadAbleServerResourcesMixin",
-        "ItemEnchantmentsMixin"
+        "ReloadAbleServerResourcesMixin"
     ],
     "client": [
         "TextMixin",
         "client.BuiltinModelItemRendererMixin",
-        "client.ShaderRegistryNucleusMixin",
-        "client.ItemRendererMixin"
+        "client.ItemRendererMixin",
+        "client.ShaderRegistryNucleusMixin"
     ],
     "injectors": {
         "defaultRequire": 1

@@ -5,6 +5,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.datapack.ReloadEvents;
@@ -14,7 +15,6 @@ import smartin.miapi.material.MaterialProperty;
 import smartin.miapi.material.base.Material;
 import smartin.miapi.modules.cache.DataCache;
 import smartin.miapi.modules.cache.ModularItemCache;
-import smartin.miapi.modules.properties.DisplayNameProperty;
 import smartin.miapi.modules.properties.slot.SlotProperty;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
@@ -26,6 +26,9 @@ import java.util.function.Supplier;
 
 /**
  * Mutable Object to cache things on static record.
+ * some stuff is stored natively on here to prevent cache lookups.
+ * if you as an addon developer want to cache something, use the cache methods in here.
+ * if a faster cache is desired on a ModuleInstance basis mixins are the only way.
  */
 public class ModuleInstanceLocalCache {
 
@@ -33,26 +36,34 @@ public class ModuleInstanceLocalCache {
     ModuleInstance record;
     ModuleInstance parent;
     ItemStack last = ItemStack.EMPTY;
-    ItemModule module;
-    List<ModuleInstance> flatList;
-    private List<ModuleInstance> sortedChildren;
+    volatile ItemModule module;
+    volatile List<ModuleInstance> flatList;
+    volatile private List<ModuleInstance> sortedChildren;
     private final Object childrenLock = new Object();
+    volatile private long lastClear = ModularItemCache.lastClearTimeStamp;
 
     public ItemModule getModule() {
-        if (module == null) {
-            this.module = RegistryInventory.ITEM_MODULE_MIAPI_REGISTRY.get(record.moduleId());
-            if (this.module == null) {
-                this.module = ItemModule.empty;
-                if (ReloadEvents.isInReload()) {
-                    return module;
+        confirmTime();
+        ItemModule local = module;
+        if (local != null) return local;
+
+        synchronized (lock) {
+            local = module;
+            if (local == null) {
+                local = RegistryInventory.ITEM_MODULE_MIAPI_REGISTRY.get(record.moduleId());
+                if (local == null) {
+                    local = ItemModule.empty;
+                    if (!ReloadEvents.isInReload()) {
+                        Miapi.LOGGER.warn("could not find module " + record.moduleId() + " substituting with empty module");
+                    }
                 }
-                Miapi.LOGGER.warn("could not find module " + record.moduleId() + " substituting with empty module");
+                module = local;
             }
         }
-        return module;
+        return local;
     }
 
-    private SequencedMap<String, ModuleInstance> subModuleMap;
+    private volatile SequencedMap<String, ModuleInstance> subModuleMap;
     private final Object subModuleLock = new Object();
 
     public ModuleInstance owner() {
@@ -60,103 +71,123 @@ public class ModuleInstanceLocalCache {
     }
 
     public SequencedMap<String, ModuleInstance> getSubModules() {
-        if (subModuleMap != null) {
-            return subModuleMap;
-        }
+        confirmTime();
+
+        SequencedMap<String, ModuleInstance> local = subModuleMap;
+        if (local != null) return local;
 
         synchronized (subModuleLock) {
-            if (subModuleMap != null) {
-                return subModuleMap;
+            local = subModuleMap;
+            if (local == null) {
+                List<Map.Entry<String, ModuleInstance>> entries =
+                        new ArrayList<>(record.children().entrySet());
+
+                // stable sort by priority (lowest first)
+                entries.sort(Comparator.comparingDouble(
+                        e -> computePriority(e.getKey(), e.getValue())
+                ));
+
+                LinkedHashMap<String, ModuleInstance> ordered = new LinkedHashMap<>();
+                for (var entry : entries) {
+                    ordered.put(entry.getKey(), entry.getValue());
+                }
+
+                local = Collections.unmodifiableSequencedMap(ordered);
+                subModuleMap = local;
             }
-
-            SequencedMap<String, ModuleInstance> map = new LinkedHashMap<>();
-
-            if (record.children() != null) {
-                map.putAll(record.children());
-            }
-
-            subModuleMap = map;
-            return subModuleMap;
         }
+        return local;
     }
 
+    /**
+     * only includes direct children.
+     */
     public List<ModuleInstance> getSortedChildren() {
-        if (sortedChildren != null) {
-            return sortedChildren;
-        }
+        List<ModuleInstance> local = sortedChildren;
+        if (local != null) return local;
 
         synchronized (childrenLock) {
-            if (sortedChildren != null) {
-                return sortedChildren;
+            local = sortedChildren;
+            if (local == null) {
+                local = List.copyOf(computeSortedChildren());
+                sortedChildren = local;
             }
-
-            List<ModuleInstance> list = new ArrayList<>();
-
-            Map<String, ModuleInstance> children = record.children();
-            if (children != null) {
-                for (var entry : children.entrySet()) {
-                    list.add(entry.getValue());
-                }
-            }
-
-            // Sort using Child priority
-            list.sort((a, b) -> {
-                double pa = computePriority(a);
-                double pb = computePriority(b);
-                return Double.compare(pb, pa); // descending (higher priority first)
-            });
-
-            sortedChildren = List.copyOf(list);
-            return sortedChildren;
         }
+        return local;
     }
 
-    private double computePriority(ModuleInstance value) {
+    private @NotNull List<ModuleInstance> computeSortedChildren() {
+        return new ArrayList<>(getSubModules().values());
+    }
+
+    private double computePriority(String slotKey, ModuleInstance value) {
         return SlotProperty.getInstance()
-                .getData(value)
-                .map(slot -> {
-                    // slot id is derived from map key, not directly available here
-                    // fallback to 0 if not resolvable
-                    return 0.0;
-                })
+                .getData(value.cache().getPropertiesRaw(true))
+                .flatMap(slotMap -> Optional.ofNullable(slotMap.get(slotKey)))
+                .map(slot -> slot.priority)
                 .orElse(0.0);
     }
 
+    /**
+     * this should nolonger be required to be called.
+     * caches should auto invalidate themselves.
+     */
     public void clear() {
         synchronized (lock) {
-            module = null;
-            flatList = null;
-            sortedChildren = null;
-
-            properties = null;
-            initialized.clear();
-
-            cachedData.clear();
-            itemStackCache.clear();
+            clearInternal();
+            lastClear = ModularItemCache.lastClearTimeStamp;
         }
     }
 
+    private void clearInternal() {
+        module = null;
+        flatList = null;
+        sortedChildren = null;
+        subModuleMap = null;
 
-    List<ModuleInstance> allSubModules() {
+        properties = null;
+        isFullyInit = false;
+
+        initialized.clear();
+        itemMergedProperties.clear();
+        cachedData.clear();
+        itemStackCache.clear();
+    }
+
+
+    public List<ModuleInstance> allSubModules() {
         if (flatList == null) {
             List<ModuleInstance> nextFlatList = new ArrayList<>();
-            List<ModuleInstance> queue = new ArrayList<>();
+            Deque<ModuleInstance> queue = new ArrayDeque<>();
             queue.add(record);
 
             while (!queue.isEmpty()) {
-                ModuleInstance module = queue.removeFirst();
-                if (module != null) {
-                    nextFlatList.add(module);
-
-                    // use sorted children from cache
-                    List<ModuleInstance> children = module.cache().getSortedChildren();
-                    queue.addAll(0, children);
-                }
+                ModuleInstance module = queue.pollFirst();
+                nextFlatList.add(module);
+                queue.addAll(module.cache().getSortedChildren());
             }
 
-            flatList = nextFlatList;
+            flatList = List.copyOf(nextFlatList);
         }
         return flatList;
+    }
+
+    /**
+     * WARNING uncached only use sparingly,
+     * use {@link ModuleInstance#getFlatList()} instead!
+     */
+    public List<ModuleInstance> allSubUnsortedModules() {
+        List<ModuleInstance> nextFlatList = new ArrayList<>();
+        Deque<ModuleInstance> queue = new ArrayDeque<>();
+        queue.add(record);
+
+        while (!queue.isEmpty()) {
+            ModuleInstance module = queue.pollFirst();
+            nextFlatList.add(module);
+            queue.addAll(module.children().values());
+        }
+
+        return List.copyOf(nextFlatList);
     }
 
     public Optional<ModuleInstance> getParent() {
@@ -166,64 +197,102 @@ public class ModuleInstanceLocalCache {
     // PROPERTY STUFF
     @Nullable
     @ApiStatus.Internal
-    public Map<ModuleProperty<?>, Object> properties = null;
-    private boolean isFullyInit = false;
-    private final Map<ModuleProperty<?>, Object> initialized = new ConcurrentHashMap<>();
+    /**
+     * one should *NEVER* access this field, its fundamentally unsave.
+     * it is only exposed so the resolver can access it to set it.
+     * its data is fundamentally volatile and no guarantees can be given.
+     * use {@link ModuleInstanceLocalCache#getPropertiesRaw(boolean)} instead!
+     */
+    public volatile Map<ModuleProperty<?>, Object> properties = null;
+    private volatile boolean isFullyInit = false;
+    public final Map<ModuleProperty<?>, Object> initialized = new ConcurrentHashMap<>();
     private final Map<ModuleProperty<?>, Object> itemMergedProperties = new ConcurrentHashMap<>();
-    private final Object lock = new Object();
+    public final Object lock = new Object();
+    private final Object resolveLock = new Object();
 
+    /**
+     * will cause deadlock if called during PropertyResolve!
+     * is thread save, will wait upon property solve to finish if property solve is occuring!
+     */
     @SuppressWarnings("unchecked")
     public <T> T getProperty(ModuleProperty<T> property) {
         if (ReloadEvents.isInReload()) {
-            properties = null;
-            initialized.clear();
+            synchronized (lock) {
+                properties = null;
+                initialized.clear();
+            }
             return null;
         }
+
+        confirmTime();
 
         Object cached = initialized.get(property);
         if (cached != null) {
             return (T) cached;
         }
-
-        if (properties == null) {
-            PropertyResolver.resolve(record);
-        }
-
-        if (properties == null) {
+        Map<ModuleProperty<?>, Object> props = getPropertiesRaw(false);
+        if (props == null) {
             Miapi.LOGGER.error("property resolve failed!");
-            Miapi.LOGGER.error("Could not resolve Property " + property);
-            Miapi.LOGGER.error("for Module " + record.moduleId());
+            Miapi.LOGGER.error("Could not resolve Property {}", property);
+            Miapi.LOGGER.error("for Module {}", record.moduleId());
             return null;
         }
 
-        Object raw = properties.get(property);
+        Object raw = props.get(property);
         if (raw == null) return null;
 
-        T value = (T) raw;
-        value = property.initialize(value, record);
-
-        initialized.put(property, value);
-        return value;
+        return (T) initialized.computeIfAbsent(property, p -> {
+            T value = (T) raw;
+            return property.initialize(value, record);
+        });
     }
 
     /**
-     * WARNING! do only use if otherwise would cause a stack overflow
-     * @return
+     * @param duringResolve if set to true, will return partial maps during resolve
+     *                      if false, will block until resolve is finished.
      */
-    public Map<ModuleProperty<?>, Object> getPropertiesRaw() {
-        return properties;
+    public Map<ModuleProperty<?>, Object> getPropertiesRaw(boolean duringResolve) {
+        ModuleInstance root = getRoot();
+        ModuleInstanceLocalCache rootCache = root.cache();
+        if (!duringResolve) {
+            synchronized (rootCache.lock) {
+                if (this.properties != null) {
+                    return this.properties;
+                }
+                if (rootCache.properties == null) {
+                    PropertyResolver.resolve(root);
+                }
+            }
+        } else {
+            synchronized (rootCache.resolveLock) {
+                if (this.properties != null) {
+                    return this.properties;
+                } else {
+                    List<ModuleInstance> flatUnsorted = root.cache().allSubUnsortedModules();
+                    for (ModuleInstance instance : flatUnsorted) {
+                        ModuleInstanceLocalCache cache = instance.cache();
+                        cache.properties = new ConcurrentHashMap<>();
+                        cache.initialized.clear();
+                    }
+                }
+            }
+            synchronized (rootCache.lock) {
+                PropertyResolver.resolve(root);
+            }
+        }
+        return this.properties;
     }
 
-    @SuppressWarnings("unchecked")
     public Map<ModuleProperty<?>, Object> getInitializedProperties() {
+        confirmTime();
         if (ReloadEvents.isInReload()) {
             return Map.of();
         }
         if (isFullyInit) {
             return initialized;
         }
-        getProperty(DisplayNameProperty.property);
-        for (var property : properties.keySet()) {
+        Map<ModuleProperty<?>, Object> props = getPropertiesRaw(false);
+        for (var property : props.keySet()) {
             getProperty(property);
         }
         isFullyInit = true;
@@ -233,7 +302,21 @@ public class ModuleInstanceLocalCache {
     public void confirmStack(ItemStack itemStack) {
         if (this.last != itemStack) {
             this.last = itemStack;
-            clear();
+            synchronized (lock) {
+                clearInternal();
+            }
+        }
+    }
+
+    public void confirmTime() {
+        long global = ModularItemCache.lastClearTimeStamp;
+        if (this.lastClear != global) {
+            synchronized (lock) {
+                if (this.lastClear != global) {
+                    clearInternal();
+                    this.lastClear = global;
+                }
+            }
         }
     }
 
@@ -244,27 +327,30 @@ public class ModuleInstanceLocalCache {
     @Nullable
     @SuppressWarnings("unchecked")
     public <T> T getPropertyItemStack(ModuleProperty<T> property) {
+        confirmTime();
         if (itemMergedProperties.containsKey(property)) {
             return (T) itemMergedProperties.get(property);
         }
-        T propertyData = null;
-        ModuleInstance lastDataOwner = null;
-        ModuleInstance root = getRoot();
-        for (ModuleInstance moduleInstance : root.getFlatList()) {
-            T toMergeData = moduleInstance.getProperty(property);
-            if (toMergeData != null) {
-                if (propertyData == null) {
-                    propertyData = toMergeData;
-                    lastDataOwner = moduleInstance;
-                } else {
-                    propertyData = property.merge(propertyData, lastDataOwner, toMergeData, moduleInstance, MergeType.SMART);
+        synchronized (lock) {
+            T propertyData = null;
+            ModuleInstance lastDataOwner = null;
+            ModuleInstance root = getRoot();
+            for (ModuleInstance moduleInstance : root.getFlatList()) {
+                T toMergeData = moduleInstance.getProperty(property);
+                if (toMergeData != null) {
+                    if (propertyData == null) {
+                        propertyData = toMergeData;
+                        lastDataOwner = moduleInstance;
+                    } else {
+                        propertyData = property.merge(propertyData, lastDataOwner, toMergeData, moduleInstance, MergeType.SMART);
+                    }
                 }
             }
+            if (property != null && propertyData != null) {
+                itemMergedProperties.put(property, propertyData);
+            }
+            return propertyData;
         }
-        if (property != null && propertyData != null) {
-            itemMergedProperties.put(property, propertyData);
-        }
-        return propertyData;
     }
 
     public ModuleInstance getRoot() {
@@ -311,6 +397,7 @@ public class ModuleInstanceLocalCache {
      */
     @SuppressWarnings("unchecked")
     public <T> T getFromCache(String key, Supplier<T> fallback) {
+        confirmTime();
         T data = (T) cachedData.get(key);
         if (data != null) {
             return data;
@@ -337,6 +424,7 @@ public class ModuleInstanceLocalCache {
      */
     @SuppressWarnings("unused")
     public <T> T getFromCache(String key, ItemStack itemStack, T fallback) {
+        confirmTime();
         return ModularItemCache.get(itemStack, key, fallback);
     }
 
@@ -351,15 +439,18 @@ public class ModuleInstanceLocalCache {
      */
     @SuppressWarnings("unused")
     public <T> T getFromCache(String key, ItemStack itemStack, Supplier<T> fallback) {
+        confirmTime();
         return ModularItemCache.get(itemStack, key, fallback);
     }
 
     /**
      * This function should not be used directly, instead check {@link ModularItemCache#get(ItemStack, String, Object)} for this functionality
-     * alternatively {@link ModuleInstance#getFromCache(String, ItemStack, Supplier)} can also be used
+     * alternatively {@link ModuleInstanceLocalCache#getFromCache(String, ItemStack, Supplier)} can also be used
      */
     @SuppressWarnings("unchecked")
     public <T> T getFromCache(String key, ItemStack itemStack, Map<String, ModularItemCache.CacheObjectSupplier> supplierMap, Supplier<T> fallback) {
+        confirmTime();
+        confirmStack(itemStack);
         T data = (T) cachedData.get(key);
         if (data != null) {
             return data;

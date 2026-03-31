@@ -170,7 +170,7 @@ public class MaterialProperty extends CodecProperty<ResourceLocation> {
             try {
                 Material jsonMaterial = MaterialProperty.MATERIAL_CODEC.decode(JsonOpsBooleanPatched.INSTANCE, element).getOrThrow().getFirst();
                 if (jsonMaterial != null) {
-                    return MaterialOverwriteProperty.property.adjustMaterial(instance.owner(), jsonMaterial.getMaterial(instance.owner(), instance.owner().cache().getPropertiesRaw()));
+                    return MaterialOverwriteProperty.property.adjustMaterial(instance.owner(), jsonMaterial.getMaterial(instance.owner(), instance.owner().cache().getPropertiesRaw(true)));
                 }
                 return jsonMaterial;
             } catch (RuntimeException ignored) {
@@ -180,7 +180,7 @@ public class MaterialProperty extends CodecProperty<ResourceLocation> {
         if (property.getData(instance.owner()).isPresent()) {
             Material material = MaterialProperty.MATERIAL_REGISTRY.get((ResourceLocation) property.getData(instance.owner()).get());
             if (material != null) {
-                material = material.getMaterial(instance.owner(), instance.owner().cache().getPropertiesRaw());
+                material = material.getMaterial(instance.owner(), instance.owner().cache().getPropertiesRaw(true));
                 return MaterialOverwriteProperty.property.adjustMaterial(instance.owner(), material);
             }
         }

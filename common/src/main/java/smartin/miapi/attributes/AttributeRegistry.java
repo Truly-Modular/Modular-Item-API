@@ -299,11 +299,20 @@ public class AttributeRegistry {
     }
 
     private static void registerAttributeAdditionalDamage(ResourceLocation id, ResourceKey<DamageType> damageType, Holder<Attribute> holder) {
+        if (holder == null || holder.value() == null) {
+            Miapi.LOGGER.error("attribute for additional damage is null! " + id);
+            return;
+        }
         EntityDamageSystem.REGISTRY.register(id, new EntityDamageSystem.AdditionalDamageEffect() {
             @Override
             public void apply(LivingEntity defender, DamageSource originalSource, float originalAmount, boolean didDamage) {
                 if (originalSource.getEntity() instanceof LivingEntity attacker) {
-                    double damage = attacker.getAttributeValue(holder);
+                    double damage;
+                    if (attacker.getAttributes().hasAttribute(holder)) {
+                        damage = attacker.getAttributeValue(holder);
+                    } else {
+                        damage = 0;
+                    }
                     if (originalSource.getDirectEntity() instanceof ItemProjectileEntity entity) {
                         damage += AttributeUtil.getActualValue(entity.getProjectileItem(), EquipmentSlot.MAINHAND, holder.value());
                     }

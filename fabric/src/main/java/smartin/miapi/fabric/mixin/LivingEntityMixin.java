@@ -1,21 +1,21 @@
 package smartin.miapi.fabric.mixin;
 
-import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import dev.architectury.event.EventResult;
-import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Arrow;
 import net.minecraft.world.level.material.FluidState;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import smartin.miapi.attributes.AttributeRegistry;
@@ -24,6 +24,10 @@ import smartin.miapi.mixin.entity.LivingEntityAccessor;
 
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin {
+    @Shadow protected abstract void onEffectRemoved(MobEffectInstance effectInstance);
+
+    @Shadow public abstract void swing(InteractionHand hand);
+
     private float storedValue;
     private DamageSource storedDamageSource;
     private MiapiEvents.LivingHurtEvent lastEvent;
@@ -104,29 +108,35 @@ public abstract class LivingEntityMixin {
         return storedDamageSource;
     }
 
-    @ModifyReturnValue(
-            method = "Lnet/minecraft/world/entity/LivingEntity;getAttributeValue(Lnet/minecraft/core/Holder;)D",
-            at = @At(value = "RETURN")
+    @ModifyArg(
+            method = "travel",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/world/entity/LivingEntity;moveRelative(FLnet/minecraft/world/phys/Vec3;)V"
+            ),
+            index = 0
     )
-    private double miapi$modifySwimSpeed(double original, Holder<Attribute> attributeHolder) {
-        if(!attributeHolder.is(ResourceLocation.parse("generic.water_movement_efficiency"))){
-            return original;
-        }
-
+    private float modifySwimSpeed(float original) {
         LivingEntity self = (LivingEntity) (Object) this;
 
-        if (!self.isInWater() || !self.isControlledByLocalInstance()) {
+        if (!self.isInWater()
+            || !self.isControlledByLocalInstance()
+        ) {
+            return original;
+        }
+        if(self instanceof Player && !self.isSprinting()){
             return original;
         }
         FluidState fluidState = self.level().getFluidState(self.blockPosition());
         if (!(
                 self.isInWater() &&
                 ((LivingEntityAccessor) self).callIsAffectedByFluidsMiapi() &&
-                !self.canStandOnFluid(fluidState))) {
+                !self.canStandOnFluid(fluidState))
+        ) {
             return original;
         }
 
-        double swimSpeed = self.getAttributeValue(AttributeRegistry.SWIM_SPEED);
-        return original + swimSpeed * 2;
+        float swimSpeed = (float) self.getAttributeValue(AttributeRegistry.SWIM_SPEED);
+        return original * swimSpeed;
     }
 }

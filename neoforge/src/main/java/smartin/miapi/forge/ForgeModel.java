@@ -7,7 +7,6 @@ import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.Material;
 import net.minecraft.client.resources.model.ModelBaker;
 import net.minecraft.client.resources.model.ModelState;
-import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.client.model.geometry.IGeometryBakingContext;
 import net.neoforged.neoforge.client.model.geometry.IUnbakedGeometry;
 import org.lwjgl.system.NonnullDefault;
@@ -23,7 +22,6 @@ public class ForgeModel implements IUnbakedGeometry<ForgeModel> {
     @Override
     public BakedModel bake(IGeometryBakingContext iGeometryBakingContext, ModelBaker arg, Function<Material, TextureAtlasSprite> function, ModelState arg2, ItemOverrides arg3) {
         DynamicBakery.dynamicBaker = arg;
-        Block block;
         return new ItemBakedModelReplacement();
     }
 }

@@ -3,9 +3,11 @@ package smartin.miapi.item.modular;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Tuple;
+import org.jetbrains.annotations.ApiStatus;
 import smartin.miapi.Miapi;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
+import smartin.miapi.modules.ModuleInstanceLocalCache;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.modules.properties.util.SourceSetter;
@@ -22,22 +24,32 @@ public class PropertyResolver {
     /**
      * Resolves {@link ModuleProperty} maps for an {@link ModuleInstance}
      *
-     * @param moduleInstance the {@link ModuleInstance} to resolve for
+     * @param root the {@link ModuleInstance} to resolve for
      */
-    public static void resolve(ModuleInstance moduleInstance) {
-        if (moduleInstance.cache().properties == null) {
-            moduleInstance.cache().properties = new ConcurrentHashMap<>();
+    @ApiStatus.Internal
+    public static void resolve(ModuleInstance root) {
+        List<ModuleInstance> flatUnsorted = root.cache().allSubUnsortedModules();
+        for (ModuleInstance instance : flatUnsorted) {
+            ModuleInstanceLocalCache cache = instance.cache();
+            cache.properties = new ConcurrentHashMap<>();
+            cache.initialized.clear();
         }
-        synchronized (moduleInstance.cache()) {
-            registry.forEach((pair) -> {
-                PropertyProvider propertyProvider = pair.getB();
-                moduleInstance.getFlatList().forEach(instance -> {
-                    if (instance.cache().properties == null) {
-                        instance.cache().properties = new ConcurrentHashMap<>();
-                    }
-                    instance.cache().properties.putAll(propertyProvider.resolve(instance, instance.cache().properties));
-                });
-            });
+
+        for (Tuple<ResourceLocation, PropertyProvider> pair : registry) {
+            PropertyProvider provider = pair.getB();
+            List<ModuleInstance> flat = root.getFlatList();
+            for (ModuleInstance instance : flat) {
+                ModuleInstanceLocalCache cache = instance.cache();
+
+                Map<ModuleProperty<?>, Object> current = cache.getPropertiesRaw(true);
+
+                Map<ModuleProperty<?>, Object> next =
+                        provider.resolve(instance, current);
+
+                if (next != null) {
+                    cache.properties = new ConcurrentHashMap<>(next);
+                }
+            }
         }
     }
 

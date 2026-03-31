@@ -2,11 +2,21 @@ package smartin.miapi.entity;
 
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
+import org.jetbrains.annotations.ApiStatus;
 import smartin.miapi.registries.MiapiRegistry;
 
+/**
+ * lightweight implementation of a new damage system to allow different damage types to have individual invulnerable timer,
+ * in effect bypassing the base one
+ */
 public class EntityDamageSystem {
     public static MiapiRegistry<AdditionalDamageEffect> REGISTRY = MiapiRegistry.getInstance(AdditionalDamageEffect.class);
 
+    /**
+     * this is called by the mixins.
+     * you should not call this directly
+     */
+    @ApiStatus.Internal
     public static void applyPostDamage(LivingEntity defender, DamageSource originalSource, float originalAmount, boolean didDamage) {
         HurtTimerFacet facet = HurtTimerFacet.KEY.get(defender);
         if (facet == null) {
@@ -23,16 +33,10 @@ public class EntityDamageSystem {
         defender.hurtDuration = baseHurtDuration;
     }
 
-    public static class DamageSnapshot {
-        public int hurtTime = 0;
-        public int hurtDuration = 0;
-
-        public void apply(LivingEntity livingEntity) {
-            livingEntity.hurtTime = this.hurtTime;
-            livingEntity.hurtDuration = this.hurtDuration;
-        }
-    }
-
+    /**
+     * implement and register this under {@link EntityDamageSystem#REGISTRY}.
+     * each registered effect has a individual invulnerability timer.
+     */
     public interface AdditionalDamageEffect {
         void apply(LivingEntity defender, DamageSource originalSource, float originalAmount, boolean didDamage);
     }
