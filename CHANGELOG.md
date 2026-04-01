@@ -1,4 +1,4 @@
-## v2.3.0 (1.21)
+## v2.3.1 (1.21)
 ### Bugfixes
  - fix fabric crashing
 ### Additions
