@@ -2,16 +2,13 @@ package smartin.miapi.fabric.mixin;
 
 import dev.architectury.event.EventResult;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Arrow;
 import net.minecraft.world.level.material.FluidState;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -24,13 +21,10 @@ import smartin.miapi.mixin.entity.LivingEntityAccessor;
 
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin {
-    @Shadow protected abstract void onEffectRemoved(MobEffectInstance effectInstance);
 
-    @Shadow public abstract void swing(InteractionHand hand);
-
-    private float storedValue;
-    private DamageSource storedDamageSource;
-    private MiapiEvents.LivingHurtEvent lastEvent;
+    private @Unique float storedValue;
+    private @Unique DamageSource storedDamageSource;
+    private @Unique MiapiEvents.LivingHurtEvent lastEvent;
 
     @Inject(method = "hurt", at = @At(value = "HEAD"), cancellable = true)
     private void miapi$damageEvent(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {

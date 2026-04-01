@@ -1,0 +1,7 @@
+{
+    "replace": false,
+    "values": [
+        "miapi:true_damage",
+        "miapi:armor_pierce_damage"
+    ]
+}

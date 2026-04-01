@@ -151,7 +151,7 @@ processResources {
     filesMatching("fabric.mod.json") {
         expand "version": project.version
     }
-    from(project(":common").sourceSets.main.resources) {
+    from(project(":common").file("src/main/resources/resourcepacks")) {
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     }
 }

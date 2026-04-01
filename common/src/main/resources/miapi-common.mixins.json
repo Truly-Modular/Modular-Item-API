@@ -6,11 +6,9 @@
     "mixins": [
         "ApoliStackPowerMixin",
         "BufferBuilderAccessor",
-        "CodecBehaviorAccessor",
         "CooldownInstanceAccessor",
         "CraftingResultInventorMixin",
         "DataResultErrorMixin",
-        "GameRendererAccessor",
         "IngredientMixin",
         "NamedAccessor",
         "NucleusMixin",

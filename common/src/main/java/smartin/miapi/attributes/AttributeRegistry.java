@@ -52,6 +52,7 @@ public class AttributeRegistry {
     public static Holder<Attribute> MINING_SPEED_SHOVEL;
     public static Holder<Attribute> MINING_SPEED_HOE;
 
+    public static Holder<Attribute> ARMOR_PIERCE_DAMAGE;
     public static Holder<Attribute> MAGIC_DAMAGE;
     public static Holder<Attribute> TRUE_DAMAGE;
     public static Holder<Attribute> STUN_DAMAGE;
@@ -107,6 +108,7 @@ public class AttributeRegistry {
         });
         registerAttributeAdditionalDamage(Miapi.id("true_damage"), ResourceKey.create(Registries.DAMAGE_TYPE, Miapi.id("true_damage")), TRUE_DAMAGE);
         registerAttributeAdditionalDamage(Miapi.id("magic_damage"), DamageTypes.MAGIC, MAGIC_DAMAGE);
+        registerAttributeAdditionalDamage(Miapi.id("armor_pierce_damage"), ResourceKey.create(Registries.DAMAGE_TYPE, Miapi.id("armor_pierce_damage")), ARMOR_PIERCE_DAMAGE);
         MiapiProjectileEvents.MODULAR_PROJECTILE_DATA_TRACKER_SET.register(new MiapiProjectileEvents.ItemProjectileDataTracker() {
             @Override
             public EventResult dataTracker(ItemProjectileEntity projectile, SynchedEntityData nbtCompound) {

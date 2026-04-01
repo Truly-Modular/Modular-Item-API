@@ -61,6 +61,9 @@ public class AttributeRegistry {
         RegistryInventory.registerAtt("generic.true_damage", true, () ->
                         new RangedAttribute("miapi.attribute.name.true_damage", 0.0, 0.0, 1024.0).setSyncable(true),
                 att -> TRUE_DAMAGE = att);
+        RegistryInventory.registerAtt("generic.armor_pierce_damage", true, () ->
+                        new RangedAttribute("miapi.attribute.name.armor_pierce_damage", 0.0, 0.0, 1024.0).setSyncable(true),
+                att -> ARMOR_PIERCE_DAMAGE = att);
 
         RegistryInventory.registerAtt("generic.stun_damage", true, () ->
                         new RangedAttribute("miapi.attribute.name.stun_damage", 0.0, 0.0, 1024.0).setSyncable(true),
