@@ -1,43 +1,6 @@
 ## v2.3.0 (1.21)
 ### Bugfixes
-- fixed minor issues with generated materials causing stat displays to fail
-- fixed generated materials not having toughness
-- fixed broken items removing their module information
-- fixed bug where some attributes using add_multiply_base where mistakenly discarded
-- improvements to glint logic and robustness
-  - added armor glint strength setting to reduce glint on armor
-  - re-added glint-rendering using vanillas rendering as fallback
-    - fallback is loaded if Vulkanmod is loaded to allow for full compat
-    - fallback now looks much better then previously
-- fixed issue where durability is rendered wrongly if other mods modify maxDamage
-- fixed crossbows shooting from feet sometimes
-- fixed arrows not critting correctly.
-- bow enchantments not working on modular arrows
-- improved reload logics performance
-### Changes
-- changed texture recoloring logic to allow for alpha pass through from original
-- improved shift+alt stat display
-- improved rendering logic for more dynamic models
-- added new properties to replace most projectile attributes
-  - this includes new tooltips for arrows, bows, crossbows and throwables
-  - the old attributes are still implemented and work, but will be fully removed in the future
-- made bow and thrown items enchantments apply damage and post-hit enchantments (this includes sharpness on thrown items).
-- more important modules are in the UI now above less important modules
-- changed internal module data handling to prevent access and write errors
+ - fix fabric crashing
 ### Additions
-- added trail rendering
-  - fully data-driven model type
-  - added 2 base trail models to be used
-- added prototype chain/rope rendering
-- added in-air model transformation for projectiles
-- added in-air render animations for projectiles (spinning daggers)
-- reworked entire projectile logic
-  - added bow speed and accuracy property
-  - added projectile damage, speed and accuracy property
-  - added throw damage and speed property
-  - added arrow retrieval property
-  - added new tooltip system to simplify 
-- added curio/accessories support for modular items
-  - support for curio/accessori attributes by using "trinket" as equipmentslot in attribute property
-  - added "trinket_slots" property setting allowed slots for an item
-  - properties that work on armor items work on curio as well
+ - added True Damage and Armor Pierce Damage attributes
+ - added system so different Damage Types can have different inv timers
