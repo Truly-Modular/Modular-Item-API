@@ -195,14 +195,14 @@ public class ModuleInstanceLocalCache {
     }
 
     // PROPERTY STUFF
-    @Nullable
-    @ApiStatus.Internal
     /**
      * one should *NEVER* access this field, its fundamentally unsave.
      * it is only exposed so the resolver can access it to set it.
      * its data is fundamentally volatile and no guarantees can be given.
      * use {@link ModuleInstanceLocalCache#getPropertiesRaw(boolean)} instead!
      */
+    @Nullable
+    @ApiStatus.Internal
     public volatile Map<ModuleProperty<?>, Object> properties = null;
     private volatile boolean isFullyInit = false;
     public final Map<ModuleProperty<?>, Object> initialized = new ConcurrentHashMap<>();
@@ -241,10 +241,13 @@ public class ModuleInstanceLocalCache {
         Object raw = props.get(property);
         if (raw == null) return null;
 
-        return (T) initialized.computeIfAbsent(property, p -> {
-            T value = (T) raw;
-            return property.initialize(value, record);
-        });
+        if (initialized.containsKey(property)) {
+            return (T) initialized.get(property);
+        } else {
+            T init = property.initialize((T) raw, record);
+            initialized.put(property, init);
+            return init;
+        }
     }
 
     /**
