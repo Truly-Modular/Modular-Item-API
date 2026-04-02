@@ -4,6 +4,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceKey;
+import smartin.miapi.Miapi;
 
 import java.util.Map;
 import java.util.Optional;
@@ -22,6 +23,15 @@ public class MiapiHolderLookupAdapter implements RegistryOps.RegistryInfoLookup 
     }
 
     private Optional<RegistryOps.RegistryInfo<Object>> createLookup(ResourceKey<? extends Registry<?>> registryKey) {
+        if (this.lookupProvider == null) {
+            if (Miapi.registryAccess != null) {
+                return Miapi.registryAccess.lookup(registryKey).map(RegistryOps.RegistryInfo::fromRegistryLookup);
+            }
+            if (Miapi.clientRegistryAccess != null) {
+                return Miapi.clientRegistryAccess.lookup(registryKey).map(RegistryOps.RegistryInfo::fromRegistryLookup);
+            }
+            return Optional.empty();
+        }
         return this.lookupProvider.lookup(registryKey).map(RegistryOps.RegistryInfo::fromRegistryLookup);
     }
 

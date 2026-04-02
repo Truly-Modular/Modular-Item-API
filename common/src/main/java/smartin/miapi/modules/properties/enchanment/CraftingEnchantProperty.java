@@ -82,6 +82,10 @@ public class CraftingEnchantProperty extends CodecProperty<Map<ResourceLocation,
 
     public static Optional<Holder<Enchantment>> tryAndLookUp(ResourceLocation id, ModuleInstance reference) {
         ResourceKey<Enchantment> enchantmentResourceKey = ResourceKey.create(Registries.ENCHANTMENT, id);
+        if (reference.getter() == null) {
+            Miapi.LOGGER.error("item was not setup correctly, registry access isn't functional");
+            return Optional.empty();
+        }
         return reference.getter().lookup(Registries.ENCHANTMENT).flatMap(e -> e.getter().get(enchantmentResourceKey));
     }
 

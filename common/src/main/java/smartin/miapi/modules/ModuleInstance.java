@@ -10,12 +10,14 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import smartin.miapi.Miapi;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * an immutable Module to be read and stored on an itemstack
@@ -38,12 +40,12 @@ public record ModuleInstance(
             .networkSynchronized(ByteBufCodecs.fromCodec(StatResolver.Codecs.JSONELEMENT_CODEC)).build();
 
     public ModuleInstance(ItemModule module, RegistryAccess access) {
-        this(module.id(),access);
+        this(module.id(), access);
     }
 
     public ModuleInstance(ResourceLocation moduleId,
                           RegistryAccess access) {
-        this(moduleId, Map.of(), Map.of(), new MiapiHolderLookupAdapter(access));
+        this(moduleId, Map.of(), Map.of(), new MiapiHolderLookupAdapter(access == null ? Miapi.registryAccess == null ? Miapi.clientRegistryAccess : Miapi.registryAccess : access));
     }
 
     public ModuleInstance(ResourceLocation moduleId,
@@ -83,7 +85,7 @@ public record ModuleInstance(
      * if this is the root, returns itself.
      */
     @NotNull
-    public ModuleInstance getRoot(){
+    public ModuleInstance getRoot() {
         return cache().getRoot();
     }
 
@@ -99,6 +101,7 @@ public record ModuleInstance(
     /**
      * Recursively calculates the position of this module instance in its hierarchy.
      * Mutates the provided list to append this module's path.
+     *
      * @param position The list to store the position.
      */
     public void calculatePosition(List<String> position) {
@@ -140,6 +143,7 @@ public record ModuleInstance(
      * creates a flatlist of all modules within the module tree.
      * this list is ordered by priority.
      * Unmodifiable.
+     *
      * @return
      */
     public List<ModuleInstance> getFlatList() {
@@ -155,6 +159,7 @@ public record ModuleInstance(
 
     /**
      * writes this module to an item
+     *
      * @param itemStack
      */
     public void writeToItem(ItemStack itemStack) {
@@ -166,7 +171,7 @@ public record ModuleInstance(
      * creates a Mutable copy.
      * this copies the entire tree and returns the mutable at the same position in the tree.
      */
-    public MutableModuleInstance asMutable(){
+    public MutableModuleInstance asMutable() {
         return MutableModuleInstance.fromRecord(this);
     }
 
@@ -191,7 +196,8 @@ public record ModuleInstance(
 
     /**
      * Equality is based on moduleId, data, and children only.
-     * Cache and registry access are ignored.
+     * registry access is ignored.
+     * cache is used to compare parent slot ID
      */
     @Override
     public boolean equals(Object obj) {
@@ -203,12 +209,16 @@ public record ModuleInstance(
 
         if (this.children.size() != other.children.size()) return false;
 
+        if (!Objects.equals(this.cache().getParentSlotId(),
+                other.cache().getParentSlotId())) {
+            return false;
+        }
+
         for (var entry : this.children.entrySet()) {
             ModuleInstance otherChild = other.children.get(entry.getKey());
             if (otherChild == null) return false;
             if (!entry.getValue().equals(otherChild)) return false;
         }
-
         return true;
     }
 

@@ -36,6 +36,7 @@ public class ModuleInstanceLocalCache {
     ModuleInstance record;
     ModuleInstance parent;
     ItemStack last = ItemStack.EMPTY;
+    String parentSlotId;
     volatile ItemModule module;
     volatile List<ModuleInstance> flatList;
     volatile private List<ModuleInstance> sortedChildren;
@@ -99,6 +100,20 @@ public class ModuleInstanceLocalCache {
         return local;
     }
 
+    @Nullable
+    public String getParentSlotId() {
+        if (parent == null) {
+            return null;
+        } else {
+            for (Map.Entry<String, ModuleInstance> entry : parent.children().entrySet()) {
+                if(entry.getValue()==this.record){
+                    return entry.getKey();
+                }
+            }
+        }
+        return null;
+    }
+
     /**
      * only includes direct children.
      */
@@ -144,6 +159,7 @@ public class ModuleInstanceLocalCache {
         flatList = null;
         sortedChildren = null;
         subModuleMap = null;
+        parentSlotId = null;
 
         properties = null;
         isFullyInit = false;

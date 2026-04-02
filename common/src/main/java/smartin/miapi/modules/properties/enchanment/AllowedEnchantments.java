@@ -5,12 +5,12 @@ import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.Holder;
+import net.minecraft.core.HolderSet;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -22,6 +22,7 @@ import smartin.miapi.blocks.ModularWorkBenchEntity;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.craft.CraftAction;
 import smartin.miapi.datapack.ReloadEvents;
+import smartin.miapi.mixin.NamedAccessor;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.util.CodecProperty;
@@ -48,10 +49,12 @@ public class AllowedEnchantments extends CodecProperty<AllowedEnchantments.Allow
     public static final ResourceLocation KEY = Miapi.id("enchantments");
     public static AllowedEnchantments property;
     public static Map<ResourceLocation, List<ResourceLocation>> enchantmentExtentionsMap = new HashMap<>();
+    public static Map<Enchantment, ResourceLocation> ID_LOOKUP = new WeakHashMap<>();
 
     public AllowedEnchantments() {
         super(AllowedEnchantsData.CODEC);
         property = this;
+        ReloadEvents.START.subscribe((isClient, registryAccess, worker) -> ID_LOOKUP = new WeakHashMap<>());
         ReloadEvents.END.subscribe((isClient, registryAccess, worker) -> {
             enchantmentExtentionsMap = new HashMap<>(Map.of(ResourceLocation.parse("c:enchantable/pickaxe"), new ArrayList<>(), ResourceLocation.parse("c:enchantable/axe"), new ArrayList<>(), ResourceLocation.parse("c:enchantable/shovel"), new ArrayList<>(), ResourceLocation.parse("c:enchantable/hoe"), new ArrayList<>()));
             if (!isClient && Miapi.server != null) {
@@ -71,6 +74,9 @@ public class AllowedEnchantments extends CodecProperty<AllowedEnchantments.Allow
             } else if (Miapi.registryAccess != null) {
                 detectEnchantments(Miapi.registryAccess);
             }
+            registryAccess.registry(Registries.ENCHANTMENT).get().keySet().forEach(id -> {
+                ID_LOOKUP.put(registryAccess.registry(Registries.ENCHANTMENT).get().get(id), id);
+            });
         });
     }
 
@@ -284,22 +290,33 @@ public class AllowedEnchantments extends CodecProperty<AllowedEnchantments.Allow
 
         private boolean contains(Enchantment enchantment, List<ResourceLocation> ids, ModuleInstance moduleInstance) {
             for (ResourceLocation id : ids) {
-                ResourceKey<Enchantment> idKey = ResourceKey.create(Registries.ENCHANTMENT, id);
-                if(moduleInstance.getter().lookup(Registries.ENCHANTMENT).isEmpty()){
-                    Miapi.LOGGER.error("item was not setup correctly, registry access isn't functional");
-                    return false;
-                }
-                var optionalEntry = moduleInstance.getter().lookup(Registries.ENCHANTMENT).get().getter().get(idKey);
-                if (optionalEntry.isPresent()) {
-                    if (optionalEntry.get() instanceof Holder.Reference<Enchantment>) {
+                if (enchantment.definition().supportedItems() instanceof HolderSet.Named<Item> set) {
+                    ResourceLocation tagID = ((NamedAccessor) set).getKey().location();
+                    if (tagID.equals(id)) {
                         return true;
                     }
                 }
-                TagKey<Enchantment> tagKey = TagKey.create(Registries.ENCHANTMENT, id);
-                var optionalTag = moduleInstance.getter().lookup(Registries.ENCHANTMENT).get().getter().get(tagKey);
-                if(optionalTag.isPresent()){
-                    if(optionalTag.get().stream().anyMatch(e->e.value().equals(enchantment))){
-                        return true;
+            }
+            ResourceLocation proposedId = ID_LOOKUP.get(enchantment);
+            if (proposedId != null) {
+                if (ids.contains(proposedId)) {
+                    return true;
+                }
+                if (moduleInstance.getter() == null) {
+                    Miapi.LOGGER.error("item was not setup correctly, registry access isn't functional");
+                    return false;
+                }
+                if (moduleInstance.getter().lookup(Registries.ENCHANTMENT).isEmpty()) {
+                    Miapi.LOGGER.error("item was not setup correctly, registry access isn't functional");
+                    return false;
+                }
+                ResourceKey<Enchantment> idKey = ResourceKey.create(Registries.ENCHANTMENT, proposedId);
+                var optionalEntry = moduleInstance.getter().lookup(Registries.ENCHANTMENT).get().getter().get(idKey);
+                if (optionalEntry.isPresent()) {
+                    for (ResourceLocation id : ids) {
+                        if (optionalEntry.get().is(id)) {
+                            return true;
+                        }
                     }
                 }
             }
