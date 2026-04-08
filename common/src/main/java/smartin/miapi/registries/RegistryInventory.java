@@ -124,8 +124,8 @@ public class RegistryInventory {
     public static final Registrar<RecipeSerializer<?>> RECIPE_SERIALIZER_REGISTRAR = registrar.get().get(Registries.RECIPE_SERIALIZER);
     public static final MiapiRegistry<ModuleProperty> MODULE_PROPERTY_MIAPI_REGISTRY = MiapiRegistry.getInstance(ModuleProperty.class);
     public static final MiapiRegistry<DatapackHolder> LOADABLE_DATAPACK_REGISTRY = MiapiRegistry.getInstance(DatapackHolder.class);
-    public static final MiapiRegistry<ItemModule> ITEM_MODULE_MIAPI_REGISTRY = MiapiRegistry.getInstance(ItemModule.class);
-    public static final MiapiRegistry<ItemModule> modules = ITEM_MODULE_MIAPI_REGISTRY;
+    public static final DatapackMiapiRegistry<ItemModule> ITEM_MODULE_MIAPI_REGISTRY = DatapackMiapiRegistry.getInstance(ItemModule.class);
+    public static final DatapackMiapiRegistry<ItemModule> modules = ITEM_MODULE_MIAPI_REGISTRY;
     public static final MiapiRegistry<ItemUseAbility> ITEM_USE_ABILITY_MIAPI_REGISTRY = useAbilityRegistry;
     public static final MiapiRegistry<EditOption> EDIT_OPTION_MIAPI_REGISTRY = MiapiRegistry.getInstance(EditOption.class);
     public static final MiapiRegistry<CraftingStat> CRAFTING_STATS_REGISTRY = MiapiRegistry.getInstance(CraftingStat.class);

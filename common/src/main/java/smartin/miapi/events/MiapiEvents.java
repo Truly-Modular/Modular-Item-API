@@ -17,7 +17,6 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -32,15 +31,12 @@ import smartin.miapi.blocks.ModularWorkBenchEntity;
 import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
 import smartin.miapi.craft.CraftAction;
 import smartin.miapi.craft.stat.StatProvidersMap;
-import smartin.miapi.entity.EntityHelper;
-import smartin.miapi.entity.ItemProjectileEntity;
-import smartin.miapi.entity.ProjectileWithBow;
+import smartin.miapi.entity.EntityDamageSystem;
 import smartin.miapi.material.base.Material;
 import smartin.miapi.material.generated.GeneratedMaterial;
 import smartin.miapi.modules.MutableModuleInstance;
 import smartin.miapi.modules.properties.util.ComponentApplyProperty;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -140,56 +136,14 @@ public class MiapiEvents {
 
         }
 
-        public static ItemStack getMainCausingStack(DamageSource damageSource) {
-            if (damageSource.getDirectEntity() instanceof Projectile projectile) {
-                ItemStack bow = ((ProjectileWithBow) projectile).getBowItem();
-                if (bow != null && !bow.isEmpty()) {
-                    return bow;
-                }
-                if (projectile instanceof ItemProjectileEntity itemProjectile) {
-                    return itemProjectile.getProjectileItem();
-                }
-            } else if (damageSource.getEntity() instanceof LivingEntity attacker) {
-                return attacker.getMainHandItem();
-            }
-            return ItemStack.EMPTY;
-        }
-
-        public static ItemStack getBowItemStack(DamageSource damageSource) {
-            if (damageSource.getDirectEntity() instanceof Projectile projectile) {
-                ItemStack bow = ((ProjectileWithBow) projectile).getBowItem();
-                if (bow != null && !bow.isEmpty()) {
-                    return bow;
-                }
-            }
-            return ItemStack.EMPTY;
-        }
-
         public ItemStack getMainCausingStack() {
-            return getMainCausingStack(this.damageSource);
+            return EntityDamageSystem.getMainCausingStack(this.damageSource);
         }
 
         public Iterable<ItemStack> getCausingItemStackAndArmorOfAttacker() {
-            return getCausingItemStackAndArmorOfAttacker(damageSource);
+            return EntityDamageSystem.getCausingItemStackAndArmorOfAttacker(damageSource);
         }
 
-        public static Iterable<ItemStack> getCausingItemStackAndArmorOfAttacker(DamageSource damageSource) {
-            List<ItemStack> itemStacks = new ArrayList<>();
-            if (damageSource.getDirectEntity() instanceof Projectile projectile) {
-                ItemStack bow = ((ProjectileWithBow) projectile).getBowItem();
-                if (bow != null && !bow.isEmpty()) {
-                    itemStacks.add(bow);
-                }
-                if (projectile instanceof ItemProjectileEntity itemProjectile) {
-                    itemStacks.add(itemProjectile.getProjectileItem());
-                }
-            }
-            if (damageSource.getEntity() instanceof LivingEntity attacker) {
-                EntityHelper.getAllEquipedItems(attacker).forEach(itemStacks::add);
-                itemStacks.add(attacker.getMainHandItem());
-            }
-            return itemStacks;
-        }
     }
 
     public static class ItemStackAttributeEventHolder {

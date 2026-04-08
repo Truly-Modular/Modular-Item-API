@@ -5,7 +5,7 @@ import dev.architectury.event.events.common.EntityEvent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import smartin.miapi.Miapi;
-import smartin.miapi.events.MiapiEvents;
+import smartin.miapi.entity.EntityDamageSystem;
 import smartin.miapi.modules.properties.projectile.ExplosionProperty;
 import smartin.miapi.modules.properties.util.CodecProperty;
 import smartin.miapi.modules.properties.util.MergeType;
@@ -30,7 +30,7 @@ public class OnKillExplosion extends CodecProperty<ExplosionProperty.ExplosionIn
         property = this;
         EntityEvent.LIVING_DEATH.register(((entity, source) -> {
             if (source.getEntity() instanceof LivingEntity attacker) {
-                Optional<ExplosionProperty.ExplosionInfo> info = getData(MiapiEvents.LivingHurtEvent.getMainCausingStack(source));
+                Optional<ExplosionProperty.ExplosionInfo> info = getData(EntityDamageSystem.getMainCausingStack(source));
                 info.ifPresent(explosionInfo -> explosionInfo.explode(attacker.level(), attacker, entity.position()));
             }
             return EventResult.pass();

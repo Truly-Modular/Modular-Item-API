@@ -34,8 +34,6 @@ public class MiapiRegistry<T> {
 
     protected final List<BiConsumer<ResourceLocation, T>> idCallbacks = new ArrayList<>();
 
-    protected final Map<ResourceLocation, Supplier<T>> suppliers = Collections.synchronizedMap(new LinkedHashMap<>());
-
     @Nullable
     protected final Class<T> tClass;
 
@@ -124,7 +122,7 @@ public class MiapiRegistry<T> {
      * @throws IllegalArgumentException if an entry with the same name already exists
      */
     public T register(ResourceLocation name, T value) {
-        if (entries.containsKey(name) || suppliers.containsKey(name)) {
+        if (entries.containsKey(name)) {
             throw new IllegalArgumentException("Entry with name '" + name + "' already exists.");
         }
         entries.put(name, value);
@@ -162,21 +160,6 @@ public class MiapiRegistry<T> {
         });
     }
 
-    /**
-     * Registers a new entry with the given name and value to this registry. If an entry with the same name already exists, an
-     * IllegalArgumentException is thrown. Calls all the callbacks associated with the class type.
-     *
-     * @param name  the name of the entry to be registered
-     * @param value the value of the entry to be registered
-     * @throws IllegalArgumentException if an entry with the same name already exists
-     */
-    public void registerSupplier(ResourceLocation name, Supplier<T> value) {
-        if (entries.containsKey(name)) {
-            throw new IllegalArgumentException("Entry with name '" + name + "' already exists.");
-        }
-        suppliers.put(name, value);
-    }
-
     public boolean containsKey(ResourceLocation id) {
         return entries.containsKey(id);
     }
@@ -185,25 +168,7 @@ public class MiapiRegistry<T> {
      * Removes all entries from this registry.
      */
     public void clear() {
-        suppliers.clear();
         entries.clear();
-    }
-
-    /**
-     * Loads all the suppliers into the proper registry
-     */
-    public void loadAllSupplier() {
-        suppliers.forEach((id, supplier) -> {
-            T entry = supplier.get();
-            entries.put(id, entry);
-            suppliers.remove(entry);
-            callbacks.forEach(callback -> {
-                callback.accept(entry);
-            });
-            idCallbacks.forEach(callback -> {
-                callback.accept(id, entry);
-            });
-        });
     }
 
     /**
@@ -214,17 +179,6 @@ public class MiapiRegistry<T> {
      */
     @Nullable
     public T get(ResourceLocation name) {
-        if (!entries.containsKey(name)) {
-            if (suppliers.containsKey(name)) {
-                T entry = suppliers.get(name).get();
-                entries.put(name, entry);
-                suppliers.remove(entry);
-                callbacks.forEach(callback -> callback.accept(entry));
-                idCallbacks.forEach(callback -> callback.accept(name, entry));
-                return entry;
-            }
-            return null;
-        }
         return entries.get(name);
     }
 

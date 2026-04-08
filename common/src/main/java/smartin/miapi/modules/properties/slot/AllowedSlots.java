@@ -35,6 +35,7 @@ public class AllowedSlots extends CodecProperty<List<String>> {
 
     public AllowedSlots() {
         super(CODEC);
+        property = this;
         RegistryInventory.ITEM_MODULE_MIAPI_REGISTRY.addCallback(itemModule -> {
             getAllowedSlots(itemModule).forEach(slot -> {
                 if (allowedInMap.containsKey(slot)) {
@@ -49,7 +50,6 @@ public class AllowedSlots extends CodecProperty<List<String>> {
         ReloadEvents.START.subscribe((isClient, registryAccess, worker) -> {
             allowedInMap.clear();
         });
-        property = this;
     }
 
     /**

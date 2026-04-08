@@ -5,14 +5,25 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import smartin.miapi.attributes.AttributeRegistry;
+import smartin.miapi.entity.PlayerLastAttackStrengthAccessor;
 import smartin.miapi.events.MiapiEvents;
 
 @Mixin(Player.class)
-public abstract class PlayerEntityMixin {
+public abstract class PlayerEntityMixin implements PlayerLastAttackStrengthAccessor {
+
+    @Unique
+    float lastAttackCD;
+
+    @Inject(method = "Lnet/minecraft/world/entity/player/Player;attack(Lnet/minecraft/world/entity/Entity;)V", at = @At("HEAD"))
+    private void miapi$caotureAttackCD(CallbackInfo ci) {
+        Player player = (Player) (Object) this;
+        this.lastAttackCD = player.getAttackStrengthScale(0.5f);
+    }
 
     @Inject(
             method = "attack",
@@ -26,6 +37,12 @@ public abstract class PlayerEntityMixin {
                 AttributeRegistry.hasCrittedLast.put(player, false);
             }
         }
+    }
+
+    @Unique
+    @Override
+    public float getLast() {
+        return this.lastAttackCD;
     }
 
     public boolean hasCritted(Player attacker, LivingEntity defender) {

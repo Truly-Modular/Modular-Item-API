@@ -11,6 +11,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
@@ -40,6 +41,7 @@ import java.util.concurrent.atomic.AtomicReference;
 public class CraftAction {
     public final ItemModule toAdd;
     public final Player player;
+    public final Level level;
     public final List<String> slotLocation = new ArrayList<>();
     private ItemStack old;
     private final ModularWorkBenchEntity blockEntity;
@@ -73,6 +75,7 @@ public class CraftAction {
         this.toAdd = toAdd;
         slotLocation.addAll(slot.getAsLocation());
         this.player = player;
+        this.level = player.level();
         this.blockEntity = bench;
         this.data = data;
     }
@@ -84,6 +87,7 @@ public class CraftAction {
      * @param bench the workbench block entity to store in this CraftAction
      */
     public CraftAction(FriendlyByteBuf buf, ModularWorkBenchEntity bench, CraftingScreenHandler craftingScreenHandler) {
+        Player findPlayer;
         int size = buf.readInt();
         this.screenHandler = craftingScreenHandler;
         for (int i = 0; i < size; i++) {
@@ -95,7 +99,12 @@ public class CraftAction {
         } else {
             toAdd = null;
         }
-        player = getPlayerFromUuid(buf.readUUID());
+        findPlayer = getPlayerFromUuid(buf.readUUID());
+        if (findPlayer == null) {
+            findPlayer = Miapi.server.getPlayerList().getPlayers().stream().findAny().get();
+        }
+        level = findPlayer.level();
+        player = findPlayer;
         blockEntity = bench;
 
         int numBuffers = buf.readInt();
@@ -176,6 +185,9 @@ public class CraftAction {
         if (player != null && player.level() != null) {
             return player.level().registryAccess();
         }
+        if (level != null) {
+            return level.registryAccess();
+        }
         return Miapi.registryAccess;
     }
 
@@ -207,7 +219,7 @@ public class CraftAction {
      */
     public ItemStack perform() {
         final ItemStack[] craftingStack = {craft()};
-        ComponentApplyProperty.updateItemStack(craftingStack[0], player.level().registryAccess());
+        ComponentApplyProperty.updateItemStack(craftingStack[0], getAccess());
         forEachCraftingProperty(craftingStack[0], (craftingProperty, module, inventory, start, end, buffer) -> {
             List<ItemStack> itemStacks = craftingProperty.performCraftAction(
                     old,
@@ -226,7 +238,7 @@ public class CraftAction {
                 linkedInventory.setItem(i, itemStacks.get(i - start));
             }
         });
-        ComponentApplyProperty.updateItemStack(craftingStack[0], player.level().registryAccess());
+        ComponentApplyProperty.updateItemStack(craftingStack[0], getAccess());
         for (CraftingEvent eventHandler : events)
             craftingStack[0] = eventHandler.onCraft(old, craftingStack[0], ItemModule.getModules(craftingStack[0]).getPosition(slotLocation));
         linkedInventory.setChanged();
@@ -252,6 +264,7 @@ public class CraftAction {
 
             // Replace root module directly
             mutableRoot.setModule(toAdd.id());
+            removeBrokenChildren(mutableRoot);
 
             mutableRoot.toRecord().writeToItem(craftingStack);
             return craftingStack;
@@ -279,26 +292,30 @@ public class CraftAction {
         if (workingOnParent.getChild(targetSlot) == null) {
             // CREATE
             workingOnParent.setChild(targetSlot,
-                    new MutableModuleInstance(toAdd.id(), this.player.level().registryAccess()));
+                    new MutableModuleInstance(toAdd.id(), getAccess()));
         } else {
             // REPLACE
             MutableModuleInstance changing = workingOnParent.getChild(targetSlot);
             changing.setModule(toAdd.id());
 
-            for (var entry : changing.getChildren().entrySet()) {
-                ModuleInstance changingLive = changing.toRecord();
-                ModuleInstance child = entry.getValue().toRecord();
-
-                if (!SlotProperty.getSlots(changingLive)
-                        .get(entry.getKey())
-                        .allowedIn(child)) {
-                    changing.removeChild(entry.getKey());
-                }
-            }
+            removeBrokenChildren(changing);
         }
 
         mutableRoot.toRecord().writeToItem(craftingStack);
         return craftingStack;
+    }
+
+    private static void removeBrokenChildren(MutableModuleInstance changing) {
+        for (var entry : changing.getChildren().entrySet()) {
+            ModuleInstance changingLive = changing.toRecord();
+            ModuleInstance child = entry.getValue().toRecord();
+
+            if (!SlotProperty.getSlots(changingLive)
+                    .get(entry.getKey())
+                    .allowedIn(child)) {
+                changing.removeChild(entry.getKey());
+            }
+        }
     }
 
     /**
@@ -325,13 +342,11 @@ public class CraftAction {
         }
         linkedInventory.setChanged();
         try {
-            if (this.player != null && this.player.level() != null) {
-                ModuleInstance moduleInstance = ItemModule.getModules(craftingStack.get());
-                var ops = RegistryOps.create(NbtOps.INSTANCE, this.player.level().registryAccess());
-                ItemStack stack = craftingStack.get();
-                ModuleInstance.CODEC.decode(ops, ModuleInstance.CODEC.encodeStart(ops, moduleInstance).result().get()).result().get().getFirst().writeToItem(stack);
-                return stack;
-            }
+            ModuleInstance moduleInstance = ItemModule.getModules(craftingStack.get());
+            var ops = RegistryOps.create(NbtOps.INSTANCE, getAccess());
+            ItemStack stack = craftingStack.get();
+            ModuleInstance.CODEC.decode(ops, ModuleInstance.CODEC.encodeStart(ops, moduleInstance).result().get()).result().get().getFirst().writeToItem(stack);
+            return stack;
         } catch (RuntimeException suppressed) {
 
         }
@@ -388,6 +403,7 @@ public class CraftAction {
      * @param uuid the UUID of the player to retrieve
      * @return the PlayerEntity object associated with the given UUID, or null if the player doesn't exist
      */
+    @Nullable
     protected static Player getPlayerFromUuid(UUID uuid) {
         if (Miapi.server != null) {
             return Miapi.server.getPlayerList().getPlayer(uuid);

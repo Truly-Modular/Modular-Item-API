@@ -51,6 +51,11 @@ public record ItemModule(ResourceLocation id, Map<ModuleProperty<?>, Object> pro
      */
     public static final ItemModule internal = new ItemModule(Miapi.id("internal"), new HashMap<>());
 
+    static {
+        RegistryInventory.ITEM_MODULE_MIAPI_REGISTRY.register(ItemModule.empty.id(), ItemModule.empty);
+        RegistryInventory.ITEM_MODULE_MIAPI_REGISTRY.register(ItemModule.internal.id(), ItemModule.internal);
+    }
+
     public static final Codec<ItemModule> CODEC =
             PropertyHolder.PROPERTY_MAP_CODEC.xmap(
                     props -> new ItemModule(null, props),

@@ -74,6 +74,7 @@ import smartin.miapi.modules.properties.util.DoubleOperationResolvable;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.network.Networking;
 import smartin.miapi.network.NetworkingImplCommon;
+import smartin.miapi.registries.OptionalGetter;
 import smartin.miapi.registries.RegistryInventory;
 
 import java.util.*;
@@ -159,6 +160,8 @@ public class Miapi {
         CodecBehavior.registerClass(MaterialSwapLootFunction.class, MaterialSwapLootFunction.CODEC.codec());
         CodecBehavior.registerClass(ModuleSwapLootFunction.class, ModuleSwapLootFunction.CODEC.codec());
         CodecBehavior.registerClass(ModelData.class, ModelData.CODEC);
+        CodecBehavior.registerClass(Optional.class, OptionalGetter.getter);
+
         //RegistryInventory.LOADABLE_DATAPACK_REGISTRY.register(Miapi.id("extendo"), new DatapackHolder(Component.literal("extendo"), false));
 
 
@@ -184,8 +187,6 @@ public class Miapi {
         });
         PlayerEvent.PLAYER_JOIN.register((player -> new Thread(() -> MiapiPermissions.getPerms(player)).start()));
         ReloadEvents.END.subscribe((isClient, registryAccess, worker) -> {
-            RegistryInventory.ITEM_MODULE_MIAPI_REGISTRY.register(ItemModule.empty.id(), ItemModule.empty);
-            RegistryInventory.ITEM_MODULE_MIAPI_REGISTRY.register(ItemModule.internal.id(), ItemModule.internal);
             Miapi.LOGGER.info("Loaded " + RegistryInventory.ITEM_MODULE_MIAPI_REGISTRY.getFlatMap().size() + " Modules");
             MiapiEvents.CLEAR_CACHE.invoker().onReload();
         });

@@ -23,7 +23,7 @@ public interface ItemUseDefaultCooldownAbility<T> extends ItemUseAbility<T> {
 
     default void afterStopAbility(ItemStack stack, Level world, LivingEntity user, int remainingUseTicks) {
         if (useCooldown(stack, world, user, remainingUseTicks) && user instanceof Player player) {
-            //player.getCooldowns().addCooldown(stack.getItem(), getCooldown(stack));
+            //player.getCooldowns().addCooldown(stack.getItem(), getAttackingCooldown(stack));
         }
     }
 }

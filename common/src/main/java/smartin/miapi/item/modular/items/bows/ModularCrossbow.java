@@ -3,6 +3,7 @@ package smartin.miapi.item.modular.items.bows;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -154,7 +155,10 @@ public class ModularCrossbow extends CrossbowItem implements PlatformModularItem
                     entity.setPickupItem(pickup);
                     if (shooter instanceof ServerPlayer serverPlayer && shooter.level() instanceof ServerLevel serverLevel) {
                         pickup.hurtAndBreak(1, serverLevel, serverPlayer, (i -> {
-                            entity.setPickupItem(new ItemStack(i));
+                            ItemStack itemStack = new ItemStack(i);
+                            pickup.getComponentsPatch().entrySet().forEach(entry -> copyCompomnentOver(entry.getKey(), itemStack, pickup));
+
+                            entity.setPickupItem(itemStack);
                         }));
                     } else {
                         pickup.hurtAndBreak(1, shooter, EquipmentSlot.MAINHAND);
@@ -169,6 +173,10 @@ public class ModularCrossbow extends CrossbowItem implements PlatformModularItem
         Projectile projectile1 = super.createProjectile(level, shooter, weapon, ammo, isCrit);
         ((ProjectileWithBow) projectile1).setBowItem(weapon);
         return projectile1;
+    }
+
+    private static <T> void copyCompomnentOver(DataComponentType<T> componentType, ItemStack itemStack, ItemStack pickup) {
+        itemStack.set(componentType, pickup.get(componentType));
     }
 
     @Override

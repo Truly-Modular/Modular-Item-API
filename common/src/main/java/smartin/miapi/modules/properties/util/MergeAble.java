@@ -2,6 +2,7 @@ package smartin.miapi.modules.properties.util;
 
 import org.apache.commons.lang3.function.TriFunction;
 
+import java.lang.reflect.Field;
 import java.util.*;
 
 /**
@@ -94,5 +95,70 @@ public interface MergeAble<T> {
         } else {
             return left;
         }
+    }
+
+    /**
+     * Reflectively merges two instances by delegating field handling to the appropriate merge strategy.
+     *
+     * <p>Resolution is automatic per field:</p>
+     * {@link MergeAble} → delegated to {@link MergeAble#merge(Object, Object, MergeType)}
+     * WARNING -> assumes Foo Mergeable<Foo> implementation, nothing else
+     * {@link Map} → delegated to {@link #mergeMap(Map, Map, MergeType)}
+     * {@link List} → delegated to {@link #mergeList(List, List, MergeType)}
+     * otherwise → {@link MergeAble#decideLeftRight(Object, Object, MergeType)}
+     *
+     * <p><b>Warnings / limitations:</b></p>
+     * <ul>
+     *     <li>Requires a no-arg constructor and non-final fields</li>
+     *     <li>Uses reflection (performance overhead, no compile-time safety)</li>
+     *     <li>Shallow field scan only (no deep object graph guarantees beyond delegation)</li>
+     *     <li>Type erasure limits precise generic handling (especially for collections)</li>
+     *     <li>Undefined behavior if field values are incompatible between left/right</li>
+     * </ul>
+     */
+    static <T> T autoMerge(T left, T right, MergeType mergeType, Class<T> clazz) {
+        try {
+            T result = clazz.getDeclaredConstructor().newInstance();
+
+            for (Field f : clazz.getDeclaredFields()) {
+                f.setAccessible(true);
+
+                Object l = f.get(left);
+                Object r = f.get(right);
+                Object value;
+
+                if (l == null || r == null) {
+                    value = MergeAble.decideLeftRight(l, r, mergeType);
+                }
+                else if (l instanceof MergeAble<?> ml && r instanceof MergeAble<?>) {
+                    value = ((MergeAble<Object>) ml).merge(l, r, mergeType);
+                }
+                else if (l instanceof Map<?, ?> && r instanceof Map<?, ?>) {
+                    value = unsafeMergeMap(l, r, mergeType);
+                }
+                else if (l instanceof List<?> && r instanceof List<?>) {
+                    value = unsafeMergeList(l, r, mergeType);
+                }
+                else {
+                    value = MergeAble.decideLeftRight(l, r, mergeType);
+                }
+
+                f.set(result, value);
+            }
+
+            return result;
+        } catch (Exception e) {
+            throw new RuntimeException("autoMerge failed for " + clazz.getName(), e);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private static Object unsafeMergeMap(Object l, Object r, MergeType mergeType) {
+        return mergeMap((Map<Object, Object>) l, (Map<Object, Object>) r, mergeType);
+    }
+
+    @SuppressWarnings("unchecked")
+    private static Object unsafeMergeList(Object l, Object r, MergeType mergeType) {
+        return mergeList((List<Object>) l, (List<Object>) r, mergeType);
     }
 }

@@ -4,7 +4,6 @@ import com.mojang.serialization.Codec;
 import dev.architectury.event.EventResult;
 import net.fabricmc.api.EnvType;
 import net.minecraft.core.Holder;
-import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
@@ -61,20 +60,13 @@ public class FakeEitherEnchantmentProperty extends EitherModuleProperty<
     @Override
     protected Map<Holder.Reference<Enchantment>, DoubleOperationResolvable> initializeDecode(Map<ResourceLocation, DoubleOperationResolvable> property, ModuleInstance context) {
         Map<Holder.Reference<Enchantment>, DoubleOperationResolvable> initialized = new HashMap<>();
-        property.forEach((id, resolvable) -> {
-            if (Miapi.registryAccess != null) {
-                getWithRegistry(Miapi.registryAccess, id, resolvable, initialized, context);
-            }
-            if (Miapi.clientRegistryAccess != null) {
-                getWithRegistry(Miapi.clientRegistryAccess, id, resolvable, initialized, context);
-            }
-        });
+        property.forEach((id, resolvable) -> getWithRegistry(id, resolvable, initialized, context));
         return initialized;
     }
 
-    private static void getWithRegistry(RegistryAccess clientRegistryAccess, ResourceLocation id, DoubleOperationResolvable resolvable, Map<Holder.Reference<Enchantment>, DoubleOperationResolvable> initialized, ModuleInstance context) {
-        clientRegistryAccess.lookup(Registries.ENCHANTMENT).ifPresentOrElse(enchantmentRegistryInfo -> {
-            enchantmentRegistryInfo.get(ResourceKey.create(Registries.ENCHANTMENT, id)).ifPresentOrElse(holder -> {
+    private static void getWithRegistry(ResourceLocation id, DoubleOperationResolvable resolvable, Map<Holder.Reference<Enchantment>, DoubleOperationResolvable> initialized, ModuleInstance context) {
+        context.getter().lookup(Registries.ENCHANTMENT).ifPresentOrElse(enchantmentRegistryInfo -> {
+            enchantmentRegistryInfo.getter().get(ResourceKey.create(Registries.ENCHANTMENT, id)).ifPresentOrElse(holder -> {
                         resolvable.setFunctionTransformer((s) -> s.getFirst().replace("[old_level]", "0"));
                         initialized.put(holder, resolvable.initialize(context));
                     }, () -> Miapi.LOGGER.warn("Could not find enchantment " + id + " skiping")

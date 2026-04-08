@@ -307,7 +307,7 @@ public class AttributeRegistry {
         }
         EntityDamageSystem.REGISTRY.register(id, new EntityDamageSystem.AdditionalDamageEffect() {
             @Override
-            public void apply(LivingEntity defender, DamageSource originalSource, float originalAmount, boolean didDamage) {
+            public void apply(LivingEntity defender, DamageSource originalSource, float originalAmount, float strength) {
                 if (originalSource.getEntity() instanceof LivingEntity attacker) {
                     double damage;
                     if (attacker.getAttributes().hasAttribute(holder)) {
@@ -321,7 +321,7 @@ public class AttributeRegistry {
                     if (damage > 0) {
                         defender.hurt(
                                 attacker.damageSources().source(damageType, originalSource.getEntity(), originalSource.getDirectEntity()),
-                                (float) damage
+                                (float) damage * strength
                         );
                     }
                 }

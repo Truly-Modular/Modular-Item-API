@@ -10,4 +10,5 @@ public class Helper {
     public static Component getTranslation(TagKey<?> tagKey) {
         throw new UnsupportedOperationException("need to be implemented on each platform");
     }
+
 }

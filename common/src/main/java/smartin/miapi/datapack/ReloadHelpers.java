@@ -21,6 +21,33 @@ public class ReloadHelpers {
      * these need to be registered before most other things
      */
     public static void registerReloadHandlers() {
+
+        HierarchicalReloadBuilder
+                .builder("miapi/materials", CodecMaterial.CODEC, CodecMaterialExtension.CODEC)
+                .clear(MaterialProperty.MATERIAL_REGISTRY::clear)
+                .baseHandler((isClient, path, data, registryAccess) -> {
+                    data.setID(path);
+                    MaterialProperty.MATERIAL_REGISTRY.register(path, data);
+                    data.generateConverters(isClient);
+                })
+                .priority(-2.0f)
+                .register();
+        ReloadHandlerBuilder
+                .builder("miapi/material_extensions")
+                .priority(-1.5f)
+                .handler((isClient, path, data, registryAccess) -> MaterialProperty.loadMaterialExtention(path, data, registryAccess))
+                .register();
+
+        HierarchicalReloadBuilder
+                .builder("miapi/modules", ItemModule.CODEC, CodecModuleExtension.CODEC)
+                .clear(RegistryInventory.ITEM_MODULE_MIAPI_REGISTRY::clearTemporary)
+                .baseHandler((isClient, path, data, registryAccess) -> {
+                    data = new ItemModule(path, data.properties());
+                    RegistryInventory.ITEM_MODULE_MIAPI_REGISTRY.registerTemporary(path, data);
+                })
+                .priority(-1.0f)
+                .register();
+
         ReloadHandlerBuilder
                 .builder("miapi/module_extensions")
                 .priority(-0.4f)
@@ -29,18 +56,27 @@ public class ReloadHelpers {
                         (isClient, path, data, access) -> data.apply()))
                 .register();
         ReloadHandlerBuilder
-                .builder("miapi/synergies")
-                .priority(2f)
-                .clear(SynergyManager::clear)
-                .codec(SynergyManager.SYNERGY_CODEC,
-                        (isClient, path, data, access) -> data.register())
-                .register();
-        ReloadHandlerBuilder
                 .builder("miapi/wiki")
                 .priority(0)
                 .clear(DocPage.PAGE_LOOKUP::clear)
                 .codec(DocPage.CODEC,
                         (isClient, path, data, registryAccess) -> DocPage.setupLookup(data))
+                .register();
+        ReloadHandlerBuilder
+                .builder("miapi/key_binding")
+                .handler((isClient, id, data, registryAccess) -> KeyBindManager.processKeybind(isClient, id, data))
+                .register();
+        ReloadHandlerBuilder
+                .builder("miapi/data_composite")
+                .clear(DatapackComposite.DATA_COMPOSITE_REGISTRY::clear)
+                .codec(DatapackComposite.DATA_PACK_CODEC,
+                        (isClient, path, data, registryAccess) -> DatapackComposite.DATA_COMPOSITE_REGISTRY.put(path, data))
+                .register();
+        ReloadHandlerBuilder
+                .builder("miapi/modular_converter")
+                .clear(ItemToModularConverter.regexes::clear)
+                .handler((isClient, path, data, registryAccess) -> ItemToModularConverter.setupModularConverter(path, data, registryAccess))
+                .priority(1)
                 .register();
         ReloadHandlerBuilder
                 .builder("miapi/skins/module")
@@ -55,6 +91,13 @@ public class ReloadHelpers {
                 .handler((isClient, path, data, registryAccess) -> SkinOptions.loadTabData(data))
                 .register();
         ReloadHandlerBuilder
+                .builder("miapi/synergies")
+                .priority(2f)
+                .clear(SynergyManager::clear)
+                .codec(SynergyManager.SYNERGY_CODEC,
+                        (isClient, path, data, access) -> data.register())
+                .register();
+        ReloadHandlerBuilder
                 .builder("miapi/create_options")
                 .priority(10)
                 .clear(CreateItemOption.CREATE_ITEM_MIAPI_REGISTRY::clear)
@@ -67,47 +110,6 @@ public class ReloadHelpers {
                         Miapi.LOGGER.error(data);
                     }
                 })
-                .register();
-        ReloadHandlerBuilder
-                .builder("miapi/key_binding")
-                .handler((isClient, id, data, registryAccess) -> KeyBindManager.processKeybind(isClient, id, data))
-                .register();
-        ReloadHandlerBuilder
-                .builder("miapi/data_composite")
-                .clear(DatapackComposite.DATA_COMPOSITE_REGISTRY::clear)
-                .codec(DatapackComposite.DATA_PACK_CODEC,
-                        (isClient, path, data, registryAccess) -> DatapackComposite.DATA_COMPOSITE_REGISTRY.put(path, data))
-                .register();
-        ReloadHandlerBuilder
-                .builder("miapi/material_extensions")
-                .priority(-1.5f)
-                .handler((isClient, path, data, registryAccess) -> MaterialProperty.loadMaterialExtention(path, data, registryAccess))
-                .register();
-
-        HierarchicalReloadBuilder
-                .builder("miapi/materials", CodecMaterial.CODEC, CodecMaterialExtension.CODEC)
-                .clear(MaterialProperty.MATERIAL_REGISTRY::clear)
-                .baseHandler((isClient, path, data, registryAccess) -> {
-                    data.setID(path);
-                    MaterialProperty.MATERIAL_REGISTRY.register(path, data);
-                    data.generateConverters(isClient);
-                })
-                .priority(-2.0f)
-                .register();
-
-        HierarchicalReloadBuilder
-                .builder("miapi/modules", ItemModule.CODEC, CodecModuleExtension.CODEC)
-                .clear(RegistryInventory.ITEM_MODULE_MIAPI_REGISTRY::clear)
-                .baseHandler((isClient, path, data, registryAccess) -> {
-                    data = new ItemModule(path, data.properties());
-                    RegistryInventory.ITEM_MODULE_MIAPI_REGISTRY.register(path, data);
-                }).register();
-
-        ReloadHandlerBuilder
-                .builder("miapi/modular_converter")
-                .clear(ItemToModularConverter.regexes::clear)
-                .handler((isClient, path, data, registryAccess) -> ItemToModularConverter.setupModularConverter(path, data, registryAccess))
-                .priority(1)
                 .register();
     }
 

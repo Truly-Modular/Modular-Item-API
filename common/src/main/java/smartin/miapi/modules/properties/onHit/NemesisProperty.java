@@ -20,6 +20,7 @@ import net.minecraft.world.item.TooltipFlag;
 import smartin.miapi.Miapi;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
 import smartin.miapi.craft.CraftAction;
+import smartin.miapi.entity.EntityDamageSystem;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.events.MeleeModularAttackEvents;
 import smartin.miapi.item.modular.ModularItem;
@@ -59,7 +60,7 @@ public class NemesisProperty extends DoubleProperty implements CraftingProperty 
         setupLore();
         property = this;
         EntityEvent.LIVING_DEATH.register((livingEntity, damageSource) -> {
-            ItemStack weapon = MiapiEvents.LivingHurtEvent.getMainCausingStack(damageSource);
+            ItemStack weapon = EntityDamageSystem.getMainCausingStack(damageSource);
             if (ModularItem.isModularItem(weapon) && !livingEntity.level().isClientSide()) {
                 double nemesisScale = getValue(weapon).orElse(0.0);
                 if (nemesisScale == 0) {

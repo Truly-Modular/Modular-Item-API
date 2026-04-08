@@ -116,6 +116,7 @@ public class PropertyRegistry {
         RegistryInventory.registerMiapi(RegistryInventory.MODULE_PROPERTY_MIAPI_REGISTRY, ProjectileTriggerProperty.KEY, new ProjectileTriggerProperty());
 
         //ON HIT
+        RegistryInventory.registerMiapi(RegistryInventory.MODULE_PROPERTY_MIAPI_REGISTRY, CustomDamageOnHitProperty.KEY, CustomDamageOnHitProperty.property);
 
         RegistryInventory.registerMiapi(RegistryInventory.MODULE_PROPERTY_MIAPI_REGISTRY, LoreProperty.KEY, new LoreProperty());
         RegistryInventory.registerMiapi(RegistryInventory.MODULE_PROPERTY_MIAPI_REGISTRY, OldNameProperty.KEY, new OldNameProperty());

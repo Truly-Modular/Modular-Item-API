@@ -44,7 +44,7 @@ public record ItemModuleExtension(PropertyHolder holder, List<ItemModule> module
 
     public void apply() {
         for (ItemModule module : modules) {
-            RegistryInventory.ITEM_MODULE_MIAPI_REGISTRY.replace(module.id(), (i, oldModule) -> {
+            RegistryInventory.ITEM_MODULE_MIAPI_REGISTRY.replaceTemporary(module.id(), (i, oldModule) -> {
                 ItemModule replacing = oldModule == null ? module : oldModule;
                 return new ItemModule(replacing.id(), holder.applyHolder(replacing.properties(), Optional.empty()));
             });
