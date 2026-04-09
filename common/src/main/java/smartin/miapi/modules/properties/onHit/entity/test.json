@@ -1,0 +1,14 @@
+{
+    "entity_armor": {
+        "miapi:undead_bonus": {
+            "entities": [
+                "#minecraft:undead",
+                "minecraft:zombie"
+            ],
+            "strength": "[material.density]*5",
+            "name": {
+                "text": "Bonus vs Undead"
+            }
+        }
+    }
+}

@@ -95,7 +95,6 @@ public class MaterialSmithingRecipe implements SmithingRecipe {
      *
      * @param inventory the input inventory
      * @param world     the input world
-     * @return
      */
     @Override
     public boolean matches(SmithingRecipeInput inventory, @NotNull Level world) {
@@ -133,9 +132,8 @@ public class MaterialSmithingRecipe implements SmithingRecipe {
         return ItemStack.EMPTY;
     }
 
-    public RecipeType<?> getType() {
-        //RecipeType.SMITHING;
-        //return RegistryInventory.;
+    @Override
+    public @NotNull RecipeType<?> getType() {
         return RecipeType.SMITHING;
     }
 

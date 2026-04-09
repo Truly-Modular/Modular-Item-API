@@ -62,7 +62,7 @@ public abstract class GenericEntityStrengthProperty extends CodecProperty<Map<Re
                                 .setMax(8)
                                 .setName(edit.name().orElse(getFallbackName(exampleType)))
                                 .setHoverDescription(stack -> {
-                                    MutableComponent component = Component.empty();;
+                                    MutableComponent component = Component.empty();
                                     component
                                             .append(edit.name().orElse(getFallbackName(exampleType)))
                                             .append("\n")

@@ -17,8 +17,11 @@ import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.gameevent.GameEventListener;
+import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
@@ -26,7 +29,7 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
-public class ModularWorkBench extends BaseEntityBlock {
+public class ModularWorkBench extends BaseEntityBlock implements SimpleWaterloggedBlock{
     private static final VoxelShape BOTTOM = Block.box(2, 0, 4, 14, 4, 12);
     private static final VoxelShape CONNECTOR = Block.box(3, 4, 5, 13, 12, 11);
     private static final VoxelShape BASE = Shapes.or(BOTTOM, CONNECTOR);
@@ -56,7 +59,7 @@ public class ModularWorkBench extends BaseEntityBlock {
 
     public ModularWorkBench(Properties settings) {
         super(settings);
-        this.registerDefaultState(((this.stateDefinition.any()).setValue(FACING, Direction.NORTH)));
+        this.registerDefaultState(((this.stateDefinition.any()).setValue(FACING, Direction.NORTH).setValue(BlockStateProperties.WATERLOGGED, false)));
     }
 
     @Override
@@ -67,7 +70,7 @@ public class ModularWorkBench extends BaseEntityBlock {
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(FACING);
+        builder.add(FACING).add(BlockStateProperties.WATERLOGGED);
     }
 
     @Override
@@ -89,6 +92,10 @@ public class ModularWorkBench extends BaseEntityBlock {
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext ctx) {
         return this.defaultBlockState().setValue(FACING, ctx.getHorizontalDirection().getOpposite());
+    }
+
+    protected FluidState getFluidState(BlockState state) {
+        return state.getValue(BlockStateProperties.WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(state);
     }
 
     @Override
