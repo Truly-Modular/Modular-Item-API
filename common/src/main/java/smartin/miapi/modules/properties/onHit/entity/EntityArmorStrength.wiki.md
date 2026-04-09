@@ -1,0 +1,59 @@
+@header Entity Armor Property
+@path /data_types/properties/on_hit/generic_entity_armor
+A property to add conditional damage reduction based on the attacked entity
+(works on equipped armor + curio)
+
+Examples 
+```json5
+{
+    "entity_armor": {
+        // Each key is a unique ID (ResourceLocation)
+        // strength will be merged based on key and each key will get a unique stat display in the UI
+        "miapi:undead_bonus": {
+            // List of entity targets
+            "entities": [
+                "#minecraft:undead",
+                // Tag (recommended for groups)
+                "minecraft:zombie"
+                // Direct entity ID
+            ],
+            // Strength applied when hitting matching entities
+            // Can be a simple number...
+            "strength": "[material.density]*5",
+            // Optional display name (Minecraft text component)
+            "name": {
+                "text": "Bonus vs Undead"
+            }
+        }
+    }
+}
+```
+```json5
+{
+    "entity_armor": {
+        //damage will be merged based on key and each key will get a unique stat display in the UI
+        "miapi:boss_bonus": {
+            "entities": [
+                "minecraft:ender_dragon"
+                // Single entity target
+            ],
+            // If omitted, defaults to 0
+            // Can also be a complex object depending on DoubleOperationResolvable
+            "strength": "10.0"
+
+            // No name → fallback name is generated from entity type
+        }
+        // Multiple entries stack:
+        // If an entity matches multiple entries,
+        // their strength values are added together
+    }
+}
+```
+
+## Notes
+
+* `entities`: list of entity IDs or `#tags`
+* `strength`: number or resolvable object (default = `0`)
+* `name`: optional UI label
+* All matching entries **add together**
+* Empty or missing `entities` → no effect

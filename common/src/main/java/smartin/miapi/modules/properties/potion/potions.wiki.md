@@ -27,6 +27,5 @@ Same id and strength level effects will be merged and their duration added toget
     "target_self": true,
     //if the target is the origin too - depends on context
     "equipment_slot": "any",
-    //from what equipment slot they can
 }
 ```

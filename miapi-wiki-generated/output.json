@@ -238,17 +238,6 @@
             "name": " (Optional) This allows for a custom name in the Crafting UI."
           },
           "key_words": []
-        },
-        "module": {
-          "header": "ModuleInstance Component",
-          "description": " This Component stores the main Modules for the Itemstack in question.  \nThis Component can be attached to any Itemstack, but many of the properties only correctly work on Modular Items,\rso It's recommended to only attach his to Modular Item\r",
-          "java": "common/src/main/java/smartin/miapi/modules/ModuleInstance.java",
-          "data": {
-            "key": "the ID of the module to be attached",
-            "child": " a slotId -> submodule map to map all submodules. This will be sorted in relation to the Slot Properties priority.",
-            "data": " this is a String->custom data map to store additional custom data for properties to use. This is a per module savedata system."
-          },
-          "key_words": []
         }
       }
     },
@@ -848,6 +837,18 @@
                     }
                   }
                 },
+                "generic_entity_armor": {
+                  "header": "Entity Armor Property",
+                  "description": "A property to add conditional damage reduction based on the attacked entity\r(works on equipped armor + curio)\r\rExamples \r```json5\r{\r    \"entity_armor\": {\r        // Each key is a unique ID (ResourceLocation)\r        // strength will be merged based on key and each key will get a unique stat display in the UI\r        \"miapi:undead_bonus\": {\r            // List of entity targets\r            \"entities\": [\r                \"#minecraft:undead\",\r                // Tag (recommended for groups)\r                \"minecraft:zombie\"\r                // Direct entity ID\r            ],\r            // Strength applied when hitting matching entities\r            // Can be a simple number...\r            \"strength\": \"[material.density]*5\",\r            // Optional display name (Minecraft text component)\r            \"name\": {\r                \"text\": \"Bonus vs Undead\"\r            }\r        }\r    }\r}\r```\r```json5\r{\r    \"entity_armor\": {\r        //damage will be merged based on key and each key will get a unique stat display in the UI\r        \"miapi:boss_bonus\": {\r            \"entities\": [\r                \"minecraft:ender_dragon\"\r                // Single entity target\r            ],\r            // If omitted, defaults to 0\r            // Can also be a complex object depending on DoubleOperationResolvable\r            \"strength\": \"10.0\"\r\r            // No name → fallback name is generated from entity type\r        }\r        // Multiple entries stack:\r        // If an entity matches multiple entries,\r        // their strength values are added together\r    }\r}\r```\r\r## Notes\r\r* `entities`: list of entity IDs or `#tags`\r* `strength`: number or resolvable object (default = `0`)\r* `name`: optional UI label\r* All matching entries **add together**\r* Empty or missing `entities` → no effect",
+                  "data": {},
+                  "key_words": []
+                },
+                "generic_entity_damage": {
+                  "header": "Entity Damage Property",
+                  "description": "A property to add conditional damage based on the attacker entity\rworks on melee weapons.\r\rExamples \r```json5\r{\r    \"entity_damage\": {\r        // Each key is a unique ID (ResourceLocation)\r        // strength will be merged based on key and each key will get a unique stat display in the UI\r        \"miapi:undead_bonus\": {\r            // List of entity targets\r            \"entities\": [\r                \"#minecraft:undead\",\r                // Tag (recommended for groups)\r                \"minecraft:zombie\"\r                // Direct entity ID\r            ],\r            // Strength applied when hitting matching entities\r            // Can be a simple number...\r            \"strength\": \"5\",\r            // Optional display name (Minecraft text component)\r            \"name\": {\r                \"text\": \"Bonus vs Undead\"\r            }\r        }\r    }\r}\r```\r```json5\r{\r    \"entity_damage\": {\r        \"miapi:boss_bonus\": {\r            \"entities\": [\r                \"minecraft:ender_dragon\"\r                // Single entity target\r            ],\r            // If omitted, defaults to 0\r            // Can also be a complex object depending on DoubleOperationResolvable\r            \"strength\": \"[material.hardness]\"\r\r            // No name → fallback name is generated from entity type\r        }\r\r        // Multiple entries stack:\r        // If an entity matches multiple entries,\r        // their strength values are added together\r    }\r}\r```\r\r## Notes\r\r* `entities`: list of entity IDs or `#tags`\r* `strength`: number or resolvable object (default = `0`)\r* `name`: optional UI label\r* All matching entries **add together**\r* Empty or missing `entities` → no effect",
+                  "data": {},
+                  "key_words": []
+                },
                 "fracturing": {
                   "header": "Fracturing Property",
                   "description": "  \nThe Fracturing Property enhances the attack damage of a weapon as its durability decreases. This means that the lower the durability of the weapon, the higher its attack damage becomes.\rThis property is useful for creating weapons that become more powerful as they are used, adding a dynamic element to their performance.\rThe damage increase is calculated as a percentage of the weapon's current durability relative to its maximum durability.\r",
@@ -924,28 +925,27 @@
             },
             "potion": {
               "header": "Potion Properties",
-              "description": "  \nProperties related to Potion\r",
-              "java": "common/src/main/java/smartin/miapi/modules/properties/potion/PotionFolder.java",
+              "description": "Potion effects\r\r\r# PossibleEffect JSON Format\rThe different potion properties re-use lists of the following effects.\rSame id and strength level effects will be merged and their duration added together.\r\r```json5\r{\r    \"potion\": \"minecraft:strength\",\r    //modded ones work too\r    \"amplifier\": \"0\",\r    //starts at 0, similar to command\r    \"duration\": \"0\",\r    //starts at 0, similar to command\r    \"ambient\": false,\r    // same as command\r    \"show_particles\": true,\r    // if the effect has particles, default true\r    \"show_icon\": true,\r    // if the icon should be visible, default true\r    \"probability\": \"1\",\r    //default 1, smaller then one only results in a chance of applying the effect\r    \"target_self\": true,\r    //if the target is the origin too - depends on context\r    \"equipment_slot\": \"any\",\r}\r```",
               "data": {},
               "key_words": [],
               "sub_pages": {
                 "on_hit_target_effects": {
                   "header": "On Hit Target Effects Property",
                   "description": " This property triggers specific potion effects on the target entity when the attacker hits it.  \nThe effects is defensive in nature and triggered by the defenders items.\rare defined by `PossibleEffect` instances, which include parameters like probability, duration, and amplifier.\rThe effects can be configured to apply based on various conditions, and the tooltip will display relevant\rinformation about these effects.\r",
-                  "java": "common/src/main/java/smartin/miapi/modules/properties/potion/OnHitDefensiveEffects.java",
                   "data": {
                     "effects": " A list of `PossibleEffect` instances that define the potion effects to be applied when hitting the target entity."
                   },
-                  "key_words": []
+                  "key_words": [],
+                  "java": "common/src/main/java/smartin/miapi/modules/properties/potion/OnHitDefensiveEffects.java"
                 },
                 "on_damaged_effects": {
                   "header": "On Damaged Effects Property",
                   "description": " This property triggers specific potion effects on an entity when it is damaged.  \nThis Effect is Aggressive in Nature and triggered from the Attackers Items.\rThe effects and their\rproperties (such as duration, amplifier, probability) are defined by `PossibleEffect` instances. The effects\rcan be configured to apply to either the attacker or the target entity, based on the `targetSelf` parameter.\r",
-                  "java": "common/src/main/java/smartin/miapi/modules/properties/potion/OnHitOffensiveEffects.java",
                   "data": {
                     "effects": " A list of `PossibleEffect` instances, each defining a potion effect to be applied under certain conditions."
                   },
-                  "key_words": []
+                  "key_words": [],
+                  "java": "common/src/main/java/smartin/miapi/modules/properties/potion/OnHitOffensiveEffects.java"
                 },
                 "on_kill_effects": {
                   "header": "On Kill Effects Property",
