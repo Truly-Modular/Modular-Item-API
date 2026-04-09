@@ -110,7 +110,7 @@ public class MaterialSmithingRecipe implements SmithingRecipe {
         ItemStack old = input.getItem(1).copy();
         if (old.getItem() instanceof VisualModularItem) {
             MutableModuleInstance instance = MutableModuleInstance.fromRecord(ItemModule.getModules(old));
-            instance.getChildren().forEach((id, child) -> {
+            instance.getUnsortedList().forEach((child) -> {
                 Material material = MaterialProperty.getMaterial(child.toRecord());
                 if (material != null && material.getID().equals(startMaterial)) {
                     MaterialProperty.setMaterial(child, MaterialProperty.MATERIAL_REGISTRY.get(resultMaterial));
