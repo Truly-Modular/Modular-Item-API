@@ -1,15 +1,19 @@
 package smartin.miapi.modules.properties.compat.apoli;
 
-/**
- * This property manages the active {@link smartin.miapi.modules.abilities.util.ItemUseAbility}
- */
+
 /*
-public class ApoliPowersProperty implements ModuleProperty {
+public class ApoliPowersProperty {
     public static final String KEY = "apoli_powers";
     public static ApoliPowersProperty property;
 
     public ApoliPowersProperty() {
         property = this;
+        Power power;
+        ItemOnItemPower power1;
+        PowerFactories powerFactories;
+        ItemOnItemPower power2;
+        RemovePowerLootFunction
+        PowerHolderComponentImpl.KEY.getNullable(null).getPowersFromSource()
     }
 
     public static List<PowerJson> getPowerJson(ItemStack itemStack) {

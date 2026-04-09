@@ -71,6 +71,10 @@ public class ModularCrossbow extends CrossbowItem implements PlatformModularItem
         }
     }
 
+    public static List<ItemStack> projectiles(ItemStack weapon, ItemStack ammo, LivingEntity shooter){
+        return ProjectileWeaponItem.draw(weapon, ammo, shooter);
+    }
+
     @Override
     public ItemStack getDefaultInstance() {
         return FakeItemManager.getDefaultInstance(this);

@@ -109,7 +109,7 @@ public class ParryBlock extends MinMaxCDAbility<BlockData> {
                 }
 
                 float returnPercent = (float) data.damageReturnPercent().getValue() / 100f;
-                if (returnPercent > 1) {
+                if (returnPercent > 0) {
                     float reflected = event.amount * returnPercent;
                     attacker.hurt(player.damageSources().playerAttack(player), reflected);
                 }
