@@ -1,4 +1,4 @@
-@header Material-Properties
+@header Materials
 @path /datapack/material
 
 Materials are the second core part next to modules on how the entire api works.  
