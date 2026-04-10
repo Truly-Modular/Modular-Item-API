@@ -13,7 +13,7 @@ const discordTheme = {
 	textColor: '#FFFFFF', // White for text
 	sidebarBackgroundColor: '#313338', // Slightly darker sidebar background
 	mutedTextColor: '#7289DA', // Muted grayish text (used for secondary text or labels)
-	linkHoverColor: '#1289DA', // Lighter version of the primary color for hover effects
+	linkHoverColor: '#65AAD8', // Lighter version of the primary color for hover effects
 	headerBackgroundColor: '#282B30',
 	headerTextColor: '#FFFFFF'
 }

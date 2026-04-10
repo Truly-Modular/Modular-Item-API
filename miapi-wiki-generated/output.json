@@ -73,7 +73,7 @@
             },
             "extension": {
               "header": "Material Extension/Modifications",
-              "description": "Material Extensions are used to extend existing materials.\rThey savely add data to existing materials without overwriting them, allowing for multiple extensions to apply\rto a single material from multiple addons without any issue\r\r### `id` \rthe id of the material to be extended\r\rexample usage:\r```json5\r{\r    \"id\": \"miapi:crystal/diamond\",\r    \"hidden_groups\": [\r        \"custom_gem\"\r    ],\r    \"properties\": {\r        \"custom_gem_tag\": {\r            \"durability\": \"1000\"\r        }\r    }\r}\r```",
+              "description": "Material Extensions are used to extend existing materials.\rThey savely add data to existing materials without overwriting them, allowing for multiple extensions to apply\rto a single material from multiple addons without any issue\r\r### `key` \rthe id of the material to be extended\r\rexample usage:\r```json5\r{\r    \"kw<\": \"miapi:crystal/diamond\",\r    \"hidden_groups\": [\r        \"custom_gem\"\r    ],\r    \"properties\": {\r        \"custom_gem_tag\": {\r            \"durability\": \"1000\"\r        }\r    }\r}\r```",
               "data": {},
               "key_words": []
             },

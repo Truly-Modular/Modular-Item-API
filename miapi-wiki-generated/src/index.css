@@ -1,7 +1,7 @@
 body {
 	margin: 0;
-	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-		sans-serif;
+	font-family:
+		-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 }
@@ -12,7 +12,10 @@ code {
 
 /* Prevent visited links from turning purple */
 .markdown-body a:visited {
-	color: #177add; /* Set the same color as normal links */
+	color: #78afe7; /* Set the same color as normal links */
+}
+.markdown-body a:link {
+	color: #78afe7; /* Set the same color as normal links */
 }
 
 /* Optionally, you can add hover effects for links */
@@ -39,7 +42,7 @@ pre {
 .hljs-title,
 .hljs-section,
 .hljs-attribute {
-	color: #032f62; /* GitHub blue */
+	color: #113660; /* GitHub blue */
 }
 
 .hljs-number,
@@ -68,11 +71,11 @@ pre {
 }
 
 .hljs-link {
-	color: #0366d6; /* GitHub blue for links */
+	color: #6792c3; /* GitHub blue for links */
 }
 
 .hljs-meta-string {
-	color: #032f62; /* Lighter blue for meta strings */
+	color: #2e4a69; /* Lighter blue for meta strings */
 }
 
 code {

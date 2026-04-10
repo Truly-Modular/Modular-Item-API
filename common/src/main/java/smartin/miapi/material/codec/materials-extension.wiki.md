@@ -5,13 +5,13 @@ Material Extensions are used to extend existing materials.
 They savely add data to existing materials without overwriting them, allowing for multiple extensions to apply
 to a single material from multiple addons without any issue
 
-### `id` 
+### `key` 
 the id of the material to be extended
 
 example usage:
 ```json5
 {
-    "id": "miapi:crystal/diamond",
+    "kw<": "miapi:crystal/diamond",
     "hidden_groups": [
         "custom_gem"
     ],
