@@ -31,10 +31,13 @@
           "key_words": [],
           "sub_pages": {
             "data": {
-              "header": "Datapack",
+              "header": "Datapack Material",
               "description": "These Articles cover how datapack Materials work\rand what options exist to create custom materials with datapacks.\rThese materials stand in opposition with component materials.",
               "data": {},
-              "key_words": [],
+              "key_words": [
+                "codec material",
+                "json material"
+              ],
               "sub_pages": {
                 "variants": {
                   "header": "Data Material - Variants",
