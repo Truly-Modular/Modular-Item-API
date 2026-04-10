@@ -4,7 +4,7 @@ import imgui.ImGui;
 import imgui.flag.ImGuiInputTextFlags;
 import imgui.flag.ImGuiTreeNodeFlags;
 import imgui.type.ImString;
-import smartin.miapi.material.CodecMaterial;
+import smartin.miapi.material.codec.CodecMaterial;
 
 import java.util.ArrayList;
 import java.util.List;

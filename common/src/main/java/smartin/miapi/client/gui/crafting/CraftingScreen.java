@@ -28,7 +28,7 @@ import smartin.miapi.client.gui.crafting.statdisplay.material.MaterialStatWidget
 import smartin.miapi.client.gui.crafting.statdisplay.material.StatDisplayWidget;
 import smartin.miapi.item.ModularItemStackConverter;
 import smartin.miapi.item.modular.VisualModularItem;
-import smartin.miapi.material.MaterialProperty;
+import smartin.miapi.material.properties.MaterialProperty;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.edit_options.EditOption;

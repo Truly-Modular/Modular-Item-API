@@ -1,4 +1,4 @@
-package smartin.miapi.material;
+package smartin.miapi.material.codec;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -27,6 +27,7 @@ import smartin.miapi.Miapi;
 import smartin.miapi.blueprint.IngredientWithCount;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.item.modular.StatResolver;
+import smartin.miapi.material.MaterialIcons;
 import smartin.miapi.material.base.IngredientController;
 import smartin.miapi.material.base.Material;
 import smartin.miapi.material.base.PropertyController;

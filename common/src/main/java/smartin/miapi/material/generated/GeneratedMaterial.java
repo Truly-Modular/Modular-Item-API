@@ -25,7 +25,7 @@ import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.material.DelegatingMaterial;
 import smartin.miapi.material.MaterialIcons;
-import smartin.miapi.material.MaterialProperty;
+import smartin.miapi.material.properties.MaterialProperty;
 import smartin.miapi.material.base.Material;
 import smartin.miapi.material.palette.FallbackColorer;
 import smartin.miapi.material.palette.GrayscalePaletteColorer;

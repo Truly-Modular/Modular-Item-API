@@ -27,7 +27,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
-import static smartin.miapi.material.MaterialProperty.MATERIAL_REGISTRY;
+import static smartin.miapi.material.properties.MaterialProperty.MATERIAL_REGISTRY;
 
 
 public class CompositeMaterial extends DelegatingMaterial {

@@ -54,7 +54,7 @@ import smartin.miapi.events.ClientEvents;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.material.MaterialCommand;
 import smartin.miapi.material.MaterialIcons;
-import smartin.miapi.material.MaterialProperty;
+import smartin.miapi.material.properties.MaterialProperty;
 import smartin.miapi.material.base.Material;
 import smartin.miapi.material.generated.TierManager;
 import smartin.miapi.material.palette.MaterialRenderControllers;

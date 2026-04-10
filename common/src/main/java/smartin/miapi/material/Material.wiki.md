@@ -1,5 +1,5 @@
 @header Material-Related
-@path /data_types/properties/material
+@path /data_types/material/properties
 
 Many Properties are directly related to control and interface with materials and their logic.
 - ``"material_property"`` a list of allowed Material Properties for the module

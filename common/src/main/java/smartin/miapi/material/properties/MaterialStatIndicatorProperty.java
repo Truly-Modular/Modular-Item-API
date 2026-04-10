@@ -1,4 +1,4 @@
-package smartin.miapi.material;
+package smartin.miapi.material.properties;
 
 import com.mojang.serialization.Codec;
 import com.redpxnda.nucleus.codec.auto.AutoCodec;

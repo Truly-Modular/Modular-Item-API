@@ -17,8 +17,11 @@ import java.util.List;
  * @header Copy On Hit
  * @path /data_types/properties/on_hit/copy_from_item
  * @description_start Attempts to copy on hit effects from item, is implemented to work with onhits implemented like the maces
+ * {
+ *     "copy_item_on_hit":["minecraft:mace"]
+ * }
+ * This copies onhit effects from used weapons.
  * @description_end
- * @data copy_item_on_hit:the id of the item to copy
  */
 public class CopyItemOnHit extends CodecProperty<List<Holder<Item>>> {
     public static ResourceLocation KEY = Miapi.id("copy_item_on_hit");

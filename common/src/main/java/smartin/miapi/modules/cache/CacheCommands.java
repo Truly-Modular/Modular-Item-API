@@ -18,7 +18,7 @@ import net.minecraft.server.level.ServerPlayer;
 import smartin.miapi.Miapi;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.events.MiapiEvents;
-import smartin.miapi.material.MaterialProperty;
+import smartin.miapi.material.properties.MaterialProperty;
 import smartin.miapi.network.modern.ModernNetworking;
 
 import java.util.Collection;

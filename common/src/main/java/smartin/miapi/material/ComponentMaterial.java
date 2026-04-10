@@ -18,6 +18,7 @@ import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.material.base.Material;
+import smartin.miapi.material.properties.MaterialProperty;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.MutableModuleInstance;
 import smartin.miapi.modules.properties.util.ModuleProperty;
@@ -26,7 +27,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
-import static smartin.miapi.material.MaterialProperty.MATERIAL_REGISTRY;
+import static smartin.miapi.material.properties.MaterialProperty.MATERIAL_REGISTRY;
 
 public class ComponentMaterial extends JsonMaterial {
     public static ResourceLocation KEY = Miapi.id("component_runtime_material");

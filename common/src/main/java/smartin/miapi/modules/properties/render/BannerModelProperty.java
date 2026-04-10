@@ -11,7 +11,7 @@ import smartin.miapi.client.model.module.BannerMiapiModel;
 import smartin.miapi.client.model.MiapiItemModel;
 import smartin.miapi.client.model.MiapiModel;
 import smartin.miapi.item.modular.Transform;
-import smartin.miapi.material.MaterialInscribeDataProperty;
+import smartin.miapi.material.properties.MaterialInscribeDataProperty;
 import smartin.miapi.modules.properties.render.baked.ModelProperty;
 import smartin.miapi.modules.properties.slot.SlotProperty;
 import smartin.miapi.modules.properties.util.CodecProperty;

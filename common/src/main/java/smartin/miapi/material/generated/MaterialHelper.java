@@ -9,7 +9,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.crafting.Ingredient;
 import smartin.miapi.blueprint.IngredientWithCount;
-import smartin.miapi.material.CodecMaterial;
+import smartin.miapi.material.codec.CodecMaterial;
 import smartin.miapi.modules.PropertyHolder;
 import smartin.miapi.registries.JsonOpsBooleanPatched;
 

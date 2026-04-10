@@ -1,6 +1,7 @@
 package smartin.miapi.registries;
 
 import smartin.miapi.material.*;
+import smartin.miapi.material.properties.*;
 import smartin.miapi.modules.abilities.key.KeyBindAbilityManagerProperty;
 import smartin.miapi.modules.abilities.util.AbilityMangerProperty;
 import smartin.miapi.modules.abilities.util.AbilityProperty;

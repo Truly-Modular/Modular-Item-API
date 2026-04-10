@@ -25,11 +25,47 @@
           "key_words": []
         },
         "material": {
-          "header": "Materials",
-          "description": "JsonMaterials is a file format used to define materials within the mod.\rThey can be found/added in mod-id:miapi/materials/any-path-and-file-name.json\rThese materials can have various stats such as hardness, density, flexibility, etc.,\r# Required Fields\r### `translation`\rThe language key of the material, points to the language file.\r### `icon`\rthe Icon of the Material, can either be the path to a texture or a more complex icon, for that see [this](https://github.com/Truly-Modular/Modular-Item-API/blob/main/common/src/main/resources/data/miapi/materials/glass/black_glass.json#L4) as an example\r### `color`\rThe Hex color of the Material. Please use RGB and NOT RGBA here.\r# Optional Fields\r## Module Stats\rModule stats is a weird subcategory.\rAny open key can be used to define a Module stats, such as ` hardness` or ` mining level` , for [Example](https://github.com/Truly-Modular/Modular-Item-API/blob/main/common/src/main/resources/data/miapi/materials/glass/black_glass.json#L4) these can be dynamicly called from by calling [material.hardness] in a complex double as reference.\r\r### `groups`\ra list of group keys. by default `stone` `wood` `metal` `bone` `glass` `fabric` `crystal` `gemstone` `flint` `rod` `fletching` `smithing` are used\r### `items`\rA List of Items to create the Material, can either be \"item\", \"tag\" or \"ingredient\". requires also a \"value\" to define the value in relation to the cost of the modules.\r### `properties`\rThis is a complex field . It is a key -> properties map. Those keys can be referenced by Modules to search for Material Properties.  \rDefault keys include \r`default`    \r`handheld` `tool` `blade`  `head`  `axe` `pickaxe` `hammer` `hoe` `shovel`  \r`armor` `helmet` `chest` `pants` `boots`  \rExample:  \r```json\r{\r  ...\r  \"properties\":{\r    \"default\":{\r        \"fireproof\":true\r    }\r  }\r}\r```\r[Emerald Example](https://github.com/Truly-Modular/Modular-Item-API/blob/release/1.21-mojmaps/common/src/main/resources/data/miapi/miapi/materials/crystal/emerald.json)\r\r\r\r### `hidden_properties`\rThis field is similar to properties, but wont display in UI\r\r### `display_properties`\rThis field is similar to properties, but they wont apply, but show up in the UI. This is useful to communicate Material information to the player.\r\r# Color Palette\rColor Palettes should be defined for all actual materials, and they need to be under the key `color_palette`\rThey can have different Types:\r### `grayscale_map`\rThis is a Map where brigthness values of the raw texture are mapped to direct color values. [Example](https://github.com/Truly-Modular/Modular-Item-API/blob/main/common/src/main/resources/data/miapi/materials/glass/black_glass.json#L17)\r### `from_material_palette_image`\rThis is a Map where brightness values of the raw texture are mapped to direct color values. Unlike the grayscale_map this uses a 1x256 texture to remap instead [Example](https://github.com/Truly-Modular/Modular-Item-API/blob/main/common/src/main/resources/data/miapi/materials/stone/magma.json#L17)\r### `image_generated`\rThis requires the json to mention a texture and this texture will be used to generate a palette similar to how generated Materials work.\r```json\r\"color_palette\": {\r    \"type\": \"image_generated\",\r    \"atlas\": \"block\",\r    \"texture\": \"minecraft:block/dirt\"\r}\r```\r### `image_generated_item`\rThis requires the json to mention a valid ItemId. This might be easier to use than the option above\r```json\r\"color_palette\": {\r    \"type\": \"image_generated_item\",\r    \"item\": \"minecraft:dirt\"\r}\r```\r### `overlay_texture`\rThis overlays a Texture over the existing Model, allowing for cooler looking custom motives. Well repeating texures are recommended. [Example](https://github.com/Truly-Modular/Modular-Item-API/blob/main/common/src/main/resources/data/miapi/materials/stone/sculk.json#L17)\r\r### `layered_mask`\rThis mask between two other Color Palettes via a Texture. Example:\r```json\r\"color_palette\": {\r    \"type\": \"layered_mask\",\r    \"base\": {\r        \"type\": \"grayscale_map\",\r        \"colors\": {\r            \"24\": \"2D0500\",\r            \"68\": \"4A0800\",\r            \"107\": \"720C00\",\r            \"150\": \"720C00\",\r            \"190\": \"BB2008\",\r            \"255\": \"E32008\"\r        }\r    },\r    \"layer\": {\r        \"type\": \"grayscale_map\",\r        \"colors\": {\r            \"24\": \"002d00\",\r            \"68\": \"005300\",\r            \"107\": \"007b18\",\r            \"150\": \"009529\",\r            \"190\": \"00aa2c\",\r            \"216\": \"17dd62\",\r            \"255\": \"41f384\"\r        }\r    },\r    \"mask\": {\r        \"type\": \"texture\",\r        \"atlas\": \"block\",\r        \"texture\": \"minecraft:block/water_still\"\r    }\r}\r```\r\r## Stats\rMaterials also can set any number of stats.\rAny other key used that doesnt hold a more special place like properties converts to a stat.\rBy default the api uses the following common ones:\r - hardness used for sword damage\r - density used to offset axe from sword damage and other heavy attack weapons\r - flexibility used to scale bows and other light weapons\r - toughness used to scale armor toughness and similar stats\r - durability base durability of tools\rUncommon ones, used for more internal behaviour\r - enchantability sets how good the enchantments are, check the minecraft wiki for more info on how this behaves\r - armor_durability used to more accuratly set armor durability. is a base value multiplied later. check other materials for references\r - armor_toughness directly overwrites armor toughness value\r - armor_knockback_ressistance directly overwrites armor knockback ressistance\r - tier used to set the rough tier of an material, used when late game materials are requested for something",
-          "data": {},
-          "key_words": [],
           "sub_pages": {
+            "data": {
+              "sub_pages": {
+                "variants": {
+                  "header": "Data Material - Variants",
+                  "description": "Material Variants allow you to create variants for materials.\rthey use a basic Module Condition to create a custom variant.\rthis uses the same logic as material extensions to overwrite materials.\r\rExample\r```json\r{\r    \"color_palette\": {\r        \"type\": \"grayscale_map\",\r        \"colors\": {\r            \"24\": \"181818\",\r            \"68\": \"444444\",\r            \"107\": \"6b6b6b\",\r            \"150\": \"969696\",\r            \"190\": \"bebebe\",\r            \"216\": \"d8d8d8\",\r            \"255\": \"ffffff\"\r        },\r        \"filler\": \"interpolate\"\r    },\r    \"variants\": [\r        {\r            \"condition\": {\r                \"type\": \"tag\",\r                \"tag\": \"blade\"\r            },\r            \"overwrite\": {\r                \"color_palette\": {\r                    \"type\": \"grayscale_map\",\r                    \"colors\": {\r                        \"24\": \"3E2D0E\",\r                        \"68\": \"805C16\",\r                        \"107\": \"D99413\",\r                        \"150\": \"E6AF15\",\r                        \"190\": \"E7EB56\",\r                        \"216\": \"FAFC75\",\r                        \"255\": \"FCFCFC\"\r                    },\r                    \"filler\": \"interpolate\"\r                }\r            }\r        }\r    ]\r}\r```\rThis example uses iron for most module colors, but gold for blades.",
+                  "data": {},
+                  "key_words": []
+                },
+                "rendering_fields": {
+                  "header": "Data Material - Properties",
+                  "description": "Now, a large part of the behaviour of modular items is controlled by properties.\rObviously, materials require some control over them as well.\rThis is done via the 3 Property fields,\r- `properties` applied and displyed\r- `display_properties` only displayed when hovering the material outside of crafting.  \rshould be used to indicate often hard to describe behaviour that relies on a module being present\r- `hidden_properties` hidden when using material inspect, but applied on the item\r\rnow, a property section of a material json looks like\r\r```json5\r{\r  \"properties\":{\r    \"module_tag\":{\r        \"fireproof\":true\r    }\r  }\r}\r```\r\rThe property `fireproof` will now be applied to all modules with the tag `module_tag`.  \rTo check a modules tags, simply search its json and search for `module_tags`.\rBut be aware synergies and extensions can change modules outside of their json and add tags to them.\r\r\rby default these tags find heavy usage\r`default`    \r`handheld` `tool` `blade`  `head`  `axe` `pickaxe` `hammer` `hoe` `shovel`  \r`armor` `helmet` `chest` `pants` `boots`",
+                  "data": {},
+                  "key_words": []
+                },
+                "default_fields": {
+                  "header": "Data Material - Default stuff",
+                  "description": "### `translation`\r```json5\r{\r    \"translation\": \"SuperDirt! \"\r    //leave space after to not directly collide with module name.\r}\r```\rcan be usd so materials can have names without a custom resourcepack.\r### `groups`\r```json\r{\r    \"groups\": [\r        \"fabric\",\r        \"metal\",\r        \"my_custom_group\"\r    ]\r}\r```\rModules check for groups to see what materials are allowed to be used for crafting\r\r## `icon`\r```json\r{\r    \"icon\": {\r        \"type\": \"item\",\r        \"item\": \"minecraft:sculk\"\r    }\r}\r```\rIcons are rendered in the ui as a short-hand for the material.\rwe *heavily* recommend the usage of the item type\rAlternatively, direct texture can be used too\r```json\r{\r    \"icon\": \"textures/item/kelp.png\"\r}\r```",
+                  "data": {},
+                  "key_words": []
+                },
+                "stats_fields": {
+                  "header": "Data Material - Stats",
+                  "description": "Now, this is a bit more complicated.\rAnything that isnt used a pre-used name in a material json will be attempted to be read as a number stat.\rso, just by adding\r```json\r{\r    \"my_cool_stat\": 5\r}\r```\ryou can do [material.my_cool_stat] within a module to retrieve this 5.  \rif a stat is not set, it defaults to 0.  \r### Default used Stats:\r- hardness used for sword damage\r- density used to offset axe from sword damage and other heavy attack weapons\r- flexibility used to scale bows and other light weapons\r- toughness used to scale armor toughness and similar stats\r- durability base durability of tools\r### Uncommon ones, used for more internal behaviour\r- enchantability sets how good the enchantments are, check the minecraft wiki for more info on how this behaves\r- armor_durability used to more accuratly set armor durability. is a base value multiplied later. check other materials for references\r- armor_toughness directly overwrites armor toughness value\r- armor_knockback_ressistance directly overwrites armor knockback ressistance\r- tier used to set the rough tier of an material, used when late game materials are requested for something",
+                  "data": {},
+                  "key_words": []
+                }
+              }
+            },
+            "parent": {
+              "header": "Material Inheritance",
+              "description": "Material inheritance allows you to base materials of other materials, copying all things abt them.\r\rExample\r```json\r{\r    \"parent\": \"miapi:metal/iron\",\r    \"data\": {\r        \"mining_speed\": 0,\r        \"mining_level\": \"minecraft:incorrect_for_diamond_tool\",\r        \"items\": [\r            {\r                \"item\": \"minecraft:blue_ice\",\r                \"value\": 0.1\r            }\r        ]\r    }\r}\r```\rThis example uses extends iron and increases its mining level to diamond and adding blue ice as ingredient.",
+              "data": {},
+              "key_words": []
+            },
+            "extension": {
+              "header": "Material Extension/Modifications",
+              "description": "Material Extensions are used to extend existing materials.\rThey savely add data to existing materials without overwriting them, allowing for multiple extensions to apply\rto a single material from multiple addons without any issue\r\r### `id` \rthe id of the material to be extended\r\rexample usage:\r```json5\r{\r    \"id\": \"miapi:crystal/diamond\",\r    \"hidden_groups\": [\r        \"custom_gem\"\r    ],\r    \"properties\": {\r        \"custom_gem_tag\": {\r            \"durability\": \"1000\"\r        }\r    }\r}\r```",
+              "data": {},
+              "key_words": []
+            },
             "component": {
               "header": "Component Material",
               "description": "Component Materials use a special components for simply runtime Materials.\rIt uses a component to allow for a variant of an existing json material. \r  \rExample:\r```json\r{\r    \"modular_material\": {\r        \"parent\": \"miapi:metal/iron\",\r        \"cost\": 1,\r        \"overwrite\": {\r            \"hardness\": 5\r        }\r    }\r}\r```\r- ``\"parent\"`` Needs to refer to a json controlled material.\r- ``\"cost\"`` The value of this item as Ingredient, defaults to 1.\r- ``\"overwrite\"`` The json to overwrite material data of its parent. Works the same a a Material Extension.\r\rExample command\r```\r/give @p minecraft:stone[miapi:modular_material={\r    \"parent\":\"miapi:metal/iron\",\r    \"overwrite\":\r        {\r            \"icon\":{\"type\":\"item\",\"item\":\"minecraft:dirt\"},\r            \"translation\":\"Dirt \",\r            \"color_palette\":{\"type\":\"image_generated_item\",\"item\":\"minecraft:dirt\"}\r        }\r    }\r]\r```\r\rOverall, a better structure for this are Composite Materials, as they offer greater flexibility in most scenarios.\rBut for quick testing this still offers some value.",
@@ -158,29 +194,33 @@
                 }
               }
             },
-            "parent": {
-              "header": "Material Inheritance",
-              "description": "Material inheritance allows you to base materials of other materials, copying all things abt them.\r\rExample\r```json\r{\r    \"parent\": \"miapi:metal/iron\",\r    \"data\": {\r        \"mining_speed\": 0,\r        \"mining_level\": \"minecraft:incorrect_for_diamond_tool\",\r        \"items\": [\r            {\r                \"item\": \"minecraft:blue_ice\",\r                \"value\": 0.1\r            }\r        ]\r    }\r}\r```\rThis example uses extends iron and increases its mining level to diamond and adding blue ice as ingredient.",
-              "data": {},
-              "key_words": []
-            },
-            "extension": {
-              "header": "Material Extension",
-              "description": "Material Extensions are used to extend existing materials.  \rThey can be found/added in mod-id:miapi/material-extensions/any-path-and-file-name.json\rThey can be used to augment existing materials,  \rFor example Arsenal uses them to add gemstone stats to some materials.\r\r### `id` \rthe id of the material to be extended",
-              "data": {},
-              "key_words": []
-            },
-            "variants": {
-              "header": "Material Variants",
-              "description": "Material Variants allow you to create variants for materials.\rthey are added in the material json (or in an extension) \rthey use a basic Module Condition and under overwrite is a data to be overwritten.\rthis uses the same logic as material extensions.\r\rExample\r```json\r{\r    \"color_palette\": {\r        \"type\": \"grayscale_map\",\r        \"colors\": {\r            \"24\": \"181818\",\r            \"68\": \"444444\",\r            \"107\": \"6b6b6b\",\r            \"150\": \"969696\",\r            \"190\": \"bebebe\",\r            \"216\": \"d8d8d8\",\r            \"255\": \"ffffff\"\r        },\r        \"filler\": \"interpolate\"\r    },\r    \"variants\": [\r        {\r            \"condition\": {\r                \"type\": \"tag\",\r                \"tag\": \"blade\"\r            },\r            \"overwrite\": {\r                \"color_palette\": {\r                    \"type\": \"grayscale_map\",\r                    \"colors\": {\r                        \"24\": \"3E2D0E\",\r                        \"68\": \"805C16\",\r                        \"107\": \"D99413\",\r                        \"150\": \"E6AF15\",\r                        \"190\": \"E7EB56\",\r                        \"216\": \"FAFC75\",\r                        \"255\": \"FCFCFC\"\r                    },\r                    \"filler\": \"interpolate\"\r                }\r            }\r        }\r    ]\r}\r```\rThis example uses iron for most module colors, but gold for blades.",
-              "data": {},
-              "key_words": []
-            },
-            "armor_stat_helper": {
-              "header": "Armor Calculation Tables",
-              "description": "## Armor Points\r### Helmet\r| Hardness | Armor Points |\r|----------|--------------|\r| 1.0      | 0.00         |\r| 1.5      | 0.00         |\r| 2.0      | 1.00         |\r| 2.5      | 1.00         |\r| 3.0      | 1.00         |\r| 3.5      | 1.00         |\r| 4.0      | 2.00         |\r| 4.5      | 2.00         |\r| 5.0      | 2.00         |\r| 5.5      | 2.00         |\r| 6.0      | 3.00         |\r| 6.5      | 3.00         |\r| 7.0      | 3.00         |\r| 7.5      | 3.00         |\r| 8.0      | 4.00         |\r| 8.5      | 4.00         |\r| 9.0      | 4.00         |\r| 9.5      | 4.00         |\r| 10.0     | 5.00         |\r| 10.5     | 5.00         |\r| 11.0     | 5.00         |\r| 11.5     | 5.00         |\r| 12.0     | 6.00         |\r| 12.5     | 6.00         |\r| 13.0     | 6.00         |\r| 13.5     | 6.00         |\r| 14.0     | 7.00         |\r| 14.5     | 7.00         |\r| 15.0     | 7.00         |\r\r---\r\r### Chestplate\r\r| Hard\\Flex | 1.0  | 1.5  | 2.0  | 2.5  | 3.0  | 3.5  | 4.0  | 4.5  | 5.0  | 5.5  | 6.0  | 6.5  | 7.0  | 7.5  | 8.0  | 8.5  | 9.0  | 9.5  | 10.0 | 10.5 | 11.0 | 11.5 | 12.0 | 12.5 | 13.0 | 13.5 | 14.0 | 14.5 | 15.0 |\r|-----------|------|------|------|------|------|------|------|------|------|------|------|------|------|------|------|------|------|------|------|------|------|------|------|------|------|------|------|------|------|\r| **1.0**   | 2.00 | 2.00 | 2.00 | 2.00 | 2.00 | 2.00 | 2.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | -1.00| -1.00| -1.00| -1.00| -1.00| -1.00|\r| **1.5**   | 2.50 | 2.50 | 2.50 | 2.50 | 2.50 | 2.50 | 2.50 | 1.50 | 1.50 | 1.50 | 1.50 | 1.50 | 1.50 | 1.50 | 1.50 | 0.50 | 0.50 | 0.50 | 0.50 | 0.50 | 0.50 | 0.50 | 0.50 | -0.50| -0.50| -0.50| -0.50| -0.50| -0.50|\r| **2.0**   | 3.00 | 3.00 | 3.00 | 3.00 | 3.00 | 3.00 | 3.00 | 2.00 | 2.00 | 2.00 | 2.00 | 2.00 | 2.00 | 2.00 | 2.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 |\r| **2.5**   | 3.50 | 3.50 | 3.50 | 3.50 | 3.50 | 3.50 | 3.50 | 2.50 | 2.50 | 2.50 | 2.50 | 2.50 | 2.50 | 2.50 | 2.50 | 1.50 | 1.50 | 1.50 | 1.50 | 1.50 | 1.50 | 1.50 | 1.50 | 0.50 | 0.50 | 0.50 | 0.50 | 0.50 | 0.50 |\r| **3.0**   | 4.00 | 4.00 | 4.00 | 4.00 | 4.00 | 4.00 | 4.00 | 3.00 | 3.00 | 3.00 | 3.00 | 3.00 | 3.00 | 3.00 | 3.00 | 2.00 | 2.00 | 2.00 | 2.00 | 2.00 | 2.00 | 2.00 | 2.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 |\r| **3.5**   | 4.50 | 4.50 | 4.50 | 4.50 | 4.50 | 4.50 | 4.50 | 3.50 | 3.50 | 3.50 | 3.50 | 3.50 | 3.50 | 3.50 | 3.50 | 2.50 | 2.50 | 2.50 | 2.50 | 2.50 | 2.50 | 2.50 | 2.50 | 1.50 | 1.50 | 1.50 | 1.50 | 1.50 | 1.50 |\r| **4.0**   | 5.00 | 5.00 | 5.00 | 5.00 | 5.00 | 5.00 | 5.00 | 4.00 | 4.00 | 4.00 | 4.00 | 4.00 | 4.00 | 4.00 | 4.00 | 3.00 | 3.00 | 3.00 | 3.00 | 3.00 | 3.00 | 3.00 | 3.00 | 2.00 | 2.00 | 2.00 | 2.00 | 2.00 | 2.00 |\r| **4.5**   | 5.50 | 5.50 | 5.50 | 5.50 | 5.50 | 5.50 | 5.50 | 4.50 | 4.50 | 4.50 | 4.50 | 4.50 | 4.50 | 4.50 | 4.50 | 3.50 | 3.50 | 3.50 | 3.50 | 3.50 | 3.50 | 3.50 | 3.50 | 2.50 | 2.50 | 2.50 | 2.50 | 2.50 | 2.50 |\r| **5.0**   | 6.00 | 6.00 | 6.00 | 6.00 | 6.00 | 6.00 | 6.00 | 5.00 | 5.00 | 5.00 | 5.00 | 5.00 | 5.00 | 5.00 | 5.00 | 4.00 | 4.00 | 4.00 | 4.00 | 4.00 | 4.00 | 4.00 | 4.00 | 3.00 | 3.00 | 3.00 | 3.00 | 3.00 | 3.00 |\r| **5.5**   | 6.50 | 6.50 | 6.50 | 6.50 | 6.50 | 6.50 | 6.50 | 5.50 | 5.50 | 5.50 | 5.50 | 5.50 | 5.50 | 5.50 | 5.50 | 4.50 | 4.50 | 4.50 | 4.50 | 4.50 | 4.50 | 4.50 | 4.50 | 3.50 | 3.50 | 3.50 | 3.50 | 3.50 | 3.50 |\r| **6.0**   | 7.00 | 7.00 | 7.00 | 7.00 | 7.00 | 7.00 | 7.00 | 6.00 | 6.00 | 6.00 | 6.00 | 6.00 | 6.00 | 6.00 | 6.00 | 5.00 | 5.00 | 5.00 | 5.00 | 5.00 | 5.00 | 5.00 | 5.00 | 4.00 | 4.00 | 4.00 | 4.00 | 4.00 | 4.00 |\r| **6.5**   | 7.50 | 7.50 | 7.50 | 7.50 | 7.50 | 7.50 | 7.50 | 6.50 | 6.50 | 6.50 | 6.50 | 6.50 | 6.50 | 6.50 | 6.50 | 5.50 | 5.50 | 5.50 | 5.50 | 5.50 | 5.50 | 5.50 | 5.50 | 4.50 | 4.50 | 4.50 | 4.50 | 4.50 | 4.50 |\r| **7.0**   | 8.00 | 8.00 | 8.00 | 8.00 | 8.00 | 8.00 | 8.00 | 7.00 | 7.00 | 7.00 | 7.00 | 7.00 | 7.00 | 7.00 | 7.00 | 6.00 | 6.00 | 6.00 | 6.00 | 6.00 | 6.00 | 6.00 | 6.00 | 5.00 | 5.00 | 5.00 | 5.00 | 5.00 | 5.00 |\r| **7.5**   | 8.50 | 8.50 | 8.50 | 8.50 | 8.50 | 8.50 | 8.50 | 7.50 | 7.50 | 7.50 | 7.50 | 7.50 | 7.50 | 7.50 | 7.50 | 6.50 | 6.50 | 6.50 | 6.50 | 6.50 | 6.50 | 6.50 | 6.50 | 5.50 | 5.50 | 5.50 | 5.50 | 5.50 | 5.50 |\r| **8.0**   | 9.00 | 9.00 | 9.00 | 9.00 | 9.00 | 9.00 | 9.00 | 8.00 | 8.00 | 8.00 | 8.00 | 8.00 | 8.00 | 8.00 | 8.00 | 7.00 | 7.00 | 7.00 | 7.00 | 7.00 | 7.00 | 7.00 | 7.00 | 6.00 | 6.00 | 6.00 | 6.00 | 6.00 | 6.00 |\r| **8.5**   | 9.50 | 9.50 | 9.50 | 9.50 | 9.50 | 9.50 | 9.50 | 8.50 | 8.50 | 8.50 | 8.50 | 8.50 | 8.50 | 8.50 | 8.50 | 7.50 | 7.50 | 7.50 | 7.50 | 7.50 | 7.50 | 7.50 | 7.50 | 6.50 | 6.50 | 6.50 | 6.50 | 6.50 | 6.50 |\r| **9.0**   |10.00 |10.00 |10.00 |10.00 |10.00 |10.00 |10.00 | 9.00 | 9.00 | 9.00 | 9.00 | 9.00 | 9.00 | 9.00 | 9.00 | 8.00 | 8.00 | 8.00 | 8.00 | 8.00 | 8.00 | 8.00 | 8.00 | 7.00 | 7.00 | 7.00 | 7.00 | 7.00 | 7.00 |\r| **9.5**   |10.50 |10.50 |10.50 |10.50 |10.50 |10.50 |10.50 | 9.50 | 9.50 | 9.50 | 9.50 | 9.50 | 9.50 | 9.50 | 9.50 | 8.50 | 8.50 | 8.50 | 8.50 | 8.50 | 8.50 | 8.50 | 8.50 | 7.50 | 7.50 | 7.50 | 7.50 | 7.50 | 7.50 |\r| **10.0**  |11.00 |11.00 |11.00 |11.00 |11.00 |11.00 |11.00 |10.00 |10.00 |10.00 |10.00 |10.00 |10.00 |10.00 |10.00 | 9.00 | 9.00 | 9.00 | 9.00 | 9.00 | 9.00 | 9.00 | 9.00 | 8.00 | 8.00 | 8.00 | 8.00 | 8.00 | 8.00 |\r| **10.5**  |11.50 |11.50 |11.50 |11.50 |11.50 |11.50 |11.50 |10.50 |10.50 |10.50 |10.50 |10.50 |10.50 |10.50 |10.50 | 9.50 | 9.50 | 9.50 | 9.50 | 9.50 | 9.50 | 9.50 | 9.50 | 8.50 | 8.50 | 8.50 | 8.50 | 8.50 | 8.50 |\r| **11.0**  |12.00 |12.00 |12.00 |12.00 |12.00 |12.00 |12.00 |11.00 |11.00 |11.00 |11.00 |11.00 |11.00 |11.00 |11.00 |10.00 |10.00 |10.00 |10.00 |10.00 |10.00 |10.00 |10.00 | 9.00 | 9.00 | 9.00 | 9.00 | 9.00 | 9.00 |\r| **11.5**  |12.50 |12.50 |12.50 |12.50 |12.50 |12.50 |12.50 |11.50 |11.50 |11.50 |11.50 |11.50 |11.50 |11.50 |11.50 |10.50 |10.50 |10.50 |10.50 |10.50 |10.50 |10.50 |10.50 | 9.50 | 9.50 | 9.50 | 9.50 | 9.50 | 9.50 |\r| **12.0**  |13.00 |13.00 |13.00 |13.00 |13.00 |13.00 |13.00 |12.00 |12.00 |12.00 |12.00 |12.00 |12.00 |12.00 |12.00 |11.00 |11.00 |11.00 |11.00 |11.00 |11.00 |11.00 |11.00 |10.00 |10.00 |10.00 |10.00 |10.00 |10.00 |\r| **12.5**  |13.50 |13.50 |13.50 |13.50 |13.50 |13.50 |13.50 |12.50 |12.50 |12.50 |12.50 |12.50 |12.50 |12.50 |12.50 |11.50 |11.50 |11.50 |11.50 |11.50 |11.50 |11.50 |11.50 |10.50 |10.50 |10.50 |10.50 |10.50 |10.50 |\r| **13.0**  |14.00 |14.00 |14.00 |14.00 |14.00 |14.00 |14.00 |13.00 |13.00 |13.00 |13.00 |13.00 |13.00 |13.00 |13.00 |12.00 |12.00 |12.00 |12.00 |12.00 |12.00 |12.00 |12.00 |11.00 |11.00 |11.00 |11.00 |11.00 |11.00 |\r| **13.5**  |14.50 |14.50 |14.50 |14.50 |14.50 |14.50 |14.50 |13.50 |13.50 |13.50 |13.50 |13.50 |13.50 |13.50 |13.50 |12.50 |12.50 |12.50 |12.50 |12.50 |12.50 |12.50 |12.50 |11.50 |11.50 |11.50 |11.50 |11.50 |11.50 |\r| **14.0**  |15.00 |15.00 |15.00 |15.00 |15.00 |15.00 |15.00 |14.00 |14.00 |14.00 |14.00 |14.00 |14.00 |14.00 |14.00 |13.00 |13.00 |13.00 |13.00 |13.00 |13.00 |13.00 |13.00 |12.00 |12.00 |12.00 |12.00 |12.00 |12.00 |\r| **14.5**  |15.50 |15.50 |15.50 |15.50 |15.50 |15.50 |15.50 |14.50 |14.50 |14.50 |14.50 |14.50 |14.50 |14.50 |14.50 |13.50 |13.50 |13.50 |13.50 |13.50 |13.50 |13.50 |13.50 |12.50 |12.50 |12.50 |12.50 |12.50 |12.50 |\r| **15.0**  |16.00 |16.00 |16.00 |16.00 |16.00 |16.00 |16.00 |15.00 |15.00 |15.00 |15.00 |15.00 |15.00 |15.00 |15.00 |14.00 |14.00 |14.00 |14.00 |14.00 |14.00 |14.00 |14.00 |13.00 |13.00 |13.00 |13.00 |13.00 |13.00 |\r\r---\r\r### Leggings\r| Hardness | Armor Points |\r|----------|--------------|\r| 1.0      | 0.00         |\r| 1.5      | 0.50         |\r| 2.0      | 1.00         |\r| 2.5      | 1.50         |\r| 3.0      | 2.00         |\r| 3.5      | 2.50         |\r| 4.0      | 3.00         |\r| 4.5      | 3.50         |\r| 5.0      | 5.00         |\r| 5.5      | 5.50         |\r| 6.0      | 6.00         |\r| 6.5      | 6.50         |\r| 7.0      | 6.00         |\r| 7.5      | 6.50         |\r| 8.0      | 7.00         |\r| 8.5      | 7.50         |\r| 9.0      | 8.00         |\r| 9.5      | 9.50         |\r| 10.0     | 10.00        |\r| 10.5     | 10.50        |\r| 11.0     | 11.00        |\r| 11.5     | 11.50        |\r| 12.0     | 12.00        |\r| 12.5     | 12.50        |\r| 13.0     | 13.00        |\r| 13.5     | 12.50        |\r| 14.0     | 14.00        |\r| 14.5     | 14.50        |\r| 15.0     | 15.00        |\r\r---\r\r### Boots\r\r| Hard\\Dens | 1.0  | 1.5  | 2.0  | 2.5  | 3.0  | 3.5  | 4.0  | 4.5  | 5.0  | 5.5  | 6.0  | 6.5  | 7.0  | 7.5  | 8.0  | 8.5  | 9.0  | 9.5  | 10.0 | 10.5 | 11.0 | 11.5 | 12.0 | 12.5 | 13.0 | 13.5 | 14.0 | 14.5 | 15.0 |\r|-----------|------|------|------|------|------|------|------|------|------|------|------|------|------|------|------|------|------|------|------|------|------|------|------|------|------|------|------|------|------|\r| **1.0**   | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | -1.00| -1.00| -1.00| -1.00| -1.00| -1.00| -1.00| -1.00| -2.00| -2.00| -2.00| -2.00| -2.00| -2.00| -2.00| -2.00| -3.00| -3.00| -3.00| -3.00| -3.00| -3.00| -3.00|\r| **1.5**   | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | -1.00| -1.00| -1.00| -1.00| -1.00| -1.00| -1.00| -1.00| -2.00| -2.00| -2.00| -2.00| -2.00| -2.00| -2.00| -2.00| -3.00| -3.00| -3.00| -3.00| -3.00| -3.00| -3.00|\r| **2.0**   | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | -1.00| -1.00| -1.00| -1.00| -1.00| -1.00| -1.00| -1.00| -2.00| -2.00| -2.00| -2.00| -2.00| -2.00| -2.00|\r| **2.5**   | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | -1.00| -1.00| -1.00| -1.00| -1.00| -1.00| -1.00| -1.00| -2.00| -2.00| -2.00| -2.00| -2.00| -2.00| -2.00|\r| **3.0**   | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | -1.00| -1.00| -1.00| -1.00| -1.00| -1.00| -1.00| -1.00| -2.00| -2.00| -2.00| -2.00| -2.00| -2.00| -2.00|\r| **3.5**   | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | -1.00| -1.00| -1.00| -1.00| -1.00| -1.00| -1.00| -1.00| -2.00| -2.00| -2.00| -2.00| -2.00| -2.00| -2.00|\r| **4.0**   | 2.00 | 2.00 | 2.00 | 2.00 | 2.00 | 2.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | -1.00| -1.00| -1.00| -1.00| -1.00| -1.00| -1.00|\r| **4.5**   | 2.00 | 2.00 | 2.00 | 2.00 | 2.00 | 2.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | -1.00| -1.00| -1.00| -1.00| -1.00| -1.00| -1.00|\r| **5.0**   | 2.00 | 2.00 | 2.00 | 2.00 | 2.00 | 2.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | -1.00| -1.00| -1.00| -1.00| -1.00| -1.00| -1.00|\r| **5.5**   | 2.00 | 2.00 | 2.00 | 2.00 | 2.00 | 2.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | -1.00| -1.00| -1.00| -1.00| -1.00| -1.00| -1.00|\r| **6.0**   | 3.00 | 3.00 | 3.00 | 3.00 | 3.00 | 3.00 | 2.00 | 2.00 | 2.00 | 2.00 | 2.00 | 2.00 | 2.00 | 2.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 |\r| **6.5**   | 3.00 | 3.00 | 3.00 | 3.00 | 3.00 | 3.00 | 2.00 | 2.00 | 2.00 | 2.00 | 2.00 | 2.00 | 2.00 | 2.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 |\r| **7.0**   | 3.00 | 3.00 | 3.00 | 3.00 | 3.00 | 3.00 | 2.00 | 2.00 | 2.00 | 2.00 | 2.00 | 2.00 | 2.00 | 2.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 |\r| **7.5**   | 3.00 | 3.00 | 3.00 | 3.00 | 3.00 | 3.00 | 2.00 | 2.00 | 2.00 | 2.00 | 2.00 | 2.00 | 2.00 | 2.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 |\r| **8.0**   | 4.00 | 4.00 | 4.00 | 4.00 | 4.00 | 4.00 | 3.00 | 3.00 | 3.00 | 3.00 | 3.00 | 3.00 | 3.00 | 3.00 | 2.00 | 2.00 | 2.00 | 2.00 | 2.00 | 2.00 | 2.00 | 2.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 |\r| **8.5**   | 4.00 | 4.00 | 4.00 | 4.00 | 4.00 | 4.00 | 3.00 | 3.00 | 3.00 | 3.00 | 3.00 | 3.00 | 3.00 | 3.00 | 2.00 | 2.00 | 2.00 | 2.00 | 2.00 | 2.00 | 2.00 | 2.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 |\r| **9.0**   | 4.00 | 4.00 | 4.00 | 4.00 | 4.00 | 4.00 | 3.00 | 3.00 | 3.00 | 3.00 | 3.00 | 3.00 | 3.00 | 3.00 | 2.00 | 2.00 | 2.00 | 2.00 | 2.00 | 2.00 | 2.00 | 2.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 |\r| **9.5**   | 4.00 | 4.00 | 4.00 | 4.00 | 4.00 | 4.00 | 3.00 | 3.00 | 3.00 | 3.00 | 3.00 | 3.00 | 3.00 | 3.00 | 2.00 | 2.00 | 2.00 | 2.00 | 2.00 | 2.00 | 2.00 | 2.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 |\r| **10.0**  | 5.00 | 5.00 | 5.00 | 5.00 | 5.00 | 5.00 | 4.00 | 4.00 | 4.00 | 4.00 | 4.00 | 4.00 | 4.00 | 4.00 | 3.00 | 3.00 | 3.00 | 3.00 | 3.00 | 3.00 | 3.00 | 3.00 | 2.00 | 2.00 | 2.00 | 2.00 | 2.00 | 2.00 | 2.00 |\r| **10.5**  | 5.00 | 5.00 | 5.00 | 5.00 | 5.00 | 5.00 | 4.00 | 4.00 | 4.00 | 4.00 | 4.00 | 4.00 | 4.00 | 4.00 | 3.00 | 3.00 | 3.00 | 3.00 | 3.00 | 3.00 | 3.00 | 3.00 | 2.00 | 2.00 | 2.00 | 2.00 | 2.00 | 2.00 | 2.00 |\r| **11.0**  | 5.00 | 5.00 | 5.00 | 5.00 | 5.00 | 5.00 | 4.00 | 4.00 | 4.00 | 4.00 | 4.00 | 4.00 | 4.00 | 4.00 | 3.00 | 3.00 | 3.00 | 3.00 | 3.00 | 3.00 | 3.00 | 3.00 | 2.00 | 2.00 | 2.00 | 2.00 | 2.00 | 2.00 | 2.00 |\r| **11.5**  | 5.00 | 5.00 | 5.00 | 5.00 | 5.00 | 5.00 | 4.00 | 4.00 | 4.00 | 4.00 | 4.00 | 4.00 | 4.00 | 4.00 | 3.00 | 3.00 | 3.00 | 3.00 | 3.00 | 3.00 | 3.00 | 3.00 | 2.00 | 2.00 | 2.00 | 2.00 | 2.00 | 2.00 | 2.00 |\r| **12.0**  | 6.00 | 6.00 | 6.00 | 6.00 | 6.00 | 6.00 | 5.00 | 5.00 | 5.00 | 5.00 | 5.00 | 5.00 | 5.00 | 5.00 | 4.00 | 4.00 | 4.00 | 4.00 | 4.00 | 4.00 | 4.00 | 4.00 | 3.00 | 3.00 | 3.00 | 3.00 | 3.00 | 3.00 | 3.00 |\r| **12.5**  | 6.00 | 6.00 | 6.00 | 6.00 | 6.00 | 6.00 | 5.00 | 5.00 | 5.00 | 5.00 | 5.00 | 5.00 | 5.00 | 5.00 | 4.00 | 4.00 | 4.00 | 4.00 | 4.00 | 4.00 | 4.00 | 4.00 | 3.00 | 3.00 | 3.00 | 3.00 | 3.00 | 3.00 | 3.00 |\r| **13.0**  | 6.00 | 6.00 | 6.00 | 6.00 | 6.00 | 6.00 | 5.00 | 5.00 | 5.00 | 5.00 | 5.00 | 5.00 | 5.00 | 5.00 | 4.00 | 4.00 | 4.00 | 4.00 | 4.00 | 4.00 | 4.00 | 4.00 | 3.00 | 3.00 | 3.00 | 3.00 | 3.00 | 3.00 | 3.00 |\r| **13.5**  | 6.00 | 6.00 | 6.00 | 6.00 | 6.00 | 6.00 | 5.00 | 5.00 | 5.00 | 5.00 | 5.00 | 5.00 | 5.00 | 5.00 | 4.00 | 4.00 | 4.00 | 4.00 | 4.00 | 4.00 | 4.00 | 4.00 | 3.00 | 3.00 | 3.00 | 3.00 | 3.00 | 3.00 | 3.00 |\r| **14.0**  | 7.00 | 7.00 | 7.00 | 7.00 | 7.00 | 7.00 | 6.00 | 6.00 | 6.00 | 6.00 | 6.00 | 6.00 | 6.00 | 6.00 | 5.00 | 5.00 | 5.00 | 5.00 | 5.00 | 5.00 | 5.00 | 5.00 | 4.00 | 4.00 | 4.00 | 4.00 | 4.00 | 4.00 | 4.00 |\r| **14.5**  | 7.00 | 7.00 | 7.00 | 7.00 | 7.00 | 7.00 | 6.00 | 6.00 | 6.00 | 6.00 | 6.00 | 6.00 | 6.00 | 6.00 | 5.00 | 5.00 | 5.00 | 5.00 | 5.00 | 5.00 | 5.00 | 5.00 | 4.00 | 4.00 | 4.00 | 4.00 | 4.00 | 4.00 | 4.00 |\r| **15.0**  | 7.00 | 7.00 | 7.00 | 7.00 | 7.00 | 7.00 | 6.00 | 6.00 | 6.00 | 6.00 | 6.00 | 6.00 | 6.00 | 6.00 | 5.00 | 5.00 | 5.00 | 5.00 | 5.00 | 5.00 | 5.00 | 5.00 | 4.00 | 4.00 | 4.00 | 4.00 | 4.00 | 4.00 | 4.00 |\r\r## Armor Toughness\r\r## Knockback Resistance",
-              "data": {},
-              "key_words": []
+            "properties": {
+              "sub_pages": {
+                "allowed": {
+                  "header": "Allowed Material",
+                  "description": "This Property manages the allowed materials for a module.\r\rExample\r```json5\r{\r    \"allowed_material\":{\r        \"allowedMaterials\": [\r            \"metal\" // list of allowed material groups\r        ],\r        \"cost\": 5 //the cost of the module.\r    }\r}\r}\r```",
+                  "data": {},
+                  "key_words": []
+                },
+                "copy_parent": {
+                  "header": "Allowed Material",
+                  "description": "This Property manages the allowed materials for a module.\r\rExample\r```json5\r{\r    \"copy_parent_material\": \"true\",\r    // copies the Parents material if this doesn't have a material set\r}\r```",
+                  "data": {},
+                  "key_words": []
+                },
+                "inscribe_data_on_craft": {
+                  "header": "Material Inscribe Item",
+                  "description": "This Property manages the allowed materials for a module.\r\rExample\r```json5\r{\r    \"inscribe_data_on_craft\": [\r        \"PROJECTILE\",\r        \"TEST\"\r    ]\r    // copies the material stack on the crafted stack under the keys set here.\r}\r```",
+                  "data": {},
+                  "key_words": []
+                },
+                "inscribe_on_craft_module": {
+                  "header": "Material Inscribe Module",
+                  "description": "Inscribes the used material onto the module\r\rExample\r```json5\r{\r    \"inscribe_on_craft_module\": [\r        \"PROJECTILE\",\r        \"TEST\"\r    ]\r    // copies the material stack on the crafted module under the keys set here.\r}\r```",
+                  "data": {},
+                  "key_words": []
+                }
+              }
             }
           }
         },
@@ -300,6 +340,22 @@
             }
           }
         },
+        "material": {
+          "sub_pages": {
+            "data": {
+              "header": "Datapack",
+              "description": "These Articles cover how datapack Materials work\rand what options exist to create custom materials with datapacks.\rThese materials stand in opposition with component materials.",
+              "data": {},
+              "key_words": []
+            },
+            "properties": {
+              "header": "Material-Related",
+              "description": "Many Properties are directly related to control and interface with materials and their logic.\r- ``\"material_property\"`` a list of allowed Material Properties for the module\r- ``\"allowed_material\"`` a list of allowed materials and material groups\r- ``inscribe_data_on_craft`` inscribes the used material ingredient onto the module\r- ``inscribe_on_craft`` inscribes the material ingredient onto the item (used for potion arrows)\r- ``material_overwrite`` allows for semi-dynamic merging with a manual material (used my cosmetics to inject additional rendering)\r- ``material`` allows you setting a fallback material, but since miapi 2.0.0 the material inscribed in module data is used over this.\r- ``material_indication`` controls a small tooltip informing the player about used material stats",
+              "data": {},
+              "key_words": []
+            }
+          }
+        },
         "properties": {
           "header": "Properties",
           "description": " Properties are the main way any stat is assigned to anything  \nThey are usually found in an id -> data map like\r``` json\r{\r\"miapi:fire_proof\":true\r}\r```\rNote that in this example \"miapi\" can be removed as it is implied if no mod id is set\rMost Properties have more complex inner data than a boolean\r",
@@ -311,15 +367,11 @@
           ],
           "sub_pages": {
             "material": {
-              "header": "Material-Related",
-              "description": "Many Properties are directly related to control and interface with materials and their logic.\r- ``\"material_property\"`` a list of allowed Material Properties for the module\r- ``\"allowed_material\"`` a list of allowed materials and material groups\r- ``inscribe_data_on_craft`` inscribes the used material ingredient onto the module\r- ``inscribe_on_craft`` inscribes the material ingredient onto the item (used for potion arrows)\r- ``material_overwrite`` allows for semi-dynamic merging with a manual material (used my cosmetics to inject additional rendering)\r- ``material`` allows you setting a fallback material, but since miapi 2.0.0 the material inscribed in module data is used over this.\r- ``material_indication`` controls a small tooltip informing the player about used material stats",
-              "data": {},
-              "key_words": [],
               "sub_pages": {
                 "material_stat_indicator": {
                   "header": "Material Stat Indicator Property",
                   "description": "  \nThe Material Stat Indicator Property is used to define and store various material-related attributes for items.\rIt allows assigning specific stats such as durability, hardness, and mining speed, which can be represented with\ra strength value and an optional description. If no description is provided, a default localized description is used.\r",
-                  "java": "common/src/main/java/smartin/miapi/material/MaterialStatIndicatorProperty.java",
+                  "java": "common/src/main/java/smartin/miapi/material/properties/MaterialStatIndicatorProperty.java",
                   "data": {
                     "material_stat_indicator": " A map of material statistics, where each entry consists of a stat name and a context object containing its strength and optional description."
                   },
@@ -414,18 +466,11 @@
                 }
               }
             },
-            "lore": {
-              "sub_pages": {
-                "copy_from_item": {
-                  "header": "Copy Item Lore",
-                  "description": " Copies lore properties from a specified item. This property enables the lore text to be duplicated  \nfrom the referenced item, allowing for a consistent narrative or flavor across items. Intended for items that share lore\rchanging lore.\r",
-                  "java": "common/src/main/java/smartin/miapi/modules/properties/AssumeItemIdentityProperty.java",
-                  "data": {
-                    "copy_item_lore": "the id of the item to copy lore from"
-                  },
-                  "key_words": []
-                }
-              }
+            "assume_item_id": {
+              "header": "Assume Item ID",
+              "description": "example:\r\r```json5\r{\r    \"assume_item_id\": [\r        \"minecraft:diamond_sword\"\r    ]\r}\r```\r\rThis property assumes the identity of an item.  \rThis is really fucking dangerous and should be tested on every item its being used rigorously.  \rThis can randomly convert the item into an assumed identity, cause weird behaviours in all kinds of ways.",
+              "data": {},
+              "key_words": []
             },
             "attributes": {
               "header": "Attribute Properties",
@@ -618,6 +663,12 @@
               "data": {},
               "key_words": [],
               "sub_pages": {
+                "auto-smelt": {
+                  "header": "Autosmelt Property",
+                  "description": "Simple autosmelt property\r````json5\r{\r    \"autosmelt\": true\r}\r````",
+                  "data": {},
+                  "key_words": []
+                },
                 "shape": {
                   "header": "Mining Shape Property",
                   "description": " The MiningShapeProperty controls how tools mine multiple blocks based on the configured mining shapes, conditions, and modes.  \nThis allows for varied mining behaviors such as mining entire veins or large areas with a single action.\r<p>\rThe property supports different mining shapes (e.g., cubes, veins), conditions (e.g., block tags, always mine), and modes (e.g., instant, staggered).\rIt also incorporates mining modifiers that can influence mining behavior, such as requiring all blocks to be the same type.\r",
@@ -785,11 +836,9 @@
                 },
                 "copy_from_item": {
                   "header": "Copy On Hit",
-                  "description": " Attempts to copy on hit effects from item, is implemented to work with onhits implemented like the maces  \n",
+                  "description": " Attempts to copy on hit effects from item, is implemented to work with onhits implemented like the maces  \n{\r    \"copy_item_on_hit\":[\"minecraft:mace\"]\r}\rThis copies onhit effects from used weapons.\r",
                   "java": "common/src/main/java/smartin/miapi/modules/properties/onHit/CopyItemOnHit.java",
-                  "data": {
-                    "copy_item_on_hit": "the id of the item to copy"
-                  },
+                  "data": {},
                   "key_words": []
                 },
                 "custom damage": {
@@ -968,9 +1017,7 @@
               "header": "UI Priority Property",
               "description": " The PriorityProperty affects the ordering of items or modules within the GUI. This property assigns a priority value  \nto each item or module, which influences its placement or sorting in graphical user interfaces where multiple items\ror modules are displayed. A lower value will be placed first in the list and higher values at the end.\r",
               "java": "common/src/main/java/smartin/miapi/modules/properties/PriorityProperty.java",
-              "data": {
-                "priority": " the priority for sorting"
-              },
+              "data": {},
               "key_words": []
             },
             "projectile": {
@@ -1127,11 +1174,9 @@
             },
             "rarity": {
               "header": "Rarity Property",
-              "description": "  \nThe RarityProperty determines the rarity level of an item. This property can influence the rarity displayed for\ritems in the game, affecting their default coloring, think of golden apples, totems and co.\r",
+              "description": "  \nThe RarityProperty determines the rarity level of an item. This property can influence the rarity displayed for\ritems in the game, affecting their default coloring, think of golden apples, totems and co.\rRarity levels are typically: COMMON, UNCOMMON, RARE, and EPIC.\rexample\r\"rarity\":\"COMMON\"\r",
               "java": "common/src/main/java/smartin/miapi/modules/properties/RarityProperty.java",
-              "data": {
-                "rarity": " A {@link Rarity} value representing the item's rarity level. Rarity levels are typically"
-              },
+              "data": {},
               "key_words": []
             },
             "render": {

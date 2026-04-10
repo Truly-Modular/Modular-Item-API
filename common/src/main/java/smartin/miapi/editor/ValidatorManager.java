@@ -4,7 +4,7 @@ import dev.architectury.event.EventResult;
 import smartin.miapi.blueprint.BlueprintComponent;
 import smartin.miapi.editor.syntax.CodecValidatorInterface;
 import smartin.miapi.editor.syntax.ModuleValidatorInterface;
-import smartin.miapi.material.CodecMaterial;
+import smartin.miapi.material.codec.CodecMaterial;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.abilities.key.MiapiBinding;
 import smartin.miapi.modules.synergies.SynergyManager;

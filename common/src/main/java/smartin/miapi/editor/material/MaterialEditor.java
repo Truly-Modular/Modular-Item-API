@@ -11,7 +11,7 @@ import net.minecraft.resources.ResourceLocation;
 import smartin.miapi.Miapi;
 import smartin.miapi.editor.MiapiEditor;
 import smartin.miapi.editor.util.ListEditor;
-import smartin.miapi.material.CodecMaterial;
+import smartin.miapi.material.codec.CodecMaterial;
 
 import java.util.HashMap;
 import java.util.function.Consumer;

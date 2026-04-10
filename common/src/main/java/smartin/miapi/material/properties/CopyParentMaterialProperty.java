@@ -1,4 +1,4 @@
-package smartin.miapi.material;
+package smartin.miapi.material.properties;
 
 import net.minecraft.resources.ResourceLocation;
 import smartin.miapi.Miapi;

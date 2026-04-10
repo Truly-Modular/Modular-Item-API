@@ -1,4 +1,4 @@
-package smartin.miapi.material;
+package smartin.miapi.material.properties;
 
 import com.google.gson.JsonElement;
 import com.mojang.serialization.Codec;

@@ -14,8 +14,10 @@ import smartin.miapi.modules.properties.util.*;
  * @description_start
  * The RarityProperty determines the rarity level of an item. This property can influence the rarity displayed for
  * items in the game, affecting their default coloring, think of golden apples, totems and co.
+ * Rarity levels are typically: COMMON, UNCOMMON, RARE, and EPIC.
+ * example
+ * "rarity":"COMMON"
  * @description_end
- * @data rarity: A {@link Rarity} value representing the item's rarity level. Rarity levels are typically: COMMON, UNCOMMON, RARE, and EPIC.
  */
 
 public class RarityProperty extends CodecProperty<Rarity> implements ComponentApplyProperty {

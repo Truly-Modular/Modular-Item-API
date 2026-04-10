@@ -11,7 +11,7 @@ import smartin.miapi.client.model.item.BakedSingleModel;
 import smartin.miapi.client.renderer.TrimRenderer;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.item.modular.Transform;
-import smartin.miapi.material.MaterialProperty;
+import smartin.miapi.material.properties.MaterialProperty;
 import smartin.miapi.material.base.ColorController;
 import smartin.miapi.material.base.Material;
 import smartin.miapi.modules.ModuleInstance;

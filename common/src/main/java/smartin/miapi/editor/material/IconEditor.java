@@ -5,7 +5,7 @@ import com.google.gson.JsonPrimitive;
 import imgui.ImGui;
 import net.minecraft.resources.ResourceLocation;
 import smartin.miapi.editor.util.JsonEditor;
-import smartin.miapi.material.CodecMaterial;
+import smartin.miapi.material.codec.CodecMaterial;
 
 import java.util.Optional;
 

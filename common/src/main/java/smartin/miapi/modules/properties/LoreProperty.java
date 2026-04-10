@@ -23,7 +23,7 @@ import smartin.miapi.item.MaterialSmithingRecipe;
 import smartin.miapi.item.ModularItemStackConverter;
 import smartin.miapi.item.modular.ModularItemPart;
 import smartin.miapi.item.modular.VisualModularItem;
-import smartin.miapi.material.MaterialProperty;
+import smartin.miapi.material.properties.MaterialProperty;
 import smartin.miapi.material.base.Material;
 import smartin.miapi.material.generated.SmithingRecipeUtil;
 import smartin.miapi.modules.properties.attributes.AttributeToolTipHelper;

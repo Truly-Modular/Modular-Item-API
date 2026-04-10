@@ -14,7 +14,7 @@ import net.minecraft.resources.ResourceLocation;
 import smartin.miapi.Miapi;
 import smartin.miapi.editor.JsonEditor;
 import smartin.miapi.editor.MiapiEditor;
-import smartin.miapi.material.CodecMaterial;
+import smartin.miapi.material.codec.CodecMaterial;
 import smartin.miapi.registries.JsonOpsBooleanPatched;
 
 import java.io.*;

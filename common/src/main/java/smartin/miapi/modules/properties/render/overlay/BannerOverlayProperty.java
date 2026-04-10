@@ -12,7 +12,7 @@ import smartin.miapi.client.model.MiapiModel;
 import smartin.miapi.client.model.ModelHolder;
 import smartin.miapi.client.model.module.BannerMiapiModel;
 import smartin.miapi.item.modular.Transform;
-import smartin.miapi.material.MaterialInscribeDataProperty;
+import smartin.miapi.material.properties.MaterialInscribeDataProperty;
 import smartin.miapi.modules.ModuleInstance;
 
 import java.util.ArrayList;

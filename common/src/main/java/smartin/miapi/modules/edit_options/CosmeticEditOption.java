@@ -13,7 +13,7 @@ import smartin.miapi.client.gui.crafting.CraftingScreen;
 import smartin.miapi.client.gui.crafting.crafter.EditModuleCrafter;
 import smartin.miapi.craft.CraftAction;
 import smartin.miapi.material.base.Material;
-import smartin.miapi.material.MaterialProperty;
+import smartin.miapi.material.properties.MaterialProperty;
 import smartin.miapi.modules.properties.slot.SlotProperty;
 import smartin.miapi.network.Networking;
 

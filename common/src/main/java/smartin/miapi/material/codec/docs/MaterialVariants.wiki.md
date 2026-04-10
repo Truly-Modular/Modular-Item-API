@@ -1,10 +1,9 @@
-@header Material Variants
-@path /datapack/material/variants
+@header Data Material - Variants
+@path /datapack/material/data/variants
 
 Material Variants allow you to create variants for materials.
-they are added in the material json (or in an extension) 
-they use a basic Module Condition and under overwrite is a data to be overwritten.
-this uses the same logic as material extensions.
+they use a basic Module Condition to create a custom variant.
+this uses the same logic as material extensions to overwrite materials.
 
 Example
 ```json

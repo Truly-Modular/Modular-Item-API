@@ -5,7 +5,7 @@ import com.mojang.datafixers.util.Either;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
-import smartin.miapi.material.CodecMaterial;
+import smartin.miapi.material.codec.CodecMaterial;
 import smartin.miapi.modules.properties.util.EditorError;
 import smartin.miapi.registries.JsonOpsBooleanPatched;
 

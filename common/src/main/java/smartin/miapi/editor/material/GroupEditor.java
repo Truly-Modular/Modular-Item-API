@@ -3,7 +3,7 @@ package smartin.miapi.editor.material;
 import imgui.ImGui;
 import imgui.type.ImString;
 import smartin.miapi.editor.util.ListEditor;
-import smartin.miapi.material.CodecMaterial;
+import smartin.miapi.material.codec.CodecMaterial;
 
 public class GroupEditor {
     private final CodecMaterial material;

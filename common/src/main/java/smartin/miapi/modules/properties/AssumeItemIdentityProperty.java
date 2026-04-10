@@ -19,15 +19,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.WeakHashMap;
 
-/**
- * @header Copy Item Lore
- * @path /data_types/properties/lore/copy_from_item
- * @description_start Copies lore properties from a specified item. This property enables the lore text to be duplicated
- * from the referenced item, allowing for a consistent narrative or flavor across items. Intended for items that share lore
- * changing lore.
- * @description_end
- * @data copy_item_lore:the id of the item to copy lore from
- */
 public class AssumeItemIdentityProperty extends CodecProperty<List<Holder<Item>>> {
     public static ResourceLocation KEY = Miapi.id("assume_item_id");
     public static AssumeItemIdentityProperty property;

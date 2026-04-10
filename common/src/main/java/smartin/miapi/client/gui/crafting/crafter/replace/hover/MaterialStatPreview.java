@@ -8,7 +8,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.crafting.CraftingScreen;
-import smartin.miapi.material.MaterialStatIndicatorProperty;
+import smartin.miapi.material.properties.MaterialStatIndicatorProperty;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.LoreProperty;
 

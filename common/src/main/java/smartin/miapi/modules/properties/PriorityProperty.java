@@ -16,7 +16,6 @@ import java.util.Optional;
  * to each item or module, which influences its placement or sorting in graphical user interfaces where multiple items
  * or modules are displayed. A lower value will be placed first in the list and higher values at the end.
  * @description_end
- * @data priority: the priority for sorting
  */
 
 public class PriorityProperty extends DoubleProperty {

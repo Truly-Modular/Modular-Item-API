@@ -3,7 +3,7 @@ package smartin.miapi.modules.edit_options.material;
 import net.minecraft.network.chat.Component;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.ScrollList;
-import smartin.miapi.material.MaterialProperty;
+import smartin.miapi.material.properties.MaterialProperty;
 import smartin.miapi.material.base.Material;
 
 import java.util.*;

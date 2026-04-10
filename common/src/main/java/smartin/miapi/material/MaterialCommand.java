@@ -12,6 +12,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import smartin.miapi.material.base.Material;
+import smartin.miapi.material.properties.MaterialProperty;
 import smartin.miapi.network.Networking;
 
 import java.util.List;

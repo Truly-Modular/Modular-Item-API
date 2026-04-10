@@ -1,4 +1,4 @@
-package smartin.miapi.material;
+package smartin.miapi.material.codec;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;

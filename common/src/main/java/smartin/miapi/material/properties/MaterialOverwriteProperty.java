@@ -1,10 +1,11 @@
-package smartin.miapi.material;
+package smartin.miapi.material.properties;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.minecraft.resources.ResourceLocation;
 import smartin.miapi.Environment;
 import smartin.miapi.Miapi;
+import smartin.miapi.material.JsonMaterial;
 import smartin.miapi.material.base.Material;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.util.MergeAble;

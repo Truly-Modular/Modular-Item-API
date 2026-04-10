@@ -15,6 +15,7 @@ import smartin.miapi.client.gui.crafting.crafter.replace.MaterialCraftingWidget;
 import smartin.miapi.blueprint.BlueprintComponent;
 import smartin.miapi.craft.CraftAction;
 import smartin.miapi.craft.MaterialCraftInfo;
+import smartin.miapi.material.properties.AllowedMaterial;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.render.ServerReplaceProperty;

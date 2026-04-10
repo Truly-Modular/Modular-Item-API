@@ -7,7 +7,7 @@ import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
 import smartin.miapi.client.gui.crafting.crafter.replace.CraftOption;
 import smartin.miapi.datapack.ReloadHandlerBuilder;
-import smartin.miapi.material.AllowedMaterial;
+import smartin.miapi.material.properties.AllowedMaterial;
 import smartin.miapi.registries.JsonOpsBooleanPatched;
 import smartin.miapi.registries.MiapiRegistry;
 

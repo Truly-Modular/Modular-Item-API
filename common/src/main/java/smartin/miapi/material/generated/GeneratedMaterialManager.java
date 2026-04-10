@@ -15,7 +15,7 @@ import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.datapack.sync.StreamCodecSyncer;
 import smartin.miapi.events.MiapiEvents;
-import smartin.miapi.material.MaterialProperty;
+import smartin.miapi.material.properties.MaterialProperty;
 import smartin.miapi.material.base.Material;
 import smartin.miapi.registries.RegistryInventory;
 
@@ -23,7 +23,7 @@ import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import static smartin.miapi.material.MaterialProperty.MATERIAL_REGISTRY;
+import static smartin.miapi.material.properties.MaterialProperty.MATERIAL_REGISTRY;
 
 public class GeneratedMaterialManager {
     public static final List<GeneratedMaterial> generatedMaterials = new ArrayList<>();

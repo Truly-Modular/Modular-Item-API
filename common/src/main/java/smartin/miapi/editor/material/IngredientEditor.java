@@ -4,7 +4,7 @@ import com.google.gson.JsonArray;
 import imgui.ImGui;
 import smartin.miapi.blueprint.IngredientWithCount;
 import smartin.miapi.editor.util.JsonEditor;
-import smartin.miapi.material.CodecMaterial;
+import smartin.miapi.material.codec.CodecMaterial;
 import smartin.miapi.modules.properties.util.CodecProperty;
 
 import java.util.ArrayList;
