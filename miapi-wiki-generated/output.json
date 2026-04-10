@@ -25,6 +25,10 @@
           "key_words": []
         },
         "material": {
+          "header": "Material-Properties",
+          "description": "Materials are the second core part next to modules on how the entire api works.  \rModules can (and almost always have) exactly one material.\rIn most cases you should use the datapack Materials, but incases of runtime demand Composite and Component Materials\rmight fill your niche better.",
+          "data": {},
+          "key_words": [],
           "sub_pages": {
             "data": {
               "sub_pages": {
@@ -195,6 +199,10 @@
               }
             },
             "properties": {
+              "header": "Material-Properties",
+              "description": "Many Properties are directly related to control and interface with materials and their logic.\r- ``\"material_property\"`` a list of allowed Material Properties for the module\r- ``\"allowed_material\"`` a list of allowed materials and material groups\r- ``inscribe_data_on_craft`` inscribes the used material ingredient onto the module\r- ``inscribe_on_craft`` inscribes the material ingredient onto the item (used for potion arrows)\r- ``material_overwrite`` allows for semi-dynamic merging with a manual material (used my cosmetics to inject additional rendering)\r- ``material`` allows you setting a fallback material, but since miapi 2.0.0 the material inscribed in module data is used over this.\r- ``material_indication`` controls a small tooltip informing the player about used material stats",
+              "data": {},
+              "key_words": [],
               "sub_pages": {
                 "allowed": {
                   "header": "Allowed Material",
@@ -345,12 +353,6 @@
             "data": {
               "header": "Datapack",
               "description": "These Articles cover how datapack Materials work\rand what options exist to create custom materials with datapacks.\rThese materials stand in opposition with component materials.",
-              "data": {},
-              "key_words": []
-            },
-            "properties": {
-              "header": "Material-Related",
-              "description": "Many Properties are directly related to control and interface with materials and their logic.\r- ``\"material_property\"`` a list of allowed Material Properties for the module\r- ``\"allowed_material\"`` a list of allowed materials and material groups\r- ``inscribe_data_on_craft`` inscribes the used material ingredient onto the module\r- ``inscribe_on_craft`` inscribes the material ingredient onto the item (used for potion arrows)\r- ``material_overwrite`` allows for semi-dynamic merging with a manual material (used my cosmetics to inject additional rendering)\r- ``material`` allows you setting a fallback material, but since miapi 2.0.0 the material inscribed in module data is used over this.\r- ``material_indication`` controls a small tooltip informing the player about used material stats",
               "data": {},
               "key_words": []
             }
