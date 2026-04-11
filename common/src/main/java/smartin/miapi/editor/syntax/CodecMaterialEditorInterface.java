@@ -19,11 +19,11 @@ public class CodecMaterialEditorInterface implements EditorInterface {
     }
 
     @Override
-    public List<EditorError> validateContent(@Nullable JsonElement json, String rawContent) {
+    public List<EditorError> validateContent(@Nullable JsonElement json, String rawContent, int lineOffset) {
         List<EditorError> errors = new ArrayList<>();
 
         if (json == null) {
-            errors.add(new EditorError(1, "Invalid JSON", EditorError.ErrorSeverity.ERROR));
+            errors.add(new EditorError(1 + lineOffset, "Invalid JSON", EditorError.ErrorSeverity.ERROR));
             return errors;
         }
 
@@ -50,10 +50,10 @@ public class CodecMaterialEditorInterface implements EditorInterface {
                     )).getOrThrow()).result();
 
             if (result.isEmpty()) {
-                errors.add(new EditorError(1, "Failed to decode material: Invalid format", EditorError.ErrorSeverity.ERROR));
+                errors.add(new EditorError(1 + lineOffset, "Failed to decode material: Invalid format", EditorError.ErrorSeverity.ERROR));
             }
         } catch (Exception e) {
-            errors.add(new EditorError(1, "Failed to validate material: " + e.getMessage(), EditorError.ErrorSeverity.ERROR));
+            errors.add(new EditorError(1 + lineOffset, "Failed to validate material: " + e.getMessage(), EditorError.ErrorSeverity.ERROR));
         }
 
         return errors;

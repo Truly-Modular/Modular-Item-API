@@ -4,10 +4,11 @@ import dev.architectury.event.EventResult;
 import smartin.miapi.blueprint.BlueprintComponent;
 import smartin.miapi.editor.syntax.CodecValidatorInterface;
 import smartin.miapi.editor.syntax.ModuleValidatorInterface;
+import smartin.miapi.editor.syntax.SynergyEditor;
 import smartin.miapi.material.codec.CodecMaterial;
+import smartin.miapi.material.codec.CodecMaterialExtension;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.abilities.key.MiapiBinding;
-import smartin.miapi.modules.synergies.SynergyManager;
 
 public class ValidatorManager {
     static void setupValidators() {
@@ -19,7 +20,7 @@ public class ValidatorManager {
             }
             if (event.resourceLocation != null &&
                 event.resourceLocation.getPath().startsWith("miapi/synergies/")) {
-                event.interfaces.add(new CodecValidatorInterface(SynergyManager.SYNERGY_CODEC, "Synergy Validator"));
+                event.interfaces.add(new SynergyEditor());
             }
             if (event.resourceLocation != null &&
                 event.resourceLocation.getPath().startsWith("miapi/modular_converters/")) {
@@ -43,7 +44,7 @@ public class ValidatorManager {
             }
             if (event.resourceLocation != null &&
                 event.resourceLocation.getPath().startsWith("miapi/material_extension/")) {
-                //TODO:validator
+                event.interfaces.add(new CodecValidatorInterface(CodecMaterialExtension.CODEC, "KeyBind Validator"));
             }
             if (event.resourceLocation != null &&
                 event.resourceLocation.getPath().startsWith("miapi/module_extension/")) {

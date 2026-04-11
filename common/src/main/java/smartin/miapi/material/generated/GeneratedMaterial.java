@@ -151,6 +151,7 @@ public class GeneratedMaterial implements Material {
                 .collect(Collectors.toList());
         Optional<Item> swordItemOptional = toolMaterials.stream().filter(SwordItem.class::isInstance).findFirst();
         Optional<Item> axeItemOptional = toolMaterials.stream().filter(AxeItem.class::isInstance).findFirst();
+        Optional<Item> pickaxeItemOptional = toolMaterials.stream().filter(PickaxeItem.class::isInstance).findFirst();
         if (swordItemOptional.isPresent() && axeItemOptional.isPresent() &&
             swordItemOptional.get() instanceof SwordItem foundSwordItem &&
             axeItemOptional.get() instanceof DiggerItem axeItem) {
@@ -167,7 +168,12 @@ public class GeneratedMaterial implements Material {
             } else {
                 stats.put("flexibility", (double) (toolMaterial.getSpeed() / 4));
             }
-            stats.put("tier", swordAttackDmg - 2);
+            if (pickaxeItemOptional.isPresent()) {
+                double pickaxeAttackDmg = AttributeUtil.getActualValue(pickaxeItemOptional.get().getDefaultInstance(), EquipmentSlot.MAINHAND, Attributes.ATTACK_DAMAGE.value(), 0.0);
+                stats.put("tier", pickaxeAttackDmg);
+            } else {
+                stats.put("tier", swordAttackDmg - 2);
+            }
             armorItems = findRelatedArmorItems();
             properties = GeneratedMaterialPropertyManager.setup(getID(), swordItem, axeItem, toolMaterials, armorItems, Map.of());
             return true;
@@ -247,7 +253,7 @@ public class GeneratedMaterial implements Material {
 
     public void addSmithingGroup() {
         if (!groups.contains("smithing")) {
-            groups = new ArrayList<>(List.of(key.toString(),"smithing"));
+            groups = new ArrayList<>(List.of(key.toString(), "smithing"));
         }
     }
 

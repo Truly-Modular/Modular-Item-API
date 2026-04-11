@@ -11,6 +11,7 @@ import imgui.type.ImString;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
+import smartin.miapi.Miapi;
 import smartin.miapi.editor.registry.RegistryViewer;
 import smartin.miapi.editor.syntax.EditorInterface;
 import smartin.miapi.modules.properties.util.EditorError;
@@ -159,7 +160,7 @@ public class JsonEditor implements MiapiEditor {
         try {
             currentJson = JsonParser.parseString(content.get());
             for (EditorInterface iface : activeInterfaces) {
-                currentErrors.addAll(iface.validateContent(currentJson, content.get()));
+                currentErrors.addAll(iface.validateContent(currentJson, content.get(),0 ));
             }
         } catch (Exception e) {
             currentJson = null;
@@ -211,7 +212,7 @@ public class JsonEditor implements MiapiEditor {
             if (ImGui.button("Format") && !readOnly) {
                 try {
                     if (currentJson != null) {
-                        content.set(currentJson.toString());
+                        content.set(Miapi.gson.toJson(currentJson));
                         validateContent();
                     }
                 } catch (Exception ignored) {
@@ -232,7 +233,7 @@ public class JsonEditor implements MiapiEditor {
                 }
             }
             // Dropdown menu
-            if (ImGui.button("Dropdown")) {
+            if (ImGui.button("Registries")) {
                 ImGui.openPopup("DropdownMenu"+resourceLocation);
             }
             if (ImGui.beginPopup("DropdownMenu"+resourceLocation)) {

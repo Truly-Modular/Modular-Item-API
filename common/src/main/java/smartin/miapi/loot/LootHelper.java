@@ -42,7 +42,7 @@ public class LootHelper {
 
     public static void setup() {
         MiapiEvents.DEFAULT_LOOT_FUNCTIONS.register(list -> {
-            //list.add(new AutoSmeltFunction());
+            list.add(new AutoSmeltFunction());
             list.add(new GlobalLootModularisationFunction());
             return EventResult.pass();
         });

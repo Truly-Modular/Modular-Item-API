@@ -29,11 +29,11 @@ public class CodecValidatorInterface implements EditorInterface {
     }
 
     @Override
-    public List<EditorError> validateContent(@Nullable JsonElement json, String rawContent) {
+    public List<EditorError> validateContent(@Nullable JsonElement json, String rawContent, int lineOffset) {
         List<EditorError> errors = new ArrayList<>();
 
         if (json == null) {
-            errors.add(new EditorError(1, "Invalid JSON", EditorError.ErrorSeverity.ERROR));
+            errors.add(new EditorError(1 + lineOffset, "Invalid JSON", EditorError.ErrorSeverity.ERROR));
             return errors;
         }
 
@@ -41,14 +41,14 @@ public class CodecValidatorInterface implements EditorInterface {
             DataResult<?> result = codec.decode(NbtOps.INSTANCE, JsonOpsBooleanPatched.INSTANCE.convertTo(NbtOps.INSTANCE, Miapi.gson.fromJson(rawContent, JsonElement.class)));
             result.result().ifPresentOrElse(
                     value -> {
-                        if(value instanceof Pair pair){
+                        if (value instanceof Pair pair) {
                             errors.addAll(getErrorsFromValidator(pair.getFirst()));
                         }
                     },
-                    () -> errors.add(new EditorError(1, "Failed to decode " + name + ": " + result.error().get().message(), EditorError.ErrorSeverity.ERROR))
+                    () -> errors.add(new EditorError(1 + lineOffset, "Failed to decode " + name + ": " + result.error().get().message(), EditorError.ErrorSeverity.ERROR))
             );
         } catch (Exception e) {
-            errors.add(new EditorError(1, "Failed to validate " + name + ": " + e.getMessage(), EditorError.ErrorSeverity.ERROR));
+            errors.add(new EditorError(1 + lineOffset, "Failed to validate " + name + ": " + e.getMessage(), EditorError.ErrorSeverity.ERROR));
         }
 
         return errors;

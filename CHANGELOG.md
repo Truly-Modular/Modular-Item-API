@@ -2,5 +2,6 @@
 ### Bugfixes
 - fixed shield damage reflect not working
 - fixed multishot on magazine crossbows not working
+- re-enabled autosmelt
 ### Additions
 ### Changes

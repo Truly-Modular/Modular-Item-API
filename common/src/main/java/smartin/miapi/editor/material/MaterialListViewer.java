@@ -68,7 +68,7 @@ public class MaterialListViewer implements MiapiEditor {
                             // Instead of MaterialEditor, open JsonEditor
                             JsonEditor jsonEditor = new JsonEditor(
                                     Files.readString(newFile.toPath()), // content
-                                    (newContent) -> writeToFile(newMaterial, newFile), // onChange callback
+                                    (newContent) -> writeJsonToFile(newFile, newContent), // onChange callback
                                     newFile.toPath(),
                                     Miapi.id(id.getNamespace() + ":" + id.getPath() + "/miapi/materials") // resource location
                             );

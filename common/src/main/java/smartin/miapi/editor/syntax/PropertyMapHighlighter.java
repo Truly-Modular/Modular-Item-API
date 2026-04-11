@@ -33,8 +33,7 @@ public class PropertyMapHighlighter implements EditorInterface {
         return id;
     }
 
-    @Override
-    public List<EditorError> validateContent(JsonElement json, String rawContent) {
+    public List<EditorError> validateContent(JsonElement json, String rawContent, int lineOffset) {
         List<EditorError> errors = new ArrayList<>();
 
         if (!(json instanceof JsonObject moduleJson)) {
@@ -42,7 +41,7 @@ public class PropertyMapHighlighter implements EditorInterface {
             return errors;
         }
 
-        return getEditorErrors(rawContent, moduleJson);
+        return getEditorErrors(rawContent, moduleJson, lineOffset);
     }
 
     public Map<String, Runnable> toolbarButtons() {
@@ -52,7 +51,7 @@ public class PropertyMapHighlighter implements EditorInterface {
         });
     }
 
-    public static List<EditorError> getEditorErrors(String rawContent, JsonObject moduleJson) {
+    public static List<EditorError> getEditorErrors(String rawContent, JsonObject moduleJson, int lineOffset) {
         List<EditorError> errors = new ArrayList<>();
         Map<String, JsonElement> rawProperties = moduleJson.asMap();
         rawProperties.forEach((key, data) -> {
@@ -62,7 +61,7 @@ public class PropertyMapHighlighter implements EditorInterface {
 
             if (property == null) {
                 errors.add(new EditorError(
-                        line,
+                        line + lineOffset,
                         "Invalid property '" + key + "'. This indicates either a broken Module, Outdated API version or missing dependency!",
                         EditorError.ErrorSeverity.ERROR
                 ));

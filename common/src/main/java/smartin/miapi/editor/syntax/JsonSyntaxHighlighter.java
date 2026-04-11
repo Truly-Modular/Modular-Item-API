@@ -28,17 +28,17 @@ public class JsonSyntaxHighlighter implements EditorInterface {
     private static final Pattern BRACKET_PATTERN = Pattern.compile("[\\[\\]{}]");
 
     @Override
-    public List<EditorError> validateContent(@Nullable JsonElement json, String rawContent) {
+    public List<EditorError> validateContent(@Nullable JsonElement json, String rawContent, int lineOffset) {
         List<EditorError> errors = new ArrayList<>();
 
         // Check for unmatched brackets
-        checkBracketMatching(rawContent, errors);
+        checkBracketMatching(rawContent, errors, lineOffset);
 
         // Check for trailing commas
-        checkTrailingCommas(rawContent, errors);
+        checkTrailingCommas(rawContent, errors, lineOffset);
 
         // Check for missing colons in properties
-        checkPropertyColons(rawContent, errors);
+        checkPropertyColons(rawContent, errors, lineOffset);
 
         return errors;
     }
@@ -73,7 +73,7 @@ public class JsonSyntaxHighlighter implements EditorInterface {
         }
     }
 
-    private void checkBracketMatching(String content, List<EditorError> errors) {
+    private void checkBracketMatching(String content, List<EditorError> errors, int lineOffset) {
         Stack<BracketInfo> stack = new Stack<>();
         int line = 1;
 
@@ -88,14 +88,14 @@ public class JsonSyntaxHighlighter implements EditorInterface {
                 stack.push(new BracketInfo(c, line));
             } else if (c == '}' || c == ']') {
                 if (stack.isEmpty()) {
-                    errors.add(new EditorError(line, "Unexpected closing bracket: " + c, EditorError.ErrorSeverity.ERROR));
+                    errors.add(new EditorError(line + lineOffset, "Unexpected closing bracket: " + c, EditorError.ErrorSeverity.ERROR));
                     continue;
                 }
 
                 BracketInfo opening = stack.pop();
                 char expected = (opening.bracket == '{') ? '}' : ']';
                 if (c != expected) {
-                    errors.add(new EditorError(line,
+                    errors.add(new EditorError(line + lineOffset,
                             "Mismatched brackets: Expected " + expected + " but found " + c,
                             EditorError.ErrorSeverity.ERROR));
                 }
@@ -111,7 +111,7 @@ public class JsonSyntaxHighlighter implements EditorInterface {
         }
     }
 
-    private void checkTrailingCommas(String content, List<EditorError> errors) {
+    private void checkTrailingCommas(String content, List<EditorError> errors, int lineOffset) {
         Pattern trailingComma = Pattern.compile(",\\s*[}\\]]");
         Matcher matcher = trailingComma.matcher(content);
         int line = 1;
@@ -124,15 +124,15 @@ public class JsonSyntaxHighlighter implements EditorInterface {
             }
             lastNewline = matcher.start();
 
-            errors.add(new EditorError(line,
+            errors.add(new EditorError(line + lineOffset,
                     "Trailing comma before closing bracket",
                     EditorError.ErrorSeverity.ERROR));
         }
     }
 
-    private void checkPropertyColons(String content, List<EditorError> errors) {
+    private void checkPropertyColons(String content, List<EditorError> errors, int lineOffset) {
         Pattern propertyPattern = Pattern.compile("\"(?:\\\\.|[^\"\\\\])*\"\\s*[^:]");
-        try{
+        try {
             Matcher matcher = propertyPattern.matcher(content);
             int line = 1;
             int lastNewline = 0;
@@ -148,12 +148,12 @@ public class JsonSyntaxHighlighter implements EditorInterface {
                     }
                     lastNewline = matcher.start();
 
-                    errors.add(new EditorError(line,
+                    errors.add(new EditorError(line + lineOffset,
                             "Missing colon after property name",
                             EditorError.ErrorSeverity.ERROR));
                 }
             }
-        }catch (StackOverflowError e){
+        } catch (StackOverflowError e) {
             Miapi.LOGGER.error("stack overflow in collon finder");
         }
     }

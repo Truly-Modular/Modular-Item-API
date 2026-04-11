@@ -8,6 +8,7 @@ import imgui.type.ImBoolean;
 import imgui.type.ImString;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.GuiGraphics;
+import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.editor.material.MaterialListViewer;
 import smartin.miapi.modules.cache.CacheCommands;
 
@@ -97,6 +98,10 @@ public class LiveDataPackEditorManager implements MiapiEditor {
             ImGui.sameLine();
             if (ImGui.button("Reload")) {
                 reload();
+            }
+            if(ReloadEvents.isInReload()){
+                ImGui.sameLine();
+                ImGui.text("Reloading....");
             }
 
             ImGui.separator();

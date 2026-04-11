@@ -2,6 +2,7 @@ package smartin.miapi.editor;
 
 import imgui.ImGui;
 import imgui.flag.ImGuiCond;
+import imgui.flag.ImGuiTreeNodeFlags;
 import imgui.type.ImBoolean;
 import imgui.type.ImString;
 import net.minecraft.client.DeltaTracker;
@@ -196,7 +197,6 @@ public class FileSystemViewer implements MiapiEditor {
         private final boolean isDirectory;
         private final BiConsumer<File, FileNode> onFileClick;
         private final List<FileNode> children = new ArrayList<>();
-        private boolean isExpanded = false;
         private String relativePath;
 
         public FileNode(File file, String relativePath, BiConsumer<File, FileNode> onFileClick) {
@@ -227,20 +227,18 @@ public class FileSystemViewer implements MiapiEditor {
         public void render() {
             if (isDirectory) {
                 if (ImGui.treeNode(name + "/")) {
-                    isExpanded = true;
                     for (FileNode child : children) {
                         child.render();
                     }
                     ImGui.treePop();
-                } else {
-                    isExpanded = false;
                 }
             } else {
-                if (ImGui.treeNodeEx(name)) {
-                    if (ImGui.isItemClicked() && name.endsWith(".json")) {
-                        onFileClick.accept(file, this);
-                    }
-                    ImGui.treePop();
+                int flags = ImGuiTreeNodeFlags.Leaf | ImGuiTreeNodeFlags.NoTreePushOnOpen;
+
+                ImGui.treeNodeEx(name, flags);
+
+                if (ImGui.isItemClicked() && name.endsWith(".json")) {
+                    onFileClick.accept(file, this);
                 }
             }
         }

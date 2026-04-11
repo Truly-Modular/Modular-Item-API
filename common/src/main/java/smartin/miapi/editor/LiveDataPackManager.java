@@ -48,7 +48,7 @@ public class LiveDataPackManager implements AutoCloseable {
             return EventResult.pass();
         });
         MiapiEvents.ADJUST_RAW_DATA.register(event -> {
-            if (Platform.getEnv() == EnvType.CLIENT && Miapi.server != null &&  isEnabled.get()) {
+            if (Platform.getEnv() == EnvType.CLIENT && Miapi.server != null && isEnabled.get()) {
                 getInstance().processDataPacks(event);
             }
             return EventResult.pass();
@@ -479,7 +479,6 @@ public class LiveDataPackManager implements AutoCloseable {
         }
 
 
-
         @Nullable
         public ValidationCache getValidationCache(String relativePath, File file, boolean forced) {
             ValidationCache cache = validatedFiles.get(relativePath);
@@ -517,7 +516,7 @@ public class LiveDataPackManager implements AutoCloseable {
                         boolean isValid = true;
                         List<EditorError> allErrors = new ArrayList<>();
                         for (EditorInterface iface : interfaces) {
-                            List<EditorError> errors = iface.validateContent(json, content);
+                            List<EditorError> errors = iface.validateContent(json, content, 0);
                             allErrors.addAll(errors);
                             // File is invalid if there are any errors (not just warnings)
                             if (errors.stream().anyMatch(error -> error.severity() == EditorError.ErrorSeverity.ERROR)) {

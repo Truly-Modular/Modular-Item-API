@@ -116,6 +116,7 @@ public class Miapi {
     }
 
     public static Gson gson = new GsonBuilder()
+            .setPrettyPrinting()
             .create();
     public static Codec<ResourceLocation> ID_CODEC = new Codec<>() {
         @Override

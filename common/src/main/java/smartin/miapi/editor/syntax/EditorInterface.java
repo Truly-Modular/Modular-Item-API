@@ -14,9 +14,10 @@ public interface EditorInterface {
      *
      * @param json       The current JSON content, null if invalid
      * @param rawContent The raw text content
+     * @param lineOffset
      * @return List of errors, empty if none
      */
-    List<EditorError> validateContent(@Nullable JsonElement json, String rawContent);
+    List<EditorError> validateContent(@Nullable JsonElement json, String rawContent, int lineOffset);
 
     /**
      * Get syntax highlighting for specific parts of the text

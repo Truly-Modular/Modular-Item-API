@@ -13,12 +13,12 @@ public class ModuleValidatorInterface extends CodecValidatorInterface {
         super(CodecModuleExtension.CODEC, "module_inheritens");
     }
 
-    public List<EditorError> validateContent(JsonElement json, String rawContent) {
+    public List<EditorError> validateContent(JsonElement json, String rawContent, int lineOffset) {
         if (json instanceof JsonObject object) {
             if (!object.has("parent")) {
-                return PropertyMapHighlighter.getEditorErrors(rawContent, object);
+                return PropertyMapHighlighter.getEditorErrors(rawContent, object,lineOffset);
             }
         }
-        return super.validateContent(json, rawContent);
+        return super.validateContent(json, rawContent, lineOffset);
     }
 }
