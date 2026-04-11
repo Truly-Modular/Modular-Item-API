@@ -13,7 +13,7 @@ import smartin.miapi.Miapi;
 import smartin.miapi.client.GlintShader;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.events.MiapiEvents;
-import smartin.miapi.material.properties.MaterialProperty;
+import smartin.miapi.material.MaterialProperty;
 import smartin.miapi.material.base.Material;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.util.CodecProperty;

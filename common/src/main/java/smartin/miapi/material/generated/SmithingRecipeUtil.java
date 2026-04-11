@@ -11,7 +11,7 @@ import net.minecraft.world.item.crafting.*;
 import smartin.miapi.Miapi;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.item.MaterialSmithingRecipe;
-import smartin.miapi.material.properties.MaterialProperty;
+import smartin.miapi.material.MaterialProperty;
 import smartin.miapi.material.base.Material;
 import smartin.miapi.mixin.smithing.SmithingTransformRecipeAccessor;
 

@@ -20,7 +20,7 @@ import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.VisualModularItem;
 import smartin.miapi.material.properties.AllowedMaterial;
 import smartin.miapi.material.properties.CopyParentMaterialProperty;
-import smartin.miapi.material.properties.MaterialProperty;
+import smartin.miapi.material.MaterialProperty;
 import smartin.miapi.material.base.Material;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;

@@ -14,7 +14,7 @@ import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.crafting.CraftingScreen;
 import smartin.miapi.client.gui.crafting.PreviewManager;
 import smartin.miapi.material.properties.AllowedMaterial;
-import smartin.miapi.material.properties.MaterialProperty;
+import smartin.miapi.material.MaterialProperty;
 import smartin.miapi.material.base.Material;
 import smartin.miapi.material.composite.AnyIngredientComposite;
 import smartin.miapi.material.composite.CompositeMaterial;

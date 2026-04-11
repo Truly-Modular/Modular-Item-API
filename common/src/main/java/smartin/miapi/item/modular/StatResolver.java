@@ -13,7 +13,7 @@ import com.redpxnda.nucleus.codec.misc.IntermediateCodec;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
-import smartin.miapi.material.properties.MaterialProperty;
+import smartin.miapi.material.MaterialProperty;
 import smartin.miapi.material.base.Material;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.registries.JsonOpsBooleanPatched;

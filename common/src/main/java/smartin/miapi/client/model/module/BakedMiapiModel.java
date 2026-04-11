@@ -37,7 +37,7 @@ import smartin.miapi.client.renderer.RescaledVertexConsumer;
 import smartin.miapi.client.renderer.TrimRenderer;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.item.modular.Transform;
-import smartin.miapi.material.properties.MaterialProperty;
+import smartin.miapi.material.MaterialProperty;
 import smartin.miapi.mixin.BufferBuilderAccessor;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.GlintProperty;

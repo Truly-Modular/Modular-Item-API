@@ -20,7 +20,7 @@ import smartin.miapi.editor.syntax.CodecValidatorInterface;
 import smartin.miapi.editor.syntax.JsonSyntaxHighlighter;
 import smartin.miapi.editor.syntax.PropertyMapHighlighter;
 import smartin.miapi.material.codec.CodecMaterial;
-import smartin.miapi.material.properties.MaterialProperty;
+import smartin.miapi.material.MaterialProperty;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.synergies.SynergyManager;

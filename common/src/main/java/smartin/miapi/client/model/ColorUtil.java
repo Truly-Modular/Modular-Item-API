@@ -11,7 +11,7 @@ import net.minecraft.util.RandomSource;
 import smartin.miapi.client.model.item.BakedSingleModel;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.material.base.Material;
-import smartin.miapi.material.properties.MaterialProperty;
+import smartin.miapi.material.MaterialProperty;
 
 /**
  * This class is a colection of ColorUtilities

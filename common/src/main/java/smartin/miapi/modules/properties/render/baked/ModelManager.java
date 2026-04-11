@@ -7,7 +7,7 @@ import net.minecraft.resources.ResourceLocation;
 import smartin.miapi.client.model.DynamicBakery;
 import smartin.miapi.client.model.ModelLoadAccessor;
 import smartin.miapi.item.modular.Transform;
-import smartin.miapi.material.properties.MaterialProperty;
+import smartin.miapi.material.MaterialProperty;
 import smartin.miapi.mixin.client.ModelLoaderInterfaceAccessor;
 
 import java.io.FileNotFoundException;

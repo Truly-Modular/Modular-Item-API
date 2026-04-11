@@ -6,7 +6,7 @@ import net.minecraft.world.item.crafting.Ingredient;
 import smartin.miapi.Miapi;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.item.modular.VisualModularItem;
-import smartin.miapi.material.properties.MaterialProperty;
+import smartin.miapi.material.MaterialProperty;
 import smartin.miapi.material.base.IngredientController;
 import smartin.miapi.material.base.Material;
 import smartin.miapi.modules.ItemModule;

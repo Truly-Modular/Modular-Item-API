@@ -5,7 +5,7 @@ import smartin.miapi.editor.DocPage;
 import smartin.miapi.item.ItemToModularConverter;
 import smartin.miapi.material.codec.CodecMaterial;
 import smartin.miapi.material.codec.CodecMaterialExtension;
-import smartin.miapi.material.properties.MaterialProperty;
+import smartin.miapi.material.MaterialProperty;
 import smartin.miapi.material.composite.material.DatapackComposite;
 import smartin.miapi.modules.CodecModuleExtension;
 import smartin.miapi.modules.ItemModule;

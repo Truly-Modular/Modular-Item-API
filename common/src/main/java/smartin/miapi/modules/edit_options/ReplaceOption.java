@@ -16,7 +16,7 @@ import smartin.miapi.craft.CraftAction;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.material.base.Material;
-import smartin.miapi.material.properties.MaterialProperty;
+import smartin.miapi.material.MaterialProperty;
 import smartin.miapi.modules.MutableModuleInstance;
 import smartin.miapi.network.Networking;
 

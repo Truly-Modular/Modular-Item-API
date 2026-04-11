@@ -1,4 +1,4 @@
-package smartin.miapi.material.properties;
+package smartin.miapi.material;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -21,6 +21,8 @@ import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.material.base.Material;
 import smartin.miapi.material.codec.CodecMaterial;
 import smartin.miapi.material.codec.MaterialCodecs;
+import smartin.miapi.material.properties.CopyParentMaterialProperty;
+import smartin.miapi.material.properties.MaterialOverwriteProperty;
 import smartin.miapi.mixin.NamedAccessor;
 import smartin.miapi.modules.ModuleDataPropertiesManager;
 import smartin.miapi.modules.ModuleInstance;
