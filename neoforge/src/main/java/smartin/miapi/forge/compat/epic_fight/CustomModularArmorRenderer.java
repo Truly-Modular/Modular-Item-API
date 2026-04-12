@@ -17,10 +17,10 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
+import smartin.miapi.Miapi;
 import smartin.miapi.client.atlas.ArmorModelManager;
 import smartin.miapi.client.model.MiapiItemModel;
 import smartin.miapi.item.modular.Transform;
@@ -29,6 +29,7 @@ import smartin.miapi.mixin.client.ElytraEntityModelAccessor;
 import smartin.miapi.mixin.client.ElytraFeatureRendererAccessor;
 import smartin.miapi.mixin.client.LivingEntityRendererAccessor;
 import yesman.epicfight.api.animation.Joint;
+import yesman.epicfight.api.animation.Pose;
 import yesman.epicfight.api.asset.AssetAccessor;
 import yesman.epicfight.api.model.Armature;
 import yesman.epicfight.api.utils.math.OpenMatrix4f;
@@ -112,25 +113,24 @@ public class CustomModularArmorRenderer<E extends LivingEntity, T extends Living
     @Override
     protected void renderLayer(T patch, E entity, @Nullable HumanoidArmorLayer<E, M, M> emmArmorFeatureRenderer, PoseStack poseStack, MultiBufferSource multiBufferSource, int i, OpenMatrix4f[] openMatrix4fs, float v, float v1, float v2, float v3) {
         float partial = (float) Rendering.getGameAndPartialTime();
-        renderSlot(entity, patch, emmArmorFeatureRenderer, poseStack, multiBufferSource, i, EquipmentSlot.HEAD, openMatrix4fs, partial );
-        renderSlot(entity, patch, emmArmorFeatureRenderer, poseStack, multiBufferSource, i, EquipmentSlot.CHEST, openMatrix4fs, partial );
-        renderSlot(entity, patch, emmArmorFeatureRenderer, poseStack, multiBufferSource, i, EquipmentSlot.LEGS, openMatrix4fs, partial );
-        renderSlot(entity, patch, emmArmorFeatureRenderer, poseStack, multiBufferSource, i, EquipmentSlot.FEET, openMatrix4fs, partial );
+        renderSlot(entity, patch, emmArmorFeatureRenderer, poseStack, multiBufferSource, i, EquipmentSlot.HEAD, openMatrix4fs, partial);
+        renderSlot(entity, patch, emmArmorFeatureRenderer, poseStack, multiBufferSource, i, EquipmentSlot.CHEST, openMatrix4fs, partial);
+        renderSlot(entity, patch, emmArmorFeatureRenderer, poseStack, multiBufferSource, i, EquipmentSlot.LEGS, openMatrix4fs, partial);
+        renderSlot(entity, patch, emmArmorFeatureRenderer, poseStack, multiBufferSource, i, EquipmentSlot.FEET, openMatrix4fs, partial);
     }
 
-    private void renderSlot(E entity, T patch, @NotNull HumanoidArmorLayer<E, M, M> emmArmorFeatureRenderer, PoseStack matrixStack, MultiBufferSource vertexConsumerProvider, int i, EquipmentSlot slot, OpenMatrix4f[] openMatrix4fs, float partial) {
-        renderArmorPiece(matrixStack, vertexConsumerProvider, i, slot, entity.getItemBySlot(slot), entity, patch, openMatrix4fs, partial);
+    private void renderSlot(E entity, T patch, @Nullable HumanoidArmorLayer<E, M, M> emmArmorFeatureRenderer, PoseStack matrixStack, MultiBufferSource vertexConsumerProvider, int i, EquipmentSlot slot, OpenMatrix4f[] openMatrix4fs, float partial) {
+        renderArmorPiece(matrixStack, vertexConsumerProvider, emmArmorFeatureRenderer, i, slot, entity.getItemBySlot(slot), entity, patch, openMatrix4fs, partial);
     }
 
 
-    public void renderArmorPiece(PoseStack matrices, MultiBufferSource vertexConsumers, int light, EquipmentSlot armorSlot, ItemStack itemStack, LivingEntity entity, T patch, OpenMatrix4f[] openMatrix4fs, float partial) {
-        if(!VisualModularItem.isVisualModularItem(itemStack)){
+    public void renderArmorPiece(PoseStack matrices, MultiBufferSource vertexConsumers, @Nullable HumanoidArmorLayer<E, M, M> emmArmorFeatureRenderer, int light, EquipmentSlot armorSlot, ItemStack itemStack, LivingEntity entity, T patch, OpenMatrix4f[] openMatrix4fs, float partial) {
+        if (!VisualModularItem.isVisualModularItem(itemStack)) {
             return;
         }
         matrices.pushPose();
-        //matrices.multiplyPositionMatrix(toJomlMatrix(patch.getArmature().getRootJoint().getToOrigin()));
-        //matrices.multiplyPositionMatrix(toJomlMatrix(patch.getMatrix(0)));
-        patch.getArmature().getPoseAsTransformMatrix(patch.getClientAnimator().getPose(partial), false);
+        Pose pose = patch.getClientAnimator().getPose(partial);
+        patch.getArmature().getPoseAsTransformMatrix(pose, false);
         epicFightModelProviders.forEach(modelProvider -> {
             matrices.pushPose();
             if (modelProvider.apply(matrices, patch.getArmature()) &&
@@ -139,23 +139,17 @@ public class CustomModularArmorRenderer<E extends LivingEntity, T extends Living
                 )) {
                 String key = modelProvider.tmId;
                 MiapiItemModel miapiItemModel = MiapiItemModel.getItemModel(itemStack);
-                //matrices.multiplyPositionMatrix(toJomlMatrix(openMatrix4fs[patch.getArmature().searchPathIndex("Head")]));
-                //patch.getArmature().searchJointByName(modelProvider.efId).getToOrigin()
-                //for (int i = modelProvider.efId.length - 1; i <= 0; i++) {
-                for (int i = 0; i < modelProvider.efId.length; i++) {
-                    //var transform = patch.getClientAnimator().getPose(0.0f).getOrDefaultTransform(modelProvider.efId[i]);
-                    //matrices.multiplyPositionMatrix(toJomlMatrix(patch.getClientAnimator().getPose(0.0f).getOrDefaultTransform(modelProvider.efId[i]).toMatrix()));
-                }
-                Joint joint = patch.getArmature().searchJointByName(modelProvider.efId[modelProvider.efId.length - 1]);
-                matrices.mulPose(toJomlMatrix(patch.getArmature().getBindedTransformFor(patch.getClientAnimator().getPose(partial), joint)));
-                if (modelProvider.matrix4f != null) {
-                    matrices.mulPose(modelProvider.matrix4f);
-                }
-                //matrices.multiplyPositionMatrix(toJomlMatrix(patch.getClientAnimator().getPose(0.0f).getOrDefaultTransform(modelProvider.efId[modelProvider.efId.length - 1]).toMatrix().invert()));
-                //matrices.multiplyPositionMatrix(toJomlMatrix(patch.getAnimator().getPose(0.0f).getOrDefaultTransform(modelProvider.efId).toMatrix()));
-
                 if (miapiItemModel != null) {
-                    miapiItemModel.render(key, itemStack, matrices, ItemDisplayContext.HEAD, 0, vertexConsumers, entity, light, OverlayTexture.NO_OVERLAY);
+                    //matrices.mulPose(toJomlMatrix(pose.get(modelProvider.efId[modelProvider.efId.length - 1]).toMatrix()));
+                    if (emmArmorFeatureRenderer != null) {
+                        Miapi.LOGGER.info("not null");
+                    }
+                    Joint joint = patch.getArmature().searchJointByName(modelProvider.efId[modelProvider.efId.length - 1]);
+                    matrices.mulPose(toJomlMatrix(patch.getArmature().getBoundTransformFor(patch.getClientAnimator().getPose(partial), joint)));
+                    if (modelProvider.matrix4f != null) {
+                        matrices.mulPose(modelProvider.matrix4f);
+                    }
+                    miapiItemModel.render(key, itemStack, matrices, ItemDisplayContext.HEAD, partial, vertexConsumers, entity, light, OverlayTexture.NO_OVERLAY);
                 }
             }
             matrices.popPose();
@@ -164,7 +158,7 @@ public class CustomModularArmorRenderer<E extends LivingEntity, T extends Living
         matrices.pushPose();
 
         Joint joint = patch.getArmature().searchJointByName("Chest");
-        matrices.mulPose(toJomlMatrix(patch.getArmature().getBindedTransformFor(patch.getClientAnimator().getPose(partial), joint)));
+        matrices.mulPose(toJomlMatrix(patch.getArmature().getBoundTransformFor(patch.getClientAnimator().getPose(partial), joint)));
         matrices.mulPose(wingMatrix);
 
         if (Minecraft.getInstance().getEntityRenderDispatcher().getRenderer(entity) instanceof LivingEntityRenderer livingEntityRenderer) {

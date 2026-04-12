@@ -67,14 +67,14 @@ dependencies {
     modLocalRuntime files('libs/archery-local.jar')
     modLocalRuntime files('libs/armory-local.jar')
 
-    modCompileOnly "maven.modrinth:epic-fight:21.11.0.5"
+    modCompileOnly "maven.modrinth:epic-fight:21.16.2-mc1.21.1-neoforge"
 
 
     //modCompileOnly "maven.modrinth:irons-rpg-tweaks:2.2.0"
     //modLocalRuntime "maven.modrinth:irons-rpg-tweaks:2.2.0"
 
     if ("${rootProject.run_with_efm}" == "true") {
-        modLocalRuntime "maven.modrinth:epic-fight:21.11.0.5"
+        modLocalRuntime "maven.modrinth:epic-fight:21.16.2-mc1.21.1-neoforge"
     }
 
     //modCompileOnly "curse.maven:minecolonies-245506:5355518"
