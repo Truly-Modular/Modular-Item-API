@@ -66,7 +66,9 @@ public class ItemIdProperty extends CodecProperty<ResourceLocation> implements C
         Optional<ResourceLocation> optional = property.getData(itemStack);
         if (optional.isPresent()) {
             ItemStack newStack = changeId(itemStack, optional.get());
-            if (newStack != null) return newStack;
+            if (newStack != null) {
+                return newStack;
+            }
         }
         return itemStack.copy();
     }

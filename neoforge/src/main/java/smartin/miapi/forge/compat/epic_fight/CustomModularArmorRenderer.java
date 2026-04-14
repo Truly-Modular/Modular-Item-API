@@ -20,7 +20,6 @@ import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
-import smartin.miapi.Miapi;
 import smartin.miapi.client.atlas.ArmorModelManager;
 import smartin.miapi.client.model.MiapiItemModel;
 import smartin.miapi.item.modular.Transform;
@@ -140,16 +139,14 @@ public class CustomModularArmorRenderer<E extends LivingEntity, T extends Living
                 String key = modelProvider.tmId;
                 MiapiItemModel miapiItemModel = MiapiItemModel.getItemModel(itemStack);
                 if (miapiItemModel != null) {
-                    //matrices.mulPose(toJomlMatrix(pose.get(modelProvider.efId[modelProvider.efId.length - 1]).toMatrix()));
-                    if (emmArmorFeatureRenderer != null) {
-                        Miapi.LOGGER.info("not null");
-                    }
+                    matrices.pushPose();
                     Joint joint = patch.getArmature().searchJointByName(modelProvider.efId[modelProvider.efId.length - 1]);
                     matrices.mulPose(toJomlMatrix(patch.getArmature().getBoundTransformFor(patch.getClientAnimator().getPose(partial), joint)));
                     if (modelProvider.matrix4f != null) {
                         matrices.mulPose(modelProvider.matrix4f);
                     }
                     miapiItemModel.render(key, itemStack, matrices, ItemDisplayContext.HEAD, partial, vertexConsumers, entity, light, OverlayTexture.NO_OVERLAY);
+                    matrices.popPose();
                 }
             }
             matrices.popPose();

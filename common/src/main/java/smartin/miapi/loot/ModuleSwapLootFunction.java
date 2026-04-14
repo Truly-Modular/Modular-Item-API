@@ -26,6 +26,7 @@ import smartin.miapi.modules.MutableModuleInstance;
 import smartin.miapi.modules.properties.AllowedInLootProperty;
 import smartin.miapi.modules.properties.ItemIdProperty;
 import smartin.miapi.modules.properties.slot.SlotProperty;
+import smartin.miapi.modules.properties.util.ComponentApplyProperty;
 import smartin.miapi.registries.RegistryInventory;
 
 import java.util.*;
@@ -106,6 +107,7 @@ public record ModuleSwapLootFunction(
                     highestMaterial,
                     lootContext.getRandom()).toRecord().writeToItem(modular);
             modular = ItemIdProperty.changeId(modular);
+            ComponentApplyProperty.updateItemStack(modular,null);
         }
         return modular;
     }

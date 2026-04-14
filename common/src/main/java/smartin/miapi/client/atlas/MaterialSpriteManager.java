@@ -192,7 +192,7 @@ public class MaterialSpriteManager {
             if (spriteSlot == null) {
                 spriteSlot = getFreeAtlasSlot(((SpriteContentsAccessor) originalSprite.contents()).getWidth(), ((SpriteContentsAccessor) originalSprite.contents()).getHeight());
                 if (spriteSlot != null) {
-                    spriteSlot.used = 4;
+                    spriteSlot.used = 20;
                     spriteSlot.holder = holder;
                     FAST_CACHE.put(holder, spriteSlot);
                     if (holder.colorer().doTick()) {
@@ -202,7 +202,7 @@ public class MaterialSpriteManager {
                     spriteSlot.updateSprite();
                 }
             }
-            if (spriteSlot != null && spriteSlot.used < 5) {
+            if (spriteSlot != null && spriteSlot.used < 4) {
                 return getBlockAtlasVertexConsumer(vertexConsumers, originalSprite, holder, spriteSlot);
             }
         }

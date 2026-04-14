@@ -52,7 +52,7 @@ public class DisplayNameProperty extends CodecProperty<Component> {
     public List<EditorError> validate(int line, Component component, boolean isClient) {
         String regex = "^[a-z_-]+(?:\\.[a-z._-]+)";
         String string = component.getString();
-        if (Pattern.matches(regex, string) && Component.translatable(string).getString().equals(string)) {
+        if (Pattern.matches(regex, string) && Component.translatable(string).getString().equals(string) && isClient) {
             return List.of(new EditorError(line, "translation seems to be missing!", EditorError.ErrorSeverity.WARNING));
         }
         return List.of();

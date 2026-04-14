@@ -8,6 +8,9 @@ import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
 import com.redpxnda.nucleus.facet.FacetKey;
 import com.redpxnda.nucleus.facet.entity.SimpleEntityFacet;
 import dev.architectury.event.EventResult;
+import dev.architectury.platform.Platform;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
@@ -41,6 +44,60 @@ public class CustomDamageOnHitProperty extends CodecProperty<Map<ResourceLocatio
             FACET.getOptional(entity).ifPresent(data -> Objects.requireNonNull(data.get()).tickDown());
             return EventResult.pass();
         });
+        if (Platform.getEnv() == EnvType.CLIENT) {
+            setupStatDisplayClient();
+        }
+
+        LoreProperty.loreSuppliers.add((itemStack, tooltip, context, tooltipType) -> getData(itemStack).ifPresent((map) -> map.forEach((id, data) -> {
+            data.tooltip.ifPresent((c -> {
+                tooltip.add(Component.translatableWithFallback(c, c,
+                        data.amount.getValue(),
+                        data.defenderCooldown.getValue(),
+                        data.attackerCooldown.getValue()));
+            }));
+        })));
+        EntityDamageSystem.DAMAGE_EVENT.register((defender, originalSource, originalAmount, strength, applyCustomEffect) -> {
+            if (originalSource.getEntity() == null) {
+                return EventResult.pass();
+            }
+            boolean isRanged = !originalSource.getEntity().equals(originalSource.getDirectEntity());
+            if (originalSource.getEntity() instanceof LivingEntity attacker) {
+                EntityDamageSystem.getCausingItemStackAndArmorOfAttacker(originalSource).forEach(itemStack -> {
+                    getData(itemStack).ifPresent(map -> {
+                        map.forEach((id, data) -> {
+                            if (data.type.isEmpty()) {
+                                Miapi.LOGGER.warn("Damage Type is not set correctly for custom_damage {}", id);
+                                return;
+                            }
+                            ResourceKey<DamageType> type = ResourceKey.create(Registries.DAMAGE_TYPE, data.type.get());
+                            if (getCD(attacker, id, true) > 0) {
+                                return;
+                            }
+                            if (getCD(defender, id, false) > 0) {
+                                return;
+                            }
+                            if (isRanged && data.onRange.orElse(true) ||
+                                data.onMelee.orElse(true)) {
+                                applyCustomEffect.accept(id, () -> {
+                                    float damage = (float) data.amount.getValue();
+                                    if (data.respectAttackCooldown.orElse(true)) {
+                                        damage = damage * strength;
+                                    }
+                                    defender.hurt(attacker.damageSources().source(type), damage);
+                                    setCD(attacker, id, true, (int) data.attackerCooldown.getValue());
+                                    setCD(defender, id, false, (int) data.defenderCooldown.getValue());
+                                });
+                            }
+                        });
+                    });
+                });
+            }
+            return EventResult.pass();
+        });
+    }
+
+    @Environment(EnvType.CLIENT)
+    private void setupStatDisplayClient() {
         StatListWidget.addStatDisplaySupplier(new StatListWidget.StatWidgetSupplier() {
             @Override
             public <T extends InteractAbleWidget & SingleStatDisplay> List<T> currentList(ItemStack original, ItemStack compareTo) {
@@ -96,53 +153,6 @@ public class CustomDamageOnHitProperty extends CodecProperty<Map<ResourceLocatio
 
                 return combined;
             }
-        });
-
-        LoreProperty.loreSuppliers.add((itemStack, tooltip, context, tooltipType) -> getData(itemStack).ifPresent((map) -> map.forEach((id, data) -> {
-            data.tooltip.ifPresent((c -> {
-                tooltip.add(Component.translatableWithFallback(c, c,
-                        data.amount.getValue(),
-                        data.defenderCooldown.getValue(),
-                        data.attackerCooldown.getValue()));
-            }));
-        })));
-        EntityDamageSystem.DAMAGE_EVENT.register((defender, originalSource, originalAmount, strength, applyCustomEffect) -> {
-            if (originalSource.getEntity() == null) {
-                return EventResult.pass();
-            }
-            boolean isRanged = !originalSource.getEntity().equals(originalSource.getDirectEntity());
-            if (originalSource.getEntity() instanceof LivingEntity attacker) {
-                EntityDamageSystem.getCausingItemStackAndArmorOfAttacker(originalSource).forEach(itemStack -> {
-                    getData(itemStack).ifPresent(map -> {
-                        map.forEach((id, data) -> {
-                            if (data.type.isEmpty()) {
-                                Miapi.LOGGER.warn("Damage Type is not set correctly for custom_damage {}", id);
-                                return;
-                            }
-                            ResourceKey<DamageType> type = ResourceKey.create(Registries.DAMAGE_TYPE, data.type.get());
-                            if (getCD(attacker, id, true) > 0) {
-                                return;
-                            }
-                            if (getCD(defender, id, false) > 0) {
-                                return;
-                            }
-                            if (isRanged && data.onRange.orElse(true) ||
-                                data.onMelee.orElse(true)) {
-                                applyCustomEffect.accept(id, () -> {
-                                    float damage = (float) data.amount.getValue();
-                                    if (data.respectAttackCooldown.orElse(true)) {
-                                        damage = damage * strength;
-                                    }
-                                    defender.hurt(attacker.damageSources().source(type), damage);
-                                    setCD(attacker, id,true, (int) data.attackerCooldown.getValue());
-                                    setCD(defender, id,false, (int) data.defenderCooldown.getValue());
-                                });
-                            }
-                        });
-                    });
-                });
-            }
-            return EventResult.pass();
         });
     }
 

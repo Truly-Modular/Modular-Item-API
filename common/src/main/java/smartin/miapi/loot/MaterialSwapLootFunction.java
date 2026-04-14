@@ -18,14 +18,15 @@ import smartin.miapi.Miapi;
 import smartin.miapi.item.ModularItemStackConverter;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.VisualModularItem;
-import smartin.miapi.material.properties.AllowedMaterial;
-import smartin.miapi.material.properties.CopyParentMaterialProperty;
 import smartin.miapi.material.MaterialProperty;
 import smartin.miapi.material.base.Material;
+import smartin.miapi.material.properties.AllowedMaterial;
+import smartin.miapi.material.properties.CopyParentMaterialProperty;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.MutableModuleInstance;
 import smartin.miapi.modules.properties.ItemIdProperty;
+import smartin.miapi.modules.properties.util.ComponentApplyProperty;
 import smartin.miapi.registries.RegistryInventory;
 
 import java.util.List;
@@ -139,6 +140,7 @@ public record MaterialSwapLootFunction(
                 }
                 root.toRecord().writeToItem(modular);
                 modular = ItemIdProperty.changeId(modular);
+                ComponentApplyProperty.updateItemStack(modular,null);
             } catch (RuntimeException e) {
                 Miapi.LOGGER.error("Issue during Material Swap", e);
             }

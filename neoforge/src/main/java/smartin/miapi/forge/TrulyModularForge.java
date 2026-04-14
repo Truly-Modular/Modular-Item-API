@@ -12,7 +12,6 @@ import net.minecraft.client.model.Model;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -53,8 +52,8 @@ import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import net.neoforged.neoforge.registries.RegisterEvent;
 import net.neoforged.neoforgespi.language.IModInfo;
 import org.apache.commons.lang3.mutable.MutableInt;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Vector3f;
 import smartin.miapi.Miapi;
 import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.client.MiapiClient;
@@ -280,7 +279,7 @@ public class TrulyModularForge {
         }
 
         @SubscribeEvent
-        public static void setupArmorRender(RegisterClientExtensionsEvent itemExtention) {
+        public static void setupClientItem(RegisterClientExtensionsEvent itemExtention) {
             RegistryInventory.MODULAR_ITEMS.addCallback((item -> {
                 itemExtention.registerItem(new IClientItemExtensions() {
                     public Map<ItemStack, ModelWithHumanModel> cache = new WeakHashMap<>();
@@ -290,19 +289,23 @@ public class TrulyModularForge {
                         return IClientItemExtensions.super.getFont(stack, context);
                     }
 
-                    public BlockEntityWithoutLevelRenderer getCustomRenderer() {
+
+                    public @NotNull BlockEntityWithoutLevelRenderer getCustomRenderer() {
                         return new BlockEntityWithoutLevelRenderer(Minecraft.getInstance().getBlockEntityRenderDispatcher(),
                                 Minecraft.getInstance().getEntityModels()) {
                             public void renderByItem(ItemStack stack, ItemDisplayContext displayContext, PoseStack poseStack, MultiBufferSource buffer, int packedLight, int packedOverlay) {
+                                //
+                                //Lighting.setupFor3DItems();
+                                //Lighting.setupForFlatItems();
                                 if (displayContext.equals(ItemDisplayContext.GUI)) {
                                     //Lighting.setupForFlatItems();
-                                    packedLight = 15728880;
-                                    test += 100;
+                                    //packedLight = 15728880;
+                                    //test += 100;
                                     //packedLight = test;
                                     //packedLight = (int)Long.parseLong("0F0080",16);
-                                    packedOverlay = OverlayTexture.NO_OVERLAY;
-                                    poseStack.translate(0.0f, 0.0F, 0.0F);
-                                    poseStack.last().transformNormal(new Vector3f(-1, -1, -1), new Vector3f(0, -1, 0));
+                                    //packedOverlay = OverlayTexture.NO_OVERLAY;
+                                    //poseStack.translate(0.0f, 0.0F, 0.0F);
+                                    //poseStack.last().transformNormal(new Vector3f(-1, -1, -1), new Vector3f(0, -1, 0));
                                 }
                                 //Lighting.setupForFlatItems();
                                 MiapiModel model = MiapiItemModel.getItemModel(stack);

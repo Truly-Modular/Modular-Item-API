@@ -27,6 +27,11 @@
     "properties": {
         "boot": {
             "can_walk_on_snow": true
+        },
+        "armor": {
+            "fake_item_tag": [
+                "minecraft:freeze_immune_wearables"
+            ]
         }
     },
     "mining_speed": 0,

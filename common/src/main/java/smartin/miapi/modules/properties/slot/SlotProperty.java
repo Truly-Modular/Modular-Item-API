@@ -67,7 +67,7 @@ public class SlotProperty extends CodecProperty<Map<String, SlotProperty.ModuleS
         List<EditorError> list = new ArrayList<>();
         component.values().forEach(slot -> {
             String regex = "^[a-z_-]+(?:\\.[a-z._-]+)";
-            if (Pattern.matches(regex, slot.translationKey) && Component.translatable(slot.translationKey).getString().equals(slot.translationKey)) {
+            if (Pattern.matches(regex, slot.translationKey) && Component.translatable(slot.translationKey).getString().equals(slot.translationKey) && isClient) {
                 list.add(new EditorError(line, "translation seems to be missing!", EditorError.ErrorSeverity.WARNING));
             }
         });
@@ -87,7 +87,7 @@ public class SlotProperty extends CodecProperty<Map<String, SlotProperty.ModuleS
                 mergedTransform.set(stack.primary, mergedTransform.get(null));
                 mergedTransform.set(null, Transform.IDENTITY);
             }
-            mergedTransform = TransformMap.merge(mergedTransform,stack);
+            mergedTransform = TransformMap.merge(mergedTransform, stack);
             current = current.getParent();
         }
         if (!mergedTransform.isPresent("item")) {

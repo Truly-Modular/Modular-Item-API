@@ -12,6 +12,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.item.modular.StatResolver;
+import smartin.miapi.modules.properties.util.ComponentApplyProperty;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.HashMap;
@@ -164,6 +165,7 @@ public record ModuleInstance(
      */
     public void writeToItem(ItemStack itemStack) {
         itemStack.set(MODULE_INSTANCE_COMPONENT, this.getRoot());
+        ComponentApplyProperty.updateItemStack(itemStack, null);
         this.cache().clear();
     }
 
