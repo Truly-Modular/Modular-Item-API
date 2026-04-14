@@ -5,6 +5,7 @@ import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.datapack.ReloadEvents;
+import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.registries.RegistryInventory;
 
 /**
@@ -34,6 +35,9 @@ public interface ComponentApplyProperty {
      */
     static void updateItemStack(ItemStack toUpdate, @Nullable RegistryAccess registryAccess) {
         if (ReloadEvents.isInReload()) {
+            return;
+        }
+        if(!ModularItem.isModularItem(toUpdate)){
             return;
         }
         RegistryInventory.MODULE_PROPERTY_MIAPI_REGISTRY

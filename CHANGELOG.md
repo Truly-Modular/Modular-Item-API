@@ -1,9 +1,5 @@
-## v2.3.4 (1.21)
+## v2.3.5 (1.21)
 ### Bugfixes
-- fixed shield damage reflect not working
-- fixed multishot on magazine crossbows not working
-- re-enabled autosmelting property
-- minor editor tweaks
-- fix server crash on startup
-### Additions
+- fixed issues with attributes in loot modularisation
+- fixed attribute merging issue where heavy armor would not apply the correct armor values
 ### Changes

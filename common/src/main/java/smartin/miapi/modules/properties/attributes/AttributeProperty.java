@@ -222,19 +222,63 @@ public class AttributeProperty extends
     }
 
     private static List<MiapiAttributeModifier> buildMiapiModifiersCache(ItemStack stack) {
-        List < MiapiAttributeModifier > result = new ArrayList<>();
+        List<MiapiAttributeModifier> result = new ArrayList<>();
 
         var optional = property.getData(stack);
         if (optional.isEmpty()) return result;
 
-        var idMap = optional.get();
+        var originalMap = optional.get();
+
+        // 1. Split maps
+        Map<ResourceLocation, Map<AttributeModifier.Operation, Map<EquipmentSlotGroupWrapper, DoubleOperationResolvable>>> explicitMap = new HashMap<>();
+        var slotMap = new HashMap<ResourceLocation, Map<AttributeModifier.Operation, Map<EquipmentSlotGroupWrapper, DoubleOperationResolvable>>>();
+
+        for (var attrEntry : originalMap.entrySet()) {
+            for (var opEntry : attrEntry.getValue().entrySet()) {
+                for (var slotEntry : opEntry.getValue().entrySet()) {
+                    EquipmentSlotGroupWrapper slot = slotEntry.getKey();
+
+                    var target = ("slot".equals(slot.raw()) && slot.group().isEmpty())
+                            ? slotMap
+                            : explicitMap;
+
+                    target
+                            .computeIfAbsent(attrEntry.getKey(), k -> new HashMap<>())
+                            .computeIfAbsent(opEntry.getKey(), k -> new HashMap<>())
+                            .put(slot, slotEntry.getValue());
+                }
+            }
+        }
+
+        // 2. Resolve "slot" entries
+        EquipmentSlotGroup resolved = EquipmentSlotProperty.getSlot(stack);
+        if (resolved != null) {
+            var resolvedSlotMap = new HashMap<ResourceLocation, Map<AttributeModifier.Operation, Map<EquipmentSlotGroupWrapper, DoubleOperationResolvable>>>();
+
+            for (var attrEntry : slotMap.entrySet()) {
+                for (var opEntry : attrEntry.getValue().entrySet()) {
+                    for (var slotEntry : opEntry.getValue().entrySet()) {
+                        EquipmentSlotGroupWrapper wrapped =
+                                new EquipmentSlotGroupWrapper(resolved.getSerializedName(), Optional.of(resolved));
+
+                        resolvedSlotMap
+                                .computeIfAbsent(attrEntry.getKey(), k -> new HashMap<>())
+                                .computeIfAbsent(opEntry.getKey(), k -> new HashMap<>())
+                                .put(wrapped, slotEntry.getValue());
+                    }
+                }
+            }
+
+            explicitMap = property.merge(explicitMap, resolvedSlotMap, MergeType.SMART);
+        }
 
         AttributeUtil.AttributeContext context = new AttributeUtil.AttributeContext();
-        context.map = idMap;
+        context.map = explicitMap;
         AttributeUtil.ITEM_ATTRIBUTE_ADJUST.invoker().adjust(context, stack);
-        idMap = context.map;
+        var finalMap = context.map;
 
-        for (var entry : idMap.entrySet()) {
+        // 5. Build result
+        for (var entry : finalMap.entrySet()) {
             Attribute attribute = findAttribute(entry.getKey());
             if (attribute == null) continue;
 
@@ -244,37 +288,21 @@ public class AttributeProperty extends
                 for (var slotEntry : opEntry.getValue().entrySet()) {
                     EquipmentSlotGroupWrapper slot = slotEntry.getKey();
                     DoubleOperationResolvable expression = slotEntry.getValue();
-                    if (slot.group().isPresent()) {
-                        result.add(new MiapiAttributeModifier(
-                                AttributeUtil.getIDForSlot(slot.group().get(), attribute, operation),
-                                attribute,
-                                operation,
-                                slot,
-                                expression
-                        ));
-                    } else if ("slot".equals(slot.raw()) && EquipmentSlotProperty.getSlot(stack) != null) {
-                        EquipmentSlotGroup resolved = EquipmentSlotProperty.getSlot(stack);
 
-                        result.add(new MiapiAttributeModifier(
-                                AttributeUtil.getIDForSlot(resolved, attribute, operation),
-                                attribute,
-                                operation,
-                                new EquipmentSlotGroupWrapper(resolved.getSerializedName(), Optional.of(resolved)),
-                                expression
-                        ));
-                    } else {
-                        result.add(new MiapiAttributeModifier(
-                                AttributeUtil.getIDForSlot(slot.raw, attribute, operation),
-                                attribute,
-                                operation,
-                                slot,
-                                expression
-                        ));
-                    }
+                    result.add(new MiapiAttributeModifier(
+                            AttributeUtil.getIDForSlot(
+                                    slot.group().orElse(EquipmentSlotGroup.MAINHAND),
+                                    attribute,
+                                    operation
+                            ),
+                            attribute,
+                            operation,
+                            slot,
+                            expression
+                    ));
                 }
             }
         }
-        result.sort(Comparator.comparingDouble(e -> priorityMap.getOrDefault(e.attribute(), 0.0f)));
 
         return result;
     }
