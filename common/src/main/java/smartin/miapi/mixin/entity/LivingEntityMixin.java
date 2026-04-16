@@ -8,8 +8,6 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -25,12 +23,6 @@ import java.util.Map;
 
 @Mixin(LivingEntity.class)
 abstract class LivingEntityMixin {
-    @Shadow
-    protected abstract int decreaseAirSupply(int currentAir);
-
-    @Unique
-    boolean miapi$originalDamage = false;
-
     @Inject(
             method = "collectEquipmentChanges",
             at = @At("RETURN"))
@@ -66,6 +58,9 @@ abstract class LivingEntityMixin {
         boolean doesDamage = original.call(source, amount);
         if (defender instanceof DamageProcessingEntity damageProcessingEntity &&
             originalCall) {
+            if(doesDamage){
+                EntityDamageSystem.applyPostDamage(defender, source, amount, doesDamage);
+            }
             damageProcessingEntity.miapi$setDamageProcessing(false);
         }
         return doesDamage;
@@ -79,9 +74,8 @@ abstract class LivingEntityMixin {
         LivingEntity defender = (LivingEntity) (Object) this;
         if (
                 defender instanceof DamageProcessingEntity damageProcessingEntity &&
-                damageProcessingEntity.miapi$isDamageProcessing() &&
-                miapi$originalDamage) {
-            EntityDamageSystem.applyPostDamage(defender, source, amount, cir.getReturnValue());
+                !damageProcessingEntity.miapi$isDamageProcessing()) {
+            //EntityDamageSystem.applyPostDamage(defender, source, amount, cir.getReturnValue());
         }
     }
 

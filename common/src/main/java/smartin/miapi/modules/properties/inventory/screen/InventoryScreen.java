@@ -48,7 +48,7 @@ public class InventoryScreen extends ParentHandledScreen<DefaultInventoryScreenH
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
-        layoutManager.scroll((int) -Math.signum(scrollY * 35));
+        layoutManager.scroll((int) -(scrollY * 3));
         return true;
     }
 

@@ -88,7 +88,7 @@ public class HurtTimerFacet implements CodecEntityFacet<Map<ResourceLocation, Hu
         }
 
         public void read(LivingEntity livingEntity) {
-            this.hurtTime = livingEntity.hurtTime = this.hurtTime;
+            this.hurtTime = livingEntity.hurtTime;
             this.hurtDuration = livingEntity.hurtDuration;
             this.invulnerableTime = livingEntity.invulnerableTime;
         }

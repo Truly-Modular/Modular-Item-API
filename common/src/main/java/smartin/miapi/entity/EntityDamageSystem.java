@@ -41,6 +41,7 @@ public class EntityDamageSystem {
         }
         int baseHurtTime = defender.hurtTime;
         int baseHurtDuration = defender.hurtDuration;
+        int invulnerabilityTime = defender.invulnerableTime;
         REGISTRY.getFlatMap().forEach((id, post) -> {
             facet.get(id).apply(defender);
             post.apply(defender, originalSource, originalAmount, attackStrength);
@@ -53,6 +54,7 @@ public class EntityDamageSystem {
         });
         defender.hurtTime = baseHurtTime;
         defender.hurtDuration = baseHurtDuration;
+        defender.invulnerableTime = invulnerabilityTime;
     }
 
     public static ItemStack getMainCausingStack(DamageSource damageSource) {

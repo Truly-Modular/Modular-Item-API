@@ -13,7 +13,7 @@
             "on_ranged_attack": false,
             "on_melee_attack": true,
             "respect_attack_cooldown": true,//whether the players attack cooldown should scale this damage too.
-            "defender_cooldown": "1000",//default 0
+            "defender_cooldown": "10",//default 0
             "attacker_cooldown": "100",//default 0
             "amount": "10", //damage amount
             "tooltip": "my_addon.custom.lighting.tooltip", //tooltip lang, amount, defender and attacker cd
