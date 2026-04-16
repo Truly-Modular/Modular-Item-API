@@ -22,7 +22,7 @@ public class BackpackInventoryType implements InventoryType {
 
     @Override
     public int getSize(ItemStack container) {
-        return 7;
+        return 12;
     }
 
     @Override

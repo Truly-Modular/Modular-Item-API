@@ -57,14 +57,15 @@ abstract class LivingEntityMixin {
     )
     private boolean miapi$hurtWrapper(DamageSource source, float amount, Operation<Boolean> original) {
         LivingEntity defender = (LivingEntity) (Object) this;
-        boolean originalCall = true;
-        if (defender instanceof DamageProcessingEntity damageProcessingEntity) {
-            originalCall = !damageProcessingEntity.miapi$isDamageProcessing();
-            miapi$originalDamage = originalCall;
+        boolean originalCall = false;
+        if (defender instanceof DamageProcessingEntity damageProcessingEntity &&
+            !damageProcessingEntity.miapi$isDamageProcessing()) {
+            originalCall = true;
             damageProcessingEntity.miapi$setDamageProcessing(true);
         }
         boolean doesDamage = original.call(source, amount);
-        if (defender instanceof DamageProcessingEntity damageProcessingEntity && originalCall) {
+        if (defender instanceof DamageProcessingEntity damageProcessingEntity &&
+            originalCall) {
             damageProcessingEntity.miapi$setDamageProcessing(false);
         }
         return doesDamage;
@@ -76,7 +77,10 @@ abstract class LivingEntityMixin {
     )
     private void miapi$hurtWrapper(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
         LivingEntity defender = (LivingEntity) (Object) this;
-        if (defender instanceof DamageProcessingEntity damageProcessingEntity && miapi$originalDamage) {
+        if (
+                defender instanceof DamageProcessingEntity damageProcessingEntity &&
+                damageProcessingEntity.miapi$isDamageProcessing() &&
+                miapi$originalDamage) {
             EntityDamageSystem.applyPostDamage(defender, source, amount, cir.getReturnValue());
         }
     }

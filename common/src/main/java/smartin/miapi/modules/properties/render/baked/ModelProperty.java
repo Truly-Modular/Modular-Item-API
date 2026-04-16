@@ -13,15 +13,21 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
-import smartin.miapi.client.model.*;
+import smartin.miapi.client.model.MiapiItemModel;
+import smartin.miapi.client.model.MiapiModel;
+import smartin.miapi.client.model.ModelHolder;
 import smartin.miapi.client.model.module.BakedMiapiModel;
+import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.util.CodecProperty;
 import smartin.miapi.modules.properties.util.MergeAble;
 import smartin.miapi.modules.properties.util.MergeType;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 
 /**
@@ -40,7 +46,6 @@ public class ModelProperty extends CodecProperty<List<ModelData>> {
     private static final String CACHE_KEY_ITEM = Miapi.MOD_ID + ":itemModelodel";
     public static final Map<String, UnbakedModelHolder> modelCache = new HashMap<>();
     public static final ResourceLocation KEY = Miapi.id("model");
-    public static Set<ResourceLocation> PRE_LOAD_IDS = new HashSet<>();
     public static Function<net.minecraft.client.resources.model.Material, TextureAtlasSprite> textureGetter;
     public static Codec<ModelData> DATA_CODEC = ModelData.CODEC;
     public static Codec<List<ModelData>> CODEC = Codec.withAlternative(Codec.list(DATA_CODEC), new Codec<>() {
@@ -64,6 +69,7 @@ public class ModelProperty extends CodecProperty<List<ModelData>> {
     public ModelProperty() {
         super(CODEC);
         property = this;
+        ReloadEvents.START.subscribe((isClient, registryAccess, worker) -> modelCache.clear());
         ModularItemCache.setSupplier(CACHE_KEY_ITEM, (stack) -> getModelMap(stack).get("item"));
         MiapiItemModel.modelSuppliers.add((key, mode, model, stack) -> {
             List<MiapiModel> miapiModels = new ArrayList<>();

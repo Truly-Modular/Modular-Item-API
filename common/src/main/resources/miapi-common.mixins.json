@@ -18,6 +18,7 @@
         "RecipeManagerMixin",
         "RegistryOpsAccessor",
         "ReloadAbleServerRegistriesMixin",
+        "SlotAccessor",
         "SpriteSourceListAccessor",
         "SpriteSourcesAccessor",
         "TagManagerMixin",
@@ -66,6 +67,7 @@
         "smithing.SmithingTransformRecipeAccessor"
     ],
     "client": [
+        "client.AbstractConainerScreenMixin",
         "client.BuiltinModelItemRendererMixin",
         "client.ClientAdvancementManagerAccessor",
         "client.ClientPlayerEntityMixin",

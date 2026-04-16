@@ -61,7 +61,7 @@ import smartin.miapi.material.palette.MaterialRenderControllers;
 import smartin.miapi.modules.MiapiPermissions;
 import smartin.miapi.modules.abilities.key.ClientKeybinding;
 import smartin.miapi.modules.cache.CacheCommands;
-import smartin.miapi.modules.properties.inventory.screen.ParentHandledScreen;
+import smartin.miapi.modules.properties.inventory.screen.InventoryScreen;
 import smartin.miapi.modules.properties.render.colorproviders.ColorProvider;
 import smartin.miapi.modules.properties.slot.AllowedSlots;
 import smartin.miapi.network.Networking;
@@ -422,7 +422,7 @@ public class MiapiClient {
     }
 
     public static void registerBackPackHandler() {
-        MenuRegistry.registerScreenFactory(RegistryInventory.backpackScreenHandler, ParentHandledScreen::new);
+        MenuRegistry.registerScreenFactory(RegistryInventory.backpackScreenHandler, InventoryScreen::new);
     }
 
     public static void registerEntityRenderer() {

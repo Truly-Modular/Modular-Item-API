@@ -8,6 +8,7 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
+import smartin.miapi.client.gui.PositionedMutableSlot;
 import smartin.miapi.modules.properties.inventory.InventoryType;
 import smartin.miapi.modules.properties.inventory.ItemInventoryManager;
 import smartin.miapi.modules.properties.inventory.SlotInfo;
@@ -20,17 +21,32 @@ import java.util.List;
 public class DefaultInventoryScreenHandler extends AbstractContainerMenu {
 
     private final Player player;
+    private List<ManagedSlot> slots = new ArrayList<>();
+    private List<Slot> coreItemSlots = new ArrayList<>();
 
     public static class ManagedInventory {
-        SlotInfo slotInfo;
-        InventoryType type;
-        Container container;
+        public SlotInfo slotInfo;
+        public InventoryType type;
+        public Container container;
 
-        int firstSlot;
-        int lastSlot;
+        public int firstSlot;
+        public int lastSlot;
+    }
+
+    /**
+     * Slot that is aware of its ManagedInventory and supports dynamic positioning + enable/disable.
+     */
+    public static class ManagedSlot extends PositionedMutableSlot {
+        public final ManagedInventory managed;
+
+        public ManagedSlot(ManagedInventory managed, Container container, int index) {
+            super(container, index, 0, 0);
+            this.managed = managed;
+        }
     }
 
     private final List<ManagedInventory> managedInventories = new ArrayList<>();
+    private final List<SlotInfo> slotInfos;
 
     private final int containerSlotCount;
 
@@ -39,50 +55,45 @@ public class DefaultInventoryScreenHandler extends AbstractContainerMenu {
 
         this.player = playerInventory.player;
 
-        int yOffset = 10; // start below screen top
-        int globalIndex = 0;
-        int startYSlotInfo = 0;
-        int leftPuffer = 22;
-        for (SlotInfo slotInfo : ItemInventoryManager.PLAYER_TO_SLOT.values()
+        this.slotInfos = ItemInventoryManager.PLAYER_TO_SLOT.values()
                 .stream()
                 .sorted(Comparator.comparingDouble(SlotInfo::priority))
-                .toList()) {
-            addSlot(new Slot(new SimpleContainer(slotInfo.getStack(player)), 0, 2, 10 + startYSlotInfo) {
+                .toList();
+
+        int globalIndex = 0;
+
+        for (SlotInfo slotInfo : slotInfos) {
+            this.coreItemSlots.add(new Slot(new SimpleContainer(slotInfo.getStack(player)), 0, 0, 0) {
+                @Override
                 public boolean allowModification(Player player) {
                     return false;
                 }
 
+                @Override
                 public boolean isFake() {
                     return true;
                 }
 
+                @Override
                 public boolean mayPlace(ItemStack stack) {
                     return false;
                 }
 
+                @Override
                 public boolean mayPickup(Player player) {
                     return false;
                 }
             });
-            startYSlotInfo += 18;
         }
 
+        /*
+        ------------------------------------
+        MANAGED INVENTORIES (NO LAYOUT HERE)
+        ------------------------------------
+         */
         for (InventoryType type : ItemInventoryManager.INVENTORY_TYPES.values()) {
 
-            // Draw title spacing
-            boolean hasValues = false;
-
-            //yOffset += 10; // space after title before slots
-
-            // Collect all SlotInfos
-            List<SlotInfo> infos = ItemInventoryManager.PLAYER_TO_SLOT.values()
-                    .stream()
-                    .sorted(Comparator.comparingDouble(SlotInfo::priority))
-                    .toList();
-
-            int usedSlotsForType = 0; // reset horizontal counter for this type
-
-            for (SlotInfo slotInfo : infos) {
+            for (SlotInfo slotInfo : slotInfos) {
                 ItemStack containerStack = slotInfo.getStack(player);
                 if (containerStack.isEmpty()) continue;
 
@@ -99,62 +110,32 @@ public class DefaultInventoryScreenHandler extends AbstractContainerMenu {
                 managedInventories.add(managed);
 
                 for (int i = 0; i < size; i++) {
-                    if (!hasValues) {
-                        hasValues = true;
-                        yOffset += 8;
-                    }
-                    int x = usedSlotsForType % 9; // horizontal position resets per type
-                    int y = usedSlotsForType / 9;
-                    addSlot(managed.type.createSlot(container, i, leftPuffer + x * 18, yOffset + y * 18, slotInfo, player, containerStack));
-                    usedSlotsForType++;
+                    ManagedSlot slot = new ManagedSlot(managed, container, i);
+                    addSlot(slot);
+                    slots.add(slot);
                     globalIndex++;
                 }
 
                 managed.lastSlot = slots.size() - 1;
             }
 
-            // Advance Y by number of rows for this InventoryType
-            int rows = (int) Math.ceil(usedSlotsForType / 9.0);
-            yOffset += rows * 18;
-
-            // minimal spacing between types
-            yOffset += 4;
         }
 
+        int leftPuffer = 22;
+        int yOffset = 6*18+6;
         this.containerSlotCount = globalIndex;
-
-        /*
-        ------------------------------------
-        PLAYER INVENTORY
-        ------------------------------------
-         */
-
-        int playerInvY = yOffset + 10; // top of player inventory
-
+        int playerInvY = yOffset + 10;
+        // top of player inventory
         for (int y = 0; y < 3; y++) {
             for (int x = 0; x < 9; x++) {
                 addSlot(new Slot(playerInventory, x + y * 9 + 9, leftPuffer + x * 18, playerInvY + y * 18));
             }
-        }
-
-        /*
-        ------------------------------------
-        HOTBAR
-        ------------------------------------
-         */
-
+        } /* ------------------------------------ HOTBAR ------------------------------------ */
         int hotbarY = playerInvY + 58;
-
         for (int x = 0; x < 9; x++) {
             addSlot(new Slot(playerInventory, x, leftPuffer + x * 18, hotbarY));
         }
     }
-
-    /*
-    ------------------------------------
-    SHIFT CLICK
-    ------------------------------------
-     */
 
     @Override
     public @NotNull ItemStack quickMoveStack(Player player, int index) {
@@ -192,6 +173,18 @@ public class DefaultInventoryScreenHandler extends AbstractContainerMenu {
 
     public List<ManagedInventory> getManagedInventories() {
         return managedInventories;
+    }
+
+    public List<ManagedSlot> getManagedSlots() {
+        return slots;
+    }
+
+    public List<Slot> getSourceItems() {
+        return coreItemSlots;
+    }
+
+    public List<SlotInfo> getSlotInfos() {
+        return slotInfos;
     }
 
     @Override
