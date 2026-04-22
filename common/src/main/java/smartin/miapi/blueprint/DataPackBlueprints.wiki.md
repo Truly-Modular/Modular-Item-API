@@ -1,5 +1,5 @@
 @header Blueprint Data
-@path /components/blueprint/data
+@path /datapack/blueprint/data
 
 ## Overview
 Datapack Blueprints add crafting options to the base UI.
