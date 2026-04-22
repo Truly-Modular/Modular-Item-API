@@ -27,8 +27,6 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * @header Blueprint Component
- * @path /components/blueprint
  * @description_start This Component allows the attachment of additional Craft Options for the crafting UI.
  * The Cost can be configured via the Ingredient in the data. Setting it to false will use the default module cost of the root module to be added.
  * Setting it to true will require whatever item this component is attached to.

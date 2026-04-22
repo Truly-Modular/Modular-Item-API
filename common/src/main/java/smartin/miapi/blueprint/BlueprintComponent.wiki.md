@@ -1,4 +1,5 @@
-# Blueprint Component
+@header Blueprint Component
+@path /components/blueprint/component
 
 ## Overview
 The **Blueprint Component** attaches additional craft options to items in the crafting UI.  

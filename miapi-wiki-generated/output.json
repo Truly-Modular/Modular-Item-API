@@ -284,15 +284,20 @@
       ],
       "sub_pages": {
         "blueprint": {
-          "header": "Blueprint Component",
-          "description": " This Component allows the attachment of additional Craft Options for the crafting UI.  \nThe Cost can be configured via the Ingredient in the data. Setting it to false will use the default module cost of the root module to be added.\rSetting it to true will require whatever item this component is attached to.\rThis is based on Module Instances instead of Item Modules, allowing for any kind of custom data like skins, submodules, color, custom glint or else.\rIt can also be set to an ingredient with count, in this case the inner data is a number, the amount of the ingredient needed and\rthe ingredient itself, following minecrafts default ingredient logic, like for recipes.\r",
-          "java": "common/src/main/java/smartin/miapi/blueprint/BlueprintComponent.java",
-          "data": {
-            "module": "a Module Instance, not a item-module, see the Module Component for more details",
-            "ingredient": " This can either be a boolean or an ingredient with Count.",
-            "name": " (Optional) This allows for a custom name in the Crafting UI."
-          },
-          "key_words": []
+          "sub_pages": {
+            "component": {
+              "header": "Blueprint Component",
+              "description": "## Overview\rThe **Blueprint Component** attaches additional craft options to items in the crafting UI.  \rIt applies a custom Module instance with custom Data, allowing direct attachment of skins or submodules.\r\r\r\r## JSON Structure\r\r```json5\r{\r  \"module\": { \r      \"id\": \"example:super_blade\",\r      \"data\": {\r          \"material\": \"miapi:metal/netherite\"\r      }\r  }, //this is the moduleinstance. run /data get SelectedItem to get a decent understanding of how to structure this.\r  \"ingredient\": true,\r  \"name\": { \"text\": \"Optional Custom Name\" }\r}\r```\r## Ingredient\r- ### true\r  in this case the Ingredient will require the source item. This only works on components.\r- ### false\r  in this case the module sets the ingredients\r- Custom\r```json\r{\r  \"ingredient\": {\r    \"ingredient\": {\r      \"item\": \"minecraft:dirt\"\r    },\r    \"count\": 1\r  }\r}\r```\rThe ingredient for the recipe. Can be one of an [String] ID, a [String] tag with #, or an [JSON Array] array containing IDs.\r```json\r{\r  \"ingredient\": {\r    \"ingredient\": {\r      \"tag\": \"minecraft:stones\"\r    },\r    \"count\": 1\r  }\r}\r```\r```json\r{\r  \"ingredient\": {\r    \"ingredient\": [\r      { \"item\": \"minecraft:iron_ingot\" },\r      { \"item\": \"minecraft:gold_ingot\" }\r    ],\r    \"count\": 1\r  }\r}\r```",
+              "data": {},
+              "key_words": []
+            },
+            "data": {
+              "header": "Blueprint Data",
+              "description": "## Overview\rDatapack Blueprints add crafting options to the base UI.\rThese Options are always allowed when the base module is allowed.\rFurther fine tuning can be achieved with the CraftingConditions Property\r```json5\r{\r  \"module\": {\r    \"key\": \"example:super_blade\",\r    \"data\": {\r      \"material\": \"miapi:metal/netherite\",\r      \"properties\": {\r        \"crafting_condition\": {\r          \"selectAble\": {\r            \"type\": \"advancement\",\r            \"advancement\": \"minecraft:end/elytra\"\r          }\r        }\r      }\r    }\r  },\r  \"ingredient\": true,\r  \"name\": { \"text\": \"Optional Custom Name\" }\r}\r```\r\r---\r\r## JSON Structure\r\r```json5\r{\r  \"module\": {\r    \"id\": \"example:super_blade\",\r    \"data\": {\r      \"material\": \"miapi:metal/netherite\"\r    }\r  }, //this is the moduleinstance. run /data get SelectedItem to get a decent understanding of how to structure this.\r  \"ingredient\": true,\r  \"name\": { \"text\": \"Optional Custom Name\" }\r}\r```\r## Ingredient\r- ### false\r  in this case the module sets the ingredients, this allows for base material crafting.\r- Custom\r```json\r{\r  \"ingredient\": {\r    \"ingredient\": {\r      \"item\": \"minecraft:dirt\"\r    },\r    \"count\": 1\r  }\r}\r```\rThe ingredient for the recipe. Can be one of an [String] ID, a [String] tag with #, or an [JSON Array] array containing IDs.\r```json\r{\r  \"ingredient\": {\r    \"ingredient\": {\r      \"tag\": \"minecraft:stones\"\r    },\r    \"count\": 1\r  }\r}\r```\r```json\r{\r  \"ingredient\": {\r    \"ingredient\": [\r      { \"item\": \"minecraft:iron_ingot\" },\r      { \"item\": \"minecraft:gold_ingot\" }\r    ],\r    \"count\": 1\r  }\r}\r```",
+              "data": {},
+              "key_words": []
+            }
+          }
         }
       }
     },
