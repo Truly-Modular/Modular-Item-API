@@ -2,9 +2,14 @@
     "module": {
         "key": "tm_arsenal:blade/normal",
         "data": {
-            "skin": "summer/sword-flamming_snake"
+            "material": "miapi:metal/gold"
         }
     },
-    "ingredient": false,
-    "name": "Blueprint Works!!!"
+    "ingredient": {
+        "ingredient": {
+            "item": "minecraft:dirt"
+        },
+        "count": 1
+    },
+    "name": "SuperTestingName"
 }

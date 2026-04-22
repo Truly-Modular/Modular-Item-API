@@ -296,7 +296,6 @@ public class MiapiClient {
 
                         toList());
         ReplaceView.optionSuppliers.add(option ->
-
         {
             List<CraftOption> options = new ArrayList<>();
             BlueprintManager.RELOADED_BLUEPRINTS.getFlatMap().forEach((id, blueprint) -> {

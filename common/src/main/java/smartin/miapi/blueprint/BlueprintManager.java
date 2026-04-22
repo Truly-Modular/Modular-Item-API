@@ -30,7 +30,7 @@ public class BlueprintManager {
                 })
                 .afterLoop(((isClient, registryAccess, worker) -> {
                     Miapi.LOGGER.info("Loaded " + RELOADED_BLUEPRINTS.getFlatMap().size() + " Blueprints");
-                }));
+                })).register();
     }
 
     public static CraftOption asCraftOption(CraftingScreenHandler screenHandler, ResourceLocation location, BlueprintComponent blueprint) {

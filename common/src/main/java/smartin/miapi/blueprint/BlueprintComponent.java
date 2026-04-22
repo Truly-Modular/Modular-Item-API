@@ -18,6 +18,8 @@ import smartin.miapi.client.gui.crafting.crafter.replace.CraftOption;
 import smartin.miapi.material.properties.AllowedMaterial;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.MutableModuleInstance;
+import smartin.miapi.modules.conditions.ConditionManager;
+import smartin.miapi.modules.conditions.ModuleCondition;
 import smartin.miapi.modules.properties.slot.SlotProperty;
 import smartin.miapi.registries.JsonOpsBooleanPatched;
 
@@ -49,7 +51,10 @@ public class BlueprintComponent {
                             .forGetter((blueprint) -> blueprint.ingredient),
                     ComponentSerialization.CODEC
                             .optionalFieldOf("name")
-                            .forGetter(blueprintComponent -> blueprintComponent.name)
+                            .forGetter(blueprintComponent -> blueprintComponent.name),
+                    ConditionManager.CONDITION_CODEC_DIRECT
+                            .optionalFieldOf("condition")
+                            .forGetter(t -> t.condition)
             ).apply(instance, BlueprintComponent::new));
     public static ResourceLocation ID = Miapi.id("blueprint_slot_id");
 
@@ -58,8 +63,10 @@ public class BlueprintComponent {
     public ModuleInstance toMerge;
     public Either<Boolean, IngredientWithCount> ingredient;
     public Optional<Component> name;
+    public Optional<ModuleCondition> condition;
 
-    public BlueprintComponent(ModuleInstance moduleInstance, Either<Boolean, IngredientWithCount> ingredient, Optional<Component> name) {
+    public BlueprintComponent(ModuleInstance moduleInstance, Either<Boolean, IngredientWithCount> ingredient, Optional<Component> name, Optional<ModuleCondition> condition) {
+        this.condition = condition;
         this.toMerge = moduleInstance;
         this.ingredient = ingredient;
         this.name = name;

@@ -1,0 +1,22 @@
+{
+    "module": {
+        "key": "tm_arsenal:blade/normal",
+        "data": {
+            "material": "miapi:metal/netherite",
+            "properties": {
+                "crafting_condition": {
+                    "selectAble": {
+                        "type": "true"
+                    }
+                }
+            }
+        }
+    },
+    "ingredient": {
+        "ingredient": {
+            "item": "minecraft:dirt"
+        },
+        "count": 1
+    },
+    "name": { "text": "Optional Custom Name" }
+}
