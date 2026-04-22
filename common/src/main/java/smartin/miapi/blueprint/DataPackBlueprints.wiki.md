@@ -5,6 +5,7 @@
 Datapack Blueprints add crafting options to the base UI.
 These Options are always allowed when the base module is allowed.
 Further fine tuning can be achieved with the CraftingConditions Property
+These Jsons need to be placed in /date/{mod-id}/miapi/blueprint/{...}.json
 ```json5
 {
   "module": {
