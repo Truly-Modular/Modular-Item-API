@@ -10,7 +10,6 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import smartin.miapi.client.atlas.BufferSpriteAdder;
 import smartin.miapi.config.MiapiConfig;
-import smartin.miapi.mixin.SpriteSourceListAccessor;
 
 import java.util.ArrayList;
 import java.util.List;

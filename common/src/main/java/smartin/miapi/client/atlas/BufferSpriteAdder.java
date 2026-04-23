@@ -15,7 +15,7 @@ import net.minecraft.server.packs.resources.ResourceMetadata;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.config.MiapiConfig;
-import smartin.miapi.mixin.SpriteSourcesAccessor;
+import smartin.miapi.mixin.client.SpriteSourcesAccessor;
 import smartin.miapi.mixin.client.SpriteContentsAccessor;
 
 import java.util.ArrayList;

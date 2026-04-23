@@ -1,4 +1,4 @@
-package smartin.miapi.mixin;
+package smartin.miapi.mixin.client;
 
 import com.mojang.serialization.MapCodec;
 import net.minecraft.client.renderer.texture.atlas.SpriteSource;

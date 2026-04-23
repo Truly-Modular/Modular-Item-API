@@ -2,4 +2,5 @@
 ### Bugfixes
 - fixed blueprints not applying properties correctly
 - fixed data blueprints not loading
+- fixed server crashes
 ### Changes
