@@ -20,6 +20,7 @@ import smartin.miapi.registries.RegistryInventory;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
 
 
 //TODO: @Panda rework this and Stats in general
@@ -32,7 +33,7 @@ public class StatRequirementProperty implements ModuleProperty<Object>, Crafting
     }
 
     @Override
-    public boolean canPerform(ItemStack old, ItemStack crafting, @Nullable ModularWorkBenchEntity bench, Player player, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<ResourceLocation, JsonElement> data) {
+    public boolean canPerform(ItemStack old, ItemStack crafting, @Nullable ModularWorkBenchEntity bench, Player player, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<ResourceLocation, JsonElement> data, Consumer<Component> failreason) {
         ModuleInstance newModule = craftAction.getModifyingModuleInstance(crafting);
         if (bench == null) return true;
 
@@ -49,6 +50,9 @@ public class StatRequirementProperty implements ModuleProperty<Object>, Crafting
                 }
             });
 
+            if(!canCraft.get()){
+                failreason.accept(Component.translatable(Miapi.MOD_ID + ".ui.craft.warning.crafting_stat"));
+            }
             return canCraft.get();
         }
 
@@ -58,11 +62,6 @@ public class StatRequirementProperty implements ModuleProperty<Object>, Crafting
     @Override
     public ItemStack preview(ItemStack old, ItemStack crafting, Player player, ModularWorkBenchEntity bench, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<ResourceLocation, JsonElement> data) {
         return crafting;
-    }
-
-    @Override
-    public Component getWarning() {
-        return Component.translatable(Miapi.MOD_ID + ".ui.craft.warning.crafting_stat");
     }
 
     @Override

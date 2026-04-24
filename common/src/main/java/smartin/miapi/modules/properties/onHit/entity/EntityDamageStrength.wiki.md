@@ -1,5 +1,6 @@
 @header Entity Damage Property
 @path /data_types/properties/on_hit/generic_entity_damage
+@keywords EntityDamageProperty
 A property to add conditional damage based on the attacker entity
 works on melee weapons.
 

@@ -3,6 +3,7 @@ package smartin.miapi.material;
 import com.google.gson.JsonElement;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -23,6 +24,7 @@ import smartin.miapi.modules.properties.util.CraftingProperty;
 
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 /**
  * this isnt really an property. its only a property since properties is given a lot of access into the crafting internals
@@ -86,7 +88,7 @@ public class BlueprintCrafting extends ServerReplaceProperty implements Crafting
         return -10;
     }
 
-    public boolean canPerform(ItemStack old, ItemStack crafting, @Nullable ModularWorkBenchEntity bench, Player player, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<ResourceLocation, JsonElement> data) {
+    public boolean canPerform(ItemStack old, ItemStack crafting, @Nullable ModularWorkBenchEntity bench, Player player, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<ResourceLocation, JsonElement> data, Consumer<Component> failreason) {
         BlueprintComponent blueprintComponent = BlueprintComponent.getBlueprint(craftAction.data, craftAction.screenHandler);
         if (blueprintComponent != null) {
             if (blueprintComponent.useMaterialCrafting()) {

@@ -17,6 +17,7 @@ import smartin.miapi.modules.edit_options.EditOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 /**
  * This is an abstract Class for Crafting properties.
@@ -79,20 +80,17 @@ public interface CraftingProperty {
      *
      * @param old         the old Itemstack
      * @param crafting    the newly Crafted Itemstack
-     * @param player      the player crafting
      * @param bench       the workbench block entity (null on client)
+     * @param player      the player crafting
      * @param craftAction CraftAction in question. can be used to access other stuff
      * @param module      the new Module
      * @param inventory   Linked Inventory, length of {@link #getSlotPositions()}
      * @param data        a map including Data send from the Client for additional Craftinginfo
+     * @param failreason
      * @return if the crafting can happen
      */
-    default boolean canPerform(ItemStack old, ItemStack crafting, @Nullable ModularWorkBenchEntity bench, Player player, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<ResourceLocation, JsonElement> data) {
+    default boolean canPerform(ItemStack old, ItemStack crafting, @Nullable ModularWorkBenchEntity bench, Player player, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<ResourceLocation, JsonElement> data, Consumer<Component> failreason) {
         return true;
-    }
-
-    default Component getWarning() {
-        return Component.empty();
     }
 
     /**

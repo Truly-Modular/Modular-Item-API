@@ -6,6 +6,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Container;
@@ -158,7 +159,9 @@ public class CraftAction {
         AtomicBoolean test = new AtomicBoolean(true);
         forEachCraftingProperty(crafted, (guiCraftingProperty, module, inventory, start, end, buffer) -> {
             if (test.get()) {
-                test.set(guiCraftingProperty.canPerform(old, crafted, blockEntity, player, this, toAdd, inventory, buffer));
+                test.set(guiCraftingProperty.canPerform(old, crafted, blockEntity, player, this, toAdd, inventory, buffer, (c)->{
+
+                }));
             }
         });
         return test.get();
@@ -169,16 +172,15 @@ public class CraftAction {
      *
      * @return a pair of a map pointing each {@link CraftingProperty} to whether it can be performed, and a boolean determining the overall outcome
      */
-    public Pair<Map<CraftingProperty, Boolean>, Boolean> fullCanPerform() {
-        Map<CraftingProperty, Boolean> map = new HashMap<>();
+    public Pair<Boolean, List<Component>> fullCanPerform() {
+        List<Component> failReasons = new ArrayList<>();
         ItemStack crafted = getPreview();
         AtomicBoolean test = new AtomicBoolean(true);
         forEachCraftingProperty(crafted, (guiCraftingProperty, module, inventory, start, end, dataMap) -> {
-            boolean result = guiCraftingProperty.canPerform(old, crafted, blockEntity, player, this, toAdd, inventory, dataMap);
-            map.put(guiCraftingProperty, result);
+            boolean result = guiCraftingProperty.canPerform(old, crafted, blockEntity, player, this, toAdd, inventory, dataMap, failReasons::add);
             if (test.get()) test.set(result);
         });
-        return Pair.of(map, test.get());
+        return Pair.of(test.get(), failReasons);
     }
 
     protected RegistryAccess getAccess() {

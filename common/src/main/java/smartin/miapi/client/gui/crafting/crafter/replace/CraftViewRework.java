@@ -142,8 +142,11 @@ public class CraftViewRework extends InteractAbleWidget {
                 setBuffers();
                 action.setData(craftOption.data().get());
                 editContext.preview(action.toPacket(Networking.createBuffer()));
-                Pair<Map<CraftingProperty, Boolean>, Boolean> canPerform = action.fullCanPerform();
-                craftButton.isEnabled = canPerform.getSecond();
+                Pair<Boolean, List<Component>> canPerform = action.fullCanPerform();
+                craftButton.isEnabled = canPerform.getFirst();
+                if (!canPerform.getFirst()) {
+                    warnings.addAll(canPerform.getSecond());
+                }
 
                 warnings.clear();
                 ItemStack crafted = editContext.getItemstack();
@@ -155,13 +158,6 @@ public class CraftViewRework extends InteractAbleWidget {
                     warnings.add(Component.translatable(Miapi.MOD_ID + ".ui.craft.warning.durability_negative"));
                     craftButton.isEnabled = false;
                 }
-                canPerform.getFirst().forEach((property, result) -> {
-                    if (!result) {
-                        Component warning = property.getWarning();
-                        if (warning != null && !warning.getString().isEmpty())
-                            warnings.add(warning);
-                    }
-                });
             }
         } catch (Exception e) {
             Miapi.LOGGER.error("surpressed", e);

@@ -28,6 +28,7 @@ import smartin.miapi.modules.properties.util.MergeType;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 /**
  * @header Crafting Condition Property
@@ -100,7 +101,7 @@ public class CraftingConditionProperty extends CodecProperty<CraftingConditionPr
     }
 
     @Override
-    public boolean canPerform(ItemStack old, ItemStack crafting, ModularWorkBenchEntity bench, Player player, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<ResourceLocation, JsonElement> data) {
+    public boolean canPerform(ItemStack old, ItemStack crafting, ModularWorkBenchEntity bench, Player player, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<ResourceLocation, JsonElement> data, Consumer<Component> failreason) {
         if (module == null) {
             return true;
         }
@@ -117,7 +118,11 @@ public class CraftingConditionProperty extends CodecProperty<CraftingConditionPr
             Miapi.LOGGER.error("bench is null. this should never happen");
         }
         ConditionManager.ConditionContext context = ConditionManager.fullContext(craftAction.getModifyingModuleInstance(crafting), pos, player, module.properties());
-        return json.craftAble.isAllowed(context);
+        boolean isAllowed = json.craftAble.isAllowed(context);
+        if(!isAllowed){
+            context.failReasons.forEach(failreason);
+        }
+        return isAllowed;
     }
 
     @Override
