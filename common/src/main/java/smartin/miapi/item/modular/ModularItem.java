@@ -8,6 +8,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.Unbreakable;
 import org.jetbrains.annotations.NotNull;
+import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.DurabilityProperty;
@@ -52,12 +53,19 @@ public interface ModularItem extends VisualModularItem {
     static @NotNull ItemStack convertToBroken(ItemStack current) {
         ItemStack broken = new ItemStack(RegistryInventory.brokenModualrItem);
         ItemModule.getModules(current).writeToItem(broken);
+        current.getComponentsPatch().entrySet().forEach(entry -> apply(entry.getKey(), current, broken));
         broken.set(DataComponents.DAMAGE, current.get(DataComponents.DAMAGE));
         broken.set(DataComponents.MAX_DAMAGE, current.get(DataComponents.MAX_DAMAGE));
-        broken.set(DataComponents.UNBREAKABLE, new Unbreakable(false));
+        if(MiapiConfig.getServerConfig().other.fullBreakModularItems){
+            broken.set(DataComponents.UNBREAKABLE, new Unbreakable(true));
+        }
         broken.set(IS_VISUAL_ONLY, true);
         current.set(DataComponents.UNBREAKABLE, new Unbreakable(false));
         current.set(IS_VISUAL_ONLY, true);
         return broken;
+    }
+
+    static <T> void apply(DataComponentType<T> component, ItemStack source, ItemStack target) {
+        target.set(component, source.get(component));
     }
 }

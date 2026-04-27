@@ -22,6 +22,7 @@ import smartin.miapi.blocks.ModularWorkBenchEntity;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.craft.CraftAction;
 import smartin.miapi.datapack.ReloadEvents;
+import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.mixin.NamedAccessor;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
@@ -229,7 +230,7 @@ public class AllowedEnchantments extends CodecProperty<AllowedEnchantments.Allow
 
     @Override
     public ItemStack preview(ItemStack oldStack, ItemStack itemStack, Player player, ModularWorkBenchEntity bench, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<ResourceLocation, JsonElement> moduleData) {
-        if (itemStack.has(DataComponents.ENCHANTMENTS)) {
+        if (itemStack.has(DataComponents.ENCHANTMENTS) && ModularItem.isModularItem(itemStack)) {
             ItemEnchantments enchantments = itemStack.getEnchantments();
             itemStack.update(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY, (old -> {
                 ItemEnchantments.Mutable mutable = new ItemEnchantments.Mutable(old);

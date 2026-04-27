@@ -124,6 +124,14 @@ public class MiapiServerConfig {
         public boolean fullBreakModularItems = true;
 
         @Comment("""
+                Sets Broken items to be unbreakable.
+                This might prevent other mods from fully accidentally deleting
+                Modular items, but makes them impossible to be anvil repaired.
+                """)
+        @AutoCodec.Name("unbreakable_broken")
+        public boolean makeBrokenItemsUnbreakable = false;
+
+        @Comment("""
                 How much of a Modules Durability is used to repair the Item
                 """)
         @AutoCodec.Name("repair_ratio")

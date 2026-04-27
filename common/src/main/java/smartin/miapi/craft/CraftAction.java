@@ -88,6 +88,7 @@ public class CraftAction {
      * @param bench the workbench block entity to store in this CraftAction
      */
     public CraftAction(FriendlyByteBuf buf, ModularWorkBenchEntity bench, CraftingScreenHandler craftingScreenHandler) {
+        Level findLevel = null;
         Player findPlayer;
         int size = buf.readInt();
         this.screenHandler = craftingScreenHandler;
@@ -102,12 +103,23 @@ public class CraftAction {
         }
         findPlayer = getPlayerFromUuid(buf.readUUID());
         if (findPlayer == null) {
-            findPlayer = Miapi.server.getPlayerList().getPlayers().stream().findAny().get();
+            findPlayer = craftingScreenHandler.playerInventory.player;
+            var optionalFallbackPlayer = Miapi.server.getPlayerList().getPlayers().stream().findAny();
+            if (optionalFallbackPlayer.isPresent()) {
+                findPlayer = optionalFallbackPlayer.get();
+                findLevel = findPlayer.level();
+            }
         }
-        level = findPlayer.level();
         player = findPlayer;
         blockEntity = bench;
+        if (findLevel == null) {
+            if (blockEntity != null) {
+                findLevel = blockEntity.getLevel();
+            }
+        }
 
+
+        level = findLevel;
         int numBuffers = buf.readInt();
         for (int i = 0; i < numBuffers; i++) {
             String key = buf.readUtf();
@@ -133,7 +145,12 @@ public class CraftAction {
         } else {
             buf.writeUtf("null");
         }
-        buf.writeUUID(player.getUUID());
+        if (player != null) {
+            buf.writeUUID(player.getUUID());
+        } else {
+            //idk, fallback incase player null cause appearently that can be a thing?!
+            buf.writeUUID(UUID.randomUUID());
+        }
 
         buf.writeInt(data.size());
         data.forEach((key, value) -> {
@@ -159,7 +176,7 @@ public class CraftAction {
         AtomicBoolean test = new AtomicBoolean(true);
         forEachCraftingProperty(crafted, (guiCraftingProperty, module, inventory, start, end, buffer) -> {
             if (test.get()) {
-                test.set(guiCraftingProperty.canPerform(old, crafted, blockEntity, player, this, toAdd, inventory, buffer, (c)->{
+                test.set(guiCraftingProperty.canPerform(old, crafted, blockEntity, player, this, toAdd, inventory, buffer, (c) -> {
 
                 }));
             }

@@ -89,7 +89,9 @@ public interface CraftingProperty {
      * @param failreason
      * @return if the crafting can happen
      */
-    default boolean canPerform(ItemStack old, ItemStack crafting, @Nullable ModularWorkBenchEntity bench, Player player, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<ResourceLocation, JsonElement> data, Consumer<Component> failreason) {
+    default boolean canPerform(ItemStack old, ItemStack crafting,
+                               @Nullable ModularWorkBenchEntity bench,
+                               @Nullable Player player, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<ResourceLocation, JsonElement> data, Consumer<Component> failreason) {
         return true;
     }
 

@@ -87,8 +87,8 @@ public class ItemIdProperty extends CodecProperty<ResourceLocation> implements C
         ItemStack newStack = new ItemStack(item);
         newStack.applyComponents(itemStack.getComponentsPatch());
         if (newStack.has(ModularItem.IS_VISUAL_ONLY)) {
-            itemStack.remove(ModularItem.IS_VISUAL_ONLY);
-            itemStack.remove(DataComponents.UNBREAKABLE);
+            newStack.remove(ModularItem.IS_VISUAL_ONLY);
+            newStack.remove(DataComponents.UNBREAKABLE);
         }
         newStack.setCount(itemStack.getCount());
         ModuleInstance newRoot = root.copy();

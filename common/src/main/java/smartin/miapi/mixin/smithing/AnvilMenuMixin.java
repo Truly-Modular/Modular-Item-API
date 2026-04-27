@@ -22,7 +22,7 @@ public class AnvilMenuMixin {
                 (ForgingScreenHandlerAccessor) this)
                 .getResultSlots()
                 .getItem(0);
-        if (VisualModularItem.isVisualModularItem(current) && current.isDamageableItem() && !MiapiConfig.getServerConfig().other.fullBreakModularItems && false) {
+        if (VisualModularItem.isVisualModularItem(current) && !MiapiConfig.getServerConfig().other.fullBreakModularItems && false) {
             ((ForgingScreenHandlerAccessor) this)
                     .getResultSlots()
                     .setItem(

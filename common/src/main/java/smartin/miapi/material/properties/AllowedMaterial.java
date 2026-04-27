@@ -164,7 +164,7 @@ public class AllowedMaterial extends CodecProperty<AllowedMaterial.AllowedMateri
     }
 
     @Override
-    public List<ItemStack> performCraftAction(ItemStack old, ItemStack crafting, Player player, ModularWorkBenchEntity bench, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<ResourceLocation, JsonElement> data) {
+    public List<ItemStack> performCraftAction(ItemStack old, ItemStack crafting, @Nullable Player player, ModularWorkBenchEntity bench, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<ResourceLocation, JsonElement> data) {
         MutableModuleInstance newModule = craftAction.getModifyingModuleInstance(crafting).asMutable();
         //AllowedMaterialJson json = Miapi.gson.decode()
         List<ItemStack> results = new ArrayList<>();
@@ -181,7 +181,7 @@ public class AllowedMaterial extends CodecProperty<AllowedMaterial.AllowedMateri
         Material material = MaterialProperty.getMaterialFromIngredient(input);
         if (material != null) {
             int newCount = (int) (input.getCount() - Math.ceil(json.getCost() * crafting.getCount() / material.getValueOfItem(input)));
-            if (!player.level().isClientSide()) {
+            if (player != null && !player.level().isClientSide()) {
                 input.setCount(newCount);
             }
             assert newModule != null;
