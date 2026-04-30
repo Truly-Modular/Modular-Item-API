@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * @header Material Grpup Condition
+ * @header Material Group Condition
  * @description_start this condition checks if the material of the module has a certain group
  * Supports custom error
  * @desciption_end

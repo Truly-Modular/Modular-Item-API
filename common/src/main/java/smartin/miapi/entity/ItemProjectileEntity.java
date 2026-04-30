@@ -251,7 +251,7 @@ public class ItemProjectileEntity extends AbstractArrow {
 
     @Override
     public @NotNull ItemStack getDefaultPickupItem() {
-        return this.entityData.get(THROWING_STACK).copy();
+        return this.entityData.get(PICKUP_STACK).copy();
     }
 
     @Override
@@ -380,7 +380,11 @@ public class ItemProjectileEntity extends AbstractArrow {
     }
 
     public void setPickupItem(ItemStack itemStack) {
-        this.entityData.set(PICKUP_STACK, itemStack);
+        if (itemStack.isEmpty()) {
+            this.entityData.set(PICKUP_STACK, null);
+        } else {
+            this.entityData.set(PICKUP_STACK, itemStack);
+        }
     }
 
     @Override
