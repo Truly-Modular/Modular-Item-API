@@ -14,9 +14,11 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import smartin.miapi.client.MiapiClient;
+import smartin.miapi.client.atlas.VertexConsumerProvider;
 import smartin.miapi.client.model.module.dynamic.ChainModel;
 import smartin.miapi.client.model.module.dynamic.DynamicModel;
 import smartin.miapi.client.model.module.dynamic.MatrixHelper;
+import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.item.modular.Transform;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.render.colorproviders.ColorProvider;
@@ -37,6 +39,8 @@ public class DynamicTrailModel extends DynamicModel<TrailState> {
     public final ModuleInstance moduleInstance;
     private final boolean debug;
     private final List<ItemDisplayContext> whiteList;
+    private VertexConsumerProvider provider = new VertexConsumerProvider();
+    private final boolean enabled = MiapiConfig.getClientConfig().render.enableTrailRendering;
 
     public DynamicTrailModel(
             int maxPoints,
@@ -135,6 +139,9 @@ public class DynamicTrailModel extends DynamicModel<TrailState> {
             Matrix4f end,
             TrailState state
     ) {
+        if (!enabled) {
+            return;
+        }
         if (state.points.size() < 2) return;
 
         PoseStack poseStack = context.matrices();
@@ -142,9 +149,8 @@ public class DynamicTrailModel extends DynamicModel<TrailState> {
         poseStack.mulPose(transform.toMatrix());
 
         Vec3 camPos = state.cameraPose;
-
-
-        VertexConsumer vc = colorProvider.getConsumer(context.vertexConsumers(), texture, context.stack(), moduleInstance, context.transformationMode());
+        colorProvider.getConsumer(texture, context.stack(), moduleInstance, context.transformationMode(), provider);
+        VertexConsumer vc = provider.getRenderSaveVC.apply(context.vertexConsumers());
         /*
         VertexConsumer vc = ItemRenderer.getFoilBufferDirect(
                 context.vertexConsumers(),
@@ -180,7 +186,7 @@ public class DynamicTrailModel extends DynamicModel<TrailState> {
                 ChainModel.drawLine(poseStack, context.vertexConsumers(), b, c, 0f, 1f, 0f, 1.0f);
                 ChainModel.drawLine(poseStack, context.vertexConsumers(), c, d, 0f, 0f, 1f, 1.0f);
                 ChainModel.drawLine(poseStack, context.vertexConsumers(), d, a, 1f, 1f, 1f, 1.0f);
-                vc = colorProvider.getConsumer(context.vertexConsumers(), texture, context.stack(), moduleInstance, context.transformationMode());
+                //vc = colorProvider.getConsumer(context.vertexConsumers(), texture, context.stack(), moduleInstance, context.transformationMode());
             }
 
             submitVertex(vc, poseStack, a, alpha2, context, 0, 0);

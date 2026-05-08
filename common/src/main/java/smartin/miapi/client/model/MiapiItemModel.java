@@ -13,7 +13,6 @@ import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
-import smartin.miapi.client.model.item.DualKeyCache;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.item.modular.VisualModularItem;
@@ -22,6 +21,7 @@ import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.cache.ModularItemCache;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.WeakHashMap;
 
@@ -30,8 +30,7 @@ public class MiapiItemModel implements MiapiModel {
     public static List<ModelSupplier> modelSuppliers = new ArrayList<>();
     public static List<ModelTransformerSupplier> modelTransformersSuppler = new ArrayList<>();
     private static final String CACHE_KEY = "miapi_model_rework";
-    public final DualKeyCache<String, ItemDisplayContext, List<ModelTransformer>> transformerCache = new DualKeyCache<>();
-    public final DualKeyCache<String, ItemDisplayContext, ModuleModel> modelCache = new DualKeyCache<>();
+    public final HashMap<CacheKey, CacheData> localCache = new HashMap<>();
     public static WeakHashMap<ItemStack, MiapiItemModel> fallbackLookup = new WeakHashMap<>();
 
     static {
@@ -44,7 +43,7 @@ public class MiapiItemModel implements MiapiModel {
             return model;
         });
         MiapiEvents.CLEAR_CACHE.register(() -> {
-            new ArrayList<>(MiapiItemModel.fallbackLookup.keySet()).forEach(i ->{
+            new ArrayList<>(MiapiItemModel.fallbackLookup.keySet()).forEach(i -> {
                 ModuleInstance moduleInstance = ItemModule.getModules(i);
                 if (moduleInstance != null) {
                     moduleInstance.cache().clear();
@@ -98,21 +97,17 @@ public class MiapiItemModel implements MiapiModel {
         }
         assert Minecraft.getInstance().level != null;
         Minecraft.getInstance().getProfiler().push("modular_item");
-        Minecraft.getInstance().getProfiler().push("root-logic");
+        Minecraft.getInstance().getProfiler().push("root-logic-model-transformers");
         String modelType = modelTypeRaw == null ? "item" : modelTypeRaw;
-        ModuleModel rootModel = modelCache.getNullSave(modelType, mode, (s, k) -> new ModuleModel(ItemModule.getModules(stack), stack, s, k));
+        CacheData data = localCache.computeIfAbsent(new CacheKey(modelType, mode), (k -> new CacheData(
+                new ModuleModel(ItemModule.getModules(stack), stack, k.key, k.context),
+                getTransfomers(stack, k.context, k.key))));
         matrices.pushPose();
-        Minecraft.getInstance().getProfiler().push("model-transformers");
-        List<ModelTransformer> transformers = transformerCache.getNullSave(modelType, mode, (s, t) -> getTransfomers(stack, mode, modelType));
-        for (ModelTransformer transformer : transformers) {
-            matrices = transformer.transform(matrices, tickDelta);
+        for (ModelTransformer transformer : data.transformers) {
+            transformer.transform(matrices, tickDelta);
         }
         Minecraft.getInstance().getProfiler().pop();
-        Minecraft.getInstance().getProfiler().push("glint-setup");
-        Minecraft.getInstance().getProfiler().pop();
-        Minecraft.getInstance().getProfiler().pop();
-        //IconRenderProperty.property.renderIcon(ItemModule.getModules(stack), matrices, tickDelta, vertexConsumers, entity, light, overlay);
-        rootModel.render(new RenderContext(modelType,
+        data.model.render(new RenderContext(modelType,
                 matrices,
                 stack,
                 mode,
@@ -135,6 +130,42 @@ public class MiapiItemModel implements MiapiModel {
             }
         });
         return transformersList;
+    }
+
+    private static final class CacheKey {
+
+        final String key;
+        final ItemDisplayContext context;
+        final int hash;
+
+        CacheKey(String key, ItemDisplayContext context) {
+            this.key = key;
+            this.context = context;
+
+            int h1 = (key == null) ? 0 : key.hashCode();
+            int h2 = (context == null) ? 0 : context.hashCode();
+            this.hash = (h1 * 31) ^ h2;
+        }
+
+        @Override
+        public int hashCode() {
+            return hash;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) return true;
+            if (!(obj instanceof CacheKey other)) return false;
+
+            return (key == other.key ||
+                    (key != null && key.equals(other.key)))
+                   && (context == other.context ||
+                       (context != null && context.equals(other.context)));
+        }
+    }
+
+    private record CacheData(ModuleModel model, List<ModelTransformer> transformers) {
+
     }
 
     public interface ModelSupplier {

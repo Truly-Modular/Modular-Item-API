@@ -59,8 +59,8 @@ public class ChainModelProperty
                                         ? data.models
                                         : seg.modelData;
 
-                        List<BakedMiapiModel> baked = usedModels.stream()
-                                .map(md -> new BakedMiapiModel(
+                        List<MiapiModel> baked = usedModels.stream()
+                                .map(md -> BakedMiapiModel.createBaked(
                                         Objects.requireNonNull(
                                                 ModelHolder.bakedModel(moduleInstance, md, stack)
                                         ),

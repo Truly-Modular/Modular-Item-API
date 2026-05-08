@@ -8,6 +8,11 @@ body {
 
 code {
 	font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+	background-color: #292c2f;
+	color: #cccccc;
+	padding: 1px;
+	border-radius: 5px;
+	white-space: pre-wrap; /* Allow inline wrapping if needed */
 }
 
 /* Prevent visited links from turning purple */
@@ -76,12 +81,6 @@ pre {
 
 .hljs-meta-string {
 	color: #2e4a69; /* Lighter blue for meta strings */
-}
-
-code {
-	background-color: rgba(0, 0, 0, 0);
-	padding: 4px;
-	white-space: pre-wrap; /* Allow inline wrapping if needed */
 }
 
 code.line {

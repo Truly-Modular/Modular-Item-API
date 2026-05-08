@@ -37,7 +37,7 @@ public class ModuleTagProperty extends CodecProperty<List<String>> {
             if (material != null) {
                 List<String> keys = getTags(moduleInstance);
                 if (keys.isEmpty()) {
-                    keys = List.of("default");
+                    return returnMap;
                 }
                 if (moduleInstance.getModule() != null) {
                     List<String> newKeys = new ArrayList<>();

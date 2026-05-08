@@ -5,7 +5,6 @@ import com.mojang.serialization.MapCodec;
 import com.redpxnda.nucleus.codec.auto.AutoCodec;
 import net.minecraft.client.renderer.texture.SpriteContents;
 import net.minecraft.client.renderer.texture.SpriteTicker;
-import net.minecraft.client.renderer.texture.atlas.SpriteResourceLoader;
 import net.minecraft.client.renderer.texture.atlas.SpriteSource;
 import net.minecraft.client.renderer.texture.atlas.SpriteSourceType;
 import net.minecraft.client.resources.metadata.animation.FrameSize;
@@ -15,8 +14,8 @@ import net.minecraft.server.packs.resources.ResourceMetadata;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.config.MiapiConfig;
-import smartin.miapi.mixin.client.SpriteSourcesAccessor;
 import smartin.miapi.mixin.client.SpriteContentsAccessor;
+import smartin.miapi.mixin.client.SpriteSourcesAccessor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,24 +31,26 @@ public class BufferSpriteAdder implements SpriteSource {
     public void run(ResourceManager resourceManager, Output output) {
         MaterialSpriteManager.ATLAS_SPRITE_POOL.clear();
         MaterialSpriteManager.FAST_CACHE.clear();
-        MiapiConfig.getClientConfig().other.cacheSprites.forEach(cacheSprites -> {
+        MiapiConfig.getClientConfig().render.cacheSprites.forEach(cacheSprites -> {
             for (int i = 0; i < cacheSprites.count; i++) {
                 List<MaterialSpriteManager.SpriteSlot> slots = MaterialSpriteManager.ATLAS_SPRITE_POOL.computeIfAbsent(MaterialSpriteManager.resToKey(cacheSprites.x, cacheSprites.y), (s) -> new ArrayList<>());
                 ResourceLocation id = Miapi.id("runtime_" + cacheSprites.x + "x" + cacheSprites.y + "-" + i);
                 NativeImage nativeImage = new NativeImage(cacheSprites.x, cacheSprites.y, false);
-
-                SpriteContents contents = new SpriteContents(id,
+                MiapiSpriteContents contents = new MiapiSpriteContents(id,
                         new FrameSize(cacheSprites.x, cacheSprites.y),
                         nativeImage,
                         ResourceMetadata.EMPTY) {
                     SpriteContents thisContents = this;
+                    boolean dirty = true;
 
                     @Nullable
                     public SpriteTicker createTicker() {
                         return new SpriteTicker() {
                             @Override
                             public void tickAndUpload(int x, int y) {
-                                thisContents.uploadFirstFrame(x, y);
+                                if (dirty) {
+                                    thisContents.uploadFirstFrame(x, y);
+                                }
                             }
 
                             @Override
@@ -59,18 +60,22 @@ public class BufferSpriteAdder implements SpriteSource {
                         };
                     }
                 };
-                output.add(id, new SpriteSupplier() {
-
-                    @Override
-                    public SpriteContents apply(SpriteResourceLoader spriteResourceLoader) {
-                        return contents;
-                    }
-                });
+                output.add(id, spriteResourceLoader -> contents);
                 slots.add(new MaterialSpriteManager.SpriteSlot(id, cacheSprites.x, cacheSprites.y, contents, (n) -> {
                     ((SpriteContentsAccessor) contents).getImage().copyFrom(n);
+                    SpriteContentsAccessor accessor = (SpriteContentsAccessor) contents;
+                    accessor.getImage().copyFrom(n);
+                    contents.dirty = true;
                 }));
             }
         });
+    }
+
+    public static class MiapiSpriteContents extends SpriteContents{
+        public boolean dirty = false;
+        public MiapiSpriteContents(ResourceLocation name, FrameSize frameSize, NativeImage originalImage, ResourceMetadata metadata) {
+            super(name, frameSize, originalImage, metadata);
+        }
     }
 
     @Override

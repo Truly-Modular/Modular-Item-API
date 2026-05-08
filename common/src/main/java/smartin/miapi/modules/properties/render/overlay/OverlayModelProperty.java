@@ -1,10 +1,8 @@
 package smartin.miapi.modules.properties.render.overlay;
 
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.Material;
@@ -14,6 +12,7 @@ import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import smartin.miapi.Miapi;
+import smartin.miapi.client.atlas.VertexConsumerProvider;
 import smartin.miapi.client.model.MiapiModel;
 import smartin.miapi.client.model.ModelHolder;
 import smartin.miapi.client.model.module.BakedMiapiModel;
@@ -83,19 +82,18 @@ public class OverlayModelProperty extends AttachedModelProperty<OverlayModelProp
 
             ColorProvider colorProviderInstance = getColorProvider(stack, base, source, holder.colorProvider(), holder.trimMode());
 
-            return List.of(new BakedMiapiModel(
+            return List.of(BakedMiapiModel.createBaked(
                     new ModelHolder(
                             holder.model(),
                             new Matrix4f(holder.matrix4f()),
                             new ColorProvider() {
                                 @Override
-                                public VertexConsumer getConsumer(MultiBufferSource vertexConsumers, TextureAtlasSprite sprite, ItemStack stack, ModuleInstance moduleInstance, ItemDisplayContext mode) {
-
-                                    return colorProviderInstance.getConsumer(vertexConsumers,
-                                                    overWriteSprite == null ? sprite : overWriteSprite,
-                                                    stack,
-                                                    useThisModule() ? base :
-                                                            moduleInstance, mode);
+                                public void getConsumer(TextureAtlasSprite sprite, ItemStack stack, ModuleInstance moduleInstance, ItemDisplayContext mode, VertexConsumerProvider out) {
+                                    colorProviderInstance.getConsumer(
+                                            overWriteSprite == null ? sprite : overWriteSprite,
+                                            stack,
+                                            useThisModule() ? base :
+                                                    moduleInstance, mode, out);
                                 }
 
                                 @Override

@@ -3,7 +3,6 @@ package smartin.miapi.client.model;
 import com.mojang.datafixers.util.Pair;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.Minecraft;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
@@ -13,102 +12,72 @@ import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.slot.SlotProperty;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Environment(EnvType.CLIENT)
 public class ModuleModel {
-    private final List<Pair<Matrix4f, MiapiModel>> actualModels;
-    public final ModuleInstance instance;
-    public Map<String, ModuleModel> subModuleModels = new HashMap<>();
-    public ItemStack stack;
-    public final String key;
-    @Nullable
-    public final ItemDisplayContext context;
     public boolean renderSubmodules = true;
     public boolean simpleSubModules = true;
+    public final Matrix4f staticSubModuleMatrix;
+    public final ModelWrapper[] currentModuleModels;
+    public final ModuleModel[] subModuleModules;
 
     public ModuleModel(ModuleInstance instance, ItemStack stack, String key, @Nullable ItemDisplayContext displayContext) {
-        this.instance = instance;
-        this.stack = stack;
-        actualModels = generateModel(key, displayContext);
-        this.key = key;
-        this.context = displayContext;
-    }
-
-    private List<Pair<Matrix4f, MiapiModel>> generateModel(String key, ItemDisplayContext context) {
-        Minecraft.getInstance().getProfiler().push("generate model");
-        List<Pair<Matrix4f, MiapiModel>> modelList = new ArrayList<>();
         Transform transform = SlotProperty.getTransformStack(instance).get("item".equals(key) ? null : key).copy();
-        Matrix4f matrix4f = Transform.toModelTransformation(transform).toMatrix();
+        staticSubModuleMatrix = Transform.toModelTransformation(transform).toMatrix();
+        List<Pair<Matrix4f, MiapiModel>> modelList = new ArrayList<>();
         for (MiapiItemModel.ModelSupplier supplier : MiapiItemModel.modelSuppliers) {
-            supplier.getModels(key, context, instance, stack).forEach(model -> {
-                modelList.add(new Pair<>(matrix4f, model));
+            for (MiapiModel model : supplier.getModels(key, displayContext, instance, stack)) {
+                modelList.add(Pair.of(new Matrix4f(staticSubModuleMatrix), model));
                 if (model.hasAnimatedModuleMatrix()) {
                     simpleSubModules = false;
                 }
-            });
-        }
-        for (Pair<Matrix4f, MiapiModel> pair : modelList) {
-            if (pair.getSecond().hasAnimatedModuleMatrix()) {
-                simpleSubModules = false;
             }
         }
-        List<Pair<Matrix4f, MiapiModel>> model = modelList;
         for (MiapiItemModel.ModelSupplier supplier : MiapiItemModel.modelSuppliers) {
-            model = supplier.filter(model, stack, instance, key, context);
+            modelList = supplier.filter(modelList, stack, instance, key, displayContext);
         }
-        Minecraft.getInstance().getProfiler().pop();
-        return model;
+        currentModuleModels = new ModelWrapper[modelList.size()];
+        for (int i = 0; i < modelList.size(); i++) {
+            Pair<Matrix4f, MiapiModel> pair = modelList.get(i);
+            currentModuleModels[i] =
+                    new ModelWrapper(pair.getFirst(), pair.getSecond());
+        }
+        List<ModuleModel> subModules = new ArrayList<>();
+        instance.cache().getSubModules().forEach((id, module) -> {
+            subModules.add(new ModuleModel(module, stack, key, displayContext));
+        });
+        subModuleModules = subModules.toArray(new ModuleModel[subModules.size()]);
     }
 
     public void render(MiapiModel.RenderContext context) {
-        Minecraft.getInstance().getProfiler().push("submodule-logic");
-        Matrix4f submoduleMatrix = new Matrix4f();
-        Minecraft.getInstance().getProfiler().pop();
-        actualModels.forEach(matrix4fMiapiModelPair -> {
-            Minecraft.getInstance().getProfiler().push("submodule-logic");
+        for (ModelWrapper currentModuleModel : currentModuleModels) {
             context.matrices().pushPose();
-            Transform.applyPosition(context.matrices(), matrix4fMiapiModelPair.getFirst());
-            Minecraft.getInstance().getProfiler().pop();
-            matrix4fMiapiModelPair.getSecond().render(context);
-            Minecraft.getInstance().getProfiler().push("submodule-logic");
+            Transform.applyPosition(context.matrices(), currentModuleModel.matrix4f);
+            currentModuleModel.miapiModel.render(context);
             context.matrices().popPose();
-            if (!simpleSubModules) {
-                submoduleMatrix.mul(matrix4fMiapiModelPair.getSecond().subModuleMatrix(context));
-            }
-            Minecraft.getInstance().getProfiler().pop();
-        });
-        //render submodules
-        if (renderSubmodules) {
-            if (simpleSubModules) {
-                instance.cache().getSubModules().forEach((id, instance1) -> {
-                    Minecraft.getInstance().getProfiler().push("submodule-logic");
-                    context.matrices().pushPose();
-                    ModuleModel subModuleModel = subModuleModels.get(id);
-                    if (subModuleModel == null) {
-                        subModuleModel = new ModuleModel(instance1, stack, key, context.transformationMode());
-                        subModuleModels.put(id, subModuleModel);
-                    }
-                    Minecraft.getInstance().getProfiler().pop();
-                    subModuleModel.render(context);
-                    context.matrices().popPose();
-                });
-            }
-            instance.cache().getSubModules().forEach((id, instance1) -> {
-                Minecraft.getInstance().getProfiler().push("submodule-logic");
-                context.matrices().pushPose();
-                Transform.applyPosition(context.matrices(), submoduleMatrix);
-                ModuleModel subModuleModel = subModuleModels.get(id);
-                if (subModuleModel == null) {
-                    subModuleModel = new ModuleModel(instance1, stack, key, context.transformationMode());
-                    subModuleModels.put(id, subModuleModel);
-                }
-                Minecraft.getInstance().getProfiler().pop();
-                subModuleModel.render(context);
-                context.matrices().popPose();
-            });
         }
+        context.matrices().pushPose();
+        if (!simpleSubModules) {
+            Matrix4f submoduleMatrix = new Matrix4f();
+            for (ModelWrapper currentModuleModel : currentModuleModels) {
+                if (currentModuleModel.miapiModel.hasAnimatedModuleMatrix()) {
+                    submoduleMatrix.mul(currentModuleModel.miapiModel.subModuleMatrix(context));
+                }
+            }
+            context.matrices().mulPose(submoduleMatrix);
+        }
+        if (renderSubmodules) {
+            for (ModuleModel model : subModuleModules) {
+                context.matrices().pushPose();
+                model.render(context);
+                context.matrices().popPose();
+            }
+        }
+        context.matrices().popPose();
+    }
+
+    public record ModelWrapper(Matrix4f matrix4f, MiapiModel miapiModel) {
+
     }
 }

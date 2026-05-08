@@ -8,8 +8,8 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 @Environment(EnvType.CLIENT)
 public class MovedVertexConsumer implements VertexConsumer {
     public VertexConsumer delegate;
-    float uOffset;
-    float vOffset;
+    public float uOffset;
+    public float vOffset;
 
     public MovedVertexConsumer(VertexConsumer delegate, TextureAtlasSprite original, TextureAtlasSprite target) {
         this.delegate = delegate;

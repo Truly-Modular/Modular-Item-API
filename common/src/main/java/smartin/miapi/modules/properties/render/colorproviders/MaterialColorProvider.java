@@ -1,12 +1,11 @@
 package smartin.miapi.modules.properties.render.colorproviders;
 
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
+import smartin.miapi.client.atlas.VertexConsumerProvider;
 import smartin.miapi.client.renderer.TrimRenderer;
 import smartin.miapi.material.MaterialProperty;
 import smartin.miapi.material.base.Material;
@@ -27,14 +26,13 @@ public class MaterialColorProvider extends TrimColorProvider {
 
     @Environment(EnvType.CLIENT)
     @Override
-    public VertexConsumer getConsumer(MultiBufferSource vertexConsumers,
-                                      TextureAtlasSprite sprite,
-                                      ItemStack stack,
-                                      ModuleInstance moduleInstance,
-                                      ItemDisplayContext mode) {
+    public void getConsumer(TextureAtlasSprite sprite,
+                            ItemStack stack,
+                            ModuleInstance moduleInstance,
+                            ItemDisplayContext mode, VertexConsumerProvider out) {
         MaterialRenderController controller = material.getRenderController(moduleInstance, mode);
         controller = getTrimController(controller, material, stack,mode);
-        return controller.getVertexConsumer(vertexConsumers, sprite, stack, moduleInstance, mode);
+        controller.getVertexConsumer(sprite, stack, moduleInstance, mode ,out);
     }
 
     @Override

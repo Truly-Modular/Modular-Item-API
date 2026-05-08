@@ -4,6 +4,7 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.mojang.blaze3d.platform.NativeImage;
+import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import dev.architectury.event.EventResult;
 import net.fabricmc.api.EnvType;
@@ -30,6 +31,7 @@ import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.material.base.Material;
 import smartin.miapi.material.palette.SpriteColorer;
+import smartin.miapi.mixin.client.BufferBuilderAccessor;
 import smartin.miapi.mixin.client.SpriteContentsAccessor;
 
 import java.io.IOException;
@@ -118,8 +120,9 @@ public class MaterialSpriteManager {
     public static void clear() {
         materialSpriteCache.invalidateAll();
         ANIMATED_ATLAS_SPRITES.clear();
-        FAST_CACHE.forEach((h,s)->{
-            s.used = 0;
+        FAST_CACHE.forEach((h, slot) -> {
+            slot.used = 0;
+            ATLAS_SPRITE_POOL.computeIfAbsent(resToKey(slot.x, slot.y), (v) -> new ArrayList<>()).add(slot);
         });
         FAST_CACHE.clear();
         //TODO:free atlas sprites
@@ -177,36 +180,56 @@ public class MaterialSpriteManager {
         }
     }
 
+    private static VertexConsumer vanillaItemVc = null;
+    public static VertexConsumer getVanillaItemVC(MultiBufferSource b){
+        if(vanillaItemVc!=null){
+            if (vanillaItemVc instanceof BufferBuilder buffer) {
+                if(((BufferBuilderAccessor) buffer).isBuilding()){
+                    return vanillaItemVc;
+                }
+            }
+        }
+        vanillaItemVc = ItemRenderer.getFoilBuffer(b, ItemBlockRenderTypes.getRenderType(ItemStack.EMPTY, false), true, false);
+        return vanillaItemVc;
+    }
+
     /**
-     *
-     * @param vertexConsumers Buffer source to generate new Consumer
-     * @param originalSprite the non-recolored sprite
-     * @param material the material, mainly used for caching and optimised lookups
+     * @param originalSprite        the non-recolored sprite
+     * @param material              the material, mainly used for caching and optimised lookups
      * @param materialSpriteColorer The colorer recoloring the sprite
      * @return a vertexconsumer that can be talked to like it was the original sprite, but renders the recolored one.
      */
-    public static VertexConsumer getVertexConsumer(MultiBufferSource vertexConsumers, TextureAtlasSprite originalSprite, Material material, SpriteColorer materialSpriteColorer) {
-        Holder holder = new Holder(originalSprite, material, materialSpriteColorer);
-        if (!MiapiConfig.getClientConfig().other.disableFastRender) {
-            SpriteSlot spriteSlot = FAST_CACHE.get(holder);
+    public static void getVertexConsumer(TextureAtlasSprite originalSprite, Material material, SpriteColorer materialSpriteColorer, VertexConsumerProvider out) {
+        out.spriteHolder = new Holder(originalSprite, material, materialSpriteColorer);
+        if (MiapiConfig.getClientConfig().render.enableFastRender) {
+            SpriteSlot spriteSlot = FAST_CACHE.get(out.spriteHolder);
             if (spriteSlot == null) {
                 spriteSlot = getFreeAtlasSlot(((SpriteContentsAccessor) originalSprite.contents()).getWidth(), ((SpriteContentsAccessor) originalSprite.contents()).getHeight());
                 if (spriteSlot != null) {
-                    spriteSlot.used = 20;
-                    spriteSlot.holder = holder;
-                    FAST_CACHE.put(holder, spriteSlot);
-                    if (holder.colorer().doTick()) {
+                    spriteSlot.used = 5;
+                    spriteSlot.holder = out.spriteHolder;
+                    FAST_CACHE.put(out.spriteHolder, spriteSlot);
+                    if (out.spriteHolder.colorer().doTick()) {
                         ANIMATED_ATLAS_SPRITES.add(spriteSlot);
-                        AnimatedTexturesManager.markAnimated(spriteSlot.sprite);
+                        AnimatedTexturesManager.markAnimated(spriteSlot.getSprite());
                     }
                     spriteSlot.updateSprite();
                 }
             }
-            if (spriteSlot != null && spriteSlot.used < 4) {
-                return getBlockAtlasVertexConsumer(vertexConsumers, originalSprite, holder, spriteSlot);
+            if(spriteSlot!=null){
+                out.u = spriteSlot.getSprite().getU0() - originalSprite.getU0();
+                out.v = spriteSlot.getSprite().getV0() - originalSprite.getV0();
+                out.spriteSlot = spriteSlot;
             }
         }
-        return getDynamicTextureVertexConsumer(vertexConsumers, originalSprite, holder);
+        out.getRenderSaveVC = (b -> {
+            if (out.spriteSlot != null && out.spriteSlot.used > 0 && out.spriteSlot.used < 4 && MiapiConfig.getClientConfig().render.enableFastRender) {
+                return getBlockAtlasVertexConsumer(b, originalSprite, out.spriteHolder, out.spriteSlot);
+            }
+            return getDynamicTextureVertexConsumer(b, originalSprite, out.spriteHolder);
+        });
+        //out.vanillaVCGetter = (b) -> ItemRenderer.getFoilBufferDirect(b, ItemBlockRenderTypes.getRenderType(ItemStack.EMPTY, false), true, false);
+        out.vanillaVCGetter = MaterialSpriteManager::getVanillaItemVC;
     }
 
     /**
@@ -216,7 +239,7 @@ public class MaterialSpriteManager {
         spriteSlot.used = 3;
 
         return new MovedVertexConsumer(
-                ItemRenderer.getFoilBufferDirect(vertexConsumers, ItemBlockRenderTypes.getRenderType(ItemStack.EMPTY, false), true, false),
+                getVanillaItemVC(vertexConsumers),
                 originalSprite,
                 spriteSlot.getSprite()
         );
@@ -252,7 +275,8 @@ public class MaterialSpriteManager {
 
     /**
      * will try to find a free SpriteSlot on the main BlockAtlas
-     * @param width the desired sprite width
+     *
+     * @param width  the desired sprite width
      * @param height the desired sprite height
      * @return a sprite slot if avialible, null if none are available
      */
@@ -275,7 +299,8 @@ public class MaterialSpriteManager {
 
     /**
      * allows simple integer based keys for res, used for optimised lookups
-     * @param width the desired sprite width
+     *
+     * @param width  the desired sprite width
      * @param height the desired sprite height
      */
     public static int resToKey(int width, int height) {

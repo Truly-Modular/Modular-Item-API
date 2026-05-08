@@ -41,12 +41,30 @@ public class ModelTransformer {
             for (Direction direction : Direction.values()) {
                 rawQuads.addAll(model.getQuads(null, direction, random));
             }
-            List<BakedQuad> redoneQuads = new ArrayList<>();
-            rawQuads.forEach(bakedQuad -> {
-                redoneQuads.add(new BakedQuad(inverse(bakedQuad.getVertices()), bakedQuad.getTintIndex(), bakedQuad.getDirection(), bakedQuad.getSprite(), bakedQuad.isShade()));
-            });
-            return redoneQuads;
+            return getInverse(rawQuads);
         });
+    }
+
+    public static BakedQuad[] getInverse(BakedQuad[] quads) {
+        BakedQuad[] result = new BakedQuad[quads.length];
+        for (int i = 0; i < quads.length; i++) {
+            result[i]= new BakedQuad(inverse(
+                    quads[i].getVertices()),
+                    quads[i].getTintIndex(),
+                    quads[i].getDirection(),
+                    quads[i].getSprite(),
+                    quads[i].isShade());
+        }
+
+        return result;
+    }
+
+    public static List<BakedQuad> getInverse(List<BakedQuad> rawQuads) {
+        List<BakedQuad> redoneQuads = new ArrayList<>();
+        rawQuads.forEach(bakedQuad -> {
+            redoneQuads.add(new BakedQuad(inverse(bakedQuad.getVertices()), bakedQuad.getTintIndex(), bakedQuad.getDirection(), bakedQuad.getSprite(), bakedQuad.isShade()));
+        });
+        return redoneQuads;
     }
 
     public static List<BakedQuad> getRescale(BakedModel bakedModel, RandomSource random) {
@@ -55,16 +73,20 @@ public class ModelTransformer {
             for (Direction direction : Direction.values()) {
                 rawQuads.addAll(model.getQuads(null, direction, random));
             }
-            List<BakedQuad> redoneQuads = new ArrayList<>();
-            rawQuads.forEach(bakedQuad -> {
-                float uStart = bakedQuad.getSprite().getU0();
-                float uScale = 1 / (bakedQuad.getSprite().getU1() - bakedQuad.getSprite().getU0());
-                float vStart = bakedQuad.getSprite().getV0();
-                float vScale = 1 / (bakedQuad.getSprite().getV1() - bakedQuad.getSprite().getV0());
-                redoneQuads.add(new BakedQuad(rescale(bakedQuad.getVertices(), uStart, uScale, vStart, vScale), bakedQuad.getTintIndex(), bakedQuad.getDirection(), bakedQuad.getSprite(), bakedQuad.isShade()));
-            });
-            return redoneQuads;
+            return getRescale(rawQuads);
         });
+    }
+
+    public static List<BakedQuad> getRescale(List<BakedQuad> rawQuads) {
+        List<BakedQuad> redoneQuads = new ArrayList<>();
+        rawQuads.forEach(bakedQuad -> {
+            float uStart = bakedQuad.getSprite().getU0();
+            float uScale = 1 / (bakedQuad.getSprite().getU1() - bakedQuad.getSprite().getU0());
+            float vStart = bakedQuad.getSprite().getV0();
+            float vScale = 1 / (bakedQuad.getSprite().getV1() - bakedQuad.getSprite().getV0());
+            redoneQuads.add(new BakedQuad(rescale(bakedQuad.getVertices(), uStart, uScale, vStart, vScale), bakedQuad.getTintIndex(), bakedQuad.getDirection(), bakedQuad.getSprite(), bakedQuad.isShade()));
+        });
+        return redoneQuads;
     }
 
     public static List<BakedQuad> getRescaleInverse(BakedModel bakedModel, RandomSource random) {
@@ -83,6 +105,22 @@ public class ModelTransformer {
             });
             return redoneQuads;
         });
+    }
+
+    public static BakedQuad[] getOffset(BakedQuad[] quads, float uOffset, float vOffset) {
+        BakedQuad[] result = new BakedQuad[quads.length];
+
+        for (int i = 0; i < quads.length; i++) {
+            result[i]= new BakedQuad(
+                    offsetUV(quads[i].getVertices(), uOffset, vOffset),
+                    quads[i].getTintIndex(),
+                    quads[i].getDirection(),
+                    quads[i].getSprite(),
+                    quads[i].isShade()
+            );
+        }
+
+        return result;
     }
 
     private static int[] rescale(int[] raw, float uStart, float uScale, float vStart, float vScale) {
@@ -105,5 +143,20 @@ public class ModelTransformer {
             copiedArray[3 * 8 + j] = raw[3 * 8 + j];
         }
         return copiedArray;
+    }
+
+    private static int[] offsetUV(int[] raw, float uOffset, float vOffset) {
+        int[] copied = new int[raw.length];
+        System.arraycopy(raw, 0, copied, 0, raw.length);
+
+        for (int i = 0; i < raw.length / 8; i++) {
+            float u = Float.intBitsToFloat(raw[i * 8 + 4]);
+            float v = Float.intBitsToFloat(raw[i * 8 + 5]);
+
+            copied[i * 8 + 4] = Float.floatToRawIntBits(u + uOffset);
+            copied[i * 8 + 5] = Float.floatToRawIntBits(v + vOffset);
+        }
+
+        return copied;
     }
 }

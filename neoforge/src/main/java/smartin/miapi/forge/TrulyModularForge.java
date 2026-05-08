@@ -323,7 +323,7 @@ public class TrulyModularForge {
                                     ));
                                 }
                                 if (buffer instanceof MultiBufferSource.BufferSource multiBufferSource) {
-                                    multiBufferSource.endBatch();
+                                    //multiBufferSource.endBatch();
                                 }
                                 //Lighting.setupFor3DItems();
                                 //Lighting.setupFor3DItems();

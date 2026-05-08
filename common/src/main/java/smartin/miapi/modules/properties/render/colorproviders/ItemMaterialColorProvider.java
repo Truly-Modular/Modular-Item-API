@@ -1,12 +1,11 @@
 package smartin.miapi.modules.properties.render.colorproviders;
 
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
+import smartin.miapi.client.atlas.VertexConsumerProvider;
 import smartin.miapi.client.renderer.TrimRenderer;
 import smartin.miapi.material.MaterialProperty;
 import smartin.miapi.material.base.Material;
@@ -26,19 +25,19 @@ public class ItemMaterialColorProvider extends MaterialColorProvider {
 
     @Environment(EnvType.CLIENT)
     @Override
-    public VertexConsumer getConsumer(MultiBufferSource vertexConsumers,
-                                      TextureAtlasSprite sprite,
-                                      ItemStack stack,
-                                      ModuleInstance moduleInstance,
-                                      ItemDisplayContext mode) {
+    public void getConsumer(TextureAtlasSprite sprite,
+                            ItemStack stack,
+                            ModuleInstance moduleInstance,
+                            ItemDisplayContext mode,
+                            VertexConsumerProvider out) {
         if (actualMaterial == null && needCheck) {
             actualMaterial = MaterialProperty.getMaterialFromIngredient(stack);
             needCheck = false;
         }
         if (actualMaterial != null) {
-            return actualMaterial.getRenderController(moduleInstance, mode).getVertexConsumer(vertexConsumers, sprite, stack, moduleInstance, mode);
+            actualMaterial.getRenderController(moduleInstance, mode).getVertexConsumer(sprite, stack, moduleInstance, mode, out);
         }
-        return material.getRenderController(moduleInstance, mode).getVertexConsumer(vertexConsumers, sprite, stack, moduleInstance, mode);
+        material.getRenderController(moduleInstance, mode).getVertexConsumer(sprite, stack, moduleInstance, mode, out);
     }
 
     @Override

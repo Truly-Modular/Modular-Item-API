@@ -1,10 +1,8 @@
 package smartin.miapi.modules.properties.render.colorproviders;
 
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.redpxnda.nucleus.util.Color;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
@@ -13,6 +11,7 @@ import net.minecraft.world.item.*;
 import net.minecraft.world.item.armortrim.ArmorTrim;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
+import smartin.miapi.client.atlas.VertexConsumerProvider;
 import smartin.miapi.client.renderer.TrimRenderer;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.material.base.Material;
@@ -42,7 +41,7 @@ public interface ColorProvider {
     static ColorProvider getProvider(String type, ItemStack itemStack, ModuleInstance moduleInstance, TrimRenderer.TrimMode mode) {
         ColorProvider base = colorProviders.getOrDefault(type, colorProviders.get("material"));
         base = base.getInstance(itemStack, base.adapt(moduleInstance), mode);
-        if (MiapiConfig.getClientConfig().other.disableFastTrim && !mode.equals(TrimRenderer.TrimMode.NONE)) {
+        if (!MiapiConfig.getClientConfig().render.enableFastTrim && !mode.equals(TrimRenderer.TrimMode.NONE)) {
 
         }
         return base;
@@ -57,12 +56,12 @@ public interface ColorProvider {
     }
 
     @Environment(EnvType.CLIENT)
-    VertexConsumer getConsumer(MultiBufferSource vertexConsumers, TextureAtlasSprite sprite, ItemStack stack, ModuleInstance moduleInstance, ItemDisplayContext mode);
+    void getConsumer(TextureAtlasSprite sprite, ItemStack stack, ModuleInstance moduleInstance, ItemDisplayContext mode, VertexConsumerProvider out);
 
     ColorProvider getInstance(ItemStack stack, ModuleInstance instance, TrimRenderer.TrimMode trimMode);
 
     static boolean shouldHaveTrim(TrimRenderer.TrimMode mode) {
-        return !mode.equals(TrimRenderer.TrimMode.NONE) && !MiapiConfig.getClientConfig().other.disableFastTrim;
+        return !mode.equals(TrimRenderer.TrimMode.NONE) && MiapiConfig.getClientConfig().render.enableFastTrim;
     }
 
     @Nullable

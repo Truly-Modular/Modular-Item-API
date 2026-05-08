@@ -1,8 +1,7 @@
 package smartin.miapi.client.model.module;
 
-import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.datafixers.util.Pair;
 import com.redpxnda.nucleus.util.Color;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -33,12 +32,10 @@ import smartin.miapi.client.model.MiapiModel;
 import smartin.miapi.client.model.ModelHolder;
 import smartin.miapi.client.model.ModelTransformer;
 import smartin.miapi.client.renderer.ObjectUVVertexConsumer;
-import smartin.miapi.client.renderer.RescaledVertexConsumer;
 import smartin.miapi.client.renderer.TrimRenderer;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.item.modular.Transform;
 import smartin.miapi.material.MaterialProperty;
-import smartin.miapi.mixin.client.BufferBuilderAccessor;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.GlintProperty;
 import smartin.miapi.modules.properties.render.AlphaOverwriteProperty;
@@ -50,7 +47,7 @@ import smartin.miapi.modules.properties.util.DoubleOperationResolvable;
 import java.util.*;
 
 @Environment(EnvType.CLIENT)
-public class BakedMiapiModel implements MiapiModel {
+public class BakedMiapiModelRework implements MiapiModel {
     ModuleInstance instance;
     BakedModel model;
     Matrix4f modelMatrix;
@@ -61,21 +58,12 @@ public class BakedMiapiModel implements MiapiModel {
     int skyLight;
     int blockLight;
     float alpha;
-    static VertexConsumer lastVC;
-    static ColorProvider lastColor;
-    static TextureAtlasSprite textureAtlasSprite;
     boolean trimModel = !MiapiConfig.getClientConfig().render.enableFastTrim;
-    private final Map<BakedModel, List<Pair<TextureAtlasSprite, List<BakedQuad>>>> modelBatchCache = new IdentityHashMap<>();
-
-    public static MiapiModel createBaked(ModelHolder holder, ModuleInstance moduleInstance, ItemStack stack) {
-        if (MiapiConfig.getClientConfig().render.optimisedModel) {
-            return new BakedMiapiModelRework(holder, moduleInstance, stack);
-        }
-        return new BakedMiapiModel(holder, moduleInstance, stack);
-    }
+    private final Map<BakedModel, BakedModelCache> modelBatchCache = new IdentityHashMap<>();
+    //to avoid excessive pair creation
 
 
-    public BakedMiapiModel(ModelHolder holder, ModuleInstance moduleInstance, ItemStack stack) {
+    public BakedMiapiModelRework(ModelHolder holder, ModuleInstance moduleInstance, ItemStack stack) {
         this.modelHolder = holder;
         this.instance = holder.colorProvider().adapt(moduleInstance);
         Color color = holder.colorProvider().getVertexColor().orElse(ColorProperty.getColor(stack, instance));
@@ -101,33 +89,10 @@ public class BakedMiapiModel implements MiapiModel {
         if (propertyBlock > blockLight) blockLight = propertyBlock;
     }
 
-    private List<Pair<TextureAtlasSprite, List<BakedQuad>>> buildBatches(BakedModel model, RandomSource random) {
-        Map<TextureAtlasSprite, List<BakedQuad>> temp = new HashMap<>();
-
-        for (Direction dir : Direction.values()) {
-            List<BakedQuad> quads = model.getQuads(null, dir, random);
-
-            for (BakedQuad quad : quads) {
-                temp.computeIfAbsent(quad.getSprite(), s -> new ArrayList<>())
-                        .add(quad);
-            }
-        }
-
-        List<Pair<TextureAtlasSprite, List<BakedQuad>>> result = new ArrayList<>(temp.size());
-
-        for (Map.Entry<TextureAtlasSprite, List<BakedQuad>> entry : temp.entrySet()) {
-            result.add(Pair.of(entry.getKey(), entry.getValue()));
-        }
-
-        return result;
-    }
-
     @Override
     public void render(RenderContext context) {
         assert Minecraft.getInstance().level != null;
-        Map<TextureAtlasSprite, VertexConsumer> lookup = new HashMap<>();
         Minecraft.getInstance().getProfiler().push("BakedModel");
-        Minecraft.getInstance().getProfiler().push("BakedModel-logic");
         context.matrices().pushPose();
 
         int sky = LightTexture.sky(context.light());
@@ -140,51 +105,16 @@ public class BakedMiapiModel implements MiapiModel {
 
         Transform.applyPosition(context.matrices(), modelMatrix);
         BakedModel currentModel = resolve(model, context.stack(), context.getEntitySave(), light);
-        Minecraft.getInstance().getProfiler().pop();
-        Minecraft.getInstance().getProfiler().push("BakedModel - quads");
-        try {
-            List<Pair<TextureAtlasSprite, List<BakedQuad>>> batches =
-                    modelBatchCache.computeIfAbsent(currentModel, m ->
-                            buildBatches(m, random)
-                    );
-
-            for (Pair<TextureAtlasSprite, List<BakedQuad>> batch : batches) {
-                TextureAtlasSprite sprite = batch.getFirst();
-                List<BakedQuad> quads = batch.getSecond();
-
-                VertexConsumer consumer = getConsumer(
-                        modelHolder.colorProvider(),
-                        sprite,
-                        context.vertexConsumers(),
-                        context.stack(),
-                        instance,
-                        context.transformationMode()
-                );
-
-                for (BakedQuad quad : quads) {
-                    consumer.putBulkData(
-                            context.matrices().last(),
-                            quad,
-                            colors[0], colors[1], colors[2],
-                            alpha,
-                            light,
-                            context.overlay()
-                    );
-                }
+        BakedModelCache cache = modelBatchCache.computeIfAbsent(currentModel, BakedModelCache::new);
+        for (DoubleQuadCache batch : cache.getForward(modelHolder.colorProvider(), context.stack(), instance, context.transformationMode())) {
+            batch.render(context.vertexConsumers(), context.matrices().last(), colors[0], colors[1], colors[2], alpha, light, context.overlay());
+        }
+        if (modelHolder.entityRendering()) {
+            for (DoubleQuadCache batch : cache.getBackwards(modelHolder.colorProvider(), context.stack(), instance, context.transformationMode())) {
+                batch.render(context.vertexConsumers(), context.matrices().last(), colors[0], colors[1], colors[2], alpha, light, context.overlay());
             }
-        } catch (RuntimeException e) {
-            Miapi.LOGGER.error(
-                    "rendering error in module " + instance.moduleId() + " " +
-                    MaterialProperty.getMaterial(instance),
-                    e
-            );
-            MaterialSpriteManager.clear();
         }
 
-        Minecraft.getInstance().getProfiler().pop();
-        Minecraft.getInstance().getProfiler().push("BakedModel Glint");
-
-        //render normally
         if (context.stack().hasFoil() && MiapiConfig.getClientConfig().enchantingGlint.shouldRenderGlint()) {
             try {
                 VertexConsumer altConsumer;
@@ -209,22 +139,20 @@ public class BakedMiapiModel implements MiapiModel {
                 } else {
                     alphaAdjust = 1.0f;
                 }
-                for (Direction dir : Direction.values()) {
-                    currentModel.getQuads(null, dir, RandomSource.create()).forEach(quad -> {
+                for (DoubleQuadCache batch : cache.getForward(modelHolder.colorProvider(), context.stack(), instance, context.transformationMode())) {
+                    for (BakedQuad quad : batch.original) {
                         Color glintColor = settings.getColor();
                         altConsumer.putBulkData(context.matrices().last(), quad,
                                 glintColor.redAsFloat(),
                                 glintColor.greenAsFloat(),
                                 glintColor.blueAsFloat(),
                                 glintColor.alphaAsFloat() * alpha * alphaAdjust, light, context.overlay());
-
-                    });
+                    }
                 }
             } catch (RuntimeException e) {
                 Miapi.LOGGER.error("rendering glint error in module " + instance.moduleId() + " " + MaterialProperty.getMaterial(instance), e);
             }
         }
-        Minecraft.getInstance().getProfiler().pop();
 
 
         if (trimModel) {
@@ -233,56 +161,14 @@ public class BakedMiapiModel implements MiapiModel {
             Holder<ArmorMaterial> armorMaterial = (context.stack().getItem() instanceof ArmorItem armorItem) ? armorItem.getMaterial() : null;
 
             if (armorMaterial != null && !modelHolder.trimMode().equals(TrimRenderer.TrimMode.NONE)) {
-                ModelTransformer.getRescale(currentModel, random).forEach(quad -> {
+                for(BakedQuad quad: cache.getTrim()){
                     TrimRenderer.renderTrims(context.matrices(), quad, modelHolder.trimMode(), light, context.vertexConsumers(), armorMaterial, context.stack());
-                });
+                }
             }
-            Minecraft.getInstance().getProfiler().pop();
-        }
-
-        lookup.clear();
-        //render from both sides if requested
-        if (modelHolder.entityRendering()) {
-            Minecraft.getInstance().getProfiler().push("EntityModel");
-            ModelTransformer.getInverse(currentModel, random).forEach(quad -> {
-                VertexConsumer vertexConsumer = getConsumer(
-                        modelHolder.colorProvider(),
-                        quad.getSprite(),
-                        context.vertexConsumers(), context.stack(),
-                        instance, context.transformationMode());
-                vertexConsumer.putBulkData(
-                        context.matrices().last(), quad,
-                        colors[0], colors[1], colors[2],
-                        alpha, light, context.overlay());
-            });
             Minecraft.getInstance().getProfiler().pop();
         }
         context.matrices().popPose();
         Minecraft.getInstance().getProfiler().pop();
-    }
-
-    public boolean isStillValid(VertexConsumer vertexConsumer) {
-        if (vertexConsumer instanceof RescaledVertexConsumer rescaledVertexConsumer) {
-            return isStillValid(rescaledVertexConsumer.delegate);
-        } else if (vertexConsumer instanceof BufferBuilder buffer) {
-            return ((BufferBuilderAccessor) buffer).isBuilding();
-        }
-        return false;
-    }
-
-    VertexConsumerProvider Vcprovider = new VertexConsumerProvider();
-
-    public VertexConsumer getConsumer(ColorProvider provider, TextureAtlasSprite sprite, MultiBufferSource source, ItemStack itemStack, ModuleInstance instance, ItemDisplayContext context) {
-        if (provider.equals(lastColor) && sprite.equals(textureAtlasSprite) && isStillValid(lastVC)) {
-            return lastVC;
-        }
-        Minecraft.getInstance().getProfiler().push("Building VC");
-        provider.getConsumer(sprite, itemStack, instance, context, Vcprovider);
-        lastVC = Vcprovider.getRenderSaveVC.apply(source);
-        Minecraft.getInstance().getProfiler().pop();
-        lastColor = provider;
-        textureAtlasSprite = sprite;
-        return lastVC;
     }
 
     public BakedModel resolve(BakedModel model, ItemStack stack, @Nullable LivingEntity entity, int light) {
@@ -293,5 +179,113 @@ public class BakedMiapiModel implements MiapiModel {
             }
         }
         return model;
+    }
+
+    class BakedModelCache {
+        BakedModel model;
+        DoubleQuadCache[] forward;
+        DoubleQuadCache[] backwards;
+        BakedQuad[] trim;
+
+
+        public BakedModelCache(BakedModel model) {
+            this.model = model;
+        }
+
+        public DoubleQuadCache[] getForward(ColorProvider colorProvider, ItemStack itemStack, ModuleInstance moduleInstance, ItemDisplayContext context) {
+            if (forward == null) {
+                forward = buildBatches(model, random, colorProvider, itemStack, moduleInstance, context);
+            }
+            return forward;
+        }
+
+        public DoubleQuadCache[] getBackwards(ColorProvider colorProvider, ItemStack itemStack, ModuleInstance moduleInstance, ItemDisplayContext context) {
+            if (backwards == null) {
+                DoubleQuadCache[] forwardArray = getForward(colorProvider, itemStack, moduleInstance, context);
+                backwards = new DoubleQuadCache[forwardArray.length];
+                for (int i = 0; i < forwardArray.length; i++) {
+                    VertexConsumerProvider provider = new VertexConsumerProvider();
+                    DoubleQuadCache cache = forward[i];
+                    colorProvider.getConsumer(cache.sprite, itemStack, moduleInstance, context, provider);
+                    backwards[i] = new DoubleQuadCache(ModelTransformer.getInverse(cache.original), provider, cache.sprite);
+                }
+            }
+            return backwards;
+        }
+
+        public BakedQuad[] getTrim() {
+            if (trim == null) {
+                trim = ModelTransformer.getRescale(model, random).toArray(new BakedQuad[0]);
+            }
+            return trim;
+        }
+    }
+
+    public static DoubleQuadCache[] buildBatches(BakedModel model, RandomSource random,
+                                                 ColorProvider colorProvider,
+                                                 ItemStack itemStack,
+                                                 ModuleInstance moduleInstance,
+                                                 ItemDisplayContext context) {
+        Map<TextureAtlasSprite, List<BakedQuad>> temp = new HashMap<>();
+
+        for (Direction dir : Direction.values()) {
+            List<BakedQuad> quads = model.getQuads(null, dir, random);
+
+            for (BakedQuad quad : quads) {
+                temp.computeIfAbsent(quad.getSprite(), s -> new ArrayList<>())
+                        .add(quad);
+            }
+        }
+
+        DoubleQuadCache[] result = new DoubleQuadCache[temp.size()];
+        int i = 0;
+        for (Map.Entry<TextureAtlasSprite, List<BakedQuad>> entry : temp.entrySet()) {
+            VertexConsumerProvider provider = new VertexConsumerProvider();
+            colorProvider.getConsumer(entry.getKey(), itemStack, moduleInstance, context, provider);
+            List<BakedQuad> quads = entry.getValue();
+            result[i] = new DoubleQuadCache(quads.toArray(new BakedQuad[quads.size()]), provider, entry.getKey());
+            i++;
+        }
+        return result;
+    }
+
+
+    public static class DoubleQuadCache {
+        TextureAtlasSprite sprite;
+        BakedQuad[] original;
+        VertexConsumerProvider vcProvider;
+        BakedQuad[] moved;
+
+        public DoubleQuadCache(BakedQuad[] forward, VertexConsumerProvider vertexConsumerProvider, TextureAtlasSprite sprite) {
+            this.original = forward;
+            this.vcProvider = vertexConsumerProvider;
+            this.sprite = sprite;
+        }
+
+        public void render(MultiBufferSource bufferSource, PoseStack.Pose pose, float red, float green, float blue, float alpha, int packedLight, int packedOverlay) {
+            if (vcProvider.isMovedBlockAtlasValid()) {
+                Minecraft.getInstance().getProfiler().push("vc");
+                if (moved == null) {
+                    moved = ModelTransformer.getOffset(original, vcProvider.u, vcProvider.v);
+                }
+                vcProvider.spriteSlot.used = 3;
+                VertexConsumer vc = MaterialSpriteManager.getVanillaItemVC(bufferSource);
+                Minecraft.getInstance().getProfiler().pop();
+                Minecraft.getInstance().getProfiler().push("quads");
+                for (BakedQuad quad : moved) {
+                    vc.putBulkData(pose, quad, red, green, blue, alpha, packedLight, packedOverlay);
+                }
+                Minecraft.getInstance().getProfiler().pop();
+            } else {
+                Minecraft.getInstance().getProfiler().push("vc");
+                VertexConsumer vc = vcProvider.getRenderSaveVC.apply(bufferSource);
+                Minecraft.getInstance().getProfiler().pop();
+                Minecraft.getInstance().getProfiler().push("quads");
+                for (BakedQuad bakedQuad : original) {
+                    vc.putBulkData(pose, bakedQuad, red, green, blue, alpha, packedLight, packedOverlay);
+                }
+                Minecraft.getInstance().getProfiler().pop();
+            }
+        }
     }
 }

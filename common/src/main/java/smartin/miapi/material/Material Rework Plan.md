@@ -8,6 +8,9 @@
   - property controller
   - variant controller
   - ingredient controller
+- enforce controller classes to be MergeAbles.
+- make material proper MergeAble.
+- add remove mergeType?
 
 ```json5
 {

@@ -81,7 +81,7 @@ public class RapidfireCrossbowProperty extends DoubleProperty {
             if ((crossbow.getItem() instanceof ModularCrossbow) && (player.level() instanceof ServerLevel serverLevel)) {
                 List<ItemStack> projectiles = new ArrayList<>(getSavedProjectilesOnCrossbow(crossbow));
                 if (!projectiles.isEmpty()) {
-                    ItemStack itemStack = projectiles.remove(0);
+                    ItemStack itemStack = projectiles.removeFirst().copy();
                     crossbow.set(DataComponents.CHARGED_PROJECTILES, ChargedProjectiles.of(ModularCrossbow.projectiles(crossbow, itemStack, player)));
                     int projectileCount = EnchantmentHelper.processProjectileCount(serverLevel, crossbow, player, 1);
                     for (int i = 1; i < projectileCount; i++) {

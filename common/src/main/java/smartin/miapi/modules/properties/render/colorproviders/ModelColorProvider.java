@@ -1,13 +1,12 @@
 package smartin.miapi.modules.properties.render.colorproviders;
 
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
+import smartin.miapi.client.atlas.VertexConsumerProvider;
 import smartin.miapi.client.renderer.TrimRenderer;
 import smartin.miapi.modules.ModuleInstance;
 
@@ -23,8 +22,10 @@ public class ModelColorProvider implements ColorProvider {
 
     @Environment(EnvType.CLIENT)
     @Override
-    public VertexConsumer getConsumer(MultiBufferSource vertexConsumers, TextureAtlasSprite sprite, ItemStack stack, ModuleInstance moduleInstance, ItemDisplayContext mode) {
-        return vertexConsumers.getBuffer(ItemBlockRenderTypes.getRenderType(stack, true));
+    public void getConsumer(TextureAtlasSprite sprite, ItemStack stack, ModuleInstance moduleInstance, ItemDisplayContext mode, VertexConsumerProvider out) {
+        out.clean();
+        out.vanillaVCGetter = (b) -> b.getBuffer(ItemBlockRenderTypes.getRenderType(stack, true));
+        out.getRenderSaveVC = (b) -> b.getBuffer(ItemBlockRenderTypes.getRenderType(stack, true));
     }
 
     @Override

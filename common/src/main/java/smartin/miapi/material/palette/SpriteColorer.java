@@ -4,13 +4,13 @@ import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.texture.SpriteContents;
 import net.minecraft.client.renderer.texture.SpriteTicker;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import smartin.miapi.client.atlas.MaterialSpriteManager;
+import smartin.miapi.client.atlas.VertexConsumerProvider;
 import smartin.miapi.material.base.Material;
 import smartin.miapi.modules.ModuleInstance;
 
@@ -62,8 +62,8 @@ public abstract class SpriteColorer implements MaterialRenderController {
     public abstract boolean doTick();
 
     @Environment(EnvType.CLIENT)
-    public VertexConsumer getVertexConsumer(MultiBufferSource vertexConsumers, TextureAtlasSprite originalSprite, ItemStack stack, ModuleInstance moduleInstance, ItemDisplayContext mode) {
-        return MaterialSpriteManager.getVertexConsumer(vertexConsumers, originalSprite, material, this);
+    public void getVertexConsumer(TextureAtlasSprite originalSprite, ItemStack stack, ModuleInstance moduleInstance, ItemDisplayContext mode, VertexConsumerProvider out) {
+        MaterialSpriteManager.getVertexConsumer(originalSprite, material, this,out);
     }
 
     public boolean isAnimatedSprite(SpriteContents spriteContents) {

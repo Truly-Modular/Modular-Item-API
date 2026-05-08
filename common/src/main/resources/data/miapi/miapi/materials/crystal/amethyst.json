@@ -4,10 +4,10 @@
         "crystal",
         "gem"
     ],
-    "hardness": 5,
+    "hardness": 5.7,
     "density": 0.5,
     "flexibility": 0,
-    "durability": 34,
+    "durability": 356,
     "mining_speed": 5,
     "toughness": 0,
     "tier": 2,

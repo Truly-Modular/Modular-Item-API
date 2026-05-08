@@ -9,7 +9,7 @@
     "hardness": 7.5,
     "density": 1.5,
     "flexibility": 0.5,
-    "durability": 587,
+    "durability": 1024,
     "enchantability": 21,
     "toughness": 2,
     "tier": 3,
@@ -43,6 +43,12 @@
             "emissive": {
                 "sky": 15,
                 "block": 15
+            }
+        },
+        "handle": {
+            "durability": {
+                "operation": "**",
+                "value": "0.40"
             }
         }
     }

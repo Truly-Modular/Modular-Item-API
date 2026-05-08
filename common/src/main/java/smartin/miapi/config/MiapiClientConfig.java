@@ -4,7 +4,6 @@ import com.redpxnda.nucleus.codec.auto.AutoCodec;
 import com.redpxnda.nucleus.codec.auto.ConfigAutoCodec;
 import com.redpxnda.nucleus.util.Color;
 import com.redpxnda.nucleus.util.Comment;
-import dev.architectury.platform.Platform;
 import net.minecraft.resources.ResourceLocation;
 import smartin.miapi.client.MiapiClient;
 import smartin.miapi.modules.abilities.key.MiapiBinding;
@@ -21,6 +20,8 @@ public class MiapiClientConfig {
     public GuiColorsCategory guiColors = new GuiColorsCategory();
 
     public OtherCategory other = new OtherCategory();
+
+    public RenderCategory render = new RenderCategory();
 
     @AutoCodec.Name("shielding_armor")
     public ShieldingArmorCategory shieldingArmor = new ShieldingArmorCategory();
@@ -39,6 +40,48 @@ public class MiapiClientConfig {
         @Comment("The color Miapi uses for its green/valid/positive color in the workbench gui")
         public Color green = new Color(0, 255, 0, 255);
 
+    }
+
+    @ConfigAutoCodec.ConfigClassMarker
+    public static class RenderCategory {
+        @Comment("""
+                requires resource pack reload to be applied (F3+T)
+                might break in development mode - if stuff stops rendering set this to true
+                might""")
+        @AutoCodec.Name("enable_fast_render")
+        public boolean enableFastRender = true;
+
+        @Comment("""
+                fast trim skips vanillas trim rendering in favor of a truly modular implementation
+                in this impl. the trim is copied onto the item texture instead of rendered ontop""")
+        @AutoCodec.Name("enable_fast_trim")
+        public boolean enableFastTrim = true;
+        @Comment("""
+                enables Trail Rendering.
+                Trails might be broken with certain shaders""")
+        @AutoCodec.Name("enable_trail")
+        public boolean enableTrailRendering = true;
+        @Comment("""
+                Optimised model might cause compat issues as it uses more aggressive optimisations
+                if items start being invisible consider disabling this
+                """)
+        @AutoCodec.Name("enable_optimised_model")
+        public boolean optimisedModel = true;
+
+        @Comment("""
+                The FastRenderer requires these cache sprites to be available.
+                these are pre-allocated and will be used if available, but the api cannot add them on runtime.
+                once these run out the slower renderer will render the overflow.
+                By default its set to ~60 standard modules and 40 3D armor modules.
+                consider increasing these if slowdowns with many items occur.
+                """)
+        @AutoCodec.Name("fast_render_cache_sprites")
+        public List<CacheSprites> cacheSprites = List.of(
+                new CacheSprites(16, 16, 60),
+                new CacheSprites(32, 32, 10),
+                new CacheSprites(64, 32, 40),
+                new CacheSprites(64, 64, 10),
+                new CacheSprites(128, 128, 10));
     }
 
     @ConfigAutoCodec.ConfigClassMarker
@@ -66,26 +109,6 @@ public class MiapiClientConfig {
         //        """)
         //@AutoCodec.Ignored
         public Map<ResourceLocation, MiapiBinding> bindings = new HashMap<>();
-
-        @AutoCodec.Name("cache_sprites")
-        public List<CacheSprites> cacheSprites = List.of(
-                new CacheSprites(16, 16, 30),
-                new CacheSprites(32, 32, 10),
-                new CacheSprites(64, 32, 40),
-                new CacheSprites(64, 64, 10),
-                new CacheSprites(128, 128, 10));
-
-        @Comment("""
-                requires resource pack reload to be enabled
-                might break in development mode - if stuff stops rendering set this to true""")
-        @AutoCodec.Name("disable_fast_render")
-        public boolean disableFastRender = Platform.isDevelopmentEnvironment();
-
-        @AutoCodec.Name("disable_recolor")
-        public boolean disableRecolor = false;
-
-        @AutoCodec.Name("disable_fast_trim")
-        public boolean disableFastTrim = false;
     }
 
     @ConfigAutoCodec.ConfigClassMarker

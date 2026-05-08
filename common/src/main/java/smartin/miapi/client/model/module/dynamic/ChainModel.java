@@ -13,7 +13,7 @@ import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
-import smartin.miapi.client.model.module.BakedMiapiModel;
+import smartin.miapi.client.model.MiapiModel;
 import smartin.miapi.client.model.module.dynamic.verlet.ChainNode;
 import smartin.miapi.client.model.module.dynamic.verlet.ChainSegment;
 import smartin.miapi.client.model.module.dynamic.verlet.ChainSimulationState;
@@ -336,9 +336,9 @@ public class ChainModel extends DynamicModel<ChainModel.ChainState> {
         public final boolean collide;
         public final float gravity;
         public final boolean locked;
-        public final List<BakedMiapiModel> modelData;
+        public final List<MiapiModel> modelData;
 
-        public ChainEntry(float length, boolean collide, boolean locked, float gravity, List<BakedMiapiModel> data) {
+        public ChainEntry(float length, boolean collide, boolean locked, float gravity, List<MiapiModel> data) {
             this.length = length;
             this.collide = collide;
             this.modelData = data;
