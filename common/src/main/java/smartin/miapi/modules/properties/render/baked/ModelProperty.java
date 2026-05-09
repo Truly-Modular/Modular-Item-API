@@ -74,7 +74,7 @@ public class ModelProperty extends CodecProperty<List<ModelData>> {
         MiapiItemModel.modelSuppliers.add((key, mode, model, stack) -> {
             List<MiapiModel> miapiModels = new ArrayList<>();
             for (ModelHolder holder : getForModule(model, key, stack)) {
-                miapiModels.add(BakedMiapiModel.createBaked(holder, model, stack));
+                miapiModels.add(BakedMiapiModel.createBaked(holder, model, stack,mode));
             }
             return miapiModels;
         });

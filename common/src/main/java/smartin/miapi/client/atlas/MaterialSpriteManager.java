@@ -206,7 +206,7 @@ public class MaterialSpriteManager {
             if (spriteSlot == null) {
                 spriteSlot = getFreeAtlasSlot(((SpriteContentsAccessor) originalSprite.contents()).getWidth(), ((SpriteContentsAccessor) originalSprite.contents()).getHeight());
                 if (spriteSlot != null) {
-                    spriteSlot.used = 5;
+                    spriteSlot.used = 6;
                     spriteSlot.holder = out.spriteHolder;
                     FAST_CACHE.put(out.spriteHolder, spriteSlot);
                     if (out.spriteHolder.colorer().doTick()) {
@@ -228,7 +228,6 @@ public class MaterialSpriteManager {
             }
             return getDynamicTextureVertexConsumer(b, originalSprite, out.spriteHolder);
         });
-        //out.vanillaVCGetter = (b) -> ItemRenderer.getFoilBufferDirect(b, ItemBlockRenderTypes.getRenderType(ItemStack.EMPTY, false), true, false);
         out.vanillaVCGetter = MaterialSpriteManager::getVanillaItemVC;
     }
 

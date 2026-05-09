@@ -5,6 +5,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
@@ -60,7 +61,7 @@ public class BannerOverlayProperty extends AttachedModelProperty<BannerOverlayPr
          */
         @Override
         @Nullable
-        public List<MiapiModel> createModel(ItemStack stack, ModuleInstance base, ModuleInstance source, ModelHolder holder) {
+        public List<MiapiModel> createModel(ItemStack stack, ModuleInstance base, ModuleInstance source, ModelHolder holder, ItemDisplayContext context) {
             List<MiapiModel> result = new ArrayList<>();
 
             Supplier<ItemStack> stackSupplier = switch (type) {

@@ -32,6 +32,9 @@ import smartin.miapi.client.atlas.VertexConsumerProvider;
 import smartin.miapi.client.model.MiapiModel;
 import smartin.miapi.client.model.ModelHolder;
 import smartin.miapi.client.model.ModelTransformer;
+import smartin.miapi.client.model.item.ItemBakedModelOverrides;
+import smartin.miapi.client.model.module.baked.BakedMiapiModelNoOverrides;
+import smartin.miapi.client.model.module.baked.BakedMiapiModelWithOverrides;
 import smartin.miapi.client.renderer.ObjectUVVertexConsumer;
 import smartin.miapi.client.renderer.RescaledVertexConsumer;
 import smartin.miapi.client.renderer.TrimRenderer;
@@ -67,9 +70,13 @@ public class BakedMiapiModel implements MiapiModel {
     boolean trimModel = !MiapiConfig.getClientConfig().render.enableFastTrim;
     private final Map<BakedModel, List<Pair<TextureAtlasSprite, List<BakedQuad>>>> modelBatchCache = new IdentityHashMap<>();
 
-    public static MiapiModel createBaked(ModelHolder holder, ModuleInstance moduleInstance, ItemStack stack) {
+    public static MiapiModel createBaked(ModelHolder holder, ModuleInstance moduleInstance, ItemStack stack, ItemDisplayContext context) {
         if (MiapiConfig.getClientConfig().render.optimisedModel) {
-            return new BakedMiapiModelRework(holder, moduleInstance, stack);
+            if (holder.model().getOverrides() != null && !holder.model().getOverrides().equals(ItemBakedModelOverrides.EMPTY)) {
+                return new BakedMiapiModelWithOverrides(holder, moduleInstance, stack, context);
+            } else {
+                return new BakedMiapiModelNoOverrides(holder, moduleInstance, stack, context);
+            }
         }
         return new BakedMiapiModel(holder, moduleInstance, stack);
     }

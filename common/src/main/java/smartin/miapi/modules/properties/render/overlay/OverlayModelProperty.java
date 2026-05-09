@@ -74,7 +74,7 @@ public class OverlayModelProperty extends AttachedModelProperty<OverlayModelProp
 
         @Override
         @Nullable
-        public List<MiapiModel> createModel(ItemStack stack, ModuleInstance base, ModuleInstance source, ModelHolder holder) {
+        public List<MiapiModel> createModel(ItemStack stack, ModuleInstance base, ModuleInstance source, ModelHolder holder,ItemDisplayContext context) {
             TextureAtlasSprite overWriteSprite = cachedSprite != null ? cachedSprite :
                     (texture != null
                             ? ModelProperty.textureGetter.apply(new Material(TextureAtlas.LOCATION_BLOCKS, ResourceLocation.parse(texture)))
@@ -104,7 +104,7 @@ public class OverlayModelProperty extends AttachedModelProperty<OverlayModelProp
                             new int[]{-1, -1},
                             holder.trimMode(),
                             holder.entityRendering()
-                    ), useThisModule() ? base : source, stack));
+                    ), useThisModule() ? base : source, stack,context));
         }
 
         private ColorProvider getColorProvider(ItemStack stack, ModuleInstance current, ModuleInstance other, ColorProvider otherColor, TrimRenderer.TrimMode mode) {

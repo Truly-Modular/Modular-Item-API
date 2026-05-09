@@ -2,7 +2,7 @@
 ### Bugfixes
 - fixed crafting reasons not being shown correctly from conditions
 - fixed some behaviour around durability if full break is turned on
-- fixed magazinecrossbows disconnecting players on shoot
+- fixed magazine crossbows disconnecting players on shoot
 ### Changes
 - buffed amethyst
 - buffed bone

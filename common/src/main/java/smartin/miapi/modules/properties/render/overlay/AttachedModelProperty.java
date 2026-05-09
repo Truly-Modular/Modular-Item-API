@@ -6,6 +6,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.client.model.MiapiItemModel;
@@ -45,7 +46,7 @@ public abstract class AttachedModelProperty<T extends AttachedModelProperty.Cust
                         if (predicate.isValid(modelJson)) {
                             ModelHolder baseHolder = ModelHolder.bakedModel(module, modelJson, stack, key);
                             if (baseHolder != null) {
-                                List<MiapiModel> model = predicate.data.createModel(stack, module, source, baseHolder);
+                                List<MiapiModel> model = predicate.data.createModel(stack, module, source, baseHolder, context);
                                 if (model != null)
                                     models.addAll(model);
                             }
@@ -81,13 +82,14 @@ public abstract class AttachedModelProperty<T extends AttachedModelProperty.Cust
         /**
          * Attempt to preload data like models or textures - this might need some more work to ensure for runtime property injection.
          */
-        public void preload() {}
+        public void preload() {
+        }
 
         /**
          * @return Creates new models based on existing Models
          */
         @Nullable
-        public abstract List<MiapiModel> createModel(ItemStack stack, ModuleInstance base, ModuleInstance source, ModelHolder holder);
+        public abstract List<MiapiModel> createModel(ItemStack stack, ModuleInstance base, ModuleInstance source, ModelHolder holder, ItemDisplayContext context);
     }
 
     /**
@@ -108,8 +110,10 @@ public abstract class AttachedModelProperty<T extends AttachedModelProperty.Cust
 
         public final String modelTargetType;
         public final String modelTargetInfo;
-        @CodecBehavior.Optional public final double priority;
-        @CodecBehavior.Optional public final boolean allowOtherModules;
+        @CodecBehavior.Optional
+        public final double priority;
+        @CodecBehavior.Optional
+        public final boolean allowOtherModules;
         public final T data;
 
         private final Pattern pattern;

@@ -65,7 +65,7 @@ public class ChainModelProperty
                                                 ModelHolder.bakedModel(moduleInstance, md, stack)
                                         ),
                                         moduleInstance,
-                                        stack
+                                        stack,displayMode
                                 ))
                                 .toList();
 
