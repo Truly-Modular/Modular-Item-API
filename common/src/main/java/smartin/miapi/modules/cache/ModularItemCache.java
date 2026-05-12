@@ -12,8 +12,7 @@ import smartin.miapi.client.model.ModelTransformer;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.VisualModularItem;
-import smartin.miapi.item.modular.items.ModularSetableArmorMaterial;
-import smartin.miapi.item.modular.items.ModularSetableToolMaterial;
+import smartin.miapi.modules.properties.mining.MiningLevelProperty;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -40,6 +39,20 @@ public class ModularItemCache {
 
     public static void setSupplier(String key, CacheObjectSupplier supplier) {
         supplierMap.put(key, supplier);
+    }
+
+    public static void setRaw(ItemStack stack, String key, Object newObject) {
+        if (!ReloadEvents.isInReload() && !stack.isEmpty() && stack.getItem() instanceof VisualModularItem) {
+            Cache itemCache = find(stack);
+            itemCache.set(key, newObject);
+        }
+    }
+
+    public static void removeRaw(ItemStack stack, String key) {
+        if (!ReloadEvents.isInReload() && !stack.isEmpty() && stack.getItem() instanceof VisualModularItem) {
+            Cache itemCache = find(stack);
+            itemCache.remove(key);
+        }
     }
 
     @Nullable
@@ -79,18 +92,18 @@ public class ModularItemCache {
         CACHE_CLEAR_EVENT.invoker().onReload(Environment.isClient());
         cache.cleanUp();
         cache.invalidateAll();
-        ModularSetableArmorMaterial.ITEMSTACK_CACHE.clear();
-        ModularSetableToolMaterial.ITEMSTACK_CACHE.clear();
         if (Environment.isClient()) {
             ModelTransformer.clearCaches();
             MaterialSpriteManager.clear();
         }
+        MiningLevelProperty.toolMaterialLookup.clear();
     }
 
     public static void clearUUIDFor(ItemStack stack) {
         if (stack.getItem() instanceof VisualModularItem && stack.hasNbt()) {
             cache.invalidate(stack);
         }
+        MiningLevelProperty.toolMaterialLookup.remove(stack);
     }
 
     protected static Cache find(ItemStack stack) {
@@ -129,6 +142,10 @@ public class ModularItemCache {
 
         public void set(String key, Object object) {
             map.put(key, object);
+        }
+
+        public void remove(String key) {
+            map.remove(key);
         }
 
         public Object get(String key) {

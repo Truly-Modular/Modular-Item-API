@@ -2,18 +2,15 @@ package smartin.miapi.item.modular.items;
 
 import net.minecraft.item.ArmorMaterial;
 import net.minecraft.item.ItemStack;
-
-import java.util.Collections;
-import java.util.Map;
-import java.util.WeakHashMap;
+import smartin.miapi.modules.cache.ModularItemCache;
 
 public interface ModularSetableArmorMaterial extends ItemStackSensitive {
     void setArmorMaterial(ArmorMaterial toolMaterial);
 
-    Map<ItemStack, ArmorMaterial> ITEMSTACK_CACHE = Collections.synchronizedMap(new WeakHashMap<>());
+    String CACHE_KEY = "modular_setable_armor_fake";
 
     default void lastItemStack(ItemStack itemStack) {
-        ArmorMaterial material = ITEMSTACK_CACHE.computeIfAbsent(itemStack, ModularArmorMaterial::forItem);
+        ArmorMaterial material = ModularItemCache.getRaw(itemStack,CACHE_KEY);
         setArmorMaterial(material);
     }
 }

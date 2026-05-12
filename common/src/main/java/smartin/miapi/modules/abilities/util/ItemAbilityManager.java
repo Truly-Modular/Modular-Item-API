@@ -19,7 +19,6 @@ import smartin.miapi.registries.MiapiRegistry;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.WeakHashMap;
 import java.util.function.Supplier;
 
 /**
@@ -32,7 +31,7 @@ public class ItemAbilityManager {
     private static final Map<PlayerEntity, ItemStack> playerActiveItemsClient = new HashMap<>();
     public static final MiapiRegistry<ItemUseAbility> useAbilityRegistry = MiapiRegistry.getInstance(ItemUseAbility.class);
     private static final EmptyAbility emptyAbility = new EmptyAbility();
-    private static final Map<ItemStack, ItemUseAbility> abilityMap = new WeakHashMap<>();
+    private static final String CACHE_KEY = "current_live_ability";
 
     public static void setup() {
         TickEvent.PLAYER_PRE.register((playerEntity) -> {
@@ -48,7 +47,7 @@ public class ItemAbilityManager {
                 if (oldItem != null) {
                     ItemUseAbility ability = getAbility(oldItem);
                     ability.onStoppedHolding(oldItem, playerEntity.getWorld(), playerEntity);
-                    abilityMap.remove(oldItem);
+                    removeItemAbility(oldItem);
                 }
             }
         });
@@ -58,12 +57,24 @@ public class ItemAbilityManager {
         useAbilityRegistry.register("empty", emptyAbility);
     }
 
+    public static void removeItemAbility(ItemStack item) {
+        ModularItemCache.removeRaw(item, CACHE_KEY);
+    }
+
+    public static void setItemAbility(ItemStack item, ItemUseAbility ability) {
+        ModularItemCache.setRaw(item, CACHE_KEY, ability);
+    }
+
+    public static ItemUseAbility getItemAbility(ItemStack item) {
+        return ModularItemCache.getRaw(item, CACHE_KEY);
+    }
+
     public static ItemUseAbility getEmpty() {
         return emptyAbility;
     }
 
     public static ItemUseAbility getAbility(ItemStack itemStack) {
-        ItemUseAbility useAbility = abilityMap.get(itemStack);
+        ItemUseAbility useAbility = getItemAbility(itemStack);
         return useAbility == null ? emptyAbility : useAbility;
     }
 
@@ -114,7 +125,7 @@ public class ItemAbilityManager {
                 return null;
             }
         });
-        abilityMap.put(itemStack, ability);
+        setItemAbility(itemStack,ability);
 
         if (ability == emptyAbility) {
             return itemCall.get();
@@ -128,7 +139,7 @@ public class ItemAbilityManager {
             return itemCall.get();
         }
         ItemStack itemStack = ability.finishUsing(stack, world, user);
-        abilityMap.remove(stack);
+        removeItemAbility(stack);
 
         return itemStack;
     }
@@ -143,7 +154,7 @@ public class ItemAbilityManager {
         if (ability instanceof ItemUseDefaultCooldownAbility itemUseDefaultCooldownAbility) {
             itemUseDefaultCooldownAbility.afterStopAbility(stack, world, user, remainingUseTicks);
         }
-        abilityMap.remove(stack);
+        removeItemAbility(stack);
     }
 
     public static void usageTick(World world, LivingEntity user, ItemStack stack, int remainingUseTicks, Runnable itemCall) {
@@ -170,7 +181,7 @@ public class ItemAbilityManager {
         if (ability == emptyAbility) {
             return itemCall.get();
         }
-        abilityMap.put(stack, ability);
+        setItemAbility(stack,ability);
         return getAbility(stack).useOnEntity(stack, user, entity, hand);
     }
 
@@ -189,7 +200,7 @@ public class ItemAbilityManager {
         if (ability == emptyAbility) {
             return itemCall.get();
         }
-        abilityMap.put(context.getStack(), ability);
+        setItemAbility(context.getStack(),ability);
         return getAbility(context.getStack()).useOnBlock(context);
     }
 

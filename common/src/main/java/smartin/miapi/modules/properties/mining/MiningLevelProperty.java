@@ -21,6 +21,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.item.modular.StatResolver;
+import smartin.miapi.item.modular.items.ModularSetableArmorMaterial;
+import smartin.miapi.item.modular.items.ModularSetableToolMaterial;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.*;
@@ -91,7 +93,11 @@ public class MiningLevelProperty implements ModuleProperty {
     /**
      * we cant use the normal caching since we need to avoid an Itemstack.getItem() call here
      */
-    static Map<ItemStack, ToolMaterial> toolMaterialLookup = Collections.synchronizedMap(new WeakHashMap<>());
+    public static Map<ItemStack, ToolMaterial> toolMaterialLookup = Collections.synchronizedMap(new WeakHashMap<>());
+
+    static {
+        ModularItemCache.setSupplier(ModularSetableToolMaterial.CACHE_KEY,MiningLevelProperty::getFakeToolMaterial);
+    }
 
     public static ToolMaterial getFakeToolMaterial(ItemStack itemStack) {
         return toolMaterialLookup.getOrDefault(itemStack, getFakeToolMaterialCache(itemStack));

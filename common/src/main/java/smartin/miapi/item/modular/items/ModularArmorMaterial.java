@@ -7,12 +7,18 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Identifier;
+import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.AttributeProperty;
 import smartin.miapi.modules.properties.DurabilityProperty;
 import smartin.miapi.modules.properties.EnchantAbilityProperty;
 import smartin.miapi.modules.properties.EquipmentSlotProperty;
 
 public class ModularArmorMaterial implements ArmorMaterial {
+
+    static {
+        ModularItemCache.setSupplier(ModularSetableArmorMaterial.CACHE_KEY, ModularArmorMaterial::forItem);
+    }
+
     @Override
     public int getDurability(ArmorItem.Type type) {
         return 50;
