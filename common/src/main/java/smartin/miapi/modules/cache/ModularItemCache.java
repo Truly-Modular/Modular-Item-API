@@ -14,6 +14,8 @@ import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.item.modular.VisualModularItem;
 import smartin.miapi.item.modular.items.ModularSetableArmorMaterial;
 import smartin.miapi.item.modular.items.ModularSetableToolMaterial;
+import smartin.miapi.modules.abilities.util.ItemAbilityManager;
+import smartin.miapi.modules.properties.LoreProperty;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -79,8 +81,10 @@ public class ModularItemCache {
         CACHE_CLEAR_EVENT.invoker().onReload(Environment.isClient());
         cache.cleanUp();
         cache.invalidateAll();
-        ModularSetableArmorMaterial.ITEMSTACK_CACHE.clear();
-        ModularSetableToolMaterial.ITEMSTACK_CACHE.clear();
+        ItemAbilityManager.discardAbilityCache();
+        ModularSetableArmorMaterial.clearArmorMaterialCache();
+        ModularSetableToolMaterial.clearToolMaterialCache();
+        LoreProperty.materialLookupTable.clear();
         if (Environment.isClient()) {
             ModelTransformer.clearCaches();
             MaterialSpriteManager.clear();
@@ -88,9 +92,22 @@ public class ModularItemCache {
     }
 
     public static void clearUUIDFor(ItemStack stack) {
-        if (stack.getItem() instanceof VisualModularItem && stack.hasNbt()) {
-            cache.invalidate(stack);
+        invalidate(stack);
+    }
+
+    public static void invalidate(ItemStack stack) {
+        if (stack == null || stack.isEmpty()) {
+            return;
         }
+        cache.invalidate(stack);
+        ItemAbilityManager.clearAbilityCache(stack);
+        ModularSetableArmorMaterial.clearItemStack(stack);
+        ModularSetableToolMaterial.clearItemStack(stack);
+        LoreProperty.materialLookupTable.remove(stack);
+    }
+
+    public static long captureSignature(ItemStack stack) {
+        return ModularStackSignature.capture(stack);
     }
 
     protected static Cache find(ItemStack stack) {
@@ -117,14 +134,15 @@ public class ModularItemCache {
     protected static class Cache {
         protected Map<String, Object> map = new ConcurrentHashMap<>();
         public ItemStack stack;
+        private final long signature;
 
         public Cache(ItemStack stack) {
             this.stack = stack;
+            this.signature = captureSignature(stack);
         }
 
         public boolean isValid(ItemStack itemStack) {
-            return true;
-            //return nbtCompound.equals(itemStack.getNbt());
+            return signature == captureSignature(itemStack);
         }
 
         public void set(String key, Object object) {

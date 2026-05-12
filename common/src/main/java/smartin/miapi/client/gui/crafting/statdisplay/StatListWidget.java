@@ -54,14 +54,13 @@ public class StatListWidget extends InteractAbleWidget {
         statWidgetSupplier.add(new StatWidgetSupplier() {
             @Override
             public <T extends InteractAbleWidget & SingleStatDisplay> List<T> currentList(ItemStack original, ItemStack compareTo) {
-                Set<GuiWidgetSupplier> suppliers = new HashSet<>();
+                ItemStack current = compareTo.isEmpty() ? original : compareTo;
+                if (current.isEmpty()) {
+                    return List.of();
+                }
+                Set<GuiWidgetSupplier> suppliers = new LinkedHashSet<>();
                 suppliers.addAll(
-                        ItemModule.getModules(original).getPropertiesMerged().keySet().stream()
-                                .filter(property -> property instanceof GuiWidgetSupplier)
-                                .map(property -> (GuiWidgetSupplier) property)
-                                .toList());
-                suppliers.addAll(
-                        ItemModule.getModules(compareTo).getPropertiesMerged().keySet().stream()
+                        ItemModule.getModules(current).getPropertiesMerged().keySet().stream()
                                 .filter(property -> property instanceof GuiWidgetSupplier)
                                 .map(property -> (GuiWidgetSupplier) property)
                                 .toList());

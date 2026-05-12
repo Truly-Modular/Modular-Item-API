@@ -241,16 +241,14 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
         }
         slotDisplay.setItem(stack);
         handler.inventory.setStack(0, stack);
+        updateItem(stack);
     }
 
     public void updateItem(ItemStack stack) {
-        if (framesSinceLastUpdate < 10) {
-            nextItemStack = stack;
-        } else {
-            PreviewManager.resetCursorStack();
-            updatePreviewItemStack(stack);
-            framesSinceLastUpdate = 0;
-        }
+        PreviewManager.resetCursorStack();
+        nextItemStack = ItemStack.EMPTY;
+        framesSinceLastUpdate = 0;
+        updatePreviewItemStack(stack);
     }
 
     static boolean hasUpdate = false;
@@ -260,53 +258,39 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
             return;
         }
         hasUpdate = true;
-        stack = stack.copy();
-        if (stack.isEmpty()) {
-            //Miapi.LOGGER.info("warn");
-        }
-        slotDisplay.setItem(stack);
-        ItemStack converted = ModularItemStackConverter.getModularVersion(stack).copy();
-        baseSlot.inSlot = ItemModule.getModules(converted);
-        baseSlot.allowed = AllowedSlots.getAllowedSlots(baseSlot.inSlot.module);
-        SlotProperty.ModuleSlot current = baseSlot;
-        slot = null;
-        if (baseSlot.inSlot.module.equals(ItemModule.empty)) {
-            current = null;
-        }
-        if (moduleCrafter != null) {
-            moduleCrafter.setItem(converted);
-            moduleCrafter.setBaseSlot(current);
-            moduleCrafter.setSelectedSlot(null);
-            moduleCrafter.setItem(converted);
-            moduleCrafter.setBaseSlot(current);
-            moduleCrafter.setSelectedSlot(null);
-        }
-        if (slotDisplay != null) {
-            slotDisplay.setItem(converted);
-            slotDisplay.select(current);
-        }
-        if (smithDisplay != null) {
-            smithDisplay.setPreview(converted);
-        }
-        if (statDisplay != null) {
-            statDisplay.setItemsOriginal(converted, converted);
-        }
-        /*
-        List<Integer> slotPos = new ArrayList<>();
-        if (slot != null) {
-            if (slot.inSlot != null) {
-                slot.inSlot.calculatePosition(slotPos);
-            } else if (slot.parent != null) {
-                slot.parent.getPosition(slotPos);
-            }
-        }
-        if (baseSlot.inSlot != null) {
-            //slot = SlotProperty.getSlotIn(baseSlot.inSlot.getRoot().getPosition(slotPos));
-        } else {
+        try {
+            stack = stack.copy();
+            slotDisplay.setItem(stack);
+            ItemStack converted = ModularItemStackConverter.getModularVersion(stack).copy();
+            baseSlot.inSlot = ItemModule.getModules(converted);
+            baseSlot.allowed = AllowedSlots.getAllowedSlots(baseSlot.inSlot.module);
+            SlotProperty.ModuleSlot current = baseSlot;
             slot = null;
+            if (baseSlot.inSlot.module.equals(ItemModule.empty)) {
+                current = null;
+            }
+            if (moduleCrafter != null) {
+                moduleCrafter.setItem(converted);
+                moduleCrafter.setBaseSlot(current);
+                moduleCrafter.setSelectedSlot(null);
+                moduleCrafter.setItem(converted);
+                moduleCrafter.setBaseSlot(current);
+                moduleCrafter.setSelectedSlot(null);
+            }
+            if (slotDisplay != null) {
+                slotDisplay.setItem(converted);
+                slotDisplay.select(current);
+            }
+            if (smithDisplay != null) {
+                smithDisplay.setPreview(converted);
+            }
+            if (statDisplay != null) {
+                statDisplay.setItemsOriginal(converted, converted);
+            }
+            updateEditOptions();
+        } finally {
+            hasUpdate = false;
         }
-         */
-        updateEditOptions();
     }
 
     public void updateEditOptions() {
@@ -356,7 +340,7 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
 
             @Override
             public ItemStack getItemstack() {
-                return moduleCrafter.stack == null ? ItemStack.EMPTY : moduleCrafter.stack;
+                return handler.inventory.getStack(0);
             }
 
             @Override
@@ -400,16 +384,10 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
 
     @Override
     public void render(DrawContext drawContext, int mouseX, int mouseY, float delta) {
-        hasUpdate = false;
         overwriteMouseX = mouseX;
         overwriteMouseY = mouseY;
-        if (framesSinceLastUpdate > 10 && !nextItemStack.isEmpty()) {
-            updateItem(nextItemStack);
-            nextItemStack = ItemStack.EMPTY;
-        }
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         renderBackground(drawContext);
-        framesSinceLastUpdate++;
         int i = (this.width - this.backgroundWidth - 6) / 2;
         int j = (this.height - this.backgroundHeight) / 2;
         //InteractAbleWidget.drawSquareBorder(drawContext, i, j, this.backgroundWidth, this.backgroundHeight, 1, ColorHelper.Argb.getArgb(255, 255, 0, 0));

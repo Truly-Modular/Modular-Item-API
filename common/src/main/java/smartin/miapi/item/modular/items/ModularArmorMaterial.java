@@ -53,67 +53,86 @@ public class ModularArmorMaterial implements ArmorMaterial {
         return 0;
     }
 
-    public static ArmorMaterial forItem(ItemStack itemStack) {
-        return new ArmorMaterial() {
-            @Override
-            public int getDurability(ArmorItem.Type type) {
-                try {
-                    return DurabilityProperty.property.getValue(itemStack).intValue();
-                } catch (RuntimeException e) {
-                    return 50;
-                }
-            }
+    public static StackBackedArmorMaterial forItem() {
+        return new StackBackedArmorMaterial();
+    }
 
-            @Override
-            public int getProtection(ArmorItem.Type type) {
-                try {
-                    return (int) AttributeProperty.getActualValueCache(itemStack, type.getEquipmentSlot(), EntityAttributes.GENERIC_ARMOR, 1.0);
-                } catch (RuntimeException e) {
-                    return 1;
-                }
-            }
+    public static class StackBackedArmorMaterial implements ArmorMaterial {
+        private ItemStack itemStack = ItemStack.EMPTY;
 
-            @Override
-            public int getEnchantability() {
-                try {
-                    return (int) EnchantAbilityProperty.getEnchantAbility(itemStack);
-                } catch (RuntimeException e) {
-                    return 10;
-                }
-            }
+        public StackBackedArmorMaterial withItemStack(ItemStack itemStack) {
+            this.itemStack = itemStack == null ? ItemStack.EMPTY : itemStack;
+            return this;
+        }
 
-            @Override
-            public SoundEvent getEquipSound() {
-                return SoundEvent.of(new Identifier("silent"));
+        public void clearIfItemStack(ItemStack itemStack) {
+            if (this.itemStack == itemStack) {
+                clearItemStack();
             }
+        }
 
-            @Override
-            public Ingredient getRepairIngredient() {
-                return Ingredient.EMPTY;
-            }
+        public void clearItemStack() {
+            this.itemStack = ItemStack.EMPTY;
+        }
 
-            @Override
-            public String getName() {
-                return "miapi_runtime_fake_armor";
+        @Override
+        public int getDurability(ArmorItem.Type type) {
+            try {
+                return DurabilityProperty.property.getValue(itemStack).intValue();
+            } catch (RuntimeException e) {
+                return 50;
             }
+        }
 
-            @Override
-            public float getToughness() {
-                try {
-                    return (int) AttributeProperty.getActualValueCache(itemStack, EquipmentSlotProperty.getSlot(itemStack), EntityAttributes.GENERIC_ARMOR_TOUGHNESS, 1.0);
-                } catch (RuntimeException e) {
-                    return 0;
-                }
+        @Override
+        public int getProtection(ArmorItem.Type type) {
+            try {
+                return (int) AttributeProperty.getActualValueCache(itemStack, type.getEquipmentSlot(), EntityAttributes.GENERIC_ARMOR, 1.0);
+            } catch (RuntimeException e) {
+                return 1;
             }
+        }
 
-            @Override
-            public float getKnockbackResistance() {
-                try {
-                    return (int) AttributeProperty.getActualValueCache(itemStack, EquipmentSlotProperty.getSlot(itemStack), EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, 0.0);
-                } catch (RuntimeException e) {
-                    return 0;
-                }
+        @Override
+        public int getEnchantability() {
+            try {
+                return (int) EnchantAbilityProperty.getEnchantAbility(itemStack);
+            } catch (RuntimeException e) {
+                return 10;
             }
-        };
+        }
+
+        @Override
+        public SoundEvent getEquipSound() {
+            return SoundEvent.of(new Identifier("silent"));
+        }
+
+        @Override
+        public Ingredient getRepairIngredient() {
+            return Ingredient.EMPTY;
+        }
+
+        @Override
+        public String getName() {
+            return "miapi_runtime_fake_armor";
+        }
+
+        @Override
+        public float getToughness() {
+            try {
+                return (int) AttributeProperty.getActualValueCache(itemStack, EquipmentSlotProperty.getSlot(itemStack), EntityAttributes.GENERIC_ARMOR_TOUGHNESS, 1.0);
+            } catch (RuntimeException e) {
+                return 0;
+            }
+        }
+
+        @Override
+        public float getKnockbackResistance() {
+            try {
+                return (int) AttributeProperty.getActualValueCache(itemStack, EquipmentSlotProperty.getSlot(itemStack), EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, 0.0);
+            } catch (RuntimeException e) {
+                return 0;
+            }
+        }
     }
 }

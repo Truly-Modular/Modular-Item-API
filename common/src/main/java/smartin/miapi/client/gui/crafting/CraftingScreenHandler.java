@@ -41,6 +41,9 @@ import static net.minecraft.screen.PlayerScreenHandler.EMPTY_OFFHAND_ARMOR_SLOT;
 public class CraftingScreenHandler extends ScreenHandler {
     private final ScreenHandlerContext context;
     private static final String PACKET_ID = ":crafting_packet_";
+    private static final String MODERN_MODE_KEY = "superior_miapi.modern_mode";
+    private static final String INVENTORY_OFFSET_KEY = "superior_miapi.inventory_offset";
+    private static final String RETURN_LEFTOVER_TO_INVENTORY_KEY = "superior_miapi.return_leftover_material_to_inventory";
     public Inventory inventory;
     public PlayerInventory playerInventory;
     public @Nullable ModularWorkBenchEntity blockEntity;
@@ -99,10 +102,11 @@ public class CraftingScreenHandler extends ScreenHandler {
                 CraftAction action = new CraftAction(buffer, blockEntity);
                 Miapi.server.execute(() -> {
                     action.setItem(inventory.getStack(0));
-                    action.linkInventory(inventory, 1);
+                    action.linkInventory(inventory, this.resolveLinkedInventoryOffset(action, inventory));
                     if (action.canPerform()) {
                         ItemStack stack = action.perform();
                         inventory.setStack(0, stack);
+                        this.returnModernMaterialRemainder(action, player);
                         if (blockEntity != null) {
                             blockEntity.setItem(stack);
                             blockEntity.saveAndSync();
@@ -115,6 +119,10 @@ public class CraftingScreenHandler extends ScreenHandler {
                 int invId = buffer.readInt();
                 int slotId = buffer.readInt();
                 Miapi.server.execute(() -> {
+                    final Slot existing = this.findMutableSlotByInventoryIndex(invId);
+                    if (existing != null) {
+                        return;
+                    }
                     Slot slot = new Slot(inventory, invId, 0, 0);
                     slot.id = slotId;
                     mutableSlots.add(slot);
@@ -124,10 +132,20 @@ public class CraftingScreenHandler extends ScreenHandler {
             });
             Networking.registerC2SPacket(packetIDSlotRemove, (buffer, player) -> {
                 int slotId = buffer.readInt();
+                int inventoryIndex = buffer.isReadable(4) ? buffer.readInt() : -1;
                 Miapi.server.execute(() -> {
-                    Slot slot = this.getSlot(slotId);
+                    Slot slot = inventoryIndex >= 1 ? this.findMutableSlotByInventoryIndex(inventoryIndex) : null;
+                    if (slot == null && slotId >= 0 && slotId < this.slots.size()) {
+                        slot = this.getSlot(slotId);
+                    }
+                    if (slot == null) {
+                        return;
+                    }
                     mutableSlots.remove(slot);
-                    quickMove(playerInventory.player, slotId);
+                    final int menuSlotId = this.slots.indexOf(slot);
+                    if (menuSlotId >= 0) {
+                        quickMove(playerInventory.player, menuSlotId);
+                    }
                 });
             });
             Networking.registerC2SPacket(editPacketID, (buffer, player) -> {
@@ -323,18 +341,23 @@ public class CraftingScreenHandler extends ScreenHandler {
      * @param slot the slot to be removed
      */
     public void removeSlotByClient(Slot slot) {
-        if (!slots.contains(slot))
+        final Slot canonicalSlot = slot == null ? null : this.findMutableSlotByInventoryIndex(slot.getIndex());
+        if (canonicalSlot == null || !slots.contains(canonicalSlot))
             return;
-        quickMove(playerInventory.player, slot.id);
-        slot.markDirty();
-        if (slot instanceof MutableSlot mutableSlot) {
+        final int menuSlotId = this.slots.indexOf(canonicalSlot);
+        if (menuSlotId >= 0) {
+            quickMove(playerInventory.player, menuSlotId);
+        }
+        canonicalSlot.markDirty();
+        if (canonicalSlot instanceof MutableSlot mutableSlot) {
             mutableSlot.setEnabled(false);
         }
         playerInventory.markDirty();
         inventory.markDirty();
         PacketByteBuf buf = Networking.createBuffer();
-        buf.writeInt(slot.id);
-        mutableSlots.remove(slot);
+        buf.writeInt(menuSlotId);
+        buf.writeInt(canonicalSlot.getIndex());
+        mutableSlots.remove(canonicalSlot);
         Networking.sendC2S(packetIDSlotRemove, buf);
     }
 
@@ -350,6 +373,14 @@ public class CraftingScreenHandler extends ScreenHandler {
      * @param slot the slot to be added
      */
     public void addSlotByClient(Slot slot) {
+        final Slot existing = slot == null ? null : this.findMutableSlotByInventoryIndex(slot.getIndex());
+        if (existing != null) {
+            if (existing instanceof MutableSlot mutableSlot) {
+                mutableSlot.setEnabled(true);
+            }
+            existing.markDirty();
+            return;
+        }
         if (slots.contains(slot)) return;
         this.addSlot(slot);
         PacketByteBuf buf = Networking.createBuffer();
@@ -359,6 +390,22 @@ public class CraftingScreenHandler extends ScreenHandler {
         Networking.sendC2S(packetIDSlotAdd, buf);
 
         slot.markDirty();
+    }
+
+    @Nullable
+    private Slot findMutableSlotByInventoryIndex(final int inventoryIndex) {
+        if (inventoryIndex < 0) {
+            return null;
+        }
+        for (Slot candidate : this.mutableSlots) {
+            if (candidate == null) {
+                continue;
+            }
+            if (candidate.getIndex() == inventoryIndex) {
+                return candidate;
+            }
+        }
+        return null;
     }
 
     @Override
@@ -405,6 +452,59 @@ public class CraftingScreenHandler extends ScreenHandler {
             blockEntity.setItem(inventory.getStack(0));
             blockEntity.saveAndSync();
         }
+    }
+
+    private void returnModernMaterialRemainder(final CraftAction action, final ServerPlayerEntity player) {
+        if (action == null || action.data == null) {
+            return;
+        }
+        if (!Boolean.parseBoolean(action.data.getOrDefault(MODERN_MODE_KEY, "false"))
+            || !Boolean.parseBoolean(action.data.getOrDefault(RETURN_LEFTOVER_TO_INVENTORY_KEY, "false"))) {
+            return;
+        }
+        final String rawOffset = action.data.get(INVENTORY_OFFSET_KEY);
+        if (rawOffset == null || rawOffset.isBlank()) {
+            return;
+        }
+        final int offset;
+        try {
+            offset = Integer.parseInt(rawOffset.trim());
+        } catch (NumberFormatException ignored) {
+            return;
+        }
+        if (offset <= 0 || offset >= this.inventory.size()) {
+            return;
+        }
+        final ItemStack remainder = this.inventory.getStack(offset);
+        if (remainder.isEmpty()) {
+            return;
+        }
+        final ItemStack toMove = remainder.copy();
+        if (!player.getInventory().insertStack(toMove) && !toMove.isEmpty()) {
+            player.dropItem(toMove, false);
+        }
+        this.inventory.setStack(offset, ItemStack.EMPTY);
+        this.inventory.markDirty();
+    }
+
+    private int resolveLinkedInventoryOffset(final CraftAction action, final Inventory linkedInventory) {
+        if (action == null || action.data == null || linkedInventory == null) {
+            return 1;
+        }
+        if (!Boolean.parseBoolean(action.data.getOrDefault(MODERN_MODE_KEY, "false"))) {
+            return 1;
+        }
+        final String rawOffset = action.data.get(INVENTORY_OFFSET_KEY);
+        if (rawOffset == null || rawOffset.isBlank()) {
+            return 1;
+        }
+        final int offset;
+        try {
+            offset = Integer.parseInt(rawOffset.trim());
+        } catch (NumberFormatException ignored) {
+            return 1;
+        }
+        return offset > 0 && offset < linkedInventory.size() ? offset : 1;
     }
 
     public ItemStack quickMove(PlayerEntity player, int index) {

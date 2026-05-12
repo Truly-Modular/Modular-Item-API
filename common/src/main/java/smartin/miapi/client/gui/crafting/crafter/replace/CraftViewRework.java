@@ -69,8 +69,9 @@ public class CraftViewRework extends InteractAbleWidget {
             }
         });
         defaultMap = option.data();
-        action = new CraftAction(editContext.getItemstack(), editContext.getSlot(), option.module(), editContext.getPlayer(), editContext.getWorkbench(), option.data());
-        action.setItem(editContext.getItemstack());
+        ItemStack sourceStack = getCurrentWorkbenchStack();
+        action = new CraftAction(sourceStack, editContext.getSlot(), option.module(), editContext.getPlayer(), editContext.getWorkbench(), option.data());
+        action.setItem(sourceStack);
         action.linkInventory(editContext.getLinkedInventory(), offset);
         setBuffers();
         ItemStack test = action.getPreview();
@@ -134,6 +135,7 @@ public class CraftViewRework extends InteractAbleWidget {
     private void update() {
         try {
             if (!isClosed) {
+                syncActionSource();
                 ItemStack previewStack = action.getPreview().copy();
                 setBuffers();
                 editContext.preview(action.toPacket(Networking.createBuffer()));
@@ -226,8 +228,9 @@ public class CraftViewRework extends InteractAbleWidget {
     }
 
     public void setBuffers() {
+        syncActionSource();
         Map<String, String> data = new HashMap<>(defaultMap);
-        action.forEachCraftingProperty(editContext.getItemstack(), ((craftingProperty, moduleInstance, itemStacks, invStart, invEnd, buf) -> {
+        action.forEachCraftingProperty(getCurrentWorkbenchStack(), ((craftingProperty, moduleInstance, itemStacks, invStart, invEnd, buf) -> {
             int index = craftingProperties.indexOf(craftingProperty);
             if (index >= 0) {
                 craftingProperty.writeData(data, craftingGuis.get(craftingProperties.indexOf(craftingProperty)), editContext);
@@ -236,6 +239,17 @@ public class CraftViewRework extends InteractAbleWidget {
             }
         }));
         action.setData(data);
+    }
+
+    private void syncActionSource() {
+        action.setItem(getCurrentWorkbenchStack());
+    }
+
+    private ItemStack getCurrentWorkbenchStack() {
+        if (editContext != null && editContext.getLinkedInventory() != null && editContext.getLinkedInventory().size() > 0) {
+            return editContext.getLinkedInventory().getStack(0);
+        }
+        return editContext == null ? ItemStack.EMPTY : editContext.getItemstack();
     }
 
     public static class PageButton<T> extends SimpleButton<T> {

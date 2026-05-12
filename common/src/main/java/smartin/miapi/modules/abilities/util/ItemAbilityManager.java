@@ -13,6 +13,7 @@ import net.minecraft.util.UseAction;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.modules.cache.ModularItemCache;
+import smartin.miapi.modules.cache.ModularStackSignature;
 import smartin.miapi.modules.properties.AbilityMangerProperty;
 import smartin.miapi.modules.properties.AbilityProperty;
 import smartin.miapi.registries.MiapiRegistry;
@@ -32,7 +33,7 @@ public class ItemAbilityManager {
     private static final Map<PlayerEntity, ItemStack> playerActiveItemsClient = new HashMap<>();
     public static final MiapiRegistry<ItemUseAbility> useAbilityRegistry = MiapiRegistry.getInstance(ItemUseAbility.class);
     private static final EmptyAbility emptyAbility = new EmptyAbility();
-    private static final Map<ItemStack, ItemUseAbility> abilityMap = new WeakHashMap<>();
+    private static final Map<ItemStack, CachedAbility> abilityMap = new WeakHashMap<>();
 
     public static void setup() {
         TickEvent.PLAYER_PRE.register((playerEntity) -> {
@@ -48,7 +49,7 @@ public class ItemAbilityManager {
                 if (oldItem != null) {
                     ItemUseAbility ability = getAbility(oldItem);
                     ability.onStoppedHolding(oldItem, playerEntity.getWorld(), playerEntity);
-                    abilityMap.remove(oldItem);
+                    clearAbilityCache(oldItem);
                 }
             }
         });
@@ -63,8 +64,25 @@ public class ItemAbilityManager {
     }
 
     public static ItemUseAbility getAbility(ItemStack itemStack) {
-        ItemUseAbility useAbility = abilityMap.get(itemStack);
-        return useAbility == null ? emptyAbility : useAbility;
+        CachedAbility cachedAbility = abilityMap.get(itemStack);
+        if (cachedAbility == null) {
+            return emptyAbility;
+        }
+        if (cachedAbility.isValid(itemStack)) {
+            return cachedAbility.ability;
+        }
+        clearAbilityCache(itemStack);
+        return emptyAbility;
+    }
+
+    public static void clearAbilityCache(ItemStack itemStack) {
+        abilityMap.remove(itemStack);
+    }
+
+    public static void discardAbilityCache() {
+        abilityMap.clear();
+        playerActiveItems.clear();
+        playerActiveItemsClient.clear();
     }
 
     public static ItemUseAbility getAbility(ItemStack itemStack, World world, PlayerEntity player, Hand hand, AbilityHitContext abilityHitContext) {
@@ -114,7 +132,7 @@ public class ItemAbilityManager {
                 return null;
             }
         });
-        abilityMap.put(itemStack, ability);
+        cacheAbility(itemStack, ability);
 
         if (ability == emptyAbility) {
             return itemCall.get();
@@ -128,7 +146,7 @@ public class ItemAbilityManager {
             return itemCall.get();
         }
         ItemStack itemStack = ability.finishUsing(stack, world, user);
-        abilityMap.remove(stack);
+        clearAbilityCache(stack);
 
         return itemStack;
     }
@@ -143,7 +161,7 @@ public class ItemAbilityManager {
         if (ability instanceof ItemUseDefaultCooldownAbility itemUseDefaultCooldownAbility) {
             itemUseDefaultCooldownAbility.afterStopAbility(stack, world, user, remainingUseTicks);
         }
-        abilityMap.remove(stack);
+        clearAbilityCache(stack);
     }
 
     public static void usageTick(World world, LivingEntity user, ItemStack stack, int remainingUseTicks, Runnable itemCall) {
@@ -170,7 +188,7 @@ public class ItemAbilityManager {
         if (ability == emptyAbility) {
             return itemCall.get();
         }
-        abilityMap.put(stack, ability);
+        cacheAbility(stack, ability);
         return getAbility(stack).useOnEntity(stack, user, entity, hand);
     }
 
@@ -189,8 +207,26 @@ public class ItemAbilityManager {
         if (ability == emptyAbility) {
             return itemCall.get();
         }
-        abilityMap.put(context.getStack(), ability);
+        cacheAbility(context.getStack(), ability);
         return getAbility(context.getStack()).useOnBlock(context);
+    }
+
+    private static void cacheAbility(ItemStack itemStack, ItemUseAbility ability) {
+        abilityMap.put(itemStack, new CachedAbility(ability, ModularStackSignature.capture(itemStack)));
+    }
+
+    private static final class CachedAbility {
+        private final ItemUseAbility ability;
+        private final long signature;
+
+        private CachedAbility(ItemUseAbility ability, long signature) {
+            this.ability = ability;
+            this.signature = signature;
+        }
+
+        private boolean isValid(ItemStack itemStack) {
+            return signature == ModularStackSignature.capture(itemStack);
+        }
     }
 
     public interface AbilityHitContext {

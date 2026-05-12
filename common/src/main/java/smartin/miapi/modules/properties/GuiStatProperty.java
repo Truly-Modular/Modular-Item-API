@@ -16,6 +16,7 @@ import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,9 +32,12 @@ public class GuiStatProperty implements ModuleProperty {
             StatListWidget.addStatDisplaySupplier(new StatListWidget.StatWidgetSupplier() {
                 @Override
                 public <T extends InteractAbleWidget & SingleStatDisplay> List<T> currentList(ItemStack original, ItemStack compareTo) {
+                    ItemStack current = compareTo.isEmpty() ? original : compareTo;
+                    if (current.isEmpty()) {
+                        return List.of();
+                    }
                     List<T> combined = new ArrayList<>();
-                    Map<String, GuiInfo> combinedMap = getInfo(original);
-                    combinedMap.putAll(getInfo(compareTo));
+                    Map<String, GuiInfo> combinedMap = new LinkedHashMap<>(getInfo(current));
                     combinedMap.forEach((key, gui) -> {
                         JsonStatDisplay display = new JsonStatDisplay(
                                 (itemStack) -> gui.header,
@@ -75,7 +79,7 @@ public class GuiStatProperty implements ModuleProperty {
     }
 
     public static Map<String, GuiInfo> getInfo(ItemStack itemStack) {
-        return ModularItemCache.getVisualOnlyCache(itemStack, KEY, new HashMap<>());
+        return new LinkedHashMap<>(ModularItemCache.getVisualOnlyCache(itemStack, KEY, new HashMap<>()));
     }
 
     public static double getValue(ItemStack itemStack, String key) {

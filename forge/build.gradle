@@ -121,6 +121,12 @@ include "com.github.EdwinMindcraft:origins-architectury:${project.fabric_apoli_v
 processResources {
     inputs.property "version", project.version
 
+    // The transformed common forge artifact does not retain common client assets like shaders.
+    // Pull them into the forge resource output so the runtime jar always ships the miapi asset tree.
+    from(project(":common").file("src/main/resources")) {
+        include "assets/**"
+    }
+
     filesMatching("META-INF/mods.toml") {
         expand "version": project.version
     }

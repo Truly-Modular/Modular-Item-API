@@ -88,76 +88,86 @@ public class MiningLevelProperty implements ModuleProperty {
         return highest;
     }
 
-    /**
-     * we cant use the normal caching since we need to avoid an Itemstack.getItem() call here
-     */
-    static Map<ItemStack, ToolMaterial> toolMaterialLookup = Collections.synchronizedMap(new WeakHashMap<>());
-
-    public static ToolMaterial getFakeToolMaterial(ItemStack itemStack) {
-        return toolMaterialLookup.getOrDefault(itemStack, getFakeToolMaterialCache(itemStack));
+    public static StackBackedToolMaterial getFakeToolMaterial() {
+        return new StackBackedToolMaterial();
     }
 
-    private static ToolMaterial getFakeToolMaterialCache(ItemStack itemStack) {
-        return new ToolMaterial() {
-            @Override
-            public int getDurability() {
-                try {
-                    return (int) DurabilityProperty.property.getValueSafe(itemStack);
-                } catch (
-                        RuntimeException e) {
-                    return 50;
-                }
-            }
+    public static class StackBackedToolMaterial implements ToolMaterial {
+        private ItemStack itemStack = ItemStack.EMPTY;
 
-            @Override
-            public float getMiningSpeedMultiplier() {
-                try {
-                    return getHighestMiningSpeedMultiplier(itemStack);
-                } catch (
-                        RuntimeException e) {
-                    return 5;
-                }
-            }
+        public StackBackedToolMaterial withItemStack(ItemStack itemStack) {
+            this.itemStack = itemStack == null ? ItemStack.EMPTY : itemStack;
+            return this;
+        }
 
-            @Override
-            public float getAttackDamage() {
-                try {
-                    return (int) AttributeProperty.getActualValueCache(itemStack, EquipmentSlot.MAINHAND, EntityAttributes.GENERIC_ATTACK_DAMAGE, 1.0);
-                } catch (RuntimeException e) {
-                    return 1;
-                }
+        public void clearIfItemStack(ItemStack itemStack) {
+            if (this.itemStack == itemStack) {
+                clearItemStack();
             }
+        }
 
-            @Override
-            public int getMiningLevel() {
-                try {
-                    return getMiningLevelHighest(itemStack);
-                } catch (
-                        RuntimeException e) {
-                    return 0;
-                }
-            }
+        public void clearItemStack() {
+            this.itemStack = ItemStack.EMPTY;
+        }
 
-            @Override
-            public int getEnchantability() {
-                try {
-                    return (int) EnchantAbilityProperty.getEnchantAbility(itemStack);
-                } catch (
-                        RuntimeException e) {
-                    return 10;
-                }
+        @Override
+        public int getDurability() {
+            try {
+                return (int) DurabilityProperty.property.getValueSafe(itemStack);
+            } catch (
+                    RuntimeException e) {
+                return 50;
             }
+        }
 
-            @Override
-            public Ingredient getRepairIngredient() {
-                try {
-                    return RepairPriority.asRepairIngredient(itemStack);
-                } catch (
-                        RuntimeException e) {
-                    return Ingredient.EMPTY;
-                }
+        @Override
+        public float getMiningSpeedMultiplier() {
+            try {
+                return getHighestMiningSpeedMultiplier(itemStack);
+            } catch (
+                    RuntimeException e) {
+                return 5;
             }
-        };
+        }
+
+        @Override
+        public float getAttackDamage() {
+            try {
+                return (int) AttributeProperty.getActualValueCache(itemStack, EquipmentSlot.MAINHAND, EntityAttributes.GENERIC_ATTACK_DAMAGE, 1.0);
+            } catch (RuntimeException e) {
+                return 1;
+            }
+        }
+
+        @Override
+        public int getMiningLevel() {
+            try {
+                return getMiningLevelHighest(itemStack);
+            } catch (
+                    RuntimeException e) {
+                return 0;
+            }
+        }
+
+        @Override
+        public int getEnchantability() {
+            try {
+                return (int) EnchantAbilityProperty.getEnchantAbility(itemStack);
+            } catch (
+                    RuntimeException e) {
+                return 10;
+            }
+        }
+
+        @Override
+        public Ingredient getRepairIngredient() {
+            try {
+                return RepairPriority.asRepairIngredient(itemStack);
+            } catch (
+                    RuntimeException e) {
+                return Ingredient.EMPTY;
+            }
+        }
     }
 
     public static boolean isSuitable(ItemStack stack, BlockState state) {
