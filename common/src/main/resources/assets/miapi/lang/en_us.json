@@ -241,7 +241,7 @@
     "miapi.stat.rocket_efficiency": "Rocket Efficiency",
     "miapi.stat.rocket_efficiency.description": "How much acceleration you get from using a rocket with a elytra",
     "miapi.stat.player_item_use_speed": "Using Slowdown",
-    "miapi.stat.player_item_use_speed.description": "How much speed you lose while holding right click.\n0 means normal movement and 1 means no movement",
+    "miapi.stat.player_item_use_speed.description": "How much speed you lose while holding right click.\n0 means normal movement \n-1 means no movement\nBows default to -0.8 (-0.80%)",
     "miapi.stat.pillagerGuard": "Villagers Guard",
     "miapi.stat.pillagerGuard.description": "Decreases damage taken from raid-related mobs by %d percent",
     "miapi.stat.illagerBane": "Illager`s Bane",

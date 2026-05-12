@@ -5,12 +5,12 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Identifier;
 import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Allows the set Itemtags via a Properterty (relies on {@link ItemStack#isIn(TagKey)}
@@ -21,11 +21,15 @@ public class FakeItemTagProperty implements ModuleProperty {
 
     public FakeItemTagProperty() {
         property = this;
+        ModularItemCache.setSupplier(KEY, FakeItemTagProperty::getTagsCache);
     }
 
+    private static List<String> getTagsCache(ItemStack itemStack) {
+        return getTags(ItemModule.getMergedProperty(itemStack, property));
+    }
 
     public static List<String> getTags(ItemStack itemStack) {
-        return getTags(ItemModule.getMergedProperty(itemStack, property));
+        return ModularItemCache.get(itemStack, KEY, List.of());
     }
 
     public static boolean hasTag(Identifier identifier, ItemStack itemStack) {
