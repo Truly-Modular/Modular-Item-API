@@ -2,7 +2,7 @@ package smartin.miapi.item.modular.items;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ToolMaterial;
-import smartin.miapi.modules.cache.ModularItemCache;
+import smartin.miapi.modules.cache.ToolAndArmorProvider;
 
 public interface ModularSetableToolMaterial extends ItemStackSensitive{
     void lastItemStack(ToolMaterial toolMaterial);
@@ -10,7 +10,7 @@ public interface ModularSetableToolMaterial extends ItemStackSensitive{
     String CACHE_KEY = "modular_setable_tool_fake";
 
     default void lastItemStack(ItemStack itemStack) {
-        ToolMaterial material = ModularItemCache.getRaw(itemStack,CACHE_KEY);
+        ToolMaterial material = ((ToolAndArmorProvider) (Object) itemStack).getToolMaterial();
         lastItemStack(material);
     }
 }
