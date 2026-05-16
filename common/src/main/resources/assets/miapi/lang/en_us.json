@@ -452,6 +452,7 @@
     "miapi.material_group.rod": "Rods",
     "miapi.material_group.rope": "Ropes",
     "miapi.material_group.leather": "Leathers",
+    "miapi.material_group.skin": "Skins",
     "miapi.material_group.sinew": "Sinews",
     "miapi.material_group.fletching": "Fletching",
     "miapi.material_group.smithing": "Smithing Material - Applied via Smithing Table",

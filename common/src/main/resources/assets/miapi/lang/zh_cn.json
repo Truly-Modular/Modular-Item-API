@@ -236,6 +236,7 @@
     "miapi.material_group.metal" : "金属",
     "miapi.material_group.rod" : "棍子",
     "miapi.material_group.rope" : "绳索",
+    "miapi.material_group.skin": "毛皮",
     "miapi.material_group.fletching" : "制箭",
     "miapi.material_group.smithing": "锻造材料-通过锻造台应用",
     "miapi.material.miapi.wood": "木",
