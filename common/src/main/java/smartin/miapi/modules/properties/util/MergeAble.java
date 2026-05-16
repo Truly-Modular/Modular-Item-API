@@ -35,6 +35,11 @@ public interface MergeAble<T> {
         if (MergeType.OVERWRITE.equals(mergeType)) {
             return new ArrayList<>(right);
         }
+        if (MergeType.REMOVE.equals(mergeType)) {
+            List<K> nextList = new ArrayList<>(left);
+            right.forEach(nextList::remove);
+            return nextList;
+        }
         List<K> merged = new ArrayList<>(left);
         merged.addAll(right);
         return merged;
@@ -59,6 +64,13 @@ public interface MergeAble<T> {
     static <K, L> Map<L, K> mergeMap(Map<L, K> left, Map<L, K> right, MergeType mergeType, TriFunction<L, K, K, K> onCollision) {
         if (MergeType.OVERWRITE.equals(mergeType)) {
             return new LinkedHashMap<>(right);
+        }
+        if (MergeType.REMOVE.equals(mergeType)) {
+            Map<L, K> nextMap = new LinkedHashMap<>(left);
+            right.forEach(((l, k) -> {
+                left.remove(l);
+            }));
+            return nextMap;
         }
         Map<L, K> merged = new LinkedHashMap<>(left);
         right.forEach((key, entry) -> {
@@ -129,17 +141,13 @@ public interface MergeAble<T> {
 
                 if (l == null || r == null) {
                     value = MergeAble.decideLeftRight(l, r, mergeType);
-                }
-                else if (l instanceof MergeAble<?> ml && r instanceof MergeAble<?>) {
+                } else if (l instanceof MergeAble<?> ml && r instanceof MergeAble<?>) {
                     value = ((MergeAble<Object>) ml).merge(l, r, mergeType);
-                }
-                else if (l instanceof Map<?, ?> && r instanceof Map<?, ?>) {
+                } else if (l instanceof Map<?, ?> && r instanceof Map<?, ?>) {
                     value = unsafeMergeMap(l, r, mergeType);
-                }
-                else if (l instanceof List<?> && r instanceof List<?>) {
+                } else if (l instanceof List<?> && r instanceof List<?>) {
                     value = unsafeMergeList(l, r, mergeType);
-                }
-                else {
+                } else {
                     value = MergeAble.decideLeftRight(l, r, mergeType);
                 }
 

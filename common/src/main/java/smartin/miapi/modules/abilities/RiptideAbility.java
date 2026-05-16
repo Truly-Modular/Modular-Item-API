@@ -10,6 +10,7 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
+import net.minecraft.tags.TagKey;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
@@ -20,25 +21,29 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.phys.Vec3;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;
 import smartin.miapi.modules.abilities.util.ItemUseDefaultCooldownAbility;
 import smartin.miapi.modules.abilities.util.ItemUseMinHoldAbility;
 import smartin.miapi.modules.properties.util.DoubleOperationResolvable;
+import smartin.miapi.modules.properties.util.MergeAble;
 import smartin.miapi.modules.properties.util.MergeType;
 
 /**
  * This Ability allows you to use the Trident riptide Effect
  */
-//TODO:rework this again
 public class RiptideAbility implements ItemUseDefaultCooldownAbility<RiptideAbility.RiptideContextJson>, ItemUseMinHoldAbility<RiptideAbility.RiptideContextJson> {
     public static Codec<RiptideContextJson> CODEC = AutoCodec.of(RiptideContextJson.class).codec();
     public static String KEY = "riptide";
 
     @Override
     public boolean allowedOnItem(ItemStack itemStack, Level world, Player player, InteractionHand hand, ItemAbilityManager.AbilityHitContext abilityHitContext, RiptideContextJson context) {
-        if (EnchantmentHelper.getTridentSpinAttackStrength(itemStack, player) == 0) {
+        if (
+                !context.hasConditions(player) &&
+                EnchantmentHelper.getTridentSpinAttackStrength(itemStack, player) == 0
+        ) {
             return false;
         }
         return true;
@@ -59,7 +64,9 @@ public class RiptideAbility implements ItemUseDefaultCooldownAbility<RiptideAbil
         ItemStack itemStack = user.getItemInHand(hand);
         if (itemStack.getDamageValue() >= itemStack.getMaxDamage() - 1) {
             return InteractionResultHolder.fail(itemStack);
-        } else if (world instanceof ServerLevel serverLevel && EnchantmentHelper.getTridentReturnToOwnerAcceleration(serverLevel, itemStack, user) > 0 && !user.isInWaterOrRain()) {
+        } else if (
+                world instanceof ServerLevel serverLevel && EnchantmentHelper.getTridentReturnToOwnerAcceleration(serverLevel, itemStack, user) > 0 &&
+                !context.hasConditions(user)) {
             return InteractionResultHolder.fail(itemStack);
         } else {
             user.startUsingItem(hand);
@@ -90,11 +97,11 @@ public class RiptideAbility implements ItemUseDefaultCooldownAbility<RiptideAbil
         float vanillaStrength = EnchantmentHelper.getTridentSpinAttackStrength(stack, player);
 
         // Final strength = apply DoubleOperationResolvable modifiers
-        double evaluatedStrength = context.riptideStrength.evaluate(vanillaStrength).orElse((double)vanillaStrength);
+        double evaluatedStrength = context.riptideStrength.evaluate(vanillaStrength).orElse((double) vanillaStrength);
         float finalPushStrength = (float) evaluatedStrength;
 
         // Can only riptide in water / rain
-        if (!player.isInWaterOrRain()) {
+        if (!context.hasConditions(entity)) {
             return;
         }
 
@@ -121,7 +128,7 @@ public class RiptideAbility implements ItemUseDefaultCooldownAbility<RiptideAbil
 
         float xRaw = -Mth.sin(yaw * Mth.DEG_TO_RAD) * Mth.cos(pitch * Mth.DEG_TO_RAD);
         float yRaw = -Mth.sin(pitch * Mth.DEG_TO_RAD);
-        float zRaw =  Mth.cos(yaw * Mth.DEG_TO_RAD) * Mth.cos(pitch * Mth.DEG_TO_RAD);
+        float zRaw = Mth.cos(yaw * Mth.DEG_TO_RAD) * Mth.cos(pitch * Mth.DEG_TO_RAD);
 
         float len = Mth.sqrt(xRaw * xRaw + yRaw * yRaw + zRaw * zRaw);
         float x = xRaw * (finalPushStrength / len);
@@ -141,6 +148,7 @@ public class RiptideAbility implements ItemUseDefaultCooldownAbility<RiptideAbil
         if (player.onGround()) {
             player.move(MoverType.SELF, new Vec3(0.0, 1.2, 0.0));
         }
+
 
         // Play riptide sound
         level.playSound(null, player, sound, SoundSource.PLAYERS, 1.0F, 1.0F);
@@ -184,6 +192,8 @@ public class RiptideAbility implements ItemUseDefaultCooldownAbility<RiptideAbil
         } else {
             merged.customSound = right.customSound;
         }
+        merged.requireFluid = MergeAble.decideLeftRight(left.requireFluid, right.requireFluid, mergeType);
+        merged.fluidOverwrite = MergeAble.decideLeftRight(left.fluidOverwrite, right.fluidOverwrite, mergeType);
         return merged;
     }
 
@@ -199,6 +209,13 @@ public class RiptideAbility implements ItemUseDefaultCooldownAbility<RiptideAbil
         @AutoCodec.Name("riptide_strength")
         @CodecBehavior.Optional
         public DoubleOperationResolvable riptideStrength = new DoubleOperationResolvable(20);
+
+        @AutoCodec.Name("require_fluid")
+        @CodecBehavior.Optional
+        public boolean requireFluid = true;
+        @AutoCodec.Name("custom_fluid")
+        @CodecBehavior.Optional
+        public TagKey<Fluid> fluidOverwrite = null;
         @CodecBehavior.Optional
         @AutoCodec.Name("custom_sound")
         public ResourceLocation customSound = null;
@@ -207,6 +224,11 @@ public class RiptideAbility implements ItemUseDefaultCooldownAbility<RiptideAbil
 
         }
 
+        public boolean hasConditions(LivingEntity livingEntity) {
+            return !requireFluid || (fluidOverwrite == null ? livingEntity.isInWaterRainOrBubble() : livingEntity.getFluidHeight(fluidOverwrite) > 0);
+        }
+
+
         public RiptideContextJson initialize(ModuleInstance moduleInstance) {
             RiptideContextJson init = new RiptideContextJson();
             init.cooldown = cooldown.initialize(moduleInstance);
@@ -214,6 +236,8 @@ public class RiptideAbility implements ItemUseDefaultCooldownAbility<RiptideAbil
             init.spinDuration = spinDuration.initialize(moduleInstance);
             init.riptideStrength = riptideStrength.initialize(moduleInstance);
             init.customSound = customSound;
+            init.requireFluid = requireFluid;
+            init.fluidOverwrite = fluidOverwrite;
             return init;
         }
 

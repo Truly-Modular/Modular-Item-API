@@ -140,6 +140,17 @@ public class MiapiEvents {
             return EntityDamageSystem.getMainCausingStack(this.damageSource);
         }
 
+        /**
+         * gets sword or bow+arrow
+         */
+        public Iterable<ItemStack> getMainCausingStacks() {
+            ItemStack bowStack = EntityDamageSystem.getBowItemStack(this.damageSource);
+            if (bowStack.isEmpty()) {
+                return List.of(EntityDamageSystem.getMainCausingStack(this.damageSource));
+            }
+            return List.of(EntityDamageSystem.getMainCausingStack(this.damageSource), bowStack);
+        }
+
         public Iterable<ItemStack> getCausingItemStackAndArmorOfAttacker() {
             return EntityDamageSystem.getCausingItemStackAndArmorOfAttacker(damageSource);
         }

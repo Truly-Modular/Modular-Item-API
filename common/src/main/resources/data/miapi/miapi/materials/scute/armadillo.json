@@ -1,0 +1,28 @@
+{
+    "icon": {
+        "type": "item",
+        "item": "minecraft:armadillo_scute"
+    },
+    "groups": [
+        "scute"
+    ],
+    "hardness": 5.4,
+    "tier": 2,
+    "density": 1,
+    "toughness": 5,
+    "flexibility": 0,
+    "durability": 95,
+    "enchantability": 12,
+    "mining_speed": 4,
+    "mining_level": "minecraft:incorrect_for_stone_tool",
+    "color_palette": {
+        "type": "image_generated_item",
+        "item": "minecraft:armadillo_scute"
+    },
+    "items": [
+        {
+            "item": "minecraft:armadillo_scute",
+            "value": 1
+        }
+    ]
+}

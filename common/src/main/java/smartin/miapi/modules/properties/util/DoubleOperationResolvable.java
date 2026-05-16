@@ -252,6 +252,9 @@ public class DoubleOperationResolvable implements SourceSetter<DoubleOperationRe
         if (MergeType.OVERWRITE.equals(mergeType)) {
             return right;
         }
+        if (MergeType.REMOVE.equals(mergeType)) {
+            return left;
+        }
         if (MergeType.EXTEND.equals(mergeType)) {
             functionTransformer = left.functionTransformer;
         }

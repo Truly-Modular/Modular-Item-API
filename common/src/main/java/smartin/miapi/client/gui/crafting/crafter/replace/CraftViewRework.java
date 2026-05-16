@@ -144,11 +144,11 @@ public class CraftViewRework extends InteractAbleWidget {
                 editContext.preview(action.toPacket(Networking.createBuffer()));
                 Pair<Boolean, List<Component>> canPerform = action.fullCanPerform();
                 craftButton.isEnabled = canPerform.getFirst();
+                warnings.clear();
                 if (!canPerform.getFirst()) {
                     warnings.addAll(canPerform.getSecond());
                 }
 
-                warnings.clear();
                 ItemStack crafted = editContext.getItemstack();
                 if (ItemStack.matches(previewStack, crafted)) {
                     warnings.add(Component.translatable(Miapi.MOD_ID + ".ui.craft.result_equal_warning"));

@@ -33,11 +33,10 @@
     "properties": {
         "handheld": {
             "attributes": [
-
                 {
                     "attribute": "generic.attack_speed",
                     "value": "-0.02",
-                    "operation": "**",
+                    "operation": "+",
                     "slot": "mainhand"
                 }
             ]
@@ -47,7 +46,7 @@
                 {
                     "attribute": "generic.attack_speed",
                     "value": "-0.1",
-                    "operation": "**",
+                    "operation": "+",
                     "slot": "mainhand"
                 }
             ]

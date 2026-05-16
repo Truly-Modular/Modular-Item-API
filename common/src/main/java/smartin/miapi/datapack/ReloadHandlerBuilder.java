@@ -109,7 +109,10 @@ public class ReloadHandlerBuilder {
     private void handleSingleFile(SingleFileHandler handler, boolean isClient, RegistryAccess registryAccess, ResourceLocation path, String data) {
         if (path.getPath().startsWith(location + "/")) {
             try {
-                handler.reloadFile(isClient, path, data, registryAccess);
+                ResourceLocation shortId = Miapi.id(path.toString()
+                        .replaceFirst(location + "/", "")
+                        .replaceFirst(".json", ""));
+                handler.reloadFile(isClient, shortId, data, registryAccess);
             } catch (RuntimeException e) {
                 Miapi.LOGGER.warn("could not load " + path, e);
             }

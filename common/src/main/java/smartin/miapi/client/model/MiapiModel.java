@@ -38,6 +38,7 @@ public interface MiapiModel {
                          float tickDelta,
                          MultiBufferSource vertexConsumers,
                          @Nullable LivingEntity entity,
+                         boolean glint,
                          int light,
                          int overlay) {
 
@@ -50,7 +51,20 @@ public interface MiapiModel {
                              @Nullable LivingEntity entity,
                              int light,
                              int overlay) {
-            this(modelType, matrices, matrices.last().pose(), stack, transformationMode, tickDelta, vertexConsumers, entity, light, overlay);
+            this(modelType, matrices, matrices.last().pose(), stack, transformationMode, tickDelta, vertexConsumers, entity, stack.hasFoil(), light, overlay);
+        }
+
+        public RenderContext(@Nullable String modelType,
+                             PoseStack matrices,
+                             ItemStack stack,
+                             ItemDisplayContext transformationMode,
+                             float tickDelta,
+                             MultiBufferSource vertexConsumers,
+                             @Nullable LivingEntity entity,
+                             boolean glint,
+                             int light,
+                             int overlay) {
+            this(modelType, matrices, matrices.last().pose(), stack, transformationMode, tickDelta, vertexConsumers, entity, glint, light, overlay);
         }
 
         @Nullable

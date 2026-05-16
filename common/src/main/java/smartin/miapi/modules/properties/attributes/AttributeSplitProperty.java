@@ -12,6 +12,7 @@ import smartin.miapi.Miapi;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.util.CodecProperty;
 import smartin.miapi.modules.properties.util.DoubleOperationResolvable;
+import smartin.miapi.modules.properties.util.MergeAble;
 import smartin.miapi.modules.properties.util.MergeType;
 
 import java.util.ArrayList;
@@ -162,17 +163,7 @@ public class AttributeSplitProperty extends CodecProperty<Map<AttributeSplitProp
 
     @Override
     public Map<Context, List<SplitContext>> merge(Map<Context, List<SplitContext>> left, Map<Context, List<SplitContext>> right, MergeType mergeType) {
-        Map<Context, List<SplitContext>> merged = new HashMap<>(left);
-        right.forEach((context, splitContexts) -> {
-            if (merged.containsKey(context)) {
-                List<SplitContext> contexts = new ArrayList<>(merged.get(context));
-                contexts.addAll(splitContexts);
-                merged.put(context, contexts);
-            } else {
-                merged.put(context, splitContexts);
-            }
-        });
-        return merged;
+        return MergeAble.mergeMap(left,right,mergeType,(c,l,r)-> MergeAble.mergeList(l,r,mergeType));
     }
 
     public record SplitContext(ResourceLocation entityAttribute,

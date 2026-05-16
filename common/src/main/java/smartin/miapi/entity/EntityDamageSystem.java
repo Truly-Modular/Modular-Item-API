@@ -89,6 +89,9 @@ public class EntityDamageSystem {
             if (bow != null && !bow.isEmpty()) {
                 itemStacks.add(bow);
             }
+            if(projectile.getWeaponItem()!=null && !projectile.getWeaponItem().isEmpty()){
+                itemStacks.add(projectile.getWeaponItem());
+            }
             if (projectile instanceof ItemProjectileEntity itemProjectile) {
                 itemStacks.add(itemProjectile.getProjectileItem());
             }

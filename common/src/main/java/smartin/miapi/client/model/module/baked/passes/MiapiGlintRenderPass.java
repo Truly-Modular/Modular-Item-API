@@ -35,7 +35,7 @@ public class MiapiGlintRenderPass implements RenderPass {
 
     @Override
     public void render(MiapiModel.RenderContext context, float[] colors, float alpha, int light) {
-        if (context.stack().hasFoil()) {
+        if (context.glint()) {
             VertexConsumer glintConsumer = new ObjectUVVertexConsumer(
                     context.vertexConsumers().getBuffer(GlintShader.modularItemGlint),
                     context.objectSpace(), true, 1.0f

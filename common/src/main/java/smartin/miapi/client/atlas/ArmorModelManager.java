@@ -17,6 +17,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import smartin.miapi.client.model.MiapiItemModel;
+import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.mixin.client.ElytraEntityModelAccessor;
 import smartin.miapi.mixin.client.ElytraFeatureRendererAccessor;
 import smartin.miapi.mixin.client.LivingEntityRendererAccessor;
@@ -105,6 +106,9 @@ public class ArmorModelManager {
     }
 
     public static void renderArmorPiece(PoseStack matrices, MultiBufferSource vertexConsumers, int light, EquipmentSlot armorSlot, ItemStack itemStack, LivingEntity entity, HumanoidModel outerModel, EntityModel entityModel) {
+        if (MiapiConfig.getClientConfig().render.batch.enableInventory) {
+            MiapiItemModel.startItemBatch();
+        }
         partProviders.forEach(armorPartProvider -> {
             List<ArmorPart> armorParts = armorPartProvider.getParts(armorSlot, entity, outerModel, entityModel);
             armorParts.forEach(armorPart -> {
@@ -117,6 +121,9 @@ public class ArmorModelManager {
                 matrices.popPose();
             });
         });
+        if (MiapiConfig.getClientConfig().render.batch.enableInventory) {
+            MiapiItemModel.finishBatch(vertexConsumers);
+        }
     }
 
     public interface ArmorPartProvider {

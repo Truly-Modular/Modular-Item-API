@@ -133,11 +133,15 @@ public class AbilityProperty extends CodecProperty<List<AbilityProperty.AbilityC
         }
 
         for (AbilityContext<?> r : right) {
-            merged.merge(
-                    makeKey.apply(r),
-                    r,
-                    (l, rr) -> l.mergeUnchecked(l, rr, mergeType)
-            );
+            if (MergeType.REMOVE.equals(mergeType)) {
+                merged.remove(makeKey.apply(r));
+            } else {
+                merged.merge(
+                        makeKey.apply(r),
+                        r,
+                        (l, rr) -> l.mergeUnchecked(l, rr, mergeType)
+                );
+            }
         }
 
         return new ArrayList<>(merged.values());

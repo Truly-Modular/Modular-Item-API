@@ -6,5 +6,6 @@ package smartin.miapi.modules.properties.util;
 public enum MergeType {
     OVERWRITE,
     SMART,
+    REMOVE,
     EXTEND
 }

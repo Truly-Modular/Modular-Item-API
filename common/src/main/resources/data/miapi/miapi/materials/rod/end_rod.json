@@ -7,8 +7,8 @@
         "rod"
     ],
     "hardness": 7.5,
-    "density": 1.5,
-    "flexibility": 0.5,
+    "density": 2,
+    "flexibility": 5.5,
     "durability": 1024,
     "enchantability": 21,
     "toughness": 2,

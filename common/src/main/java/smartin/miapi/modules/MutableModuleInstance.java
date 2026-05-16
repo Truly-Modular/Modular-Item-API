@@ -126,7 +126,7 @@ public class MutableModuleInstance {
         Map<String, ModuleInstance> childRecords = new LinkedHashMap<>();
 
         for (var entry : children.entrySet()) {
-            if ("empty".equals(entry.getValue().moduleId.getNamespace())) {
+            if ("empty".equals(entry.getValue().moduleId.getPath())) {
                 if (entry.getValue().getChildren().isEmpty()) {
                     continue;
                 }

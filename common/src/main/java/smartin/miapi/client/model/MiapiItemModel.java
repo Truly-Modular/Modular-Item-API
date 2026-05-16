@@ -13,6 +13,8 @@ import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
+import smartin.miapi.client.model.module.baked.passes.DeferredGlintRenderPass;
+import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.item.modular.VisualModularItem;
@@ -106,6 +108,7 @@ public class MiapiItemModel implements MiapiModel {
         for (ModelTransformer transformer : data.transformers) {
             transformer.transform(matrices, tickDelta);
         }
+        boolean hasFoil = stack.hasFoil();
         Minecraft.getInstance().getProfiler().pop();
         data.model.render(new RenderContext(modelType,
                 matrices,
@@ -114,11 +117,28 @@ public class MiapiItemModel implements MiapiModel {
                 tickDelta,
                 vertexConsumers,
                 entity,
+                hasFoil,
                 light,
                 overlay));
         matrices.popPose();
         matrices.last().pose().invert();
+        if (hasFoil && MiapiConfig.getClientConfig().render.optimisedModel && !isBatching) {
+            finishBatch(vertexConsumers);
+        }
         Minecraft.getInstance().getProfiler().pop();
+    }
+
+    public static boolean isBatching = false;
+
+    public static void startItemBatch() {
+        isBatching = true;
+    }
+
+    public static void finishBatch(MultiBufferSource multiBufferSource) {
+        Minecraft.getInstance().getProfiler().push("Modular Item Batch");
+        DeferredGlintRenderPass.flush(multiBufferSource);
+        Minecraft.getInstance().getProfiler().pop();
+        isBatching = false;
     }
 
     private static @NotNull List<ModelTransformer> getTransfomers(ItemStack stack, ItemDisplayContext mode, String modelType) {

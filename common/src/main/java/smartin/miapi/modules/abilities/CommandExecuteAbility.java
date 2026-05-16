@@ -194,6 +194,8 @@ public class CommandExecuteAbility implements
             json.minHold = this.minHold.initialize(moduleInstance);
             json.cooldown = this.cooldown.initialize(moduleInstance);
             json.userAnim = this.userAnim;
+            json.startPose = this.startPose;
+            json.executePose = this.executePose;
             return json;
         }
     }

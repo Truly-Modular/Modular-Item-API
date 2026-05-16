@@ -1,19 +1,16 @@
 {
     "icon": {
         "type": "item",
-        "item": "minecraft:scute"
-    },
-    "load_condition": {
-        "type": "mod_loaded",
-        "mod": "forbidden"
+        "item": "minecraft:turtle_scute"
     },
     "groups": [
         "scute"
     ],
-    "hardness": 4.1,
+    "hardness": 5.1,
     "tier": 2,
     "density": 1,
-    "toughness": 1,
+    "toughness": 4.5,
+    "knockback_resistance": 3,
     "flexibility": 0,
     "durability": 95,
     "enchantability": 12,
@@ -36,7 +33,7 @@
     },
     "items": [
         {
-            "item": "minecraf:scute",
+            "item": "minecraft:turtle_scute",
             "value": 1
         }
     ]

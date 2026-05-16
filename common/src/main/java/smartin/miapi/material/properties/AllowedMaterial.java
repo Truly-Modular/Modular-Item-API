@@ -261,7 +261,11 @@ public class AllowedMaterial extends CodecProperty<AllowedMaterial.AllowedMateri
         public AllowedMaterialData merge(AllowedMaterialData left, AllowedMaterialData right, MergeType mergeType) {
             AllowedMaterialData material = new AllowedMaterialData();
             material.allowedMaterials = new ArrayList<>(left.allowedMaterials);
-            material.allowedMaterials.addAll(right.allowedMaterials);
+            if (MergeType.REMOVE.equals(mergeType)) {
+                material.allowedMaterials.removeAll(right.allowedMaterials);
+            } else {
+                material.allowedMaterials.addAll(right.allowedMaterials);
+            }
             if (left.cost != null && right.cost == null) {
                 material.cost = left.cost;
             } else {

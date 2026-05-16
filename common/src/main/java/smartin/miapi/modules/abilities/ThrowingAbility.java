@@ -76,13 +76,18 @@ public class ThrowingAbility implements ItemUseDefaultCooldownAbility<ThrowingAb
     }
 
     @Override
-    public void onStoppedUsingAfter(ItemStack stack, Level world, LivingEntity user, int remainingUseTicks, BasicContext context) {
+    public void onStoppedUsingAfter(ItemStack originalStack, Level world, LivingEntity user, int remainingUseTicks, BasicContext context) {
         if (user instanceof Player playerEntity) {
-            int i = this.getMaxUseTime(stack, user, context) - remainingUseTicks;
+            int i = this.getMaxUseTime(originalStack, user, context) - remainingUseTicks;
             if (i >= 10) {
-                playerEntity.awardStat(Stats.ITEM_USED.get(stack.getItem()));
+                playerEntity.awardStat(Stats.ITEM_USED.get(originalStack.getItem()));
                 if (world instanceof ServerLevel) {
                     EquipmentSlot equipmentSlot = getEquipmentSlot(user.getUsedItemHand());
+                    ItemStack stack = originalStack.copy();
+                    if(!playerEntity.hasInfiniteMaterials()){
+                        originalStack.setCount(originalStack.getCount() - 1);
+                    }
+                    stack.setCount(1);
                     stack.hurtAndBreak(1, playerEntity, equipmentSlot);
                     float speed = (float) ThrowSpeedProperty.getThrowSpeed(stack);
                     float damage = (float) ThrowDamageProperty.getDamage(stack);

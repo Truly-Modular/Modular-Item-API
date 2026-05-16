@@ -10,6 +10,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import smartin.miapi.client.gui.crafting.CraftingScreen;
+import smartin.miapi.client.model.MiapiItemModel;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.entity.ShieldingArmorFacet;
 import smartin.miapi.events.ClientEvents;
@@ -23,6 +24,40 @@ public class InGameHudMixin {
     )
     private void miapi$customDrawContext(GuiGraphics guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) {
         ClientEvents.HUD_RENDER.invoker().render(guiGraphics, deltaTracker.getGameTimeDeltaTicks());
+    }
+
+    @Inject(
+            method = "renderItemHotbar",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lcom/mojang/blaze3d/systems/RenderSystem;enableBlend()V"
+            )
+    )
+    private void miapi$optimisationBatchRenderingHotbarstart(
+            GuiGraphics graphics,
+            DeltaTracker delta,
+            CallbackInfo ci
+    ) {
+        if (MiapiConfig.getClientConfig().render.batch.enableHotBar) {
+            MiapiItemModel.startItemBatch();
+        }
+    }
+
+    @Inject(
+            method = "renderItemHotbar",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lcom/mojang/blaze3d/systems/RenderSystem;disableBlend()V"
+            )
+    )
+    private void miapi$optimisationBatchRenderingHotbarend(
+            GuiGraphics graphics,
+            DeltaTracker delta,
+            CallbackInfo ci
+    ) {
+        if (MiapiConfig.getClientConfig().render.batch.enableHotBar) {
+            MiapiItemModel.finishBatch(graphics.bufferSource());
+        }
     }
 
     @Inject(

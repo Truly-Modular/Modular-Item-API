@@ -41,9 +41,28 @@ public class MiapiClientConfig {
         public Color green = new Color(0, 255, 0, 255);
 
     }
+    @ConfigAutoCodec.ConfigClassMarker
+    public static class BatchRenderCategory {
+        @AutoCodec.Name("enable_hotbar")
+        public boolean enableHotBar = true;
+
+        @AutoCodec.Name("enable_armor")
+        public boolean enableArmor = true;
+
+        @AutoCodec.Name("enable_inventory")
+        public boolean enableInventory = true;
+    }
+
 
     @ConfigAutoCodec.ConfigClassMarker
     public static class RenderCategory {
+        @Comment("""
+                batch rendering optimises modular item rendering by grouping their rendering.
+                This might not work if other mods screw with the rendering internals of one of these things.
+                """)
+        @AutoCodec.Name("batch_rendering")
+        public BatchRenderCategory batch = new BatchRenderCategory();
+
         @Comment("""
                 requires resource pack reload to be applied (F3+T)
                 might break in development mode - if stuff stops rendering set this to true
