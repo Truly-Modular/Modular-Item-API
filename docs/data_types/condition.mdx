@@ -1,6 +1,35 @@
-# Conditions
+﻿# Conditions
 
 ## Description
 
 # ConditionsConditions are a **core component** of the system that define logical requirements for various gameplay, data, and configuration scenarios.  They allow dynamic evaluation of whether certain actions, states, or configurations should be active or valid — giving creators fine-grained control over how different elements interact.---## OverviewA **Condition** represents a logical statement that can evaluate to **true** or **false** within a given context.  When a condition evaluates to `true`, the corresponding behavior, property, or feature becomes active or available.  If it evaluates to `false`, that behavior may be hidden, disabled, or skipped entirely.Conditions are used across a variety of systems — not just crafting — and can depend on:- Module configurations and relationships- Material properties and categories- Player advancements- External mod integrations- expandable by other java addonsEach condition is defined as a small JSON object, specifying a `"type"` field that determines the logic or check to perform.  Additional fields depend on the specific condition type.---## Behavior and ContextConditions are always evaluated within a **context**, meaning their checks are relative to where they are used.  For example, a condition inside a **module context** evaluates using that module’s data, and the condition can be shifted to other modules of the item via some of the conditions.## Custom ErrorsMany condition types support an optional `"error"` field.  When provided, and the condition evaluates to `false`, the system displays this error message in the relevant interface (e.g., a crafting button tooltip).  This allows developers to give user-friendly feedback about why an action failed or is unavailable.```json{    "type": "material_group",    "material_group": "fabric",    "error": "Requires a fabric material!"}
 
+```
+
+---
+
+## Condition Types
+
+The following condition types are available. Click any type to view its full documentation.
+
+| Type | Description |
+|------|-------------|
+| [`advancement_condition`](/docs/data_types/condition/advancement_condition) | Check if the player has a specific advancement |
+| [`and_condition`](/docs/data_types/condition/and_condition) | All sub-conditions must be true |
+| [`child_condition`](/docs/data_types/condition/child_condition) | Test a condition on direct child modules |
+| [`is_mod_loaded`](/docs/data_types/condition/is_mod_loaded) | Check if a specific mod is loaded |
+| [`item_in_inventory`](/docs/data_types/condition/item_in_inventory) | Check if the player has N of an item in their inventory |
+| [`material`](/docs/data_types/condition/material) | Check what material the current module uses |
+| [`material_count`](/docs/data_types/condition/material_count) | Count how many times a material appears on the item |
+| [`material_group`](/docs/data_types/condition/material_group) | Check if the module material belongs to a group |
+| [`miapi_perm`](/docs/data_types/condition/miapi_perm) | Check patreon/seasonal permissions (special access flag) |
+| [`module`](/docs/data_types/condition/module) | Check if the current module matches a specific module ResourceLocation |
+| [`not`](/docs/data_types/condition/not) | Inverse of another condition |
+| [`number`](/docs/data_types/condition/number) | Evaluate a double resolvable - true if greater than 0 |
+| [`or_condition`](/docs/data_types/condition/or_condition) | At least one sub-condition must be true |
+| [`other_module`](/docs/data_types/condition/other_module) | Test a condition on all other modules on the item |
+| [`parent`](/docs/data_types/condition/parent) | Test a condition on the parent module |
+| [`tag`](/docs/data_types/condition/tag) | Check for a specific module tag |
+| [`true_condition`](/docs/data_types/condition/true) | Always evaluates to true (useful as default/fallback) |
+
+> **Note:** `miapi_perm` and `module` are implemented in code but do not yet have expanded documentation pages. Basic usage follows the same `"type"` field pattern as all other condition types.
