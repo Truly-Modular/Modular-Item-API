@@ -1,0 +1,11 @@
+# Global Loot Modularisation Loot Function
+
+## Description
+
+The `GlobalLootModularisationFunction` is a loot function that applies all globally registered loot adjustment functions to an item when it is generated as loot. Adjustments are registered centrally via `LootHelper` and run sequentially over the item stack. This allows mods and datapacks to inject universal loot behaviour — such as randomising materials or applying enchantments — without modifying individual loot tables.
+
+Its full ID is ```"miapi:global_loot_adjuster"```
+
+## Data
+
+This loot function has no configurable parameters.
