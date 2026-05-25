@@ -1,0 +1,9 @@
+# Global Loot Modularisation Loot Function
+
+## Description
+
+The `GlobalLootModularisationFunction` is a loot function that applies all globally registered loot adjustments to a modular item when it is dropped as loot. It iterates over every loot function that has been added to MIAPI's global loot adjustment list and applies each one in sequence to the item stack. This allows mod and datapack authors to register loot transformations that automatically affect all modular item drops without modifying individual loot tables. Its full ID is ```"miapi:global_loot_modularisation"```
+
+## Data
+
+This loot function has no configurable parameters.
