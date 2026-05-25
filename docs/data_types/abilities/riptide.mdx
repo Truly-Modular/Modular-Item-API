@@ -1,0 +1,77 @@
+# Riptide Ability
+
+## Description
+
+The `miapi:riptide` ability allows an item to launch the player with a spin attack, mimicking the vanilla Trident's Riptide enchantment behaviour. When the player holds the item and releases after the minimum charge time is met, they are propelled in their look direction and enter a spinning attack state for a configurable duration.
+
+### Features
+
+- Activated by holding and releasing right-click (SPEAR use animation).
+- Requires the player to be in water or rain by default (configurable).
+- Launch direction and strength are computed from the player's look direction.
+- Starts a spin attack (`startAutoSpinAttack`) for the configured number of ticks.
+- Grants a small upward boost when the player is on the ground at launch.
+- Sound selection mirrors vanilla Riptide levels but can be overridden.
+- Applies a cooldown after use and enforces a minimum hold time before triggering.
+
+### JSON Context Fields
+
+- **`cooldown`** *(DoubleOperationResolvable, default: `20`)*
+  Cooldown in ticks applied to the item after the ability fires.
+
+- **`min_use`** *(DoubleOperationResolvable, default: `10`)*
+  Minimum number of ticks the item must be held before the launch triggers on release.
+
+- **`spin_duration_base`** *(DoubleOperationResolvable, default: `20`)*
+  Duration in ticks for the auto-spin attack that begins when the player launches.
+
+- **`riptide_strength`** *(DoubleOperationResolvable, default: `20`)*
+  The impulse strength applied to the player at launch. This value is passed through `DoubleOperationResolvable`, allowing it to be offset or scaled relative to the vanilla enchantment strength derived from the item.
+
+- **`require_fluid`** *(boolean, default: `true`)*
+  When `true`, the launch only fires when the player is in water, rain, or a bubble column. Set to `false` to allow the ability to trigger anywhere.
+
+- **`custom_fluid`** *(fluid tag ResourceLocation, optional)*
+  A fluid tag that overrides the default water/rain/bubble check. When specified, the player must be touching fluid matching this tag for the ability to fire. Has no effect when `require_fluid` is `false`.
+
+- **`custom_sound`** *(ResourceLocation, optional)*
+  A sound event ID that replaces the vanilla Riptide sounds (`trident.riptide_1/2/3`). If the resource location does not resolve to a registered sound event it is silently ignored and the vanilla sounds are used.
+
+### Behavior Notes
+
+- The ability will not fire if the item is at maximum damage (one durability remaining).
+- If `require_fluid` is `true` and the player is not in the required fluid (or rain), releasing the item before the minimum hold time has no effect.
+- The spin attack duration (`spin_duration_base`) is read with `.getValue()`, so module-level operations are applied.
+- The launch strength is resolved via `riptide_strength.evaluate(vanillaStrength)`, meaning module operations can layer on top of or replace the base vanilla enchantment contribution.
+
+---
+
+### Example
+
+```json
+{
+  "ability_context": [
+    {
+      "id": "mymod:custom_riptide",
+      "type": "miapi:riptide",
+      "priority": 0,
+      "data": {
+        "cooldown": 40,
+        "min_use": 15,
+        "spin_duration_base": 30,
+        "riptide_strength": 3.0,
+        "require_fluid": false,
+        "custom_sound": "mymod:item.my_weapon.launch"
+      }
+    }
+  ]
+}
+```
+
+This configuration:
+- Applies a 2-second cooldown (40 ticks) after each launch.
+- Requires the item to be held for at least 15 ticks before releasing triggers the launch.
+- Keeps the player in a spin attack for 30 ticks (1.5 seconds).
+- Launches with a fixed strength of `3.0`, regardless of enchantments.
+- Allows launch on dry land (`require_fluid: false`).
+- Plays a custom sound instead of the vanilla Riptide sounds.
