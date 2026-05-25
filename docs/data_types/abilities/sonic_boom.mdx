@@ -1,0 +1,54 @@
+# Sonic Boom Ability
+
+## Description
+
+The `sonic_boom` ability allows the player to **emit a sonic boom** that damages all nearby living entities in a configurable range, by using and holding the item.
+
+### Features
+
+- Requires a minimum hold time before activation.
+- Damages all living entities within a configurable spherical range centered on the player.
+- Spawns `SONIC_BOOM` particles on each affected entity.
+- Plays a configurable sound event on activation (default is `warden.sonic_boom`).
+- Applies a cooldown after use.
+- Only executes on the server side (requires `ServerLevel`).
+- Uses a `SPYGLASS` animation while holding the item.
+- Supports merging and initialization of all configurable parameters.
+
+### Context Fields (SonicBoomContext)
+
+| Field      | Type                        | Description                                                        | Default Value              |
+|------------|-----------------------------|--------------------------------------------------------------------|----------------------------|
+| on_boom    | `SoundEvent`                | Sound played when the sonic boom is released                       | `warden_sonic_boom`        |
+| min_hold   | `DoubleOperationResolvable` | Minimum ticks the item must be held before activation              | `15`                       |
+| damage     | `DoubleOperationResolvable` | Amount of damage dealt to each entity in range                     | `10`                       |
+| cooldown   | `DoubleOperationResolvable` | Cooldown duration in ticks after use                               | `20`                       |
+| max_range  | `DoubleOperationResolvable` | Radius in blocks around the player that entities are affected      | `5`                        |
+
+### Example
+
+```json
+{
+    "ability_context": [
+        {
+            "id": "addon:test",
+            "type": "miapi:sonic_boom",
+            "priority": 0,
+            "data": {
+                "damage": "[material.tier]*5",
+                "cooldown": 40,
+                "max_range": 8,
+                "min_hold": 20
+            }
+        }
+    ]
+}
+```
+
+### Usage
+
+- Player holds the item (right-click and hold).
+- On release after the minimum hold time, the ability deals damage to all living entities within `max_range` blocks of the player.
+- The `on_boom` sound is played at the player's position.
+- `SONIC_BOOM` particles are spawned at each affected entity's position.
+- A cooldown is applied after a successful activation.
