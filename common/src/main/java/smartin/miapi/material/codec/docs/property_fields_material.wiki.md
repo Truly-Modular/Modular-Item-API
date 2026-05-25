@@ -1,5 +1,5 @@
 @header Data Material - Properties
-@path /datapack/material/data/rendering_fields
+@path /datapack/material/data/property_fields
 
 Now, a large part of the behaviour of modular items is controlled by properties.
 Obviously, materials require some control over them as well.
