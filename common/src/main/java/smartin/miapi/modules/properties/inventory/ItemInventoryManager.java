@@ -1,29 +1,52 @@
 package smartin.miapi.modules.properties.inventory;
 
+import com.mojang.serialization.Codec;
+import com.redpxnda.nucleus.codec.auto.AutoCodec;
+import com.redpxnda.nucleus.event.PrioritizedEvent;
+import com.redpxnda.nucleus.facet.FacetKey;
+import com.redpxnda.nucleus.facet.entity.SimpleEntityFacet;
 import com.redpxnda.nucleus.util.Color;
+import dev.architectury.event.EventResult;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.Container;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.component.ItemContainerContents;
-import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
-import smartin.miapi.modules.properties.inventory.impl.BackpackInventoryType;
+import smartin.miapi.modules.properties.inventory.features.*;
 import smartin.miapi.modules.properties.inventory.impl.PlayerArmorSlotInfo;
-import smartin.miapi.modules.properties.inventory.impl.QuiverInventoryType;
+import smartin.miapi.registries.DatapackMiapiRegistry;
+import smartin.miapi.registries.MiapiRegistry;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 public class ItemInventoryManager {
-
-    public static final Map<ResourceLocation, InventoryType> INVENTORY_TYPES = new HashMap<>();
     public static final Map<ResourceLocation, SlotInfo> PLAYER_TO_SLOT = new HashMap<>();
+    public static final PrioritizedEvent<GetInventoryFeatures> GET_INVENTORY_FEATURES_EVENT = PrioritizedEvent.createEventResult();
+    public static final FacetKey<SimpleEntityFacet<List<InventoryInstance>>> CACHE = SimpleEntityFacet.createSimple(
+                    Miapi.id("player_inv_holder"),
+                    Codec.list(AutoCodec.of(InventoryInstance.class).codec()))
+            .setDefaultValue(null)
+            .setPredicate(Player.class::isInstance)
+            .setSaveCondition(data -> false)
+            .syncToClientsOnSet(false)
+            .build();
+    public static final MiapiRegistry<InventoryFeatureType> INVENTORY_FEATURE_REGISTRY = MiapiRegistry.getInstance(InventoryFeatureType.class);
+    public static DatapackMiapiRegistry<InventoryType> INVENTORY_TYPE_REGISTRY = DatapackMiapiRegistry.getInstance(InventoryType.class);
 
     static {
-        registerInventoryType(new BackpackInventoryType());
-        registerInventoryType(new QuiverInventoryType());
+        INVENTORY_FEATURE_REGISTRY.register(AutoPickupFeatureType.ID, AutoPickupFeatureType.FEATURE);
+        INVENTORY_FEATURE_REGISTRY.register(BackPackViewFeatureType.ID, BackPackViewFeatureType.FEATURE);
+        INVENTORY_FEATURE_REGISTRY.register(InventorySizeFeatureType.ID, InventorySizeFeatureType.FEATURE);
+        INVENTORY_FEATURE_REGISTRY.register(TagBlacklistFeatureType.ID, TagBlacklistFeatureType.FEATURE);
+        INVENTORY_FEATURE_REGISTRY.register(TagWhiteListFeatureType.ID, TagWhiteListFeatureType.FEATURE);
+        INVENTORY_FEATURE_REGISTRY.register(InteractFromInventoryFeature.FEATURE.id(), InteractFromInventoryFeature.FEATURE);
 
         // Armor slots
         PLAYER_TO_SLOT.put(
@@ -67,58 +90,47 @@ public class ItemInventoryManager {
         );
     }
 
-    public static void registerInventoryType(InventoryType type) {
-        INVENTORY_TYPES.put(type.getId(), type);
-    }
-
-
-    /**
-     * loads container from itemstack based on InventoryType ID
-     */
-    public static Container loadOrCreate(ItemStack stack, ResourceLocation id) {
-
-        Container inventory = load(stack, id);
-
-        if (inventory != null) return inventory;
-
-        InventoryType type = INVENTORY_TYPES.get(id);
-        if (type == null) throw new IllegalArgumentException("unknowk inventory type requested!");
-
-        return type.decode(stack, ItemContainerContents.EMPTY);
-    }
-
-    @Nullable
-    private static Container load(ItemStack stack, ResourceLocation typeId) {
-
-        InventoryType type = INVENTORY_TYPES.get(typeId);
-        if (type == null) return null;
-
-        InventoryComponent component = stack.get(InventoryComponent.ITEM_INVENTORIES);
-
-        if (component == null) {
-            return type.decode(stack, ItemContainerContents.EMPTY);
+    public static List<InventoryInstance> getAllInventories(Player player) {
+        if (true) {
+            return computeNewInventoryInstances(player);
         }
-
-        ItemContainerContents contents =
-                component.inventories().getOrDefault(typeId, ItemContainerContents.EMPTY);
-
-        return type.decode(stack, contents);
+        var optional = CACHE.getOptional(player);
+        if (optional.isEmpty()) {
+            return computeNewInventoryInstances(player);
+        } else {
+            if (optional.get().get() == null) {
+                List<InventoryInstance> newList = computeNewInventoryInstances(player);
+                optional.get().set(newList);
+            }
+            return optional.get().get();
+        }
     }
 
-    /**
-     * saves Inventory back onto Itemstack after changing it
-     */
-    public static void save(ItemStack stack, InventoryType type, Container inventory) {
+    public static <T> Stream<InventoryInstance> getInventoriesWith(
+            Player player,
+            InventoryFeatureType<T> feature,
+            Predicate<T> filter
+    ) {
+        return getAllInventories(player).stream()
+                .filter(inv -> inv.getFeatures().has(feature) && filter.test(inv.getFeatures().get(feature).get()));
+    }
 
-        InventoryComponent component = stack.get(InventoryComponent.ITEM_INVENTORIES);
+    private static List<InventoryInstance> computeNewInventoryInstances(Player player) {
+        List<InventoryInstance> result = new ArrayList<>();
+        for (SlotInfo slot : PLAYER_TO_SLOT.values()) {
+            ItemStack stack = slot.getStack(player);
+            if (stack.isEmpty()) continue;
+            INVENTORY_TYPE_REGISTRY.getFlatMap().forEach((id, type) -> {
+                InventoryInstance instance = new InventoryInstance(player, stack, type, slot);
+                if (instance.getSize() > 0) {
+                    result.add(instance);
+                }
+            });
+        }
+        return result;
+    }
 
-        Map<ResourceLocation, ItemContainerContents> map =
-                component != null
-                        ? new HashMap<>(component.inventories())
-                        : new HashMap<>();
-
-        map.put(type.getId(), type.encode(inventory));
-
-        stack.set(InventoryComponent.ITEM_INVENTORIES, new InventoryComponent(map));
+    public interface GetInventoryFeatures {
+        EventResult getFeatures(AtomicReference<InventoryFeatureType.FeatureSet> mutableSet, Player player, ItemStack itemStack, InventoryType inventoryType);
     }
 }

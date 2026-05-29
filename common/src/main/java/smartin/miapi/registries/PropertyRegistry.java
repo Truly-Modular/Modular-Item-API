@@ -1,6 +1,7 @@
 package smartin.miapi.registries;
 
-import smartin.miapi.material.*;
+import smartin.miapi.material.BlueprintCrafting;
+import smartin.miapi.material.MaterialProperty;
 import smartin.miapi.material.properties.*;
 import smartin.miapi.modules.abilities.key.KeyBindAbilityManagerProperty;
 import smartin.miapi.modules.abilities.util.AbilityMangerProperty;
@@ -11,6 +12,8 @@ import smartin.miapi.modules.properties.attributes.AttributeProperty;
 import smartin.miapi.modules.properties.attributes.AttributeSplitProperty;
 import smartin.miapi.modules.properties.compat.ht_treechop.TreechopProperty;
 import smartin.miapi.modules.properties.enchanment.*;
+import smartin.miapi.modules.properties.inventory.InventoryFeatureProperty;
+import smartin.miapi.modules.properties.inventory.ItemInventoryFeatureProperty;
 import smartin.miapi.modules.properties.mining.AutoSmeltProperty;
 import smartin.miapi.modules.properties.mining.MiningLevelProperty;
 import smartin.miapi.modules.properties.mining.MiningShapeProperty;
@@ -119,6 +122,11 @@ public class PropertyRegistry {
         //ON HIT
         RegistryInventory.registerMiapi(RegistryInventory.MODULE_PROPERTY_MIAPI_REGISTRY, CustomDamageOnHitProperty.KEY, CustomDamageOnHitProperty.property);
         RegistryInventory.registerMiapi(RegistryInventory.MODULE_PROPERTY_MIAPI_REGISTRY, ModularAttackCommandProperty.KEY, ModularAttackCommandProperty.property);
+
+
+        RegistryInventory.registerMiapi(RegistryInventory.MODULE_PROPERTY_MIAPI_REGISTRY, ItemInventoryFeatureProperty.KEY, ItemInventoryFeatureProperty.property);
+        RegistryInventory.registerMiapi(RegistryInventory.MODULE_PROPERTY_MIAPI_REGISTRY, InventoryFeatureProperty.KEY, InventoryFeatureProperty.property);
+        
 
         RegistryInventory.registerMiapi(RegistryInventory.MODULE_PROPERTY_MIAPI_REGISTRY, LoreProperty.KEY, new LoreProperty());
         RegistryInventory.registerMiapi(RegistryInventory.MODULE_PROPERTY_MIAPI_REGISTRY, OldNameProperty.KEY, new OldNameProperty());

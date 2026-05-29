@@ -1,61 +1,50 @@
 package smartin.miapi.modules.properties.inventory;
 
+import com.mojang.serialization.Codec;
+import com.redpxnda.nucleus.codec.auto.AutoCodec;
+import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.Container;
-import net.minecraft.world.SimpleContainer;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.Slot;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.component.ItemContainerContents;
+import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.ModuleInstance;
+import smartin.miapi.modules.properties.inventory.features.InventoryFeatureType;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Map;
 
-public interface InventoryType {
+public class InventoryType {
+    public static Codec<InventoryType> CODEC = AutoCodec.of(InventoryType.class).codec();
+    @CodecBehavior.Optional
+    public Component name = Component.literal("missing name " + getId());
 
-    ResourceLocation getId();
+    @CodecBehavior.Optional
+    public double priority = 0.0;
 
-    Component getName();
+    @AutoCodec.Ignored
+    public ResourceLocation id;
 
-    int getSize(ItemStack container);
+    @CodecBehavior.Optional
+    public InventoryFeatureType.FeatureSet features = new InventoryFeatureType.FeatureSet(Map.of());
 
-    boolean canInsert(ItemStack container, ItemStack stack);
-
-    double priority();
-
-    default Slot createSlot(Container container, int index, int x, int y, SlotInfo slotInfo, Player player, ItemStack containerSource) {
-        return new Slot(container, index, x, y) {
-            public boolean mayPlace(ItemStack stack) {
-                return canInsert(containerSource, stack);
-            }
-        };
+    public ResourceLocation getId() {
+        return id;
     }
 
-    default Container decode(ItemStack container, ItemContainerContents contents) {
-        SimpleContainer inv = new SimpleContainer(getSize(container)) {
-            @Override
-            public boolean canAddItem(ItemStack stack) {
-                return super.canAddItem(stack) && canInsert(container, stack);
-            }
-        };
-
-        if (contents != null) {
-            for (int i = 0; i < contents.stream().toList().size() && i < inv.getContainerSize(); i++) {
-                inv.setItem(i, contents.stream().toList().get(i));
-            }
-        }
-
-        return inv;
+    public Component getName() {
+        return name;
     }
 
-    default ItemContainerContents encode(Container inventory) {
-        List<ItemStack> stacks = new ArrayList<>();
+    public double priority() {
+        return priority;
+    }
 
-        for (int i = 0; i < inventory.getContainerSize(); i++) {
-            stacks.add(inventory.getItem(i));
-        }
+    InventoryFeatureType.FeatureSet getDefaultFeatures() {
+        return features;
+    }
 
-        return ItemContainerContents.fromItems(stacks);
+    public InventoryType additionalSetup(ResourceLocation id, RegistryAccess registryAccess) {
+        this.features = features.initialize(features, new ModuleInstance(ItemModule.empty, registryAccess));
+        this.id = id;
+        return this;
     }
 }

@@ -25,6 +25,7 @@ public class MiapiBinding {
     public boolean blockInteraction;
     public boolean entityInteraction;
     public boolean itemInteraction;
+    public boolean nonItem = false;
     public InteractionHand[] hands = new InteractionHand[]{InteractionHand.MAIN_HAND, InteractionHand.OFF_HAND};
     public static Codec<MiapiBinding> CODEC = RecordCodecBuilder.create(
             instance ->
@@ -33,15 +34,25 @@ public class MiapiBinding {
                             Miapi.FIXED_BOOL_CODEC.optionalFieldOf("block_interaction", false).forGetter(binding -> binding.blockInteraction),
                             Miapi.FIXED_BOOL_CODEC.optionalFieldOf("entity_interaction", false).forGetter(binding -> binding.entityInteraction),
                             Miapi.FIXED_BOOL_CODEC.optionalFieldOf("item_interaction", true).forGetter(binding -> binding.itemInteraction),
+                            Miapi.FIXED_BOOL_CODEC.optionalFieldOf("no_item_interaction", false).forGetter(binding -> binding.nonItem),
                             Codec.INT.optionalFieldOf("scan_code", -1).forGetter(miapiBinding -> miapiBinding.defaultScanCode)
                     ).apply(instance, MiapiBinding::new));
 
-    private MiapiBinding(String category, boolean blockInteraction, boolean entityInteraction, boolean itemInteraction, int scanCode) {
+    public MiapiBinding(String category, boolean blockInteraction, boolean entityInteraction, boolean itemInteraction,boolean nonItem, int scanCode) {
         this.category = category;
         this.defaultScanCode = scanCode;
         this.blockInteraction = blockInteraction;
         this.entityInteraction = entityInteraction;
         this.itemInteraction = itemInteraction;
+    }
+
+    public MiapiBinding(String category, int scanCode) {
+        this.category = category;
+        this.defaultScanCode = scanCode;
+        this.blockInteraction = true;
+        this.entityInteraction = true;
+        this.itemInteraction = true;
+        nonItem = true;
     }
 
     public static MiapiBinding decode(ResourceLocation id, String data) {

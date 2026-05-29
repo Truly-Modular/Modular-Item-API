@@ -7,7 +7,6 @@ import dev.architectury.event.EventResult;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import smartin.miapi.Miapi;
@@ -22,8 +21,8 @@ import java.util.List;
 import java.util.function.Predicate;
 
 public class ModularAttackCommandProperty extends CodecProperty<List<ModularAttackCommandProperty.CommandContext>> {
-    public static Codec<List<CommandContext>> CODEC = Codec.list(AutoCodec.of(CommandContext.class).codec());
     public static ResourceLocation KEY = Miapi.id("damage_command");
+    public static Codec<List<CommandContext>> CODEC = Codec.list(AutoCodec.of(CommandContext.class).codec());
     public static ModularAttackCommandProperty property = new ModularAttackCommandProperty();
 
     protected ModularAttackCommandProperty() {
@@ -37,11 +36,11 @@ public class ModularAttackCommandProperty extends CodecProperty<List<ModularAtta
             return EventResult.pass();
         });
         MiapiEvents.LIVING_HURT.register(event -> {
-            livingHurt(event,true);
+            livingHurt(event, true);
             return EventResult.pass();
         });
         MiapiEvents.LIVING_HURT_AFTER.register(event -> {
-            livingHurt(event,false);
+            livingHurt(event, false);
             return EventResult.pass();
         });
     }
@@ -75,13 +74,14 @@ public class ModularAttackCommandProperty extends CodecProperty<List<ModularAtta
     public static void performCommands(List<ModularAttackCommandProperty.CommandContext> context, LivingEntity defender, LivingEntity attacker, ServerLevel serverLevel, Predicate<CommandContext> predicate) {
         context.forEach(commandContext -> {
             if (predicate.test(commandContext)) {
-                CommandSourceStack source;
-                if (commandContext.runAs.equals(CommandContextEntity.ATTACKER) && attacker instanceof ServerPlayer serverPlayer) {
-                    source = serverPlayer.createCommandSourceStack();
-                } else if (commandContext.runAs.equals(CommandContextEntity.DEFENDER) && defender instanceof ServerPlayer serverPlayer) {
-                    source = serverPlayer.createCommandSourceStack();
-                } else {
-                    source = serverLevel.getServer().createCommandSourceStack();
+                CommandSourceStack source = serverLevel.getServer().createCommandSourceStack();
+                if (commandContext.runAs.equals(CommandContextEntity.ATTACKER)) {
+                    source = source.withEntity(attacker);
+                } else if (commandContext.runAs.equals(CommandContextEntity.DEFENDER)) {
+                    source = source.withEntity(defender);
+                }
+                if (!commandContext.commandFeedback) {
+                    source = source.withSuppressedOutput();
                 }
 
                 if (commandContext.runAt.equals(CommandContextEntity.ATTACKER)) {
@@ -110,6 +110,8 @@ public class ModularAttackCommandProperty extends CodecProperty<List<ModularAtta
         List<String> command = new ArrayList<>();
         @CodecBehavior.Optional
         boolean onMeleeWeapon = false;
+        @CodecBehavior.Optional
+        boolean commandFeedback = false;
         @CodecBehavior.Optional
         boolean runBefore = false;
         @CodecBehavior.Optional

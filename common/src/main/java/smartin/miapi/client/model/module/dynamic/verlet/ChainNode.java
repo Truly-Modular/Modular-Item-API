@@ -10,6 +10,6 @@ public class ChainNode {
     public boolean locked = false;
     public boolean collide = false;
     public float gravity = 1.0f;
-    public float resistance = 0.3f;
+    public float resistance = 1.0f;
     public boolean hadCollision = false;
 }

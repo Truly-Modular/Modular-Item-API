@@ -38,7 +38,7 @@ public abstract class DynamicModel<S extends SimulationState>
         S state = getState(context);
 
 
-        double now = MiapiClient.currentTickFull();;
+        double now = MiapiClient.currentTickFull();
 
         double delta = now - state.lastTime;
         state.lastTime = now;

@@ -65,7 +65,7 @@ public class ChainModelProperty
                                                 ModelHolder.bakedModel(moduleInstance, md, stack)
                                         ),
                                         moduleInstance,
-                                        stack,displayMode
+                                        stack, displayMode
                                 ))
                                 .toList();
 
@@ -80,7 +80,9 @@ public class ChainModelProperty
 
                     ChainModel model = new ChainModel(
                             entries,
-                            data.segments,
+                            data.chainRadius,
+                            data.rigidness,
+                            data.iterations,
                             data.transform,
                             data.debug
                     );
@@ -109,36 +111,29 @@ public class ChainModelProperty
     ) {
         return MergeAble.mergeList(left, right, mergeType);
     }
-
-    /* ------------------------------------------------------------
-     *  Data Class
-     * ------------------------------------------------------------ */
-
     public static class ChainModelData {
 
         public static final Codec<ChainModelData> CODEC =
                 RecordCodecBuilder.create(instance -> instance.group(
                         Codec.FLOAT.optionalFieldOf("chainLength", 0.75f)
                                 .forGetter(d -> d.chainLength),
-
                         Codec.INT.optionalFieldOf("segments", 8)
                                 .forGetter(d -> d.segments),
-
+                        Codec.INT.optionalFieldOf("iterations", 200)
+                                .forGetter(d -> d.iterations),
                         Codec.FLOAT.optionalFieldOf("chainRadius", 0.03f)
                                 .forGetter(d -> d.chainRadius),
-
+                        Codec.FLOAT.optionalFieldOf("rigidness", 0.3f)
+                                .forGetter(d -> d.rigidness),
                         Miapi.toListOrSimple(ModelData.CODEC)
                                 .optionalFieldOf("models", List.of())
                                 .forGetter(d -> d.models),
-
                         Codec.list(SegmentData.CODEC)
                                 .optionalFieldOf("baseSegments", List.of())
                                 .forGetter(d -> d.baseSegments),
-
                         Codec.unboundedMap(Codec.INT, SegmentData.CODEC)
                                 .optionalFieldOf("overrides", Map.of())
                                 .forGetter(d -> d.overrides),
-
                         Transform.CODEC.optionalFieldOf("transform", Transform.IDENTITY)
                                 .forGetter(d -> d.transform),
                         Codec.BOOL.optionalFieldOf("debug", false)
@@ -149,18 +144,22 @@ public class ChainModelProperty
 
         public float chainLength;
         public int segments;
+        public int iterations;
         public float chainRadius;
         public List<ModelData> models;
         public List<SegmentData> baseSegments;
         public Map<Integer, SegmentData> overrides;
         public boolean debug;
+        public float rigidness;
 
         public Transform transform;
 
         public ChainModelData(
                 float chainLength,
                 int segments,
+                int iterations,
                 float chainRadius,
+                float rigidness,
                 List<ModelData> models,
                 List<SegmentData> baseSegments,
                 Map<Integer, SegmentData> overrides,
@@ -170,6 +169,8 @@ public class ChainModelProperty
             this.chainLength = chainLength;
             this.segments = segments;
             this.chainRadius = chainRadius;
+            this.iterations = iterations;
+            this.rigidness = rigidness;
 
             this.models = new ArrayList<>(models);
 
@@ -255,7 +256,9 @@ public class ChainModelProperty
             return new ChainModelData(
                     chainLength,
                     segments,
+                    iterations,
                     chainRadius,
+                    rigidness,
                     new ArrayList<>(models),
                     baseCopy,
                     overrideCopy,

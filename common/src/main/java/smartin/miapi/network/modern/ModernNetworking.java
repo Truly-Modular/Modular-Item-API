@@ -1,9 +1,11 @@
 package smartin.miapi.network.modern;
 
+import com.mojang.serialization.Codec;
 import dev.architectury.networking.NetworkManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -101,6 +103,52 @@ public class ModernNetworking {
                               TriConsumer<T, Player, RegistryAccess> onReceive) {
         public void receive(RegistryFriendlyByteBuf raw, Player player) {
             onReceive().accept(codec().decode(raw), player, raw.registryAccess());
+        }
+    }
+
+    @SuppressWarnings("unused")
+    public static record ServerToClientManager<T>(ResourceLocation id, StreamCodec<RegistryFriendlyByteBuf, T> codec,
+                                                  TriConsumer<T, Player, RegistryAccess> onReceive) {
+        public ServerToClientManager(ResourceLocation id, Codec<T> codec, TriConsumer<T, Player, RegistryAccess> onReceive) {
+            this(id, ByteBufCodecs.fromCodecWithRegistries(codec), onReceive);
+        }
+        public ServerToClientManager(ResourceLocation id, StreamCodec<RegistryFriendlyByteBuf, T> codec, TriConsumer<T, Player, RegistryAccess> onReceive) {
+            this.id = id;
+            this.codec = codec;
+            this.onReceive = onReceive;
+            registerC2SReceiver(id, codec, onReceive);
+        }
+
+        public void deRegister() {
+            deregisterC2SReceiver(id());
+        }
+
+        public void sendToClientPlayer(ServerPlayer player, T data) {
+            sendToPlayer(id(), player, codec(), data);
+        }
+    }
+
+    @SuppressWarnings("unused")
+    public static record ClientToServerManager<T>(ResourceLocation id, StreamCodec<RegistryFriendlyByteBuf, T> codec,
+                                                  TriConsumer<T, Player, RegistryAccess> onReceive) {
+        public ClientToServerManager(ResourceLocation id, Codec<T> codec, TriConsumer<T, Player, RegistryAccess> onReceive) {
+            this(id, ByteBufCodecs.fromCodecWithRegistries(codec), onReceive);
+        }
+
+
+        public ClientToServerManager(ResourceLocation id, StreamCodec<RegistryFriendlyByteBuf, T> codec, TriConsumer<T, Player, RegistryAccess> onReceive) {
+            this.id = id;
+            this.codec = codec;
+            this.onReceive = onReceive;
+            registerC2SReceiver(id, codec, onReceive);
+        }
+
+        public void deRegister() {
+            deregisterC2SReceiver(id());
+        }
+
+        public void sendServer(T data, RegistryAccess access) {
+            sendToServer(id(), codec(), data, access);
         }
     }
 

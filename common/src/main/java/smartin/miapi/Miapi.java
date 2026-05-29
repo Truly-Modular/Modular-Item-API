@@ -67,6 +67,7 @@ import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.conditions.ConditionManager;
 import smartin.miapi.modules.conditions.ModuleCondition;
 import smartin.miapi.modules.properties.attributes.EquipmentSlotGroupWrapper;
+import smartin.miapi.modules.properties.inventory.features.InventoryFeatureType;
 import smartin.miapi.modules.properties.inventory.screen.DefaultInventoryScreenHandler;
 import smartin.miapi.modules.properties.render.baked.ModelData;
 import smartin.miapi.modules.properties.util.ComponentApplyProperty;
@@ -162,6 +163,8 @@ public class Miapi {
         CodecBehavior.registerClass(ModuleSwapLootFunction.class, ModuleSwapLootFunction.CODEC.codec());
         CodecBehavior.registerClass(ModelData.class, ModelData.CODEC);
         CodecBehavior.registerClass(Optional.class, OptionalGetter.getter);
+        CodecBehavior.registerClass(InventoryFeatureType.FeatureSet.class, InventoryFeatureType.FeatureSet.CODEC);
+        CodecBehavior.registerClass(ItemStack.class, ItemStack.CODEC);
 
         //RegistryInventory.LOADABLE_DATAPACK_REGISTRY.register(Miapi.id("extendo"), new DatapackHolder(Component.literal("extendo"), false));
 

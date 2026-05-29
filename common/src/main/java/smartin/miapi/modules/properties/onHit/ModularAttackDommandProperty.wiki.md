@@ -33,6 +33,9 @@ Commands can trigger from melee weapon hits, direct melee attacks, or ranged att
 - **`onBefore`** *(boolean, optional, default = false)*:  
   If the commands are run before or after applying damage
 
+- **`commandFeedback`** *(boolean, optional, default = false)*:  
+  If the commands feedback is relayed into chat
+
 - **`runAt`** *(string, optional, default = `"DEFENDER"`)*:  
   Determines where the command executes.  
   Values:

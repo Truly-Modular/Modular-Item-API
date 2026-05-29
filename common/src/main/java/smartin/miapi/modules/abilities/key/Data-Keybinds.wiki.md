@@ -65,6 +65,19 @@ example:
     "entity_interaction": false
 }
 ```
-while this is placed in miapi/miapi/key_binging/test
+while this is placed in miapi/miapi/key_binding/test
 
 will add a new custom keybind
+
+```json
+{
+    "keybind_ability_context":{
+        "miapi:test": {
+            "copy_item": {
+                "id":"minecraft:bow",
+                "fake_item_identity": true
+            }
+        }
+    }
+}
+```

@@ -2,176 +2,226 @@ package smartin.miapi.client.model.module.dynamic.verlet;
 
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import org.joml.Matrix3f;
-import org.joml.Quaternionf;
 import org.joml.Vector3f;
+import smartin.miapi.Miapi;
+
+import java.util.List;
 
 import static smartin.miapi.client.model.module.dynamic.ChainCollisionUtil.collideNodeWithWorld;
 
-/**
- * attempt at a verlet implementation, there still seem to be some issues with this
- * TODO:fixme
- */
 public class VerletIntegrator {
 
-    public static void runVerlet(Level level, float delta, ChainSimulationState sim, Vector3f gravity, int passes, boolean ui, Vec3 camPos) {
-        // constraint passes
-        VerletIntegrator.solveInitVelocity(sim, delta, gravity, ui);
+    private static final float EPSILON = 1e-6f;
+    private static final float MIN_DIST_SQ = 1e-12f;
 
-        for (int i = 0; i < passes; i++) {
-            boolean stable = VerletIntegrator.integrate(sim, level,false, ui);
-            if (stable) break;
-        }
-        //VerletIntegrator.integrate(sim, level,true, ui);
+    private static final float FIXED_DT = 1.0f / 60.0f;
+    private static final float MAX_DT = 1.0f / 15.0f;
+
+    private static float r(float v) {
+        return Math.round(v * 1000f) / 1000f;
     }
 
-    private static void solveInitVelocity(
+
+    public static void runVerlet(
+            Level level,
+            List<ChainUpdater> updaters,
+            int minSteps,
+            boolean initSolve,
+            float delta,
+            float damping,
+            //probably should think of a better name for this
+            float rigidness, // 0 = rigid, 1 = springy
+            ChainSimulationState sim,
+            Vector3f gravity,
+            int passes,
+            boolean ui,
+            Vec3 camPos
+    ) {
+
+        float dt = Math.max(1e-4f, Math.min(delta, MAX_DT));
+
+        //sth still si wrong with running multiple steps
+        //cant figure it out, even loging vel and accel doesnt seem to imply some rapid changes there,
+        //but chain still behaves incredibly weirdly
+        int steps = 1;//Math.max(minSteps, (int) Math.ceil(dt / FIXED_DT));
+        float h = dt / steps;
+        float deltaPercent = 0;
+        for (int i = 0; i < steps; i++) {
+
+            deltaPercent += 1.0f / steps;
+            for (ChainUpdater updater : updaters) {
+                updater.apply(sim, deltaPercent);
+            }
+            Vector3f oldHandle = new Vector3f(sim.prevHandlePos);
+            sim.rootDelta
+                    .set(sim.handlePos)
+                    .sub(oldHandle);
+
+            sim.rootAcceleration
+                    .set(sim.rootDelta)
+                    .sub(sim.prevRootDelta);
+
+            sim.prevRootDelta.set(sim.rootDelta);
+            Miapi.LOGGER.info(
+                    "vel=" + r(sim.rootDelta.length()) +
+                    " accel=" + r(sim.rootAcceleration.length())
+            );
+            if (initSolve) {
+                integrateMotion(sim, h, damping, gravity);
+            }
+
+            for (int p = 0; p < passes; p++) {
+                solveConstraints(sim, level, rigidness, h, ui);
+            }
+
+            sim.prevDt = h;
+        }
+    }
+
+    private static void integrateMotion(
             ChainSimulationState s,
             float dt,
-            Vector3f gravity,
-            boolean ui
+            float damping,
+            Vector3f gravity
     ) {
+
         float dt2 = dt * dt;
 
-        // --- positional verlet ---
+        // timestep-invariant damping
+        float normalizedDamping =
+                (float) Math.pow(damping, dt / FIXED_DT);
+
         for (ChainNode n : s.nodes) {
-            if (n.locked) continue;
 
-            float damping = 0.98f;
-            float resistance = n.hadCollision ? n.resistance : 1.0f;
+            if (n.locked) {
+                continue;
+            }
 
-            Vector3f vel = new Vector3f(n.pos).sub(n.prevPos)
-                    .mul(damping * resistance);
+            Vector3f current = new Vector3f(n.pos);
 
-            n.prevPos.set(n.pos);
+            //corrections for variable delta times
+            float dtRatio = s.prevDt > 0f
+                    ? dt / s.prevDt
+                    : 1f;
+
+            Vector3f vel = new Vector3f(n.pos)
+                    .sub(n.prevPos)
+                    .mul(dtRatio)
+                    .mul(normalizedDamping);
+
             n.pos.add(vel);
-            n.pos.fma(dt2, new Vector3f(gravity).mul(n.gravity * resistance));
+
+            float resistance =
+                    n.hadCollision
+                            ? n.resistance
+                            : 1.0f;
+
+            n.pos.fma(
+                    dt2,
+                    new Vector3f(gravity)
+                            .mul(n.gravity * resistance)
+            );
+
+            n.prevPos.set(current);
             n.hadCollision = false;
         }
     }
 
-
-    private static boolean integrate(
+    private static void solveConstraints(
             ChainSimulationState s,
             Level level,
-            boolean fixSolve,
+            float rigidness,
+            float dt,
             boolean ui
     ) {
-        s.nodes[0].pos.set(s.handlePos);
 
-        boolean notWorked = true;
+        float stiffness = 1.0f - Math.max(0f, Math.min(1f, rigidness));
+        float stiffnessPerStep =
+                1.0f - (float) Math.pow(
+                        1.0f - stiffness,
+                        dt / FIXED_DT
+                );
+
+        s.nodes[0].pos.set(s.handlePos);
 
         for (ChainSegment seg : s.segments) {
 
-            ChainNode na = s.nodes[seg.a];
-            ChainNode nb = s.nodes[seg.b];
+            ChainNode a = s.nodes[seg.a];
+            ChainNode b = s.nodes[seg.b];
 
-            // --- positional constraint ---
-            Vector3f delta = new Vector3f(nb.pos).sub(na.pos);
-            float dist = delta.length();
-            if (dist < 1e-6f) continue;
-            notWorked = false;
+            Vector3f delta = new Vector3f(b.pos).sub(a.pos);
 
-            float diff = (dist - seg.restLength) / dist;
-            delta.mul(diff);
-            if (fixSolve) {
-                if (!nb.locked) {
-                    nb.pos.sub(delta);
+            float distSq = delta.lengthSquared();
+
+            if (distSq < MIN_DIST_SQ) {
+                continue;
+            }
+
+            float dist = (float) Math.sqrt(distSq);
+
+            float error = dist - seg.restLength;
+
+            if (Math.abs(error) < EPSILON) {
+                continue;
+            }
+
+            float invDist = 1.0f / dist;
+
+            delta.mul(invDist * error);
+
+            float wA = a.locked ? 0f : 1f;
+            float wB = b.locked ? 0f : 1f;
+
+            float wSum = wA + wB;
+
+            if (wSum <= 0f) {
+                continue;
+            }
+
+            Vector3f correctionA = new Vector3f(delta)
+                    .mul((wA / wSum) * stiffnessPerStep);
+
+            Vector3f correctionB = new Vector3f(delta)
+                    .mul((wB / wSum) * stiffnessPerStep);
+
+            if (!a.locked) {
+                a.pos.add(correctionA);
+            }
+
+            if (!b.locked) {
+                b.pos.sub(correctionB);
+            }
+        }
+
+        if (!ui) {
+
+            for (ChainSegment seg : s.segments) {
+
+                ChainNode a = s.nodes[seg.a];
+                ChainNode b = s.nodes[seg.b];
+
+                if (a.collide && !a.locked) {
+                    a.hadCollision |=
+                            collideNodeWithWorld(
+                                    level,
+                                    a.pos,
+                                    seg.radius
+                            );
                 }
-            } else {
-                if (na.locked && !nb.locked) {
-                    nb.pos.sub(delta);
-                } else if (!na.locked && nb.locked) {
-                    na.pos.add(delta);
-                } else if (!na.locked) {
-                    delta.mul(0.5f);
-                    na.pos.add(delta);
-                    nb.pos.sub(delta);
+
+                if (b.collide && !b.locked) {
+                    b.hadCollision |=
+                            collideNodeWithWorld(
+                                    level,
+                                    b.pos,
+                                    seg.radius
+                            );
                 }
             }
-
-
-            // --- collision ---
-            if (!ui) {
-                if (na.collide && !na.locked)
-                    na.hadCollision |= collideNodeWithWorld(level, na.pos, seg.radius);
-
-                if (nb.collide && !nb.locked)
-                    nb.hadCollision |= collideNodeWithWorld(level, nb.pos, seg.radius);
-            }
-        }
-        return notWorked || true;
-    }
-
-    public static void computeSegmentRotations(
-            ChainNode[] nodes,
-            ChainSegment[] segments,
-            Quaternionf baseRotation
-    ) {
-        int n = segments.length;
-
-        Vector3f[] t = new Vector3f[n];
-        Vector3f[] normal = new Vector3f[n];
-
-        // tangents
-        for (int i = 0; i < n; i++) {
-            ChainSegment s = segments[i];
-            t[i] = new Vector3f(nodes[s.b].pos)
-                    .sub(nodes[s.a].pos)
-                    .normalize();
-        }
-
-        // initial normal
-        Vector3f up = Math.abs(t[0].y) < 0.99f
-                ? new Vector3f(0, 1, 0)
-                : new Vector3f(1, 0, 0);
-
-        normal[0] = up.cross(t[0], new Vector3f()).normalize();
-
-        // first frame
-        {
-            Quaternionf frameRot = new Quaternionf();
-            setRotationFromFrame(frameRot, t[0], normal[0]);
-            segments[0].rot.set(baseRotation).mul(frameRot);
-        }
-
-        // parallel transport
-        for (int i = 0; i < n - 1; i++) {
-            Vector3f v = t[i].cross(t[i + 1], new Vector3f());
-            float c = t[i].dot(t[i + 1]);
-
-            if (v.lengthSquared() < 1e-6f) {
-                normal[i + 1] = new Vector3f(normal[i]);
-            } else {
-                float angle = (float) Math.atan2(v.length(), c);
-                v.normalize();
-                normal[i + 1] = new Vector3f(normal[i])
-                        .rotateAxis(angle, v.x, v.y, v.z);
-            }
-
-            Quaternionf frameRot = new Quaternionf();
-            setRotationFromFrame(frameRot, t[i + 1], normal[i + 1]);
-
-            segments[i + 1].rot.set(baseRotation).mul(frameRot);
         }
     }
 
-
-    // Z = tangent, X = normal, Y = binormal
-    private static void setRotationFromFrame(
-            Quaternionf out,
-            Vector3f tangent,
-            Vector3f normal
-    ) {
-        Vector3f binormal = tangent.cross(normal, new Vector3f());
-
-        Matrix3f m = new Matrix3f(
-                normal.x, binormal.x, tangent.x,
-                normal.y, binormal.y, tangent.y,
-                normal.z, binormal.z, tangent.z
-        );
-
-        out.setFromUnnormalized(m);
+    public interface ChainUpdater {
+        void apply(ChainSimulationState sim, float deltaPercent);
     }
 }
-

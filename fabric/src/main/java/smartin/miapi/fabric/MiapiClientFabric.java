@@ -2,6 +2,7 @@ package smartin.miapi.fabric;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.model.loading.v1.ModelLoadingPlugin;
 import net.fabricmc.fabric.api.client.rendering.v1.ArmorRenderer;
 import net.minecraft.resources.ResourceLocation;
@@ -11,13 +12,15 @@ import smartin.miapi.registries.RegistryInventory;
 
 import java.util.List;
 
+import static smartin.miapi.client.MiapiClient.KEY_BINDINGS;
+
 @Environment(EnvType.CLIENT)
 public class MiapiClientFabric {
 
     public static void setupClient() {
         UseAnim anim;
 
-        //smartin.miapi.client.MiapiClient.KEY_BINDINGS.addCallback((KeyBindingHelper::registerKeyBinding));
+        KEY_BINDINGS.addCallback((KeyBindingHelper::registerKeyBinding));
         RegistryInventory.MODULAR_ITEMS.addCallback((item) -> ArmorRenderer.register(new ModularArmorRenderer(), item));
         ModelLoadingPlugin.register(pluginContext -> {
             List<ResourceLocation> ids = RegistryInventory.MODULAR_ITEMS.getFlatMap().keySet().stream().map(id -> ResourceLocation.parse(id.toString().replace("item/", ""))).toList();

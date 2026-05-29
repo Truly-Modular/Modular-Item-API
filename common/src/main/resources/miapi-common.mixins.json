@@ -63,11 +63,8 @@
         "smithing.SmithingTransformRecipeAccessor"
     ],
     "client": [
-        "client.BufferBuilderAccessor",
-        "client.OptionsAccessor",
-        "client.SpriteSourceListAccessor",
-        "client.SpriteSourcesAccessor",
         "client.AbstractConainerScreenMixin",
+        "client.BufferBuilderAccessor",
         "client.BuiltinModelItemRendererMixin",
         "client.ClientAdvancementManagerAccessor",
         "client.ClientPlayerEntityMixin",
@@ -90,9 +87,12 @@
         "client.ModelLoaderMixin",
         "client.ModelPredicateProviderRegistryAccessor",
         "client.MultiPlayerGameModeMixin",
+        "client.OptionsAccessor",
         "client.SpriteContentsAccessor",
         "client.SpriteContentsNativeImageGetter",
+        "client.SpriteSourceListAccessor",
         "client.SpriteSourceListMixin",
+        "client.SpriteSourcesAccessor",
         "client.TextureAtlasAccessor",
         "client.TextureAtlasHolderAccessor"
     ],

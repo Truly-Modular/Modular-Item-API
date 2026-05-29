@@ -1,5 +1,7 @@
 package smartin.miapi.modules.abilities.key;
 
+import com.redpxnda.nucleus.event.PrioritizedEvent;
+import dev.architectury.event.EventResult;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.InteractionHand;
@@ -13,10 +15,23 @@ import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.mixin.client.MinecraftAccessor;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class ClientKeybinding {
     public static boolean isUsing = false;
+    public static PrioritizedEvent<ClientKeyBindPressEvent> CLIENT_KEY_PRESS_EVENT = PrioritizedEvent.createEventResult();
+    public static PrioritizedEvent<ClientKeyBindReleaseEvent> CLIENT_KEY_PRESS_END_EVENT = PrioritizedEvent.createEventResult();
+
+    public interface ClientKeyBindPressEvent {
+        EventResult process(Minecraft minecraft, LocalPlayer player, MiapiBinding binding, List<InteractionHand> hands, AtomicReference<Boolean> requireModularItem, AtomicReference<Boolean> requireItemAbility);
+    }
+
+    public interface ClientKeyBindReleaseEvent {
+        EventResult process(Minecraft minecraft, LocalPlayer player, MiapiBinding binding);
+    }
 
     public static void clientTick(Minecraft client) {
         LocalPlayer player = client.player;
@@ -28,7 +43,7 @@ public class ClientKeybinding {
                     client.gameMode.releaseUsingItem(player);
                     isUsing = false;
                     binding.lastDown = binding.asKeyMapping().isDown();
-                    removeActiveButton(client, player);
+                    removeActiveButton(client, binding, player);
                     return;
                 }
             }
@@ -60,32 +75,42 @@ public class ClientKeybinding {
 
     private static void startItemUseLogic(MiapiBinding binding, LocalPlayer player) {
         //start use item logic here
-        binding.lastDown = true;
-        if (startUseItem(Minecraft.getInstance(), binding)) {
+        if (startUseItem(Minecraft.getInstance(), binding, player)) {
             isUsing = true;
         }
+        binding.lastDown = true;
     }
 
-    private static void removeActiveButton(Minecraft client, LocalPlayer player) {
+    private static void removeActiveButton(Minecraft client, MiapiBinding binding, LocalPlayer player) {
+        if (CLIENT_KEY_PRESS_END_EVENT.invoker().process(client, player, binding).interruptsFurtherEvaluation()) {
+            return;
+        }
         KeyBindManager.updateServerId(Miapi.id("none"), client.player);
         ItemAbilityManager.clientKeyBindID.remove(player);
     }
 
-    private static boolean startUseItem(Minecraft minecraft, MiapiBinding binding) {
+    private static boolean startUseItem(Minecraft minecraft, MiapiBinding binding, LocalPlayer player) {
         if (!minecraft.gameMode.isDestroying()) {
             ((MinecraftAccessor) minecraft).setRightClickDelay(4);
             if (!minecraft.player.isHandsBusy()) {
                 if (minecraft.hitResult == null) {
                     Miapi.LOGGER.warn("Null returned as 'hitResult', this shouldn't happen!");
                 }
+                List<InteractionHand> hands = new ArrayList<>(List.of(binding.hands));
+                AtomicReference<Boolean> requireModularItem = new AtomicReference(true);
+                AtomicReference<Boolean> requireItemAbility = new AtomicReference(Boolean.TRUE);
 
-                for (InteractionHand interactionHand : binding.hands) {
+                if (CLIENT_KEY_PRESS_EVENT.invoker().process(minecraft, player, binding, hands, requireModularItem, requireItemAbility).interruptsFurtherEvaluation()) {
+                    return false;
+                }
+
+                for (InteractionHand interactionHand : hands) {
                     ItemStack itemStack = minecraft.player.getItemInHand(interactionHand);
-                    if (ModularItem.isModularItem(itemStack)) {
+                    if (ModularItem.isModularItem(itemStack) || !requireModularItem.get()) {
                         if (!itemStack.isItemEnabled(minecraft.level.enabledFeatures())) {
                             return false;
                         }
-                        if (KeyBindAbilityManagerProperty.property.getData(itemStack).isEmpty()) {
+                        if (KeyBindAbilityManagerProperty.property.getData(itemStack).isEmpty() && requireItemAbility.get()) {
                             //full prevent execution if there is no ability. reduces networking
                             return false;
                         }
@@ -95,7 +120,7 @@ public class ClientKeybinding {
                         if (minecraft.hitResult != null) {
                             switch (minecraft.hitResult.getType()) {
                                 case ENTITY:
-                                    if (binding.entityInteraction) {
+                                    if (binding.entityInteraction ) {
                                         EntityHitResult entityHitResult = (EntityHitResult) minecraft.hitResult;
                                         Entity entity = entityHitResult.getEntity();
                                         if (!minecraft.level.getWorldBorder().isWithinBounds(entity.blockPosition())) {
@@ -140,7 +165,7 @@ public class ClientKeybinding {
                             }
                         }
 
-                        if (!itemStack.isEmpty() && binding.itemInteraction) {
+                        if (!itemStack.isEmpty() && (binding.itemInteraction)) {
                             InteractionResult interactionResult3 = minecraft.gameMode.useItem(minecraft.player, interactionHand);
                             if (interactionResult3.consumesAction()) {
                                 if (interactionResult3.shouldSwing()) {

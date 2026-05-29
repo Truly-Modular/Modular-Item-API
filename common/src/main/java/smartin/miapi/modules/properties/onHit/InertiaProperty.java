@@ -24,14 +24,12 @@ public class InertiaProperty extends DoubleProperty {
 
                 getData(damageSource.getWeaponItem()).ifPresent(inertia -> {
                     if (inertia.getValue() > 0) {
-                        // --- Compute attacker’s horizontal velocity
+
                         Vec3 motion = livingAttacker.getKnownMovement();
-                        double horizontalSpeed = motion.length();
+                        double speed = motion.length();
 
-                        // --- Get multiplier from extracted function
-                        double multiplier = computeVelocityMultiplier(horizontalSpeed);
+                        double multiplier = computeVelocityMultiplier(speed);
 
-                        // --- Apply final bonus
                         double finalBonus = inertia.getValue() * multiplier;
                         bonusDamage.add(finalBonus * baseDamage);
                     }

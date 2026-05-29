@@ -5,10 +5,10 @@ import com.redpxnda.nucleus.codec.auto.ConfigAutoCodec;
 import com.redpxnda.nucleus.util.Color;
 import com.redpxnda.nucleus.util.Comment;
 import net.minecraft.resources.ResourceLocation;
+import smartin.miapi.Miapi;
 import smartin.miapi.client.MiapiClient;
 import smartin.miapi.modules.abilities.key.MiapiBinding;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -41,6 +41,7 @@ public class MiapiClientConfig {
         public Color green = new Color(0, 255, 0, 255);
 
     }
+
     @ConfigAutoCodec.ConfigClassMarker
     public static class BatchRenderCategory {
         @AutoCodec.Name("enable_hotbar")
@@ -109,6 +110,9 @@ public class MiapiClientConfig {
         @AutoCodec.Name("animated_materials")
         public boolean animatedMaterials = true;
 
+        @AutoCodec.Name("basicVerlet")
+        public boolean basicVerlet = true;
+
         @Comment("If Editor is enabled despite nucleus not being loaded")
         @AutoCodec.Name("allow_editor_no_nucleus")
         public boolean allowEditorNoNucleus = false;
@@ -121,13 +125,22 @@ public class MiapiClientConfig {
         @AutoCodec.Name("split_new_line")
         public boolean splitNewLineAlways = false;
 
-        //@AutoCodec.Name("keybinds")
-        //@Comment("""
-        //        Keybinds are kept in the config so they are available during gamestart.
-        //        This is required as if keys are registered later the default binding is overwriten.
-        //        """)
+        @AutoCodec.Name("keybinds")
+        @Comment("""
+                Keybinds are kept in the config so they are available during gamestart.
+                This is required so that.
+                1) Rebinding on the main menu is possible
+                2) Keybindings dont continously default back to their default on world load.
+                                
+                This isnt meant to be interacted with by users.
+                """)
         //@AutoCodec.Ignored
-        public Map<ResourceLocation, MiapiBinding> bindings = new HashMap<>();
+        public Map<ResourceLocation, MiapiBinding> bindings = Map.of(
+                Miapi.id("backpack-open"), new MiapiBinding("miapi_backpack", 5),
+                Miapi.id("food-pouch"), new MiapiBinding("miapi_backpack", 5),
+                Miapi.id("throwing-pouch"), new MiapiBinding("miapi_backpack", 5),
+                Miapi.id("tool-belt"), new MiapiBinding("miapi_backpack", 5)
+        );
     }
 
     @ConfigAutoCodec.ConfigClassMarker

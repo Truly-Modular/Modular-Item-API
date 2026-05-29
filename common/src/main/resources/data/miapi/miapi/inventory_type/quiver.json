@@ -1,0 +1,10 @@
+{
+    "name": "Testing Quiver",
+    "priority": 8,
+    "features": {
+        "size": 10,
+        "contents_whitelist": [
+            "minecraft:arrows"
+        ]
+    }
+}

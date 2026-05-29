@@ -1,0 +1,7 @@
+{
+    "name": "Testing Backpack",
+    "priority": 10,
+    "features": {
+        "size": 10
+    }
+}

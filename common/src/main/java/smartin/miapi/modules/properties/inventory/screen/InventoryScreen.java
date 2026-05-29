@@ -3,8 +3,10 @@ package smartin.miapi.modules.properties.inventory.screen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
+import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.ParentHandledScreen;
 import smartin.miapi.modules.properties.inventory.SlotInfo;
 
@@ -13,6 +15,7 @@ import java.util.LinkedHashSet;
 import java.util.stream.Collectors;
 
 public class InventoryScreen extends ParentHandledScreen<DefaultInventoryScreenHandler> {
+    public static final ResourceLocation BACKGROUND_TEXTURE = Miapi.id("textures/gui/backpack/background.png");
 
     private SlotInfo hoveredInventory = null;
     public static int leftSlotInfSpace = 22;
@@ -67,8 +70,6 @@ public class InventoryScreen extends ParentHandledScreen<DefaultInventoryScreenH
 
         super.render(context, mouseX, mouseY, delta);
 
-        renderHighlights(context);
-
         // Render headers AFTER slots
         layoutManager.renderHeaders(context, mouseX, mouseY);
         updateHoveredInventory(context, mouseX, mouseY);
@@ -87,30 +88,35 @@ public class InventoryScreen extends ParentHandledScreen<DefaultInventoryScreenH
     }
 
     private void renderHighlights(GuiGraphics gfx) {
-        if (hoveredInventory == null) return;
-
         int left = this.leftPos;
         int top = this.topPos;
+        layoutManager.withScissor(gfx,()->{
+            for (DefaultInventoryScreenHandler.ManagedInventory managed : menu.getManagedInventories()) {
+                for (int i = managed.firstSlot; i <= managed.lastSlot; i++) {
+                    DefaultInventoryScreenHandler.ManagedSlot slot = menu.getManagedSlots().get(i);
+                    if (!slot.isActive()) continue;
 
-        for (DefaultInventoryScreenHandler.ManagedInventory managed : menu.getManagedInventories()) {
-            if (!hoveredInventory.equals(managed.slotInfo)) continue;
+                    if (hoveredInventory != null && !hoveredInventory.equals(managed.slotInfo)) {
+                        gfx.blit(BACKGROUND_TEXTURE,
+                                left + slot.x - 1,
+                                top + slot.y - 1,
+                                18, 18,
+                                176.0f, 18f,
+                                18, 18,
+                                512, 512);
 
-            int color = managed.slotInfo.getColor().argb();
-
-            for (int i = managed.firstSlot; i <= managed.lastSlot; i++) {
-                Slot slot = menu.getManagedSlots().get(i);
-
-                if (!slot.isActive()) continue;
-
-                gfx.fill(
-                        left + slot.x - 1,
-                        top + slot.y - 1,
-                        left + slot.x + 17,
-                        top + slot.y + 17,
-                        color
-                );
+                    } else {
+                        gfx.blit(BACKGROUND_TEXTURE,
+                                left + slot.x - 1,
+                                top + slot.y - 1,
+                                18, 18,
+                                176.0f, 0f,
+                                18, 18,
+                                512, 512);
+                    }
+                }
             }
-        }
+        });
     }
 
     private void updateHoveredInventory(GuiGraphics context, int mouseX, int mouseY) {
@@ -164,6 +170,12 @@ public class InventoryScreen extends ParentHandledScreen<DefaultInventoryScreenH
 
     @Override
     protected void renderBg(GuiGraphics gfx, float delta, int mouseX, int mouseY) {
-        // Background only — layout handled by SlotLayoutManager
+        int i = (this.width - this.imageWidth - 6) / 2 + leftSlotInfSpace - 5;
+        int j = (this.height - this.imageHeight) / 2 - 2;
+        gfx.blit(BACKGROUND_TEXTURE, i, j, 175, 3, 0.0f, 0.0f, 175, 3, 512, 512);
+        int slotHeight = 6 * 18;
+        gfx.blit(BACKGROUND_TEXTURE, i, j + 3, 175, slotHeight + 15, 0.0f, 3.0f, 175, 12, 512, 512);
+        gfx.blit(BACKGROUND_TEXTURE, i, j + slotHeight + 15, 175, 84, 0.0f, 15.0f, 175, 84, 512, 512);
+        renderHighlights(gfx);
     }
 }

@@ -1,0 +1,7 @@
+{
+    "inventory_features": {
+        "miapi:backpack": {
+            "interact_inventory_item_binding": "miapi:throwing-pouch"
+        }
+    }
+}

@@ -4,6 +4,7 @@
 - fixed some behaviour around durability if full break is turned on
 - fixed magazine crossbows disconnecting players on shoot
 - fixed leaving material on removed modules
+- fixed crash/issues related to generated detected attributes
 ### Changes
 - buffed amethyst
 - buffed bone

@@ -9,6 +9,7 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import smartin.miapi.client.gui.PositionedMutableSlot;
+import smartin.miapi.modules.properties.inventory.InventoryInstance;
 import smartin.miapi.modules.properties.inventory.InventoryType;
 import smartin.miapi.modules.properties.inventory.ItemInventoryManager;
 import smartin.miapi.modules.properties.inventory.SlotInfo;
@@ -21,12 +22,13 @@ import java.util.List;
 public class DefaultInventoryScreenHandler extends AbstractContainerMenu {
 
     private final Player player;
-    private List<ManagedSlot> slots = new ArrayList<>();
-    private List<Slot> coreItemSlots = new ArrayList<>();
+    private final List<ManagedSlot> slots = new ArrayList<>();
+    private final List<Slot> coreItemSlots = new ArrayList<>();
 
     public static class ManagedInventory {
         public SlotInfo slotInfo;
         public InventoryType type;
+        public InventoryInstance inventoryInstance;
         public Container container;
 
         public int firstSlot;
@@ -91,38 +93,30 @@ public class DefaultInventoryScreenHandler extends AbstractContainerMenu {
         MANAGED INVENTORIES (NO LAYOUT HERE)
         ------------------------------------
          */
-        for (InventoryType type : ItemInventoryManager.INVENTORY_TYPES.values()) {
-
-            for (SlotInfo slotInfo : slotInfos) {
-                ItemStack containerStack = slotInfo.getStack(player);
-                if (containerStack.isEmpty()) continue;
-
-                Container container = ItemInventoryManager.loadOrCreate(containerStack, type.getId());
-                int size = container.getContainerSize();
-                if (size <= 0) continue;
-
-                ManagedInventory managed = new ManagedInventory();
-                managed.slotInfo = slotInfo;
-                managed.type = type;
-                managed.container = container;
-                managed.firstSlot = slots.size();
-
-                managedInventories.add(managed);
-
-                for (int i = 0; i < size; i++) {
-                    ManagedSlot slot = new ManagedSlot(managed, container, i);
-                    addSlot(slot);
-                    slots.add(slot);
-                    globalIndex++;
-                }
-
-                managed.lastSlot = slots.size() - 1;
+        for (InventoryInstance instance : ItemInventoryManager.getAllInventories(player)) {
+            Container container = instance.create();
+            ManagedInventory managed = new ManagedInventory();
+            managed.inventoryInstance = instance;
+            managed.container = container;
+            managed.type = instance.getType();
+            managed.firstSlot = slots.size();
+            managed.slotInfo = instance.getSlot();
+            for (int i = 0; i < instance.getSize(); i++) {
+                ManagedSlot slot = new ManagedSlot(managed, container, i){
+                    public boolean mayPlace(ItemStack stack) {
+                        return instance.canInsert(stack);
+                    }
+                };
+                addSlot(slot);
+                slots.add(slot);
+                globalIndex++;
             }
-
+            managed.lastSlot = slots.size() - 1;
+            managedInventories.add(managed);
         }
 
         int leftPuffer = 22;
-        int yOffset = 6*18+6;
+        int yOffset = 6 * 18 + 6;
         this.containerSlotCount = globalIndex;
         int playerInvY = yOffset + 10;
         // top of player inventory
@@ -199,9 +193,7 @@ public class DefaultInventoryScreenHandler extends AbstractContainerMenu {
         for (ManagedInventory managed : managedInventories) {
 
             ItemStack stack = managed.slotInfo.getStack(player);
-
-            ItemInventoryManager.save(stack, managed.type, managed.container);
-
+            managed.inventoryInstance.save(managed.container);
             managed.slotInfo.setStack(stack, player);
         }
     }

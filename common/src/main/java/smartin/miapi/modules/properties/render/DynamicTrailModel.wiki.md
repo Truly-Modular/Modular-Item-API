@@ -18,7 +18,7 @@ The JSON value can be **a single object** or **a list of objects**.
   "texture": "miapi:item/trail",
   "debug": false,
   "color_provider": "material",
-  "display_contest": [
+  "display_context": [
     "THIRD_PERSON_LEFT_HAND",
     "THIRD_PERSON_RIGHT_HAND",
     "GROUND"

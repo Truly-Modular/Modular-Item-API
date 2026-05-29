@@ -1,0 +1,11 @@
+{
+    "name": "Food Pouch",
+    "priority": 7,
+    "features": {
+        "size": 10,
+        "contents_whitelist": [
+            "minecraft:food"
+        ],
+        "interact_inventory_item_binding": "miapi:food-pouch"
+    }
+}

@@ -1,7 +1,6 @@
 package smartin.miapi.material.generated;
 
 import com.google.gson.JsonElement;
-import com.mojang.datafixers.util.Either;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
@@ -10,7 +9,6 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -27,6 +25,7 @@ import smartin.miapi.modules.properties.ComponentProperty;
 import smartin.miapi.modules.properties.CopyItemLoreProperty;
 import smartin.miapi.modules.properties.FakeItemTagProperty;
 import smartin.miapi.modules.properties.attributes.AttributeProperty;
+import smartin.miapi.modules.properties.attributes.EquipmentSlotGroupWrapper;
 import smartin.miapi.modules.properties.enchanment.CraftingEnchantProperty;
 import smartin.miapi.modules.properties.onHit.CopyItemOnHit;
 import smartin.miapi.modules.properties.util.DoubleOperationResolvable;
@@ -192,14 +191,14 @@ public class GeneratedMaterialPropertyManager {
                         .toList();
             }
 
-            Map<ResourceLocation, Map<AttributeModifier.Operation, Map<Either<EquipmentSlotGroup, Boolean>, DoubleOperationResolvable>>> attributes = new HashMap<>();
+            Map<ResourceLocation, Map<AttributeModifier.Operation, Map<EquipmentSlotGroupWrapper, DoubleOperationResolvable>>> attributes = new HashMap<>();
 
             modifiers.forEach(e -> {
                 DoubleOperationResolvable resolvable = new DoubleOperationResolvable(List.of(new DoubleOperationResolvable.IndividualOperation("" + e.modifier().amount() + "/" + cost + " * [module.cost]")));
                 attributes
                         .computeIfAbsent(BuiltInRegistries.ATTRIBUTE.getKey(e.attribute().value()), (c) -> new HashMap<>())
                         .computeIfAbsent(AttributeModifier.Operation.ADD_VALUE, (c) -> new HashMap<>())
-                        .put(Either.left(e.slot()), resolvable);
+                        .put(new EquipmentSlotGroupWrapper(e.slot()), resolvable);
             });
 
             if(!attributes.isEmpty()){
