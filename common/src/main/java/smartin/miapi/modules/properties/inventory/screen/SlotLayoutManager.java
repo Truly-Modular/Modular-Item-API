@@ -5,6 +5,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import smartin.miapi.modules.properties.inventory.InventoryType;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -13,7 +14,7 @@ public class SlotLayoutManager {
     private final List<DefaultInventoryScreenHandler.ManagedSlot> allSlots;
     private final List<DefaultInventoryScreenHandler.ManagedInventory> allInventories;
 
-    private final LinkedHashMap<InventoryType, List<DefaultInventoryScreenHandler.ManagedInventory>> inventoriesByType = new LinkedHashMap<>();
+    private LinkedHashMap<InventoryType, List<DefaultInventoryScreenHandler.ManagedInventory>> inventoriesByType = new LinkedHashMap<>();
     private final LinkedHashMap<InventoryType, Integer> headerPositions = new LinkedHashMap<>();
     private final List<DefaultInventoryScreenHandler.ManagedSlot> activeSlots = new ArrayList<>();
 
@@ -54,6 +55,10 @@ public class SlotLayoutManager {
                     .computeIfAbsent(inv.type, k -> new ArrayList<>())
                     .add(inv);
         }
+
+        var list = inventoriesByType.entrySet().stream().sorted(Comparator.comparingDouble(c -> c.getKey().priority())).toList();
+        inventoriesByType = new LinkedHashMap<>();
+        list.forEach(entry -> inventoriesByType.put(entry.getKey(), entry.getValue()));
         layout(true);
     }
 

@@ -159,8 +159,7 @@ public class CustomDamageOnHitProperty extends CodecProperty<Map<ResourceLocatio
     public static FacetKey<SimpleEntityFacet<CooldownData>> FACET =
             SimpleEntityFacet.createSimple(Miapi.id("custom_damage_cd"), CooldownData.CODEC)
                     .syncToClientsOnSet(false)
-                    .setDefaultValue(new CooldownData())
-                    .build();
+                    .build(new CooldownData());
 
     private static int getCD(LivingEntity e, ResourceLocation id, boolean attacker) {
         return FACET.getOptional(e).map(facet -> {

@@ -14,7 +14,10 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LightningBolt;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
@@ -39,8 +42,10 @@ import smartin.miapi.entity.arrowhitbehaviours.EntityPierceBehaviour;
 import smartin.miapi.entity.arrowhitbehaviours.ProjectileHitBehaviour;
 import smartin.miapi.events.MiapiProjectileEvents;
 import smartin.miapi.mixin.projectile.AbstractArrowAccessor;
+import smartin.miapi.modules.abilities.key.handler.backpack.UseFromBackpackHandler;
 import smartin.miapi.modules.abilities.util.WrappedSoundEvent;
 import smartin.miapi.modules.properties.attributes.AttributeUtil;
+import smartin.miapi.modules.properties.inventory.features.AutoPickupFeatureType;
 import smartin.miapi.modules.properties.projectile.AirDragProperty;
 import smartin.miapi.modules.properties.projectile.ChannelingProperty;
 import smartin.miapi.modules.properties.projectile.MakesImpactSoundProperty;
@@ -462,18 +467,36 @@ public class ItemProjectileEntity extends AbstractArrow {
             }
             case ALLOWED -> {
                 boolean hasLoyalty = this.entityData.get(LOYALTY) > 0;
+                ItemStack pickupItem = this.getPickupItem();
+                boolean wasFromBackPack = false;
+                if (pickupItem.has(UseFromBackpackHandler.CURRENTLY_FROM_BACKPACK_COMPONENT)) {
+                    pickupItem.remove(UseFromBackpackHandler.CURRENTLY_FROM_BACKPACK_COMPONENT);
+                    wasFromBackPack = true;
+                }
                 if (hasLoyalty && getOwner() != null && !ownedBy(player)) {
                     return false;
                 }
+                if(wasFromBackPack){
+                    pickupItem = AutoPickupFeatureType.tryPickUpBeforeInventory(pickupItem,player);
+                    if(pickupItem==null){
+                        return true;
+                    }
+                }
                 if (slotId == -2 && player.getOffhandItem().isEmpty()) {
-                    player.getInventory().offhand.set(0, this.getPickupItem());
+                    player.getInventory().offhand.set(0, pickupItem);
                     player.getInventory().setChanged();
                     return true;
                 }
                 if (slotId >= 0 && player.getInventory().getItem(slotId).isEmpty()) {
-                    return player.getInventory().add(slotId, this.getPickupItem());
+                    return player.getInventory().add(slotId, pickupItem);
                 } else {
-                    return player.getInventory().add(this.getPickupItem());
+                    if(!wasFromBackPack){
+                        pickupItem = AutoPickupFeatureType.tryPickUpBeforeInventory(pickupItem,player);
+                        if(pickupItem==null){
+                            return true;
+                        }
+                    }
+                    return player.getInventory().add(pickupItem);
                 }
             }
             default -> {

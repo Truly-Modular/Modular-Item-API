@@ -29,24 +29,25 @@ import java.util.stream.Stream;
 public class ItemInventoryManager {
     public static final Map<ResourceLocation, SlotInfo> PLAYER_TO_SLOT = new HashMap<>();
     public static final PrioritizedEvent<GetInventoryFeatures> GET_INVENTORY_FEATURES_EVENT = PrioritizedEvent.createEventResult();
-    public static final FacetKey<SimpleEntityFacet<List<InventoryInstance>>> CACHE = SimpleEntityFacet.createSimple(
+    public static final FacetKey<SimpleEntityFacet.NullAbleEntityFacet<List<InventoryInstance>>> CACHE = SimpleEntityFacet.createSimple(
                     Miapi.id("player_inv_holder"),
                     Codec.list(AutoCodec.of(InventoryInstance.class).codec()))
-            .setDefaultValue(null)
             .setPredicate(Player.class::isInstance)
             .setSaveCondition(data -> false)
             .syncToClientsOnSet(false)
-            .build();
+            .buildNullable();
     public static final MiapiRegistry<InventoryFeatureType> INVENTORY_FEATURE_REGISTRY = MiapiRegistry.getInstance(InventoryFeatureType.class);
     public static DatapackMiapiRegistry<InventoryType> INVENTORY_TYPE_REGISTRY = DatapackMiapiRegistry.getInstance(InventoryType.class);
 
     static {
-        INVENTORY_FEATURE_REGISTRY.register(AutoPickupFeatureType.ID, AutoPickupFeatureType.FEATURE);
-        INVENTORY_FEATURE_REGISTRY.register(BackPackViewFeatureType.ID, BackPackViewFeatureType.FEATURE);
-        INVENTORY_FEATURE_REGISTRY.register(InventorySizeFeatureType.ID, InventorySizeFeatureType.FEATURE);
-        INVENTORY_FEATURE_REGISTRY.register(TagBlacklistFeatureType.ID, TagBlacklistFeatureType.FEATURE);
-        INVENTORY_FEATURE_REGISTRY.register(TagWhiteListFeatureType.ID, TagWhiteListFeatureType.FEATURE);
-        INVENTORY_FEATURE_REGISTRY.register(InteractFromInventoryFeature.FEATURE.id(), InteractFromInventoryFeature.FEATURE);
+        register(AutoPickupFeatureType.FEATURE);
+        register(BackPackViewFeatureType.FEATURE);
+        register(InventorySizeFeatureType.FEATURE);
+        register(TagBlacklistFeatureType.FEATURE);
+        register(TagWhiteListFeatureType.FEATURE);
+        register(InteractFromInventoryFeature.FEATURE);
+        register(GrowToFillStateFeatureType.FEATURE);
+        register(IsAmmoFeatureType.FEATURE);
 
         // Armor slots
         PLAYER_TO_SLOT.put(
@@ -104,6 +105,10 @@ public class ItemInventoryManager {
             }
             return optional.get().get();
         }
+    }
+
+    public static void register(InventoryFeatureType<?> type) {
+        INVENTORY_FEATURE_REGISTRY.register(type.id(), type);
     }
 
     public static <T> Stream<InventoryInstance> getInventoriesWith(

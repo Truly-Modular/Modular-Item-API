@@ -1,48 +1,30 @@
 {
-    "icon": {
-        "type": "item",
-        "item": "minecraft:gray_stained_glass"
-    },
-    "groups": [
-        "glass"
-    ],
-    "hardness": 4.8,
-    "density": 1,
-    "flexibility": 0,
-    "tier": 2,
-    "durability": 50,
-    "enchantability": 11,
-    "color": "CDE7E6",
-    "color_palette": {
-        "type": "grayscale_map",
-        "colors": {
-            "0": "4C4C4CFF",
-            "24": "4C4C4CFF",
-            "68": "4C4C4CFF",
-            "107": "4C4C4C66",
-            "150": "4C4C4C66",
-            "190": "4C4C4C9B",
-            "216": "4C4C4C66",
-            "255": "4C4C4C66"
+    "parent": "miapi:glass/glass",
+    "data": {
+        "icon": {
+            "type": "item",
+            "item": "minecraft:gray_stained_glass"
         },
-        "filler": "interpolate"
-    },
-    "properties": {
-        "default": {
-            "durability": {
-                "operation": "**",
-                "value": "0.5"
+        "color": "CDE7E6",
+        "color_palette": {
+            "type": "grayscale_map",
+            "colors": {
+                "0": "4C4C4CFF",
+                "24": "4C4C4CFF",
+                "68": "4C4C4CFF",
+                "107": "4C4C4C66",
+                "150": "4C4C4C66",
+                "190": "4C4C4C9B",
+                "216": "4C4C4C66",
+                "255": "4C4C4C66"
+            },
+            "filler": "interpolate"
+        },
+        "items": [
+            {
+                "item": "minecraft:gray_stained_glass",
+                "value": 1.0
             }
-        }
-    },
-    "mining_speed": 4,
-    "mining_level": "minecraft:incorrect_for_wooden_tool",
-    "textures": [
-    ],
-    "items": [
-        {
-            "item": "minecraft:gray_stained_glass",
-            "value": 1.0
-        }
-    ]
+        ]
+    }
 }

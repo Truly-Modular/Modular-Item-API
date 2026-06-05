@@ -77,6 +77,7 @@ public class GeneratedMaterialFromCopy implements Material {
         groups.add(getStringID());
         groups.addAll(other.getGroups());
         guiGroups.addAll(other.getGuiGroups());
+        guiGroups.remove(getStringID());
         textureKeys = List.of("default");
         stats.put("hardness", other.getDouble("hardness"));
         stats.put("density", other.getDouble("density"));
@@ -119,8 +120,8 @@ public class GeneratedMaterialFromCopy implements Material {
 
     @Override
     public void addSmithingGroup() {
-        if(!groups.contains("smithing")){
-            groups =  new ArrayList<>(groups);
+        if (!groups.contains("smithing")) {
+            groups = new ArrayList<>(groups);
             groups.add("smithing");
         }
     }
@@ -247,12 +248,12 @@ public class GeneratedMaterialFromCopy implements Material {
         return object;
     }
 
-    public static record GeneratedMaterialCopy(ItemStack ingredient, ResourceLocation fromMaterial){
+    public static record GeneratedMaterialCopy(ItemStack ingredient, ResourceLocation fromMaterial) {
 
     }
 
     @Override
-    public int hashCode(){
+    public int hashCode() {
         return getID().hashCode();
     }
 }

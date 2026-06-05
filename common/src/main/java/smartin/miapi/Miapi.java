@@ -147,8 +147,8 @@ public class Miapi {
                         return parts;
                     }
             );
-
     public static void init() {
+
         CodecBehavior.registerClass(Transform.class, Transform.CODEC);
         CodecBehavior.registerClass(DoubleOperationResolvable.class, DoubleOperationResolvable.CODEC);
         CodecBehavior.registerClass(ModuleInstance.class, ModuleInstance.CODEC);

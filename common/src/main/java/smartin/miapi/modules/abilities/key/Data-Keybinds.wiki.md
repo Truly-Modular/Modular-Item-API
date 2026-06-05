@@ -11,11 +11,18 @@ Keybind jsons look like this
 
 ```json
 {
-    "category": "testing-miapi",
-    "scan_code": 32,
-    "entity_interaction": false,
-    "block_interaction": false,
-    "item_interaction": false
+    "miapi:test": {
+        "id": "miapi:test",
+        "category": "miapi",
+        "scan_code": 32,
+        "handler": {
+            "hands": ["OFFHAND" , "MAINHAND"],
+            "type": "miapi:use_item_ability",
+            "item_interaction": true,
+            "block_interaction": true,
+            "entity_interaction": true
+        }
+    }
 }
 ```
 
@@ -60,9 +67,14 @@ example:
 ```
 ```json
 {
-    "category": "testing-miapi",
-    "scan_code": 32,
-    "entity_interaction": false
+    "miapi:test": {
+        "id": "miapi:test",
+        "category": "miapi",
+        "scan_code": 5,
+        "handler": {
+            "type": "miapi:use_item_ability"
+        }
+    }
 }
 ```
 while this is placed in miapi/miapi/key_binding/test

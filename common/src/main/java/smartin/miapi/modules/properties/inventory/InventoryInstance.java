@@ -3,7 +3,6 @@ package smartin.miapi.modules.properties.inventory;
 import com.redpxnda.nucleus.codec.auto.AutoCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Container;
-import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
@@ -11,7 +10,10 @@ import net.minecraft.world.item.component.ItemContainerContents;
 import smartin.miapi.modules.properties.inventory.features.InventoryFeatureType;
 import smartin.miapi.modules.properties.inventory.features.InventorySizeFeatureType;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -27,7 +29,7 @@ public class InventoryInstance {
     @AutoCodec.Ignored
     SlotInfo slot;
 
-    public InventoryInstance(Player player, ItemStack itemStack, InventoryType inventoryType,SlotInfo slot) {
+    public InventoryInstance(Player player, ItemStack itemStack, InventoryType inventoryType, SlotInfo slot) {
         this.owningPlayer = player;
         this.owningItem = itemStack;
         this.type = inventoryType;
@@ -45,7 +47,7 @@ public class InventoryInstance {
         return owningItem;
     }
 
-    public SlotInfo getSlot(){
+    public SlotInfo getSlot() {
         return slot;
     }
 
@@ -63,35 +65,19 @@ public class InventoryInstance {
         return atomicBoolean.get();
     }
 
-    public Container create() {
-        SimpleContainer inv = new SimpleContainer(getSize()) {
-            @Override
-            public boolean canAddItem(ItemStack stack) {
-                return super.canAddItem(stack) && canInsert(stack);
-            }
-        };
-        InventoryComponent component = owningItem.getOrDefault(InventoryComponent.ITEM_INVENTORIES, new InventoryComponent(Map.of()));
-        ItemContainerContents contents =
-                component.inventories().getOrDefault(type.getId(), ItemContainerContents.EMPTY);
-
-        if (contents != null) {
-            for (int i = 0; i < contents.stream().toList().size() && i < inv.getContainerSize(); i++) {
-                inv.setItem(i, contents.stream().toList().get(i));
-            }
-        }
-
-        return inv;
+    public ComponentBackedContainer create() {
+        return new ComponentBackedContainer(this.owningItem, this.getType().getId(), getSize());
     }
 
     public void save(Container container) {
         InventoryComponent component = owningItem.get(InventoryComponent.ITEM_INVENTORIES);
 
-        Map<ResourceLocation, ItemContainerContents> map =
+        Map<ResourceLocation, InventoryComponent.CachedContents> map =
                 component != null
                         ? new HashMap<>(component.inventories())
                         : new HashMap<>();
 
-        map.put(type.getId(), encode(container));
+        map.put(type.getId(), new InventoryComponent.CachedContents(encode(container)));
 
         owningItem.set(InventoryComponent.ITEM_INVENTORIES, new InventoryComponent(map));
     }

@@ -54,6 +54,8 @@
     "mining_speed": 4,
     "mining_level": "minecraft:incorrect_for_wooden_tool",
     "textures": [
+        "glass",
+        "crystal"
     ],
     "items": [
         {

@@ -2,6 +2,7 @@ package smartin.miapi.modules.properties.mining;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import it.unimi.dsi.fastutil.objects.Reference2FloatOpenHashMap;
 import net.minecraft.core.*;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -51,13 +52,16 @@ public class MiningLevelProperty extends CodecProperty<Map<String, MiningLevelPr
     public static Map<String, TagKey<Block>> miningCapabilities = new HashMap<>();
     public static Codec<Map<String, MiningRule>> CODEC = Codec.unboundedMap(Codec.STRING, MiningRule.CODEC);
     public static String CACHEKEY = KEY + "finished_component";
+    public static String CACHEKEY_SPEED = KEY + "destroy_speed";
 
 
     public MiningLevelProperty() {
         super(CODEC);
         property = this;
         ModularItemCache.setSupplier(CACHEKEY, this::asComponent);
+        ModularItemCache.setSupplier(CACHEKEY_SPEED, (stack) -> new Reference2FloatOpenHashMap<Block>());
     }
+
 
     @Override
     public Map<String, MiningRule> merge(Map<String, MiningRule> left, Map<String, MiningRule> right, MergeType mergeType) {
@@ -90,7 +94,10 @@ public class MiningLevelProperty extends CodecProperty<Map<String, MiningLevelPr
     }
 
     public static float getDestroySpeed(ItemStack stack, BlockState state) {
-        return Math.max(property.asComponentCached(stack).getMiningSpeed(state), 1.0F);
+        return ModularItemCache.get(stack, CACHEKEY_SPEED,
+                new Reference2FloatOpenHashMap<Block>())
+                .computeIfAbsent(state.getBlock(), (b) -> Math.max(property.asComponentCached(stack)
+                        .getMiningSpeed(state), 1.0F));
     }
 
     public static boolean isCorrectToolForDrops(ItemStack stack, BlockState state) {
@@ -221,6 +228,7 @@ public class MiningLevelProperty extends CodecProperty<Map<String, MiningLevelPr
 
     /**
      * yeah, idk ask the easy anvil team why they are incompetent and dont properly add their tags
+     *
      * @param blocks
      * @return
      */
@@ -239,6 +247,7 @@ public class MiningLevelProperty extends CodecProperty<Map<String, MiningLevelPr
 
     /**
      * yeah, idk ask the easy anvil team why they are incompetent and dont properly add their tags
+     *
      * @param blocks
      * @return
      */

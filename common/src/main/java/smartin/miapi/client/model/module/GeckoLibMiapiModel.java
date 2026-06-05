@@ -24,11 +24,15 @@ public class GeckoLibMiapiModel implements MiapiModel {
 
     @Override
     public void render(RenderContext context) {
-
-
-        //VertexConsumer vertexConsumer = modelHolder.colorProvider().getConsumer(vertexConsumers, quad.getSprite(), stack, instance, transformationMode);
-
-        renderer.defaultRender(context.matrices(), null, context.vertexConsumers(), null, null, 0, context.tickDelta(), context.light());
+        renderer.defaultRender(
+                context.matrices(),
+                null,
+                context.vertexConsumers(),
+                null,
+                null,
+                0,
+                context.tickDelta(),
+                context.light());
     }
 
     public Matrix4f subModuleMatrix(RenderContext context) {

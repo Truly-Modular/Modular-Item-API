@@ -39,6 +39,7 @@ import smartin.miapi.registries.JsonOpsBooleanPatched;
 import java.util.*;
 import java.util.stream.Collectors;
 
+//TODO:fix gui groups
 public class GeneratedMaterial implements Material {
     ItemStack mainIngredient = ItemStack.EMPTY;
     Ingredient ingredient = Ingredient.EMPTY;

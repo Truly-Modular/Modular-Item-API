@@ -6,7 +6,6 @@ import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.model.loading.v1.ModelLoadingPlugin;
 import net.fabricmc.fabric.api.client.rendering.v1.ArmorRenderer;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.UseAnim;
 import smartin.miapi.client.model.item.ItemBakedModelReplacement;
 import smartin.miapi.registries.RegistryInventory;
 
@@ -18,8 +17,6 @@ import static smartin.miapi.client.MiapiClient.KEY_BINDINGS;
 public class MiapiClientFabric {
 
     public static void setupClient() {
-        UseAnim anim;
-
         KEY_BINDINGS.addCallback((KeyBindingHelper::registerKeyBinding));
         RegistryInventory.MODULAR_ITEMS.addCallback((item) -> ArmorRenderer.register(new ModularArmorRenderer(), item));
         ModelLoadingPlugin.register(pluginContext -> {

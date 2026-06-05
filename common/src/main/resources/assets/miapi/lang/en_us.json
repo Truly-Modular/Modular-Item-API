@@ -217,6 +217,7 @@
     "miapi.ability.throw.lore": "Throwable",
     "miapi.ability.area_harvest_ability.title": "AoE Harvest",
     "miapi.ability.area_harvest_ability.description": "Will instantly harvest all nearby crops\n and replant them in an area on right clicking a crop",
+    "miapi.attribute.ui.base_value": "Base Value: &s",
     "miapi.attribute.name.stun_max_health": "Stun Protection",
     "miapi.attribute.name.stun_damage": "Stun",
     "miapi.attribute.name.armor_pierce_damage": "Armor Pierce Damage",

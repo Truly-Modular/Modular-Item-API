@@ -7,6 +7,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.profiling.ProfilerFiller;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ProjectileWeaponItem;
 import org.jetbrains.annotations.NotNull;
 import smartin.miapi.Miapi;
 
@@ -25,6 +27,8 @@ public class IdentifiableMiapiReloadListenerFixed implements IdentifiableResourc
             Miapi.registryAccess = Miapi.server.reloadableRegistries().get();
             return Miapi.server.registryAccess();
         }
+        ProjectileWeaponItem weaponItem;
+        Player player;
         return null;
     });
 

@@ -116,7 +116,7 @@ public class ModernNetworking {
             this.id = id;
             this.codec = codec;
             this.onReceive = onReceive;
-            registerC2SReceiver(id, codec, onReceive);
+            registerS2CReceiver(id, codec, onReceive);
         }
 
         public void deRegister() {

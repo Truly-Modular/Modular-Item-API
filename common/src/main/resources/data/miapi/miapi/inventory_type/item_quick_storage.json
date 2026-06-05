@@ -1,0 +1,10 @@
+{
+    "name": "Quick Storage",
+    "priority": -10,
+    "features": {
+        "set_to_size": true,
+        "contents_whitelist": [
+            "miapi:none"
+        ]
+    }
+}

@@ -132,6 +132,17 @@ public class DoubleOperationResolvable implements SourceSetter<DoubleOperationRe
     }
 
     /**
+     * returns the fallback value,
+     * this value is returned if there are no operations set.
+     *
+     * @return
+     */
+    public double getBaseValue() {
+        return baseValue;
+    }
+
+
+    /**
      * use this function to set a new FunctionTransformer, it resets the cachedResult as well
      *
      * @param functionTransformer the new FunctionTransformer

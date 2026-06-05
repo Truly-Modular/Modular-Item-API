@@ -112,7 +112,6 @@ public class ProjectileRenderAnimation extends CodecProperty<ProjectileRenderAni
 
         @Override
         public RenderAnimation merge(RenderAnimation left, RenderAnimation right, MergeType mergeType) {
-            // Simple rule: right overrides left
             return mergeType == MergeType.OVERWRITE ? right : left;
         }
 
@@ -121,9 +120,6 @@ public class ProjectileRenderAnimation extends CodecProperty<ProjectileRenderAni
             return CODEC;
         }
 
-        /*
-         * Axis enum — semantic, data-friendly
-         */
         public enum Axis {
             X, Y, Z,
             VELOCITY;

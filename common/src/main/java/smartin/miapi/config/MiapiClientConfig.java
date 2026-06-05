@@ -1,16 +1,22 @@
 package smartin.miapi.config;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import com.redpxnda.nucleus.codec.auto.AutoCodec;
 import com.redpxnda.nucleus.codec.auto.ConfigAutoCodec;
 import com.redpxnda.nucleus.util.Color;
 import com.redpxnda.nucleus.util.Comment;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.InteractionHand;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.MiapiClient;
 import smartin.miapi.modules.abilities.key.MiapiBinding;
+import smartin.miapi.modules.abilities.key.handler.OpenBackPackHandler;
+import smartin.miapi.modules.abilities.key.handler.UseItemAbilityHandler;
+import smartin.miapi.modules.abilities.key.handler.backpack.UseFromBackpackHandler;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @ConfigAutoCodec.ConfigClassMarker
 public class MiapiClientConfig {
@@ -32,6 +38,9 @@ public class MiapiClientConfig {
     @AutoCodec.Name("enchanting_glint")
     public EnchantingGlint enchantingGlint = new EnchantingGlint();
 
+    @AutoCodec.Name("inventory_preview")
+    public InventoryUsePreview preview = new InventoryUsePreview();
+
     @ConfigAutoCodec.ConfigClassMarker
     public static class GuiColorsCategory {
         @Comment("The color Miapi uses for its red/invalid/negative color in the workbench gui")
@@ -40,6 +49,18 @@ public class MiapiClientConfig {
         @Comment("The color Miapi uses for its green/valid/positive color in the workbench gui")
         public Color green = new Color(0, 255, 0, 255);
 
+    }
+
+    @ConfigAutoCodec.ConfigClassMarker
+    public static class InventoryUsePreview {
+        @AutoCodec.Name("top_distance")
+        public int topDistance = 20;
+
+        @AutoCodec.Name("max_item_count")
+        public int count = 1;
+
+        @AutoCodec.Name("display_time")
+        public int displayTime = 3;
     }
 
     @ConfigAutoCodec.ConfigClassMarker
@@ -102,16 +123,14 @@ public class MiapiClientConfig {
                 new CacheSprites(64, 32, 40),
                 new CacheSprites(64, 64, 10),
                 new CacheSprites(128, 128, 10));
+
+        @Comment("Whether Miapi materials can be animated")
+        @AutoCodec.Name("animated_materials")
+        public boolean animatedMaterials = true;
     }
 
     @ConfigAutoCodec.ConfigClassMarker
     public static class OtherCategory {
-        @Comment("Whether Miapi materials can be animated")
-        @AutoCodec.Name("animated_materials")
-        public boolean animatedMaterials = true;
-
-        @AutoCodec.Name("basicVerlet")
-        public boolean basicVerlet = true;
 
         @Comment("If Editor is enabled despite nucleus not being loaded")
         @AutoCodec.Name("allow_editor_no_nucleus")
@@ -136,10 +155,18 @@ public class MiapiClientConfig {
                 """)
         //@AutoCodec.Ignored
         public Map<ResourceLocation, MiapiBinding> bindings = Map.of(
-                Miapi.id("backpack-open"), new MiapiBinding("miapi_backpack", 5),
-                Miapi.id("food-pouch"), new MiapiBinding("miapi_backpack", 5),
-                Miapi.id("throwing-pouch"), new MiapiBinding("miapi_backpack", 5),
-                Miapi.id("tool-belt"), new MiapiBinding("miapi_backpack", 5)
+                Miapi.id("backpack-open"), new MiapiBinding(
+                        Miapi.id("miapi_backpack"), "miapi",
+                        InputConstants.KEY_B,
+                        new OpenBackPackHandler(Optional.of(Miapi.id("none")), OpenBackPackHandler.Mode.BLACKLIST, Optional.empty())),
+                Miapi.id("test"), new MiapiBinding(
+                        Miapi.id("test"), "miapi",
+                        InputConstants.KEY_V,
+                        new UseItemAbilityHandler(List.of(InteractionHand.MAIN_HAND, InteractionHand.OFF_HAND), true, true, true)),
+                Miapi.id("backpack_use"), new MiapiBinding(
+                        Miapi.id("backpack_use"), "miapi",
+                        InputConstants.KEY_X,
+                        new UseFromBackpackHandler(true, true, true, Miapi.id("miapi:backpack")))
         );
     }
 

@@ -6,9 +6,9 @@
     "groups": [
         "rod"
     ],
-    "hardness": 3,
-    "density": 3,
-    "flexibility": 3,
+    "hardness": 3.5,
+    "density": 3.5,
+    "flexibility": 3.5,
     "durability": 512,
     "enchantability": 18,
     "toughness": 1,

@@ -201,6 +201,11 @@ public class MaterialSpriteManager {
      */
     public static void getVertexConsumer(TextureAtlasSprite originalSprite, Material material, SpriteColorer materialSpriteColorer, VertexConsumerProvider out) {
         out.spriteHolder = new Holder(originalSprite, material, materialSpriteColorer);
+        if(!originalSprite.atlasLocation().equals(TextureAtlas.LOCATION_BLOCKS)){
+            out.getRenderSaveVC = (b -> getDynamicTextureVertexConsumer(b, originalSprite, out.spriteHolder));
+            out.vanillaVCGetter = MaterialSpriteManager::getVanillaItemVC;
+            return;
+        }
         if (MiapiConfig.getClientConfig().render.enableFastRender) {
             SpriteSlot spriteSlot = FAST_CACHE.get(out.spriteHolder);
             if (spriteSlot == null) {

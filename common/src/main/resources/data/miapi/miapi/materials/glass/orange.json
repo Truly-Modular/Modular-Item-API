@@ -1,48 +1,30 @@
 {
-    "icon": {
-        "type": "item",
-        "item": "minecraft:orange_stained_glass"
-    },
-    "groups": [
-        "glass"
-    ],
-    "hardness": 4.8,
-    "density": 1,
-    "flexibility": 0,
-    "tier": 2,
-    "durability": 50,
-    "enchantability": 11,
-    "color": "D87F33",
-    "color_palette": {
-        "type": "grayscale_map",
-        "colors": {
-            "0": "D87F33FF",
-            "24": "D87F33FF",
-            "68": "D87F33FF",
-            "107": "D87F3366",
-            "150": "D87F3366",
-            "190": "D87F339B",
-            "216": "D87F3366",
-            "255": "D87F3366"
+    "parent": "miapi:glass/glass",
+    "data": {
+        "icon": {
+            "type": "item",
+            "item": "minecraft:orange_stained_glass"
         },
-        "filler": "interpolate"
-    },
-    "properties": {
-        "default": {
-            "durability": {
-                "operation": "**",
-                "value": "0.5"
+        "color": "D87F33",
+        "color_palette": {
+            "type": "grayscale_map",
+            "colors": {
+                "0": "D87F33FF",
+                "24": "D87F33FF",
+                "68": "D87F33FF",
+                "107": "D87F3366",
+                "150": "D87F3366",
+                "190": "D87F339B",
+                "216": "D87F3366",
+                "255": "D87F3366"
+            },
+            "filler": "interpolate"
+        },
+        "items": [
+            {
+                "item": "minecraft:orange_stained_glass",
+                "value": 1.0
             }
-        }
-    },
-    "mining_speed": 4,
-    "mining_level": "minecraft:incorrect_for_wooden_tool",
-    "textures": [
-    ],
-    "items": [
-        {
-            "item": "minecraft:orange_stained_glass",
-            "value": 1.0
-        }
-    ]
+        ]
+    }
 }

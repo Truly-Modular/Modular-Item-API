@@ -110,6 +110,7 @@ public class PropertyRegistry {
         RegistryInventory.registerMiapi(RegistryInventory.MODULE_PROPERTY_MIAPI_REGISTRY, AirDragProperty.KEY, new AirDragProperty());
         RegistryInventory.registerMiapi(RegistryInventory.MODULE_PROPERTY_MIAPI_REGISTRY, WaterDragProperty.KEY, new WaterDragProperty());
         RegistryInventory.registerMiapi(RegistryInventory.MODULE_PROPERTY_MIAPI_REGISTRY, ArrowProperty.KEY, new ArrowProperty());
+        RegistryInventory.registerMiapi(RegistryInventory.MODULE_PROPERTY_MIAPI_REGISTRY, AllowedProjectileProperty.KEY, AllowedProjectileProperty.PROPERTY);
 
         RegistryInventory.registerMiapi(RegistryInventory.MODULE_PROPERTY_MIAPI_REGISTRY, RapidfireCrossbowProperty.KEY, new RapidfireCrossbowProperty());
         RegistryInventory.registerMiapi(RegistryInventory.MODULE_PROPERTY_MIAPI_REGISTRY, MagazineCrossbowShotDelay.KEY, new MagazineCrossbowShotDelay());
@@ -126,7 +127,7 @@ public class PropertyRegistry {
 
         RegistryInventory.registerMiapi(RegistryInventory.MODULE_PROPERTY_MIAPI_REGISTRY, ItemInventoryFeatureProperty.KEY, ItemInventoryFeatureProperty.property);
         RegistryInventory.registerMiapi(RegistryInventory.MODULE_PROPERTY_MIAPI_REGISTRY, InventoryFeatureProperty.KEY, InventoryFeatureProperty.property);
-        
+
 
         RegistryInventory.registerMiapi(RegistryInventory.MODULE_PROPERTY_MIAPI_REGISTRY, LoreProperty.KEY, new LoreProperty());
         RegistryInventory.registerMiapi(RegistryInventory.MODULE_PROPERTY_MIAPI_REGISTRY, OldNameProperty.KEY, new OldNameProperty());

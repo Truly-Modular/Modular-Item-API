@@ -327,8 +327,18 @@ public class CodecMaterial implements Material {
         // Merge groups and guiGroups
         this.groups = new ArrayList<>(this.groups);
         this.groups.addAll(material.groups);
+        this.groups = groups.stream().distinct().toList();
         this.guiGroups = new ArrayList<>(this.guiGroups);
         this.guiGroups.addAll(material.guiGroups);
+        this.guiGroups = new ArrayList<>(guiGroups.stream().distinct().toList());
+        ResourceLocation toRemove = material.getID();
+        if (toRemove != null) {
+            this.guiGroups.remove(toRemove.toLanguageKey().replace("/","."));
+        }
+        toRemove = this.getID();
+        if (toRemove != null) {
+            this.guiGroups.remove(toRemove.toLanguageKey().replace("/","."));
+        }
 
         // Merge properties
         mergeProperties(material.mergedAllAppliedProperties, this.mergedAllAppliedProperties);

@@ -1,6 +1,7 @@
 package smartin.miapi.item.modular.items.bows;
 
 
+import dev.architectury.injectables.annotations.ExpectPlatform;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.core.component.DataComponentType;
@@ -71,7 +72,7 @@ public class ModularCrossbow extends CrossbowItem implements PlatformModularItem
         }
     }
 
-    public static List<ItemStack> projectiles(ItemStack weapon, ItemStack ammo, LivingEntity shooter){
+    public static List<ItemStack> projectiles(ItemStack weapon, ItemStack ammo, LivingEntity shooter) {
         return ProjectileWeaponItem.draw(weapon, ammo, shooter);
     }
 
@@ -253,12 +254,16 @@ public class ModularCrossbow extends CrossbowItem implements PlatformModularItem
         }
     }
 
+    @ExpectPlatform
+    public static Predicate<ItemStack> getAllSupportedProjectilesWithApi(ProjectileWeaponItem weaponItem, ItemStack weapon) {
+        return weaponItem.getAllSupportedProjectiles().or(IsCrossbowShootAble::canCrossbowShoot);
+    }
+
 
     @Override
     public Predicate<ItemStack> getAllSupportedProjectiles() {
         return super.getAllSupportedProjectiles().or(IsCrossbowShootAble::canCrossbowShoot);
     }
-
 
     private static float getPowerForTime(int timeLeft, ItemStack stack, LivingEntity shooter) {
         float f = (float) timeLeft / (float) getChargeDuration(stack, shooter);

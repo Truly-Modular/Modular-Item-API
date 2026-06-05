@@ -3,14 +3,13 @@ package smartin.miapi.datapack;
 import smartin.miapi.Miapi;
 import smartin.miapi.editor.DocPage;
 import smartin.miapi.item.ItemToModularConverter;
+import smartin.miapi.material.MaterialProperty;
 import smartin.miapi.material.codec.CodecMaterial;
 import smartin.miapi.material.codec.CodecMaterialExtension;
-import smartin.miapi.material.MaterialProperty;
 import smartin.miapi.material.composite.material.DatapackComposite;
 import smartin.miapi.modules.CodecModuleExtension;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ItemModuleExtension;
-import smartin.miapi.modules.abilities.key.KeyBindManager;
 import smartin.miapi.modules.edit_options.CreateItemOption.CreateItemOption;
 import smartin.miapi.modules.edit_options.skins.SkinOptions;
 import smartin.miapi.modules.properties.inventory.InventoryType;
@@ -63,10 +62,6 @@ public class ReloadHelpers {
                 .clear(DocPage.PAGE_LOOKUP::clear)
                 .codec(DocPage.CODEC,
                         (isClient, path, data, registryAccess) -> DocPage.setupLookup(data))
-                .register();
-        ReloadHandlerBuilder
-                .builder("miapi/key_binding")
-                .handler((isClient, id, data, registryAccess) -> KeyBindManager.processKeybind(isClient, id, data))
                 .register();
         ReloadHandlerBuilder
                 .builder("miapi/data_composite")

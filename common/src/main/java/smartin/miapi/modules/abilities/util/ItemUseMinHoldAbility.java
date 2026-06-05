@@ -9,6 +9,22 @@ public interface ItemUseMinHoldAbility<T> extends ItemUseAbility<T> {
 
     int getMinHoldTime(ItemStack itemStack);
 
+    default float getMinUseRatio(
+            ItemStack stack,
+            LivingEntity user,
+            int remainingUseTicks,
+            T context
+    ) {
+        int usedTicks = getMaxUseTime(stack, user, context) - remainingUseTicks;
+        int minHold = getMinHoldTime(stack);
+
+        if (minHold <= 0) {
+            return 1.0f;
+        }
+
+        return Math.min(1.0f, usedTicks / (float) minHold);
+    }
+
     @Override
     default void onStoppedUsing(ItemStack stack, Level world, LivingEntity user, int remainingUseTicks, T context) {
         if (finishedMinHold(stack, world, user, remainingUseTicks, context)) {

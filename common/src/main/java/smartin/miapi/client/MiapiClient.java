@@ -62,6 +62,7 @@ import smartin.miapi.modules.MiapiPermissions;
 import smartin.miapi.modules.abilities.key.ClientKeybinding;
 import smartin.miapi.modules.cache.CacheCommands;
 import smartin.miapi.modules.properties.inventory.screen.InventoryScreen;
+import smartin.miapi.modules.properties.inventory.screen.preview.InventoryPreviewRenderer;
 import smartin.miapi.modules.properties.render.colorproviders.ColorProvider;
 import smartin.miapi.modules.properties.slot.AllowedSlots;
 import smartin.miapi.network.Networking;
@@ -138,7 +139,7 @@ public class MiapiClient {
         ClientEvents.CLIENT_TICK.register((instance -> {
             tick.addAndGet(1);
 
-            if (MiapiConfig.getClientConfig().other.animatedMaterials) {
+            if (MiapiConfig.getClientConfig().render.animatedMaterials) {
                 Minecraft.getInstance().getProfiler().push("miapiMaterialAnimations");
                 MaterialSpriteManager.tick();
                 Minecraft.getInstance().getProfiler().pop();
@@ -326,6 +327,7 @@ public class MiapiClient {
             EditorCommands.registerClient();
         }
         LiveDataPackManager.setup();
+        InventoryPreviewRenderer.setup();
         //Minecraft client = Minecraft.getInstance();
         //materialAtlasManager = new MaterialAtlasManager(client.getTextureManager());
         //ReloadListenerRegistry.register(PackType.CLIENT_RESOURCES, materialAtlasManager);

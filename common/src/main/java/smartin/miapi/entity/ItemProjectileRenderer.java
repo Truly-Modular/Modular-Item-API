@@ -46,6 +46,7 @@ public class ItemProjectileRenderer extends EntityRenderer<ItemProjectileEntity>
                                         this, itemStack, entity, yaw, tickDelta, matrixStack, vertexConsumers, light)
                                 .interruptsFurtherEvaluation()){
                     matrixStack.popPose();
+                    matrixStack.pushPose();
                     return;
                 }
                 Minecraft.getInstance().getItemRenderer().renderStatic(

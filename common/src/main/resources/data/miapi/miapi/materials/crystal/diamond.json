@@ -29,6 +29,7 @@
         "filler": "interpolate"
     },
     "textures": [
+        "crystal",
         "bright"
     ],
     "items": [

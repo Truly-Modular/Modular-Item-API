@@ -1,48 +1,30 @@
 {
-    "icon": {
-        "type": "item",
-        "item": "minecraft:blue_stained_glass"
-    },
-    "groups": [
-        "glass"
-    ],
-    "hardness": 4.8,
-    "density": 1,
-    "flexibility": 0,
-    "tier": 2,
-    "durability": 50,
-    "enchantability": 11,
-    "color": "334CB2",
-    "color_palette": {
-        "type": "grayscale_map",
-        "colors": {
-            "0": "334CB2FF",
-            "24": "334CB2FF",
-            "68": "334CB2FF",
-            "107": "334CB266",
-            "150": "334CB266",
-            "190": "334CB29B",
-            "216": "334CB266",
-            "255": "334CB266"
+    "parent": "miapi:glass/glass",
+    "data": {
+        "icon": {
+            "type": "item",
+            "item": "minecraft:blue_stained_glass"
         },
-        "filler": "interpolate"
-    },
-    "properties": {
-        "default": {
-            "durability": {
-                "operation": "**",
-                "value": "0.5"
+        "color": "334CB2",
+        "color_palette": {
+            "type": "grayscale_map",
+            "colors": {
+                "0": "334CB2FF",
+                "24": "334CB2FF",
+                "68": "334CB2FF",
+                "107": "334CB266",
+                "150": "334CB266",
+                "190": "334CB29B",
+                "216": "334CB266",
+                "255": "334CB266"
+            },
+            "filler": "interpolate"
+        },
+        "items": [
+            {
+                "item": "minecraft:blue_stained_glass",
+                "value": 1.0
             }
-        }
-    },
-    "mining_speed": 4,
-    "mining_level": "minecraft:incorrect_for_wooden_tool",
-    "textures": [
-    ],
-    "items": [
-        {
-            "item": "minecraft:blue_stained_glass",
-            "value": 1.0
-        }
-    ]
+        ]
+    }
 }

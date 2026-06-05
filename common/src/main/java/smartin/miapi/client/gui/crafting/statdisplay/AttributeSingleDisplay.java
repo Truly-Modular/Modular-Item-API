@@ -4,6 +4,7 @@ import com.google.common.collect.Multimap;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.Util;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -67,6 +68,17 @@ public class AttributeSingleDisplay extends SingleStatDisplayDouble {
             return attribute.getDefaultValue();
         }
         return value;
+    }
+
+    public List<Component> getHoverLines(GuiGraphics drawContext, int mouseX, int mouseY, float delta) {
+        List<Component> lines = new ArrayList<>();
+        if (isMouseOver(mouseX, mouseY)) {
+            if (this.defaultValue != 0) {
+                lines.add(Component.translatable("miapi.attribute.ui.base_value", this.defaultValue));
+            }
+        }
+        lines.addAll(super.getHoverLines(drawContext, mouseX, mouseY, delta));
+        return lines;
     }
 
 

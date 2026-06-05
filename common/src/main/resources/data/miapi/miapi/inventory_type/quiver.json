@@ -5,6 +5,7 @@
         "size": 10,
         "contents_whitelist": [
             "minecraft:arrows"
-        ]
+        ],
+        "is_ammo": true
     }
 }

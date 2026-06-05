@@ -2,6 +2,8 @@
     "name": "Testing Backpack",
     "priority": 10,
     "features": {
-        "size": 10
+        "size": 10,
+        "interact_inventory_item_binding": "miapi:backpack",
+        "auto_pickup": true
     }
 }
