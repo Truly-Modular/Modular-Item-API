@@ -84,7 +84,7 @@ public class AdvancementCondition implements ModuleCondition {
     public static boolean hasAdvancementClient(AdvancementHolder advancement, Player player) {
         if (Minecraft.getInstance() != null && Minecraft.getInstance().getConnection() != null) {
             ClientAdvancements manager = Minecraft.getInstance().getConnection().getAdvancements();
-            Map<AdvancementHolder, AdvancementProgress> map = ((ClientAdvancementManagerAccessor) manager).getProgress();
+            Map<AdvancementHolder, AdvancementProgress> map = ((ClientAdvancementManagerAccessor) manager).getMiapiProgress();
             var optional = map.keySet().stream().filter(advancement1 -> advancement.id().equals(advancement1.id())).findFirst();
             return optional.isPresent() && map.get(optional.get()).isDone();
         }

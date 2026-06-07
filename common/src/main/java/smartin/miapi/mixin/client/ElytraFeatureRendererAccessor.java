@@ -9,5 +9,5 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 @Mixin(ElytraLayer.class)
 public interface ElytraFeatureRendererAccessor<T extends LivingEntity> {
     @Accessor("elytraModel")
-    ElytraModel<T> getElytra();
+    ElytraModel<T> getMiapiElytra();
 }

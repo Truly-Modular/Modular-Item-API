@@ -103,7 +103,7 @@ public class SmithingRecipeUtil {
             }
             optionalRecipe.ifPresent(smithingTransformRecipe -> {
                 ItemStack templateItem = Arrays.stream(((SmithingTransformRecipeAccessor) smithingTransformRecipe)
-                                .getTemplate()
+                                .getMiapiTemplate()
                                 .getItems())
                         .filter(itemStack -> !itemStack.isEmpty())
                         .findAny()
@@ -113,13 +113,13 @@ public class SmithingRecipeUtil {
                     normal.accept(material);
                     return;
                 }
-                var baseItems = ((SmithingTransformRecipeAccessor) smithingTransformRecipe).getBase().getItems();
+                var baseItems = ((SmithingTransformRecipeAccessor) smithingTransformRecipe).getMiapiBase().getItems();
                 if (baseItems.length > 1 &&
                     GeneratedMaterialPropertyManager.shouldApplyProperty(MiapiConfig.getServerConfig().generatedMaterials.properties.allowMultiSmithing, material.getID().toString())) {
                     normal.accept(material);
                     return;
                 }
-                var optional = Arrays.stream(((SmithingTransformRecipeAccessor) smithingTransformRecipe).getBase().getItems())
+                var optional = Arrays.stream(((SmithingTransformRecipeAccessor) smithingTransformRecipe).getMiapiBase().getItems())
                         //making sure the input has a valid SourceMaterial
                         .filter(itemStack -> {
                             if (itemStack.getItem() instanceof TieredItem toolItem) {
@@ -148,7 +148,7 @@ public class SmithingRecipeUtil {
         if (recipe.getResultItem(manager).getItem().equals(swordItem)) {
             return true;
         }
-        return ((SmithingTransformRecipeAccessor) recipe).getResult().getItem().equals(swordItem);
+        return ((SmithingTransformRecipeAccessor) recipe).getMiapiResult().getItem().equals(swordItem);
     }
 
     public static RecipeManager findManager(boolean isClient) {
@@ -180,11 +180,11 @@ public class SmithingRecipeUtil {
         id = id.replace(":", ".");
         ResourceLocation recipeId = Miapi.id(id);
         if (recipeManager.byKey(recipeId).isEmpty()) {
-            Ingredient template = ((SmithingTransformRecipeAccessor) smithingTransformRecipe).getTemplate();
+            Ingredient template = ((SmithingTransformRecipeAccessor) smithingTransformRecipe).getMiapiTemplate();
             MaterialSmithingRecipe materialSmithingRecipe = new MaterialSmithingRecipe(
                     template,
                     sourceMaterial.getID(),
-                    ((SmithingTransformRecipeAccessor) smithingTransformRecipe).getAddition(),
+                    ((SmithingTransformRecipeAccessor) smithingTransformRecipe).getMiapiAdditions(),
                     outputMaterial.getID()
             );
 

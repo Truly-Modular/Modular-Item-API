@@ -11,9 +11,9 @@ import java.util.List;
 
 @Mixin(HolderSet.Named.class)
 public interface NamedAccessor<T> {
-    @Accessor
-    TagKey<T> getKey();
+    @Accessor("key")
+    TagKey<T> getMiapiKey();
 
-    @Invoker
-    void callBind(List<Holder<T>> contents);
+    @Invoker("bind")
+    void callMiapiBind(List<Holder<T>> contents);
 }

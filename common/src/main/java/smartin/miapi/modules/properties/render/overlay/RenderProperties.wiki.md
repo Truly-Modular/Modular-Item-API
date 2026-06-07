@@ -1,0 +1,89 @@
+@header Render Properties
+@path /data_types/properties/render
+
+This directory contains all render-related properties for modular items. These properties control how items are rendered in various contexts including GUI, inventory, and 3D views.
+
+---
+
+## Available Properties
+
+### Model Properties
+
+- **`alpha_overwrite`**: Controls transparency/alpha value of rendering
+- **`banner`**: Defines custom banner models
+- **`block_model`**: Defines custom block models
+- **`flail_model`** (chain_model): Defines custom chain/flail models
+- **`conduit_model`**: Defines custom conduit models
+- **`crystal_model`**: Enables crystal rendering
+- **`trail`**: Defines dynamic trail rendering
+- **`emissive`**: Defines emissive light levels
+- **`entity_model`**: Defines custom entity models
+- **`gui_offset`**: Adjusts GUI position and size
+- **`module_icon`**: Defines custom icon rendering for modules
+- **`item_model`**: Defines custom item models
+- **`model_transform`**: Defines custom model transformations
+- **`color`**: Sets custom color for items
+
+### Overlay Properties
+
+- **`banner_overlay`**: Attaches banner overlays to models
+- **`overlay_texture_model`**: Defines custom overlay textures
+
+### Baked Model Properties
+
+- **`model_data`**: Model configuration with paths and transforms
+- **`model_metadata`**: Custom .mcmeta data for models
+
+---
+
+## Transform Object
+
+All model properties that use transforms share a common structure:
+
+```json
+"transform": {
+  "rotation": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+  },
+  "translation": {
+    "x": 0.0,
+    "y": 0.0,
+    "z": 0.0
+  },
+  "scale": {
+    "x": 1.0,
+    "y": 1.0,
+    "z": 1.0
+  },
+  "origin": "item"
+}
+```
+
+---
+
+## Display Contexts
+
+Some properties support different display contexts:
+
+- **`gui`**: GUI/inventory view
+- **`head`**: Head view
+- **`fixed`**: Fixed view
+- **`ground`**: Ground view
+- **`firstperson_lefthand`**: First-person left hand
+- **`firstperson_righthand`**: First-person right hand
+- **`thirdperson_lefthand`**: Third-person left hand
+- **`thirdperson_righthand`**: Third-person right hand
+
+---
+
+## Color Providers
+
+Available color providers for rendering:
+
+- **`material`**: Uses material color
+- **`model`**: Uses vanilla model rendering
+- **`potion`**: Uses potion color
+- **`parent`**: Uses parent module color
+- **`item.material`**: Uses item material color

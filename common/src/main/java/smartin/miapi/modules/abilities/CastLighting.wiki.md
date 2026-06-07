@@ -1,9 +1,9 @@
-@header CastLightingAbility  
+@header CastLighting Ability  
 @path /data_types/abilities/cast_lightning
 
 ## CastLightingAbility
 
-This ability allows the player to **summon lightning bolts** at a targeted location within a configurable range, by using and holding the item.
+This ability allows the player to **summon lightning bolts** at a targeted block location within a configurable range, by using and holding the item.
 
 ### Features
 
@@ -14,38 +14,58 @@ This ability allows the player to **summon lightning bolts** at a targeted locat
 - Applies a cooldown after use.
 - Only works on the server side (requires `ServerPlayer`).
 - Uses a custom `UseAnim.SPEAR` animation while holding the item.
-- Supports merging and initialization of all configurable parameters.
 
-### Context Fields (CastLightingContext)
+### Behavior
 
-| Field       | Type                   | Description                                                   | Default Value         |
-|-------------|------------------------|---------------------------------------------------------------|----------------------|
-| onThrow     | `SoundEvent`           | Sound played when lightning is cast                           | `SoundEvents.EMPTY`  |
-| minHold     | `DoubleOperationResolvable` | Minimum ticks the item must be held before activation         | 10                   |
-| lighting    | `DoubleOperationResolvable` | Number of lightning bolts to summon                           | 1                    |
-| cooldown    | `DoubleOperationResolvable` | Cooldown duration in ticks after use                          | 40                   |
-| maxRange    | `DoubleOperationResolvable` | Maximum allowed distance from player to cast lightning        | 6                    |
+- Player holds the item (right-click and hold).
+- On release after the minimum hold time:
+  - Checks if the player is within the configured `max_range` of the targeted block.
+  - If within range, spawns the configured number of lightning bolts at the target position.
+  - Plays the configured sound event.
+  - Applies the configured cooldown.
+
+### JSON Context Fields
+
+- **`on_throw`** _(SoundEvent, optional, default = `SoundEvents.EMPTY`)_ :  
+  Sound event played when lightning is cast.
+
+- **`min_hold`** _(number, optional, default = 10)_:  
+  Minimum time in ticks the item must be held before lightning is cast.
+
+- **`lighting`** _(number, optional, default = 1)_:  
+  Number of lightning bolts to summon at the target position.
+
+- **`cooldown`** _(number, optional, default = 50)_:  
+  Time in ticks before the ability can be used again.
+
+- **`max_range`** _(number, optional, default = 6)_:  
+  Maximum allowed distance (in blocks) from the player to the targeted block. The squared distance is checked.
 
 ### Example
+
 ```json
 {
-    "ability_context": [
-        {
-            "id": "addon:test",
-            "type": "miapi:cast_lighting",
-            "priority": 0,
-            "data": {
-                "lighting": "[material.tier]",
-                "cooldown": "[material.density]*20"
-            }
-        }
-    ]
+	"ability_context": [
+		{
+			"id": "addon:cast_lightning",
+			"type": "miapi:cast_lighting",
+			"priority": 0,
+			"data": {
+				"on_throw": "minecraft:thunder",
+				"min_hold": 10,
+				"lighting": 1,
+				"cooldown": 50,
+				"max_range": 6
+			}
+		}
+	]
 }
 ```
 
-### Usage
+This configuration:
 
-- Player holds the item (right-click and hold).
-- On release after the minimum hold time, if within range of the targeted block, the ability summons lightning bolts.
-- The number of lightning bolts and cooldown are determined by the context values.
-- The ability checks the squared distance between player and target to ensure it's within `maxRange`.
+- Plays the thunder sound when lightning is cast.
+- Requires 10 ticks of holding before activation.
+- Spawns 1 lightning bolt at the target position.
+- Applies a 50-tick cooldown.
+- Allows casting up to 6 blocks away from the player.

@@ -9,8 +9,8 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 
 @Mixin(SpriteSources.class)
 public interface SpriteSourcesAccessor {
-    @Invoker
-    static SpriteSourceType callRegister(String name, MapCodec<? extends SpriteSource> codec) {
+    @Invoker("register")
+    static SpriteSourceType callMiapiRegister(String name, MapCodec<? extends SpriteSource> codec) {
         throw new UnsupportedOperationException();
     }
 }

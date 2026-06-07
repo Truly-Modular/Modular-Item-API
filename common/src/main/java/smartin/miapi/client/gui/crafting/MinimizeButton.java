@@ -55,7 +55,7 @@ public class MinimizeButton extends InteractAbleWidget {
 
     @Override
     public void renderWidget(GuiGraphics drawContext, int mouseX, int mouseY, float delta) {
-        //drawContext.fill(getX(), getY(), getX()+getWidth(), getY()+getHeight(), 10, new Color(255, 0, 0, 255).argb());
+        //drawContext.fill(getX(), getY(), getX()+getMiapiWidth(), getY()+getMiapiHeight(), 10, new Color(255, 0, 0, 255).argb());
         super.renderWidget(drawContext, mouseX, mouseY, delta);
     }
 }

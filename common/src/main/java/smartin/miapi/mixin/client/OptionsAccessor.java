@@ -8,10 +8,7 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(Options.class)
 public interface OptionsAccessor {
-    @Accessor
-    KeyMapping[] getKeyMappings();
-
     @Mutable
-    @Accessor
-    void setKeyMappings(KeyMapping[] keyMappings);
+    @Accessor("keyMappings")
+    void setMiapiKeyMappings(KeyMapping[] keyMappings);
 }

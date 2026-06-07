@@ -86,7 +86,7 @@ public abstract class LivingEntityMixin {
     @Inject(method = "hurt", at = @At(value = "TAIL"))
     private void miapi$damageEventAfter(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
         LivingEntity livingEntity = (LivingEntity) (Object) this;
-        float lastDamageTaken = ((LivingEntityAccessor) livingEntity).getLastDamageTaken();
+        float lastDamageTaken = ((LivingEntityAccessor) livingEntity).getMiapiLastDamageTaken();
         MiapiEvents.LivingHurtEvent livingHurtEvent = new MiapiEvents.LivingHurtEvent((LivingEntity) (Object) this, source.getEntity(), source, lastDamageTaken);
         livingHurtEvent.isCritical = lastEvent.isCritical;
         MiapiEvents.LIVING_HURT_AFTER.invoker().hurt(livingHurtEvent);
@@ -124,7 +124,7 @@ public abstract class LivingEntityMixin {
         FluidState fluidState = self.level().getFluidState(self.blockPosition());
         if (!(
                 self.isInWater() &&
-                ((LivingEntityAccessor) self).callIsAffectedByFluidsMiapi() &&
+                ((LivingEntityAccessor) self).callMiapiIsAffectedByFluidsMiapi() &&
                 !self.canStandOnFluid(fluidState))
         ) {
             return original;

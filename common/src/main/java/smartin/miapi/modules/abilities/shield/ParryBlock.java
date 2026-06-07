@@ -250,9 +250,9 @@ public class ParryBlock extends MinMaxCDAbility<BlockData> {
     public void addCooldown(Player player, ItemStack stack, int cooldown) {
         if (cooldown > 0) {
 
-            Map<Item, ItemCooldowns.CooldownInstance> cd = ((ItemCooldownsAccessor) player.getCooldowns()).getCooldowns();
+            Map<Item, ItemCooldowns.CooldownInstance> cd = ((ItemCooldownsAccessor) player.getCooldowns()).getMiapiCooldowns();
             if (cd.containsKey(stack.getItem())) {
-                int currentCD = ((CooldownInstanceAccessor) cd.get(stack.getItem())).getEndTime() - ((ItemCooldownsAccessor) player.getCooldowns()).getTickCount();
+                int currentCD = ((CooldownInstanceAccessor) cd.get(stack.getItem())).getMiapiEndTime() - ((ItemCooldownsAccessor) player.getCooldowns()).getMiapiTickCount();
                 if (currentCD > cooldown) {
                     return;
                 }

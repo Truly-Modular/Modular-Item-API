@@ -7,9 +7,9 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(ElytraModel.class)
 public interface ElytraEntityModelAccessor {
-    @Accessor
-    ModelPart getRightWing();
+    @Accessor("rightWing")
+    ModelPart getMiapiRightWing();
 
-    @Accessor
-    ModelPart getLeftWing();
+    @Accessor("leftWing")
+    ModelPart getMiapiLeftWing();
 }

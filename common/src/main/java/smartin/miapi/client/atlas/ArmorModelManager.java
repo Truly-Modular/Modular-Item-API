@@ -75,9 +75,9 @@ public class ArmorModelManager {
             List<ArmorPart> parts = new ArrayList<>();
             if (Minecraft.getInstance().getEntityRenderDispatcher().getRenderer(livingEntity) instanceof LivingEntityRenderer livingEntityRenderer) {
                 Optional<ElytraLayer<?, ?>> elytraFeatureRenderer =
-                        ((LivingEntityRendererAccessor) livingEntityRenderer).getFeatures().stream().filter(a -> a instanceof ElytraLayer<?, ?>).findAny();
+                        ((LivingEntityRendererAccessor) livingEntityRenderer).getMiapiLayers().stream().filter(a -> a instanceof ElytraLayer<?, ?>).findAny();
                 if (elytraFeatureRenderer.isPresent()) {
-                    ElytraModel elytraEntityModel = ((ElytraFeatureRendererAccessor) elytraFeatureRenderer.get()).getElytra();
+                    ElytraModel elytraEntityModel = ((ElytraFeatureRendererAccessor) elytraFeatureRenderer.get()).getMiapiElytra();
                     livingEntity.getYHeadRot();
                     livingEntity.getViewXRot(0);
                     livingEntity.getAgeScale();
@@ -86,14 +86,14 @@ public class ArmorModelManager {
                     parts.add((matrixStack, equipmentSlot1, livingEntity1, model1, entityModel1) -> {
                         entityModel.copyPropertiesTo(elytraEntityModel);
                         entityModel1.copyPropertiesTo(model1);
-                        ModelPart part = ((ElytraEntityModelAccessor) elytraEntityModel).getLeftWing();
+                        ModelPart part = ((ElytraEntityModelAccessor) elytraEntityModel).getMiapiLeftWing();
                         part.translateAndRotate(matrixStack);
                         return "left_wing";
                     });
                     parts.add((matrixStack, equipmentSlot1, livingEntity1, model1, entityModel1) -> {
                         entityModel.copyPropertiesTo(elytraEntityModel);
                         entityModel1.copyPropertiesTo(model1);
-                        ModelPart part = ((ElytraEntityModelAccessor) elytraEntityModel).getRightWing();
+                        ModelPart part = ((ElytraEntityModelAccessor) elytraEntityModel).getMiapiRightWing();
                         part.translateAndRotate(matrixStack);
                         return "right_wing";
                     });

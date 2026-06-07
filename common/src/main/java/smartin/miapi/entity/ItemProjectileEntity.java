@@ -88,7 +88,7 @@ public class ItemProjectileEntity extends AbstractArrow {
         this.entityData.set(THROWING_STACK, thrownStack);
         this.entityData.set(PICKUP_STACK, thrownStack);
         this.entityData.set(LOYALTY, this.getLoyaltyFromItem(stack));
-        ((AbstractArrowAccessor) this).setPickupItemStack(itemStack);
+        ((AbstractArrowAccessor) this).setMiapiPikcupItemStack(itemStack);
         this.entityData.set(ENCHANTED, stack.hasFoil());
         this.entityData.set(WATER_DRAG, waterDrag);
         this.entityData.set(SPEED_DAMAGE, true);
@@ -286,7 +286,7 @@ public class ItemProjectileEntity extends AbstractArrow {
         float damage = getProjectileDamage();
         if (this.getPierceLevel() > 0) {
             projectileHitBehaviour = new EntityPierceBehaviour();
-            ((AbstractArrowAccessor) this).callSetPierceLevel((byte) (this.getPierceLevel() - 1));
+            ((AbstractArrowAccessor) this).callMiapiSetPierceLevel((byte) (this.getPierceLevel() - 1));
         } else {
             projectileHitBehaviour = new EntityBounceBehaviour();
         }
@@ -415,7 +415,7 @@ public class ItemProjectileEntity extends AbstractArrow {
             return;
         }
         hitEntitySound = new WrappedSoundEvent(this.getDefaultHitGroundSoundEvent(), 1.0f, 1.0f);
-        ((AbstractArrowAccessor) this).setSoundEvent(hitEntitySound.event());
+        ((AbstractArrowAccessor) this).setMiapiSoundEvent(hitEntitySound.event());
         HitResult.Type hitresult$type = result.getType();
         if (hitresult$type == HitResult.Type.ENTITY) {
             EntityHitResult entityhitresult = (EntityHitResult) result;

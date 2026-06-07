@@ -52,7 +52,7 @@ public class LootHelper {
         ReloadListenerRegistry.register(PackType.SERVER_DATA, new LootModifierManager(), Miapi.id("global_loot"));
         LootEvent.MODIFY_LOOT_TABLE.register((key, context, builtin) -> {
             LootModifierManager.getLootPools().forEach(lootTable -> {
-                ((LootTableAccessor) lootTable).getPools().forEach(lootPool -> {
+                ((LootTableAccessor) lootTable).getMiapiPools().forEach(lootPool -> {
                     LootPool.lootPool()
                             .setRolls(lootPool.rolls);
                     context.addPool(getBuilderFromLootPool(lootPool));

@@ -26,7 +26,7 @@ public class ItemCombinerMenuMixin {
         if(index==3){
             ItemCombinerMenu itemCombinerMenu = (ItemCombinerMenu) (Object) this;
             if(itemCombinerMenu instanceof SmithingMenu menu){
-                var recipe = ((SmithingScreenHandlerAccessor) menu).currentRecipe();
+                var recipe = ((SmithingScreenHandlerAccessor) menu).getMiapiSelectedRecipe();
                 if(recipe.value() instanceof MaterialSmithingRecipe){
                     menu.getSlot(1).getItem().setCount(0);
                     menu.getSlot(1).set(ItemStack.EMPTY);

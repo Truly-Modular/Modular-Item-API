@@ -25,7 +25,7 @@ import java.util.List;
  */
 public class BufferSpriteAdder implements SpriteSource {
     public static MapCodec<? extends SpriteSource> CODEC = AutoCodec.of(BufferSpriteAdder.class);
-    public static SpriteSourceType TYPE = SpriteSourcesAccessor.callRegister("miapi_runtime", CODEC);
+    public static SpriteSourceType TYPE = SpriteSourcesAccessor.callMiapiRegister("miapi_runtime", CODEC);
 
     @Override
     public void run(ResourceManager resourceManager, Output output) {

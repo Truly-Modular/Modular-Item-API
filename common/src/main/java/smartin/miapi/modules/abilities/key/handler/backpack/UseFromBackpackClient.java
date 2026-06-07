@@ -49,7 +49,7 @@ public final class UseFromBackpackClient {
         }
 
         InventoryPreviewManager.show(CURRENT_INVENTORY);
-        if (((MinecraftAccessor) mc).getRightClickDelay() == 0
+        if (((MinecraftAccessor) mc).getMiapiRightClickDelay() == 0
             && !player.isUsingItem()) {
 
             UseItemAbilityHandler.isUsing =

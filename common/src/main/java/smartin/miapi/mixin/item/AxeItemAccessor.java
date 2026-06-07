@@ -9,8 +9,8 @@ import java.util.Map;
 
 @Mixin(AxeItem.class)
 public interface AxeItemAccessor {
-    @Accessor
-    static Map<Block, Block> getSTRIPPABLES() {
+    @Accessor("STRIPPABLES")
+    static Map<Block, Block> getMiapiStrippables() {
         throw new UnsupportedOperationException();
     }
 }

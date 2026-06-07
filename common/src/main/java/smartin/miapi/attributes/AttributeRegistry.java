@@ -114,9 +114,9 @@ public class AttributeRegistry {
             public EventResult dataTracker(ItemProjectileEntity projectile, SynchedEntityData nbtCompound) {
                 if (projectile.level() instanceof ServerLevel) {
                     ItemStack projectileStack = projectile.thrownStack;
-                    nbtCompound.set(AbstractArrowAccessor.getPerceLevelDataPublic(),
+                    nbtCompound.set(AbstractArrowAccessor.getMiapiPierceLevelDataPublic(),
                             (byte) (AttributeUtil.getActualValue(projectileStack, EquipmentSlot.MAINHAND, PROJECTILE_PIERCING.value(), 0.0)
-                                    + nbtCompound.get(AbstractArrowAccessor.getPerceLevelDataPublic()))
+                                    + nbtCompound.get(AbstractArrowAccessor.getMiapiPierceLevelDataPublic()))
                     );
                 }
                 return EventResult.pass();
@@ -237,7 +237,7 @@ public class AttributeRegistry {
                     livingHurtEvent.damageSource.getEntity() instanceof LivingEntity attacker) {
                 if (attacker.getAttributes().hasAttribute(ARMOR_CRUSHING)) {
                     double value = attacker.getAttributeValue(ARMOR_CRUSHING);
-                    ((LivingEntityAccessor) livingHurtEvent.defender).callDamageArmor(livingHurtEvent.damageSource, (float) (livingHurtEvent.defender.getArmorValue() * value));
+                    ((LivingEntityAccessor) livingHurtEvent.defender).callMiapiDamageArmor(livingHurtEvent.damageSource, (float) (livingHurtEvent.defender.getArmorValue() * value));
                 }
             }
             return EventResult.pass();

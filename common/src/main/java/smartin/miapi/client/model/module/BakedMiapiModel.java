@@ -272,7 +272,7 @@ public class BakedMiapiModel implements MiapiModel {
         if (vertexConsumer instanceof RescaledVertexConsumer rescaledVertexConsumer) {
             return isStillValid(rescaledVertexConsumer.delegate);
         } else if (vertexConsumer instanceof BufferBuilder buffer) {
-            return ((BufferBuilderAccessor) buffer).isBuilding();
+            return ((BufferBuilderAccessor) buffer).isMiapiBuilding();
         }
         return false;
     }

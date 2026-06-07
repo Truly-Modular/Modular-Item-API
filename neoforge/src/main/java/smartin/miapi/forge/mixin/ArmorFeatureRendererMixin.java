@@ -41,7 +41,7 @@ public abstract class ArmorFeatureRendererMixin<T extends LivingEntity, M extend
         for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
             ItemStack itemStack = livingEntity.getItemBySlot(equipmentSlot);
             if (VisualModularItem.isVisualModularItem(itemStack) && equipmentSlot.isArmor()) {
-                renderPieces(poseStack, buffer, packedLight, equipmentSlot, itemStack, livingEntity, getArmorModel(equipmentSlot), ((FeatureRendererAccessor) renderer).getContext());
+                renderPieces(poseStack, buffer, packedLight, equipmentSlot, itemStack, livingEntity, getArmorModel(equipmentSlot), ((FeatureRendererAccessor) renderer).getMiapiRenderer());
             }
         }
     }
@@ -51,7 +51,7 @@ public abstract class ArmorFeatureRendererMixin<T extends LivingEntity, M extend
         ItemStack itemStack = entity.getItemBySlot(armorSlot);
         HumanoidArmorLayer renderer = (HumanoidArmorLayer) (Object) this;
         if (VisualModularItem.isVisualModularItem(itemStack)) {
-            renderPieces(matrices, vertexConsumers, light, armorSlot, itemStack, entity, model, ((FeatureRendererAccessor) renderer).getContext());
+            renderPieces(matrices, vertexConsumers, light, armorSlot, itemStack, entity, model, ((FeatureRendererAccessor) renderer).getMiapiRenderer());
             ci.cancel();
         }
     }

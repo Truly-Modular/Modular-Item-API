@@ -27,7 +27,7 @@ public class SpriteSourceListMixin {
         if (sprite != null && sprite.equals(blockAtlas) && MiapiConfig.getClientConfig().render.enableFastRender) {
             List<SpriteSource> list = new ArrayList<>(((SpriteSourceListAccessor) original).getSourcesMiapi());
             list.add(new BufferSpriteAdder());
-            return SpriteSourceListAccessor.createSpriteSourceList(list);
+            return SpriteSourceListAccessor.createMiapiSpriteSourceList(list);
         }
         return original;
     }

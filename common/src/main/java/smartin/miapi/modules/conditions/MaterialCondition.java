@@ -12,10 +12,10 @@ import smartin.miapi.modules.ModuleInstance;
 
 import java.util.List;
 import java.util.Optional;
+
 /**
  * @header Material Condition
- * @description_start
- * this condition checks if this Module has a certain material
+ * @description_start this condition checks if this Module has a certain material
  * Supports custom error
  * @desciption_end
  * @path /data_types/condition/material

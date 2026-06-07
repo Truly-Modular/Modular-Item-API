@@ -98,8 +98,8 @@ public class MaterialAtlasManager extends TextureAtlasHolder {
     public TextureAtlasSprite getMaterialSprite(ResourceLocation id) {
         try {
             TextureAtlasSprite sprite = getSprite(id);
-            TextureAtlas atlas = ((TextureAtlasHolderAccessor) this).getTextureAtlas();
-            if (sprite == ((TextureAtlasAccessor) atlas).getMissingSprite()) {
+            TextureAtlas atlas = ((TextureAtlasHolderAccessor) this).getMiapiTextureAtlas();
+            if (sprite == ((TextureAtlasAccessor) atlas).getMiapiMissingSprite()) {
                 return null;
             }
             return getSprite(id);

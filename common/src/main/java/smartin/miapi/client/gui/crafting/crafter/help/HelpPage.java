@@ -75,9 +75,9 @@ public class HelpPage extends InteractAbleWidget {
 
     @Override
     public void renderWidget(GuiGraphics drawContext, int mouseX, int mouseY, float delta) {
-        //drawContext.fill(getX(), getY(), getX() + getWidth(), getY() + getHeight(), color);
+        //drawContext.fill(getX(), getY(), getX() + getMiapiWidth(), getY() + getMiapiHeight(), color);
         drawContext.blit(BACKGROUND, getX(), getY(), getWidth(), getHeight(), 0, 0, getWidth(), getHeight(), getWidth(), getHeight());
-        //drawContext.drawTexture(CraftingScreen.BACKGROUND_TEXTURE, getX(), getY(), 0, 0, getWidth(), getHeight());
+        //drawContext.drawTexture(CraftingScreen.BACKGROUND_TEXTURE, getX(), getY(), 0, 0, getMiapiWidth(), getMiapiHeight());
         CraftingScreen craftingScreen;
         super.renderWidget(drawContext, mouseX, mouseY, delta);
     }

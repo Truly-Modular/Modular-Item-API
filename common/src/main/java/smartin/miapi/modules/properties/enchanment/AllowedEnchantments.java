@@ -291,7 +291,7 @@ public class AllowedEnchantments extends CodecProperty<AllowedEnchantments.Allow
         private boolean contains(Enchantment enchantment, List<ResourceLocation> ids, ModuleInstance moduleInstance) {
             for (ResourceLocation id : ids) {
                 if (enchantment.definition().supportedItems() instanceof HolderSet.Named<Item> set) {
-                    ResourceLocation tagID = ((NamedAccessor) set).getKey().location();
+                    ResourceLocation tagID = ((NamedAccessor) set).getMiapiKey().location();
                     if (tagID.equals(id)) {
                         return true;
                     }

@@ -160,18 +160,18 @@ public class CustomModularArmorRenderer<E extends LivingEntity, T extends Living
 
         if (Minecraft.getInstance().getEntityRenderDispatcher().getRenderer(entity) instanceof LivingEntityRenderer livingEntityRenderer) {
             Optional<ElytraLayer<?, ?>> elytraFeatureRenderer =
-                    ((LivingEntityRendererAccessor) livingEntityRenderer).getFeatures().stream().filter(a -> a instanceof ElytraLayer<?, ?>).findAny();
+                    ((LivingEntityRendererAccessor) livingEntityRenderer).getMiapiLayers().stream().filter(a -> a instanceof ElytraLayer<?, ?>).findAny();
             MiapiItemModel miapiItemModel = MiapiItemModel.getItemModel(itemStack);
             if (elytraFeatureRenderer.isPresent() && miapiItemModel != null) {
-                ElytraModel elytraEntityModel = ((ElytraFeatureRendererAccessor) elytraFeatureRenderer.get()).getElytra();
+                ElytraModel elytraEntityModel = ((ElytraFeatureRendererAccessor) elytraFeatureRenderer.get()).getMiapiElytra();
                 livingEntityRenderer.getModel().copyPropertiesTo(elytraEntityModel);
                 matrices.pushPose();
-                ModelPart part = ((ElytraEntityModelAccessor) elytraEntityModel).getLeftWing();
+                ModelPart part = ((ElytraEntityModelAccessor) elytraEntityModel).getMiapiLeftWing();
                 part.translateAndRotate(matrices);
                 miapiItemModel.render("left_wing", itemStack, matrices, ItemDisplayContext.HEAD, 0, vertexConsumers, entity, light, OverlayTexture.NO_OVERLAY);
                 matrices.popPose();
                 matrices.pushPose();
-                ModelPart rightWing = ((ElytraEntityModelAccessor) elytraEntityModel).getRightWing();
+                ModelPart rightWing = ((ElytraEntityModelAccessor) elytraEntityModel).getMiapiRightWing();
                 ArmorModelManager armorModelManager;
                 rightWing.translateAndRotate(matrices);
                 miapiItemModel.render("right_wing", itemStack, matrices, ItemDisplayContext.HEAD, 0, vertexConsumers, entity, light, OverlayTexture.NO_OVERLAY);

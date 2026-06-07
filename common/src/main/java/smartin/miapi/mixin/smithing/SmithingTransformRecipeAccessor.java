@@ -8,15 +8,15 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(SmithingTransformRecipe.class)
 public interface SmithingTransformRecipeAccessor {
-    @Accessor
-    Ingredient getTemplate();
+    @Accessor("template")
+    Ingredient getMiapiTemplate();
 
-    @Accessor
-    Ingredient getBase();
+    @Accessor("base")
+    Ingredient getMiapiBase();
 
-    @Accessor
-    Ingredient getAddition();
+    @Accessor("addition")
+    Ingredient getMiapiAdditions();
 
-    @Accessor
-    ItemStack getResult();
+    @Accessor("result")
+    ItemStack getMiapiResult();
 }

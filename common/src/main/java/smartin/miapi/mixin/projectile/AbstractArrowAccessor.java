@@ -11,19 +11,16 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 @Mixin(AbstractArrow.class)
 public interface AbstractArrowAccessor {
     @Accessor("PIERCE_LEVEL")
-    static EntityDataAccessor<Byte> getPerceLevelDataPublic() {
+    static EntityDataAccessor<Byte> getMiapiPierceLevelDataPublic() {
         throw new UnsupportedOperationException();
     }
 
-    @Invoker
-    void callSetPierceLevel(byte pierceLevel);
+    @Invoker("setPierceLevel")
+    void callMiapiSetPierceLevel(byte pierceLevel);
 
-    @Accessor
-    SoundEvent getSoundEvent();
+    @Accessor("soundEvent")
+    void setMiapiSoundEvent(SoundEvent soundEvent);
 
-    @Accessor
-    void setSoundEvent(SoundEvent soundEvent);
-
-    @Accessor
-    void setPickupItemStack(ItemStack pickupItemStack);
+    @Accessor("pickupItemStack")
+    void setMiapiPikcupItemStack(ItemStack pickupItemStack);
 }

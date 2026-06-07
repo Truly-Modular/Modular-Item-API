@@ -10,6 +10,6 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 public interface ModelLoaderInterfaceAccessor {
 
     @Invoker("loadBlockModel")
-    BlockModel loadModelFromPath(ResourceLocation identifier);
+    BlockModel miapiLoadModelFromPath(ResourceLocation identifier);
 
 }

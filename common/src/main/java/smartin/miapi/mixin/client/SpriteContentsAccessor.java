@@ -10,12 +10,9 @@ public interface SpriteContentsAccessor {
     @Accessor("originalImage")
     NativeImage getImage();
 
-    @Accessor
-    int getWidth();
+    @Accessor("width")
+    int getMiapiWidth();
 
-    @Accessor
-    int getHeight();
-
-    @Accessor
-    NativeImage[] getByMipLevel();
+    @Accessor("height")
+    int getMiapiHeight();
 }

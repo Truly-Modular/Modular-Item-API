@@ -7,7 +7,7 @@ import smartin.miapi.material.MaterialProperty;
 import smartin.miapi.material.codec.CodecMaterial;
 import smartin.miapi.material.codec.CodecMaterialExtension;
 import smartin.miapi.material.composite.material.DatapackComposite;
-import smartin.miapi.modules.CodecModuleExtension;
+import smartin.miapi.modules.CodecModuleInheritance;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ItemModuleExtension;
 import smartin.miapi.modules.edit_options.CreateItemOption.CreateItemOption;
@@ -40,7 +40,7 @@ public class ReloadHelpers {
                 .register();
 
         HierarchicalReloadBuilder
-                .builder("miapi/modules", ItemModule.CODEC, CodecModuleExtension.CODEC)
+                .builder("miapi/modules", ItemModule.CODEC, CodecModuleInheritance.CODEC)
                 .clear(RegistryInventory.ITEM_MODULE_MIAPI_REGISTRY::clearTemporary)
                 .baseHandler((isClient, path, data, registryAccess) -> {
                     data = new ItemModule(path, data.properties());

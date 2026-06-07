@@ -10,13 +10,13 @@ import java.util.HashMap;
 /**
  * A datapack-defined inheritance/extension for ItemModules.
  */
-public record CodecModuleExtension(ResourceLocation target,
-                                   PropertyHolder extensionData) implements HierarchicalReloadBuilder.Extension<ItemModule> {
+public record CodecModuleInheritance(ResourceLocation target,
+                                     PropertyHolder extensionData) implements HierarchicalReloadBuilder.Extension<ItemModule> {
 
-    public static final Codec<CodecModuleExtension> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            ResourceLocation.CODEC.fieldOf("parent").forGetter(CodecModuleExtension::target),
-            PropertyHolder.MAP_CODEC.fieldOf("data").forGetter(CodecModuleExtension::extensionData)
-    ).apply(instance, CodecModuleExtension::new));
+    public static final Codec<CodecModuleInheritance> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+            ResourceLocation.CODEC.fieldOf("parent").forGetter(CodecModuleInheritance::target),
+            PropertyHolder.MAP_CODEC.fieldOf("data").forGetter(CodecModuleInheritance::extensionData)
+    ).apply(instance, CodecModuleInheritance::new));
 
     @Override
     public ItemModule applyTo(ItemModule base) {

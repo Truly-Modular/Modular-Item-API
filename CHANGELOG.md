@@ -5,6 +5,7 @@
 - fixed magazine crossbows disconnecting players on shoot
 - fixed leaving material on removed modules
 - fixed crash/issues related to generated detected attributes
+- changed mixin function names to prevent mixin conflict
 ### Changes
 - significantly improved rendering performance
 - improved rapid lookup performance for mining speed
@@ -20,3 +21,7 @@
 - added trail render config option
 - added new config option to control breakability of broken times
 - added scute materials
+
+### Warning
+this snapshot includes unfinished backpack + keybind stuff.  
+id recommend unbinding them since formats and stuff might change prior to a release

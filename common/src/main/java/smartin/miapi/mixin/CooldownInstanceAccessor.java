@@ -5,6 +5,6 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(targets = "net.minecraft.world.item.ItemCooldowns$CooldownInstance")
 public interface CooldownInstanceAccessor {
-    @Accessor
-    int getEndTime();
+    @Accessor("endTime")
+    int getMiapiEndTime();
 }

@@ -23,7 +23,7 @@ public class ElytraLayerMixin {
         ItemStack itemStack = livingEntity.getItemBySlot(EquipmentSlot.CHEST);
         if (VisualModularItem.isVisualModularItem(itemStack)) {
             ElytraLayer layer = (ElytraLayer) (Object) this;
-            ((ElytraFeatureRendererAccessor) layer).getElytra().setupAnim(livingEntity, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
+            ((ElytraFeatureRendererAccessor) layer).getMiapiElytra().setupAnim(livingEntity, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
         }
     }
 }

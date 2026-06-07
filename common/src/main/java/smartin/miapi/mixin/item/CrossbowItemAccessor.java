@@ -9,23 +9,17 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 
 @Mixin(CrossbowItem.class)
 public interface CrossbowItemAccessor {
-    @Invoker
-    static boolean callTryLoadProjectiles(LivingEntity shooter, ItemStack crossbowStack) {
+    @Invoker("tryLoadProjectiles")
+    static boolean callMiapiTryLoadProjectiles(LivingEntity shooter, ItemStack crossbowStack) {
         throw new UnsupportedOperationException();
     }
 
-    @Accessor
-    boolean isStartSoundPlayed();
+    @Accessor("startSoundPlayed")
+    void setMiapiStartSoundPlayed(boolean startSoundPlayed);
 
-    @Accessor
-    void setStartSoundPlayed(boolean startSoundPlayed);
+    @Accessor("midLoadSoundPlayed")
+    void setMiapiMidLoadSoundPlayed(boolean midLoadSoundPlayed);
 
-    @Accessor
-    boolean isMidLoadSoundPlayed();
-
-    @Accessor
-    void setMidLoadSoundPlayed(boolean midLoadSoundPlayed);
-
-    @Invoker
-    CrossbowItem.ChargingSounds callGetChargingSounds(ItemStack stack);
+    @Invoker("getChargingSounds")
+    CrossbowItem.ChargingSounds getMiapiGetChargeSounds(ItemStack stack);
 }

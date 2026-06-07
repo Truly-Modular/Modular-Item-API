@@ -32,7 +32,7 @@ public class BlockModelProperty extends CodecProperty<List<BlockModelProperty.Bl
             MaterialIcons.SpinSettings.CODEC.optionalFieldOf("spin").forGetter(BlockModelData::spin)
     ).apply(instance, BlockModelData::new));
 
-    public static final Codec<List<BlockModelData>> CODEC = Codec.list(BLOCK_MODEL_DATA_CODEC);
+    public static final Codec<List<BlockModelData>> CODEC = Miapi.toListOrSimple(BLOCK_MODEL_DATA_CODEC);
 
     public BlockModelProperty() {
         super(CODEC);

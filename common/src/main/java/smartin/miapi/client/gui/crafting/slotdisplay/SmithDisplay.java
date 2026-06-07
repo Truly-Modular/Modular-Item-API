@@ -58,11 +58,11 @@ public class SmithDisplay extends InteractAbleWidget {
 
     @Override
     public void renderWidget(GuiGraphics context, int mouseX, int mouseY, float delta) {
-        //context.enableScissor(getX(),getY(),getX()+getWidth(),getY()+getHeight());
+        //context.enableScissor(getX(),getY(),getX()+getMiapiWidth(),getY()+getMiapiHeight());
         /*
         InventoryScreen.renderEntityInInventoryFollowsMouse(
                 context,
-                this.getX() + getWidth() / 2 + 3,
+                this.getX() + getMiapiWidth() / 2 + 3,
                 this.getY() + this.height - 10,
                 30,
                 50,

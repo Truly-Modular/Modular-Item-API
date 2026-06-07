@@ -81,7 +81,7 @@ public class SpriteFromJson {
             else atlasId = ResourceLocation.parse(key);
 
             ResourceLocation textureId = ResourceLocation.parse(obj.get("texture").getAsString());
-            rawSprite = Minecraft.getInstance().getTextureAtlas(atlasId).apply(textureId);
+            rawSprite = Minecraft.getInstance().getMiapiTextureAtlas(atlasId).apply(textureId);
             SpriteContents contents = rawSprite.contents();
             imageSupplier = () -> NativeImageGetter.get(contents);
             if (obj.has("forceTick"))
@@ -94,8 +94,8 @@ public class SpriteFromJson {
             NativeImage rawImage = loadTexture(Minecraft.getInstance().getResourceManager(), textureId);
             NativeImageGetter.ImageHolder holder = new NativeImageGetter.ImageHolder();
             holder.nativeImage = rawImage;
-            holder.width = rawImage.getWidth();
-            holder.height = rawImage.getHeight();
+            holder.width = rawImage.getMiapiWidth();
+            holder.height = rawImage.getMiapiHeight();
             imageSupplier = () -> holder;
         }
     }

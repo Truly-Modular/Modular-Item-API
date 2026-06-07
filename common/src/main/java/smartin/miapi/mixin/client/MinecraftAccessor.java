@@ -6,9 +6,9 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(Minecraft.class)
 public interface MinecraftAccessor {
-    @Accessor
-    int getRightClickDelay();
+    @Accessor("rightClickDelay")
+    int getMiapiRightClickDelay();
 
-    @Accessor
-    void setRightClickDelay(int rightClickDelay);
+    @Accessor("rightClickDelay")
+    void setMiapiRightClickDelay(int rightClickDelay);
 }

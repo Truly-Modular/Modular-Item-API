@@ -7,6 +7,6 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(TextureAtlasHolder.class)
 public interface TextureAtlasHolderAccessor {
-    @Accessor
-    TextureAtlas getTextureAtlas();
+    @Accessor("textureAtlas")
+    TextureAtlas getMiapiTextureAtlas();
 }

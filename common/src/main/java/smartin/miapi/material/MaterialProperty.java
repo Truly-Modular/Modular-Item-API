@@ -92,7 +92,7 @@ public class MaterialProperty extends CodecProperty<ResourceLocation> {
             if (named instanceof NamedAccessor namedAccessor) {
                 MATERIAL_REGISTRY.getFlatMap().forEach((id, material) -> {
                 });
-                namedAccessor.callBind(List.of());
+                namedAccessor.callMiapiBind(List.of());
             }
             Miapi.LOGGER.info("Loaded " + MATERIAL_REGISTRY.getFlatMap().size() + " Materials");
         }));

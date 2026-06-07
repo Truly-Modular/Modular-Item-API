@@ -33,9 +33,17 @@ public class EntityModelProperty extends CodecProperty<List<EntityModelProperty.
             List<MiapiModel> models = new ArrayList<>();
             getData(model).ifPresent(entityModelDataList -> {
                 entityModelDataList.forEach(entityModelData -> {
-                    EntityType entityType = BuiltInRegistries.ENTITY_TYPE.get(entityModelData.id);
+                    EntityType<?> entityType = BuiltInRegistries.ENTITY_TYPE.get(entityModelData.id);
+                    if(entityType == null) {
+                        Miapi.LOGGER.warn("Entity type {} not found for entity model property", entityModelData.id);
+                        return;
+                    }
                     //this is entirely client side rendering, this *should* be save
                     Entity entity = entityType.create(Minecraft.getInstance().level);
+                    if(entity == null) {
+                        Miapi.LOGGER.warn("Failed to create entity of type {} for entity model property", entityModelData.id);
+                        return;
+                    }
                     if (entityModelData.nbt != null) {
                         entity.load(entityModelData.nbt);
                     }

@@ -88,18 +88,18 @@ public class MiapiFabric implements ModInitializer {
                     if (!mappings.contains(key)) {
                         mappings.add(key);
                     }
-                    Set<String> categories = new HashSet<>(KeyMappingAccessor.getCATEGORIES());
+                    Set<String> categories = new HashSet<>(KeyMappingAccessor.getMiapiCategories());
                     categories.add(key.getCategory());
 
-                    KeyMappingAccessor.setCATEGORIES(categories);
-                    Map<String, Integer> mapPrio = new HashMap<>(KeyMappingAccessor.getCATEGORY_SORT_ORDER());
+                    KeyMappingAccessor.setMiapiCategories(categories);
+                    Map<String, Integer> mapPrio = new HashMap<>(KeyMappingAccessor.getMiapiCategoryOrder());
                     int max = Collections.max(mapPrio.values());
                     if (!mapPrio.keySet().contains(key.getCategory())) {
                         mapPrio.put(key.getCategory(), max + 1);
-                        KeyMappingAccessor.setCATEGORY_SORT_ORDER(mapPrio);
+                        KeyMappingAccessor.setMiapiCategoryOrder(mapPrio);
                     }
                 });
-                ((OptionsAccessor) Minecraft.getInstance().options).setKeyMappings(mappings.toArray(new KeyMapping[0]));
+                ((OptionsAccessor) Minecraft.getInstance().options).setMiapiKeyMappings(mappings.toArray(new KeyMapping[0]));
             });
         }
 

@@ -83,7 +83,7 @@ public class SpecialAttackAbility implements
             if (entityHitResult != null) {
                 Entity target2 = entityHitResult.getEntity();
                 if (target2 instanceof LivingEntity target) {
-                    ((LivingEntityAccessor) player).attacking(target);
+                    ((LivingEntityAccessor) player).getMiapiLastHurt(target);
                     float damage = (float) ((float) player.getAttributeValue(Attributes.ATTACK_DAMAGE) * specialAttackJson.damage.getValue());
                     float sweeping = (float) specialAttackJson.sweeping.getValue();
                     AttackUtil.performAttack(player, target, damage, true, stack);

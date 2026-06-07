@@ -10,5 +10,5 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 @Mixin(RenderLayer.class)
 public interface FeatureRendererAccessor<T extends Entity, M extends EntityModel<T>> {
     @Accessor("renderer")
-    RenderLayerParent<T, M> getContext();
+    RenderLayerParent<T, M> getMiapiRenderer();
 }

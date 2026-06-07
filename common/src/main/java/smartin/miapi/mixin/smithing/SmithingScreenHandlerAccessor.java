@@ -10,6 +10,6 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 public interface SmithingScreenHandlerAccessor {
 
     @Accessor("selectedRecipe")
-    RecipeHolder<SmithingRecipe> currentRecipe();
+    RecipeHolder<SmithingRecipe> getMiapiSelectedRecipe();
 
 }

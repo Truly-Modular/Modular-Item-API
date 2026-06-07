@@ -225,8 +225,8 @@ public class ModularCrossbow extends CrossbowItem implements PlatformModularItem
             }
             return InteractionResultHolder.consume(crossbow);
         } else if (!player.getProjectile(crossbow).isEmpty()) {
-            ((CrossbowItemAccessor) this).setStartSoundPlayed(false);
-            ((CrossbowItemAccessor) this).setMidLoadSoundPlayed(false);
+            ((CrossbowItemAccessor) this).setMiapiStartSoundPlayed(false);
+            ((CrossbowItemAccessor) this).setMiapiMidLoadSoundPlayed(false);
             player.startUsingItem(usedHand);
             return InteractionResultHolder.consume(crossbow);
         } else {
@@ -243,11 +243,11 @@ public class ModularCrossbow extends CrossbowItem implements PlatformModularItem
         if (charge >= 1.0F &&
             !isCharged(stack) &&
             !MiapiProjectileEvents.MODULAR_CROSSBOW_PRE_LOAD.invoker().load(context).interruptsFurtherEvaluation() &&
-            CrossbowItemAccessor.callTryLoadProjectiles(livingEntity, stack)) {
+            CrossbowItemAccessor.callMiapiTryLoadProjectiles(livingEntity, stack)) {
             if (MiapiProjectileEvents.MODULAR_CROSSBOW_POST_LOAD.invoker().load(context).interruptsFurtherEvaluation()) {
                 return;
             }
-            ChargingSounds chargingSounds = ((CrossbowItemAccessor) this).callGetChargingSounds(stack);
+            ChargingSounds chargingSounds = ((CrossbowItemAccessor) this).getMiapiGetChargeSounds(stack);
             chargingSounds.end().ifPresent((holder) -> {
                 level.playSound((Player) null, livingEntity.getX(), livingEntity.getY(), livingEntity.getZ(), holder.value(), livingEntity.getSoundSource(), 1.0F, 1.0F / (level.getRandom().nextFloat() * 0.5F + 1.0F) + 0.2F);
             });

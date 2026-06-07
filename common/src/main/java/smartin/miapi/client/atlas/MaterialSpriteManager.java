@@ -184,7 +184,7 @@ public class MaterialSpriteManager {
     public static VertexConsumer getVanillaItemVC(MultiBufferSource b){
         if(vanillaItemVc!=null){
             if (vanillaItemVc instanceof BufferBuilder buffer) {
-                if(((BufferBuilderAccessor) buffer).isBuilding()){
+                if(((BufferBuilderAccessor) buffer).isMiapiBuilding()){
                     return vanillaItemVc;
                 }
             }
@@ -209,7 +209,7 @@ public class MaterialSpriteManager {
         if (MiapiConfig.getClientConfig().render.enableFastRender) {
             SpriteSlot spriteSlot = FAST_CACHE.get(out.spriteHolder);
             if (spriteSlot == null) {
-                spriteSlot = getFreeAtlasSlot(((SpriteContentsAccessor) originalSprite.contents()).getWidth(), ((SpriteContentsAccessor) originalSprite.contents()).getHeight());
+                spriteSlot = getFreeAtlasSlot(((SpriteContentsAccessor) originalSprite.contents()).getMiapiWidth(), ((SpriteContentsAccessor) originalSprite.contents()).getMiapiHeight());
                 if (spriteSlot != null) {
                     spriteSlot.used = 6;
                     spriteSlot.holder = out.spriteHolder;

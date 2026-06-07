@@ -68,7 +68,7 @@ public class ModelManager {
         filePath2 = filePath2.replace(".json", "");
         filePath2 = filePath2.replace("models/", "");
         ResourceLocation modelId = ResourceLocation.parse(filePath2);
-        BlockModel model = ((ModelLoaderInterfaceAccessor) loader).loadModelFromPath(modelId);
+        BlockModel model = ((ModelLoaderInterfaceAccessor) loader).miapiLoadModelFromPath(modelId);
         if (!filePath2.endsWith(".json")) {
             filePath2 += ".json";
         }

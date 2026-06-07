@@ -84,7 +84,7 @@ public class ShieldingArmorFacet implements EntityFacet<CompoundTag> {
     }
 
     public int ticksSinceLastAttack() {
-        int lastAttackedTime = ((LivingEntityAccessor) livingEntity).getLastAttackedTime();
+        int lastAttackedTime = ((LivingEntityAccessor) livingEntity).getMiapiLastAttackedTime();
         if (lastAttackedTime > livingEntity.tickCount) {
             return livingEntity.tickCount;
         }

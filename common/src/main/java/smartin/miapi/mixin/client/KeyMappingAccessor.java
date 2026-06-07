@@ -10,25 +10,25 @@ import java.util.Set;
 
 @Mixin(KeyMapping.class)
 public interface KeyMappingAccessor {
-    @Accessor
-    static Set<String> getCATEGORIES() {
+    @Accessor("CATEGORIES")
+    static Set<String> getMiapiCategories() {
         throw new UnsupportedOperationException();
     }
 
     @Mutable
-    @Accessor
-    static void setCATEGORIES(Set<String> CATEGORIES) {
+    @Accessor("CATEGORIES")
+    static void setMiapiCategories(Set<String> CATEGORIES) {
         throw new UnsupportedOperationException();
     }
 
-    @Accessor
-    static Map<String, Integer> getCATEGORY_SORT_ORDER() {
+    @Accessor("CATEGORY_SORT_ORDER")
+    static Map<String, Integer> getMiapiCategoryOrder() {
         throw new UnsupportedOperationException();
     }
 
     @Mutable
-    @Accessor
-    static void setCATEGORY_SORT_ORDER(Map<String, Integer> CATEGORY_SORT_ORDER) {
+    @Accessor("CATEGORY_SORT_ORDER")
+    static void setMiapiCategoryOrder(Map<String, Integer> CATEGORY_SORT_ORDER) {
         throw new UnsupportedOperationException();
     }
 }

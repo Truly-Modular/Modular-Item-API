@@ -27,12 +27,12 @@ public class PlayerEntityModelMixin<T extends LivingEntity> {
     public void adjustElytraAngles(PoseStack poseStack, MultiBufferSource buffer, int packedLight, T livingEntity, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch, CallbackInfo ci) {
         if (Minecraft.getInstance().getEntityRenderDispatcher().getRenderer(livingEntity) instanceof PlayerRenderer livingEntityRenderer) {
             Optional<ElytraLayer> elytraFeatureRenderer =
-                    ((LivingEntityRendererAccessor) livingEntityRenderer).getFeatures().stream().filter(a -> a instanceof ElytraLayer<?, ?>).findAny();
+                    ((LivingEntityRendererAccessor) livingEntityRenderer).getMiapiLayers().stream().filter(a -> a instanceof ElytraLayer<?, ?>).findAny();
             if (elytraFeatureRenderer.isPresent()) {
                 ItemStack itemStack = livingEntity.getItemBySlot(EquipmentSlot.CHEST);
                 if (!itemStack.is(Items.ELYTRA) && itemStack.getItem() instanceof ModularElytraItem) {
 
-                    ((ElytraFeatureRendererAccessor) elytraFeatureRenderer.get()).getElytra().setupAnim(livingEntity, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
+                    ((ElytraFeatureRendererAccessor) elytraFeatureRenderer.get()).getMiapiElytra().setupAnim(livingEntity, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
                 }
             }
         }

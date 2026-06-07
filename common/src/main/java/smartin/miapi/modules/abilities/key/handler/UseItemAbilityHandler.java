@@ -103,7 +103,7 @@ public final class UseItemAbilityHandler implements KeybindHandler {
 
     @Override
     public void whileHeld(Minecraft mc, LocalPlayer player, MiapiBinding binding) {
-        if (((MinecraftAccessor) mc).getRightClickDelay() == 0 && !player.isUsingItem()) {
+        if (((MinecraftAccessor) mc).getMiapiRightClickDelay() == 0 && !player.isUsingItem()) {
             isUsing = tryUse(mc, player, binding.id, this.hands, this.entityInteraction, this.blockInteraction, this.itemInteraction);
         } else {
             isUsing = false;
@@ -122,7 +122,7 @@ public final class UseItemAbilityHandler implements KeybindHandler {
         if (mc.gameMode.isDestroying()) return false;
         if (player.isHandsBusy()) return false;
 
-        ((MinecraftAccessor) mc).setRightClickDelay(4);
+        ((MinecraftAccessor) mc).setMiapiRightClickDelay(4);
 
         for (InteractionHand hand : hands) {
             ItemStack stack = player.getItemInHand(hand);

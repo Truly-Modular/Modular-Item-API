@@ -15,7 +15,7 @@ public interface SpriteSourceListAccessor {
     List<SpriteSource> getSourcesMiapi();
 
     @Invoker("<init>")
-    static SpriteSourceList createSpriteSourceList(List<SpriteSource> sources) {
+    static SpriteSourceList createMiapiSpriteSourceList(List<SpriteSource> sources) {
         throw new UnsupportedOperationException();
     }
 }

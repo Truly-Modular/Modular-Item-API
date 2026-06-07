@@ -35,7 +35,7 @@ public class ModuleInstanceCodec implements Codec<ModuleInstance> {
     public <T> DataResult<Pair<ModuleInstance, T>> decode(DynamicOps<T> ops, T input) {
         RegistryOps.RegistryInfoLookup lookup;
         if (ops instanceof RegistryOps<?> registryOps) {
-            lookup = ((RegistryOpsAccessor) registryOps).getLookupProvider();
+            lookup = ((RegistryOpsAccessor) registryOps).getMiapiLookupProvider();
         }else{
             lookup = new MiapiHolderLookupAdapter(Miapi.registryAccess);
         }

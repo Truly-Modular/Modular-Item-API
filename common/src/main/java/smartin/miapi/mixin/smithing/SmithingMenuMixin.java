@@ -17,7 +17,7 @@ public class SmithingMenuMixin {
     private void miapi$clearSmithingStart(Player player, ItemStack stack, CallbackInfo ci) {
         if (VisualModularItem.isVisualModularItem(stack)) {
             SmithingMenu menu = (SmithingMenu) (Object) this;
-            var smithing = ((SmithingScreenHandlerAccessor) menu).currentRecipe();
+            var smithing = ((SmithingScreenHandlerAccessor) menu).getMiapiSelectedRecipe();
             if(smithing.value() instanceof MaterialSmithingRecipe){
                 menu.getSlot(1).getItem().setCount(0);
                 menu.getSlot(1).set(ItemStack.EMPTY);

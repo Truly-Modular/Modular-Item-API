@@ -17,6 +17,7 @@ import smartin.miapi.blocks.ModularWorkBenchEntity;
 import smartin.miapi.craft.CraftAction;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
+import smartin.miapi.modules.MutableModuleInstance;
 import smartin.miapi.modules.conditions.ConditionManager;
 import smartin.miapi.modules.conditions.ModuleCondition;
 import smartin.miapi.modules.conditions.TrueCondition;
@@ -117,9 +118,11 @@ public class CraftingConditionProperty extends CodecProperty<CraftingConditionPr
         } else {
             Miapi.LOGGER.error("bench is null. this should never happen");
         }
+        MutableModuleInstance moduleInstance = craftAction.getModifyingModuleInstance(crafting).asMutable();
+
         ConditionManager.ConditionContext context = ConditionManager.fullContext(craftAction.getModifyingModuleInstance(crafting), pos, player, module.properties());
         boolean isAllowed = json.craftAble.isAllowed(context);
-        if(!isAllowed){
+        if (!isAllowed) {
             context.failReasons.forEach(failreason);
         }
         return isAllowed;

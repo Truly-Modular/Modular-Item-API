@@ -7,6 +7,6 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(TextureAtlas.class)
 public interface TextureAtlasAccessor {
-    @Accessor
-    TextureAtlasSprite getMissingSprite();
+    @Accessor("missingSprite")
+    TextureAtlasSprite getMiapiMissingSprite();
 }
