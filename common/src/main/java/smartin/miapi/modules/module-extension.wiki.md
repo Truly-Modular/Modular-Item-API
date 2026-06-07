@@ -9,10 +9,20 @@ Module Extensions extend existing modules by adding or overriding properties. Ex
 
 ```json5
 {
-	"id": '"miapi:super_blade",
-    "merge": {
-		"material": "miapi:metal/netherite",
-		"durability": 2000
+	id: 'miapi:super_blade',
+	merge: {
+		//merges together, if it already has durability, it will be added together
+		material: 'miapi:metal/netherite',
+		durability: 2000
+	},
+	remove: [
+		//these properties will be fully removed from the module
+		'material_indication',
+		'model'
+	],
+	replace: {
+		//these properties will be replaced, ignoring previously existing data
+		tag: ['gem_armor', 'gem_armor_medium', 'gem_armor_generic', 'gem_armor_medium_generic']
 	}
 }
 ```

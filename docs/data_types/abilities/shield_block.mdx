@@ -1,0 +1,6 @@
+# Shield Block Ability
+
+## Description
+
+## ShieldBlockAbilityThis ability provides basic shield blocking behavior for items equipped in the off-hand.### Features- Uses the `BLOCK` use animation.- Applies a cooldown after blocking.- Requires minimum hold time before blocking activates.### Behavior- When right-clicked and held, the item enters a blocking state.- Applies cooldown after the blocking action completes.- Currently configured to always return false for `allowedOnItem`, meaning this ability is not actively used.### JSON Context Fields- **`cooldown`** _(number, optional, default = 0)_:    Time in ticks before the ability can be used again after blocking.- **`min_hold`** _(number, optional, default = 0)_:    Minimum time in ticks the item must be held before blocking activates.### Example```json{	"ability_context": [		{			"id": "addon:shield_block",			"type": "miapi:shield_block",			"data": {				"cooldown": 20,				"min_hold": 0			}		}	]}```This configuration:- Enables shield blocking with a 1-second cooldown.- Instantly activates on right-click.
+
