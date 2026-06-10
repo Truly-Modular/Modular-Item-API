@@ -86,9 +86,6 @@ public class MiapiReloadListener implements PreparableReloadListener {
             }
         });
         reloadData = filteredMap;
-
-
-        //TODO:this is not working on servers at the moment for no known reason
     }
 
     public static void actualReload(RegistryAccess access) {

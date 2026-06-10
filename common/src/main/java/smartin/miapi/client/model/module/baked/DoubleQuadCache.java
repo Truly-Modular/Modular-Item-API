@@ -23,7 +23,9 @@ public class DoubleQuadCache {
     }
 
     public void render(MultiBufferSource bufferSource, PoseStack.Pose pose, float red, float green, float blue, float alpha, int packedLight, int packedOverlay) {
-        if (vcProvider.isMovedBlockAtlasValid()) {
+        if (vcProvider.isMovedBlockAtlasValid()||false) {
+            //this optimation would require rebuild on SpriteSlot invalidation
+            //this is a bit impractical and prob not worth the work
             Minecraft.getInstance().getProfiler().push("vc");
             if (moved == null) {
                 moved = ModelTransformer.getOffset(original, vcProvider.u, vcProvider.v);

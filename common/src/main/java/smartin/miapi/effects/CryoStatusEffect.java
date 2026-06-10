@@ -90,7 +90,6 @@ public class CryoStatusEffect extends RenderingMobEffect {
         }
     }
 
-    //TODO:this doesnt apply anymore
     public void onRemoved(LivingEntity entity, AttributeMap attributes, int amplifier) {
         if (entity.level() instanceof ServerLevel world) {
             world.playSound(null, entity.getX(), entity.getY(), entity.getZ(), SoundEvents.GLASS_BREAK, SoundSource.BLOCKS, 1, 1);

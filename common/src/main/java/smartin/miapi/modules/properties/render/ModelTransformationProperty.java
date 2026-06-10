@@ -63,7 +63,6 @@ public class ModelTransformationProperty extends CodecProperty<ModelTransformati
         };
     }
 
-    //TODO:requires testing and more debugging with makeLeft vs not make left
     public static Transform makeLeft(Transform transform) {
         transform = transform.copy();
         transform.translation.set(new Vector3f(-transform.translation.x(), transform.translation.y(), transform.translation.z()));

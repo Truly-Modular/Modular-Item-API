@@ -72,7 +72,6 @@ public class CubeMiningShape implements MiningShape {
 
     @Override
     public MiningShape initialize(MiningShape property, ModuleInstance context) {
-        //TODO:swap to Double resovlable
         CubeMiningShape shape = new CubeMiningShape();
         shape.width = ((CubeMiningShape) property).width.initialize(context);
         shape.depth = ((CubeMiningShape) property).depth.initialize(context);

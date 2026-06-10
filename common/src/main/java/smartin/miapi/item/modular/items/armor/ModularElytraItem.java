@@ -32,7 +32,6 @@ import java.util.MissingResourceException;
 public class ModularElytraItem extends ElytraItem implements PlatformModularItemMethods, ModularItem {
     public ModularElytraItem(Properties settings) {
         super(settings);
-        //TODO:revisit cape, fake armor and platform specific elytra stuffs
     }
 
     @ExpectPlatform

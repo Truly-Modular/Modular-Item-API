@@ -6,6 +6,7 @@
     "mixins": [
         "LivingEntityMixin",
         "ModularCrossBowMixin",
+        "PlayerMixin",
         "ReloadAbleServerResourcesMixin",
         "item.ModularItemTestMixin"
     ],

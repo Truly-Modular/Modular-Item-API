@@ -204,8 +204,6 @@ public class ModularCrossbow extends CrossbowItem implements PlatformModularItem
         return draw(weapon, ammo, shooter);
     }
 
-
-    //TODO: somehow give apoth enchants a callback here, maybe custom event?
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand usedHand) {
         ItemStack crossbow = player.getItemInHand(usedHand);

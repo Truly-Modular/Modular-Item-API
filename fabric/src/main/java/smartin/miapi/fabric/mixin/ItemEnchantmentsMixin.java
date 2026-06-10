@@ -41,7 +41,6 @@ public abstract class ItemEnchantmentsMixin implements ItemEnchantmentsAccessor 
         ItemEnchantments itemEnchantments = (ItemEnchantments) (Object) this;
         ItemStack itemStack = getOwnerStack();
         if (itemStack != null && ModularItem.isModularItem(itemStack)) {
-            //TODO:this might not work
             return FakeEnchantmentManager.adjustEnchantments(original, itemStack);
         }
         return original;
@@ -55,7 +54,6 @@ public abstract class ItemEnchantmentsMixin implements ItemEnchantmentsAccessor 
         ItemEnchantments itemEnchantments = (ItemEnchantments) (Object) this;
         ItemStack itemStack = getOwnerStack();
         if (itemStack != null && ModularItem.isModularItem(itemStack)) {
-            //TODO:this might not work
             return FakeEnchantmentManager.adjustLevel(enchantment, original, itemStack);
         }
         return original;

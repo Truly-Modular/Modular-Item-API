@@ -13,7 +13,7 @@ import smartin.miapi.modules.abilities.util.ItemAbilityManager;
 import smartin.miapi.modules.abilities.util.ItemUseDefaultCooldownAbility;
 import smartin.miapi.modules.abilities.util.ItemUseMinHoldAbility;
 
-//TODO: maybe implement cooldown, cooldown factor on hit and min hold time before shield up.
+
 //i have no use for this so idgf
 public class ShieldBlockAbility implements ItemUseDefaultCooldownAbility, ItemUseMinHoldAbility {
     @Override

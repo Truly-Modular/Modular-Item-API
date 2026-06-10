@@ -2,7 +2,6 @@
     "name": "Food Pouch",
     "priority": 7,
     "features": {
-        "size": 10,
         "contents_whitelist": [
             "minecraft:food"
         ],

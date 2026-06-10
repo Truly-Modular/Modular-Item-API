@@ -48,6 +48,7 @@ import java.util.function.IntUnaryOperator;
 @Environment(EnvType.CLIENT)
 public class MaterialSpriteManager {
     static Map<Holder, DynamicTexture> animated_Textures = new HashMap<>();
+    static long CURRENT_GENERATION = 0;
 
     public static final long CACHE_SIZE = 10000;
     public static final long CACHE_LIFETIME = 10;
@@ -181,10 +182,11 @@ public class MaterialSpriteManager {
     }
 
     private static VertexConsumer vanillaItemVc = null;
-    public static VertexConsumer getVanillaItemVC(MultiBufferSource b){
-        if(vanillaItemVc!=null){
+
+    public static VertexConsumer getVanillaItemVC(MultiBufferSource b) {
+        if (vanillaItemVc != null) {
             if (vanillaItemVc instanceof BufferBuilder buffer) {
-                if(((BufferBuilderAccessor) buffer).isMiapiBuilding()){
+                if (((BufferBuilderAccessor) buffer).isMiapiBuilding()) {
                     return vanillaItemVc;
                 }
             }
@@ -201,7 +203,8 @@ public class MaterialSpriteManager {
      */
     public static void getVertexConsumer(TextureAtlasSprite originalSprite, Material material, SpriteColorer materialSpriteColorer, VertexConsumerProvider out) {
         out.spriteHolder = new Holder(originalSprite, material, materialSpriteColorer);
-        if(!originalSprite.atlasLocation().equals(TextureAtlas.LOCATION_BLOCKS)){
+        long thisGeneration = 0;
+        if (!originalSprite.atlasLocation().equals(TextureAtlas.LOCATION_BLOCKS)) {
             out.getRenderSaveVC = (b -> getDynamicTextureVertexConsumer(b, originalSprite, out.spriteHolder));
             out.vanillaVCGetter = MaterialSpriteManager::getVanillaItemVC;
             return;
@@ -219,20 +222,33 @@ public class MaterialSpriteManager {
                         AnimatedTexturesManager.markAnimated(spriteSlot.getSprite());
                     }
                     spriteSlot.updateSprite();
+                    thisGeneration = spriteSlot.generation;
                 }
             }
-            if(spriteSlot!=null){
+            if (spriteSlot != null) {
                 out.u = spriteSlot.getSprite().getU0() - originalSprite.getU0();
                 out.v = spriteSlot.getSprite().getV0() - originalSprite.getV0();
                 out.spriteSlot = spriteSlot;
             }
         }
+        long finalGen = thisGeneration;
+        out.isSpriteSlotValid = () -> {
+            if (finalGen != out.spriteSlot.generation) {
+                getVertexConsumer(originalSprite, material, materialSpriteColorer, out);
+                return false;
+            }
+            return true;
+        };
         out.getRenderSaveVC = (b -> {
+            if (finalGen != out.spriteSlot.generation) {
+                getVertexConsumer(originalSprite, material, materialSpriteColorer, out);
+            }
             if (out.spriteSlot != null && out.spriteSlot.used > 0 && out.spriteSlot.used < 4 && MiapiConfig.getClientConfig().render.enableFastRender) {
                 return getBlockAtlasVertexConsumer(b, originalSprite, out.spriteHolder, out.spriteSlot);
             }
             return getDynamicTextureVertexConsumer(b, originalSprite, out.spriteHolder);
         });
+        //add sprite verification checks once per tick to each out vcprovider
         out.vanillaVCGetter = MaterialSpriteManager::getVanillaItemVC;
     }
 
@@ -316,6 +332,7 @@ public class MaterialSpriteManager {
      */
     public static class SpriteSlot {
         public int used = 0;
+        public long generation = 0;
         public ResourceLocation internalID;
         public Consumer<NativeImage> update;
         public int x;
@@ -351,6 +368,7 @@ public class MaterialSpriteManager {
             if (holder != null) {
                 update.accept(holder.colorer().createSpriteManager(holder.sprite().contents()).recolor());
             }
+            this.generation = CURRENT_GENERATION;
         }
 
         public void clear() {

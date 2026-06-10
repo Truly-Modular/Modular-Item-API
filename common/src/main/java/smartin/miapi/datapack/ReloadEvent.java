@@ -69,7 +69,6 @@ public class ReloadEvent {
         mainListeners.entrySet().stream()
                 .sorted(Map.Entry.comparingByValue())
                 .forEach(entry -> {
-                    //TODO:paralelize work of same priority
                     List<CompletableFuture<?>> queuedFutures = new ArrayList<>();
                     AtomicBoolean active = new AtomicBoolean(true);
 

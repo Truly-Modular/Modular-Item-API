@@ -107,7 +107,9 @@ public class FakeEitherEnchantmentProperty extends EitherModuleProperty<
                 enchantments.putAll(getEnchants(original));
                 enchantments.putAll(getEnchants(compareTo));
                 enchantments.forEach((enchantment, data) -> {
-                    if (Miapi.clientRegistryAccess != null && enchantment.canSerializeIn(Miapi.clientRegistryAccess.lookupOrThrow(Registries.ENCHANTMENT))) {
+                    if (Miapi.clientRegistryAccess != null
+                        //&& enchantment.canSerializeIn(Miapi.clientRegistryAccess.lookupOrThrow(Registries.ENCHANTMENT))
+                    ) {
                         Component desc = Component
                                 .translatableWithFallback(
                                         "enchantment." + enchantment.key().location().getNamespace() + "." + enchantment.key().location().getPath() + ".desc",

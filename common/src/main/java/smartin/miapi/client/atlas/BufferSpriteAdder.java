@@ -41,7 +41,6 @@ public class BufferSpriteAdder implements SpriteSource {
                         nativeImage,
                         ResourceMetadata.EMPTY) {
                     SpriteContents thisContents = this;
-                    boolean dirty = true;
 
                     @Nullable
                     public SpriteTicker createTicker() {
@@ -50,6 +49,7 @@ public class BufferSpriteAdder implements SpriteSource {
                             public void tickAndUpload(int x, int y) {
                                 if (dirty) {
                                     thisContents.uploadFirstFrame(x, y);
+                                    dirty = false;
                                 }
                             }
 
@@ -62,7 +62,6 @@ public class BufferSpriteAdder implements SpriteSource {
                 };
                 output.add(id, spriteResourceLoader -> contents);
                 slots.add(new MaterialSpriteManager.SpriteSlot(id, cacheSprites.x, cacheSprites.y, contents, (n) -> {
-                    ((SpriteContentsAccessor) contents).getImage().copyFrom(n);
                     SpriteContentsAccessor accessor = (SpriteContentsAccessor) contents;
                     accessor.getImage().copyFrom(n);
                     contents.dirty = true;
@@ -71,8 +70,9 @@ public class BufferSpriteAdder implements SpriteSource {
         });
     }
 
-    public static class MiapiSpriteContents extends SpriteContents{
+    public static class MiapiSpriteContents extends SpriteContents {
         public boolean dirty = false;
+
         public MiapiSpriteContents(ResourceLocation name, FrameSize frameSize, NativeImage originalImage, ResourceMetadata metadata) {
             super(name, frameSize, originalImage, metadata);
         }

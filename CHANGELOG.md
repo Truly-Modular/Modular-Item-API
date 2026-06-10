@@ -6,6 +6,7 @@
 - fixed leaving material on removed modules
 - fixed crash/issues related to generated detected attributes
 - changed mixin function names to prevent mixin conflict
+- fixed fake enchantment ui previews not always working
 ### Changes
 - significantly improved rendering performance
 - improved rapid lookup performance for mining speed
@@ -21,7 +22,9 @@
 - added trail render config option
 - added new config option to control breakability of broken times
 - added scute materials
+- added very basic compat with Elytratrims (only basic trims work)
 
-### Warning
-this snapshot includes unfinished backpack + keybind stuff.  
-id recommend unbinding them since formats and stuff might change prior to a release
+### Note
+I moved keybinds to developer mode and reset inventories back to size 0
+both keybinds and backpacks will not be part of this release.
+im aiming to release this soon, so testing on it would be appreciated.

@@ -33,6 +33,7 @@ import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.item.Item;
+import smartin.miapi.compat.elytratrim.ElytraTrimsCompat;
 import smartin.miapi.Miapi;
 import smartin.miapi.blocks.ModularWorkBenchRenderer;
 import smartin.miapi.blueprint.BlueprintManager;
@@ -60,6 +61,9 @@ import smartin.miapi.material.generated.TierManager;
 import smartin.miapi.material.palette.MaterialRenderControllers;
 import smartin.miapi.modules.MiapiPermissions;
 import smartin.miapi.modules.abilities.key.ClientKeybinding;
+import smartin.miapi.modules.abilities.key.handler.KeybindHandlerTypes;
+import smartin.miapi.modules.abilities.key.handler.OpenBackPackHandler;
+import smartin.miapi.modules.abilities.key.handler.UseItemAbilityHandler;
 import smartin.miapi.modules.cache.CacheCommands;
 import smartin.miapi.modules.properties.inventory.screen.InventoryScreen;
 import smartin.miapi.modules.properties.inventory.screen.preview.InventoryPreviewRenderer;
@@ -328,6 +332,9 @@ public class MiapiClient {
         }
         LiveDataPackManager.setup();
         InventoryPreviewRenderer.setup();
+        if (Platform.isModLoaded("elytratrims")) {
+            ElytraTrimsCompat.init();
+        }
         //Minecraft client = Minecraft.getInstance();
         //materialAtlasManager = new MaterialAtlasManager(client.getTextureManager());
         //ReloadListenerRegistry.register(PackType.CLIENT_RESOURCES, materialAtlasManager);
@@ -352,6 +359,8 @@ public class MiapiClient {
             ReloadEvents.reloadCounter--;
             ReloadEvents.POST.fireEvent(true, Minecraft.getInstance().level.registryAccess());
             MiapiEvents.CLEAR_CACHE.invoker().onReload();
+            KeybindHandlerTypes.register(UseItemAbilityHandler.TYPE);
+            KeybindHandlerTypes.register(OpenBackPackHandler.TYPE);
         }
     }
 

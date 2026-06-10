@@ -20,7 +20,7 @@ import smartin.miapi.modules.properties.util.EntityDamageBoostProperty;
  */
 
 public class IllagerBane extends EntityDamageBoostProperty {
-    ///TODO:look how to better detect those entitys, maybe a tag and look into mod compat as well
+    ///TODO:move emerald away from this property to sth with a description using the genering property
     public static final ResourceLocation KEY = Miapi.id("illager_bane");
     public static IllagerBane property;
 

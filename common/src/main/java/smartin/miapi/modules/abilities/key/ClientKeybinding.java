@@ -3,6 +3,7 @@ package smartin.miapi.modules.abilities.key;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
+import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.modules.abilities.key.handler.BindingState;
 import smartin.miapi.modules.abilities.key.handler.KeybindHandler;
 import smartin.miapi.modules.abilities.util.ItemAbilityManager;
@@ -13,6 +14,9 @@ public class ClientKeybinding {
     public static void clientTick(Minecraft client) {
         LocalPlayer player = client.player;
         if (player == null) return;
+        if (!MiapiConfig.getServerConfig().other.developmentMode) {
+            return;
+        }
         ItemAbilityManager.clientKeyBindID.remove(player);
         Collection<MiapiBinding> bindings =
                 KeyBindManager.REGISTRY.getFlatMap().values();

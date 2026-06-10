@@ -114,6 +114,8 @@ dependencies {
         modApi files('libs/veil.jar')
     }
 
+    modCompileOnly("maven.modrinth:elytra-trims:MsDKblMy")
+
     //modCompileOnly("dev.onyxstudios.cardinal-components-api:cardinal-components-base:${cca_version}") {
     //    exclude(group: "net.fabricmc.fabric-api")
     //}

@@ -4,6 +4,7 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.MultiBufferSource;
 
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * this is an optimisation class.
@@ -19,13 +20,14 @@ public class VertexConsumerProvider {
     public MaterialSpriteManager.SpriteSlot spriteSlot;
     public Function<MultiBufferSource, VertexConsumer> vanillaVCGetter;
     public Function<MultiBufferSource, VertexConsumer> getRenderSaveVC;
+    public Supplier<Boolean> isSpriteSlotValid = () -> true;
 
-    public void clean(){
+    public void clean() {
         spriteHolder = null;
         spriteSlot = null;
     }
 
     public boolean isMovedBlockAtlasValid() {
-        return spriteSlot != null && spriteSlot.used > 0 && spriteSlot.used < 4;
+        return isSpriteSlotValid.get() && spriteSlot != null && spriteSlot.used > 0 && spriteSlot.used < 4;
     }
 }

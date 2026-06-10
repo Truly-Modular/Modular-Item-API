@@ -60,7 +60,6 @@ public class ProjectileDropItemProperty extends CodecProperty<String> {
                             toDrop
                     ));
                 }
-                //TODO:doesnt always prevent arrow from existing!
                 return true;
             }
         }

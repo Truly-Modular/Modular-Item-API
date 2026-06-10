@@ -1,5 +1,6 @@
 package smartin.miapi.client.model.module.baked.passes;
 
+import com.redpxnda.nucleus.event.PrioritizedEvent;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
@@ -22,6 +23,19 @@ public interface RenderPass {
                 int light
     );
 
+    public static PrioritizedEvent<FindPasses> COLLECT_PASSES = PrioritizedEvent.createLoop();
+
+    interface FindPasses {
+        void find(
+                List<RenderPass> passes,
+                ModelHolder holder,
+                ModuleInstance moduleInstance,
+                ItemStack stack,
+                ItemDisplayContext context,
+                BakedModelCache cache,
+                RandomSource random);
+    }
+
     static RenderPass[] getRenderPasses(
             ModelHolder holder,
             ModuleInstance moduleInstance,
@@ -37,11 +51,11 @@ public interface RenderPass {
         if (MiapiConfig.getClientConfig().enchantingGlint.shouldRenderGlint()) {
             if (MiapiClient.CUSTOM_SHADER_LOADED) {
                 /**
-                    currently defer is called by {@link MiapiItemModel}
-                    performance could be significantly increased if the defered renderer would trigger once per frame instead of once per item, but this already should
-                    significantly increase performance.
-                    (if the rendering is completly defered, looking into iris compat might be worth too)
-                    (maybe restructuring the optimized model with a complete defered renderer might be worth too; allowing for a Vanilla Glint and Trim to be deferred too.)
+                 currently defer is called by {@link MiapiItemModel}
+                 performance could be significantly increased if the defered renderer would trigger once per frame instead of once per item, but this already should
+                 significantly increase performance.
+                 (if the rendering is completly defered, looking into iris compat might be worth too)
+                 (maybe restructuring the optimized model with a complete defered renderer might be worth too; allowing for a Vanilla Glint and Trim to be deferred too.)
                  */
                 passes.add(new DeferredGlintRenderPass(moduleInstance, stack, GlintProperty.property.getGlintSettings(moduleInstance, stack), context, holder, cache, random));
                 //passes.add(new MiapiGlintRenderPass(moduleInstance, stack, GlintProperty.property.getGlintSettings(moduleInstance, stack), context, holder, cache, random));
@@ -53,6 +67,7 @@ public interface RenderPass {
         if (!MiapiConfig.getClientConfig().render.enableFastTrim) {
             passes.add(new TrimRenderPass(holder, cache, random));
         }
+        COLLECT_PASSES.invoker().find(passes, holder, moduleInstance, stack, context, cache, random);
         return passes.toArray(new RenderPass[passes.size()]);
     }
 

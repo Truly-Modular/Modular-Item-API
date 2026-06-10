@@ -364,9 +364,9 @@ public class CraftAction {
             ModuleInstance moduleInstance = ItemModule.getModules(craftingStack.get());
             var ops = RegistryOps.create(NbtOps.INSTANCE, getAccess());
             ItemStack stack = craftingStack.get();
-            ModuleInstance.CODEC.decode(ops, ModuleInstance.CODEC.encodeStart(ops, moduleInstance).result().get()).result().get().getFirst().writeToItem(stack);
+            //ModuleInstance.CODEC.decode(ops, ModuleInstance.CODEC.encodeStart(ops, moduleInstance).result().get()).result().get().getFirst().writeToItem(stack);
             return stack;
-        } catch (RuntimeException suppressed) {
+        } catch (RuntimeException ignored) {
 
         }
         return craftingStack.get();

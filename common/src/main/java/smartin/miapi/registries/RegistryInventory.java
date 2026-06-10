@@ -77,9 +77,6 @@ import smartin.miapi.modules.StackStorageComponent;
 import smartin.miapi.modules.abilities.*;
 import smartin.miapi.modules.abilities.gun.GunContextProperty;
 import smartin.miapi.modules.abilities.gun.GunMagazineComponent;
-import smartin.miapi.modules.abilities.key.handler.KeybindHandlerTypes;
-import smartin.miapi.modules.abilities.key.handler.OpenBackPackHandler;
-import smartin.miapi.modules.abilities.key.handler.UseItemAbilityHandler;
 import smartin.miapi.modules.abilities.key.handler.backpack.UseFromBackpackHandler;
 import smartin.miapi.modules.abilities.shield.BlockAbility;
 import smartin.miapi.modules.abilities.shield.ParryBlock;
@@ -499,9 +496,6 @@ public class RegistryInventory {
             registerMiapi(useAbilityRegistry, CastLightingAbility.KEY, new CastLightingAbility());
             registerMiapi(useAbilityRegistry, SonicBoomAbility.KEY, new SonicBoomAbility());
             registerMiapi(useAbilityRegistry, CommandExecuteAbility.KEY, new CommandExecuteAbility());
-
-            KeybindHandlerTypes.register(UseItemAbilityHandler.TYPE);
-            KeybindHandlerTypes.register(OpenBackPackHandler.TYPE);
 
             registerMiapi(MODULE_PROPERTY_MIAPI_REGISTRY, GunContextProperty.KEY, new GunContextProperty());
 

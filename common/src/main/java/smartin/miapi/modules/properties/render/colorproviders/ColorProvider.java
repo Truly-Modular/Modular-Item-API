@@ -41,9 +41,6 @@ public interface ColorProvider {
     static ColorProvider getProvider(String type, ItemStack itemStack, ModuleInstance moduleInstance, TrimRenderer.TrimMode mode) {
         ColorProvider base = colorProviders.getOrDefault(type, colorProviders.get("material"));
         base = base.getInstance(itemStack, base.adapt(moduleInstance), mode);
-        if (!MiapiConfig.getClientConfig().render.enableFastTrim && !mode.equals(TrimRenderer.TrimMode.NONE)) {
-
-        }
         return base;
     }
 

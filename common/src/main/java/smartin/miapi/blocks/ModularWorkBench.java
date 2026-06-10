@@ -64,7 +64,6 @@ public class ModularWorkBench extends BaseEntityBlock implements SimpleWaterlogg
 
     @Override
     protected MapCodec<? extends BaseEntityBlock> codec() {
-        //TODO:this probably doesnt work lol
         return CODEC;
     }
 
