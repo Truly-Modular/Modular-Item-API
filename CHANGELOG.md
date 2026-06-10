@@ -23,8 +23,3 @@
 - added new config option to control breakability of broken times
 - added scute materials
 - added very basic compat with Elytratrims (only basic trims work)
-
-### Note
-I moved keybinds to developer mode and reset inventories back to size 0
-both keybinds and backpacks will not be part of this release.
-im aiming to release this soon, so testing on it would be appreciated.
