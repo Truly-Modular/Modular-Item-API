@@ -20,38 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * This property allows modules to define and modify attribute splits for items.
- *
- * @header Attribute Split Property
- * @description_start The Attribute Split Property is used to divide attributes across different contexts.
- * It enables assigning attributes to multiple slots and merging them based on a percentage split.
- * This Doesnt by default remove the attribute, if you wish to remove the existing attribute you need to split that attribute in
- * with the percentage -100
- * This property is essential to re-balance certain attributes for usage with other mods like alembic.
- * This Example would give 20% of the weapons attack damage as offhand damage
- * ```json
- * "attribute_split": {
- * "minecraft:generic.attack_damage": {
- * "mainhand": [
- * {
- * "attribute": "minecraft:generic.attack_damage",
- * "percentage": "20",
- * "target":"offhand"
- * }
- * ]
- * }
- * }
- * ```
- * @description_end
- * @path /data_types/properties/attributes/attribute_split
- * @data context: a map containing the attribute context and split configurations.
- * @data first map key is the Attribute to be split
- * @data inner map key is the SlotGroup that is used as source
- * @data attribute:the attribute to be added
- * @data percentage:how much of the attribute should be added, 100 means same amount, 0.0 means nothing
- * @data target:(Optional) a target slot overwriting the source, if not set uses source slot
- */
+
 public class AttributeSplitProperty extends CodecProperty<Map<AttributeSplitProperty.Context, List<AttributeSplitProperty.SplitContext>>> {
     public static final ResourceLocation KEY = Miapi.id("attribute_split");
     public static final Codec<Map<ResourceLocation, Map<EquipmentSlotGroup, List<ActualInner>>>> ACUTAL_CODEC = Codec.unboundedMap(

@@ -1,4 +1,5 @@
-# Attribute Split Property
+@header Attribute Split Property
+@path /data_types/properties/attributes/attribute_split
 
 The Attribute Split Property is used to divide attributes across different contexts. It enables assigning attributes to multiple slots and merging them based on a percentage split.
 
