@@ -48,7 +48,7 @@ import java.util.List;
 import java.util.*;
 
 public class CodecMaterial implements Material {
-    ResourceLocation id;
+    ResourceLocation id = Miapi.id("none");
     public Optional<JsonElement> iconJson;
     Optional<JsonElement> paletteJson;
     Optional<JsonElement> dyePaletteJson;

@@ -1,24 +1,39 @@
 package smartin.miapi.forge.mixin;
 
+import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ProjectileWeaponItem;
 import org.spongepowered.asm.mixin.Mixin;
-import smartin.miapi.item.modular.items.bows.ModularCrossbow;
+import org.spongepowered.asm.mixin.injection.At;
+import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.modules.properties.projectile.AllowedProjectileProperty;
-import smartin.miapi.modules.properties.projectile.IsCrossbowShootAble;
 
 import java.util.function.Predicate;
 
-@Mixin(ModularCrossbow.class)
+@Mixin(ProjectileWeaponItem.class)
 public class ModularCrossBowMixin {
 
-    @SuppressWarnings("unused")
-    //overwrite froge method via mixin.
-    //i hate this workflow lmao
-    public Predicate<ItemStack> getAllSupportedProjectiles(ItemStack weaponStack) {
-        ModularCrossbow crossbow = (ModularCrossbow) (Object) this;
-        return AllowedProjectileProperty
-                .getAllowedProjectiles(
-                        crossbow,
-                        weaponStack, () -> getAllSupportedProjectiles(weaponStack).or(IsCrossbowShootAble::canCrossbowShoot));
+    @ModifyReturnValue(method = "getAllSupportedProjectiles(Lnet/minecraft/world/item/ItemStack;)Ljava/util/function/Predicate;", at = @At("RETURN"))
+    public Predicate<ItemStack> miapi$getAllSupportedProjectiles(Predicate<ItemStack> original, ItemStack weaponStack) {
+        ProjectileWeaponItem crossbow = (ProjectileWeaponItem) (Object) this;
+        if (crossbow instanceof ModularItem) {
+            return AllowedProjectileProperty
+                    .getAllowedProjectiles(
+                            crossbow,
+                            weaponStack, () -> original);
+        }
+        return original;
+    }
+
+    @ModifyReturnValue(method = "getSupportedHeldProjectiles(Lnet/minecraft/world/item/ItemStack;)Ljava/util/function/Predicate;", at = @At("RETURN"))
+    public Predicate<ItemStack> miapi$getAllHeldSupportedProjectiles(Predicate<ItemStack> original, ItemStack weaponStack) {
+        ProjectileWeaponItem crossbow = (ProjectileWeaponItem) (Object) this;
+        if (crossbow instanceof ModularItem) {
+            return AllowedProjectileProperty
+                    .getAllowedHandProjectiles(
+                            crossbow,
+                            weaponStack, () -> original);
+        }
+        return original;
     }
 }

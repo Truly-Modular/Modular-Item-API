@@ -1,11 +1,12 @@
 package smartin.miapi.forge.mixin;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ProjectileWeaponItem;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import smartin.miapi.modules.properties.projectile.AllowedProjectileProperty;
 
 import java.util.function.Predicate;
@@ -13,7 +14,7 @@ import java.util.function.Predicate;
 @Mixin(Player.class)
 public class PlayerMixin {
 
-    @Redirect(
+    @WrapOperation(
             method = "Lnet/minecraft/world/entity/player/Player;getProjectile(Lnet/minecraft/world/item/ItemStack;)Lnet/minecraft/world/item/ItemStack;",
             at = @At(
                     value = "INVOKE",
@@ -22,12 +23,13 @@ public class PlayerMixin {
     )
     private Predicate<ItemStack> miapi$redirectHeldProjectiles(
             ProjectileWeaponItem weapon,
-            ItemStack weaponStack
+            ItemStack weaponStack,
+            Operation<Predicate<ItemStack>> original
     ) {
-        return AllowedProjectileProperty.getAllowedHandProjectiles(weapon, weaponStack, weapon::getSupportedHeldProjectiles);
+        return AllowedProjectileProperty.getAllowedHandProjectiles(weapon, weaponStack, () -> original.call(weapon, weaponStack));
     }
 
-    @Redirect(
+    @WrapOperation(
             method = "Lnet/minecraft/world/entity/player/Player;getProjectile(Lnet/minecraft/world/item/ItemStack;)Lnet/minecraft/world/item/ItemStack;",
             at = @At(
                     value = "INVOKE",
@@ -36,8 +38,9 @@ public class PlayerMixin {
     )
     private Predicate<ItemStack> miapi$redirectSupportedProjectiles(
             ProjectileWeaponItem weapon,
-            ItemStack weaponStack
+            ItemStack weaponStack,
+            Operation<Predicate<ItemStack>> original
     ) {
-        return AllowedProjectileProperty.getAllowedProjectiles(weapon, weaponStack, weapon::getAllSupportedProjectiles);
+        return AllowedProjectileProperty.getAllowedProjectiles(weapon, weaponStack, () -> original.call(weapon, weaponStack));
     }
 }

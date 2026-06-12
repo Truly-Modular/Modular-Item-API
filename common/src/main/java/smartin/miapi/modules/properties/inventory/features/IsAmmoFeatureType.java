@@ -63,7 +63,8 @@ public class IsAmmoFeatureType implements InventoryFeatureType<Boolean> {
         if (weapon.isEmpty() || player == null) {
             return ItemStack.EMPTY;
         }
-        Predicate<ItemStack> predicate = AllowedProjectileProperty.getAllowedProjectiles(projectileWeaponItem, weapon, () -> ModularCrossbow.getAllSupportedProjectilesWithApi(projectileWeaponItem, weapon));
+        Predicate<ItemStack> predicate = AllowedProjectileProperty.getAllowedProjectiles(projectileWeaponItem, weapon, () ->
+                ModularCrossbow.getAllSupportedProjectilesWithApi(projectileWeaponItem, weapon));
         for (InventoryInstance instance :
                 ItemInventoryManager.getInventoriesWith(
                         player,

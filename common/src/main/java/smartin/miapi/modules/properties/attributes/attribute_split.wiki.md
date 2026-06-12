@@ -1,0 +1,116 @@
+# Attribute Split Property
+
+The Attribute Split Property is used to divide attributes across different contexts. It enables assigning attributes to multiple slots and merging them based on a percentage split.
+
+This property does not by default remove the attribute. If you wish to remove the existing attribute, you need to split that attribute with the percentage `-100`.
+
+This property is essential to re-balance certain attributes for usage with other mods like Alembic.
+
+## Purpose
+
+Split an attribute's value across multiple equipment slots based on percentage ratios. Useful for distributing stats like attack damage between main hand and offhand weapons.
+
+## JSON Structure
+
+```json5
+{
+  "attribute_split": {
+    "<attribute_id>": {
+      "<source_slot>": [
+        {
+          "attribute": "<attribute_id>",
+          "percentage": <number>,
+          "target": "<target_slot>" // optional
+        }
+      ]
+    }
+  }
+}
+```
+
+## Parameters
+
+- **`<attribute_id>`** — string (Required) The attribute to be split (e.g., `minecraft:generic.attack_damage`).
+
+### Slot Level
+
+- **`<source_slot>`** — string (Required) The equipment slot group that serves as the source for the split (e.g., `mainhand`, `offhand`).
+
+### Split Context Array
+
+- **`attribute`** — string (Required) The attribute identifier to apply the split to. Must match the parent attribute key.
+- **`percentage`** — number (Required) How much of the attribute should be transferred. Values:
+  - `100` — transfers the full attribute value
+  - `0` — transfers nothing
+  - `-100` — removes the attribute entirely
+  - Any value between `0` and `100` — transfers that percentage
+- **`target`** — string (Optional) The target slot to move the attribute to. If omitted, the attribute remains in the source slot.
+
+## Constraints
+
+- Percentage values must be numeric
+- Target slot must be a valid equipment slot group
+- Attribute ID must be a valid Minecraft attribute
+- At least one split context must be defined per source slot
+
+## Examples
+
+### Example 1: Split Attack Damage Between Main Hand and Offhand
+
+```json5
+{
+	attribute_split: {
+		'minecraft:generic.attack_damage': {
+			mainhand: [
+				{
+					// Give 20% of the weapon's attack damage to the offhand
+					attribute: 'minecraft:generic.attack_damage',
+					percentage: 20,
+					target: 'offhand'
+				}
+			]
+		}
+	}
+}
+```
+
+### Example 2: Remove Attribute from Source Slot
+
+```json5
+{
+	attribute_split: {
+		'minecraft:generic.attack_damage': {
+			mainhand: [
+				{
+					// Remove the attribute from mainhand entirely
+					attribute: 'minecraft:generic.attack_damage',
+					percentage: -100
+				}
+			]
+		}
+	}
+}
+```
+
+### Example 3: Transfer Attribute to New Type
+
+```json5
+{
+	attribute_split: {
+		'minecraft:generic.attack_damage': {
+			mainhand: [
+				{
+					// Remove 50% of attack damage from mainhand
+					attribute: 'minecraft:generic.attack_damage',
+					percentage: -50
+				},
+				{
+					// Transfer 25% of the original attack damage as magic damage
+					attribute: 'miapi:generic.magic_damage',
+					percentage: 25
+				}
+			]
+		}
+	}
+}
+```

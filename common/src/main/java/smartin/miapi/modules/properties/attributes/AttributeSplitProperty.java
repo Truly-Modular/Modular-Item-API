@@ -52,7 +52,6 @@ import java.util.Map;
  * @data percentage:how much of the attribute should be added, 100 means same amount, 0.0 means nothing
  * @data target:(Optional) a target slot overwriting the source, if not set uses source slot
  */
-
 public class AttributeSplitProperty extends CodecProperty<Map<AttributeSplitProperty.Context, List<AttributeSplitProperty.SplitContext>>> {
     public static final ResourceLocation KEY = Miapi.id("attribute_split");
     public static final Codec<Map<ResourceLocation, Map<EquipmentSlotGroup, List<ActualInner>>>> ACUTAL_CODEC = Codec.unboundedMap(
