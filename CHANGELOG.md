@@ -2,5 +2,6 @@
 ### Bugfixes
 - fix crash of loading crossbow on neoforge without ammo
 - fix crash due to material id not being set correctly
+- fixed models sometimes using the wrong textures
 ### Changes
 ### Additions

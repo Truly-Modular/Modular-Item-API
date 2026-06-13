@@ -272,6 +272,9 @@ public class CodecMaterial implements Material {
         );
 
         // Copy non-constructor fields
+        if(this.id==null){
+            throw new RuntimeException("Cannot create copy for a material without an ID");
+        }
         copy.id = this.id;
         copy.stringData = new HashMap<>(this.stringData);
         copy.doubleMap = new HashMap<>(this.doubleMap);
@@ -333,11 +336,11 @@ public class CodecMaterial implements Material {
         this.guiGroups = new ArrayList<>(guiGroups.stream().distinct().toList());
         ResourceLocation toRemove = material.getID();
         if (toRemove != null) {
-            this.guiGroups.remove(toRemove.toLanguageKey().replace("/","."));
+            this.guiGroups.remove(toRemove.toLanguageKey().replace("/", "."));
         }
         toRemove = this.getID();
         if (toRemove != null) {
-            this.guiGroups.remove(toRemove.toLanguageKey().replace("/","."));
+            this.guiGroups.remove(toRemove.toLanguageKey().replace("/", "."));
         }
 
         // Merge properties
@@ -411,6 +414,9 @@ public class CodecMaterial implements Material {
     }
 
     public void setID(ResourceLocation id) {
+        if (id == null) {
+            throw new RuntimeException("trying to set a material id to NULL.");
+        }
         this.id = id;
         List<String> g = new ArrayList<>(this.groups);
         g.addFirst(getStringID());
@@ -642,7 +648,12 @@ public class CodecMaterial implements Material {
 
     @Override
     public int hashCode() {
-        return getID().hashCode() + 13 * variants.size();
+        ResourceLocation id = getID();
+        // Null-safety: if ID is null (shouldn't happen), use a fallback
+        if (id == null) {
+            return 0;
+        }
+        return id.hashCode() + 13 * variants.size();
     }
 
     public Component getTranslation() {

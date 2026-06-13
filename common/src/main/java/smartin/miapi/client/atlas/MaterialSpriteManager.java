@@ -58,6 +58,7 @@ public class MaterialSpriteManager {
     public static final Map<Integer, List<SpriteSlot>> ATLAS_SPRITE_POOL = new HashMap<>();
     public static final Map<Holder, SpriteSlot> FAST_CACHE = new HashMap<>();
     public static final List<SpriteSlot> ANIMATED_ATLAS_SPRITES = new ArrayList<>();
+    public static List<VertexConsumerProvider> PROVIDERS = new ArrayList<>();
 
     //WARNING!! only access anything related to colorer ONLY from the RENDER THREAD!
     protected static final Cache<Holder, ResourceLocation> materialSpriteCache = CacheBuilder.newBuilder()
@@ -126,6 +127,10 @@ public class MaterialSpriteManager {
             ATLAS_SPRITE_POOL.computeIfAbsent(resToKey(slot.x, slot.y), (v) -> new ArrayList<>()).add(slot);
         });
         FAST_CACHE.clear();
+        PROVIDERS.forEach(vertexConsumerProvider -> {
+            vertexConsumerProvider.isFast = false;
+        });
+        PROVIDERS.clear();
         //TODO:free atlas sprites
     }
 
@@ -170,9 +175,33 @@ public class MaterialSpriteManager {
             for (TextureAtlasSprite sprite : animated) {
                 AnimatedTexturesManager.markAnimated(sprite);
             }
-
         }
-
+        PROVIDERS.removeAll(PROVIDERS.stream().filter((provider) -> {
+            Holder holder = provider.spriteHolder;
+            provider.isFast = false;
+            if (holder != null && MiapiConfig.getClientConfig().render.enableFastRender) {
+                SpriteSlot spriteSlot = FAST_CACHE.get(provider.spriteHolder);
+                if (spriteSlot == null) {
+                    spriteSlot = getFreeAtlasSlot(((SpriteContentsAccessor) holder.sprite().contents()).getMiapiWidth(), ((SpriteContentsAccessor) holder.sprite().contents()).getMiapiHeight());
+                    if (spriteSlot != null) {
+                        spriteSlot.used = 4;
+                        spriteSlot.holder = provider.spriteHolder;
+                        FAST_CACHE.put(provider.spriteHolder, spriteSlot);
+                        if (provider.spriteHolder.colorer().doTick()) {
+                            ANIMATED_ATLAS_SPRITES.add(spriteSlot);
+                            AnimatedTexturesManager.markAnimated(spriteSlot.getSprite());
+                        }
+                        spriteSlot.updateSprite();
+                    }
+                }
+                if (spriteSlot != null) {
+                    provider.spriteSlot = spriteSlot;
+                    provider.isFast = spriteSlot.used > 0 && spriteSlot.used < 4;
+                }
+            }
+            provider.counter--;
+            return !(provider.counter > 0);
+        }).toList());
     }
 
     public static void markTextureAsAnimatedInUse(TextureAtlasSprite sprite) {
@@ -203,53 +232,20 @@ public class MaterialSpriteManager {
      */
     public static void getVertexConsumer(TextureAtlasSprite originalSprite, Material material, SpriteColorer materialSpriteColorer, VertexConsumerProvider out) {
         out.spriteHolder = new Holder(originalSprite, material, materialSpriteColorer);
-        long thisGeneration = 0;
         if (!originalSprite.atlasLocation().equals(TextureAtlas.LOCATION_BLOCKS)) {
             out.getRenderSaveVC = (b -> getDynamicTextureVertexConsumer(b, originalSprite, out.spriteHolder));
             out.vanillaVCGetter = MaterialSpriteManager::getVanillaItemVC;
             return;
         }
-        if (MiapiConfig.getClientConfig().render.enableFastRender) {
-            SpriteSlot spriteSlot = FAST_CACHE.get(out.spriteHolder);
-            if (spriteSlot == null) {
-                spriteSlot = getFreeAtlasSlot(((SpriteContentsAccessor) originalSprite.contents()).getMiapiWidth(), ((SpriteContentsAccessor) originalSprite.contents()).getMiapiHeight());
-                if (spriteSlot != null) {
-                    spriteSlot.used = 6;
-                    spriteSlot.holder = out.spriteHolder;
-                    FAST_CACHE.put(out.spriteHolder, spriteSlot);
-                    if (out.spriteHolder.colorer().doTick()) {
-                        ANIMATED_ATLAS_SPRITES.add(spriteSlot);
-                        AnimatedTexturesManager.markAnimated(spriteSlot.getSprite());
-                    }
-                    spriteSlot.updateSprite();
-                    thisGeneration = spriteSlot.generation;
-                }
-            }
-            if (spriteSlot != null) {
-                out.u = spriteSlot.getSprite().getU0() - originalSprite.getU0();
-                out.v = spriteSlot.getSprite().getV0() - originalSprite.getV0();
-                out.spriteSlot = spriteSlot;
-            }
-        }
-        long finalGen = thisGeneration;
-        out.isSpriteSlotValid = () -> {
-            if (finalGen != out.spriteSlot.generation) {
-                getVertexConsumer(originalSprite, material, materialSpriteColorer, out);
-                return false;
-            }
-            return true;
-        };
         out.getRenderSaveVC = (b -> {
-            if (finalGen != out.spriteSlot.generation) {
-                getVertexConsumer(originalSprite, material, materialSpriteColorer, out);
-            }
-            if (out.spriteSlot != null && out.spriteSlot.used > 0 && out.spriteSlot.used < 4 && MiapiConfig.getClientConfig().render.enableFastRender) {
+            if (out.isFast) {
                 return getBlockAtlasVertexConsumer(b, originalSprite, out.spriteHolder, out.spriteSlot);
             }
             return getDynamicTextureVertexConsumer(b, originalSprite, out.spriteHolder);
         });
         //add sprite verification checks once per tick to each out vcprovider
         out.vanillaVCGetter = MaterialSpriteManager::getVanillaItemVC;
+        PROVIDERS.add(out);
     }
 
     /**

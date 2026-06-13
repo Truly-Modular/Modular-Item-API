@@ -8,7 +8,6 @@ import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import smartin.miapi.client.atlas.MaterialSpriteManager;
 import smartin.miapi.client.atlas.VertexConsumerProvider;
-import smartin.miapi.client.model.ModelTransformer;
 
 public class DoubleQuadCache {
     public TextureAtlasSprite sprite;
@@ -23,12 +22,12 @@ public class DoubleQuadCache {
     }
 
     public void render(MultiBufferSource bufferSource, PoseStack.Pose pose, float red, float green, float blue, float alpha, int packedLight, int packedOverlay) {
-        if (vcProvider.isMovedBlockAtlasValid()||false) {
+        if (false) {
             //this optimation would require rebuild on SpriteSlot invalidation
             //this is a bit impractical and prob not worth the work
             Minecraft.getInstance().getProfiler().push("vc");
             if (moved == null) {
-                moved = ModelTransformer.getOffset(original, vcProvider.u, vcProvider.v);
+                //moved = ModelTransformer.getOffset(original, vcProvider.u, vcProvider.v);
             }
             vcProvider.spriteSlot.used = 3;
             VertexConsumer vc = MaterialSpriteManager.getVanillaItemVC(bufferSource);
