@@ -139,47 +139,49 @@ public class MaterialSpriteManager {
      * responsible for animated textures and clearing unused caches
      */
     public static void tick() {
-        if (!ReloadEvents.isInReload()) {
-            List<Holder> toRemove = new ArrayList<>();
-            animated_Textures.forEach(((holder, nativeImageBackedTexture) -> {
-                try {
-                    holder.colorer.tick((nativeImage) -> {
-                        //important!
-                        //the MaskColorer is responsible for managing any NativeImage it creates.
-                        //BUT the NativeBackedTexture removes its old uploaded NativeImage, so we need to upload a copy
-                        Objects.requireNonNull(nativeImageBackedTexture.getPixels()).copyFrom(nativeImage);
-                        nativeImageBackedTexture.upload();
-                    }, holder.sprite().contents());
-                } catch (Exception e) {
-                    toRemove.add(holder);
-                }
-            }));
-            ANIMATED_ATLAS_SPRITES.forEach(slot -> {
-                AnimatedTexturesManager.markAnimated(slot.getSprite());
-                slot.updateSprite();
-            });
-            toRemove.forEach(materialSpriteCache::invalidate);
-            List<Holder> toRemoveFAST = new ArrayList<>();
-            FAST_CACHE.forEach((h, s) -> {
-                s.used--;
-                if (s.used < 1) {
-                    toRemoveFAST.add(h);
-                    s.clear();
-                    ANIMATED_ATLAS_SPRITES.remove(s);
-                }
-            });
-            toRemoveFAST.forEach(h -> {
-                SpriteSlot slot = FAST_CACHE.remove(h);
-                ATLAS_SPRITE_POOL.computeIfAbsent(resToKey(slot.x, slot.y), (s) -> new ArrayList<>()).add(slot);
-            });
-            for (TextureAtlasSprite sprite : animated) {
-                AnimatedTexturesManager.markAnimated(sprite);
+        if (ReloadEvents.isInReload()) {
+            return;
+        }
+        List<Holder> toRemove = new ArrayList<>();
+        animated_Textures.forEach(((holder, nativeImageBackedTexture) -> {
+            try {
+                holder.colorer.tick((nativeImage) -> {
+                    //important!
+                    //the MaskColorer is responsible for managing any NativeImage it creates.
+                    //BUT the NativeBackedTexture removes its old uploaded NativeImage, so we need to upload a copy
+                    Objects.requireNonNull(nativeImageBackedTexture.getPixels()).copyFrom(nativeImage);
+                    nativeImageBackedTexture.upload();
+                }, holder.sprite().contents());
+            } catch (Exception e) {
+                toRemove.add(holder);
             }
+        }));
+        ANIMATED_ATLAS_SPRITES.forEach(slot -> {
+            AnimatedTexturesManager.markAnimated(slot.getSprite());
+            slot.updateSprite();
+        });
+        toRemove.forEach(materialSpriteCache::invalidate);
+        List<Holder> toRemoveFAST = new ArrayList<>();
+        FAST_CACHE.forEach((h, s) -> {
+            s.used--;
+            if (s.used < 1) {
+                toRemoveFAST.add(h);
+                s.clear();
+                ANIMATED_ATLAS_SPRITES.remove(s);
+            }
+        });
+        toRemoveFAST.forEach(h -> {
+            SpriteSlot slot = FAST_CACHE.remove(h);
+            ATLAS_SPRITE_POOL.computeIfAbsent(resToKey(slot.x, slot.y), (s) -> new ArrayList<>()).add(slot);
+        });
+        for (TextureAtlasSprite sprite : animated) {
+            AnimatedTexturesManager.markAnimated(sprite);
         }
         PROVIDERS.removeAll(PROVIDERS.stream().filter((provider) -> {
             Holder holder = provider.spriteHolder;
             provider.isFast = false;
-            if (holder != null && MiapiConfig.getClientConfig().render.enableFastRender) {
+            boolean shouldRemove = (provider.counter > 0);
+            if (holder != null && !shouldRemove && MiapiConfig.getClientConfig().render.enableFastRender) {
                 SpriteSlot spriteSlot = FAST_CACHE.get(provider.spriteHolder);
                 if (spriteSlot == null) {
                     spriteSlot = getFreeAtlasSlot(((SpriteContentsAccessor) holder.sprite().contents()).getMiapiWidth(), ((SpriteContentsAccessor) holder.sprite().contents()).getMiapiHeight());
@@ -200,7 +202,7 @@ public class MaterialSpriteManager {
                 }
             }
             provider.counter--;
-            return !(provider.counter > 0);
+            return shouldRemove;
         }).toList());
     }
 
@@ -239,6 +241,7 @@ public class MaterialSpriteManager {
         }
         out.getRenderSaveVC = (b -> {
             if (out.isFast) {
+                out.counter = 3;
                 return getBlockAtlasVertexConsumer(b, originalSprite, out.spriteHolder, out.spriteSlot);
             }
             return getDynamicTextureVertexConsumer(b, originalSprite, out.spriteHolder);

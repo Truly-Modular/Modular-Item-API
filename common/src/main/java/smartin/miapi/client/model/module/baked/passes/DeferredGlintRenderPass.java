@@ -92,6 +92,7 @@ public class DeferredGlintRenderPass implements RenderPass {
             int light
     ) {
         if (!context.glint()) return;
+        context.matrices().pushPose();
         PoseStack.Pose pose = context.matrices().last();
         COMMANDS.add(new GlintCommand(
                 quadCaches,
@@ -103,6 +104,7 @@ public class DeferredGlintRenderPass implements RenderPass {
                 light,
                 context.overlay()
         ));
+        context.matrices().popPose();
     }
 
     public record GlintCommand(

@@ -25,8 +25,10 @@ public class ReverseRenderPass implements RenderPass {
 
     @Override
     public void render(MiapiModel.RenderContext context, float[] colors, float alpha, int light) {
+        context.matrices().pushPose();
         for (DoubleQuadCache batch : quadCaches) {
             batch.render(context.vertexConsumers(), context.matrices().last(), colors[0], colors[1], colors[2], alpha, light, context.overlay());
         }
+        context.matrices().popPose();
     }
 }

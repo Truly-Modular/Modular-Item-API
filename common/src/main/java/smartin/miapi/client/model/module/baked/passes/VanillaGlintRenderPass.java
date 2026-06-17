@@ -35,6 +35,7 @@ public class VanillaGlintRenderPass implements RenderPass {
 
     @Override
     public void render(MiapiModel.RenderContext context, float[] colors, float alpha, int light) {
+        context.matrices().pushPose();
         if (context.glint()) {
             VertexConsumer glintConsumer = new ObjectUVVertexConsumer(
                     context.vertexConsumers().getBuffer(RenderType.entityGlintDirect()),
@@ -51,5 +52,6 @@ public class VanillaGlintRenderPass implements RenderPass {
                 }
             }
         }
+        context.matrices().popPose();
     }
 }

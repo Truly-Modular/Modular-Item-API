@@ -34,6 +34,7 @@ public class MiapiItemModel implements MiapiModel {
     private static final String CACHE_KEY = "miapi_model_rework";
     public final HashMap<CacheKey, CacheData> localCache = new HashMap<>();
     public static WeakHashMap<ItemStack, MiapiItemModel> fallbackLookup = new WeakHashMap<>();
+    public static boolean isRendering = false;
 
     static {
         ModularItemCache.setSupplier(CACHE_KEY, (s) -> {
@@ -97,6 +98,7 @@ public class MiapiItemModel implements MiapiModel {
             }
             return;
         }
+        isRendering = true;
         assert Minecraft.getInstance().level != null;
         Minecraft.getInstance().getProfiler().push("modular_item");
         Minecraft.getInstance().getProfiler().push("root-logic-model-transformers");
@@ -121,11 +123,12 @@ public class MiapiItemModel implements MiapiModel {
                 light,
                 overlay));
         matrices.popPose();
-        matrices.last().pose().invert();
+        //matrices.last().pose().invert();
         if (hasFoil && MiapiConfig.getClientConfig().render.optimisedModel && !isBatching) {
             finishBatch(vertexConsumers);
         }
         Minecraft.getInstance().getProfiler().pop();
+        isRendering = false;
     }
 
     public static boolean isBatching = false;
@@ -135,10 +138,12 @@ public class MiapiItemModel implements MiapiModel {
     }
 
     public static void finishBatch(MultiBufferSource multiBufferSource) {
+        isRendering = true;
         Minecraft.getInstance().getProfiler().push("Modular Item Batch");
         DeferredGlintRenderPass.flush(multiBufferSource);
         Minecraft.getInstance().getProfiler().pop();
         isBatching = false;
+        isRendering = false;
     }
 
     private static @NotNull List<ModelTransformer> getTransfomers(ItemStack stack, ItemDisplayContext mode, String modelType) {

@@ -106,7 +106,7 @@ public class ModuleInstanceLocalCache {
             return null;
         } else {
             for (Map.Entry<String, ModuleInstance> entry : parent.children().entrySet()) {
-                if(entry.getValue()==this.record){
+                if (entry.getValue() == this.record) {
                     return entry.getKey();
                 }
             }
@@ -148,10 +148,7 @@ public class ModuleInstanceLocalCache {
      * caches should auto invalidate themselves.
      */
     public void clear() {
-        synchronized (lock) {
-            clearInternal();
-            lastClear = ModularItemCache.lastClearTimeStamp;
-        }
+        getRoot().getFlatList().forEach(moduleInstance -> moduleInstance.cache().clearInternal());
     }
 
     private void clearInternal() {
@@ -168,6 +165,7 @@ public class ModuleInstanceLocalCache {
         itemMergedProperties.clear();
         cachedData.clear();
         itemStackCache.clear();
+        lastClear = ModularItemCache.lastClearTimeStamp;
     }
 
 

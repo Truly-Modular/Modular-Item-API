@@ -165,8 +165,8 @@ public record ModuleInstance(
      */
     public void writeToItem(ItemStack itemStack) {
         itemStack.set(MODULE_INSTANCE_COMPONENT, this.getRoot());
+        this.cache().confirmStack(itemStack);
         ComponentApplyProperty.updateItemStack(itemStack, null);
-        this.cache().clear();
     }
 
     /**

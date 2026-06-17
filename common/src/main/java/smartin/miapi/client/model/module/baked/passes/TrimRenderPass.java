@@ -22,11 +22,12 @@ public class TrimRenderPass implements RenderPass{
     @Override
     public void render(MiapiModel.RenderContext context, float[] colors, float alpha, int light) {
         Holder<ArmorMaterial> armorMaterial = (context.stack().getItem() instanceof ArmorItem armorItem) ? armorItem.getMaterial() : null;
-
+        context.matrices().pushPose();
         if (armorMaterial != null && !modelHolder.trimMode().equals(TrimRenderer.TrimMode.NONE)) {
             for(BakedQuad quad: bakedQuads){
                 TrimRenderer.renderTrims(context.matrices(), quad, modelHolder.trimMode(), light, context.vertexConsumers(), armorMaterial, context.stack());
             }
         }
+        context.matrices().popPose();
     }
 }
