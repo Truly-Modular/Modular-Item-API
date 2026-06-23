@@ -130,7 +130,7 @@ dependencies {
     //modCompileOnly "dev.latvian.mods:rhino:${rootProject.rhino_version}"
     modCompileOnly "dev.latvian.mods:kubejs-neoforge:${rootProject.kjs_version}"
 
-    modCompileOnlyApi "software.bernie.geckolib:geckolib-fabric-1.20.1:${geckolib_version}"
+    //modCompileOnlyApi "software.bernie.geckolib:geckolib-fabric-1.20.1:${geckolib_version}"
     modCompileOnly "curse.maven:bettercombat-639842:6092862"
 
     if (enableAddons) {

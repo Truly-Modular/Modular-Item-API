@@ -1,5 +1,5 @@
 package smartin.miapi.client.model.module;
-
+/*
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import org.joml.Matrix4f;
@@ -43,3 +43,5 @@ public class GeckoLibMiapiModel implements MiapiModel {
         return new Matrix4f();
     }
 }
+
+ */
