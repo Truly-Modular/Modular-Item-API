@@ -1,16 +1,6 @@
 package smartin.miapi.client.model.module.geo;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.world.item.ItemStack;
-import software.bernie.geckolib.cache.object.BakedGeoModel;
-import software.bernie.geckolib.core.animatable.GeoAnimatable;
-import software.bernie.geckolib.model.GeoModel;
-import software.bernie.geckolib.renderer.GeoRenderer;
-
-/**
- * Adapter: MiAPI RenderContext -> GeckoLib GeoRenderer pipeline
- */
+/*
 public class MiapiGeoRenderer<T extends GeoAnimatable> implements GeoRenderer<T> {
 
     private final GeoModel<T> model;
@@ -54,9 +44,7 @@ public class MiapiGeoRenderer<T extends GeoAnimatable> implements GeoRenderer<T>
 
     }
 
-    /**
-     * Main entry from MiAPI
-     */
+
     public void renderItem(MiapiContextBridge<T> ctx, T animatable) {
         this.animatable = animatable;
 
@@ -72,9 +60,6 @@ public class MiapiGeoRenderer<T extends GeoAnimatable> implements GeoRenderer<T>
         );
     }
 
-    /**
-     * Optional bridge wrapper (maps your RenderContext)
-     */
     public record MiapiContextBridge<T>(
             PoseStack poseStack,
             MultiBufferSource bufferSource,
@@ -84,3 +69,4 @@ public class MiapiGeoRenderer<T extends GeoAnimatable> implements GeoRenderer<T>
             float yaw
     ) {}
 }
+*/

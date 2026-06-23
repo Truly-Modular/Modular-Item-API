@@ -1,4 +1,4 @@
-package smartin.miapi.client.model.module;
+package smartin.miapi.client.model.module.geo;
 /*
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
