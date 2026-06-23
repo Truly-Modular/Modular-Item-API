@@ -82,9 +82,7 @@ dependencies {
     modApi "com.redpxnda.nucleus:nucleus-trinket-common:${rootProject.minecraft_version}+${rootProject.nucleus_trinket_version}"
     //modCompileOnly "com.github.apace100:apoli:${rootProject.apoli_version}"
 
-    if (enableAddons) {
-        modImplementation("net.fabricmc:fabric-language-kotlin:1.13.6+kotlin.2.2.20")
-    }
+    modImplementation("net.fabricmc:fabric-language-kotlin:1.13.6+kotlin.2.2.20")
 
     /*
     modImplementation("foundry.veil:veil-common-1.21.1:${project.veil_version}") {
