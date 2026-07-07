@@ -46,7 +46,7 @@ public class ColorUtil {
     }
 
     public static BakedQuad recolorBakedQuad(BakedQuad originalQuad, int newColor) {
-        return new BakedQuad(originalQuad.getVertices(), newColor, originalQuad.getDirection(), originalQuad.getSprite(), false);
+        return new BakedQuad(originalQuad.getVertices(), newColor, originalQuad.getDirection(), originalQuad.getSprite(), originalQuad.isShade());
     }
 
     public static int getModuleColor(ModuleInstance instance) {

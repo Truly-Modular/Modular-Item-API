@@ -81,7 +81,11 @@ public class MiningLevelProperty extends CodecProperty<Map<String, MiningLevelPr
         rawData.values().forEach(miningRule -> {
             rules.addAll(miningRule.asRules());
         });
-        return new Tool(rules, 1.0f, 1);
+        return new Tool(rules, 1.0f, getDamagePerBlock(itemStack));
+    }
+
+    public static int getDamagePerBlock(ItemStack stack){
+        return 1;
     }
 
     Tool asComponentCached(ItemStack itemStack) {
@@ -94,20 +98,34 @@ public class MiningLevelProperty extends CodecProperty<Map<String, MiningLevelPr
     }
 
     public static float getDestroySpeed(ItemStack stack, BlockState state) {
-        return ModularItemCache.get(stack, CACHEKEY_SPEED,
-                new Reference2FloatOpenHashMap<Block>())
-                .computeIfAbsent(state.getBlock(), (b) -> Math.max(property.asComponentCached(stack)
-                        .getMiningSpeed(state), 1.0F));
+        var data = property.getData(stack);
+        if (data.isEmpty()) {
+            return 1.0f;
+        }
+        Map<String, MiningRule> rules = data.get();
+        float max = 1.0f;
+        for (MiningRule rule : rules.values()) {
+            max = Math.max(max, rule.getSpeed(state));
+        }
+        return max;
     }
 
     public static boolean isCorrectToolForDrops(ItemStack stack, BlockState state) {
-        Tool tool = property.asComponentCached(stack);
-        return tool.isCorrectForDrops(state);
+        var data = property.getData(stack);
+        if (data.isEmpty()) {
+            return false;
+        }
+        Map<String, MiningRule> rules = data.get();
+        for (MiningRule rule : rules.values()) {
+            if(rule.isCorrectForDropFast(state)){
+                return true;
+            }
+        }
+        return false;
     }
 
     public static boolean mineBlock(ItemStack stack, Level level, BlockState state, BlockPos pos, LivingEntity miningEntity) {
-        Tool ourComponent = property.asComponentCached(stack);
-        int toolDamage = ourComponent.damagePerBlock();
+        int toolDamage = getDamagePerBlock(stack);
         if (!level.isClientSide && state.getDestroySpeed(level, pos) != 0.0F && toolDamage > 0) {
             stack.hurtAndBreak(toolDamage, miningEntity, EquipmentSlot.MAINHAND);
         }
@@ -157,6 +175,47 @@ public class MiningLevelProperty extends CodecProperty<Map<String, MiningLevelPr
                 mergedBoolean = right.correctForDrops();
             }
             return new MiningRule(blocks, blacklist, merged, mergedBoolean, left.useMaterial() || right.useMaterial(), mergedMaterials);
+        }
+
+        public boolean isCorrectForDropFast(BlockState state) {
+            boolean isValid = false;
+            Holder<Block> block = state.getBlock().arch$holder();
+            for (HolderSet<Block> set : blocks()) {
+                if (set.contains(block)) {
+                    isValid = true;
+                }
+            }
+            if (isValid) {
+                for (HolderSet<Block> set : blacklist()) {
+                    if (set.contains(block)) {
+                        isValid = false;
+                    }
+                }
+            }
+            return isValid;
+        }
+
+        public float getSpeed(BlockState state) {
+            boolean isValid = false;
+            Holder<Block> block = state.getBlock().arch$holder();
+            for (HolderSet<Block> set : blocks()) {
+                if (set.contains(block)) {
+                    isValid = true;
+                    break;
+                }
+            }
+            if (isValid) {
+                for (HolderSet<Block> set : blacklist()) {
+                    if (set.contains(block)) {
+                        isValid = false;
+                        break;
+                    }
+                }
+                if (isValid) {
+                    return (float) this.speed().evaluate(0.0, 1.0);
+                }
+            }
+            return 1;
         }
 
         public MiningRule initialize(ModuleInstance moduleInstance) {

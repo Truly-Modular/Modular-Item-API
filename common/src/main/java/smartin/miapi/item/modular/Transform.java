@@ -17,13 +17,11 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.renderer.block.model.ItemTransform;
 import net.minecraft.client.resources.model.ModelState;
 import org.jetbrains.annotations.NotNull;
-import org.joml.Matrix4f;
-import org.joml.Quaternionf;
-import org.joml.Vector3f;
-import org.joml.Vector4f;
+import org.joml.*;
 import smartin.miapi.Miapi;
 
 import java.io.IOException;
+import java.lang.Math;
 import java.util.List;
 import java.util.Optional;
 
@@ -264,30 +262,51 @@ public class Transform {
     }
 
     public int[] rotateVertexData(int[] vertexData) {
-        for (int i = 0; i < vertexData.length; i += 8) {
-            // Extract position components from vertex data
-            float x = Float.intBitsToFloat(vertexData[i]);
-            float y = Float.intBitsToFloat(vertexData[i + 1]);
-            float z = Float.intBitsToFloat(vertexData[i + 2]);
+        int[] rotatedData = vertexData.clone();
 
-            // Create Vector4f representing the position (X, Y, Z, 1.0)
+        Matrix4f transform = this.toMatrix();
+        Matrix3f normalMatrix = new Matrix3f(transform);
+
+        for (int i = 0; i < rotatedData.length; i += 8) {
+            // Rotate position
+            float x = Float.intBitsToFloat(rotatedData[i]);
+            float y = Float.intBitsToFloat(rotatedData[i + 1]);
+            float z = Float.intBitsToFloat(rotatedData[i + 2]);
+
             Vector4f position = new Vector4f(x, y, z, 1.0f);
+            transform.transform(position);
 
-            // Apply the transformation to the position
-            Vector4f transformedPosition = this.toMatrix().transform(position);
+            rotatedData[i] = Float.floatToRawIntBits(position.x);
+            rotatedData[i + 1] = Float.floatToRawIntBits(position.y);
+            rotatedData[i + 2] = Float.floatToRawIntBits(position.z);
 
+            // Rotate packed normal (if present)
+            int packedNormal = rotatedData[i + 7];
+            if (packedNormal != 0) {
+                byte nx = (byte) (packedNormal & 0xFF);
+                byte ny = (byte) ((packedNormal >> 8) & 0xFF);
+                byte nz = (byte) ((packedNormal >> 16) & 0xFF);
 
-            // Extract the transformed position components
-            float transformedX = transformedPosition.x;
-            float transformedY = transformedPosition.y;
-            float transformedZ = transformedPosition.z;
+                Vector3f normal = new Vector3f(
+                        nx / 127.0f,
+                        ny / 127.0f,
+                        nz / 127.0f
+                );
 
-            // Update the vertex array with the new transformed position values
-            vertexData[i] = Float.floatToIntBits(transformedX);
-            vertexData[i + 1] = Float.floatToIntBits(transformedY);
-            vertexData[i + 2] = Float.floatToIntBits(transformedZ);
+                normalMatrix.transform(normal).normalize();
+
+                int rx = Math.max(-127, Math.min(127, Math.round(normal.x * 127.0f)));
+                int ry = Math.max(-127, Math.min(127, Math.round(normal.y * 127.0f)));
+                int rz = Math.max(-127, Math.min(127, Math.round(normal.z * 127.0f)));
+
+                rotatedData[i + 7] =
+                        (rx & 0xFF) |
+                        ((ry & 0xFF) << 8) |
+                        ((rz & 0xFF) << 16);
+            }
         }
-        return vertexData;
+
+        return rotatedData;
     }
 
     /**

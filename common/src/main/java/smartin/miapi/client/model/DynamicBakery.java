@@ -17,6 +17,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Vector3f;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.model.item.BakedSingleModel;
 import smartin.miapi.client.model.item.BakedSingleModelOverrides;
@@ -77,11 +78,11 @@ public class DynamicBakery {
                 for (Direction direction : modelElement.faces.keySet()) {
                     BlockElementFace modelElementFace = modelElement.faces.get(direction);
                     try {
-                        if(
-                                modelElementFace.texture()!=null &&
+                        if (
+                                modelElementFace.texture() != null &&
                                 !model.getMaterial(modelElementFace.texture()).texture().toString().equals("miapi:block/texture/modular_workbench") &&
                                 !model.getMaterial(modelElementFace.texture()).texture().toString().equals("miapi:texture/block/modular_workbench")
-                        ){
+                        ) {
                             TextureAtlasSprite sprite2 = textureGetter.apply(model.getMaterial(modelElementFace.texture()));
                             if (modelElementFace.cullForDirection() == null) {
                                 builder.addUnculledFace(createQuad(modelElement, modelElementFace, sprite2, direction, BlockModelRotation.X0_Y0, id, color));
@@ -129,7 +130,7 @@ public class DynamicBakery {
         //rotatedData[10] = rotatedData[18];
 
         List<BakedQuad> quads = new ArrayList<>();
-        quads.add(new BakedQuad(rotatedData, quad.getTintIndex(), Direction.rotate(transform.toMatrix(), quad.getDirection()), quad.getSprite(), quad.isShade()));
+        quads.add(new BakedQuad(rotatedData, quad.getTintIndex(), calculateFacingStable(rotatedData), quad.getSprite(), quad.isShade()));
 
         for (int i = 0; i < rotatedData.length; i += 8) {
             int endIndex = Math.min(i + 8, rotatedData.length);
@@ -138,6 +139,54 @@ public class DynamicBakery {
 
         }
         return quads;
+    }
+
+    public static Direction calculateFacingStable(int[] faceData) {
+        Vector3f v0 = new Vector3f(
+                Float.intBitsToFloat(faceData[0]),
+                Float.intBitsToFloat(faceData[1]),
+                Float.intBitsToFloat(faceData[2])
+        );
+
+        Vector3f v1 = new Vector3f(
+                Float.intBitsToFloat(faceData[8]),
+                Float.intBitsToFloat(faceData[9]),
+                Float.intBitsToFloat(faceData[10])
+        );
+
+        Vector3f v2 = new Vector3f(
+                Float.intBitsToFloat(faceData[16]),
+                Float.intBitsToFloat(faceData[17]),
+                Float.intBitsToFloat(faceData[18])
+        );
+
+        Vector3f normal = new Vector3f(v2).sub(v1)
+                .cross(new Vector3f(v0).sub(v1));
+
+        if (!normal.isFinite() || normal.lengthSquared() < 1.0E-12F) {
+            return Direction.UP;
+        }
+
+        normal.normalize();
+
+        float x = Math.abs(normal.x);
+        float y = Math.abs(normal.y);
+        float z = Math.abs(normal.z);
+
+        // Bias threshold for diagonal ties.
+        // If two axes are close (45 degree region), prefer the axis with the
+        // largest deterministic priority instead of floating point variation.
+        final float TOLERANCE = 0.0005F;
+
+        if (x + TOLERANCE >= y && x + TOLERANCE >= z) {
+            return normal.x >= 0 ? Direction.EAST : Direction.WEST;
+        }
+
+        if (y + TOLERANCE >= x && y + TOLERANCE >= z) {
+            return normal.y >= 0 ? Direction.UP : Direction.DOWN;
+        }
+
+        return normal.z >= 0 ? Direction.SOUTH : Direction.NORTH;
     }
 
     public static BakedSingleModel dynamicBakedModel(BakedModel model) {

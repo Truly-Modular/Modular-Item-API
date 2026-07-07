@@ -33,6 +33,7 @@ public class MiapiItemModel implements MiapiModel {
     public static List<ModelTransformerSupplier> modelTransformersSuppler = new ArrayList<>();
     private static final String CACHE_KEY = "miapi_model_rework";
     public final HashMap<CacheKey, CacheData> localCache = new HashMap<>();
+    //TODO:rewrite this weakHashmap with itemstack keys, this is a memory leak
     public static WeakHashMap<ItemStack, MiapiItemModel> fallbackLookup = new WeakHashMap<>();
     public static boolean isRendering = false;
 

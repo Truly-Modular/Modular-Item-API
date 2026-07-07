@@ -22,6 +22,8 @@ public interface MiapiModel {
 
     void render(RenderContext context);
 
+    //maybe allow different ones depending on submodule?
+    //that prob. got lost when moving to RenderContext system
     default Matrix4f subModuleMatrix(RenderContext context) {
         return new Matrix4f();
     }

@@ -45,6 +45,7 @@
         "item.MiapiItemStackMixin",
         "item.ShovelItemAccessor",
         "item.ThrowablePotionItemAccessor",
+        "item.ToolMixin",
         "loot.BlockMixin",
         "loot.LootTableAccessor",
         "loot.LootTableMixin",
