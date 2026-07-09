@@ -1,27 +1,23 @@
 {
-    "icon": "textures/item/phantom_membrane.png",
+    "icon": "textures/item/rabbit_hide.png",
     "groups": [
-        "fabric",
+        "skin",
         "sinew",
         "leather"
     ],
-    "hardness": 5,
-    "density": 1.5,
-    "flexibility": 7,
-    "enchantability": 18,
+    "hardness": 4,
+    "density": 1.2,
+    "flexibility": 6,
+    "enchantability": 15,
     "tier": 1,
-    "durability": 432,
-    "color": "D9D6BE",
+    "durability": 125,
+    "color": "C59C66",
     "color_palette": {
         "type": "grayscale_map",
         "colors": {
-            "24": "6E506B",
-            "70": "46515D",
-            "79": "4F5C6A",
-            "88": "586675",
-            "95": "5F6F80",
-            "127": "7F8F9F",
-            "255": "A5B9CE"
+            "24": "4D3927",
+            "68": "805F40",
+            "255": "C59C66"
         },
         "filler": "interpolate"
     },
@@ -42,7 +38,7 @@
     "mining_level": "minecraft:incorrect_for_wooden_tool",
     "items": [
         {
-            "item": "minecraft:phantom_membrane",
+            "item": "minecraft:rabbit_hide",
             "value": 1.0
         }
     ]

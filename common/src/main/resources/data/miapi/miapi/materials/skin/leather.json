@@ -1,7 +1,7 @@
 {
     "icon": "textures/item/leather.png",
     "groups": [
-        "fabric",
+        "skin",
         "sinew",
         "leather"
     ],
