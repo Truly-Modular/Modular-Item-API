@@ -462,6 +462,7 @@
     "miapi.material_template.smithing": "From %s -> %s",
     "miapi.material.miapi.scute.armadillo": "Armadillo Scutes",
     "miapi.material.miapi.scute.turtle": "Turtle Scutes",
+    "miapi.material.miapi.wood.wood": "Wood",
     "miapi.material.miapi.stone.stone": "Stone",
     "miapi.material.miapi.stone.redstone": "Redstone",
     "miapi.material.miapi.stone.andesite": "Andesite",

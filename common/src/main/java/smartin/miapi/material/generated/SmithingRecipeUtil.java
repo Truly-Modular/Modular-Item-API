@@ -31,12 +31,6 @@ import static smartin.miapi.material.generated.GeneratedMaterialManager.verboseL
 public class SmithingRecipeUtil {
     public static RecipeManager manager = null;
 
-    public static void setupSmithingRecipes(boolean isClient, RegistryAccess registryAccess, RecipeManager manager) {
-        List<GeneratedMaterial> materials = MaterialProperty.MATERIAL_REGISTRY.getFlatMap().values().stream().filter(GeneratedMaterial.class::isInstance).map(m -> (GeneratedMaterial) m).toList();
-        materials.forEach(m -> MaterialProperty.MATERIAL_REGISTRY.remove(m.key));
-        setupSmithingRecipe(materials, isClient, m -> MaterialProperty.MATERIAL_REGISTRY.register(m.key, m), registryAccess, null);
-    }
-
     public static void setupSmithingRecipe(List<GeneratedMaterial> materials, boolean isClient, Consumer<GeneratedMaterial> register, RegistryAccess registryAccess, RecipeManager recipeManager) {
         try {
             if (recipeManager == null) {
@@ -48,7 +42,6 @@ public class SmithingRecipeUtil {
                 return;
             }
             List<GeneratedMaterial> todo = new ArrayList<>(materials);
-            List<GeneratedMaterial> done = new ArrayList<>();
             AtomicBoolean hasMadeProgress = new AtomicBoolean(false);
             do {
                 hasMadeProgress.set(false);
@@ -61,8 +54,6 @@ public class SmithingRecipeUtil {
                         if (verboseLogging()) {
                             Miapi.LOGGER.info("registered smithing material " + smithing.getStringID());
                         }
-                        todo.remove(smithing);
-                        done.add(smithing);
                         register.accept(smithing);
                         hasMadeProgress.set(true);
                     }, (normal) -> {
@@ -97,11 +88,12 @@ public class SmithingRecipeUtil {
                     .map(SmithingTransformRecipe.class::cast)
                     //check if the output is valid
                     .filter(recipe -> isValidRecipe(recipe, material.getSwordItem(), registryManager))
-                    .findAny();
+                    .toList();
             if (optionalRecipe.isEmpty()) {
                 normal.accept(material);
             }
-            optionalRecipe.ifPresent(smithingTransformRecipe -> {
+            boolean noValidRecipe = true;
+            for(SmithingTransformRecipe smithingTransformRecipe:optionalRecipe){
                 ItemStack templateItem = Arrays.stream(((SmithingTransformRecipeAccessor) smithingTransformRecipe)
                                 .getMiapiTemplate()
                                 .getItems())
@@ -109,16 +101,14 @@ public class SmithingRecipeUtil {
                         .findAny()
                         .orElse(ItemStack.EMPTY);
                 if (templateItem.isEmpty()) {
-                    //is not a smithing material
-                    normal.accept(material);
-                    return;
+                    break;
                 }
                 var baseItems = ((SmithingTransformRecipeAccessor) smithingTransformRecipe).getMiapiBase().getItems();
                 if (baseItems.length > 1 &&
                     GeneratedMaterialPropertyManager.shouldApplyProperty(MiapiConfig.getServerConfig().generatedMaterials.properties.allowMultiSmithing, material.getID().toString())) {
-                    normal.accept(material);
-                    return;
+                    break;
                 }
+                noValidRecipe = false;
                 var optional = Arrays.stream(((SmithingTransformRecipeAccessor) smithingTransformRecipe).getMiapiBase().getItems())
                         //making sure the input has a valid SourceMaterial
                         .filter(itemStack -> {
@@ -136,7 +126,10 @@ public class SmithingRecipeUtil {
                     smithingMaterial.accept(material);
                     addSmithingRecipe(sourceMaterial, material, templateItem, smithingTransformRecipe, registryManager, manager);
                 });
-            });
+            }
+            if(noValidRecipe){
+                normal.accept(material);
+            }
         } catch (RuntimeException e) {
             Miapi.LOGGER.error("Error during Smithing recipe generation!", e);
         }

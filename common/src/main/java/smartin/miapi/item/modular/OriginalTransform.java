@@ -1,0 +1,475 @@
+package smartin.miapi.item.modular;
+
+import com.google.gson.Gson;
+import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonToken;
+import com.google.gson.stream.JsonWriter;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Transformation;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import com.redpxnda.nucleus.codec.auto.AutoCodec;
+import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.client.renderer.block.model.ItemTransform;
+import net.minecraft.client.resources.model.ModelState;
+import net.minecraft.world.entity.Entity;
+import org.jetbrains.annotations.NotNull;
+import org.joml.*;
+import smartin.miapi.Miapi;
+
+import java.io.IOException;
+import java.lang.Math;
+import java.util.List;
+import java.util.Optional;
+
+/**
+ * A Transform represents a transformation in 3D space, including rotation, translation, and scaling.
+ * It extends the Transformation class with additional utility methods.
+ */
+@JsonAdapter(OriginalTransform.TransformJsonAdapter.class)
+public class OriginalTransform {
+    @CodecBehavior.Optional
+    public String origin;
+    @CodecBehavior.Optional
+    public Vector3f rotation;
+    @CodecBehavior.Optional
+    public Vector3f translation;
+    @CodecBehavior.Optional
+    public Vector3f scale;
+
+    public static final Codec<Vector3f> VECTOR_CODEC = Codec.withAlternative(AutoCodec.of(Vector3f.class).codec(),
+            Codec.list(Codec.DOUBLE).xmap((list)->
+                    new Vector3f(
+                            list.getFirst().floatValue(),
+                            list.get(1).floatValue(),
+                            list.get(2).floatValue()),
+                    vector -> List.of((double)vector.x(),(double)vector.y(),(double)vector.z())));
+
+    public static final Codec<OriginalTransform> CODEC = RecordCodecBuilder.create((instance) ->
+            instance.group(
+                    VECTOR_CODEC.optionalFieldOf("rotation", new Vector3f(0,0,0))
+                            .forGetter((transform) -> transform.rotation),
+                    VECTOR_CODEC.optionalFieldOf("translation", new Vector3f(0,0,0))
+                            .forGetter((transform) -> transform.translation),
+                    VECTOR_CODEC.optionalFieldOf("scale", new Vector3f(1,1,1))
+                            .forGetter((transform) -> transform.scale),
+                    Codec.STRING.optionalFieldOf("origin")
+                            .forGetter((transform) -> Optional.ofNullable(transform.origin))
+            ).apply(instance, OriginalTransform::new)
+    );
+
+    /**
+     * The identity bakedTransform, representing no transformation at all.
+     */
+    public static final OriginalTransform IDENTITY = new OriginalTransform(new Vector3f(), new Vector3f(), new Vector3f(1.0F, 1.0F, 1.0F));
+
+    /**
+     * Creates a new Transform with the given rotation, translation, and scale.
+     *
+     * @param rotation    the rotation vector, as a Vec3f
+     * @param translation the translation vector, as a Vec3f
+     * @param scale       the scale vector, as a Vec3f
+     */
+    public OriginalTransform(Vector3f rotation, Vector3f translation, Vector3f scale) {
+        this.rotation = new Vector3f(rotation);
+        this.translation = new Vector3f(translation);
+        this.scale = new Vector3f(scale);
+    }
+
+    /**
+     * Creates a new Transform with the given rotation, translation, and scale.
+     *
+     * @param rotation    the rotation vector, as a Vec3f
+     * @param translation the translation vector, as a Vec3f
+     * @param scale       the scale vector, as a Vec3f
+     */
+    public OriginalTransform(Vector3f rotation, Vector3f translation, Vector3f scale, Optional<String> origin) {
+        this(rotation, translation, scale);
+        origin.ifPresent(string -> this.origin = string);
+    }
+
+    @Environment(EnvType.CLIENT)
+    public OriginalTransform(ItemTransform transformation) {
+        this.rotation = new Vector3f(transformation.rotation);
+        this.translation = new Vector3f(transformation.translation);
+        this.scale = new Vector3f(transformation.scale);
+    }
+
+    /**
+     * Merges two Transformations into a new Transform. This Transform is applied first, followed by the child.
+     *
+     * @param child the child transformation, as a Transformation
+     * @return the merged transformation, as a new Transform
+     */
+    public OriginalTransform merge(OriginalTransform child) {
+        return OriginalTransform.merge(this, child);
+    }
+
+    /**
+     * Merges two Transformations into a new Transform. The parent transformation is applied first, followed by the child.
+     *
+     * @param parent        the parent transformation, as a Transformation
+     * @param originalChild the child transformation, as a Transformation
+     * @return the merged transformation, as a new Transform
+     */
+    public static OriginalTransform merge(OriginalTransform parent, OriginalTransform originalChild) {
+        OriginalTransform child = originalChild.copy();
+        parent = parent.copy();
+        Matrix4f parentMatrix = parent.toMatrix();
+
+        Matrix4f childMatrix = child.toMatrix();
+        childMatrix.mul(parentMatrix);
+        OriginalTransform merged = fromMatrix(childMatrix);
+        float rotation = merged.rotation.y;
+        if (Float.isNaN(rotation)) {
+            Miapi.LOGGER.info("FAILURE " + rotation);
+        }
+        return merged;
+    }
+
+    public static void applyPosition(PoseStack matrixStack, Matrix4f matrix4f) {
+        matrixStack.mulPose(matrix4f);
+    }
+
+    public static void applyPosition(PoseStack matrixStack, OriginalTransform transform) {
+        applyPosition(matrixStack, transform.toMatrix());
+    }
+
+    public void applyPosition(PoseStack matrixStack) {
+        applyPosition(matrixStack, this);
+    }
+
+    public Matrix4f toMatrix() {
+        // Create the translation matrix
+        Matrix4f translationMatrix = new Matrix4f().translate(translation);
+
+        // Create the rotation matrix
+        Matrix4f rotationMatrix = new Matrix4f()
+                .rotateX((float) Math.toRadians(rotation.x))
+                .rotateY((float) Math.toRadians(rotation.y))
+                .rotateZ((float) Math.toRadians(rotation.z));
+
+        // Create the scale matrix
+        Matrix4f scaleMatrix = new Matrix4f().scale(scale);
+
+        // Combine the matrices
+        return new Matrix4f()
+                .mul(translationMatrix)
+                .mul(rotationMatrix)
+                .mul(scaleMatrix);
+    }
+
+    public static OriginalTransform fromMatrix(Matrix4f matrix) {
+        // Extract translation
+        Vector3f translation = new Vector3f();
+        matrix.getTranslation(translation);
+
+        // Extract rotation (in Euler angles)
+        Matrix4f rotationMatrix = new Matrix4f(matrix);
+        rotationMatrix.normalize3x3();
+        Vector3f rotation = rotationMatrix.getEulerAnglesXYZ(new Vector3f());
+        rotation.x = (float) Math.toDegrees(rotation.x());
+        rotation.y = (float) Math.toDegrees(rotation.y());
+        rotation.z = (float) Math.toDegrees(rotation.z());
+
+        // Extract scale
+        Vector3f scale = matrix.getScale(new Vector3f());
+
+        return new OriginalTransform(rotation, translation, scale);
+    }
+
+
+    /**
+     * Creates a new copy of this Transform.
+     *
+     * @return the new Transform copy
+     */
+    public OriginalTransform copy() {
+        OriginalTransform copy = new OriginalTransform(
+                this.rotation != null ? new Vector3f(this.rotation) : new Vector3f(0, 0, 0),
+                this.translation != null ? new Vector3f(this.translation) : new Vector3f(0, 0, 0),
+                this.scale != null ? new Vector3f(this.scale) : new Vector3f(1, 1, 1)
+        );
+
+        copy.origin = this.origin;
+        return copy;
+    }
+
+    /**
+     * Repairs a Transformation by replacing null rotation, translation, or scale vectors with default values.
+     *
+     * @param transformation the Transformation to repair, as a Transformation
+     * @return the repaired transformation, as a new Transform
+     */
+    public static OriginalTransform repair(OriginalTransform transformation) {
+        Vector3f parentRotation = transformation.rotation;
+        if (parentRotation == null) {
+            parentRotation = new Vector3f(0, 0, 0);
+        }
+        Vector3f parentTranslation = transformation.translation;
+        if (parentTranslation == null) {
+            parentTranslation = new Vector3f(0, 0, 0);
+        }
+        Vector3f parentScale = transformation.scale;
+        if (parentScale == null) {
+            parentScale = new Vector3f(1, 1, 1);
+        }
+        return new OriginalTransform(new Vector3f(parentRotation), new Vector3f(parentTranslation), new Vector3f(parentScale)).withOrigin(transformation.origin);
+    }
+
+    public OriginalTransform withOrigin(String origin) {
+        this.origin = origin;
+        return this;
+    }
+
+    /**
+     * Converts a Transformation into a model Transformation by scaling the translation vector by 1/16.
+     *
+     * @param transformation the Transformation to convert, as a Transformation
+     * @return the new model Transformation, as a Transform
+     */
+    public static OriginalTransform toModelTransformation(OriginalTransform transformation) {
+        OriginalTransform transform = repair(transformation);
+        transform.translation.mul(1.0f / 16.0f);
+        return transform;
+    }
+
+    /**
+     * Creates an AffineTransformation from this Transform.
+     *
+     * @return an AffineTransformation with the rotation, translation, and scale from this Transform.
+     */
+    @Environment(EnvType.CLIENT)
+    public Transformation toAffineTransformation() {
+        OriginalTransform transform = this.copy();
+        Quaternionf quaternionf = new Quaternionf();
+        quaternionf.rotationXYZ(
+                (float) Math.toRadians(this.rotation.x),
+                (float) Math.toRadians(this.rotation.y),
+                (float) Math.toRadians(this.rotation.z)
+        );
+        Vector3f translationVector = new Vector3f(transform.translation);
+        Vector3f scaleVector = new Vector3f(transform.scale);
+        return new Transformation(translationVector, quaternionf, scaleVector, quaternionf);
+    }
+
+    public int[] rotateVertexData(int[] vertexData) {
+        int[] rotatedData = vertexData.clone();
+
+        Matrix4f transform = this.toMatrix();
+        Matrix3f normalMatrix = new Matrix3f(transform);
+
+        for (int i = 0; i < rotatedData.length; i += 8) {
+            // Rotate position
+            float x = Float.intBitsToFloat(rotatedData[i]);
+            float y = Float.intBitsToFloat(rotatedData[i + 1]);
+            float z = Float.intBitsToFloat(rotatedData[i + 2]);
+
+            Vector4f position = new Vector4f(x, y, z, 1.0f);
+            transform.transform(position);
+
+            rotatedData[i] = Float.floatToRawIntBits(position.x);
+            rotatedData[i + 1] = Float.floatToRawIntBits(position.y);
+            rotatedData[i + 2] = Float.floatToRawIntBits(position.z);
+
+            // Rotate packed normal (if present)
+            int packedNormal = rotatedData[i + 7];
+            if (packedNormal != 0) {
+                byte nx = (byte) (packedNormal & 0xFF);
+                byte ny = (byte) ((packedNormal >> 8) & 0xFF);
+                byte nz = (byte) ((packedNormal >> 16) & 0xFF);
+
+                Vector3f normal = new Vector3f(
+                        nx / 127.0f,
+                        ny / 127.0f,
+                        nz / 127.0f
+                );
+
+                normalMatrix.transform(normal).normalize();
+
+                int rx = Math.max(-127, Math.min(127, Math.round(normal.x * 127.0f)));
+                int ry = Math.max(-127, Math.min(127, Math.round(normal.y * 127.0f)));
+                int rz = Math.max(-127, Math.min(127, Math.round(normal.z * 127.0f)));
+
+                rotatedData[i + 7] =
+                        (rx & 0xFF) |
+                        ((ry & 0xFF) << 8) |
+                        ((rz & 0xFF) << 16);
+            }
+        }
+
+        return rotatedData;
+    }
+
+    /**
+     * Helper to convert an entities position+rotation into a Transform Object for easier work
+     * @param entity
+     * @return
+     */
+    public static OriginalTransform getTransform(Entity entity) {
+        return new OriginalTransform(
+                new Vector3f(entity.getXRot(), entity.getYRot(), 0),
+                new Vector3f((float) entity.getX(), (float) entity.getY(), (float) entity.getZ()),
+                new Vector3f(1)
+        );
+    }
+
+    /**
+     * Helper method to easily set an entities position via a Transform
+     * @param entity
+     * @param transform
+     */
+    public static void setTransform(Entity entity, OriginalTransform transform) {
+        entity.setPos(
+                transform.translation.x,
+                transform.translation.y,
+                transform.translation.z
+        );
+
+        entity.setXRot(transform.rotation.x);
+        entity.setYRot(transform.rotation.y);
+
+        entity.setXRot(entity.getXRot());
+        entity.setYRot(entity.getYRot());
+    }
+
+    /**
+     * Creates an ModelBakeSettings from this Transform
+     *
+     * @return a ModelBakeSettings
+     */
+    @Environment(EnvType.CLIENT)
+    public ModelState toModelBakeSettings() {
+        OriginalTransform transform = toModelTransformation(this);
+        Transformation affineTransformation = transform.toAffineTransformation();
+        return new ModelState() {
+            @Override
+            public @NotNull Transformation getRotation() {
+                return affineTransformation;
+            }
+
+            @Override
+            public boolean isUvLocked() {
+                return false;
+            }
+        };
+    }
+
+    @Override
+    public String toString() {
+        Gson gson = new Gson();
+        return gson.toJson(this);
+    }
+
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        } else if (o == null) {
+            return false;
+        } else if (o.getClass() != this.getClass()) {
+            return false;
+        } else {
+            OriginalTransform transformation = (OriginalTransform) o;
+            return this.rotation.equals(transformation.rotation) && this.scale.equals(transformation.scale) && this.translation.equals(transformation.translation);
+        }
+    }
+
+    public int hashCode() {
+        int i = this.rotation.hashCode();
+        i = 31 * i + this.translation.hashCode();
+        i = 31 * i + this.scale.hashCode();
+        return i;
+    }
+
+    public static class TransformJsonAdapter extends TypeAdapter<OriginalTransform> {
+        @Override
+        public void write(JsonWriter jsonWriter, OriginalTransform transform) throws IOException {
+            jsonWriter.beginObject();
+            jsonWriter.name("origin").value(transform.origin);
+            writeVector3f(jsonWriter, "rotation", transform.rotation);
+            writeVector3f(jsonWriter, "translation", transform.translation);
+            writeVector3f(jsonWriter, "scale", transform.scale);
+            jsonWriter.endObject();
+        }
+
+        @Override
+        public OriginalTransform read(JsonReader jsonReader) throws IOException {
+            Vector3f rotation = null;
+            Vector3f translation = null;
+            Vector3f scale = null;
+            String origin = null;
+
+            jsonReader.beginObject();
+            while (jsonReader.hasNext()) {
+                String name = jsonReader.nextName();
+                if ("origin".equals(name)) {
+                    origin = jsonReader.nextString();
+                } else if ("rotation".equals(name)) {
+                    rotation = readVector3f(jsonReader);
+                } else if ("translation".equals(name)) {
+                    translation = readVector3f(jsonReader);
+                } else if ("scale".equals(name)) {
+                    scale = readVector3f(jsonReader);
+                } else {
+                    jsonReader.skipValue();
+                }
+            }
+            jsonReader.endObject();
+            // Ensure non-null values for final fields
+            if (rotation == null) {
+                rotation = new Vector3f();
+            }
+            if (translation == null) {
+                translation = new Vector3f();
+            }
+            if (scale == null) {
+                scale = new Vector3f();
+            }
+            OriginalTransform transform = new OriginalTransform(rotation, translation, scale);
+            transform.origin = origin;
+            return transform;
+        }
+
+        private static void writeVector3f(JsonWriter jsonWriter, String name, Vector3f vector3f) throws IOException {
+            jsonWriter.name(name);
+            jsonWriter.beginArray();
+            jsonWriter.value(vector3f.x);
+            jsonWriter.value(vector3f.y);
+            jsonWriter.value(vector3f.z);
+            jsonWriter.endArray();
+        }
+
+        private static Vector3f readVector3f(JsonReader jsonReader) throws IOException {
+            Vector3f vector3f = new Vector3f();
+
+            if (jsonReader.peek() == JsonToken.BEGIN_ARRAY) {
+                // Read as an array
+                jsonReader.beginArray();
+                vector3f.x = (float) jsonReader.nextDouble();
+                vector3f.y = (float) jsonReader.nextDouble();
+                vector3f.z = (float) jsonReader.nextDouble();
+                jsonReader.endArray();
+            } else if (jsonReader.peek() == JsonToken.BEGIN_OBJECT) {
+                // Read as an object with components
+                jsonReader.beginObject();
+                while (jsonReader.hasNext()) {
+                    String propName = jsonReader.nextName();
+                    if ("x".equals(propName)) {
+                        vector3f.x = (float) jsonReader.nextDouble();
+                    } else if ("y".equals(propName)) {
+                        vector3f.y = (float) jsonReader.nextDouble();
+                    } else if ("z".equals(propName)) {
+                        vector3f.z = (float) jsonReader.nextDouble();
+                    }
+                }
+                jsonReader.endObject();
+            }
+
+            return vector3f;
+        }
+    }
+}

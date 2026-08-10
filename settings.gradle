@@ -23,5 +23,5 @@ def enableAddons = providers
 if (enableAddons && System.getenv("JITPACK") == null) {
     //includeBuild("./archery")
     //includeBuild("./arsenal")
-    //includeBuild("./armory")
+    includeBuild("./armory")
 }

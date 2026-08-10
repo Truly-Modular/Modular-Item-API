@@ -1,0 +1,58 @@
+{
+    "frames": [
+        {
+            "usedItem": {
+                "position": [0.0, 0.017453292, 0.0],
+                "rotation": [115, 0.0, 0.0],
+                "scale": [1.0, 1.0, 1.0]
+            },
+            "interpolate": {
+                "type": "easeInOut",
+                "amplifier": 2
+            },
+            "endTime": 0.1
+        },
+        {
+            "fpUsedArm": {
+                "position": [-0.37, 0.03, -0.8],
+                "rotation": [-58.0, 0.9, 10.0],
+                "scale": [1.0, 1.0, 1.0],
+                "interpolateMode": "cosine"
+            },
+            "usedArm": {
+                "position": [0.0, 0.0, 0.0],
+                "rotation": [-57.0, -25.0, 7.0],
+                "scale": [1.0, 1.0, 1.0],
+                "interpolateMode": "cosine"
+            },
+            "usedItem": {
+                "position": [0.0, 0.094, -0.406],
+                "rotation": [-41.0, 3.0, 2.0],
+                "scale": [1.0, 1.0, 1.0],
+                "interpolateMode": "cosine"
+            },
+            "interpolate": "none",
+            "endTime": 0.2
+        }
+    ],
+    "loops": 0,
+    "initialPose": {
+        "fpUsedArm": {
+            "position": [0.0, 0.0, 0.0],
+            "rotation": [0.0, 0.0, 0.0],
+            "scale": [1.0, 1.0, 1.0]
+        },
+        "usedArm": {
+            "position": [0.0, 0.0, 0.0],
+            "rotation": [0.0, 0.0, 0.0],
+            "scale": [1.0, 1.0, 1.0]
+        },
+        "usedItem": {
+            "position": [0.0, 0.0, 0.0],
+            "rotation": [0.0, 0.0, 0.0],
+            "scale": [1.0, 1.0, 1.0]
+        }
+    },
+    "resetFirstPersonView": false,
+    "name": "miapi:throwing_knife_alt"
+}

@@ -1,0 +1,72 @@
+{
+    "frames": [
+        {
+            "fpUsedArm": {
+                "position": [-0.464, 0.124, -0.175],
+                "rotation": [-46.0, 11.9, 20.0],
+                "scale": [1.0, 1.0, 1.0],
+                "interpolateMode": "cosine"
+            },
+            "usedArm": {
+                "position": [0.0, -0.2, -0.28],
+                "rotation": [-57.0, -25.0, 7.0],
+                "scale": [1.0, 1.0, 1.0],
+                "interpolateMode": "cosine"
+            },
+            "usedItem": {
+                "position": [0.0, 0.0, 0.0],
+                "rotation": [-16.0, 4.0, 3.0],
+                "scale": [1.0, 1.0, 1.0],
+                "interpolateMode": "cosine"
+            },
+            "interpolate": "none",
+            "endTime": 0.15
+        },
+        {
+            "fpUsedArm": {
+                "position": [0.0, 0.0, 0.0],
+                "rotation": [0.0, 0.0, 0.0],
+                "scale": [1.0, 1.0, 1.0]
+            },
+            "usedArm": {
+                "position": [0.0, 0.0, 0.0],
+                "rotation": [0.0, 0.0, 0.0],
+                "scale": [1.0, 1.0, 1.0]
+            },
+            "usedItem": {
+                "position": [0.0, 0.0, 0.0],
+                "rotation": [0.0, 0.0, 0.0],
+                "scale": [1.0, 1.0, 1.0]
+            },
+            "interpolate": "none",
+            "endTime": 0.4
+        }
+    ],
+    "loops": 1,
+    "initialPose": {
+        "fpUsedArm": {
+            "position": [0.0, 0.0, 0.0],
+            "rotation": [0.0, 0.0, 0.0],
+            "scale": [1.0, 1.0, 1.0]
+        },
+        "usedArm": {
+            "position": [0.0, 0.0, 0.0],
+            "rotation": [0.0, 0.0, 0.0],
+            "scale": [1.0, 1.0, 1.0]
+        },
+        "usedItem": {
+            "position": [0.0, 0.0, 0.0],
+            "rotation": [0.0, 0.0, 0.0],
+            "scale": [1.0, 1.0, 1.0]
+        },
+        "interpolate": "none",
+        "endTime": 0.0
+    },
+    "resetFirstPersonView": false,
+    "leftHandMultiplier": {
+        "position": [-1.0, 1.0, 1.0],
+        "rotation": [1.0, -1.0, -1.0],
+        "scale": [1.0, 1.0, 1.0]
+    },
+    "name": "miapi:throwing_knife"
+}

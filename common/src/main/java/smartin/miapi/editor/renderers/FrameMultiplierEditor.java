@@ -3,6 +3,7 @@ package smartin.miapi.editor.renderers;
 import com.redpxnda.nucleus.pose.client.HumanoidPoseAnimation;
 import imgui.ImGui;
 import org.joml.Vector3f;
+import smartin.miapi.editor.pose.Vector3fEditor;
 
 import java.util.function.Consumer;
 

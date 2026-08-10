@@ -3,6 +3,7 @@ package smartin.miapi.modules.properties;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
+import dev.architectury.event.EventResult;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.ChatFormatting;
@@ -19,6 +20,7 @@ import org.jetbrains.annotations.NotNull;
 import smartin.miapi.Miapi;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.datapack.ReloadEvents;
+import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.item.MaterialSmithingRecipe;
 import smartin.miapi.item.ModularItemStackConverter;
 import smartin.miapi.item.modular.ModularItemPart;
@@ -43,7 +45,7 @@ import java.util.*;
  * The lore can be customized based on whether the item is modular or not, and additional configurations are available
  * through {@link MiapiConfig}. Depending on the environment (client or server), different lore might be injected.
  * @description_end
- * @data a list of Lore Entires, compromoised of:
+ * @data a list of Lore Entries, compromised of:
  * @data text: The {@link Component} text to display.
  * @data position: The position of the lore ("top" or "bottom").
  * @data priority: The priority of the lore entry, used for sorting.
@@ -72,6 +74,13 @@ public class LoreProperty extends CodecProperty<List<LoreProperty.Holder>> {
                 tooltip.add(format(Component.translatable("miapi.ui.modular_item"), ChatFormatting.GRAY));
             }
             getHolders(itemStack).stream().filter(h -> h.position.equals("top")).forEach(holder -> tooltip.add(holder.getText()));
+        });
+        MiapiEvents.CLEAR_CACHE.register(new MiapiEvents.EmptyEvent() {
+            @Override
+            public EventResult onReload() {
+                materialLookupTable.clear();
+                return EventResult.pass();
+            }
         });
         ReloadEvents.END.subscribe((isClient, registryAccess, worker) -> {
             try {

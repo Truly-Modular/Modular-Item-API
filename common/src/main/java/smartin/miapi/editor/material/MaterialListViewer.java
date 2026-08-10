@@ -12,6 +12,7 @@ import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
 import smartin.miapi.Miapi;
+import smartin.miapi.editor.EditorLogger;
 import smartin.miapi.editor.JsonEditor;
 import smartin.miapi.editor.MiapiEditor;
 import smartin.miapi.material.codec.CodecMaterial;
@@ -182,7 +183,7 @@ public class MaterialListViewer implements MiapiEditor {
 
             return material;
         } catch (IOException e) {
-            Miapi.LOGGER.error("Failed to read CodecMaterial from file: {}", file.getAbsolutePath(), e);
+            EditorLogger.getLogger().error("Failed to read CodecMaterial from file: {}", file.getAbsolutePath(), e);
             return null;
         }
     }
@@ -223,7 +224,7 @@ public class MaterialListViewer implements MiapiEditor {
             JsonElement json = encoded.result().orElseThrow(() -> new IOException("Failed to encode CodecMaterial"));
             Miapi.gson.toJson(json, writer);
         } catch (IOException e) {
-            Miapi.LOGGER.error("Failed to write CodecMaterial to file: {}", file.getAbsolutePath(), e);
+            EditorLogger.getLogger().error("Failed to write CodecMaterial to file: {}", file.getAbsolutePath(), e);
         }
     }
 }

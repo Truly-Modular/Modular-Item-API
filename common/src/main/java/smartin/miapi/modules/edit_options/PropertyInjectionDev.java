@@ -1,6 +1,8 @@
 package smartin.miapi.modules.edit_options;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -46,7 +48,7 @@ public class PropertyInjectionDev implements EditOption {
                     try {
                         assert property != null;
                         property.load(Miapi.id("property-injection"), stringJsonElementEntry.getValue(), true);
-                        properties.put(property, property.decode(stringJsonElementEntry.getValue()));
+                        properties.put(property, property.decode(removeNulls(stringJsonElementEntry.getValue())));
                     } catch (Exception e) {
                         Miapi.LOGGER.error("error during property injection", e);
                     }
@@ -65,6 +67,40 @@ public class PropertyInjectionDev implements EditOption {
             }
         }
         return context.getItemstack();
+    }
+
+    private static JsonElement removeNulls(JsonElement element) {
+        if (element == null || element.isJsonNull()) {
+            return JsonNull.INSTANCE;
+        }
+
+        if (element.isJsonObject()) {
+            JsonObject result = new JsonObject();
+
+            for (var entry : element.getAsJsonObject().entrySet()) {
+                JsonElement cleaned = removeNulls(entry.getValue());
+                if (!cleaned.isJsonNull()) {
+                    result.add(entry.getKey(), cleaned);
+                }
+            }
+
+            return result;
+        }
+
+        if (element.isJsonArray()) {
+            JsonArray result = new JsonArray();
+
+            for (JsonElement child : element.getAsJsonArray()) {
+                JsonElement cleaned = removeNulls(child);
+                if (!cleaned.isJsonNull()) {
+                    result.add(cleaned);
+                }
+            }
+
+            return result;
+        }
+
+        return element;
     }
 
     @Override

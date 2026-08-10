@@ -4,6 +4,7 @@ import com.google.gson.JsonElement;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
+import smartin.miapi.editor.EditorLogger;
 import smartin.miapi.modules.properties.util.EditorError;
 
 import java.util.*;
@@ -55,7 +56,7 @@ public class JsonSyntaxHighlighter implements EditorInterface {
             addHighlighting(content, PROPERTY_PATTERN, PROPERTY_COLOR, highlighting);
             addHighlighting(content, BRACKET_PATTERN, BRACKET_COLOR, highlighting);
         } catch (StackOverflowError error) {
-
+            EditorLogger.getLogger().error("Stack overflow in syntax highlighting - content may be too large");
         }
 
         return highlighting;
@@ -154,7 +155,7 @@ public class JsonSyntaxHighlighter implements EditorInterface {
                 }
             }
         } catch (StackOverflowError e) {
-            Miapi.LOGGER.error("stack overflow in collon finder");
+            EditorLogger.getLogger().error("Stack overflow in colon finder - content may be too large");
         }
     }
 

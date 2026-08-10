@@ -16,6 +16,7 @@ import net.minecraft.world.item.ItemStack;
 import smartin.miapi.Miapi;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.editor.material.MaterialEditor;
+import smartin.miapi.editor.pose.HumanoidPoseAnimationRegistryEditor;
 import smartin.miapi.editor.syntax.CodecValidatorInterface;
 import smartin.miapi.editor.syntax.JsonSyntaxHighlighter;
 import smartin.miapi.editor.syntax.PropertyMapHighlighter;

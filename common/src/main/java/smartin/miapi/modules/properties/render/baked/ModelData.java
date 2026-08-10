@@ -36,7 +36,6 @@ public class ModelData {
             ).apply(instance, ModelData::new)
     );
 
-    // Constructor to work with RecordCodecBuilder
     public ModelData(String path, Transform transform, String condition, String color_provider,
                      String trim_mode, Optional<Boolean> entity_render, String id) {
         this.path = path;
@@ -47,6 +46,18 @@ public class ModelData {
         this.entity_render = entity_render.orElseGet(() -> (
                 this.getTrimMode().equals(TrimRenderer.TrimMode.ARMOR_LAYER_ONE) ||
                 this.getTrimMode().equals(TrimRenderer.TrimMode.ARMOR_LAYER_TWO)));
+        this.id = id;
+        repair();
+    }
+
+    public ModelData(String path, Transform transform, String condition, String color_provider,
+                     String trim_mode, Boolean entity_render, String id) {
+        this.path = path;
+        this.transform = transform;
+        this.condition = condition;
+        this.color_provider = color_provider;
+        this.trim_mode = trim_mode;
+        this.entity_render = entity_render;
         this.id = id;
         repair();
     }

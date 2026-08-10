@@ -15,7 +15,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.client.model.DynamicBakery;
-import smartin.miapi.modules.properties.render.baked.ModelProperty;
+import smartin.miapi.modules.properties.render.baked.ModelManager;
 import smartin.miapi.registries.RegistryInventory;
 
 import java.util.ArrayList;
@@ -91,7 +91,7 @@ public class ItemBakedModelReplacement implements UnbakedModel, BakedModel {
     @Nullable
     @Override
     public BakedModel bake(ModelBaker baker, Function<Material, TextureAtlasSprite> spriteGetter, ModelState state) {
-        ModelProperty.textureGetter = spriteGetter;
+        ModelManager.textureGetter = spriteGetter;
         DynamicBakery.dynamicBaker = baker;
         //overrides = new ItemBakedModelOverrides();
         return this;

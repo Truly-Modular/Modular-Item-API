@@ -51,7 +51,7 @@ public class ModuleTagProperty extends CodecProperty<List<String>> {
                                     material.materialProperties(key),
                                     Component.translatable("miapi.property.source.material", material.getTranslation().getString()).withStyle(ChatFormatting.DARK_GRAY));
                     if (!materialProperties.isEmpty()) {
-                        returnMap = PropertyResolver.merge(oldMap, materialProperties, MergeType.SMART);
+                        returnMap = PropertyResolver.merge(returnMap, materialProperties, MergeType.SMART);
                     }
                 }
                 Map<ModuleProperty<?>, Object> materialProperties = PropertyResolver
@@ -59,7 +59,7 @@ public class ModuleTagProperty extends CodecProperty<List<String>> {
                                 material.materialProperties(moduleInstance.moduleId().toString()),
                                 Component.translatable("miapi.property.source.material", material.getTranslation().getString()).withStyle(ChatFormatting.DARK_GRAY));
                 if (!materialProperties.isEmpty()) {
-                    returnMap = PropertyResolver.merge(oldMap, materialProperties, MergeType.SMART);
+                    returnMap = PropertyResolver.merge(returnMap, materialProperties, MergeType.SMART);
                 }
             }
             return returnMap;

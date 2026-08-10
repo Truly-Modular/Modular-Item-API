@@ -45,11 +45,14 @@ public class CraftingEnchantProperty extends CodecProperty<Map<ResourceLocation,
 
     @Override
     public void updateComponent(ItemStack itemStack, RegistryAccess registryAccess) {
+        if (registryAccess == null) {
+            return;
+        }
         getData(itemStack).ifPresent(stringDoubleOperationResolvableMap -> {
             EnchantmentHelper.updateEnchantments(itemStack, (mutable -> {
                 stringDoubleOperationResolvableMap.forEach((enchantmentID, value) -> {
                     try {
-                        tryAndLookUp(enchantmentID, ItemModule.getModules(itemStack)).ifPresent(enchantment -> {
+                        tryAndLookUp(enchantmentID, registryAccess, ItemModule.getModules(itemStack)).ifPresent(enchantment -> {
                             int prevLevel = mutable.getLevel(enchantment);
                             value.setFunctionTransformer((s) -> s.getFirst().replace("[old_level]", String.valueOf(prevLevel)));
                             int nextLevel = (int) value.evaluate(0.0, prevLevel);
@@ -69,18 +72,21 @@ public class CraftingEnchantProperty extends CodecProperty<Map<ResourceLocation,
     public static Map<Holder<Enchantment>, DoubleOperationResolvable> tryConvert(Map<ResourceLocation, DoubleOperationResolvable> original, ItemStack itemStack) {
         Map<Holder<Enchantment>, DoubleOperationResolvable> mapped = new HashMap<>();
         original.forEach((id, ench) -> {
-            tryAndLookUp(id, itemStack).ifPresent(holder -> {
+            tryAndLookUp(id, null, itemStack).ifPresent(holder -> {
                 mapped.put(holder, ench);
             });
         });
         return mapped;
     }
 
-    public static Optional<Holder<Enchantment>> tryAndLookUp(ResourceLocation id, ItemStack reference) {
-        return tryAndLookUp(id, ItemModule.getModules(reference));
+    public static Optional<Holder<Enchantment>> tryAndLookUp(ResourceLocation id, RegistryAccess access, ItemStack reference) {
+        return tryAndLookUp(id, access, ItemModule.getModules(reference));
     }
 
-    public static Optional<Holder<Enchantment>> tryAndLookUp(ResourceLocation id, ModuleInstance reference) {
+    public static Optional<Holder<Enchantment>> tryAndLookUp(ResourceLocation id, RegistryAccess access, ModuleInstance reference) {
+        if (access != null) {
+            return access.registry(Registries.ENCHANTMENT).flatMap(registry -> registry.getHolder(id)).map(r-> r);
+        }
         ResourceKey<Enchantment> enchantmentResourceKey = ResourceKey.create(Registries.ENCHANTMENT, id);
         if (reference.getter() == null) {
             Miapi.LOGGER.error("item was not setup correctly, registry access isn't functional");

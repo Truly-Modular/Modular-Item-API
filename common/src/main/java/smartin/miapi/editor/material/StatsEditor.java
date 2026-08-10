@@ -34,20 +34,18 @@ public class StatsEditor {
             new ArrayList<>(stats).forEach(entry -> {
                 ImGui.pushID(entry.toString());
                 ImGui.pushItemWidth(150); // Limit width to 150 pixels
-                if (ImGui.inputText(" Stat ", entry.name, ImGuiInputTextFlags.None)) {
+                if (ImGui.inputText("Stat", entry.name, ImGuiInputTextFlags.None)) {
                     try {
-                        double oldValue = material.getDouble(entry.name.get());
-                        material.doubleMap.remove(entry.name.get());
-                        material.doubleMap.put(entry.name.get(), oldValue);
+                        material.doubleMap.put(entry.name.get(), entry.value.get());
                     } catch (Exception e) {
-                        ImGui.text("Invalid stat name!");
+                        ImGui.text("Invalid stat value!");
                     }
                 }
                 ImGui.popItemWidth(); // Restore default width
                 ImGui.sameLine();
 
-                ImGui.pushItemWidth(50); // Limit width to 150 pixels
-                if (ImGui.inputDouble(" Value ", entry.value)) {
+                ImGui.pushItemWidth(50); // Limit width to 50 pixels
+                if (ImGui.inputDouble("Value", entry.value)) {
                     material.doubleMap.put(entry.name.get(), entry.value.get());
                 }
                 ImGui.popItemWidth();

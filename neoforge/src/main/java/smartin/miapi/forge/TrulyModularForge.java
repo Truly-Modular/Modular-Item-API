@@ -47,6 +47,7 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
+import net.neoforged.neoforge.event.RegisterGameTestsEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeModificationEvent;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import net.neoforged.neoforge.registries.RegisterEvent;
@@ -66,7 +67,7 @@ import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.forge.compat.epic_fight.EpicFightCompat;
 import smartin.miapi.item.modular.VisualModularItem;
 import smartin.miapi.modules.properties.attributes.AttributeProperty;
-import smartin.miapi.modules.properties.render.baked.ModelProperty;
+import smartin.miapi.modules.properties.render.baked.ModelManager;
 import smartin.miapi.registries.DatapackHolder;
 import smartin.miapi.registries.RegistryInventory;
 
@@ -150,6 +151,11 @@ public class TrulyModularForge {
         @SubscribeEvent
         public static void register(RegisterEvent event) {
             event.register(NeoForgeRegistries.GLOBAL_LOOT_MODIFIER_SERIALIZERS.key(), Miapi.id("global_loot_mod"), () -> MiapiGlobalLootModifier.CODEC);
+        }
+
+        @SubscribeEvent
+        static void register(RegisterGameTestsEvent event) {
+
         }
 
 
@@ -256,7 +262,7 @@ public class TrulyModularForge {
         public static void entityRenderers(ModelEvent.ModifyBakingResult registerAdditional) {
             //dont ask me, but this fixes registration for client
             List<ModelResourceLocation> ids = RegistryInventory.MODULAR_ITEMS.getFlatMap().keySet().stream().map(ModelResourceLocation::inventory).toList();
-            ModelProperty.textureGetter = registerAdditional.getTextureGetter();
+            ModelManager.textureGetter = registerAdditional.getTextureGetter();
             ids.forEach(id -> {
                 registerAdditional.getModels().put(id, new ItemBakedModelReplacement() {
                     @Override

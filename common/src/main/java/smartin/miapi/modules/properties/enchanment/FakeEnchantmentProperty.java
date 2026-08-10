@@ -4,6 +4,8 @@ import com.mojang.serialization.Codec;
 import dev.architectury.event.EventResult;
 import net.fabricmc.api.EnvType;
 import net.minecraft.core.Holder;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.EnchantmentTags;
 import net.minecraft.world.item.ItemStack;
@@ -17,7 +19,10 @@ import smartin.miapi.client.gui.crafting.statdisplay.SingleStatDisplay;
 import smartin.miapi.client.gui.crafting.statdisplay.SingleStatDisplayDouble;
 import smartin.miapi.client.gui.crafting.statdisplay.StatListWidget;
 import smartin.miapi.modules.ModuleInstance;
-import smartin.miapi.modules.properties.util.*;
+import smartin.miapi.modules.properties.util.CodecProperty;
+import smartin.miapi.modules.properties.util.DoubleOperationResolvable;
+import smartin.miapi.modules.properties.util.MergeAble;
+import smartin.miapi.modules.properties.util.MergeType;
 
 import java.util.*;
 
@@ -44,7 +49,7 @@ public class FakeEnchantmentProperty extends CodecProperty<Map<ResourceLocation,
         });
         ADD_ENCHANTMENT.register(enchantmentMap -> {
             for (Map.Entry<ResourceLocation, DoubleOperationResolvable> location : getData(enchantmentMap.referenceStack).orElse(new HashMap<>()).entrySet()) {
-                CraftingEnchantProperty.tryAndLookUp(location.getKey(), enchantmentMap.referenceStack).ifPresent(enchantment -> {
+                CraftingEnchantProperty.tryAndLookUp(location.getKey(), null, enchantmentMap.referenceStack).ifPresent(enchantment -> {
                     if (!enchantmentMap.enchantments.contains(enchantment)) {
                         enchantmentMap.enchantments.add(enchantment);
                     }
@@ -76,8 +81,9 @@ public class FakeEnchantmentProperty extends CodecProperty<Map<ResourceLocation,
                 enchantments.addAll(CraftingEnchantProperty.tryConvert(getData(original).orElse(new HashMap<>()), original).keySet());
                 enchantments.addAll(CraftingEnchantProperty.tryConvert(getData(compareTo).orElse(new HashMap<>()), compareTo).keySet());
                 enchantments.forEach(enchantment -> {
-                    JsonStatDisplay display = new JsonStatDisplay((stack) -> enchantment.value().description(),
+                    JsonStatDisplay display = new JsonStatDisplay(
                             (stack) -> enchantment.value().description(),
+                            (stack) -> getDescription(enchantment.value().description(), enchantment),
                             new SingleStatDisplayDouble.StatReaderHelper() {
                                 @Override
                                 public double getValue(ItemStack itemStack) {
@@ -99,6 +105,21 @@ public class FakeEnchantmentProperty extends CodecProperty<Map<ResourceLocation,
                 return displays;
             }
         });
+    }
+
+    public static Component getDescription(Component component, Holder<Enchantment> enchantment) {
+        return enchantment.unwrapKey()
+                .<Component>map(key -> Component.translatableWithFallback(
+                        "enchantment." + key.location().getNamespace() + "." + key.location().getPath() + ".description",
+                        component.getString()))
+                .orElseGet(() -> {
+                    if (component.getContents() instanceof TranslatableContents translatable) {
+                        return Component.translatableWithFallback(
+                                translatable.getKey() + ".description",
+                                component.getString());
+                    }
+                    return component;
+                });
     }
 
     @Override

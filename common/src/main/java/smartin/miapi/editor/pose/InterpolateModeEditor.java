@@ -1,4 +1,4 @@
-package smartin.miapi.editor.renderers;
+package smartin.miapi.editor.pose;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;

@@ -1,0 +1,22 @@
+{
+    "name": "miapi:reset",
+    "initialPose":     {
+        "usedArm": {
+            "position": [0, 0, 0],
+            "rotation": [0, 0, 0],
+            "scale": [1, 1, 1]
+        },
+        "usedItem": {
+            "position": [0, 0, 0],
+            "rotation": [0, 0, 0],
+            "scale": [1, 1, 1]
+        },
+        "fpUsedArm": {
+            "position": [0, 0, 0],
+            "rotation": [0, 0, 0],
+            "scale": [1, 1, 1]
+        }
+    },
+    "loops": 1,
+    "resetFirstPersonView": false
+}

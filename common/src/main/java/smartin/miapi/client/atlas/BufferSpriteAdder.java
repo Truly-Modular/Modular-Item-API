@@ -14,6 +14,7 @@ import net.minecraft.server.packs.resources.ResourceMetadata;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.config.MiapiConfig;
+import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.mixin.client.SpriteContentsAccessor;
 import smartin.miapi.mixin.client.SpriteSourcesAccessor;
 
@@ -29,6 +30,8 @@ public class BufferSpriteAdder implements SpriteSource {
 
     @Override
     public void run(ResourceManager resourceManager, Output output) {
+        MiapiEvents.CLEAR_CACHE.invoker().onReload();
+        clearAtlasSlots();
         MaterialSpriteManager.ATLAS_SPRITE_POOL.clear();
         MaterialSpriteManager.FAST_CACHE.clear();
         MiapiConfig.getClientConfig().render.cacheSprites.forEach(cacheSprites -> {
@@ -68,6 +71,19 @@ public class BufferSpriteAdder implements SpriteSource {
                 }));
             }
         });
+        MiapiEvents.CLEAR_CACHE.invoker().onReload();
+    }
+
+    public static void clearAtlasSlots() {
+        MaterialSpriteManager.ATLAS_SPRITE_POOL.values().forEach(slots -> {
+            slots.forEach(MaterialSpriteManager.SpriteSlot::destroy);
+            slots.clear();
+        });
+
+        MaterialSpriteManager.FAST_CACHE.values().forEach(MaterialSpriteManager.SpriteSlot::destroy);
+        MaterialSpriteManager.FAST_CACHE.clear();
+
+        MaterialSpriteManager.ANIMATED_ATLAS_SPRITES.clear();
     }
 
     public static class MiapiSpriteContents extends SpriteContents {

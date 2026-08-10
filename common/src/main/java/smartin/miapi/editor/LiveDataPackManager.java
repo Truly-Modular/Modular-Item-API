@@ -7,22 +7,23 @@ import net.fabricmc.api.EnvType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.datapack.ReloadEvents;
-import smartin.miapi.editor.syntax.EditorInterface;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.modules.cache.CacheCommands;
 import smartin.miapi.modules.conditions.ConditionManager;
 import smartin.miapi.modules.properties.util.EditorError;
 
-import java.io.*;
+import java.io.Closeable;
+import java.io.File;
+import java.io.IOException;
 import java.nio.file.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 public class LiveDataPackManager implements AutoCloseable {
     private static final String RUNTIME_FOLDER = "miapi_runtime_datapacks";
@@ -33,7 +34,7 @@ public class LiveDataPackManager implements AutoCloseable {
     private final List<DataPackContext> loadedPacks = new ArrayList<>();
     private final File runtimeFolder;
     private WatchService watchService;
-    private final Map<WatchKey, DataPackContext> watchKeys = new HashMap<>();
+    private final Map<WatchKey, DataPackContext> watchKeys = new ConcurrentHashMap<>();
     public List<MiapiEditor> openedEditors = new ArrayList<>();
     boolean isValidating = false;
     public static Supplier<Boolean> isEnabled = () -> false;
@@ -79,9 +80,10 @@ public class LiveDataPackManager implements AutoCloseable {
     private void setupFileWatcher() {
         try {
             watchService = runtimeFolder.toPath().getFileSystem().newWatchService();
-
+            EditorLogger.getLogger().debug("File watcher setup successful");
         } catch (IOException e) {
-            e.printStackTrace();
+            EditorLogger.getLogger().error("Failed to setup file watcher: {}", e.getMessage());
+            // Continue without file watching rather than crashing
         }
     }
 
@@ -100,17 +102,26 @@ public class LiveDataPackManager implements AutoCloseable {
                         StandardWatchEventKinds.ENTRY_DELETE);
                 watchKeys.put(key, context);
                 if (dataDir.isDirectory()) {
-                    Arrays.stream(dataDir.listFiles(File::isDirectory)).forEach(f -> {
-                        watchDataPack(context, f);
-                    });
+                    File[] subDirs = dataDir.listFiles(File::isDirectory);
+                    if (subDirs != null) {
+                        for (File subDir : subDirs) {
+                            if (subDir != null) {
+                                watchDataPack(context, subDir);
+                            }
+                        }
+                    }
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            EditorLogger.getLogger().error("Failed to watch data pack directory: {}", e.getMessage());
         }
     }
 
     public void unwatchDataPack(DataPackContext context) {
+        if (context == null) {
+            EditorLogger.getLogger().warn("Cannot unwatch null context");
+            return;
+        }
         watchKeys.entrySet().removeIf(entry -> {
             if (entry.getValue() == context) {
                 entry.getKey().cancel();
@@ -134,14 +145,14 @@ public class LiveDataPackManager implements AutoCloseable {
                             // Validate all files when any JSON file changes
                             //context.validateAllFiles();
                             changeOccured = true;
-                        } else {
                         }
+                        // Non-JSON file changes are ignored
                     }
                     key.reset();
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            EditorLogger.getLogger().error("Error checking file changes: {}", e.getMessage());
         }
         return changeOccured;
     }
@@ -156,57 +167,103 @@ public class LiveDataPackManager implements AutoCloseable {
 
         if (directories != null) {
             for (File dir : directories) {
-                DataPackContext context = loadOrCreateContext(dir);
-                loadedPacks.add(context);
-                watchDataPack(context);
+                if (dir != null) {
+                    DataPackContext context = loadOrCreateContext(dir);
+                    if (context != null) {
+                        loadedPacks.add(context);
+                        watchDataPack(context);
+                    }
+                }
             }
         }
     }
 
     public DataPackContext createNewPack(String name, String id, String author, String description, boolean enabled) {
-        id = id.toLowerCase();
-        if (!name.isEmpty() && !id.isEmpty()) {
-            File newDir = new File(runtimeFolder, id);
-            if (!newDir.exists()) {
-                newDir.mkdirs();
-                DataPackContext context = createDefaultContext(newDir);
-                context.name = name;
-                context.id = id;
-                context.author = author;
-                context.description = description;
-                context.enabled = enabled;
-                context.dataPath = "data";
-                saveContext(context);
-                loadedPacks.add(context);
-                watchDataPack(context);
-                return context;
-            }
+        if (name.isEmpty() || id.isEmpty()) {
+            EditorLogger.getLogger().warn("Cannot create pack with empty name or id");
+            return null;
         }
-        return null;
+        
+        id = id.toLowerCase();
+        File newDir = new File(runtimeFolder, id);
+        if (!newDir.exists()) {
+            if (!newDir.mkdirs()) {
+                EditorLogger.getLogger().error("Failed to create directory: {}", id);
+                return null;
+            }
+            DataPackContext context = createDefaultContext(newDir);
+            context.name = name;
+            context.id = id;
+            context.author = author;
+            context.description = description;
+            context.enabled = enabled;
+            context.dataPath = "data";
+            if (!saveContext(context)) {
+                EditorLogger.getLogger().error("Failed to save new pack context");
+                return null;
+            }
+            loadedPacks.add(context);
+            watchDataPack(context);
+            return context;
+        } else {
+            EditorLogger.getLogger().warn("Directory already exists: {}", id);
+            return null;
+        }
     }
 
     public void deletePack(DataPackContext context) {
+        if (context == null) {
+            EditorLogger.getLogger().warn("Cannot delete null context");
+            return;
+        }
         try {
             unwatchDataPack(context);
-            deleteDirectory(context.directory);
+            if (!deleteDirectory(context.directory)) {
+                EditorLogger.getLogger().error("Failed to delete directory: {}", context.directory.getAbsolutePath());
+            }
             loadedPacks.remove(context);
-        } catch (IOException e) {
-            e.printStackTrace();
+            EditorLogger.getLogger().info("Deleted data pack: {}", context.id);
+        } catch (Exception e) {
+            EditorLogger.getLogger().error("Error deleting data pack: {}", e.getMessage());
         }
     }
 
-    private void deleteDirectory(File directory) throws IOException {
+    private boolean deleteDirectory(File directory) {
+        if (directory == null || !directory.exists()) {
+            return true;
+        }
+        
         File[] files = directory.listFiles();
         if (files != null) {
             for (File file : files) {
                 if (file.isDirectory()) {
-                    deleteDirectory(file);
+                    if (!deleteDirectory(file)) {
+                        return false;
+                    }
                 } else {
-                    Files.delete(file.toPath());
+                    try {
+                        // Make file writable before deletion
+                        if (file.setWritable(true)) {
+                            Files.delete(file.toPath());
+                        } else {
+                            EditorLogger.getLogger().error("Cannot make file writable: {}", file.getAbsolutePath());
+                            return false;
+                        }
+                    } catch (IOException e) {
+                        EditorLogger.getLogger().error("Failed to delete file: {} - {}", file.getName(), e.getMessage());
+                        return false;
+                    }
                 }
             }
         }
-        Files.delete(directory.toPath());
+        
+        try {
+            Files.delete(directory.toPath());
+            return true;
+        } catch (IOException e) {
+            EditorLogger.getLogger().error("Failed to delete directory: {} - {}", directory.getName(), e.getMessage());
+            return false;
+        }
     }
 
     private DataPackContext loadOrCreateContext(File directory) {
@@ -217,17 +274,26 @@ public class LiveDataPackManager implements AutoCloseable {
             try {
                 String json = Files.readString(contextFile.toPath());
                 context = GSON.fromJson(json, DataPackContext.class);
-                context.directory = directory;
-                context.repair();
+                if (context != null) {
+                    context.directory = directory;
+                    context.repair();
+                    EditorLogger.getLogger().debug("Loaded context from file: {}", context.id);
+                } else {
+                    EditorLogger.getLogger().warn("Failed to deserialize context from file: {}", contextFile.getAbsolutePath());
+                    context = createDefaultContext(directory);
+                }
             } catch (IOException e) {
-                e.printStackTrace();
+                EditorLogger.getLogger().error("Failed to read context file: {} - {}", contextFile.getName(), e.getMessage());
                 context = createDefaultContext(directory);
             }
         } else {
+            EditorLogger.getLogger().debug("Creating new context for directory: {}", directory.getName());
             context = createDefaultContext(directory);
         }
 
-        saveContext(context);
+        if (!saveContext(context)) {
+            EditorLogger.getLogger().error("Failed to save context after loading: {}", context.id);
+        }
         return context;
     }
 
@@ -243,18 +309,34 @@ public class LiveDataPackManager implements AutoCloseable {
         return context;
     }
 
-    public void saveContext(DataPackContext context) {
+    public boolean saveContext(DataPackContext context) {
+        if (context == null) {
+            EditorLogger.getLogger().warn("Cannot save null context");
+            return false;
+        }
         try {
             File contextFile = new File(context.directory, CONTEXT_FILE);
             String json = GSON.toJson(context);
             Files.writeString(contextFile.toPath(), json);
+            EditorLogger.getLogger().debug("Saved context for pack: {}", context.id);
+            return true;
         } catch (IOException e) {
-            e.printStackTrace();
+            EditorLogger.getLogger().error("Failed to save context: {} - {}", context.id, e.getMessage());
+            return false;
         }
     }
 
     private void processDataPacks(MiapiEvents.ReloadEventData event) {
+        if (event == null) {
+            EditorLogger.getLogger().warn("Cannot process null event");
+            return;
+        }
+        
         for (DataPackContext context : loadedPacks) {
+            if (context == null) {
+                continue;
+            }
+            
             if (context.enabled && !context.passedValidation) {
                 Minecraft.getInstance().player.sendSystemMessage(Component.literal(context.name + " Could not load, it did not pass Validation"));
             }
@@ -270,14 +352,15 @@ public class LiveDataPackManager implements AutoCloseable {
                             try {
                                 ResourceLocation location = getResourceLocation(dataDir.toPath(), path);
                                 String content = Files.readString(path);
-                                if (shouldLoadJson(Files.readString(path))) {
+                                if (shouldLoadJson(content)) {
                                     event.data.put(location, content);
                                 }
                             } catch (IOException e) {
+                                EditorLogger.getLogger().error("Failed to process file: {}", path.getFileName());
                             }
                         });
             } catch (IOException e) {
-                e.printStackTrace();
+                EditorLogger.getLogger().error("Error walking data directory: {}", e.getMessage());
             }
         }
     }
@@ -296,7 +379,7 @@ public class LiveDataPackManager implements AutoCloseable {
                 });
                 if (allowed) {
                     element.remove("load_condition");
-                    //Miapi.LOGGER.info("redid " + location);
+                    //EditorLogger.getLogger().info("redid " + location);
                     return true;
                 }
                 return false;
@@ -360,16 +443,16 @@ public class LiveDataPackManager implements AutoCloseable {
                                             openedEditors.add(editor);
                                         }
                                     } catch (RuntimeException e) {
-                                        Miapi.LOGGER.warn("", e);
+                                        EditorLogger.getLogger().warn("", e);
                                     } catch (IOException e) {
-                                        Miapi.LOGGER.warn("", e);
+                                        EditorLogger.getLogger().warn("", e);
                                     }
                                     context.passedValidation = false;
                                 }
                             }
                         });
             } catch (IOException e) {
-                e.printStackTrace();
+                EditorLogger.getLogger().warn("Failure during validation", e);
                 isValidating = false;
                 return false;
             }
@@ -397,191 +480,43 @@ public class LiveDataPackManager implements AutoCloseable {
     }
 
     public List<DataPackContext> getLoadedPacks() {
+        // Return unmodifiable copy to prevent external modification
         return new ArrayList<>(loadedPacks);
     }
 
     @Override
     public void close() {
+        EditorLogger.getLogger().info("Closing LiveDataPackManager");
         if (watchService != null) {
             try {
                 watchService.close();
+                watchService = null;
             } catch (IOException e) {
-                e.printStackTrace();
+                EditorLogger.getLogger().error("Failed to close watch service: {}", e.getMessage());
             }
         }
-    }
-
-    public static class DataPackContext {
-        public String name;
-        public String id;
-        public String author;
-        public String description;
-        public boolean enabled;
-        public String dataPath;
-        public boolean watchFiles = true;
-        public transient File directory;
-        public transient boolean passedValidation = true;
-        public transient Map<String, ValidationCache> validatedFiles = new HashMap<>();
-
-        public void repair() {
-            if (dataPath == null) {
-                dataPath = "data";
-            }
-            if (validatedFiles == null) {
-                validatedFiles = new HashMap<>();
-            }
-        }
-
-        public void createDatapack(ZipOutputStream zos, File dataPath) {
+        
+        // Cancel all watch keys
+        watchKeys.forEach((key, context) -> {
+            key.cancel();
+        });
+        watchKeys.clear();
+        
+        // Close all opened editors
+        openedEditors.forEach(editor -> {
             try {
-                if (dataPath == null || !dataPath.exists() || !dataPath.isDirectory()) {
-                    throw new IllegalArgumentException("Data path must exist and be a directory: " + dataPath);
+                if (editor instanceof AutoCloseable closeable) {
+                    closeable.close();
                 }
-
-                Path basePath = dataPath.toPath();
-
-                Files.walk(basePath).forEach(path -> {
-                    try {
-                        String relativePath = basePath.relativize(path).toString().replace("\\", "/");
-
-                        if (Files.isDirectory(path)) {
-                            // Store directory with trailing slash inside "data/"
-                            if (!relativePath.isEmpty()) {
-                                String dirPath = "data/" + relativePath + "/";
-                                zos.putNextEntry(new ZipEntry(dirPath));
-                                zos.closeEntry();
-                            }
-                            return;
-                        }
-
-                        // File path inside zip inside "data/"
-                        String zipPath = "data/" + relativePath;
-
-                        ZipEntry entry = new ZipEntry(zipPath);
-                        zos.putNextEntry(entry);
-
-                        try (InputStream is = Files.newInputStream(path)) {
-                            byte[] buffer = new byte[4096];
-                            int len;
-                            while ((len = is.read(buffer)) > 0) {
-                                zos.write(buffer, 0, len);
-                            }
-                        }
-
-                        zos.closeEntry();
-                    } catch (IOException e) {
-                        Miapi.LOGGER.warn("Could not write data ", e);
-                    }
-                });
-            } catch (IOException e) {
-                Miapi.LOGGER.warn("Could not write data ", e);
-            }
-        }
-
-
-        @Nullable
-        public ValidationCache getValidationCache(String relativePath, File file, boolean forced) {
-            ValidationCache cache = validatedFiles.get(relativePath);
-            if (cache == null || cache.lastModified != file.lastModified() || !cache.blockLoad() && forced) {
-                try {
-                    // Convert relative path to ResourceLocation
-                    // Remove .json extension and replace path separators with /
-                    String pathWithoutExt = relativePath.replace(".json", "").replace("\\", "/");
-                    pathWithoutExt = pathWithoutExt.replaceFirst("/", ":");
-                    ResourceLocation resourceLocation = Miapi.id(pathWithoutExt);
-
-                    // Get interfaces through event system
-                    List<EditorInterface> interfaces = new ArrayList<>();
-                    EditorEvents.EDITOR_INTERFACES.invoker().onGetInterfaces(
-                            new EditorEvents.EditorInterfaceData(resourceLocation, file.getPath(), interfaces)
-                    );
-
-                    // Read and parse the file content
-                    String content = Files.readString(file.toPath());
-                    JsonElement json = JsonParser.parseString(content);
-                    boolean shouldLoad = true;
-
-                    if (json.isJsonObject()) {
-                        if (json.getAsJsonObject().has("load_condition")) {
-                            shouldLoad = ConditionManager.get(json.getAsJsonObject().get("load_condition")).isAllowed(new ConditionManager.ConditionContext() {
-                                @Override
-                                public ConditionManager.ConditionContext copy() {
-                                    return this;
-                                }
-                            });
-                        }
-                    }
-                    if (shouldLoad) {
-                        // Validate using all interfaces
-                        boolean isValid = true;
-                        List<EditorError> allErrors = new ArrayList<>();
-                        for (EditorInterface iface : interfaces) {
-                            List<EditorError> errors = iface.validateContent(json, content, 0);
-                            allErrors.addAll(errors);
-                            // File is invalid if there are any errors (not just warnings)
-                            if (errors.stream().anyMatch(error -> error.severity() == EditorError.ErrorSeverity.ERROR)) {
-                                isValid = false;
-                                break;
-                            }
-                            if (errors.stream().anyMatch(error -> error.severity() == EditorError.ErrorSeverity.WARNING)) {
-                                //isValid = false;
-                                //break;
-                            }
-                        }
-
-                        // Cache the result
-                        long lastModified = Files.getLastModifiedTime(file.toPath()).toMillis();
-                        cache = new ValidationCache(lastModified, shouldLoad, !(shouldLoad && isValid), allErrors);
-                        if (cache.blockLoad()) {
-                            Miapi.LOGGER.warn("could not validate file " + file.toPath());
-                        }
-                        validatedFiles.put(relativePath, cache);
-                    } else {
-                        long lastModified = Files.getLastModifiedTime(file.toPath()).toMillis();
-                        cache = new ValidationCache(lastModified, shouldLoad, false, List.of());
-                        validatedFiles.put(relativePath, cache);
-                    }
-
-                } catch (Exception e) {
-                    // If any error occurs during validation, consider the file invalid
-                    long lastModified = 0;
-                    try {
-                        lastModified = Files.getLastModifiedTime(file.toPath()).toMillis();
-                    } catch (IOException ex) {
-                        Miapi.LOGGER.warn("", ex);
-                    }
-                    cache = new ValidationCache(lastModified, false, false, List.of(new EditorError(0, "Critical load issue," + e.getMessage(), EditorError.ErrorSeverity.ERROR)));
-                    validatedFiles.put(relativePath, cache);
-                }
-            }
-            boolean isValid = cache != null && cache.shouldLoad();
-            if (!isValid) {
-                Miapi.LOGGER.warn("fail");
-            }
-            return cache;
-        }
-
-        public boolean isFileValid(String relativePath, File file) {
-            ValidationCache cache = getValidationCache(relativePath, file, false);
-            boolean isValid = cache != null && cache.shouldLoad();
-            if (!isValid) {
-                Miapi.LOGGER.warn("fail");
-            }
-            return isValid;
-        }
-
-        private boolean validateFile(String relativePath, File file) {
-            try {
-                // Basic JSON validation
-                String content = Files.readString(file.toPath());
-                JsonParser.parseString(content);
-                return true;
             } catch (Exception e) {
-                return false;
+                EditorLogger.getLogger().error("Failed to close editor: {}", e.getMessage());
             }
-        }
+        });
+        openedEditors.clear();
+
+        EditorLogger.getLogger().info("LiveDataPackManager closed successfully");
     }
 
-    private record ValidationCache(long lastModified, boolean shouldLoad, boolean blockLoad, List<EditorError> errors) {
+    record ValidationCache(long lastModified, boolean shouldLoad, boolean blockLoad, List<EditorError> errors) {
     }
 } 

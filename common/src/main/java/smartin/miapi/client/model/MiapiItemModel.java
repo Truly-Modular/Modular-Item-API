@@ -13,6 +13,7 @@ import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
+import smartin.miapi.client.MiapiClient;
 import smartin.miapi.client.model.module.baked.passes.DeferredGlintRenderPass;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.datapack.ReloadEvents;
@@ -92,7 +93,7 @@ public class MiapiItemModel implements MiapiModel {
             @Nullable LivingEntity entity,
             int light,
             int overlay) {
-        if (ReloadEvents.isInReload()) {
+        if (ReloadEvents.isInReload() || !MiapiClient.isClientLoaded) {
             ModuleInstance instance = ItemModule.getModules(stack);
             if (instance != null) {
                 instance.cache().clear();

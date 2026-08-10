@@ -10,7 +10,6 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
-import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import smartin.miapi.client.model.MiapiModel;
 import smartin.miapi.client.model.module.dynamic.verlet.ChainNode;
@@ -45,11 +44,6 @@ public class ChainModel extends DynamicModel<ChainModel.ChainState> {
         this.iterations = iterations;
         this.debug = debug;
         this.rigidness = rigidness;
-
-        float len = 0f;
-        for (ChainEntry e : chain)
-            len += e.length;
-        float totalLength = len;
     }
 
     @Override
@@ -61,6 +55,7 @@ public class ChainModel extends DynamicModel<ChainModel.ChainState> {
     public static class ChainState extends SimulationState {
 
         public final ChainSimulationState sim;
+        public final Matrix4f lastProjection = new Matrix4f();
 
         public ChainState(List<ChainEntry> chain, RenderContext context, Vec3 cameraPos) {
             sim = new ChainSimulationState();
@@ -115,10 +110,6 @@ public class ChainModel extends DynamicModel<ChainModel.ChainState> {
 
     }
 
-    public final Vector3f prevRootDelta = new Vector3f();
-    public final Vector3f rootDelta = new Vector3f();
-    public final Vector3f rootAcceleration = new Vector3f();
-
     @Override
     public void updatePhysics(
             ChainState state,
@@ -154,17 +145,6 @@ public class ChainModel extends DynamicModel<ChainModel.ChainState> {
                     public void apply(ChainSimulationState sim, float deltaPercent) {
                         sim.prevHandlePos.set(sim.handlePos);
                         fullLastPos.lerp(currentPos, deltaPercent, sim.handlePos);
-
-                        //Vector3f delta = new Vector3f(sim.handlePos).sub(sim.prevHandlePos);
-                        //Miapi.LOGGER.info("delta step " + delta.length());
-
-
-                        // delta based on smoothed motion
-
-                        // apply to root
-                        //ChainNode root = sim.nodes[0];
-                        //root.pos.add(delta);
-                        //root.prevPos.add(delta);
                     }
                 }),
                 minIterations * 2,
@@ -199,26 +179,9 @@ public class ChainModel extends DynamicModel<ChainModel.ChainState> {
                 .setNormal(0, 1, 0);
     }
 
-
-
-    /* ---------------- END MATRIX ---------------- */
-
     @Override
     protected Matrix4f computeEnd(ChainState state, PoseStack poseStack) {
-
-        int count = state.sim.nodes.length;
-        Vector3f endWorld =
-                new Vector3f(state.sim.nodes[count - 1].pos);
-        Vector3f endLocal =
-                MatrixHelper.translatePositionToLocalSpace(
-                        poseStack, endWorld, state.cameraPose
-                );
-
-        ChainSegment last = state.sim.segments[state.sim.segments.length - 1];
-
-        return new Matrix4f()
-                .translation(endLocal);
-
+        return new Matrix4f(state.lastProjection);
     }
 
     @Override
@@ -239,54 +202,6 @@ public class ChainModel extends DynamicModel<ChainModel.ChainState> {
                 context,
                 state);
     }
-
-    private void renderChainSimpleForward(
-            RenderContext context,
-            ChainState state
-    ) {
-        context.matrices().pushPose();
-        for (int i = 0; i < chain.size(); i++) {
-            Vector3f a = MatrixHelper.translateVectorToLocalSpace(context.matrices(), state.sim.nodes[i].pos, state.cameraPose);
-            Vector3f b = MatrixHelper.translateVectorToLocalSpace(context.matrices(), state.sim.nodes[i + 1].pos, state.cameraPose);
-
-            Vector3f delta = new Vector3f(b).sub(a);
-            /*
-            float yaw =
-                    (float) Math.atan2(delta.x, delta.z);
-
-            float pitch =
-                    (float) Math.atan2(
-                            delta.y,
-                            Math.sqrt(delta.x * delta.x +
-                                      delta.z * delta.z)
-                    );
-            context.matrices().pushPose();
-            context.matrices().translate(a.x, a.y, a.z);
-            context.matrices().mulPose(Axis.YP.rotation(yaw));
-            context.matrices().mulPose(Axis.XP.rotation(-pitch));
-            chain.get(i).modelData.forEach(model ->
-                    model.render(context)
-            );
-
-            context.matrices().popPose();
-            */
-            context.matrices().pushPose();
-            context.matrices().translate(a.x, a.y, a.z);
-            Vector3f dir = new Vector3f(delta).normalize();
-            Quaternionf rotation = new Quaternionf()
-                    .rotationTo(
-                            new Vector3f(0, 0, 1),
-                            dir
-                    );
-            context.matrices().mulPose(rotation);
-            chain.get(i).modelData.forEach(model ->
-                    model.render(context)
-            );
-            context.matrices().popPose();
-        }
-        context.matrices().popPose();
-    }
-
 
     private void renderChainDynForward(
             RenderContext context,
@@ -328,15 +243,6 @@ public class ChainModel extends DynamicModel<ChainModel.ChainState> {
                     .normalize();
 
             prevUp.set(up);
-
-
-            Matrix4f basisOld = new Matrix4f(
-                    right.x, up.x, forward.x, 0,
-                    right.y, up.y, forward.y, 0,
-                    right.z, up.z, forward.z, 0,
-                    0, 0, 0, 1
-            );
-
             Matrix4f basis = new Matrix4f(
                     right.x, right.y, right.z, 0,
                     up.x, up.y, up.z, 0,
@@ -367,39 +273,15 @@ public class ChainModel extends DynamicModel<ChainModel.ChainState> {
                         0f, 0.0f, 1f, 1.0f);
             }
             context.matrices().scale(10, 10, 10);
+            if (i == chain.size() - 1) {
+                state.lastProjection.set(context.matrices().last().pose());
+            }
             chain.get(i).modelData.forEach(model ->
                     model.render(context)
             );
-            //context.matrices().scale(0.1f,0.1f,0.1f);
             context.matrices().popPose();
         }
         context.matrices().popPose();
-    }
-
-
-    private void renderSegment(
-            RenderContext context,
-            Vector3f start,
-            Vector3f end,
-            Quaternionf orientation,
-            ChainEntry entry,
-            Vec3 camPos
-    ) {
-        Vector3f startLocal = MatrixHelper.translatePositionToLocalSpace(
-                context.matrices(), start, camPos
-        );
-
-        context.matrices().translate(
-                startLocal.x(),
-                startLocal.y(),
-                startLocal.z()
-        );
-
-        context.matrices().mulPose(orientation);
-
-        entry.modelData.forEach(model ->
-                model.render(context)
-        );
     }
 
 

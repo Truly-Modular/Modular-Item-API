@@ -1,9 +1,11 @@
 package smartin.miapi.client;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
 import com.redpxnda.nucleus.config.ConfigManager;
 import com.redpxnda.nucleus.event.RenderEvents;
 import com.redpxnda.nucleus.facet.network.clientbound.FacetSyncPacket;
+import com.redpxnda.nucleus.pose.client.HumanoidPoseAnimation;
 import com.redpxnda.nucleus.registry.effect.RenderingMobEffect;
 import dev.architectury.event.EventResult;
 import dev.architectury.event.events.client.ClientLifecycleEvent;
@@ -33,7 +35,6 @@ import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.item.Item;
-import smartin.miapi.compat.elytratrim.ElytraTrimsCompat;
 import smartin.miapi.Miapi;
 import smartin.miapi.blocks.ModularWorkBenchRenderer;
 import smartin.miapi.blueprint.BlueprintManager;
@@ -45,6 +46,7 @@ import smartin.miapi.client.gui.crafting.crafter.replace.ReplaceView;
 import smartin.miapi.client.gui.crafting.statdisplay.StatListWidget;
 import smartin.miapi.client.model.ModularModelPredicateProvider;
 import smartin.miapi.client.renderer.SpriteLoader;
+import smartin.miapi.compat.elytratrim.ElytraTrimsCompat;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.editor.EditorCommands;
@@ -57,7 +59,6 @@ import smartin.miapi.material.MaterialCommand;
 import smartin.miapi.material.MaterialIcons;
 import smartin.miapi.material.MaterialProperty;
 import smartin.miapi.material.base.Material;
-import smartin.miapi.material.generated.TierManager;
 import smartin.miapi.material.palette.MaterialRenderControllers;
 import smartin.miapi.modules.MiapiPermissions;
 import smartin.miapi.modules.abilities.key.ClientKeybinding;
@@ -98,6 +99,7 @@ public class MiapiClient {
     public static final MiapiRegistry<KeyMapping> KEY_BINDINGS = MiapiRegistry.getInstance(KeyMapping.class);
     public static boolean CUSTOM_SHADER_LOADED = true;
     public static volatile AtomicInteger tick = new AtomicInteger(0);
+    public static boolean isClientLoaded = false;
     //public static final KeyBinding HOVER_DETAIL_BINDING = KEY_BINDINGS.register("miapi:hover_detail", new KeyBinding("miapi.gui.item_detail", 42, "miapi.keybinds"));
 
     public static double currentTickFull() {
@@ -203,7 +205,15 @@ public class MiapiClient {
         ClientLifecycleEvent.CLIENT_SETUP.register(MiapiClient::clientSetup);
         ClientLifecycleEvent.CLIENT_STARTED.register(MiapiClient::clientStart);
         ClientLifecycleEvent.CLIENT_LEVEL_LOAD.register(MiapiClient::clientLevelLoad);
-
+        ReloadListenerRegistry.register(PackType.CLIENT_RESOURCES, (barrier, manager, prepareProfiler, applyProfiler, prepareExecutor, applyExecutor) -> CompletableFuture.runAsync(() -> {
+                    MiapiEvents.CLEAR_CACHE.invoker().onReload();
+                    MiapiClient.isClientLoaded = false;
+                }, prepareExecutor)
+                .thenCompose(barrier::wait)
+                .thenRunAsync(() -> {
+                    MiapiEvents.CLEAR_CACHE.invoker().onReload();
+                    MiapiClient.isClientLoaded = true;
+                }, applyExecutor));
         ClientPlayerEvent.CLIENT_PLAYER_JOIN.register(player -> new Thread(() -> MiapiPermissions.getPerms(player)).start());
         ClientPlayerEvent.CLIENT_PLAYER_JOIN.register(player -> {
             MiapiEvents.CLEAR_CACHE.invoker().onReload();
@@ -221,7 +231,6 @@ public class MiapiClient {
         });
         ClientReloadShadersEvent.EVENT.register((resourceFactory, asd) -> {
             MiapiEvents.CLEAR_CACHE.invoker().onReload();
-            TierManager.setup();
         });
         /*
         ReloadListenerRegistry.register(PackType.CLIENT_RESOURCES, new PreparableReloadListener() {
@@ -338,6 +347,7 @@ public class MiapiClient {
         //Minecraft client = Minecraft.getInstance();
         //materialAtlasManager = new MaterialAtlasManager(client.getTextureManager());
         //ReloadListenerRegistry.register(PackType.CLIENT_RESOURCES, materialAtlasManager);
+        CodecBehavior.registerClass(HumanoidPoseAnimation.PartState.class, NucleusHelper.codec);
     }
 
     private static void clientReload() {

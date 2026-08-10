@@ -9,6 +9,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import dev.architectury.platform.Platform;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.GuiGraphics;
@@ -320,12 +321,16 @@ public class CodecMaterial implements Material {
         }
         if (material.paletteJson.isPresent()) {
             this.paletteJson = material.paletteJson;
-            this.palette = MaterialRenderControllers.creators.get(this.paletteJson.get().getAsJsonObject().get("type").getAsString()).createPalette(this.paletteJson.get(), this);
+            if(Platform.getEnv() == EnvType.CLIENT){
+                this.palette = MaterialRenderControllers.creators.get(this.paletteJson.get().getAsJsonObject().get("type").getAsString()).createPalette(this.paletteJson.get(), this);
+            }
         }
 
         if (material.dyePaletteJson.isPresent()) {
             this.dyePaletteJson = material.paletteJson;
-            this.dyeAblePalette = MaterialRenderControllers.creators.get(this.dyePaletteJson.get().getAsJsonObject().get("type").getAsString()).createPalette(this.dyePaletteJson.get(), this);
+            if(Platform.getEnv() == EnvType.CLIENT) {
+                this.dyeAblePalette = MaterialRenderControllers.creators.get(this.dyePaletteJson.get().getAsJsonObject().get("type").getAsString()).createPalette(this.dyePaletteJson.get(), this);
+            }
         }
         // Merge groups and guiGroups
         this.groups = new ArrayList<>(this.groups);

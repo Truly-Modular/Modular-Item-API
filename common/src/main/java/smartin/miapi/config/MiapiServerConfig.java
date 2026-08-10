@@ -242,7 +242,11 @@ public class MiapiServerConfig {
             @AutoCodec.Name("smithing")
             public GeneratePropertyOption smithingOption = new GeneratePropertyOption();
 
-            @Comment("An allow list since truly modular normally ignores smithing recipes that convert multiple items, as wrong detections become likely there.")
+            @Comment("""
+                    An allow list since truly modular normally ignores smithing recipes that convert multiple items, as wrong detections become likely there.
+                    Normally convertion from multiple base materials (f.e. iron or diamong to netherite) are blocked from becoming modular recpies.
+                    These usually seem to be cosmetic attachments rather then real materials.
+                    """)
             @AutoCodec.Name("allow_smithing_multi_ingredient_recipes")
             public GeneratePropertyOption allowMultiSmithing = new GeneratePropertyOption();
         }
@@ -255,11 +259,11 @@ public class MiapiServerConfig {
             @Comment("A list of blocked regexes, if any material causes issues add their id to here")
             public List<String> blocked = List.of();
 
-            public GeneratePropertyOption(){
+            public GeneratePropertyOption() {
 
             }
 
-            public GeneratePropertyOption(List<String> blocked){
+            public GeneratePropertyOption(List<String> blocked) {
                 this.blocked = blocked;
             }
         }

@@ -7,7 +7,6 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Transformation;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.redpxnda.nucleus.codec.auto.AutoCodec;
@@ -15,8 +14,7 @@ import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.renderer.block.model.ItemTransform;
-import net.minecraft.client.resources.model.ModelState;
-import org.jetbrains.annotations.NotNull;
+import net.minecraft.world.entity.Entity;
 import org.joml.*;
 import smartin.miapi.Miapi;
 
@@ -27,35 +25,33 @@ import java.util.Optional;
 
 /**
  * A Transform represents a transformation in 3D space, including rotation, translation, and scaling.
- * It extends the Transformation class with additional utility methods.
+ * It stores a Matrix4f internally and provides utility methods to extract components.
  */
 @JsonAdapter(Transform.TransformJsonAdapter.class)
 public class Transform {
     @CodecBehavior.Optional
     public String origin;
-    @CodecBehavior.Optional
-    public Vector3f rotation;
-    @CodecBehavior.Optional
-    public Vector3f translation;
-    @CodecBehavior.Optional
-    public Vector3f scale;
+    private Matrix4f matrix;
+    private Vector3f translation;
+    private Vector3f rotation;
+    private Vector3f scale;
 
     public static final Codec<Vector3f> VECTOR_CODEC = Codec.withAlternative(AutoCodec.of(Vector3f.class).codec(),
-            Codec.list(Codec.DOUBLE).xmap((list)->
-                    new Vector3f(
-                            list.getFirst().floatValue(),
-                            list.get(1).floatValue(),
-                            list.get(2).floatValue()),
-                    vector -> List.of((double)vector.x(),(double)vector.y(),(double)vector.z())));
+            Codec.list(Codec.DOUBLE).xmap((list) ->
+                            new Vector3f(
+                                    list.getFirst().floatValue(),
+                                    list.get(1).floatValue(),
+                                    list.get(2).floatValue()),
+                    vector -> List.of((double) vector.x(), (double) vector.y(), (double) vector.z())));
 
     public static final Codec<Transform> CODEC = RecordCodecBuilder.create((instance) ->
             instance.group(
-                    VECTOR_CODEC.optionalFieldOf("rotation", new Vector3f())
-                            .forGetter((transform) -> transform.rotation),
-                    VECTOR_CODEC.optionalFieldOf("translation", new Vector3f())
-                            .forGetter((transform) -> transform.translation),
-                    VECTOR_CODEC.optionalFieldOf("scale", new Vector3f())
-                            .forGetter((transform) -> transform.scale),
+                    VECTOR_CODEC.optionalFieldOf("rotation", new Vector3f(0, 0, 0))
+                            .forGetter(Transform::getRotation),
+                    VECTOR_CODEC.optionalFieldOf("translation", new Vector3f(0, 0, 0))
+                            .forGetter(Transform::getTranslation),
+                    VECTOR_CODEC.optionalFieldOf("scale", new Vector3f(1, 1, 1))
+                            .forGetter(Transform::getScale),
                     Codec.STRING.optionalFieldOf("origin")
                             .forGetter((transform) -> Optional.ofNullable(transform.origin))
             ).apply(instance, Transform::new)
@@ -64,7 +60,62 @@ public class Transform {
     /**
      * The identity bakedTransform, representing no transformation at all.
      */
-    public static final Transform IDENTITY = new Transform(new Vector3f(), new Vector3f(), new Vector3f(1.0F, 1.0F, 1.0F));
+    public static final Transform IDENTITY = new Transform(new Matrix4f().identity());
+
+
+    /**
+     * Creates a new Transform with the given Matrix4f.
+     *
+     * @param matrix the matrix to use
+     */
+    public Transform(Matrix4f matrix) {
+        this.matrix = new Matrix4f(matrix);
+        this.origin = null;
+
+        validateMatrix(this.matrix);
+    }
+
+    private static void validateMatrix(Matrix4f matrix) {
+        if (!matrix.isFinite()) {
+            Miapi.LOGGER.error("Invalid transform matrix contains NaN or Infinity: {}", matrix);
+            return;
+        }
+
+        float determinant = matrix.determinant();
+        if (Math.abs(determinant) < 1.0E-6f) {
+            Miapi.LOGGER.error("Invalid transform matrix has zero determinant: {}", matrix);
+            return;
+        }
+
+
+        if (!matrix.isAffine()) {
+            Miapi.LOGGER.warn(
+                    "TransformMatrix received non-affine matrix. " +
+                    "This looks like a projection matrix or contains perspective data: {}",
+                    matrix
+            );
+        }
+
+        if (!isOrthonormal(matrix)) {
+            Miapi.LOGGER.warn(
+                    "TransformMatrix rotation basis is not orthonormal. " +
+                    "Matrix may contain shear or invalid scaling: {}",
+                    matrix
+            );
+        }
+    }
+
+    private static boolean isOrthonormal(Matrix4f matrix) {
+        Vector3f x = matrix.getColumn(0, new Vector3f());
+        Vector3f y = matrix.getColumn(1, new Vector3f());
+        Vector3f z = matrix.getColumn(2, new Vector3f());
+
+        float xy = Math.abs(x.dot(y));
+        float xz = Math.abs(x.dot(z));
+        float yz = Math.abs(y.dot(z));
+
+        return xy < 1E-4f && xz < 1E-4f && yz < 1E-4f;
+    }
 
     /**
      * Creates a new Transform with the given rotation, translation, and scale.
@@ -74,9 +125,7 @@ public class Transform {
      * @param scale       the scale vector, as a Vec3f
      */
     public Transform(Vector3f rotation, Vector3f translation, Vector3f scale) {
-        this.rotation = new Vector3f(rotation);
-        this.translation = new Vector3f(translation);
-        this.scale = new Vector3f(scale);
+        this(rotation, translation, scale, Optional.empty());
     }
 
     /**
@@ -85,17 +134,20 @@ public class Transform {
      * @param rotation    the rotation vector, as a Vec3f
      * @param translation the translation vector, as a Vec3f
      * @param scale       the scale vector, as a Vec3f
+     * @param origin      the origin string
      */
     public Transform(Vector3f rotation, Vector3f translation, Vector3f scale, Optional<String> origin) {
-        this(rotation, translation, scale);
+        this(toMatrix(rotation, translation, scale));
         origin.ifPresent(string -> this.origin = string);
+        this.rotation = rotation;
+        this.translation = translation;
+        this.scale = scale;
     }
+
 
     @Environment(EnvType.CLIENT)
     public Transform(ItemTransform transformation) {
-        this.rotation = new Vector3f(transformation.rotation);
-        this.translation = new Vector3f(transformation.translation);
-        this.scale = new Vector3f(transformation.scale);
+        this(toMatrix(transformation.rotation, transformation.translation, transformation.scale));
     }
 
     /**
@@ -108,31 +160,119 @@ public class Transform {
         return Transform.merge(this, child);
     }
 
-    @Environment(EnvType.CLIENT)
-    public ItemTransform toTransformation() {
-        return new ItemTransform(new Vector3f(rotation), new Vector3f(new Vector3f(translation).div(16)), new Vector3f(scale));
-    }
-
     /**
      * Merges two Transformations into a new Transform. The parent transformation is applied first, followed by the child.
      *
-     * @param parent        the parent transformation, as a Transformation
-     * @param originalChild the child transformation, as a Transformation
+     * @param parent the parent transformation, as a Transformation
+     * @param child  the child transformation, as a Transformation
      * @return the merged transformation, as a new Transform
      */
-    public static Transform merge(Transform parent, Transform originalChild) {
-        Transform child = originalChild.copy();
-        parent = parent.copy();
-        Matrix4f parentMatrix = parent.toMatrix();
+    public static Transform merge(Transform parent, Transform child) {
+        Matrix4f merged = new Matrix4f(parent.matrix)
+                .mul(child.matrix);
 
-        Matrix4f childMatrix = child.toMatrix();
-        childMatrix.mul(parentMatrix);
-        Transform merged = fromMatrix(childMatrix);
-        float rotation = merged.rotation.y;
-        if (Float.isNaN(rotation)) {
-            Miapi.LOGGER.info("FAILURE " + rotation);
+        return new Transform(merged);
+    }
+
+    @Environment(EnvType.CLIENT)
+    public ItemTransform toTransformation() {
+        return new ItemTransform(
+                new Vector3f(getRotation()),
+                new Vector3f(getTranslation().div(16)),
+                new Vector3f(getScale())
+        );
+    }
+
+    /**
+     * Extracts the translation vector from this transformation.
+     *
+     * @return the translation vector
+     */
+    public Vector3f getTranslation() {
+        return new Vector3f(matrix.getTranslation(new Vector3f()));
+    }
+
+    /**
+     * Extracts the rotation vector (in degrees) from this transformation.
+     *
+     * @return the rotation vector in degrees
+     */
+    public Vector3f getRotation() {
+        Matrix4f rotationMatrix = new Matrix4f(matrix);
+        // Remove translation
+        rotationMatrix.m30(0);
+        rotationMatrix.m31(0);
+        rotationMatrix.m32(0);
+
+        // Remove scale
+        Vector3f scale = new Vector3f();
+        rotationMatrix.getScale(scale);
+
+        rotationMatrix.scale(
+                1.0f / scale.x,
+                1.0f / scale.y,
+                1.0f / scale.z
+        );
+        return getEulerAnglesXYZ(rotationMatrix,new Vector3f()).mul(57.29577951308232f);
+    }
+
+    public Vector3f getEulerAnglesXYZ(Matrix4f rotationMatrix, Vector3f dest) {
+        float sy = rotationMatrix.m20();
+
+        // epsilon instead of exact 1 due to floating point error
+        if (Math.abs(sy) < 0.999999f) {
+            // Normal case
+            dest.x = (float) Math.atan2(-rotationMatrix.m21(), rotationMatrix.m22());
+            dest.y = (float) Math.atan2(sy, Math.sqrt(1.0f - sy * sy));
+            dest.z = (float) Math.atan2(-rotationMatrix.m10(), rotationMatrix.m00());
+        } else {
+            // Gimbal lock
+            dest.y = sy > 0
+                    ? (float) (Math.PI * 0.5)
+                    : (float) (-Math.PI * 0.5);
+
+            // Arbitrarily choose Z = 0
+            dest.z = 0.0f;
+
+            if (sy > 0) {
+                // +90°
+                dest.x = (float) Math.atan2(rotationMatrix.m01(), rotationMatrix.m11());
+            } else {
+                // -90°
+                dest.x = (float) Math.atan2(-rotationMatrix.m01(), rotationMatrix.m11());
+            }
         }
-        return merged;
+
+        return dest;
+    }
+
+    private static final float EPS = 0.1f;
+
+    private static Vector3f fixEuler(Vector3f euler) {
+        //euler.x = wrapAndDeGimbal(euler.x);
+        //euler.y = wrapAndDeGimbal(euler.y);
+        //euler.z = wrapAndDeGimbal(euler.z);
+
+        return euler;
+    }
+
+    private static float wrapAndDeGimbal(float angle) {
+        angle %= 360f;
+        if (angle <= -180f) angle += 360f;
+        if (angle > 180f) angle -= 360f;
+        if (Math.abs(Math.abs(angle) - 90f) < EPS) {
+            angle += EPS;
+        }
+        return angle;
+    }
+
+    /**
+     * Extracts the scale vector from this transformation.
+     *
+     * @return the scale vector
+     */
+    public Vector3f getScale() {
+        return matrix.getScale(new Vector3f());
     }
 
     public static void applyPosition(PoseStack matrixStack, Matrix4f matrix4f) {
@@ -140,52 +280,16 @@ public class Transform {
     }
 
     public static void applyPosition(PoseStack matrixStack, Transform transform) {
-        applyPosition(matrixStack, transform.toMatrix());
+        applyPosition(matrixStack, transform.matrix);
     }
 
     public void applyPosition(PoseStack matrixStack) {
-        applyPosition(matrixStack, this);
+        applyPosition(matrixStack, this.matrix);
     }
 
     public Matrix4f toMatrix() {
-        // Create the translation matrix
-        Matrix4f translationMatrix = new Matrix4f().translate(translation);
-
-        // Create the rotation matrix
-        Matrix4f rotationMatrix = new Matrix4f()
-                .rotateX((float) Math.toRadians(rotation.x))
-                .rotateY((float) Math.toRadians(rotation.y))
-                .rotateZ((float) Math.toRadians(rotation.z));
-
-        // Create the scale matrix
-        Matrix4f scaleMatrix = new Matrix4f().scale(scale);
-
-        // Combine the matrices
-        return new Matrix4f()
-                .mul(translationMatrix)
-                .mul(rotationMatrix)
-                .mul(scaleMatrix);
+        return matrix;
     }
-
-    public static Transform fromMatrix(Matrix4f matrix) {
-        // Extract translation
-        Vector3f translation = new Vector3f();
-        matrix.getTranslation(translation);
-
-        // Extract rotation (in Euler angles)
-        Matrix4f rotationMatrix = new Matrix4f(matrix);
-        rotationMatrix.normalize3x3();
-        Vector3f rotation = rotationMatrix.getEulerAnglesXYZ(new Vector3f());
-        rotation.x = (float) Math.toDegrees(rotation.x());
-        rotation.y = (float) Math.toDegrees(rotation.y());
-        rotation.z = (float) Math.toDegrees(rotation.z());
-
-        // Extract scale
-        Vector3f scale = matrix.getScale(new Vector3f());
-
-        return new Transform(rotation, translation, scale);
-    }
-
 
     /**
      * Creates a new copy of this Transform.
@@ -193,12 +297,7 @@ public class Transform {
      * @return the new Transform copy
      */
     public Transform copy() {
-        Transform copy = new Transform(
-                this.rotation != null ? new Vector3f(this.rotation) : new Vector3f(0, 0, 0),
-                this.translation != null ? new Vector3f(this.translation) : new Vector3f(0, 0, 0),
-                this.scale != null ? new Vector3f(this.scale) : new Vector3f(1, 1, 1)
-        );
-
+        Transform copy = new Transform(new Matrix4f(matrix));
         copy.origin = this.origin;
         return copy;
     }
@@ -210,24 +309,26 @@ public class Transform {
      * @return the repaired transformation, as a new Transform
      */
     public static Transform repair(Transform transformation) {
-        Vector3f parentRotation = transformation.rotation;
-        if (parentRotation == null) {
-            parentRotation = new Vector3f(0, 0, 0);
+        Matrix4f matrix = new Matrix4f();
+        if (transformation.matrix != null) {
+            matrix.set(transformation.matrix);
         }
-        Vector3f parentTranslation = transformation.translation;
-        if (parentTranslation == null) {
-            parentTranslation = new Vector3f(0, 0, 0);
-        }
-        Vector3f parentScale = transformation.scale;
-        if (parentScale == null) {
-            parentScale = new Vector3f(1, 1, 1);
-        }
-        return new Transform(new Vector3f(parentRotation), new Vector3f(parentTranslation), new Vector3f(parentScale)).withOrigin(transformation.origin);
+        return new Transform(matrix).withOrigin(transformation.origin);
     }
 
     public Transform withOrigin(String origin) {
         this.origin = origin;
         return this;
+    }
+
+    public static Matrix4f toMatrix(Vector3f rotation, Vector3f translation, Vector3f scale) {
+        rotation = fixEuler(rotation);
+        Matrix4f translationMatrix = new Matrix4f().translate(translation);
+        Matrix4f scaleMatrix = new Matrix4f().scale(scale);
+        return new Matrix4f()
+                .mul(translationMatrix)
+                .rotate((new Quaternionf()).rotationXYZ(rotation.x() * 0.017453292F, rotation.y() * 0.017453292F, rotation.z() * 0.017453292F))
+                .mul(scaleMatrix);
     }
 
     /**
@@ -238,33 +339,19 @@ public class Transform {
      */
     public static Transform toModelTransformation(Transform transformation) {
         Transform transform = repair(transformation);
-        transform.translation.mul(1.0f / 16.0f);
-        return transform;
-    }
 
-    /**
-     * Creates an AffineTransformation from this Transform.
-     *
-     * @return an AffineTransformation with the rotation, translation, and scale from this Transform.
-     */
-    @Environment(EnvType.CLIENT)
-    public Transformation toAffineTransformation() {
-        Transform transform = this.copy();
-        Quaternionf quaternionf = new Quaternionf();
-        quaternionf.rotationXYZ(
-                (float) Math.toRadians(this.rotation.x),
-                (float) Math.toRadians(this.rotation.y),
-                (float) Math.toRadians(this.rotation.z)
-        );
-        Vector3f translationVector = new Vector3f(transform.translation);
-        Vector3f scaleVector = new Vector3f(transform.scale);
-        return new Transformation(translationVector, quaternionf, scaleVector, quaternionf);
+        Matrix4f matrix = new Matrix4f(transform.matrix);
+        Vector3f translation = matrix.getTranslation(new Vector3f());
+        translation.mul(1.0f / 16.0f);
+        matrix.setTranslation(translation);
+
+        return new Transform(matrix);
     }
 
     public int[] rotateVertexData(int[] vertexData) {
         int[] rotatedData = vertexData.clone();
 
-        Matrix4f transform = this.toMatrix();
+        Matrix4f transform = this.matrix;
         Matrix3f normalMatrix = new Matrix3f(transform);
 
         for (int i = 0; i < rotatedData.length; i += 8) {
@@ -310,25 +397,37 @@ public class Transform {
     }
 
     /**
-     * Creates an ModelBakeSettings from this Transform
+     * Helper to convert an entities position+rotation into a Transform Object for easier work
      *
-     * @return a ModelBakeSettings
+     * @param entity
+     * @return
      */
-    @Environment(EnvType.CLIENT)
-    public ModelState toModelBakeSettings() {
-        Transform transform = toModelTransformation(this);
-        Transformation affineTransformation = transform.toAffineTransformation();
-        return new ModelState() {
-            @Override
-            public @NotNull Transformation getRotation() {
-                return affineTransformation;
-            }
+    public static Transform getTransform(Entity entity) {
+        return new Transform(
+                new Vector3f(entity.getXRot(), entity.getYRot(), 0f),
+                new Vector3f((float) entity.getX(), (float) entity.getY(), (float) entity.getZ()),
+                new Vector3f(1, 1, 1)
+        );
+    }
 
-            @Override
-            public boolean isUvLocked() {
-                return false;
-            }
-        };
+    /**
+     * Helper method to easily set an entities position via a Transform
+     *
+     * @param entity
+     * @param transform
+     */
+    public static void setTransform(Entity entity, Transform transform) {
+        entity.setPos(
+                transform.getTranslation().x,
+                transform.getTranslation().y,
+                transform.getTranslation().z
+        );
+
+        //entity.setXRot(transform.getRotation().x);
+        //entity.setYRot(transform.getRotation().y);
+
+        //entity.setXRot(entity.getXRot());
+        //entity.setYRot(entity.getYRot());
     }
 
     @Override
@@ -337,6 +436,7 @@ public class Transform {
         return gson.toJson(this);
     }
 
+    @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
@@ -346,14 +446,17 @@ public class Transform {
             return false;
         } else {
             Transform transformation = (Transform) o;
-            return this.rotation.equals(transformation.rotation) && this.scale.equals(transformation.scale) && this.translation.equals(transformation.translation);
+            return this.getRotation().equals(transformation.getRotation()) &&
+                   this.getScale().equals(transformation.getScale()) &&
+                   this.getTranslation().equals(transformation.getTranslation());
         }
     }
 
+    @Override
     public int hashCode() {
-        int i = this.rotation.hashCode();
-        i = 31 * i + this.translation.hashCode();
-        i = 31 * i + this.scale.hashCode();
+        int i = this.getRotation().hashCode();
+        i = 31 * i + this.getTranslation().hashCode();
+        i = 31 * i + this.getScale().hashCode();
         return i;
     }
 
@@ -362,9 +465,9 @@ public class Transform {
         public void write(JsonWriter jsonWriter, Transform transform) throws IOException {
             jsonWriter.beginObject();
             jsonWriter.name("origin").value(transform.origin);
-            writeVector3f(jsonWriter, "rotation", transform.rotation);
-            writeVector3f(jsonWriter, "translation", transform.translation);
-            writeVector3f(jsonWriter, "scale", transform.scale);
+            writeVector3f(jsonWriter, "rotation", transform.getRotation());
+            writeVector3f(jsonWriter, "translation", transform.getTranslation());
+            writeVector3f(jsonWriter, "scale", transform.getScale());
             jsonWriter.endObject();
         }
 

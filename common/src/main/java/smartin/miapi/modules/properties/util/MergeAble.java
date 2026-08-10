@@ -4,6 +4,7 @@ import org.apache.commons.lang3.function.TriFunction;
 
 import java.lang.reflect.Field;
 import java.util.*;
+import java.util.function.BiFunction;
 
 /**
  * Merge able is a common interface to merge incoming data from different sources.
@@ -25,6 +26,47 @@ public interface MergeAble<T> {
      * @return a merged copy of {@link T}
      */
     T merge(T left, T right, MergeType mergeType);
+
+    /**
+     * Simplified merging of Optionals.
+     *
+     * <p>Behaviour:
+     * <ul>
+     *     <li>{@link MergeType#OVERWRITE}: resolves using {@link #decideLeftRight(Object, Object, MergeType)}</li>
+     *     <li>{@link MergeType#REMOVE}: returns {@link Optional#empty()} if the right side is present.</li>
+     *     <li>Otherwise: if both are present, {@code onCollision} is used. Returning {@code null}
+     *         removes the value.</li>
+     * </ul>
+     */
+    static <K> Optional<K> mergeOptional(
+            Optional<K> left,
+            Optional<K> right,
+            MergeType mergeType,
+            BiFunction<K, K, K> onCollision
+    ) {
+        if (MergeType.OVERWRITE.equals(mergeType)) {
+            return (Optional<K>) decideLeftRight(right, left, mergeType);
+        }
+
+        if (MergeType.REMOVE.equals(mergeType)) {
+            return right.isPresent() ? Optional.empty() : left;
+        }
+
+        if (left.isEmpty()) {
+            return right;
+        }
+        if (right.isEmpty()) {
+            return left;
+        }
+
+        K merged = onCollision.apply(left.get(), right.get());
+        return merged == null ? Optional.empty() : Optional.of(merged);
+    }
+
+    static <K> Optional<K> mergeOptional(Optional<K> left, Optional<K> right, MergeType mergeType) {
+        return mergeOptional(left, right, mergeType,
+                (l, r) -> decideLeftRight(r, l, mergeType));
+    }
 
     /**
      * Simplified Merging of Lists, adds both entries if merging type requires it

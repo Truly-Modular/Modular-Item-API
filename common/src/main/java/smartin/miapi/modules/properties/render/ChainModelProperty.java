@@ -10,12 +10,12 @@ import net.minecraft.resources.ResourceLocation;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.model.MiapiItemModel;
 import smartin.miapi.client.model.MiapiModel;
-import smartin.miapi.client.model.ModelHolder;
 import smartin.miapi.client.model.module.BakedMiapiModel;
 import smartin.miapi.client.model.module.dynamic.ChainModel;
 import smartin.miapi.item.modular.Transform;
 import smartin.miapi.modules.properties.render.baked.ModelData;
 import smartin.miapi.modules.properties.render.baked.ModelManager;
+import smartin.miapi.modules.properties.render.baked.ModelProperty;
 import smartin.miapi.modules.properties.util.CodecProperty;
 import smartin.miapi.modules.properties.util.MergeAble;
 import smartin.miapi.modules.properties.util.MergeType;
@@ -60,12 +60,12 @@ public class ChainModelProperty
                                         : seg.modelData;
 
                         List<MiapiModel> baked = usedModels.stream()
-                                .map(md -> BakedMiapiModel.createBaked(
-                                        Objects.requireNonNull(
-                                                ModelHolder.bakedModel(moduleInstance, md, stack)
-                                        ),
+                                .flatMap(md -> ModelProperty.bakedModel(moduleInstance, md, stack).stream())
+                                .map(model -> BakedMiapiModel.createBaked(
+                                        model,
                                         moduleInstance,
-                                        stack, displayMode
+                                        stack,
+                                        displayMode
                                 ))
                                 .toList();
 

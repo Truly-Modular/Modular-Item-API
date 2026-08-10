@@ -19,7 +19,7 @@ import smartin.miapi.client.model.module.BakedMiapiModel;
 import smartin.miapi.client.renderer.TrimRenderer;
 import smartin.miapi.material.MaterialProperty;
 import smartin.miapi.modules.ModuleInstance;
-import smartin.miapi.modules.properties.render.baked.ModelProperty;
+import smartin.miapi.modules.properties.render.baked.ModelManager;
 import smartin.miapi.modules.properties.render.colorproviders.ColorProvider;
 import smartin.miapi.modules.properties.render.colorproviders.MaterialColorProvider;
 
@@ -62,7 +62,7 @@ public class OverlayModelProperty extends AttachedModelProperty<OverlayModelProp
         @Override
         public void preload() {
             if (texture != null) {
-                cachedSprite = ModelProperty.textureGetter.apply(
+                cachedSprite = ModelManager.textureGetter.apply(
                         new Material(TextureAtlas.LOCATION_BLOCKS, ResourceLocation.parse(texture))
                 );
             }
@@ -77,7 +77,7 @@ public class OverlayModelProperty extends AttachedModelProperty<OverlayModelProp
         public List<MiapiModel> createModel(ItemStack stack, ModuleInstance base, ModuleInstance source, ModelHolder holder,ItemDisplayContext context) {
             TextureAtlasSprite overWriteSprite = cachedSprite != null ? cachedSprite :
                     (texture != null
-                            ? ModelProperty.textureGetter.apply(new Material(TextureAtlas.LOCATION_BLOCKS, ResourceLocation.parse(texture)))
+                            ? ModelManager.textureGetter.apply(new Material(TextureAtlas.LOCATION_BLOCKS, ResourceLocation.parse(texture)))
                             : null);
 
             ColorProvider colorProviderInstance = getColorProvider(stack, base, source, holder.colorProvider(), holder.trimMode());

@@ -1,4 +1,4 @@
-package smartin.miapi.editor.renderers;
+package smartin.miapi.editor.pose;
 
 import com.redpxnda.nucleus.pose.client.HumanoidPoseAnimation;
 import imgui.ImGui;

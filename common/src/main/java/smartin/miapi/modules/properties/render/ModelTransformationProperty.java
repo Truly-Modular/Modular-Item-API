@@ -11,17 +11,11 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Matrix4f;
-import org.joml.Vector3f;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.model.MiapiItemModel;
 import smartin.miapi.item.modular.Transform;
 import smartin.miapi.modules.properties.util.CodecProperty;
 import smartin.miapi.modules.properties.util.MergeType;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
 
 @Environment(EnvType.CLIENT)
 public class ModelTransformationProperty extends CodecProperty<ModelTransformationProperty.ModelTransformationData> {
@@ -61,38 +55,6 @@ public class ModelTransformationProperty extends CodecProperty<ModelTransformati
             case THIRD_PERSON_LEFT_HAND, FIRST_PERSON_LEFT_HAND -> true;
             default -> false;
         };
-    }
-
-    public static Transform makeLeft(Transform transform) {
-        transform = transform.copy();
-        transform.translation.set(new Vector3f(-transform.translation.x(), transform.translation.y(), transform.translation.z()));
-        Matrix4f m = transform.toMatrix();
-        m.rotate((float) Math.PI, new Vector3f(1, 0, 0));
-        m.rotate((float) Math.PI, new Vector3f(0, 1, 0));
-        m.rotate((float) Math.PI, new Vector3f(0, 0, 1));
-        Transform rotated = Transform.fromMatrix(m);
-        rotated.origin = transform.origin;
-
-        return rotated;
-    }
-
-    private static Set<String> getStringOfMode(ItemDisplayContext mode) {
-        List<String> modes = new ArrayList<>();
-        modes.add(mode.toString());
-        modes.add(mode.toString().replace("_", ""));
-        modes.add(mode.toString().toLowerCase());
-        modes.add(mode.toString().toLowerCase().replace("_", ""));
-        switch (mode) {
-            case GUI -> modes.add("gui");
-            case HEAD -> modes.add("head");
-            case FIXED -> modes.add("fixed");
-            case GROUND -> modes.add("ground");
-            case FIRST_PERSON_LEFT_HAND -> modes.add("firstperson_lefthand");
-            case FIRST_PERSON_RIGHT_HAND -> modes.add("firstperson_righthand");
-            case THIRD_PERSON_LEFT_HAND -> modes.add("thirdperson_lefthand");
-            case THIRD_PERSON_RIGHT_HAND -> modes.add("thirdperson_righthand");
-        }
-        return Set.copyOf(modes);
     }
 
     @Override

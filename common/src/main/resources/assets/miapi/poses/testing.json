@@ -1,0 +1,167 @@
+{
+    "name": "miapi:testing_knife",
+    "frames": [
+        {
+            "head": null,
+            "body": null,
+            "fpUsedArm": {
+                "position": [
+                    -0.094,
+                    0.188,
+                    -0.312
+                ],
+                "rotation": [
+                    -0.01766781,
+                    -3.7102404E-4,
+                    0.0031637563
+                ],
+                "scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ],
+                "interpolateMode": "cosine"
+            },
+            "fpUnusedArm": null,
+            "fpRightArm": null,
+            "fpLeftArm": null,
+            "usedArm": {
+                "position": [
+                    0.0,
+                    -0.219,
+                    -0.281
+                ],
+                "rotation": [
+                    -1.0103711,
+                    -0.44303438,
+                    0.12290608
+                ],
+                "scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ],
+                "interpolateMode": "cosine"
+            },
+            "unusedArm": null,
+            "rightArm": null,
+            "leftArm": null,
+            "usedItem": {
+                "position": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "rotation": [
+                    -0.2871765,
+                    0.08635889,
+                    0.04913102
+                ],
+                "scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ],
+                "interpolateMode": "cosine"
+            },
+            "unusedItem": null,
+            "rightItem": null,
+            "leftItem": null,
+            "rightLeg": null,
+            "leftLeg": null,
+            "interpolate": "none",
+            "endTime": 0.2
+        }
+    ],
+    "loops": 1,
+    "initialPose": {
+        "head": null,
+        "body": null,
+        "fpUsedArm": {
+            "position": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "interpolateMode": null
+        },
+        "fpUnusedArm": null,
+        "fpRightArm": null,
+        "fpLeftArm": null,
+        "usedArm": {
+            "position": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "interpolateMode": null
+        },
+        "unusedArm": null,
+        "rightArm": null,
+        "leftArm": null,
+        "usedItem": {
+            "position": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "scale": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "interpolateMode": null
+        },
+        "unusedItem": null,
+        "rightItem": null,
+        "leftItem": null,
+        "rightLeg": null,
+        "leftLeg": null,
+        "interpolate": "none",
+        "endTime": 0.0
+    },
+    "resetFirstPersonView": false,
+    "leftHandMultiplier": {
+        "position": [
+            -1.0,
+            1.0,
+            1.0
+        ],
+        "rotation": [
+            1.0,
+            -1.0,
+            -1.0
+        ],
+        "scale": [
+            1.0,
+            1.0,
+            1.0
+        ]
+    },
+    "nextPose": null
+}

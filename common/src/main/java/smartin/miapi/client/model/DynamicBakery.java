@@ -22,7 +22,7 @@ import smartin.miapi.Miapi;
 import smartin.miapi.client.model.item.BakedSingleModel;
 import smartin.miapi.client.model.item.BakedSingleModelOverrides;
 import smartin.miapi.item.modular.Transform;
-import smartin.miapi.modules.properties.render.baked.ModelProperty;
+import smartin.miapi.modules.properties.render.baked.ModelManager;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
@@ -44,7 +44,7 @@ public class DynamicBakery {
             ModelBakery modelLoader = ModelLoadAccessor.getLoader();
             AtomicReference<BlockModel> actualModel = new AtomicReference<>(unbakedModel);
             unbakedModel.getDependencies().stream().filter(identifier -> identifier.toString().equals("minecraft:item/generated") || identifier.toString().contains("handheld")).findFirst().ifPresent(identifier -> {
-                actualModel.set(ITEM_MODEL_GENERATOR.generateBlockModel(ModelProperty.textureGetter, unbakedModel));
+                actualModel.set(ITEM_MODEL_GENERATOR.generateBlockModel(ModelManager.textureGetter, unbakedModel));
             });
             BakedSingleModel model = DynamicBakery.bake(actualModel.get(), modelLoader, unbakedModel.getRootModel(), textureGetter, Transform.toModelTransformation(settings), ResourceLocation.parse(unbakedModel.name), true, color);
             for (Direction direction : Direction.values()) {
@@ -53,7 +53,7 @@ public class DynamicBakery {
                 }
             }
             try {
-                actualModel.set(ITEM_MODEL_GENERATOR.generateBlockModel(ModelProperty.textureGetter, unbakedModel));
+                actualModel.set(ITEM_MODEL_GENERATOR.generateBlockModel(ModelManager.textureGetter, unbakedModel));
                 return DynamicBakery.bake(actualModel.get(), modelLoader, unbakedModel.getRootModel(), textureGetter, Transform.toModelTransformation(settings), ResourceLocation.parse(unbakedModel.name), true, color);
             } catch (Exception suppressed) {
 
@@ -242,7 +242,7 @@ public class DynamicBakery {
 
             for (int j = overrides.size() - 1; j >= 0; --j) {
                 ItemOverride modelOverride = overrides.get(j);
-                BlockModel model = ModelProperty.modelCache.get(modelOverride.getModel().toString()).model();
+                BlockModel model = ModelManager.modelCache.get(modelOverride.getModel().toString()).model();
                 BakedSingleModel bakedModel = bakeModel(model, textureGetter, color, Transform.IDENTITY);
                 assert bakedModel != null;
                 bakedModel = (BakedSingleModel) ColorUtil.recolorModel(bakedModel, color);

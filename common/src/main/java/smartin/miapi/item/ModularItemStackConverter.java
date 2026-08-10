@@ -7,8 +7,6 @@ import net.minecraft.world.item.component.ItemAttributeModifiers;
 import smartin.miapi.Miapi;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.item.modular.ModularItem;
-import smartin.miapi.modules.ItemModule;
-import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.registries.RegistryInventory;
 
 import java.util.ArrayList;
@@ -57,9 +55,9 @@ public class ModularItemStackConverter {
             }
         }
         if (ModularItem.isModularItem(converted)) {
-            ModuleInstance moduleInstance = ItemModule.getModules(converted);
+            return converted;
         }
-        return converted;
+        return original;
     }
 
     /**

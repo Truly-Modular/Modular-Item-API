@@ -55,10 +55,18 @@ public class MaterialSpriteManager {
     public static final TimeUnit CACHE_LIFETIME_UNIT = TimeUnit.SECONDS;
     protected static Map<ResourceLocation, DynamicTexture> nativeImageBackedTextureMap = new HashMap<>();
     public static Set<TextureAtlasSprite> animated = new HashSet<>();
+    /**
+     * Image Pool. Managed by {@link BufferSpriteAdder}
+     */
     public static final Map<Integer, List<SpriteSlot>> ATLAS_SPRITE_POOL = new HashMap<>();
+    /**
+     * Fast lookup for currently used SpriteSlots
+     */
     public static final Map<Holder, SpriteSlot> FAST_CACHE = new HashMap<>();
+    /**
+     * Collection of currently used animated slots to be ticked each frame.
+     */
     public static final List<SpriteSlot> ANIMATED_ATLAS_SPRITES = new ArrayList<>();
-    public static List<VertexConsumerProvider> PROVIDERS = new ArrayList<>();
 
     //WARNING!! only access anything related to colorer ONLY from the RENDER THREAD!
     protected static final Cache<Holder, ResourceLocation> materialSpriteCache = CacheBuilder.newBuilder()
@@ -127,10 +135,6 @@ public class MaterialSpriteManager {
             ATLAS_SPRITE_POOL.computeIfAbsent(resToKey(slot.x, slot.y), (v) -> new ArrayList<>()).add(slot);
         });
         FAST_CACHE.clear();
-        PROVIDERS.forEach(vertexConsumerProvider -> {
-            vertexConsumerProvider.isFast = false;
-        });
-        PROVIDERS.clear();
         //TODO:free atlas sprites
     }
 
@@ -177,33 +181,31 @@ public class MaterialSpriteManager {
         for (TextureAtlasSprite sprite : animated) {
             AnimatedTexturesManager.markAnimated(sprite);
         }
-        PROVIDERS.removeAll(PROVIDERS.stream().filter((provider) -> {
-            Holder holder = provider.spriteHolder;
-            provider.isFast = false;
-            boolean shouldRemove = (provider.counter > 0);
-            if (holder != null && !shouldRemove && MiapiConfig.getClientConfig().render.enableFastRender) {
-                SpriteSlot spriteSlot = FAST_CACHE.get(provider.spriteHolder);
-                if (spriteSlot == null) {
-                    spriteSlot = getFreeAtlasSlot(((SpriteContentsAccessor) holder.sprite().contents()).getMiapiWidth(), ((SpriteContentsAccessor) holder.sprite().contents()).getMiapiHeight());
-                    if (spriteSlot != null) {
-                        spriteSlot.used = 4;
-                        spriteSlot.holder = provider.spriteHolder;
-                        FAST_CACHE.put(provider.spriteHolder, spriteSlot);
-                        if (provider.spriteHolder.colorer().doTick()) {
-                            ANIMATED_ATLAS_SPRITES.add(spriteSlot);
-                            AnimatedTexturesManager.markAnimated(spriteSlot.getSprite());
-                        }
-                        spriteSlot.updateSprite();
-                    }
-                }
+    }
+
+    public static void providerReAquire(VertexConsumerProvider provider) {
+        Holder holder = provider.spriteHolder;
+        provider.isFast = false;
+        if (holder != null && MiapiConfig.getClientConfig().render.enableFastRender) {
+            SpriteSlot spriteSlot = FAST_CACHE.get(provider.spriteHolder);
+            if (spriteSlot == null) {
+                spriteSlot = getFreeAtlasSlot(((SpriteContentsAccessor) holder.sprite().contents()).getMiapiWidth(), ((SpriteContentsAccessor) holder.sprite().contents()).getMiapiHeight());
                 if (spriteSlot != null) {
-                    provider.spriteSlot = spriteSlot;
-                    provider.isFast = spriteSlot.used > 0 && spriteSlot.used < 4;
+                    spriteSlot.used = 6;
+                    spriteSlot.holder = provider.spriteHolder;
+                    FAST_CACHE.put(provider.spriteHolder, spriteSlot);
+                    if (provider.spriteHolder.colorer().doTick()) {
+                        ANIMATED_ATLAS_SPRITES.add(spriteSlot);
+                        AnimatedTexturesManager.markAnimated(spriteSlot.getSprite());
+                    }
+                    spriteSlot.updateSprite();
                 }
             }
-            provider.counter--;
-            return shouldRemove;
-        }).toList());
+            if (spriteSlot != null) {
+                provider.spriteSlot = spriteSlot;
+                spriteSlot.clearOwner.add(() -> provider.spriteSlot = null);
+            }
+        }
     }
 
     public static void markTextureAsAnimatedInUse(TextureAtlasSprite sprite) {
@@ -240,23 +242,26 @@ public class MaterialSpriteManager {
             return;
         }
         out.getRenderSaveVC = (b -> {
-            if (out.isFast) {
-                out.counter = 3;
+            if (out.spriteSlot == null) {
+                providerReAquire(out);
+            } else if (out.spriteSlot.used > 0 && out.spriteSlot.used < 4 && out.spriteSlot.holder != null && out.spriteSlot.holder.hashCode() == out.spriteHolder.hashCode()) {
                 return getBlockAtlasVertexConsumer(b, originalSprite, out.spriteHolder, out.spriteSlot);
+            } else {
+                out.spriteSlot.clearOwner();
             }
             return getDynamicTextureVertexConsumer(b, originalSprite, out.spriteHolder);
         });
         //add sprite verification checks once per tick to each out vcprovider
         out.vanillaVCGetter = MaterialSpriteManager::getVanillaItemVC;
-        PROVIDERS.add(out);
     }
 
     /**
      * Creates a Vertex Consumer that uses on BlockAtlas Textures to render (if possible)
      */
     private static @NotNull VertexConsumer getBlockAtlasVertexConsumer(MultiBufferSource vertexConsumers, TextureAtlasSprite originalSprite, Holder holder, SpriteSlot spriteSlot) {
-        spriteSlot.used = 3;
-
+        if (spriteSlot.used < 3) {
+            spriteSlot.used = 3;
+        }
         return new MovedVertexConsumer(
                 getVanillaItemVC(vertexConsumers),
                 originalSprite,
@@ -274,7 +279,12 @@ public class MaterialSpriteManager {
         return new RescaledVertexConsumer(atlasConsumer, originalSprite);
     }
 
-    public record Holder(TextureAtlasSprite sprite, Material material, SpriteColorer colorer) {
+    public record Holder(TextureAtlasSprite sprite, Material material, SpriteColorer colorer, int hash) {
+
+        public Holder(TextureAtlasSprite sprite, Material material, SpriteColorer colorer) {
+            this(sprite, material, colorer, Objects.hash(sprite, material, colorer));
+        }
+
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;
@@ -287,9 +297,8 @@ public class MaterialSpriteManager {
 
         @Override
         public int hashCode() {
-            return Objects.hash(sprite, material, colorer);
+            return hash;
         }
-
     }
 
     /**
@@ -339,6 +348,7 @@ public class MaterialSpriteManager {
         public final SpriteContents contents;
         public TextureAtlasSprite sprite;
         public Holder holder;
+        public List<Runnable> clearOwner = new ArrayList<>();
 
         public SpriteSlot(ResourceLocation id, int x, int y, SpriteContents contents, Consumer<NativeImage> update) {
             this.contents = contents;
@@ -370,6 +380,10 @@ public class MaterialSpriteManager {
             this.generation = CURRENT_GENERATION;
         }
 
+        public void release() {
+            clearOwner();
+        }
+
         public void clear() {
             NativeImage image = new NativeImage(x, y, false);
             for (int x = 0; x < this.x; x++) {
@@ -378,6 +392,23 @@ public class MaterialSpriteManager {
                 }
             }
             update.accept(image);
+            clearOwner();
+        }
+
+        public void clearOwner() {
+            clearOwner.forEach(Runnable::run);
+            clearOwner.clear();
+        }
+
+        public void destroy() {
+            clearOwner();
+            used = 0;
+            if (contents != null) {
+                contents.close();
+            }
+            holder = null;
+            sprite = null;
+            update = null;
         }
 
 
@@ -394,5 +425,4 @@ public class MaterialSpriteManager {
             return Objects.hashCode(internalID);
         }
     }
-
 }

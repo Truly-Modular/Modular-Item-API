@@ -1,4 +1,4 @@
-package smartin.miapi.editor.renderers;
+package smartin.miapi.editor.pose;
 
 import imgui.ImGui;
 import org.joml.Vector3f;

@@ -9,7 +9,6 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.client.model.DynamicBakery;
-import smartin.miapi.modules.properties.render.baked.ModelProperty;
 
 import java.util.ArrayList;
 
@@ -22,14 +21,6 @@ public class ItemBakedModelOverrides extends ItemOverrides {
 
     @Override
     public BakedModel resolve(BakedModel oldmodel, ItemStack stack, @Nullable ClientLevel world, @Nullable LivingEntity entity, int seed) {
-        BakedModel model = ModelProperty.getItemModel(stack);
-        if (model != null) {
-            ItemOverrides modelOverride = model.getOverrides();
-            if (modelOverride != null) {
-                return modelOverride.resolve(model, stack, world, entity, seed);
-            }
-            return model;
-        }
         return oldmodel;
     }
 }

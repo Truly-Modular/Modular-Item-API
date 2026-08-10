@@ -44,12 +44,11 @@ public abstract class AttachedModelProperty<T extends AttachedModelProperty.Cust
 
                     for (ModelData modelJson : modelList) {
                         if (predicate.isValid(modelJson)) {
-                            ModelHolder baseHolder = ModelHolder.bakedModel(module, modelJson, stack, key);
-                            if (baseHolder != null) {
+                            ModelProperty.bakedModel(module, modelJson, stack, key).forEach(baseHolder->{
                                 List<MiapiModel> model = predicate.data.createModel(stack, module, source, baseHolder, context);
                                 if (model != null)
                                     models.addAll(model);
-                            }
+                            });
                         }
                     }
                 }

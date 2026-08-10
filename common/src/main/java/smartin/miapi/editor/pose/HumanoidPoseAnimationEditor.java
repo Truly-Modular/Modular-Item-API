@@ -1,4 +1,4 @@
-package smartin.miapi.editor;
+package smartin.miapi.editor.pose;
 
 import com.google.gson.JsonPrimitive;
 import com.redpxnda.nucleus.math.InterpolateMode;
@@ -9,7 +9,7 @@ import imgui.type.ImInt;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
-import smartin.miapi.editor.renderers.FrameEditor;
+import smartin.miapi.editor.MiapiEditor;
 
 import java.util.ArrayList;
 import java.util.List;

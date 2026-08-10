@@ -7,28 +7,32 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.FastColor;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Matrix4f;
 import smartin.miapi.Miapi;
+import smartin.miapi.client.model.DynamicBakery;
 import smartin.miapi.client.model.MiapiItemModel;
 import smartin.miapi.client.model.MiapiModel;
 import smartin.miapi.client.model.ModelHolder;
+import smartin.miapi.client.model.item.BakedSingleModel;
 import smartin.miapi.client.model.module.BakedMiapiModel;
 import smartin.miapi.datapack.ReloadEvents;
+import smartin.miapi.item.modular.StatResolver;
+import smartin.miapi.item.modular.Transform;
+import smartin.miapi.material.MaterialProperty;
+import smartin.miapi.material.base.ColorController;
+import smartin.miapi.material.base.Material;
 import smartin.miapi.modules.ModuleInstance;
-import smartin.miapi.modules.cache.ModularItemCache;
+import smartin.miapi.modules.properties.render.colorproviders.ColorProvider;
 import smartin.miapi.modules.properties.util.CodecProperty;
 import smartin.miapi.modules.properties.util.MergeAble;
 import smartin.miapi.modules.properties.util.MergeType;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
 
 /**
  * NOTE!
@@ -43,10 +47,7 @@ import java.util.function.Function;
 @Environment(EnvType.CLIENT)
 public class ModelProperty extends CodecProperty<List<ModelData>> {
     public static ModelProperty property;
-    private static final String CACHE_KEY_ITEM = Miapi.MOD_ID + ":itemModelodel";
-    public static final Map<String, UnbakedModelHolder> modelCache = new HashMap<>();
     public static final ResourceLocation KEY = Miapi.id("model");
-    public static Function<net.minecraft.client.resources.model.Material, TextureAtlasSprite> textureGetter;
     public static Codec<ModelData> DATA_CODEC = ModelData.CODEC;
     public static Codec<List<ModelData>> CODEC = Codec.withAlternative(Codec.list(DATA_CODEC), new Codec<>() {
         @Override
@@ -69,12 +70,11 @@ public class ModelProperty extends CodecProperty<List<ModelData>> {
     public ModelProperty() {
         super(CODEC);
         property = this;
-        ReloadEvents.START.subscribe((isClient, registryAccess, worker) -> modelCache.clear());
-        ModularItemCache.setSupplier(CACHE_KEY_ITEM, (stack) -> getModelMap(stack).get("item"));
+        ReloadEvents.START.subscribe((isClient, registryAccess, worker) -> ModelManager.modelCache.clear());
         MiapiItemModel.modelSuppliers.add((key, mode, model, stack) -> {
             List<MiapiModel> miapiModels = new ArrayList<>();
             for (ModelHolder holder : getForModule(model, key, stack)) {
-                miapiModels.add(BakedMiapiModel.createBaked(holder, model, stack,mode));
+                miapiModels.add(BakedMiapiModel.createBaked(holder, model, stack, mode));
             }
             return miapiModels;
         });
@@ -84,10 +84,7 @@ public class ModelProperty extends CodecProperty<List<ModelData>> {
         List<ModelData> modelDataList = property.getData(instance).orElse(new ArrayList<>());
         List<ModelHolder> models = new ArrayList<>();
         for (ModelData json : modelDataList) {
-            ModelHolder holder = ModelHolder.bakedModel(instance, json, itemStack, key);
-            if (holder != null) {
-                models.add(holder);
-            }
+            bakedModel(instance, json, itemStack, key).forEach(models::add);
         }
         return models;
     }
@@ -101,14 +98,78 @@ public class ModelProperty extends CodecProperty<List<ModelData>> {
                ("item".equals(jsonKey) && modelTypeKey == null);
     }
 
-    public static Map<String, BakedModel> getModelMap(ItemStack stack) {
-        //return (Map<String, BakedModel>) ModularItemCache.getRaw(stack, CACHE_KEY_MAP);
-        return new HashMap<>();
+    public static List<ModelHolder> bakedModel(ModuleInstance instance, ModelData json, ItemStack itemStack, String key) {
+        int condition = ColorController.getColor(StatResolver.resolveString(json.condition, instance));
+        if (condition != 0) {
+            if (
+                    json.transform.origin == null && "item".equals(key) ||
+                    json.transform.origin != null && json.transform.origin.equals(key) ||
+                    ("item".equals(json.transform.origin) && key == null)) {
+                return bakedModel(instance, json, itemStack);
+            }
+        }
+        return List.of();
     }
 
-    @Nullable
-    public static BakedModel getItemModel(ItemStack stack) {
-        return ModularItemCache.getRaw(stack, CACHE_KEY_ITEM);
+    public static List<ModelHolder> bakedModel(ModuleInstance instance, ModelData json, ItemStack itemStack) {
+        Material material = MaterialProperty.getMaterial(instance);
+        json.repair();
+        List<String> list = new ArrayList<>();
+        if (material != null) {
+            list.add(material.getStringID());
+            list = material.getTextureKeys();
+        } else {
+            list.add("default");
+        }
+        UnbakedModelHolder unbakedModel = findUnbakedModel(json.path, list);
+        if (unbakedModel == null) {
+            return List.of();
+        }
+        List<ModelHolder> holders = new ArrayList<>();
+        findModels(instance, json, itemStack, unbakedModel, holders, list);
+        return holders;
+    }
+
+    private static @Nullable UnbakedModelHolder findUnbakedModel(String path, List<String> list) {
+        UnbakedModelHolder unbakedModel = null;
+        for (String str : list) {
+            String fullPath = path.replace("[material.texture]", str);
+            if (ModelManager.modelCache.containsKey(fullPath)) {
+                unbakedModel = ModelManager.modelCache.get(fullPath);
+                break;
+            }
+        }
+        if (unbakedModel == null) {
+            String fullPath = path.replace("[material.texture]", "default");
+            if (ModelManager.modelCache.containsKey(fullPath)) {
+                unbakedModel = ModelManager.modelCache.get(fullPath);
+            }
+        }
+        return unbakedModel;
+    }
+
+    private static void findModels(ModuleInstance instance, ModelData json, ItemStack itemStack, UnbakedModelHolder unbakedModel, List<ModelHolder> holders, List<String> materialKeys) {
+        BakedSingleModel model = DynamicBakery.bakeModel(unbakedModel.model(), ModelManager.textureGetter, FastColor.ARGB32.color(255, 255, 255, 255), Transform.IDENTITY);
+        Matrix4f matrix4f = Transform.toModelTransformation(json.transform).toMatrix();
+        String colorProviderId = unbakedModel.modelMetadata().colorProvider() != null ?
+                unbakedModel.modelMetadata().colorProvider() : json.color_provider;
+        ColorProvider colorProvider = ColorProvider.getProvider(colorProviderId, itemStack, instance, json.getTrimMode());
+        if (colorProvider == null) {
+            throw new RuntimeException("colorProvider is null");
+        }
+        holders.add(new ModelHolder(
+                model.optimize(), matrix4f, colorProvider,
+                unbakedModel.modelMetadata().lightValues() == null ? new int[]{-1, -1} : unbakedModel.modelMetadata().lightValues(),
+                json.getTrimMode(), json.entity_render));
+        if (holders.size() > 15) {
+            return;
+        }
+        unbakedModel.modelMetadata().modelSources().forEach(modelSource -> {
+            UnbakedModelHolder nextUnbaked = findUnbakedModel(modelSource, materialKeys);
+            if (nextUnbaked != null) {
+                findModels(instance, json, itemStack, nextUnbaked, holders, materialKeys);
+            }
+        });
     }
 
     @Override

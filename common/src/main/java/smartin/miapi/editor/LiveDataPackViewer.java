@@ -1,0 +1,313 @@
+package smartin.miapi.editor;
+
+import com.google.gson.JsonObject;
+import com.redpxnda.nucleus.editor.core.ClientLoader;
+import imgui.ImGui;
+import imgui.flag.ImGuiCond;
+import imgui.type.ImBoolean;
+import imgui.type.ImString;
+import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.gui.GuiGraphics;
+import smartin.miapi.datapack.ReloadEvents;
+import smartin.miapi.editor.material.MaterialListViewer;
+import smartin.miapi.modules.cache.CacheCommands;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.Objects;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
+
+public class LiveDataPackViewer implements MiapiEditor {
+    private final LiveDataPackManager manager;
+    public final ImBoolean show = new ImBoolean(true);
+    private final ImBoolean showCreateWindow = new ImBoolean(false);
+    private final ImString newPackName = new ImString(256);
+    private final ImString newPackId = new ImString(256);
+    private final ImString newPackAuthor = new ImString(256);
+    private final ImString newPackDescription = new ImString(1024);
+    private final ImBoolean newPackEnabled = new ImBoolean(true);
+    private DataPackContext editingContext;
+    private final ImString editName = new ImString(256);
+    private final ImString editId = new ImString(256);
+    private final ImString editAuthor = new ImString(256);
+    private final ImString editDescription = new ImString(256);
+    private final ImString editDataPath = new ImString(1024);
+    private final ImBoolean editWatchFiles = new ImBoolean(true);
+    private FileSystemViewer fileSystemViewer;
+
+    public LiveDataPackViewer(LiveDataPackManager manager) {
+        this.manager = manager;
+    }
+
+    public static LiveDataPackViewer openUI;
+
+    static {
+        LiveDataPackManager.isEnabled = LiveDataPackViewer::isEnabled;
+    }
+
+    public static void openLivePackViewer() {
+        if (openUI != null) {
+            openUI.show.set(true);
+            if (!editors.contains(openUI)) {
+                editors.add(openUI);
+            }
+        } else {
+            openUI = new LiveDataPackViewer(LiveDataPackManager.getInstance());
+            editors.add(openUI);
+        }
+    }
+
+    public static boolean isEnabled() {
+        if ( openUI != null) {
+            return openUI.show.get();
+        } else {
+            return false;
+        }
+    }
+
+    private void clearNewPackFields() {
+        newPackName.clear();
+        newPackId.clear();
+        newPackAuthor.clear();
+        newPackDescription.clear();
+        newPackEnabled.set(true);
+    }
+
+    @Override
+    public void render(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
+        if (!show.get()) {
+            MiapiEditor.editors.remove(this);
+            return;
+        }
+
+        ImGui.setNextWindowSize(400, 600, ImGuiCond.FirstUseEver);
+        if (ImGui.begin("LivePack Manager##" + System.identityHashCode(this), show)) {
+            // Top button row
+            if (ImGui.button("Create New Pack")) {
+                showCreateWindow.set(true);
+                clearNewPackFields();
+            }
+            ImGui.sameLine();
+            if (ImGui.button("Refresh")) {
+                manager.scanForDataPacks();
+            }
+            ImGui.sameLine();
+            if (ImGui.button("Reload")) {
+                reload();
+            }
+            if (ReloadEvents.isInReload()) {
+                ImGui.sameLine();
+                ImGui.text("Reloading....");
+            }
+
+            ImGui.separator();
+
+            // List all packs
+            List<DataPackContext> packContexts = manager.getLoadedPacks();
+            for (DataPackContext pack : packContexts) {
+                if (ImGui.treeNode(pack.name + " (" + pack.id + ")")) {
+                    ImGui.text("Directory: " + pack.directory.getName());
+
+                    if (editingContext == pack) {
+                        // Edit mode
+                        if (ImGui.inputText("Name", editName)) {
+                            pack.name = editName.get();
+                        }
+                        if (ImGui.inputText("ID", editId)) {
+                            pack.id = editId.get().toLowerCase();
+                        }
+                        if (ImGui.inputText("Author", editAuthor)) {
+                            pack.author = editAuthor.get();
+                        }
+                        if (ImGui.inputTextMultiline("Description", editDescription)) {
+                            pack.description = editDescription.get();
+                        }
+                        if (ImGui.inputText("Data Path", editDataPath)) {
+                            pack.dataPath = editDataPath.get();
+                        }
+                        if (ImGui.checkbox("Watch Files", editWatchFiles)) {
+                            pack.watchFiles = editWatchFiles.get();
+                            if (pack.watchFiles) {
+                                manager.watchDataPack(pack);
+                            } else {
+                                manager.unwatchDataPack(pack);
+                            }
+                        }
+                        if (ImGui.checkbox("Enabled", pack.enabled)) {
+                            pack.enabled = !pack.enabled;
+                        }
+                        if (ImGui.button("Save")) {
+                            manager.saveContext(pack);
+                            editingContext = null;
+                        }
+                        ImGui.sameLine();
+                        if (ImGui.button("Cancel")) {
+                            editingContext = null;
+                        }
+                    } else {
+                        // View mode
+                        ImGui.text("ID: " + pack.id);
+                        ImGui.text("Author: " + pack.author);
+                        ImGui.text("Description: " + pack.description);
+                        ImGui.text("Data Path: " + pack.dataPath);
+                        ImGui.text("Watch Files: " + (pack.watchFiles ? "Yes" : "No"));
+                        ImGui.text("Enabled: " + (pack.enabled ? "Yes" : "No"));
+                        if (ImGui.button("Edit")) {
+                            editingContext = pack;
+                            editName.set(pack.name);
+                            editId.set(pack.id);
+                            editAuthor.set(pack.author);
+                            editDescription.set(pack.description);
+                            editDataPath.set(pack.dataPath);
+                            editWatchFiles.set(pack.watchFiles);
+                        }
+                    }
+
+                    ImGui.sameLine();
+                    if (ImGui.button("Open Files")) {
+                        if (fileSystemViewer != null) {
+                            ClientLoader.RENDER.remove(fileSystemViewer);
+                        }
+                        File dataDir = new File(pack.directory, pack.dataPath);
+                        if (!dataDir.exists()) {
+                            dataDir.mkdirs();
+                        }
+                        fileSystemViewer = new FileSystemViewer(dataDir, (file) -> {
+                            reload();
+                        });
+                        MiapiEditor.editors.add(fileSystemViewer);
+                    }
+                    ImGui.sameLine();
+                    if (ImGui.button("Open Explorer")) {
+                        File dataDir = new File(pack.directory, pack.dataPath);
+                        openInExplorer(dataDir);
+                    }
+
+                    ImGui.sameLine();
+                    if (ImGui.button("Create Datapack & Open")) {
+                            File defaultJsonFolder = pack.directory.getAbsoluteFile();
+                        File zipFile = new File(defaultJsonFolder, pack.name + ".zip");
+                        File dataDir = new File(pack.directory, pack.dataPath);
+
+                        try (FileOutputStream fos = new FileOutputStream(zipFile);
+                             ZipOutputStream zos = new ZipOutputStream(fos, StandardCharsets.UTF_8)) {
+
+                            // Add pack.mcmeta
+                            JsonObject mcmeta = new JsonObject();
+                            JsonObject packObject = new JsonObject();
+                            packObject.addProperty("pack_format", 48);
+                            packObject.addProperty("description", (pack.description != null ? pack.description : "Generated datapack") + "\nby " + pack.author);
+                            packObject.addProperty("author", pack.author != null ? pack.author : "unkown");
+                            mcmeta.add("pack", packObject);
+
+                            zos.putNextEntry(new ZipEntry("pack.mcmeta"));
+                            zos.write(mcmeta.toString().getBytes(StandardCharsets.UTF_8));
+                            zos.closeEntry();
+
+                            // Add datapack files
+                            pack.createDatapack(zos, dataDir);
+
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
+                        openInExplorer(defaultJsonFolder);
+
+                        EditorLogger.getLogger().info("Datapack created at: " + zipFile.getAbsolutePath());
+
+                    }
+
+                    ImGui.sameLine();
+                    if (ImGui.button("Delete")) {
+                        manager.deletePack(pack);
+                        if (fileSystemViewer != null && Objects.equals(fileSystemViewer.getRootDirectory(), pack.directory)) {
+                            ClientLoader.RENDER.remove(fileSystemViewer);
+                            fileSystemViewer = null;
+                        }
+                    }
+                    File dataDir = new File(pack.directory, pack.dataPath);
+                    if (ImGui.button("Materials")) {
+                        MiapiEditor.editors.add(new MaterialListViewer(
+                                dataDir,
+                                this::reload
+                        ));
+                    }
+
+                    ImGui.treePop();
+                }
+            }
+
+            ImGui.end();
+        }
+
+        // Render create window
+        if (showCreateWindow.get()) {
+            ImGui.setNextWindowSize(400, 300, ImGuiCond.FirstUseEver);
+            if (ImGui.begin("Create New DataPack", showCreateWindow)) {
+                ImGui.inputText("Pack Name", newPackName);
+                ImGui.inputText("Pack ID (lowercase)", newPackId);
+                if (!newPackId.get().toLowerCase().equals(newPackId.get())) {
+                    newPackId.set(newPackId.get().toLowerCase());
+                }
+                ImGui.inputText("Author", newPackAuthor);
+                ImGui.inputTextMultiline("Description", newPackDescription);
+                ImGui.checkbox("Enabled", newPackEnabled);
+
+                boolean canCreate = !newPackName.get().trim().isEmpty() &&
+                                    !newPackId.get().trim().isEmpty() &&
+                                    !newPackAuthor.get().trim().isEmpty();
+
+                if (!canCreate) {
+                    ImGui.textColored(1.0f, 0.0f, 0.0f, 1.0f, "Please fill in all required fields");
+                }
+
+                if (ImGui.button("Create") && canCreate) {
+                    manager.createNewPack(
+                            newPackName.get().trim(),
+                            newPackId.get().trim(),
+                            newPackAuthor.get().trim(),
+                            newPackDescription.get().trim(),
+                            newPackEnabled.get()
+                    );
+                    showCreateWindow.set(false);
+                    clearNewPackFields();
+                }
+                ImGui.sameLine();
+                if (ImGui.button("Cancel")) {
+                    showCreateWindow.set(false);
+                    clearNewPackFields();
+                }
+            }
+            ImGui.end();
+        }
+    }
+
+    private void openInExplorer(File folder) {
+        try {
+            if (!folder.exists()) folder.mkdirs();
+
+            String os = System.getProperty("os.name").toLowerCase();
+
+            if (os.contains("win")) {
+                new ProcessBuilder("explorer.exe", folder.getAbsolutePath()).start();
+            } else if (os.contains("mac")) {
+                new ProcessBuilder("open", folder.getAbsolutePath()).start();
+            } else if (os.contains("nix") || os.contains("nux")) {
+                new ProcessBuilder("xdg-open", folder.getAbsolutePath()).start();
+            } else {
+                EditorLogger.getLogger().error("Unsupported OS — cannot open file explorer.");
+            }
+        } catch (Exception e) {
+            EditorLogger.getLogger().error("Couldn't open:",e);
+        }
+    }
+
+    public void reload() {
+        LiveDataPackManager.getInstance().checkAndValidateDatapacks(true);
+        CacheCommands.triggerServerReload();
+    }
+}

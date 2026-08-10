@@ -83,13 +83,16 @@ public class JsonEditor implements MiapiEditor {
                 watchService = filePath.getFileSystem().newWatchService();
                 watchKey = filePath.getParent().register(watchService, StandardWatchEventKinds.ENTRY_MODIFY);
                 lastModified = Files.getLastModifiedTime(filePath).toMillis();
+                EditorLogger.getLogger().debug("File watcher setup for: {}", filePath);
             } catch (IOException e) {
-                e.printStackTrace();
+                EditorLogger.getLogger().warn("Failed to setup file watcher for: {} - {}", filePath, e.getMessage());
+                // Continue without file watching
             }
         }
     }
 
-    boolean skipNext = false;
+    // Track if we're currently reloading to skip next change
+    private boolean isReloading = false;
 
     private void checkFileChanges() {
         if (!watchFile || watchService == null) return;
@@ -102,8 +105,8 @@ public class JsonEditor implements MiapiEditor {
                     if (filePath.getFileName().equals(changed)) {
                         long newLastModified = Files.getLastModifiedTime(filePath).toMillis();
                         if (newLastModified > lastModified) {
-                            if (skipNext) {
-                                skipNext = !skipNext;
+                            // Skip if currently reloading to avoid processing same change twice
+                            if (isReloading) {
                                 return;
                             }
                             lastModified = newLastModified;
@@ -117,18 +120,20 @@ public class JsonEditor implements MiapiEditor {
                 key.reset();
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            EditorLogger.getLogger().error("Error checking file changes: {}", e.getMessage());
         }
     }
 
     public void reloadFile() {
         if (filePath != null) {
             try {
+                isReloading = true;
                 String newContent = Files.readString(filePath);
                 content.set(newContent);
                 validateContent();
+                isReloading = false;
             } catch (IOException e) {
-                e.printStackTrace();
+                EditorLogger.getLogger().error("Failed to reload file: {} - {}", filePath, e.getMessage());
             }
         }
     }
@@ -356,7 +361,6 @@ public class JsonEditor implements MiapiEditor {
 
     public void save(String newContent) {
         try {
-            skipNext = true;
             Files.writeString(filePath, newContent);
         } catch (IOException e) {
             e.printStackTrace();
