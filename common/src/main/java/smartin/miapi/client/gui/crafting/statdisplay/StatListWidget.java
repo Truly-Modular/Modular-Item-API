@@ -177,6 +177,11 @@ public class StatListWidget extends InteractAbleWidget {
                 .setMin(-2)
                 .setMax(12)
                 .setTranslationKey(BludgeonProperty.KEY).build());
+        addStatDisplay(SinglePropertyStatDisplay
+                .builder(ExecutionerProperty.property)
+                .setMin(-2)
+                .setMax(12)
+                .setTranslationKey(ExecutionerProperty.KEY).build());
         /*
         addStatDisplay(SinglePropertyStatDisplay
                 .builder(BlockProperty.property)

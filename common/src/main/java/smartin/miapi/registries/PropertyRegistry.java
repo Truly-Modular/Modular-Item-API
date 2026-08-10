@@ -123,7 +123,7 @@ public class PropertyRegistry {
         //ON HIT
         RegistryInventory.registerMiapi(RegistryInventory.MODULE_PROPERTY_MIAPI_REGISTRY, CustomDamageOnHitProperty.KEY, CustomDamageOnHitProperty.property);
         RegistryInventory.registerMiapi(RegistryInventory.MODULE_PROPERTY_MIAPI_REGISTRY, ModularAttackCommandProperty.KEY, ModularAttackCommandProperty.property);
-
+        RegistryInventory.registerMiapi(RegistryInventory.MODULE_PROPERTY_MIAPI_REGISTRY, ExecutionerProperty.KEY, ExecutionerProperty.property);
 
         RegistryInventory.registerMiapi(RegistryInventory.MODULE_PROPERTY_MIAPI_REGISTRY, ItemInventoryFeatureProperty.KEY, ItemInventoryFeatureProperty.property);
         RegistryInventory.registerMiapi(RegistryInventory.MODULE_PROPERTY_MIAPI_REGISTRY, InventoryFeatureProperty.KEY, InventoryFeatureProperty.property);
