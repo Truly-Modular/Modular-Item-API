@@ -11,6 +11,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
+import smartin.miapi.Miapi;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.item.modular.VisualModularItem;
 import smartin.miapi.material.MaterialProperty;
@@ -106,13 +107,21 @@ public class MaterialSmithingRecipe implements SmithingRecipe {
      */
     @Override
     public @NotNull ItemStack assemble(SmithingRecipeInput input, HolderLookup.Provider registries) {
+        if (input == null) {
+            return ItemStack.EMPTY;
+        }
         ItemStack old = input.getItem(1).copy();
         if (old.getItem() instanceof VisualModularItem) {
             MutableModuleInstance instance = MutableModuleInstance.fromRecord(ItemModule.getModules(old));
             instance.getUnsortedList().forEach((child) -> {
                 Material material = MaterialProperty.getMaterial(child.toRecord());
                 if (material != null && material.getID().equals(startMaterial)) {
-                    MaterialProperty.setMaterial(child, MaterialProperty.MATERIAL_REGISTRY.get(resultMaterial));
+                    Material applyMaterial = MaterialProperty.MATERIAL_REGISTRY.get(resultMaterial);
+                    if (applyMaterial != null) {
+                        MaterialProperty.setMaterial(child, applyMaterial);
+                    } else {
+                        Miapi.LOGGER.warn("could not find " + resultMaterial + " for modular smithing");
+                    }
                 }
             });
             instance.toRecord().writeToItem(old);
