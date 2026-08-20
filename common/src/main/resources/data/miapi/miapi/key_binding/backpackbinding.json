@@ -1,0 +1,14 @@
+{
+    "category": "miapi",
+    "scan_code": 32,
+    "handler": {
+        "hands": [
+            "OFFHAND",
+            "MAINHAND"
+        ],
+        "type": "miapi:open_ui",
+        "item_interaction": true,
+        "block_interaction": true,
+        "entity_interaction": true
+    }
+}

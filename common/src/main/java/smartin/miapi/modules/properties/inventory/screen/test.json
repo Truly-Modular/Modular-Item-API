@@ -1,0 +1,13 @@
+{
+    "item_inventory_features": {
+        "miapi:backpack": {
+            "miapi:size": 10
+        },
+        "miapi:quiver": {
+            "miapi:size": 5
+        },
+        "miapi:food_pouch": {
+            "miapi:size": 5
+        }
+    }
+}
