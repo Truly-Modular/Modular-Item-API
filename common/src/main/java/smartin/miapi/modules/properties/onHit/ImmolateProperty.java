@@ -5,7 +5,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import smartin.miapi.Miapi;
 import smartin.miapi.entity.EntityHelper;
-import smartin.miapi.events.MeleeModularAttackEvents;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.modules.properties.onHit.entity.EntityArmorStrength;
 import smartin.miapi.modules.properties.util.DoubleProperty;
@@ -36,7 +35,7 @@ public class ImmolateProperty extends DoubleProperty {
             }
             return EventResult.pass();
         });
-        MeleeModularAttackEvents.ATTACK_DAMAGE_BONUS.register((target, itemStack, baseDamage, damageSource, bonusDamage) -> {
+        MiapiEvents.MODIFY_DAMAGE_EVENT.register((target, itemStack, baseDamage, damageSource, bonusDamage,level) -> {
             if (target.isOnFire()) {
                 if (damageSource.getEntity() != null && damageSource.getEntity().isOnFire() && damageSource.getEntity() instanceof LivingEntity livingEntity) {
                     double immolate = getForItems(EntityHelper.getAllEquipedItems(livingEntity));
@@ -55,7 +54,6 @@ public class ImmolateProperty extends DoubleProperty {
                     bonusDamage.add(baseDamage * immolate / 50.0);
                 }
             }
-            return EventResult.pass();
         });
     }
 }

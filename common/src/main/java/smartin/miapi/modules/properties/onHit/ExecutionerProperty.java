@@ -1,10 +1,9 @@
 package smartin.miapi.modules.properties.onHit;
 
-import dev.architectury.event.EventResult;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import smartin.miapi.Miapi;
-import smartin.miapi.events.MeleeModularAttackEvents;
+import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.modules.properties.util.DoubleProperty;
 
 /**
@@ -26,8 +25,8 @@ public class ExecutionerProperty extends DoubleProperty {
         super(KEY);
         property = this;
 
-        MeleeModularAttackEvents.ATTACK_DAMAGE_BONUS.register(
-                (target, itemStack, baseDamage, damageSource, bonusDamage) -> {
+        MiapiEvents.MODIFY_DAMAGE_EVENT.register(
+                (target, itemStack, baseDamage, damageSource, bonusDamage,level) -> {
                     if (target instanceof LivingEntity livingEntity) {
                         double executioner = getValue(itemStack).orElse(0.0);
 
@@ -37,8 +36,6 @@ public class ExecutionerProperty extends DoubleProperty {
                             bonusDamage.add(bonus);
                         }
                     }
-
-                    return EventResult.pass();
                 }
         );
     }

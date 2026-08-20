@@ -26,6 +26,7 @@ public class MeleeModularAttackEvents {
     public static final PrioritizedEvent<HurtEnemy> HURT_ENEMY_POST = PrioritizedEvent.createEventResult();
     /**
      * This Event should be used whenever you want to have conditional damage on modular items
+     * YOU PROBABLY WANT TO USE {@link  MiapiEvents.MODIFY_DAMAGE_EVENT instead}
      * This is called via {@link net.minecraft.world.item.Item#getAttackDamageBonus(Entity, float, DamageSource)}
      */
     public static final PrioritizedEvent<GetAttackDamageBonus> ATTACK_DAMAGE_BONUS = PrioritizedEvent.createEventResult();

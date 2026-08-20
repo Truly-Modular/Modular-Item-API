@@ -6,11 +6,14 @@ import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
+import org.apache.commons.lang3.mutable.MutableFloat;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -27,6 +30,17 @@ public abstract class EnchantmentHelperMixin {
             MiapiEvents.MODULAR_ITEM_DAMAGE.invoker().durability(damage, stack, level);
         }
     }
+
+    @ModifyReturnValue(method = "Lnet/minecraft/world/item/enchantment/EnchantmentHelper;modifyDamage(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/entity/Entity;Lnet/minecraft/world/damagesource/DamageSource;F)F", at = @At(value = "RETURN"))
+    private static float miapi$adjustSupportedItem(float originalEnchantmentDamage, ServerLevel level, ItemStack tool, Entity entity, DamageSource damageSource, float baseDamage) {
+        if (ModularItem.isModularItem(tool)) {
+            MutableFloat modularBonusDamage = new MutableFloat();
+            MiapiEvents.MODIFY_DAMAGE_EVENT.invoker().adjust(entity, tool, baseDamage, damageSource, modularBonusDamage, level);
+            return originalEnchantmentDamage + modularBonusDamage.floatValue() - baseDamage;
+        }
+        return originalEnchantmentDamage;
+    }
+
 
     // ---- 1) If the component is null but we have fakes, return a non-null placeholder
     @WrapOperation(

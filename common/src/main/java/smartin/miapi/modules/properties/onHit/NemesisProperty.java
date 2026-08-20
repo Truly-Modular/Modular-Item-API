@@ -22,7 +22,6 @@ import smartin.miapi.blocks.ModularWorkBenchEntity;
 import smartin.miapi.craft.CraftAction;
 import smartin.miapi.entity.EntityDamageSystem;
 import smartin.miapi.events.MiapiEvents;
-import smartin.miapi.events.MeleeModularAttackEvents;
 import smartin.miapi.item.modular.ModularItem;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.LoreProperty;
@@ -128,7 +127,7 @@ public class NemesisProperty extends DoubleProperty implements CraftingProperty 
             return EventResult.pass();
         });
 
-        MeleeModularAttackEvents.ATTACK_DAMAGE_BONUS.register((target, weapon, baseDamage, damageSource, bonusDamage) -> {
+        MiapiEvents.MODIFY_DAMAGE_EVENT.register((target, weapon, baseDamage, damageSource, bonusDamage,level) -> {
             if (ModularItem.isModularItem(weapon)) {
                 double nemesisScale = getValue(weapon).orElse(0.0);
                 NemesisData data = weapon.get(NEMESIS_COMPONENT);
@@ -150,7 +149,6 @@ public class NemesisProperty extends DoubleProperty implements CraftingProperty 
                     }
                 }
             }
-            return EventResult.pass();
         });
 
 

@@ -1,11 +1,10 @@
 package smartin.miapi.modules.properties.onHit;
 
-import dev.architectury.event.EventResult;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import smartin.miapi.Miapi;
-import smartin.miapi.events.MeleeModularAttackEvents;
+import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.modules.properties.util.DoubleProperty;
 
 /**
@@ -28,18 +27,17 @@ public class HealthPercentDamage extends DoubleProperty {
     public HealthPercentDamage() {
         super(KEY);
         property = this;
-        MeleeModularAttackEvents.ATTACK_DAMAGE_BONUS.register((target, itemStack, baseDamage, damageSource, bonusDamage) -> {
+        MiapiEvents.MODIFY_DAMAGE_EVENT.register((target, itemStack, baseDamage, damageSource, bonusDamage,level) -> {
             if (damageSource.getEntity() instanceof LivingEntity livingAttacker && target instanceof LivingEntity livingTarget) {
                 if (livingAttacker instanceof Player player) {
                     if (player.oAttackAnim != 0.0) {
-                        return EventResult.pass();
+                        return;
                     }
                 }
                 double percentage = getValue(itemStack).orElse(0.0) / 100;
                 double increasingBy = livingTarget.getHealth() / (100 / percentage);
                 bonusDamage.add(increasingBy);
             }
-            return EventResult.pass();
         });
     }
 }

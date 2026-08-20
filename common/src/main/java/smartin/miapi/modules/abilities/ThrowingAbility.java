@@ -152,7 +152,9 @@ public class ThrowingAbility implements ItemUseAbility<ThrowingAbilityContext> {
         player.awardStat(Stats.ITEM_USED.get(originalStack.getItem()));
 
         EquipmentSlot equipmentSlot = getEquipmentSlot(user.getUsedItemHand());
-
+        if(originalStack.isDamageableItem()){
+            originalStack.hurtAndBreak(1, player, equipmentSlot);
+        }
         ItemStack thrownStack = originalStack.copy();
         thrownStack.setCount(1);
 
@@ -163,8 +165,6 @@ public class ThrowingAbility implements ItemUseAbility<ThrowingAbilityContext> {
         if (!player.hasInfiniteMaterials()) {
             originalStack.shrink(1);
         }
-
-        thrownStack.hurtAndBreak(1, player, equipmentSlot);
 
         float speed = (float) ThrowSpeedProperty.getThrowSpeed(thrownStack);
         float damage = (float) ThrowDamageProperty.getDamage(thrownStack);
@@ -202,7 +202,7 @@ public class ThrowingAbility implements ItemUseAbility<ThrowingAbilityContext> {
         if (player.getAbilities().instabuild) {
             projectile.pickup = AbstractArrow.Pickup.CREATIVE_ONLY;
         } else {
-            user.setItemInHand(user.getUsedItemHand(), ItemStack.EMPTY);
+            user.setItemInHand(user.getUsedItemHand(), originalStack);
         }
 
         world.addFreshEntity(projectile);

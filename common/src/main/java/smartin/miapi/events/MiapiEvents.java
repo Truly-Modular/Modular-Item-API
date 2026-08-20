@@ -48,6 +48,11 @@ public class MiapiEvents {
      * While Attribute based stuff should be implemented using these, since they are called regardless of weapon
      */
     public static final PrioritizedEvent<LivingHurt> LIVING_HURT = PrioritizedEvent.createEventResult();
+    /**
+     * to apply Bonus Damage, triggers everwhere where enchantments trigger too.
+     * this mainly includes bow, arrow and sword
+     */
+    public static final PrioritizedEvent<DamageModifyEvent> MODIFY_DAMAGE_EVENT = PrioritizedEvent.createLoop();
     public static final PrioritizedEvent<LivingHurt> LIVING_HURT_AFTER = PrioritizedEvent.createEventResult();
     public static final PrioritizedEvent<LivingHurt> LIVING_HURT_AFTER_ARMOR = PrioritizedEvent.createEventResult();
 
@@ -87,6 +92,10 @@ public class MiapiEvents {
 
     public interface InventoryTickEvent {
         void tick(ItemStack stack, Level level, Entity entity, int slotId, boolean isSelected);
+    }
+
+    public interface DamageModifyEvent {
+        void adjust(Entity entity, ItemStack weapon, float baseDamage, DamageSource damageSource, MutableFloat damage, ServerLevel level);
     }
 
     public interface DurabilityEvent {
