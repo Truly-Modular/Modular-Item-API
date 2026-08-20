@@ -10,6 +10,8 @@ import smartin.miapi.material.composite.material.DatapackComposite;
 import smartin.miapi.modules.CodecModuleInheritance;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ItemModuleExtension;
+import smartin.miapi.modules.abilities.key.KeyBindManager;
+import smartin.miapi.modules.abilities.key.MiapiBinding;
 import smartin.miapi.modules.edit_options.CreateItemOption.CreateItemOption;
 import smartin.miapi.modules.edit_options.skins.SkinOptions;
 import smartin.miapi.modules.properties.inventory.InventoryType;
@@ -108,11 +110,15 @@ public class ReloadHelpers {
                     }
                 })
                 .register();
+        ReloadHandlerBuilder
+                .builder("miapi/key_binding")
+                .codec(MiapiBinding.CODEC, (isClient, path, data, registryAccess) -> KeyBindManager.register(data.withID(path)))
+                .register();
         ReloadHandlerBuilder.builder("miapi/inventory_type")
                 .clear(ItemInventoryManager.INVENTORY_TYPE_REGISTRY::clearTemporary)
                 .syncToClient(true)
-                .codec(InventoryType.CODEC,((isClient, path, data, registryAccess) ->
-                        ItemInventoryManager.INVENTORY_TYPE_REGISTRY.registerTemporary(path,data.additionalSetup(path,registryAccess))))
+                .codec(InventoryType.CODEC, ((isClient, path, data, registryAccess) ->
+                        ItemInventoryManager.INVENTORY_TYPE_REGISTRY.registerTemporary(path, data.additionalSetup(path, registryAccess))))
                 .priority(0.0f)
                 .register();
     }

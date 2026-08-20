@@ -1,223 +1,247 @@
 package smartin.miapi.modules.properties.inventory.screen;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import smartin.miapi.modules.properties.inventory.InventoryType;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.*;
 
 public class SlotLayoutManager {
 
     private final List<DefaultInventoryScreenHandler.ManagedSlot> allSlots;
-    private final List<DefaultInventoryScreenHandler.ManagedInventory> allInventories;
+    private final List<InventorySection> sections;
 
-    private LinkedHashMap<InventoryType, List<DefaultInventoryScreenHandler.ManagedInventory>> inventoriesByType = new LinkedHashMap<>();
-    private final LinkedHashMap<InventoryType, Integer> headerPositions = new LinkedHashMap<>();
-    private final List<DefaultInventoryScreenHandler.ManagedSlot> activeSlots = new ArrayList<>();
-
-    private InventoryType selectedType = null;
-
-    // NOW PIXELS
-    private int scrollOffset = 0;
+    private final List<DefaultInventoryScreenHandler.ManagedSlot> activeSlots =
+            new ArrayList<>();
 
     private final int visibleRows;
-    private final int columns = 9;
+    private final int visibleHeight;
 
-    private int contentHeight = 0;
+    private final int startX;
+    private final int startY;
 
-    private int startX;
-    private int startY;
-    private int textX;
-    private int textY;
+    private final int textX;
+    private final int textY;
 
-    private static final int SLOT_SIZE = 18;
-    private static final int HEADER_SPACE = 9;
+    private final LinkedHashMap<InventorySection, Integer> sectionPositions =
+            new LinkedHashMap<>();
 
-    public SlotLayoutManager(List<DefaultInventoryScreenHandler.ManagedInventory> inventories,
-                             List<DefaultInventoryScreenHandler.ManagedSlot> slots,
-                             int visibleRows,
-                             int x,
-                             int y,
-                             int topX,
-                             int topY) {
-        this.allInventories = inventories;
+    private InventoryType selectedType;
+
+    private int scrollOffset;
+    private int contentHeight;
+
+    public SlotLayoutManager(
+            List<DefaultInventoryScreenHandler.ManagedInventory> inventories,
+            List<DefaultInventoryScreenHandler.ManagedSlot> slots,
+            int visibleRows,
+            int x,
+            int y,
+            int topX,
+            int topY
+    ) {
         this.allSlots = slots;
+
         this.visibleRows = visibleRows;
+        this.visibleHeight = visibleRows * InventorySection.SLOT_SIZE;
+
         this.startX = x;
         this.startY = y;
+
         this.textX = topX;
         this.textY = topY;
-        for (DefaultInventoryScreenHandler.ManagedInventory inv : allInventories) {
-            inventoriesByType
-                    .computeIfAbsent(inv.type, k -> new ArrayList<>())
-                    .add(inv);
-        }
 
-        var list = inventoriesByType.entrySet().stream().sorted(Comparator.comparingDouble(c -> c.getKey().priority())).toList();
-        inventoriesByType = new LinkedHashMap<>();
-        list.forEach(entry -> inventoriesByType.put(entry.getKey(), entry.getValue()));
+        this.sections = createSections(inventories, slots);
+
         layout(true);
     }
 
+    private List<InventorySection> createSections(
+            List<DefaultInventoryScreenHandler.ManagedInventory> inventories,
+            List<DefaultInventoryScreenHandler.ManagedSlot> slots
+    ) {
+        Map<InventoryType, List<DefaultInventoryScreenHandler.ManagedInventory>> grouped =
+                new LinkedHashMap<>();
+
+        inventories.stream()
+                .sorted(Comparator.comparingDouble(
+                        inventory -> inventory.type.priority()
+                ))
+                .forEach(inventory ->
+                        grouped
+                                .computeIfAbsent(inventory.type, ignored -> new ArrayList<>())
+                                .add(inventory)
+                );
+
+        return grouped.entrySet()
+                .stream()
+                .map(entry -> new InventorySection(
+                        entry.getKey(),
+                        entry.getValue(),
+                        slots
+                ))
+                .toList();
+    }
+
     public void setSelectedType(InventoryType type) {
-        this.selectedType = type;
-        this.scrollOffset = 0;
+        selectedType = type;
+        scrollOffset = 0;
         layout(true);
     }
 
     public void clearSelectedType() {
-        this.selectedType = null;
-        this.scrollOffset = 0;
+        selectedType = null;
+        scrollOffset = 0;
         layout(true);
     }
 
     public void scroll(int deltaPixels) {
-        this.scrollOffset += deltaPixels;
+        scrollOffset += deltaPixels;
         clampScroll();
         layout(true);
     }
 
     public void setScroll(int value) {
-        this.scrollOffset = value;
+        scrollOffset = value;
         clampScroll();
         layout(true);
     }
 
-    public void update(GuiGraphics context, InventoryScreen screen, int mouseX, int mouseY) {
+    public void update(
+            GuiGraphics context,
+            InventoryScreen screen,
+            int mouseX,
+            int mouseY
+    ) {
         boolean isMouseOver = isMouseOver(mouseX, mouseY);
-        if (screen.getFocusSlot() instanceof DefaultInventoryScreenHandler.ManagedSlot && !isMouseOver) {
+
+        if (screen.getFocusSlot()
+                    instanceof DefaultInventoryScreenHandler.ManagedSlot
+            && !isMouseOver) {
             screen.resetHoverSlot();
         }
-        //Miapi.LOGGER.info("disable "+isMouseOver);
-        this.getActiveSlots().forEach(managedSlot ->
-                managedSlot.setHighlightable(isMouseOver));
+
+        activeSlots.forEach(slot ->
+                slot.setHighlightable(isMouseOver)
+        );
     }
 
     public boolean isMouseOver(int mouseX, int mouseY) {
-        int scissorX = (textX + startX);
-        int scissorY = (textY);
-        int scissorW = (textX + startX + SLOT_SIZE * 9);
-        int scissorH = (textY + SLOT_SIZE * visibleRows);
-        boolean isMouseOver =
-                mouseX > scissorX &&
-                mouseX < scissorW &&
-                mouseY > scissorY &&
-                mouseY < scissorH;
-        return isMouseOver;
-    }
+        int left = textX + startX;
+        int top = textY;
+        int right = left + InventorySection.SLOT_SIZE * InventorySection.COLUMNS;
+        int bottom = top + visibleHeight;
 
-    private void clampScroll() {
-        int maxScroll = Math.max(0, contentHeight - visibleRows * SLOT_SIZE);
-        if (scrollOffset < 0) scrollOffset = 0;
-        if (scrollOffset > maxScroll) scrollOffset = maxScroll;
+        return mouseX > left
+               && mouseX < right
+               && mouseY > top
+               && mouseY < bottom;
     }
 
     public void layout(boolean applyPositions) {
         if (applyPositions) {
-            for (var slot : allSlots) {
+            for (DefaultInventoryScreenHandler.ManagedSlot slot : allSlots) {
                 slot.setEnabled(false);
             }
         }
 
         activeSlots.clear();
-        headerPositions.clear();
+        sectionPositions.clear();
 
         int yCursor = 0;
 
-        for (var entry : inventoriesByType.entrySet()) {
-            InventoryType type = entry.getKey();
-
-            if (selectedType != null && type != selectedType) continue;
-
-            boolean showHeader = selectedType == null;
-
-            if (showHeader) {
-                headerPositions.put(type, yCursor);
-                yCursor += HEADER_SPACE;
+        for (InventorySection section : sections) {
+            if (selectedType != null &&
+                section.getType() != selectedType) {
+                //continue;
             }
 
-            int indexWithinType = 0;
+            sectionPositions.put(section, yCursor);
 
-            for (var inv : entry.getValue()) {
-                int slotCount = inv.lastSlot - inv.firstSlot + 1;
+            section.layout(
+                    startX,
+                    yCursor,
+                    scrollOffset,
+                    visibleHeight
+            );
 
-                for (int i = 0; i < slotCount; i++) {
-                    var slot = allSlots.get(inv.firstSlot + i);
-                    activeSlots.add(slot);
+            activeSlots.addAll(getSectionSlots(section));
 
-                    int row = indexWithinType / columns;
-                    int col = indexWithinType % columns;
-
-                    int globalY = yCursor + row * SLOT_SIZE;
-                    int visibleY = globalY - scrollOffset;
-
-                    if (applyPositions) {
-                        boolean visible = visibleY >= -SLOT_SIZE && visibleY < visibleRows * SLOT_SIZE;
-
-                        slot.setEnabled(visible);
-                        if (visible) {
-                            int x = startX + col * SLOT_SIZE;
-                            int y = startY + visibleY;
-                            slot.setPos(x, y);
-                        }
-                    }
-
-                    indexWithinType++;
-                }
-            }
-
-            int rows = (int) Math.ceil(indexWithinType / (double) columns);
-            yCursor += rows * SLOT_SIZE;
+            yCursor += section.getRequiredHeight();
         }
 
         contentHeight = yCursor;
+        clampScroll();
     }
 
-    public void renderHeaders(GuiGraphics context, int mouseX, int mouseY) {
-        if (selectedType != null) return;
+    private List<DefaultInventoryScreenHandler.ManagedSlot> getSectionSlots(
+            InventorySection section
+    ) {
+        List<DefaultInventoryScreenHandler.ManagedSlot> result = new ArrayList<>();
 
-        withScissor(context, () -> {
-            for (var entry : headerPositions.entrySet()) {
-                InventoryType type = entry.getKey();
-                int globalY = entry.getValue();
+        for (DefaultInventoryScreenHandler.ManagedInventory inventory :
+                section.getInventories()) {
 
-                int visibleY = globalY - scrollOffset;
+            for (int i = inventory.firstSlot; i <= inventory.lastSlot; i++) {
+                result.add(allSlots.get(i));
+            }
+        }
 
-                boolean visible = visibleY >= -HEADER_SPACE && visibleY < visibleRows * SLOT_SIZE;
-                if (!visible) continue;
+        return result;
+    }
 
-                int x = startX;
-                int y = startY + visibleY - HEADER_SPACE;
+    public void renderHeaders(
+            GuiGraphics graphics,
+            int mouseX,
+            int mouseY
+    ) {
+        if (selectedType != null) {
+            return;
+        }
 
-                context.drawString(
-                        Minecraft.getInstance().font,
-                        type.getName(),
-                        x + textX,
-                        y + textY,
-                        0xFFFFFF,
-                        false
+        withScissor(graphics, () -> {
+            for (var entry : sectionPositions.entrySet()) {
+                InventorySection section = entry.getKey();
+                int sectionY = entry.getValue();
+
+                section.renderHeader(
+                        graphics,
+                        startX + textX,
+                        startY + sectionY - scrollOffset,
+                        0,
+                        visibleHeight
                 );
             }
         });
     }
 
-    // SCISSOR WRAPPER
-    public void withScissor(GuiGraphics context, Runnable render) {
-        double scale = Minecraft.getInstance().getWindow().getGuiScale();
-        int scissorX = (textX + startX);
-        int scissorY = (textY);
-        int scissorW = (textX + startX + SLOT_SIZE * 9);
-        int scissorH = (textY + SLOT_SIZE * visibleRows);
+    public void withScissor(
+            GuiGraphics graphics,
+            Runnable render
+    ) {
+        int left = textX + startX - 1;
+        int top = textY;
+        int right = left + InventorySection.SLOT_SIZE * InventorySection.COLUMNS;
+        int bottom = top + visibleHeight;
 
-        //InteractAbleWidget.drawSquareBorder(context, 0,0,1000,1000, 5, Color.RED.getRGB());
-        context.enableScissor(scissorX, scissorY, scissorW, scissorH);
-        //context.fill(0, 0, 2000, 2000, Color.BLUE.getRGB());
-        //RenderSystem.enableScissor(509,500,510,600);
-        render.run();
-        context.disableScissor();
+        graphics.enableScissor(left, top, right, bottom);
+
+        try {
+            render.run();
+        } finally {
+            graphics.disableScissor();
+        }
+    }
+
+    private void clampScroll() {
+        int maxScroll = getMaxScroll();
+
+        if (scrollOffset < 0) {
+            scrollOffset = 0;
+        }
+
+        if (scrollOffset > maxScroll) {
+            scrollOffset = maxScroll;
+        }
     }
 
     public int getScrollOffset() {
@@ -225,13 +249,29 @@ public class SlotLayoutManager {
     }
 
     public int getMaxScroll() {
-        return Math.max(0, contentHeight - visibleRows * SLOT_SIZE);
+        return Math.max(0, contentHeight - visibleHeight);
     }
 
     public float getScrollProgress() {
         int max = getMaxScroll();
-        if (max == 0) return 0f;
+
+        if (max == 0) {
+            return 0.0f;
+        }
+
         return (float) scrollOffset / max;
+    }
+
+    public int getContentHeight() {
+        return contentHeight;
+    }
+
+    public int getVisibleHeight() {
+        return visibleHeight;
+    }
+
+    public int getVisibleRows() {
+        return visibleRows;
     }
 
     public List<DefaultInventoryScreenHandler.ManagedSlot> getActiveSlots() {
@@ -240,5 +280,9 @@ public class SlotLayoutManager {
 
     public InventoryType getSelectedType() {
         return selectedType;
+    }
+
+    public List<InventorySection> getSections() {
+        return sections;
     }
 }

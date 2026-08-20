@@ -17,6 +17,8 @@ public final class KeyBindManager {
     public static final MiapiRegistry<MiapiBinding> REGISTRY =
             MiapiRegistry.getInstance(MiapiBinding.class);
 
+    public static boolean IS_KEYBIND_SYSTEM_ENABLED = false;
+
     public static final ResourceLocation NONE =
             Miapi.id("none");
 
@@ -32,6 +34,9 @@ public final class KeyBindManager {
     }
 
     public static void register(MiapiBinding binding) {
+        if(!IS_KEYBIND_SYSTEM_ENABLED){
+            return;
+        }
         if (!MiapiClient.KEY_BINDINGS.containsKey(binding.id)) {
             REGISTRY.register(binding.id, binding);
         }
@@ -49,11 +54,14 @@ public final class KeyBindManager {
 
     @Environment(EnvType.CLIENT)
     public static void clientRegister(MiapiBinding binding) {
+        if(!IS_KEYBIND_SYSTEM_ENABLED){
+            return;
+        }
         if (binding.state.clientRegistered) {
             return;
         }
         binding.state.clientRegistered = true;
-        if(!MiapiClient.KEY_BINDINGS.containsKey(binding.id)){
+        if (!MiapiClient.KEY_BINDINGS.containsKey(binding.id)) {
             MiapiClient.KEY_BINDINGS.register(binding.id, binding.asKeyMapping());
         }
         Map<ResourceLocation, MiapiBinding> bindingMap = new HashMap<>(MiapiConfig

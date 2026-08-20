@@ -6,6 +6,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.ParentHandledScreen;
 import smartin.miapi.modules.properties.inventory.SlotInfo;
@@ -90,7 +91,7 @@ public class InventoryScreen extends ParentHandledScreen<DefaultInventoryScreenH
     private void renderHighlights(GuiGraphics gfx) {
         int left = this.leftPos;
         int top = this.topPos;
-        layoutManager.withScissor(gfx,()->{
+        layoutManager.withScissor(gfx, () -> {
             for (DefaultInventoryScreenHandler.ManagedInventory managed : menu.getManagedInventories()) {
                 for (int i = managed.firstSlot; i <= managed.lastSlot; i++) {
                     DefaultInventoryScreenHandler.ManagedSlot slot = menu.getManagedSlots().get(i);
@@ -135,29 +136,7 @@ public class InventoryScreen extends ParentHandledScreen<DefaultInventoryScreenH
                 .sorted(Comparator.comparingDouble(SlotInfo::priority))
                 .collect(Collectors.toCollection(LinkedHashSet::new))) {
 
-            int x1 = left;
-            int x2 = left + height + 4;
-            int y1 = top + yOffset;
-            int y2 = y1 + height;
-
-            int color = info.getColor().argb();
-
-            context.fill(x1, y1, x2, y2, color);
-            context.drawString(
-                    Minecraft.getInstance().font,
-                    info.getName(),
-                    x1 - 20,
-                    y1,
-                    color,
-                    false
-            );
-
-            if (mouseX >= x1 && mouseX <= x2 &&
-                mouseY >= y1 && mouseY <= y2) {
-                hoveredInventory = info;
-            }
-
-            yOffset += height;
+            yOffset = renderBackpackSourceLeft(context, mouseX, mouseY, info, left, height, top, yOffset);
         }
 
         // Apply filtering to layout manager
@@ -166,6 +145,28 @@ public class InventoryScreen extends ParentHandledScreen<DefaultInventoryScreenH
         } else {
             //layoutManager.clearSelectedType();
         }
+    }
+
+    /**
+     * renders the items and handles the hover logic for the items on the left
+     */
+    private int renderBackpackSourceLeft(GuiGraphics context, int mouseX, int mouseY, SlotInfo info, int left, int height, int top, int yOffset) {
+        int x1 = left;
+        int x2 = left + height + 4;
+        int y1 = top + yOffset;
+        int y2 = y1 + height;
+
+        ItemStack stack = info.getStack(minecraft.player);
+        context.renderItem(stack, x1, y1);
+
+        if (mouseX >= x1 && mouseX <= x2 &&
+            mouseY >= y1 && mouseY <= y2) {
+            hoveredInventory = info;
+            context.renderTooltip(Minecraft.getInstance().font, info.getName(), mouseX, mouseY);
+        }
+
+        yOffset += height;
+        return yOffset;
     }
 
     @Override

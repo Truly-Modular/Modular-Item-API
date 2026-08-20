@@ -5,11 +5,14 @@ import com.redpxnda.nucleus.codec.auto.ConfigAutoCodec;
 import com.redpxnda.nucleus.util.Color;
 import com.redpxnda.nucleus.util.Comment;
 import net.minecraft.resources.ResourceLocation;
+import smartin.miapi.Miapi;
 import smartin.miapi.client.MiapiClient;
 import smartin.miapi.modules.abilities.key.MiapiBinding;
+import smartin.miapi.modules.abilities.key.handler.OpenBackPackHandler;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @ConfigAutoCodec.ConfigClassMarker
 public class MiapiClientConfig {
@@ -146,8 +149,10 @@ public class MiapiClientConfig {
                                 
                 This isnt meant to be interacted with by users.
                 """)
-        //@AutoCodec.Ignored
         public Map<ResourceLocation, MiapiBinding> bindings = Map.of(
+                Miapi.id("backpack-open"),
+                new MiapiBinding(Miapi.id("backpack-open"), "miapi", 32, new OpenBackPackHandler(
+                        Optional.empty(), OpenBackPackHandler.Mode.WHITELIST, Optional.empty()))
         );
     }
 

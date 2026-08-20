@@ -17,3 +17,4 @@
 - fixed sometimes removing stats from loot
 - fixed item rendering flickering in odd circumstances
 - fixed crash when smithing with an invalid material
+- fixed crash when Construct from Fungal Infection: Spore

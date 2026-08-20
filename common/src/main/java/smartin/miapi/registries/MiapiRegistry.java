@@ -74,6 +74,8 @@ public class MiapiRegistry<T> {
     @Nullable
     public <T> ResourceLocation findKey(T value) {
         Optional<ResourceLocation> matchingId = entries.entrySet().stream()
+                .filter(Objects::nonNull)
+                .filter(entry -> entry.getValue() != null)
                 .filter(entry -> entry.getValue().equals(value))
                 .map(Map.Entry::getKey)
                 .findFirst();
@@ -152,8 +154,8 @@ public class MiapiRegistry<T> {
      * @param remappingFunction remapping function, old entry can be null!
      */
     public void replace(ResourceLocation id, BiFunction<ResourceLocation, ? super T, ? extends T> remappingFunction) {
-        entries.compute(id, (i,entry)->{
-            T newEntry = remappingFunction.apply(i,entry);
+        entries.compute(id, (i, entry) -> {
+            T newEntry = remappingFunction.apply(i, entry);
             callbacks.forEach(callback -> callback.accept(newEntry));
             idCallbacks.forEach(callback -> callback.accept(id, newEntry));
             return newEntry;

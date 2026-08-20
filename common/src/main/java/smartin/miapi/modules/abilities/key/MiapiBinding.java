@@ -10,11 +10,11 @@ import smartin.miapi.Miapi;
 import smartin.miapi.modules.abilities.key.handler.BindingState;
 import smartin.miapi.modules.abilities.key.handler.KeybindHandler;
 
-public class MiapiBinding  {
+public class MiapiBinding {
     public static final Codec<MiapiBinding> CODEC =
             RecordCodecBuilder.create(instance ->
                     instance.group(
-                            ResourceLocation.CODEC.fieldOf("id")
+                            ResourceLocation.CODEC.optionalFieldOf("id", Miapi.id("none"))
                                     .forGetter(binding -> binding.id),
                             Codec.STRING.fieldOf("category")
                                     .forGetter(binding -> binding.category),
@@ -33,7 +33,7 @@ public class MiapiBinding  {
     @Environment(EnvType.CLIENT)
     private KeyMapping mapping;
 
-    public  MiapiBinding(
+    public MiapiBinding(
             ResourceLocation id,
             String category,
             int defaultScanCode,
@@ -43,6 +43,10 @@ public class MiapiBinding  {
         this.category = category;
         this.defaultScanCode = defaultScanCode;
         this.handler = handler;
+    }
+
+    public MiapiBinding withID(ResourceLocation nextID) {
+        return new MiapiBinding(nextID, category, defaultScanCode, handler);
     }
 
     @Environment(EnvType.CLIENT)

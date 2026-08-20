@@ -22,7 +22,7 @@ public class LivingEntityMixin {
     private DamageSource storedDamageSource;
     private MiapiEvents.LivingHurtEvent lastEvent;
 
-    @Inject(method = "hurt", at = @At(value = "HEAD"),cancellable = true)
+    @Inject(method = "hurt", at = @At(value = "HEAD"), cancellable = true)
     private void miapi$damageEvent(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
         MiapiEvents.LivingHurtEvent livingHurtEvent = new MiapiEvents.LivingHurtEvent((LivingEntity) (Object) this, source.getEntity(), source, amount);
         if (source.getEntity() instanceof Player entity) {
@@ -48,17 +48,18 @@ public class LivingEntityMixin {
         //float damage = Math.max(0, currentShieldingArmor);
         //amount -= damage;
         //currentShieldingArmor = currentShieldingArmor - Math.min(amount, damage);
-        MiapiEvents.LivingHurtEvent livingHurtEvent = new MiapiEvents.LivingHurtEvent((LivingEntity) (Object) this, storedDamageSource.getEntity(), storedDamageSource, amount);
         if (storedDamageSource != null) {
+            MiapiEvents.LivingHurtEvent livingHurtEvent = new MiapiEvents.LivingHurtEvent((LivingEntity) (Object) this, storedDamageSource.getEntity(), storedDamageSource, amount);
             if (storedDamageSource.getEntity() instanceof Player entity) {
                 livingHurtEvent.isCritical = hasCrited(entity, (LivingEntity) (Object) this);
             }
             if (storedDamageSource.getEntity() instanceof Arrow arrowEntity) {
                 //livingHurtEvent.isCritical = arrowEntity.isCritical();
             }
+            MiapiEvents.LIVING_HURT_AFTER_ARMOR.invoker().hurt(livingHurtEvent);
+            return livingHurtEvent.amount;
         }
-        MiapiEvents.LIVING_HURT_AFTER_ARMOR.invoker().hurt(livingHurtEvent);
-        return livingHurtEvent.amount;
+        return amount;
     }
 
     @Unique
