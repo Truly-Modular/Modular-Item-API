@@ -54,7 +54,6 @@ public class AllowedEnchantments extends CodecProperty<AllowedEnchantments.Allow
     public AllowedEnchantments() {
         super(AllowedEnchantsData.CODEC);
         property = this;
-        ReloadEvents.START.subscribe((isClient, registryAccess, worker) -> ID_LOOKUP = new WeakHashMap<>());
         ReloadEvents.END.subscribe((isClient, registryAccess, worker) -> {
             enchantmentExtentionsMap = new HashMap<>(Map.of(ResourceLocation.parse("c:enchantable/pickaxe"), new ArrayList<>(), ResourceLocation.parse("c:enchantable/axe"), new ArrayList<>(), ResourceLocation.parse("c:enchantable/shovel"), new ArrayList<>(), ResourceLocation.parse("c:enchantable/hoe"), new ArrayList<>()));
             if (!isClient && Miapi.server != null) {
