@@ -8,10 +8,10 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.renderer.texture.SpriteContents;
 import net.minecraft.util.FastColor;
 import net.minecraft.util.Mth;
-import smartin.miapi.client.AnimatedTexturesManager;
 import smartin.miapi.client.renderer.NativeImageGetter;
 import smartin.miapi.material.base.Material;
 
+import java.io.IOException;
 import java.util.function.Consumer;
 
 @Environment(EnvType.CLIENT)
@@ -29,7 +29,7 @@ public class SpriteOverlayerJson extends SpritePixelReplacer {
     @Override
     public void tick(Consumer<NativeImage> nativeImageConsumer, SpriteContents spriteContents) {
         super.tick(nativeImageConsumer, spriteContents);
-        AnimatedTexturesManager.markAnimated(delegate.rawSprite);
+        delegate.markUse();
     }
 
     @Override
@@ -76,5 +76,10 @@ public class SpriteOverlayerJson extends SpritePixelReplacer {
     @Override
     public boolean doTick() {
         return delegate.isAnimated();
+    }
+
+    @Override
+    public void close() throws IOException {
+        super.close();
     }
 }

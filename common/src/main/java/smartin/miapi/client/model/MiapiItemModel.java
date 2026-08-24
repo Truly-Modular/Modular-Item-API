@@ -2,7 +2,6 @@ package smartin.miapi.client.model;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.datafixers.util.Pair;
-import dev.architectury.event.EventResult;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
@@ -17,7 +16,6 @@ import smartin.miapi.client.MiapiClient;
 import smartin.miapi.client.model.module.baked.passes.DeferredGlintRenderPass;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.datapack.ReloadEvents;
-import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.item.modular.VisualModularItem;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
@@ -26,7 +24,6 @@ import smartin.miapi.modules.cache.ModularItemCache;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.WeakHashMap;
 
 @Environment(EnvType.CLIENT)
 public class MiapiItemModel implements MiapiModel {
@@ -34,29 +31,10 @@ public class MiapiItemModel implements MiapiModel {
     public static List<ModelTransformerSupplier> modelTransformersSuppler = new ArrayList<>();
     private static final String CACHE_KEY = "miapi_model_rework";
     public final HashMap<CacheKey, CacheData> localCache = new HashMap<>();
-    //TODO:rewrite this weakHashmap with itemstack keys, this is a memory leak
-    public static WeakHashMap<ItemStack, MiapiItemModel> fallbackLookup = new WeakHashMap<>();
     public static boolean isRendering = false;
 
     static {
-        ModularItemCache.setSupplier(CACHE_KEY, (s) -> {
-            if (fallbackLookup.containsKey(s)) {
-                return fallbackLookup.get(s);
-            }
-            MiapiItemModel model = new MiapiItemModel(s);
-            fallbackLookup.put(s, model);
-            return model;
-        });
-        MiapiEvents.CLEAR_CACHE.register(() -> {
-            new ArrayList<>(MiapiItemModel.fallbackLookup.keySet()).forEach(i -> {
-                ModuleInstance moduleInstance = ItemModule.getModules(i);
-                if (moduleInstance != null) {
-                    moduleInstance.cache().clear();
-                }
-            });
-            MiapiItemModel.fallbackLookup = new WeakHashMap<>();
-            return EventResult.pass();
-        });
+        ModularItemCache.setSupplier(CACHE_KEY, MiapiItemModel::new);
     }
 
     @Nullable

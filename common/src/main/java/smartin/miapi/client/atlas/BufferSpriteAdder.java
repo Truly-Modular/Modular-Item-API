@@ -13,8 +13,10 @@ import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceMetadata;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
+import smartin.miapi.client.renderer.NativeImageGetter;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.events.MiapiEvents;
+import smartin.miapi.material.codec.CodecMaterial;
 import smartin.miapi.mixin.client.SpriteContentsAccessor;
 import smartin.miapi.mixin.client.SpriteSourcesAccessor;
 
@@ -31,6 +33,7 @@ public class BufferSpriteAdder implements SpriteSource {
     @Override
     public void run(ResourceManager resourceManager, Output output) {
         MiapiEvents.CLEAR_CACHE.invoker().onReload();
+        CodecMaterial.onTexturePackReload();
         clearAtlasSlots();
         MaterialSpriteManager.ATLAS_SPRITE_POOL.clear();
         MaterialSpriteManager.FAST_CACHE.clear();
@@ -51,8 +54,16 @@ public class BufferSpriteAdder implements SpriteSource {
                             @Override
                             public void tickAndUpload(int x, int y) {
                                 if (dirty) {
-                                    thisContents.uploadFirstFrame(x, y);
-                                    dirty = false;
+                                    NativeImage image = NativeImageGetter.get(thisContents).nativeImage;
+                                    if (NativeImageGetter.isStillValid(image)) {
+                                        Miapi.LOGGER.info("Attempted to render invalid textures, clearing Caches instead");
+                                        MiapiEvents.CLEAR_CACHE.invoker().onReload();
+                                        dirty = true;
+                                    } else {
+                                        thisContents.uploadFirstFrame(x, y);
+                                        dirty = false;
+
+                                    }
                                 }
                             }
 
@@ -64,11 +75,12 @@ public class BufferSpriteAdder implements SpriteSource {
                     }
                 };
                 output.add(id, spriteResourceLoader -> contents);
-                slots.add(new MaterialSpriteManager.SpriteSlot(id, cacheSprites.x, cacheSprites.y, contents, (n) -> {
+                MaterialSpriteManager.SpriteSlot slot = new MaterialSpriteManager.SpriteSlot(id, cacheSprites.x, cacheSprites.y, contents, (n) -> {
                     SpriteContentsAccessor accessor = (SpriteContentsAccessor) contents;
                     accessor.getImage().copyFrom(n);
                     contents.dirty = true;
-                }));
+                });
+                slots.add(slot);
             }
         });
         MiapiEvents.CLEAR_CACHE.invoker().onReload();

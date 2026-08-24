@@ -1,7 +1,6 @@
 package smartin.miapi.material.palette;
 
 import com.google.gson.JsonElement;
-import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -14,18 +13,17 @@ import net.minecraft.client.renderer.texture.SpriteContents;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.packs.resources.Resource;
-import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.FastColor;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.client.atlas.MaterialAtlasManager;
 import smartin.miapi.client.atlas.MaterialSpriteManager;
 import smartin.miapi.client.renderer.NativeImageGetter;
 import smartin.miapi.registries.JsonOpsBooleanPatched;
 
-import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 
 @Environment(EnvType.CLIENT)
@@ -67,46 +65,29 @@ public class SpriteFromJson {
             Codec.BOOL.optionalFieldOf("forceTick", false).forGetter(sprite -> sprite.isAnimated)
     ).apply(instance, SpriteFromJson::new));
 
-    /*
-    public SpriteFromJson(JsonElement json) {
-        if (!(json instanceof JsonObject obj))
-            throw new IllegalArgumentException("json used for json sprite must be a json object!");
-
-        JsonElement atlasRaw = obj.get("atlas");
-        if (atlasRaw instanceof JsonPrimitive prim && prim.isString()) {
-            String key = prim.getAsString();
-            ResourceLocation atlasId;
-
-            if (atlasIdShortcuts.containsKey(key)) atlasId = atlasIdShortcuts.get(key);
-            else atlasId = ResourceLocation.parse(key);
-
-            ResourceLocation textureId = ResourceLocation.parse(obj.get("texture").getAsString());
-            rawSprite = Minecraft.getInstance().getMiapiTextureAtlas(atlasId).apply(textureId);
-            SpriteContents contents = rawSprite.contents();
-            imageSupplier = () -> NativeImageGetter.get(contents);
-            if (obj.has("forceTick"))
-                isAnimated = obj.get("forceTick").getAsBoolean();
-            else
-                isAnimated = SpriteColorer.isAnimatedSpriteStatic(contents);
-        } else {
-            isAnimated = obj.has("forceTick") && obj.get("forceTick").getAsBoolean();
-            ResourceLocation textureId = ResourceLocation.parse(obj.get("texture").getAsString());
-            NativeImage rawImage = loadTexture(Minecraft.getInstance().getResourceManager(), textureId);
-            NativeImageGetter.ImageHolder holder = new NativeImageGetter.ImageHolder();
-            holder.nativeImage = rawImage;
-            holder.width = rawImage.getMiapiWidth();
-            holder.height = rawImage.getMiapiHeight();
-            imageSupplier = () -> holder;
-        }
-    }
-     */
-
     public static SpriteFromJson getFromJson(JsonElement element) {
         return MAP_CODEC.codec().decode(JsonOpsBooleanPatched.INSTANCE, element).getOrThrow().getFirst();
     }
 
 
     public SpriteFromJson(String atlasKey, String texturePath, boolean forceTick) {
+        AtomicReference<SpriteContents> contents = new AtomicReference<>();
+        SpriteContents actualContents = findContextSavely(atlasKey, texturePath);
+        contents.set(actualContents);
+        imageSupplier = () -> {
+            NativeImageGetter.ImageHolder image = NativeImageGetter.get(contents.get());
+            if (NativeImageGetter.isStillValid(image.nativeImage)) {
+                return NativeImageGetter.get(contents.get());
+            }else{
+                SpriteContents nextContext = findContextSavely(atlasKey, texturePath);
+                contents.set(nextContext);
+                return NativeImageGetter.get(nextContext);
+            }
+        };
+        isAnimated = forceTick || SpriteColorer.isAnimatedSpriteStatic(contents.get());
+    }
+
+    private @NotNull SpriteContents findContextSavely(String atlasKey, String texturePath) {
         ResourceLocation atlasId = atlasIdShortcuts.getOrDefault(atlasKey, ResourceLocation.parse(atlasKey));
         ResourceLocation textureId = ResourceLocation.parse(texturePath);
         TextureAtlas atlasSprite = Minecraft.getInstance().getModelManager().getAtlas(atlasId);
@@ -114,25 +95,11 @@ public class SpriteFromJson {
             throw new RuntimeException("could not find atlas" + atlasKey);
         }
         rawSprite = atlasSprite.getSprite(textureId);
-        if (atlasSprite == null) {
+        if (rawSprite == null) {
             throw new RuntimeException("could not find atlas image" + textureId + " on atlas " + atlasKey);
         }
         SpriteContents contents = rawSprite.contents();
-        imageSupplier = () -> NativeImageGetter.get(contents);
-        isAnimated = forceTick || SpriteColorer.isAnimatedSpriteStatic(contents);
-    }
-
-    public static NativeImage loadTexture(ResourceManager resourceManager, ResourceLocation id) {
-        try {
-            NativeImage nativeImage;
-            Resource resource = resourceManager.getResourceOrThrow(id);
-            try (InputStream inputStream = resource.open()) {
-                nativeImage = NativeImage.read(inputStream);
-            }
-            return nativeImage;
-        } catch (Exception ex) {
-            throw new IllegalArgumentException("Failed to fetch texture '" + id + "' for json sprite data!", ex);
-        }
+        return contents;
     }
 
     public void markUse() {

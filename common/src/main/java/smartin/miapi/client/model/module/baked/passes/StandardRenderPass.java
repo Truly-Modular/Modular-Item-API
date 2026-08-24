@@ -8,25 +8,53 @@ import smartin.miapi.client.model.MiapiModel;
 import smartin.miapi.client.model.ModelHolder;
 import smartin.miapi.client.model.module.baked.BakedModelCache;
 import smartin.miapi.client.model.module.baked.DoubleQuadCache;
+import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.modules.ModuleInstance;
 
 public class StandardRenderPass implements RenderPass {
     DoubleQuadCache[] quadCaches;
+    ModuleInstance moduleInstance;
+    ItemStack stack;
 
     public StandardRenderPass(ModuleInstance moduleInstance, ItemStack stack, ItemDisplayContext context, ModelHolder modelHolder, BakedModelCache cache, RandomSource random) {
         quadCaches = cache.getForward(modelHolder.colorProvider(), stack, moduleInstance, context, random);
+        this.moduleInstance = moduleInstance;
+        this.stack = stack;
     }
 
     @Override
     public void render(MiapiModel.RenderContext context, float[] colors, float alpha, int light) {
+        context.matrices().pushPose();
         try {
-            context.matrices().pushPose();
             for (DoubleQuadCache batch : quadCaches) {
-                batch.render(context.vertexConsumers(), context.matrices().last(), colors[0], colors[1], colors[2], alpha, light, context.overlay());
+                batch.render(
+                        context.vertexConsumers(),
+                        context.matrices().last(),
+                        colors[0],
+                        colors[1],
+                        colors[2],
+                        alpha,
+                        light,
+                        context.overlay()
+                );
             }
         } catch (RuntimeException renderError) {
-            Miapi.LOGGER.info("Error while rendering:" , renderError);
-        } finally {
+            Miapi.LOGGER.error(
+                    "Error rendering StandardRenderPass: module={}, item={}, context={}, batchCount={}, colors=[{}, {}, {}], alpha={}, light={}, overlay={}",
+                    moduleInstance,
+                    stack,
+                    context,
+                    quadCaches.length,
+                    colors[0],
+                    colors[1],
+                    colors[2],
+                    alpha,
+                    light,
+                    context.overlay(),
+                    renderError
+            );
+            MiapiEvents.CLEAR_CACHE.invoker();
+        }finally {
             context.matrices().popPose();
         }
     }

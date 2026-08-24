@@ -29,8 +29,8 @@ public class DoubleQuadCache {
             if (moved == null) {
                 //moved = ModelTransformer.getOffset(original, vcProvider.u, vcProvider.v);
             }
-            if (vcProvider.spriteSlot.used < 3) {
-                vcProvider.spriteSlot.used = 3;
+            if (vcProvider.spriteSlot.canBeRendered()) {
+                vcProvider.spriteSlot.use();
             }
             VertexConsumer vc = MaterialSpriteManager.getVanillaItemVC(bufferSource);
             Minecraft.getInstance().getProfiler().pop();

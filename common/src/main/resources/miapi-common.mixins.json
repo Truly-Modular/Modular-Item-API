@@ -62,7 +62,8 @@
         "smithing.SmithingTransformRecipeAccessor"
     ],
     "client": [
-        "PoseStackMixin",
+        "client.NativeImageAccessor",
+        "client.PoseStackMixin",
         "client.AbstractConainerScreenMixin",
         "client.BufferBuilderAccessor",
         "client.BuiltinModelItemRendererMixin",

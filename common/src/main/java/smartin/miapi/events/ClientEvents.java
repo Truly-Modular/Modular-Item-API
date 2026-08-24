@@ -13,6 +13,7 @@ public class ClientEvents {
     public static final Event<HudRender> HUD_RENDER = PrioritizedEvent.createLoop();
     public static final Event<Register> STAT_WIDGET_REGISTRATION = PrioritizedEvent.createLoop();
     public static final Event<ClientTick> CLIENT_TICK = PrioritizedEvent.createLoop();
+    public static final Event<ClientTick> CLIENT_RENDER_TICK = PrioritizedEvent.createLoop();
     public static final Event<ResolveColorProvider> RESOLVE_COLOR_PROVIDER = PrioritizedEvent.createLoop();
 
     public interface HudRender {

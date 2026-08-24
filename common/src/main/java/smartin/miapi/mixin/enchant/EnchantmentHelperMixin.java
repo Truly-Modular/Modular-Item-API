@@ -36,7 +36,7 @@ public abstract class EnchantmentHelperMixin {
         if (ModularItem.isModularItem(tool)) {
             MutableFloat modularBonusDamage = new MutableFloat();
             MiapiEvents.MODIFY_DAMAGE_EVENT.invoker().adjust(entity, tool, baseDamage, damageSource, modularBonusDamage, level);
-            return originalEnchantmentDamage + modularBonusDamage.floatValue() - baseDamage;
+            return originalEnchantmentDamage + modularBonusDamage.floatValue();
         }
         return originalEnchantmentDamage;
     }

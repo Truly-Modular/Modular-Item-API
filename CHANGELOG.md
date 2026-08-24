@@ -18,3 +18,5 @@
 - fixed item rendering flickering in odd circumstances
 - fixed crash when smithing with an invalid material
 - fixed crash when Construct from Fungal Infection: Spore
+- fixed stability issues with reloading texture packs
+- fixed minor stability issues related to Overlay Rendering

@@ -63,12 +63,10 @@ public abstract class SpriteColorer implements MaterialRenderController {
 
     @Environment(EnvType.CLIENT)
     public void getVertexConsumer(TextureAtlasSprite originalSprite, ItemStack stack, ModuleInstance moduleInstance, ItemDisplayContext mode, VertexConsumerProvider out) {
-        MaterialSpriteManager.getVertexConsumer(originalSprite, material, this,out);
+        MaterialSpriteManager.getVertexConsumer(originalSprite, material, this, out);
     }
 
-    public boolean isAnimatedSprite(SpriteContents spriteContents) {
-        return SpriteColorer.isAnimatedSpriteStatic(spriteContents);
-    }
+    public boolean isAnimatedSprite(SpriteContents spriteContents) {return SpriteColorer.isAnimatedSpriteStatic(spriteContents);}
 
     public static boolean isAnimatedSpriteStatic(SpriteContents spriteContents) {
         try (SpriteTicker animator = spriteContents.createTicker()) {

@@ -19,12 +19,10 @@ import smartin.miapi.modules.properties.util.DoubleProperty;
  */
 public class ExecutionerProperty extends DoubleProperty {
     public static final ResourceLocation KEY = Miapi.id("executioner");
-    public static ExecutionerProperty property;
+    public static ExecutionerProperty property = new ExecutionerProperty();
 
     public ExecutionerProperty() {
         super(KEY);
-        property = this;
-
         MiapiEvents.MODIFY_DAMAGE_EVENT.register(
                 (target, itemStack, baseDamage, damageSource, bonusDamage,level) -> {
                     if (target instanceof LivingEntity livingEntity) {

@@ -9,6 +9,7 @@ import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.resources.TextureAtlasHolder;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
+import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.mixin.client.TextureAtlasAccessor;
 import smartin.miapi.mixin.client.TextureAtlasHolderAccessor;
 
@@ -57,6 +58,12 @@ public class MaterialAtlasManager extends TextureAtlasHolder {
         } catch (RuntimeException e) {
             return null;
         }
+    }
+
+    @Override
+    public void close() {
+        super.close();
+        MiapiEvents.CLEAR_CACHE.invoker().onReload();
     }
 
     public record AddedSpriteEntry(ResourceLocation id, Consumer<SpriteContents> onCreated) {

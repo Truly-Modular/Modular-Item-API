@@ -144,14 +144,15 @@ public class MiapiClient {
         //BoomerangClientRendering.setup();
         ClientEvents.CLIENT_TICK.register((instance -> {
             tick.addAndGet(1);
-
+            ClientKeybinding.clientTick(instance);
+        }));
+        ClientEvents.CLIENT_RENDER_TICK.register(client -> {
             if (MiapiConfig.getClientConfig().render.animatedMaterials) {
                 Minecraft.getInstance().getProfiler().push("miapiMaterialAnimations");
                 MaterialSpriteManager.tick();
                 Minecraft.getInstance().getProfiler().pop();
             }
-            ClientKeybinding.clientTick(instance);
-        }));
+        });
         Networking.registerS2CPacket(MaterialCommand.SEND_MATERIAL_CLIENT, (buf -> {
             String materialId = buf.readUtf();
             Minecraft.getInstance().execute(() -> {

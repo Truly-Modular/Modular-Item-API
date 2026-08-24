@@ -12,6 +12,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.architectury.platform.Platform;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -38,6 +39,7 @@ import smartin.miapi.material.palette.MaterialRenderControllers;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleDataPropertiesManager;
 import smartin.miapi.modules.ModuleInstance;
+import smartin.miapi.modules.cache.CacheCommands;
 import smartin.miapi.modules.conditions.ConditionManager;
 import smartin.miapi.modules.properties.render.ColorProperty;
 import smartin.miapi.modules.properties.util.MergeType;
@@ -77,6 +79,19 @@ public class CodecMaterial implements Material {
     protected MaterialRenderController dyeAblePalette;
     public Either<Boolean, List<Holder<Item>>> toGenerate = Either.left(false);
     public List<MaterialVariant> variants = new ArrayList<>();
+
+    /**
+     * due to this and other materials bad handling of RenderControllers this is required
+     * a structural rework of materials and their side of colloring, what is and isnt cached how
+     * would make this nolonger required.
+     * BUT this patch makes reloading texturepacks somewhat stable.
+     */
+    @Environment(EnvType.CLIENT)
+    public static void onTexturePackReload() {
+        if (Minecraft.getInstance() != null && Minecraft.getInstance().player != null) {
+            CacheCommands.triggerServerReload();
+        }
+    }
 
     public static final Codec<CodecMaterial> CODEC = new Codec<>() {
         @Override
@@ -273,7 +288,7 @@ public class CodecMaterial implements Material {
         );
 
         // Copy non-constructor fields
-        if(this.id==null){
+        if (this.id == null) {
             throw new RuntimeException("Cannot create copy for a material without an ID");
         }
         copy.id = this.id;
@@ -321,14 +336,14 @@ public class CodecMaterial implements Material {
         }
         if (material.paletteJson.isPresent()) {
             this.paletteJson = material.paletteJson;
-            if(Platform.getEnv() == EnvType.CLIENT){
+            if (Platform.getEnv() == EnvType.CLIENT) {
                 this.palette = MaterialRenderControllers.creators.get(this.paletteJson.get().getAsJsonObject().get("type").getAsString()).createPalette(this.paletteJson.get(), this);
             }
         }
 
         if (material.dyePaletteJson.isPresent()) {
             this.dyePaletteJson = material.paletteJson;
-            if(Platform.getEnv() == EnvType.CLIENT) {
+            if (Platform.getEnv() == EnvType.CLIENT) {
                 this.dyeAblePalette = MaterialRenderControllers.creators.get(this.dyePaletteJson.get().getAsJsonObject().get("type").getAsString()).createPalette(this.dyePaletteJson.get(), this);
             }
         }

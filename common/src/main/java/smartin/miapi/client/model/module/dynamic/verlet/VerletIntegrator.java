@@ -3,7 +3,6 @@ package smartin.miapi.client.model.module.dynamic.verlet;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
-import smartin.miapi.Miapi;
 
 import java.util.List;
 
@@ -62,10 +61,6 @@ public class VerletIntegrator {
                     .sub(sim.prevRootDelta);
 
             sim.prevRootDelta.set(sim.rootDelta);
-            Miapi.LOGGER.info(
-                    "vel=" + r(sim.rootDelta.length()) +
-                    " accel=" + r(sim.rootAcceleration.length())
-            );
             if (initSolve) {
                 integrateMotion(sim, h, damping, gravity);
             }

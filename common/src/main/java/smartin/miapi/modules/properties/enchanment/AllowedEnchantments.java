@@ -260,10 +260,19 @@ public class AllowedEnchantments extends CodecProperty<AllowedEnchantments.Allow
                                         .optionalFieldOf("anvil_allowed", List.of())
                                         .forGetter(AllowedEnchantsData::anvilAllowed),
                                 Codec.list(ResourceLocation.CODEC)
+                                        .optionalFieldOf("allowed_anvil")
+                                        .forGetter(a -> Optional.empty()),
+                                Codec.list(ResourceLocation.CODEC)
                                         .optionalFieldOf("forbidden", List.of())
                                         .forGetter(AllowedEnchantsData::forbidden))
                         .apply(instance, AllowedEnchantsData::new));
 
+        public AllowedEnchantsData(List<ResourceLocation> allowed,
+                                   List<ResourceLocation> anvilAllowed,
+                                   Optional<List<ResourceLocation>> allowedAnvil,
+                                   List<ResourceLocation> forbidden) {
+            this(allowed, MergeAble.mergeList(anvilAllowed, allowedAnvil.orElse(List.of()), MergeType.SMART), forbidden);
+        }
 
         Optional<Boolean> isSupported(Enchantment enchantment, ModuleInstance moduleInstance) {
             if (contains(enchantment, forbidden(), moduleInstance)) {

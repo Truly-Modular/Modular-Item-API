@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.NativeImage;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.renderer.texture.SpriteContents;
+import smartin.miapi.mixin.client.NativeImageAccessor;
 import smartin.miapi.mixin.client.SpriteContentsAccessor;
 
 import java.util.Map;
@@ -27,6 +28,10 @@ public class NativeImageGetter {
 
     public static NativeImage getImage(SpriteContents contents) {
         return ((SpriteContentsAccessor) contents).getImage();
+    }
+
+    public static boolean isStillValid(NativeImage nativeImage) {
+        return ((NativeImageAccessor) (Object) nativeImage).getPixelsMiapi() == 0L;
     }
 
     public static ImageHolder getFromContents(NativeImage contents) {
