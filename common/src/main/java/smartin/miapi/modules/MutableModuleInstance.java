@@ -59,6 +59,24 @@ public class MutableModuleInstance {
         return root;
     }
 
+    /**
+     * Removes this module from its parent.
+     *
+     * @return the former parent, or {@code null} if this module has no parent.
+     */
+    @Nullable
+    public MutableModuleInstance removeFromParent() {
+        MutableModuleInstance oldParent = parent;
+        if (oldParent == null) {
+            return null;
+        }
+
+        parent = null;
+        oldParent.children.values().removeIf(child -> child == this);
+
+        return oldParent;
+    }
+
     public void setChild(String slot, MutableModuleInstance child) {
         child.parent = this;
         children.put(slot, child);

@@ -1,0 +1,12 @@
+{
+	"match": {
+		"predicates": {
+			"miapi:light_emit": {
+				"light": 8,
+				"water_sensitive": false
+			}
+		}
+	},
+	"luminance": 8,
+	"water_sensitive": false
+}

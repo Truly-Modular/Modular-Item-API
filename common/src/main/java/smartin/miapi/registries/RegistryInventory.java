@@ -9,6 +9,7 @@ import dev.architectury.registry.registries.RegistrarManager;
 import dev.architectury.registry.registries.RegistrySupplier;
 import dev.architectury.utils.Env;
 import net.minecraft.Util;
+import net.minecraft.advancements.critereon.ItemSubPredicate;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -90,7 +91,9 @@ import smartin.miapi.modules.edit_options.*;
 import smartin.miapi.modules.edit_options.CreateItemOption.CreateItemOption;
 import smartin.miapi.modules.edit_options.material.MaterialViewer;
 import smartin.miapi.modules.edit_options.skins.SkinOptions;
+import smartin.miapi.modules.edit_options.remove.RemoveModuleOption;
 import smartin.miapi.modules.properties.compat.better_combat.BetterCombatHelper;
+import smartin.miapi.modules.properties.compat.lambdynamiclight.MiapiLightEmitingPredicate;
 import smartin.miapi.modules.properties.inventory.InventoryComponent;
 import smartin.miapi.modules.properties.inventory.screen.DefaultInventoryScreenHandler;
 import smartin.miapi.modules.properties.onHit.NemesisProperty;
@@ -123,6 +126,8 @@ public class RegistryInventory {
     public static final Registrar<CreativeModeTab> CREATIVE_MODE_TAB_REGISTRAR = registrar.get().get(Registries.CREATIVE_MODE_TAB);
     public static final Registrar<GameEvent> GAME_EVENT_REGISTRAR = registrar.get().get(Registries.GAME_EVENT);
     public static final Registrar<RecipeSerializer<?>> RECIPE_SERIALIZER_REGISTRAR = registrar.get().get(Registries.RECIPE_SERIALIZER);
+    public static final Registrar<ItemSubPredicate.Type<?>> ITEM_SUB_PREDICATE_REGISTRAR = registrar.get().get(Registries.ITEM_SUB_PREDICATE_TYPE);
+
     public static final MiapiRegistry<ModuleProperty> MODULE_PROPERTY_MIAPI_REGISTRY = MiapiRegistry.getInstance(ModuleProperty.class);
     public static final MiapiRegistry<DatapackHolder> LOADABLE_DATAPACK_REGISTRY = MiapiRegistry.getInstance(DatapackHolder.class);
     public static final DatapackMiapiRegistry<ItemModule> ITEM_MODULE_MIAPI_REGISTRY = DatapackMiapiRegistry.getInstance(ItemModule.class);
@@ -249,6 +254,8 @@ public class RegistryInventory {
 
         RegistryInventory.LOOT_ITEM_CONDITION_TYPE_REGISTRAR.register(
                 LootHelper.LOOT_TABLE_ID, () -> LootTableCondition.TYPE);
+
+        register(ITEM_SUB_PREDICATE_REGISTRAR, "light_emit", () -> MiapiLightEmitingPredicate.TYPE);
 
         RegistryInventory.COMPONENT_TYPE_REGISTRAR.register(
                 Miapi.id("item_module"), () -> ModuleInstance.MODULE_INSTANCE_COMPONENT);
@@ -446,6 +453,7 @@ public class RegistryInventory {
             registerMiapi(EDIT_OPTION_MIAPI_REGISTRY, "cosmetic", new CosmeticEditOption());
             registerMiapi(EDIT_OPTION_MIAPI_REGISTRY, "glint_settings", new GlintEditOption());
             registerMiapi(EDIT_OPTION_MIAPI_REGISTRY, "material_lexica", new MaterialViewer());
+            registerMiapi(EDIT_OPTION_MIAPI_REGISTRY, "remove", new RemoveModuleOption());
             SynergyManager.setup();
 
             //CONDITIONS

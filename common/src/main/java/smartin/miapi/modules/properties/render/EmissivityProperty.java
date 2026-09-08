@@ -31,6 +31,10 @@ public class EmissivityProperty extends CodecProperty<EmissivityProperty.LightJs
         property = this;
     }
 
+    /**
+     * 0 is sky
+     * 1 is block
+     */
     public static int[] getLightValues(ModuleInstance instance) {
         return property.getData(instance).orElse(new LightJson()).asArray();
     }
