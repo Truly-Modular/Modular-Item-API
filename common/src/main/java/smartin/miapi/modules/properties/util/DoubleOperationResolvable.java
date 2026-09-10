@@ -298,6 +298,10 @@ public class DoubleOperationResolvable implements SourceSetter<DoubleOperationRe
         return children;
     }
 
+    public boolean isInitialized() {
+        return this.initialized!=null;
+    }
+
 
     public static class IndividualOperation {
 

@@ -154,13 +154,28 @@ public record PossibleEffect(Holder<MobEffect> potion,
                     ).findFirst();
             if (mergeWith.isPresent()) {
                 PossibleEffect first = mergeWith.get();
-                mergedList.remove(first);
+                if (!(first.duration.isInitialized() && possibleEffect.duration.isInitialized())) {
+                    mergedList.add(new PossibleEffect(
+                                    first.potion,
+                                    DoubleOperationResolvable.merge(first.amplifier, possibleEffect.amplifier, mergeType),
+                                    DoubleOperationResolvable.merge(first.duration, possibleEffect.duration, mergeType),
+                                    DoubleOperationResolvable.merge(first.ambient, possibleEffect.ambient, mergeType),
+                                    DoubleOperationResolvable.merge(first.showParticle, possibleEffect.showParticle, mergeType),
+                                    DoubleOperationResolvable.merge(first.showIcon, possibleEffect.showIcon, mergeType),
+                                    DoubleOperationResolvable.merge(first.probability, possibleEffect.probability, mergeType),
+                                    first.targetSelf,
+                                    first.group()
+                            )
+                    );
+                    mergedList.remove(first);
+                } else {
+                    mergedList.remove(first);
 
-                double combinedProbability = first.probability().getValue() + possibleEffect.probability().getValue();
-                int combinedDuration = (int) (first.duration().getValue() +
-                                              (combinedProbability > 1.0f ? (int) (first.duration().getValue() * (combinedProbability - 1.0f))
-                                                      : first.duration().getValue()));
-                combinedProbability = Math.min(combinedProbability, 1.0f);
+                    double combinedProbability = first.probability().getValue() + possibleEffect.probability().getValue();
+                    int combinedDuration = (int) (first.duration().getValue() +
+                                                  (combinedProbability > 1.0f ? (int) (first.duration().getValue() * (combinedProbability - 1.0f))
+                                                          : first.duration().getValue()));
+                    combinedProbability = Math.min(combinedProbability, 1.0f);
 
                 /*
                 MobEffectInstance mergedMobEffect = new MobEffectInstance(
@@ -180,18 +195,19 @@ public record PossibleEffect(Holder<MobEffect> potion,
 
                  */
 
-                mergedList.add(new PossibleEffect(
-                                first.potion,
-                                DoubleOperationResolvable.merge(first.amplifier, possibleEffect.amplifier, mergeType),
-                                new DoubleOperationResolvable(combinedDuration),
-                                DoubleOperationResolvable.merge(first.ambient, possibleEffect.ambient, mergeType),
-                                DoubleOperationResolvable.merge(first.showParticle, possibleEffect.showParticle, mergeType),
-                                DoubleOperationResolvable.merge(first.showIcon, possibleEffect.showIcon, mergeType),
-                                new DoubleOperationResolvable(combinedProbability),
-                                first.targetSelf,
-                                first.group()
-                        )
-                );
+                    mergedList.add(new PossibleEffect(
+                                    first.potion,
+                                    DoubleOperationResolvable.merge(first.amplifier, possibleEffect.amplifier, mergeType),
+                                    new DoubleOperationResolvable(combinedDuration),
+                                    DoubleOperationResolvable.merge(first.ambient, possibleEffect.ambient, mergeType),
+                                    DoubleOperationResolvable.merge(first.showParticle, possibleEffect.showParticle, mergeType),
+                                    DoubleOperationResolvable.merge(first.showIcon, possibleEffect.showIcon, mergeType),
+                                    new DoubleOperationResolvable(combinedProbability),
+                                    first.targetSelf,
+                                    first.group()
+                            )
+                    );
+                }
             } else {
                 mergedList.add(possibleEffect);
             }

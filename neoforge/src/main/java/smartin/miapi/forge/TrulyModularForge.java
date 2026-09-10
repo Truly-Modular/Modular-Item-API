@@ -209,7 +209,7 @@ public class TrulyModularForge {
                         String packName = packDir.getFileName().toString();
                         ResourceLocation packId = ResourceLocation.fromNamespaceAndPath(targetModId, packName);
                         var packInfo = new PackLocationInfo(
-                                packId.toString(),
+                                DatapackHolder.getDefaultName(packDir, packId.toString()),
                                 Component.literal(packName),
                                 DatapackHolder.shouldEnableByDefault(packDir) ? PackSource.BUILT_IN : PackSource.FEATURE,
                                 Optional.of(new KnownPack("neoforge", "mod/" + packId, modInfo.getVersion().toString()))

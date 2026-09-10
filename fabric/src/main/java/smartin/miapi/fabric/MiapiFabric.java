@@ -13,6 +13,7 @@ import net.fabricmc.fabric.api.util.TriState;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunction;
 import smartin.miapi.Environment;
@@ -47,12 +48,11 @@ public class MiapiFabric implements ModInitializer {
                                 ResourceManagerHelper.registerBuiltinResourcePack(
                                         Miapi.id(id, dataPath.getFileName().toString()),
                                         modContainer,
+                                        Component.literal(DatapackHolder.getDefaultName(dataPath, dataPath.toString())),
                                         DatapackHolder.shouldEnableByDefault(dataPath) ? ResourcePackActivationType.DEFAULT_ENABLED : ResourcePackActivationType.NORMAL
                                 );
                             });
-                        } catch (IOException ignored) {
-
-                        }
+                        } catch (IOException ignored) {}
                     });
                 });
             });

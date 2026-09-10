@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 
 public class ModuleTagProperty extends CodecProperty<List<String>> {
@@ -45,6 +46,7 @@ public class ModuleTagProperty extends CodecProperty<List<String>> {
                     newKeys.addAll(keys);
                     keys = newKeys;
                 }
+                keys = keys.stream().distinct().collect(Collectors.toList());
                 for (String key : keys) {
                     Map<ModuleProperty<?>, Object> materialProperties = PropertyResolver
                             .setSource(

@@ -3,3 +3,5 @@
 - added compat for LambDynamicLights
 ### Changes
 ### Fixes
+- fixed bug where material effects could apply twice
+- fixed bug where Potion effects would not correctly merge
