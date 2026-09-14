@@ -22,7 +22,7 @@ import java.util.List;
 public class DefaultInventoryScreenHandler extends AbstractContainerMenu {
 
     private final Player player;
-    private final List<ManagedSlot> slots = new ArrayList<>();
+    private final List<ManagedSlot> managedSlots = new ArrayList<>();
     private final List<Slot> coreItemSlots = new ArrayList<>();
 
     public static class ManagedInventory {
@@ -99,7 +99,7 @@ public class DefaultInventoryScreenHandler extends AbstractContainerMenu {
             managed.inventoryInstance = instance;
             managed.container = container;
             managed.type = instance.getType();
-            managed.firstSlot = slots.size();
+            managed.firstSlot = managedSlots.size();
             managed.slotInfo = instance.getSlot();
             for (int i = 0; i < instance.getSize(); i++) {
                 ManagedSlot slot = new ManagedSlot(managed, container, i){
@@ -108,10 +108,10 @@ public class DefaultInventoryScreenHandler extends AbstractContainerMenu {
                     }
                 };
                 addSlot(slot);
-                slots.add(slot);
+                managedSlots.add(slot);
                 globalIndex++;
             }
-            managed.lastSlot = slots.size() - 1;
+            managed.lastSlot = managedSlots.size() - 1;
             managedInventories.add(managed);
         }
 
@@ -133,23 +133,19 @@ public class DefaultInventoryScreenHandler extends AbstractContainerMenu {
 
     @Override
     public @NotNull ItemStack quickMoveStack(Player player, int index) {
-
         ItemStack original = ItemStack.EMPTY;
+
         Slot slot = this.slots.get(index);
 
-        if (slot != null && slot.hasItem()) {
-
+        if (slot.hasItem()) {
             ItemStack stack = slot.getItem();
             original = stack.copy();
 
             if (index < containerSlotCount) {
-
-                if (!moveItemStackTo(stack, containerSlotCount, slots.size(), true)) {
+                if (!moveItemStackTo(stack, containerSlotCount, this.slots.size(), true)) {
                     return ItemStack.EMPTY;
                 }
-
             } else {
-
                 if (!moveItemStackTo(stack, 0, containerSlotCount, false)) {
                     return ItemStack.EMPTY;
                 }
@@ -170,7 +166,7 @@ public class DefaultInventoryScreenHandler extends AbstractContainerMenu {
     }
 
     public List<ManagedSlot> getManagedSlots() {
-        return slots;
+        return managedSlots;
     }
 
     public List<Slot> getSourceItems() {

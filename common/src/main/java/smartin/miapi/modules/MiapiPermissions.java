@@ -17,7 +17,7 @@ public class MiapiPermissions {
     static Set<UUID> loadingPerms = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
     public static boolean hasPerm(Player player, String perm) {
-        if (MiapiConfig.getServerConfig().other.developmentMode) {
+        if (MiapiConfig.getServerConfig().other.hasDeveloperMode(player)) {
             return true;
         }
         if (perm.equals(player.getUUID().toString())) {

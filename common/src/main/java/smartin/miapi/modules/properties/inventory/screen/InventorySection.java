@@ -1,12 +1,18 @@
 package smartin.miapi.modules.properties.inventory.screen;
 
+import com.redpxnda.nucleus.event.PrioritizedEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import smartin.miapi.modules.properties.inventory.InventoryType;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * this class manages on section within the UI with one header.
+ * it controlls its height, buttons and slot placement
+ */
 public class InventorySection {
 
     public static final int SLOT_SIZE = 18;
@@ -16,6 +22,8 @@ public class InventorySection {
     private final InventoryType type;
     private final List<DefaultInventoryScreenHandler.ManagedInventory> inventories;
     private final List<DefaultInventoryScreenHandler.ManagedSlot> allSlots;
+    private final List<InventoryTypeConfigElement> elements = new ArrayList<>();
+    public static PrioritizedEvent<GetButtonsEvent> GET_BUTTON_EVENT = PrioritizedEvent.createLoop(GetButtonsEvent.class);
 
     private final int rowCount;
 
@@ -41,11 +49,20 @@ public class InventorySection {
         this.rowCount = (int) Math.ceil(count / (double) COLUMNS);
 
         this.contentHeight = rowCount * SLOT_SIZE;
-        this.heightWithHeader = HEADER_HEIGHT + contentHeight;
+        GET_BUTTON_EVENT.invoker().addButtons(elements, type, inventories);
+        int buttonHeight = 0;
+        for (InventoryTypeConfigElement element : elements) {
+            buttonHeight += element.getHeight();
+        }
+        this.heightWithHeader = Math.max(buttonHeight, HEADER_HEIGHT + contentHeight);
     }
 
     public InventoryType getType() {
         return type;
+    }
+
+    public boolean hasButtons(){
+        return !elements.isEmpty();
     }
 
     public List<DefaultInventoryScreenHandler.ManagedInventory> getInventories() {
@@ -88,15 +105,14 @@ public class InventorySection {
 
                 boolean visible =
                         visibleY >= -SLOT_SIZE &&
-                        visibleY < visibleHeight;
-
+                        visibleY < visibleHeight + 9;
                 slot.setEnabled(visible);
-
                 if (visible) {
                     slot.setPos(
                             startX + col * SLOT_SIZE,
-                            yCursor + visibleY
+                            visibleY
                     );
+
                 }
 
                 index++;
@@ -104,16 +120,20 @@ public class InventorySection {
         }
     }
 
+    com.redpxnda.nucleus.util.Color color = new com.redpxnda.nucleus.util.Color((int) (Math.random() * 255), (int) (Math.random() * 255), (int) (Math.random() * 255), 120);
+
     public void renderHeader(
             GuiGraphics graphics,
             int x,
             int sectionY,
             int scrollOffset,
+            int screenTop,
             int visibleHeight
     ) {
-        int visibleY = sectionY - scrollOffset;
+        int visibleY = screenTop + sectionY - scrollOffset;
 
-        if (visibleY < -HEADER_HEIGHT || visibleY >= visibleHeight) {
+        if (visibleY + HEADER_HEIGHT < screenTop ||
+            visibleY >= screenTop + visibleHeight) {
             return;
         }
 
@@ -121,9 +141,24 @@ public class InventorySection {
                 Minecraft.getInstance().font,
                 type.getName(),
                 x,
-                visibleY,
+                visibleY - HEADER_HEIGHT,
                 Color.DARK_GRAY.getRGB(),
                 false
         );
+    }
+
+    public void renderButtons(
+            GuiGraphics graphics,
+            int x,
+            int sectionY,
+            int scrollOffset,
+            int screenTop,
+            int visibleHeight
+    ) {
+
+    }
+
+    interface GetButtonsEvent {
+        void addButtons(List<InventoryTypeConfigElement> list, InventoryType type, List<DefaultInventoryScreenHandler.ManagedInventory> inventories);
     }
 }

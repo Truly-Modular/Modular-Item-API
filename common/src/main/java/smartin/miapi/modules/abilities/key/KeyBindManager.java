@@ -17,7 +17,7 @@ public final class KeyBindManager {
     public static final MiapiRegistry<MiapiBinding> REGISTRY =
             MiapiRegistry.getInstance(MiapiBinding.class);
 
-    public static boolean IS_KEYBIND_SYSTEM_ENABLED = false;
+    public static boolean IS_KEYBIND_SYSTEM_ENABLED = true;
 
     public static final ResourceLocation NONE =
             Miapi.id("none");

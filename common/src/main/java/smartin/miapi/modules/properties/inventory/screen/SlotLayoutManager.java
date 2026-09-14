@@ -5,13 +5,12 @@ import smartin.miapi.modules.properties.inventory.InventoryType;
 
 import java.util.*;
 
-public class SlotLayoutManager {
+import static smartin.miapi.modules.properties.inventory.screen.InventoryScreen.BACKGROUND_TEXTURE;
 
+public class SlotLayoutManager {
     private final List<DefaultInventoryScreenHandler.ManagedSlot> allSlots;
     private final List<InventorySection> sections;
-
-    private final List<DefaultInventoryScreenHandler.ManagedSlot> activeSlots =
-            new ArrayList<>();
+    private final List<DefaultInventoryScreenHandler.ManagedSlot> activeSlots = new ArrayList<>();
 
     private final int visibleRows;
     private final int visibleHeight;
@@ -42,7 +41,7 @@ public class SlotLayoutManager {
         this.allSlots = slots;
 
         this.visibleRows = visibleRows;
-        this.visibleHeight = visibleRows * InventorySection.SLOT_SIZE;
+        this.visibleHeight = Math.min(visibleRows * InventorySection.SLOT_SIZE, 100);
 
         this.startX = x;
         this.startY = y;
@@ -146,8 +145,9 @@ public class SlotLayoutManager {
 
         activeSlots.clear();
         sectionPositions.clear();
+        int offset = 10;
 
-        int yCursor = 0;
+        int yCursor = offset;
 
         for (InventorySection section : sections) {
             if (selectedType != null &&
@@ -169,7 +169,7 @@ public class SlotLayoutManager {
             yCursor += section.getRequiredHeight();
         }
 
-        contentHeight = yCursor;
+        contentHeight = yCursor - offset;
         clampScroll();
     }
 
@@ -206,12 +206,69 @@ public class SlotLayoutManager {
                 section.renderHeader(
                         graphics,
                         startX + textX,
-                        startY + sectionY - scrollOffset,
-                        0,
+                        sectionY,
+                        scrollOffset,
+                        textY,
                         visibleHeight
                 );
             }
         });
+    }
+
+    public boolean hasButtons() {
+        for (InventorySection section : sections) {
+            if (section.hasButtons()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void renderButtons(
+            GuiGraphics graphics,
+            int mouseX,
+            int mouseY
+    ) {
+        if (selectedType != null) {
+            return;
+        }
+        int buttonStartX = startX + textX + 9 * InventorySection.SLOT_SIZE;
+
+        graphics.blit(BACKGROUND_TEXTURE,
+                buttonStartX,
+                0,
+                45, 5,
+                234, 0f,
+                45, 5,
+                512, 512);
+        graphics.blit(BACKGROUND_TEXTURE,
+                buttonStartX,
+                5,
+                45, 20,
+                234, 20f,
+                45, getVisibleHeight() - 10,
+                512, 512);
+        graphics.blit(BACKGROUND_TEXTURE,
+                buttonStartX,
+                0,
+                45, 5,
+                234, 25f,
+                45, 5,
+                512, 512);
+
+        for (var entry : sectionPositions.entrySet()) {
+            InventorySection section = entry.getKey();
+            int sectionY = entry.getValue();
+
+            section.renderButtons(
+                    graphics,
+                    buttonStartX + 5,
+                    sectionY,
+                    scrollOffset,
+                    textY,
+                    visibleHeight
+            );
+        }
     }
 
     public void withScissor(

@@ -25,9 +25,9 @@ public class InventoryScreen extends ParentHandledScreen<DefaultInventoryScreenH
 
     public InventoryScreen(DefaultInventoryScreenHandler menu, Inventory playerInventory, Component title) {
         super(menu, playerInventory, Component.empty());
-        this.imageWidth = 196;
+        this.imageWidth = 196 + 45;
         this.imageHeight = 222;
-        this.inventoryLabelX = 8;
+        this.inventoryLabelX = 21;
         this.inventoryLabelY = 72;
     }
 
@@ -44,6 +44,7 @@ public class InventoryScreen extends ParentHandledScreen<DefaultInventoryScreenH
                 leftPos,
                 topPos + 9
         );
+        this.inventoryLabelY = layoutManager.getVisibleHeight() + 14;
     }
 
     public void resetHoverSlot() {
@@ -97,15 +98,24 @@ public class InventoryScreen extends ParentHandledScreen<DefaultInventoryScreenH
                     DefaultInventoryScreenHandler.ManagedSlot slot = menu.getManagedSlots().get(i);
                     if (!slot.isActive()) continue;
 
-                    if (hoveredInventory != null && !hoveredInventory.equals(managed.slotInfo)) {
-                        gfx.blit(BACKGROUND_TEXTURE,
-                                left + slot.x - 1,
-                                top + slot.y - 1,
-                                18, 18,
-                                176.0f, 18f,
-                                18, 18,
-                                512, 512);
-
+                    if (hoveredInventory != null) {
+                        if (hoveredInventory.equals(managed.slotInfo)) {
+                            gfx.blit(BACKGROUND_TEXTURE,
+                                    left + slot.x - 1,
+                                    top + slot.y - 1,
+                                    18, 18,
+                                    176.0f, 18f,
+                                    18, 18,
+                                    512, 512);
+                        } else {
+                            gfx.blit(BACKGROUND_TEXTURE,
+                                    left + slot.x - 1,
+                                    top + slot.y - 1,
+                                    18, 18,
+                                    176.0f, 36f,
+                                    18, 18,
+                                    512, 512);
+                        }
                     } else {
                         gfx.blit(BACKGROUND_TEXTURE,
                                 left + slot.x - 1,

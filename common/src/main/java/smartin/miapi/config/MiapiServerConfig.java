@@ -1,12 +1,16 @@
 package smartin.miapi.config;
 
+import com.mojang.serialization.Codec;
 import com.redpxnda.nucleus.codec.auto.AutoCodec;
 import com.redpxnda.nucleus.codec.auto.ConfigAutoCodec;
 import com.redpxnda.nucleus.util.Comment;
 import dev.architectury.platform.Platform;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.player.Player;
+import org.jetbrains.annotations.NotNull;
 import smartin.miapi.Miapi;
 import smartin.miapi.loot.MaterialSwapLootFunction;
 import smartin.miapi.loot.ModuleSwapLootFunction;
@@ -66,10 +70,36 @@ public class MiapiServerConfig {
     @ConfigAutoCodec.ConfigClassMarker
     public static class OtherCategory {
         @Comment("""
-                Whether the development mode of Miapi is enabled
+                Whether the development mode of Miapi is enabled.
+                supports "all","admin","none"
                 DO NOT ENABLE IF U DO NOT KNOW WHAT IT DOES""")
         @AutoCodec.Name("development_mode")
-        public boolean developmentMode = Platform.isDevelopmentEnvironment();
+        public DeveloperMode developmentMode = Platform.isDevelopmentEnvironment() ? DeveloperMode.ALL : DeveloperMode.NONE;
+
+        public boolean hasDeveloperMode(Player player) {
+            return switch (developmentMode) {
+                case DeveloperMode.NONE -> false;
+                case DeveloperMode.ALL -> true;
+                case DeveloperMode.ADMIN -> player != null && player.hasPermissions(4);
+            };
+        }
+
+        public enum DeveloperMode implements StringRepresentable {
+            ALL("ALL"),
+            ADMIN("ADMIN"),
+            NONE("NONE");
+            final String name;
+            public static Codec<DeveloperMode> CODEC = AutoCodec.of(DeveloperMode.class).codec();
+
+            DeveloperMode(String none) {
+                name = none;
+            }
+
+            @Override
+            public @NotNull String getSerializedName() {
+                return name;
+            }
+        }
 
         @Comment("""
                 Truly Modular Logs more aggressively

@@ -2,6 +2,7 @@
 ### Additions
 - added compat for LambDynamicLights
 ### Changes
+- changed developer mode to support ALL, ADMIN and NONE
 ### Fixes
 - fixed bug where material effects could apply twice
 - fixed bug where Potion effects would not correctly merge

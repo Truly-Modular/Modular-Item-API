@@ -3,6 +3,7 @@ package smartin.miapi.client.gui.crafting.crafter.glint;
 import com.redpxnda.nucleus.util.Color;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
@@ -79,7 +80,7 @@ public class FloatWidgetField extends EditBox implements GuiEventListener {
         if (prefix != null)
             context.drawString(textRenderer, prefix, getX() - textRenderer.width(prefix) - 4, getY() - 1, Color.WHITE.argb(), true);
 
-        if ((MiapiConfig.getServerConfig().other.developmentMode) && Screen.hasAltDown())
+        if ((MiapiConfig.getServerConfig().other.hasDeveloperMode(Minecraft.getInstance().player)) && Screen.hasAltDown())
             drawSquareBorder(context, getX(), getY(), getWidth(), getHeight(), 1, Color.YELLOW.argb());
         super.renderWidget(context, mouseX, mouseY, delta);
     }

@@ -380,7 +380,7 @@ public abstract class InteractAbleWidget extends AbstractWidget implements Rende
      */
     @Override
     public void renderWidget(GuiGraphics drawContext, int mouseX, int mouseY, float delta) {
-        if ((debug || MiapiConfig.getServerConfig().other.developmentMode) && Screen.hasAltDown()) {
+        if ((debug || MiapiConfig.getServerConfig().other.hasDeveloperMode(Minecraft.getInstance().player)) && Screen.hasAltDown()) {
             drawSquareBorder(drawContext, getX(), getY(), getWidth(), getHeight(), 1, randomColor);
         }else{
             //yeah, i dont fucking know, but remove this and EMI/JEI break their rendeirng on scrolllists scissorboxes
