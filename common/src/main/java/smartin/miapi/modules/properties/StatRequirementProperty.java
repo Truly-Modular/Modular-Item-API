@@ -7,7 +7,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
-import smartin.miapi.blocks.ModularWorkBenchEntity;
+import smartin.miapi.blocks.IModularWorkbench;
 import smartin.miapi.craft.CraftAction;
 import smartin.miapi.craft.stat.CraftingStat;
 import smartin.miapi.modules.ItemModule;
@@ -33,7 +33,7 @@ public class StatRequirementProperty implements ModuleProperty<Object>, Crafting
     }
 
     @Override
-    public boolean canPerform(ItemStack old, ItemStack crafting, @Nullable ModularWorkBenchEntity bench, Player player, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<ResourceLocation, JsonElement> data, Consumer<Component> failreason) {
+    public boolean canPerform(ItemStack old, ItemStack crafting, @Nullable IModularWorkbench bench, Player player, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<ResourceLocation, JsonElement> data, Consumer<Component> failreason) {
         ModuleInstance newModule = craftAction.getModifyingModuleInstance(crafting);
         if (bench == null) return true;
 
@@ -60,7 +60,7 @@ public class StatRequirementProperty implements ModuleProperty<Object>, Crafting
     }
 
     @Override
-    public ItemStack preview(ItemStack old, ItemStack crafting, Player player, ModularWorkBenchEntity bench, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<ResourceLocation, JsonElement> data) {
+    public ItemStack preview(ItemStack old, ItemStack crafting, Player player, IModularWorkbench bench, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<ResourceLocation, JsonElement> data) {
         return crafting;
     }
 

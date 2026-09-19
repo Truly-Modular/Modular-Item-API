@@ -15,7 +15,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
-import smartin.miapi.blocks.ModularWorkBenchEntity;
+import smartin.miapi.blocks.IModularWorkbench;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.ParentHandledScreen;
 import smartin.miapi.client.gui.SimpleScreenHandlerListener;
@@ -132,7 +132,6 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
             smithDisplay.setPreview(item);
         }, menu.inventory,
                 menu::addSlotByClient, menu::removeSlotByClient);
-        moduleCrafter.setPacketIdentifier(menu.packetID);
         this.addChild(moduleCrafter);
 
         slotDisplay = new SlotDisplay(ItemStack.EMPTY, centerX + 51 - 15, centerY + 117 - 14, 68, 87, (selected) -> {
@@ -197,7 +196,6 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
         editHolder.children().clear();
         moduleCrafter = new ModuleCrafter(moduleCrafter.getX(), moduleCrafter.getY(), moduleCrafter.getWidth(), moduleCrafter.getHeight() + 74, moduleCrafter);
         moduleCrafter.handler = menu;
-        moduleCrafter.setPacketIdentifier(menu.packetID);
         addChild(moduleCrafter);
         updateItem(getItem());
         moduleCrafter.setSelectedSlot(slot1);
@@ -220,7 +218,6 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
         editHolder.children().clear();
         moduleCrafter = new ModuleCrafter(moduleCrafter.getX(), moduleCrafter.getY(), moduleCrafter.getWidth(), moduleCrafter.getHeight() - 74, moduleCrafter);
         moduleCrafter.handler = menu;
-        moduleCrafter.setPacketIdentifier(menu.packetID);
         addChild(moduleCrafter);
         updateItem(getItem());
         moduleCrafter.setSelectedSlot(slot1);
@@ -383,7 +380,7 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
             }
 
             @Override
-            public @Nullable ModularWorkBenchEntity getWorkbench() {
+            public @Nullable IModularWorkbench getWorkbench() {
                 if (Minecraft.getInstance().player.containerMenu instanceof CraftingScreenHandler craftingScreenHandler) {
                     return craftingScreenHandler.blockEntity;
                 }
@@ -399,7 +396,7 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
             }
 
             @Override
-            public CraftingScreenHandler getScreenHandler() {
+            public CraftingHandler getScreenHandler() {
                 if (Minecraft.getInstance().player.containerMenu instanceof CraftingScreenHandler craftingScreenHandler) {
                     return craftingScreenHandler;
                 }

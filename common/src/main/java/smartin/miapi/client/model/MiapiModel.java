@@ -97,7 +97,5 @@ public interface MiapiModel {
             result = 31 * result + System.identityHashCode(entity);
             return result;
         }
-
-
     }
 }

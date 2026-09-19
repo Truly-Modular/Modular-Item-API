@@ -8,7 +8,7 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import smartin.miapi.Miapi;
-import smartin.miapi.blocks.ModularWorkBenchEntity;
+import smartin.miapi.blocks.IModularWorkbench;
 import smartin.miapi.craft.CraftAction;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.material.MaterialProperty;
@@ -82,7 +82,7 @@ public class FakeItemTagProperty extends CodecProperty<List<String>> implements 
     }
 
     @Override
-    public ItemStack preview(ItemStack old, ItemStack crafting, Player player, ModularWorkBenchEntity bench, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<ResourceLocation, JsonElement> data) {
+    public ItemStack preview(ItemStack old, ItemStack crafting, Player player, IModularWorkbench bench, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<ResourceLocation, JsonElement> data) {
         lookupCache.remove(old);
         lookupCache.remove(crafting);
         return crafting;

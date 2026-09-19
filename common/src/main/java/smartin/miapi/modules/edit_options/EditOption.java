@@ -8,9 +8,9 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
-import smartin.miapi.blocks.ModularWorkBenchEntity;
+import smartin.miapi.blocks.IModularWorkbench;
 import smartin.miapi.client.gui.InteractAbleWidget;
-import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
+import smartin.miapi.client.gui.crafting.CraftingHandler;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.slot.SlotProperty;
 import smartin.miapi.registries.RegistryInventory;
@@ -64,12 +64,11 @@ public interface EditOption {
         @Nullable
         Player getPlayer();
 
-        @Nullable
-        ModularWorkBenchEntity getWorkbench();
+        @Nullable IModularWorkbench getWorkbench();
 
         Container getLinkedInventory();
 
-        CraftingScreenHandler getScreenHandler();
+        CraftingHandler getScreenHandler();
 
         @Environment(EnvType.CLIENT)
         default void addSlot(Slot slot){

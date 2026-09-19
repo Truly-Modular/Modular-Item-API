@@ -281,7 +281,7 @@ public class MiapiClient {
         });
 
         ReplaceView.optionSuppliers.add(option ->
-                option.getScreenHandler().slots
+                option.getScreenHandler().getActiveSlots()
                         .stream()
                                 .
 

@@ -11,13 +11,13 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FastColor;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
-import smartin.miapi.blocks.ModularWorkBenchEntity;
+import smartin.miapi.blocks.IModularWorkbench;
 import smartin.miapi.client.gui.*;
+import smartin.miapi.client.gui.crafting.CraftingHandler;
 import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ModuleInstance;
@@ -44,7 +44,7 @@ public class EditView extends InteractAbleWidget {
     SlotProperty.ModuleSlot slot;
     List<Slot> currentSlots = new ArrayList<>();
 
-    public EditView(int x, int y, int width, int height, ItemStack stack, @Nullable SlotProperty.ModuleSlot slot, Consumer<ItemStack> preview, Consumer<Object> back) {
+    public EditView(int x, int y, int width, int height, ItemStack stack,CraftingHandler handler, @Nullable SlotProperty.ModuleSlot slot, Consumer<ItemStack> preview, Consumer<Object> back) {
         super(x, y, width, height, Component.empty());
         this.previewConsumer = preview;
         this.stack = stack;
@@ -97,7 +97,7 @@ public class EditView extends InteractAbleWidget {
             }
 
             @Override
-            public @Nullable ModularWorkBenchEntity getWorkbench() {
+            public @Nullable IModularWorkbench getWorkbench() {
                 if (Minecraft.getInstance().player.containerMenu instanceof CraftingScreenHandler craftingScreenHandler) {
                     return craftingScreenHandler.blockEntity;
                 }
@@ -106,18 +106,12 @@ public class EditView extends InteractAbleWidget {
 
             @Override
             public Container getLinkedInventory() {
-                if (Minecraft.getInstance().player.containerMenu instanceof CraftingScreenHandler craftingScreenHandler) {
-                    return craftingScreenHandler.inventory;
-                }
-                return null;
+                return handler.getAttachedStorage();
             }
 
             @Override
-            public CraftingScreenHandler getScreenHandler() {
-                if (Minecraft.getInstance().player.containerMenu instanceof CraftingScreenHandler craftingScreenHandler) {
-                    return craftingScreenHandler;
-                }
-                return null;
+            public CraftingHandler getScreenHandler() {
+                return handler;
             }
         };
         RegistryInventory.EDIT_OPTION_MIAPI_REGISTRY.getFlatMap().forEach((s, editOption) -> {
@@ -151,8 +145,7 @@ public class EditView extends InteractAbleWidget {
         editContext = new EditOption.EditContext() {
             @Override
             public void craft(FriendlyByteBuf packetByteBuf) {
-                AbstractContainerMenu screenHandler = this.getScreenHandler();
-                if (screenHandler instanceof CraftingScreenHandler screenHandler1) {
+                if (this.getScreenHandler() instanceof CraftingScreenHandler screenHandler1) {
                     ModuleInstance toCrafter = instance;
                     FriendlyByteBuf buf = Networking.createBuffer();
                     buf.writeUtf(RegistryInventory.EDIT_OPTION_MIAPI_REGISTRY.findKey(option).toString());
@@ -165,7 +158,7 @@ public class EditView extends InteractAbleWidget {
                         buf.writeUtf(entry);
                     }
                     buf.writeBytes(packetByteBuf.copy());
-                    Networking.sendC2S(screenHandler1.editPacketID, buf);
+                    this.getScreenHandler().sendEditPacket(buf);
                 }
                 preview(packetByteBuf);
             }
@@ -196,7 +189,7 @@ public class EditView extends InteractAbleWidget {
             }
 
             @Override
-            public @Nullable ModularWorkBenchEntity getWorkbench() {
+            public @Nullable IModularWorkbench getWorkbench() {
                 if (Minecraft.getInstance().player.containerMenu instanceof CraftingScreenHandler craftingScreenHandler) {
                     return craftingScreenHandler.blockEntity;
                 }
@@ -204,7 +197,7 @@ public class EditView extends InteractAbleWidget {
             }
 
             @Override
-            public CraftingScreenHandler getScreenHandler() {
+            public CraftingHandler getScreenHandler() {
                 if (Minecraft.getInstance().player.containerMenu instanceof CraftingScreenHandler craftingScreenHandler) {
                     return craftingScreenHandler;
                 }

@@ -40,7 +40,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class ModularWorkBenchEntity extends BlockEntity implements MenuProvider, GameEventListener {
+public class ModularWorkBenchEntity extends BlockEntity implements MenuProvider, GameEventListener,IModularWorkbench {
     public static final Map<GameEvent, CustomGameEventHandler> gameEventHandlers = MiscUtil.initialize(new ConcurrentHashMap<>(), map -> {
         map.put(RegistryInventory.statProviderCreatedEvent, (bench, world, event, emitter, emitterPos) -> {
             if (emitter.affectedState() != null) {

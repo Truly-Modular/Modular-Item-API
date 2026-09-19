@@ -6,7 +6,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
-import smartin.miapi.blocks.ModularWorkBenchEntity;
+import smartin.miapi.blocks.IModularWorkbench;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
@@ -85,7 +85,7 @@ public interface CraftingStat<T> {
             T expected,
             ItemStack old,
             ItemStack crafting,
-            @Nullable ModularWorkBenchEntity bench,
+            @Nullable IModularWorkbench bench,
             Player player,
             ModuleInstance newModule,
             ItemModule module,

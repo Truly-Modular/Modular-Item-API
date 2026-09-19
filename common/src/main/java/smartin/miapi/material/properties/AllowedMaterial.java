@@ -12,7 +12,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec2;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
-import smartin.miapi.blocks.ModularWorkBenchEntity;
+import smartin.miapi.blocks.IModularWorkbench;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.crafting.crafter.replace.MaterialCraftingWidget;
 import smartin.miapi.config.MiapiConfig;
@@ -102,7 +102,7 @@ public class AllowedMaterial extends CodecProperty<AllowedMaterial.AllowedMateri
     }
 
     @Override
-    public boolean canPerform(ItemStack old, ItemStack crafting, ModularWorkBenchEntity bench, Player player, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<ResourceLocation, JsonElement> data, Consumer<Component> failreason) {
+    public boolean canPerform(ItemStack old, ItemStack crafting, @Nullable IModularWorkbench bench, Player player, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<ResourceLocation, JsonElement> data, Consumer<Component> failreason) {
         Optional<AllowedMaterialData> optional = getData(module);
         ItemStack input = inventory.get(0);
         if (optional.isPresent()) {
@@ -132,7 +132,7 @@ public class AllowedMaterial extends CodecProperty<AllowedMaterial.AllowedMateri
     }
 
     @Override
-    public ItemStack preview(ItemStack old, ItemStack crafting, Player player, ModularWorkBenchEntity bench, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<ResourceLocation, JsonElement> data) {
+    public ItemStack preview(ItemStack old, ItemStack crafting, Player player, IModularWorkbench bench, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<ResourceLocation, JsonElement> data) {
         MutableModuleInstance newModule = craftAction.getModifyingModuleInstance(crafting).asMutable();
         Optional<AllowedMaterialData> optional = getData(module);
         ItemStack input = inventory.get(0);
@@ -164,7 +164,7 @@ public class AllowedMaterial extends CodecProperty<AllowedMaterial.AllowedMateri
     }
 
     @Override
-    public List<ItemStack> performCraftAction(ItemStack old, ItemStack crafting, @Nullable Player player, ModularWorkBenchEntity bench, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<ResourceLocation, JsonElement> data) {
+    public List<ItemStack> performCraftAction(ItemStack old, ItemStack crafting, @Nullable Player player, IModularWorkbench bench, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<ResourceLocation, JsonElement> data) {
         MutableModuleInstance newModule = craftAction.getModifyingModuleInstance(crafting).asMutable();
         //AllowedMaterialJson json = Miapi.gson.decode()
         List<ItemStack> results = new ArrayList<>();

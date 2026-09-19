@@ -10,7 +10,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec2;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
-import smartin.miapi.blocks.ModularWorkBenchEntity;
+import smartin.miapi.blocks.IModularWorkbench;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.crafting.crafter.replace.MaterialCraftingWidget;
 import smartin.miapi.blueprint.BlueprintComponent;
@@ -88,7 +88,7 @@ public class BlueprintCrafting extends ServerReplaceProperty implements Crafting
         return -10;
     }
 
-    public boolean canPerform(ItemStack old, ItemStack crafting, @Nullable ModularWorkBenchEntity bench, Player player, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<ResourceLocation, JsonElement> data, Consumer<Component> failreason) {
+    public boolean canPerform(ItemStack old, ItemStack crafting, @Nullable IModularWorkbench bench, Player player, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<ResourceLocation, JsonElement> data, Consumer<Component> failreason) {
         BlueprintComponent blueprintComponent = BlueprintComponent.getBlueprint(craftAction.data, craftAction.screenHandler);
         if (blueprintComponent != null) {
             if (blueprintComponent.useMaterialCrafting()) {
@@ -108,7 +108,7 @@ public class BlueprintCrafting extends ServerReplaceProperty implements Crafting
     }
 
     @Override
-    public ItemStack preview(ItemStack old, ItemStack crafting, Player player, ModularWorkBenchEntity bench, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<ResourceLocation, JsonElement> data) {
+    public ItemStack preview(ItemStack old, ItemStack crafting, Player player, IModularWorkbench bench, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<ResourceLocation, JsonElement> data) {
         BlueprintComponent blueprintComponent = BlueprintComponent.getBlueprint(craftAction.data, craftAction.screenHandler);
         if (blueprintComponent != null) {
             ModuleInstance moduleInstance = craftAction.getModifyingModuleInstance(crafting);
@@ -120,7 +120,7 @@ public class BlueprintCrafting extends ServerReplaceProperty implements Crafting
     }
 
     @Override
-    public List<ItemStack> performCraftAction(ItemStack old, ItemStack crafting, Player player, @Nullable ModularWorkBenchEntity bench, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<ResourceLocation, JsonElement> data) {
+    public List<ItemStack> performCraftAction(ItemStack old, ItemStack crafting, Player player, IModularWorkbench bench, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<ResourceLocation, JsonElement> data) {
         List<ItemStack> result = CraftingProperty.super.performCraftAction(old, crafting, player, bench, craftAction, module, inventory, data);
         BlueprintComponent blueprintComponent = BlueprintComponent.getBlueprint(craftAction.data, craftAction.screenHandler);
         if (blueprintComponent != null && !blueprintComponent.useMaterialCrafting()) {

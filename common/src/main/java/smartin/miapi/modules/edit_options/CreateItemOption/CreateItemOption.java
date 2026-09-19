@@ -14,10 +14,10 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
-import smartin.miapi.blocks.ModularWorkBenchEntity;
+import smartin.miapi.blocks.IModularWorkbench;
 import smartin.miapi.client.gui.InteractAbleWidget;
+import smartin.miapi.client.gui.crafting.CraftingHandler;
 import smartin.miapi.client.gui.crafting.CraftingScreen;
-import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
 import smartin.miapi.client.gui.crafting.PreviewManager;
 import smartin.miapi.client.gui.crafting.crafter.create_module.CreateListView;
 import smartin.miapi.craft.CraftAction;
@@ -156,7 +156,7 @@ public class CreateItemOption implements EditOption {
             }
 
             @Override
-            public @Nullable ModularWorkBenchEntity getWorkbench() {
+            public @Nullable IModularWorkbench getWorkbench() {
                 return context.getWorkbench();
             }
 
@@ -166,7 +166,7 @@ public class CreateItemOption implements EditOption {
             }
 
             @Override
-            public CraftingScreenHandler getScreenHandler() {
+            public CraftingHandler getScreenHandler() {
                 return context.getScreenHandler();
             }
 
@@ -190,7 +190,7 @@ public class CreateItemOption implements EditOption {
 
         Component getName();
 
-        default boolean isAllowed(Player player, ModularWorkBenchEntity entity) {
+        default boolean isAllowed(Player player, IModularWorkbench entity) {
             return true;
         }
 

@@ -10,7 +10,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
-import smartin.miapi.blocks.ModularWorkBenchEntity;
+import smartin.miapi.blocks.IModularWorkbench;
 import smartin.miapi.craft.CraftAction;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
@@ -59,7 +59,7 @@ public class ReturnIngredientProperty extends CodecProperty<ReturnIngredientProp
     }
 
     @Override
-    public ItemStack preview(ItemStack old, ItemStack crafting, Player player, ModularWorkBenchEntity bench, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<ResourceLocation, JsonElement> data) {
+    public ItemStack preview(ItemStack old, ItemStack crafting, Player player, IModularWorkbench bench, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<ResourceLocation, JsonElement> data) {
         return crafting;
     }
 
@@ -68,11 +68,11 @@ public class ReturnIngredientProperty extends CodecProperty<ReturnIngredientProp
             ItemStack old,
             ItemStack crafting,
             Player player,
-            @Nullable ModularWorkBenchEntity bench,
+            IModularWorkbench bench,
             CraftAction action,
             ItemModule module,
             List<ItemStack> inventory,
-            java.util.Map<net.minecraft.resources.ResourceLocation, com.google.gson.JsonElement> data
+            Map<ResourceLocation, JsonElement> data
     ) {
         ModuleInstance removedModule = action.getModifyingModuleInstance(old);
         refund(removedModule, player);

@@ -18,7 +18,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
 import smartin.miapi.Miapi;
-import smartin.miapi.blocks.ModularWorkBenchEntity;
+import smartin.miapi.blocks.IModularWorkbench;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.craft.CraftAction;
 import smartin.miapi.datapack.ReloadEvents;
@@ -228,7 +228,7 @@ public class AllowedEnchantments extends CodecProperty<AllowedEnchantments.Allow
     }
 
     @Override
-    public ItemStack preview(ItemStack oldStack, ItemStack itemStack, Player player, ModularWorkBenchEntity bench, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<ResourceLocation, JsonElement> moduleData) {
+    public ItemStack preview(ItemStack oldStack, ItemStack itemStack, Player player, IModularWorkbench bench, CraftAction craftAction, ItemModule module, List<ItemStack> inventory, Map<ResourceLocation, JsonElement> moduleData) {
         if (itemStack.has(DataComponents.ENCHANTMENTS) && ModularItem.isModularItem(itemStack)) {
             ItemEnchantments enchantments = itemStack.getEnchantments();
             itemStack.update(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY, (old -> {

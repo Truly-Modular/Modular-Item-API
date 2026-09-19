@@ -70,7 +70,7 @@ public class MaterialCraftingWidget extends InteractAbleWidget {
         ReplaceOption.unsafeCraftAction = action;
         if (
                 ReplaceOption.unsafeEditContext != null &&
-                !ReplaceOption.unsafeEditContext.getScreenHandler().inventory.getItem(1).isEmpty()) {
+                !ReplaceOption.unsafeEditContext.getScreenHandler().getAttachedStorage().getItem(1).isEmpty()) {
             PreviewManager.resetCursorStack();
 
         }

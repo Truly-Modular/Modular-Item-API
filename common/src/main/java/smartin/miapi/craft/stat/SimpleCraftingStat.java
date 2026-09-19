@@ -3,7 +3,7 @@ package smartin.miapi.craft.stat;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
 import org.jetbrains.annotations.Nullable;
-import smartin.miapi.blocks.ModularWorkBenchEntity;
+import smartin.miapi.blocks.IModularWorkbench;
 import smartin.miapi.item.modular.StatResolver;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
@@ -52,7 +52,7 @@ public class SimpleCraftingStat implements CraftingStat<Double> {
             Double expected,
             ItemStack old,
             ItemStack crafting,
-            @Nullable ModularWorkBenchEntity bench,
+            @Nullable IModularWorkbench bench,
             Player player,
             ModuleInstance newModule,
             ItemModule module,

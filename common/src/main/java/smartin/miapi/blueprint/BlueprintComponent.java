@@ -13,7 +13,7 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
-import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
+import smartin.miapi.client.gui.crafting.CraftingHandler;
 import smartin.miapi.client.gui.crafting.crafter.replace.CraftOption;
 import smartin.miapi.material.properties.AllowedMaterial;
 import smartin.miapi.modules.ModuleInstance;
@@ -101,8 +101,8 @@ public class BlueprintComponent {
         return false;
     }
 
-    public ItemStack retrieve(CraftingScreenHandler screenHandler) {
-        var optional = screenHandler.slots.stream()
+    public ItemStack retrieve(CraftingHandler screenHandler) {
+        var optional = screenHandler.getActiveSlots().stream()
                 .filter(a -> a.getItem().has(BLUEPRINT_COMPONENT))
                 .filter((a -> this.equals(a.getItem().get(BLUEPRINT_COMPONENT)))).findAny();
         return optional.map(Slot::getItem).orElse(ItemStack.EMPTY);
@@ -136,7 +136,7 @@ public class BlueprintComponent {
     }
 
     @Nullable
-    public static BlueprintComponent getBlueprint(Map<ResourceLocation, JsonElement> dataMap, CraftingScreenHandler screenHandler) {
+    public static BlueprintComponent getBlueprint(Map<ResourceLocation, JsonElement> dataMap, CraftingHandler screenHandler) {
         JsonElement json = dataMap.get(ID);
         if (json != null) {
             var decodeResult = Codec.INT.decode(JsonOpsBooleanPatched.INSTANCE, json);
@@ -150,7 +150,7 @@ public class BlueprintComponent {
                 //check cursor stack somehow for blueprint
             }
             if (id >= 0) {
-                ItemStack itemStack = screenHandler.slots.get(id).getItem();
+                ItemStack itemStack = screenHandler.getActiveSlots().get(id).getItem();
                 if (itemStack.has(BLUEPRINT_COMPONENT)) {
                     return itemStack.get(BLUEPRINT_COMPONENT);
                 }
@@ -165,12 +165,12 @@ public class BlueprintComponent {
         return name.orElse(toMerge.cache().getModuleName());
     }
 
-    public CraftOption asCraftOption(CraftingScreenHandler screenHandler) {
+    public CraftOption asCraftOption(CraftingHandler screenHandler) {
         return new CraftOption(
                 toMerge.getModule(),
                 () -> {
                     int i = -1;
-                    var optional = screenHandler.slots.stream()
+                    var optional = screenHandler.getActiveSlots().stream()
                             .filter(a -> a.getItem().has(BLUEPRINT_COMPONENT))
                             .filter((a -> this.equals(a.getItem().get(BLUEPRINT_COMPONENT)))).findAny();
                     if (optional.isPresent()) {

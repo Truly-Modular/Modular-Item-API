@@ -4,7 +4,7 @@ import com.google.gson.JsonElement;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
-import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
+import smartin.miapi.client.gui.crafting.CraftingHandler;
 import smartin.miapi.client.gui.crafting.crafter.replace.CraftOption;
 import smartin.miapi.datapack.ReloadHandlerBuilder;
 import smartin.miapi.material.properties.AllowedMaterial;
@@ -33,7 +33,7 @@ public class BlueprintManager {
                 })).register();
     }
 
-    public static CraftOption asCraftOption(CraftingScreenHandler screenHandler, ResourceLocation location, BlueprintComponent blueprint) {
+    public static CraftOption asCraftOption(CraftingHandler screenHandler, ResourceLocation location, BlueprintComponent blueprint) {
         return new CraftOption(
                 blueprint.toMerge.getModule(),
                 () -> {
@@ -48,7 +48,7 @@ public class BlueprintManager {
     }
 
     @Nullable
-    public static BlueprintComponent getBlueprint(Map<ResourceLocation, JsonElement> dataMap, CraftingScreenHandler screenHandler) {
+    public static BlueprintComponent getBlueprint(Map<ResourceLocation, JsonElement> dataMap, CraftingHandler screenHandler) {
         JsonElement json = dataMap.get(ID);
         if (json != null) {
             var decodeResult = ResourceLocation.CODEC.decode(JsonOpsBooleanPatched.INSTANCE, json).getOrThrow().getFirst();

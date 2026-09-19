@@ -8,8 +8,8 @@ import net.minecraft.world.Container;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import smartin.miapi.client.gui.InteractAbleWidget;
+import smartin.miapi.client.gui.crafting.CraftingHandler;
 import smartin.miapi.client.gui.crafting.CraftingScreen;
-import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
 import smartin.miapi.client.gui.crafting.crafter.help.HelpGuiInfo;
 import smartin.miapi.client.gui.crafting.crafter.replace.CraftOption;
 import smartin.miapi.client.gui.crafting.crafter.replace.ReplaceView;
@@ -34,12 +34,11 @@ public class ModuleCrafter extends InteractAbleWidget {
     public SlotProperty.ModuleSlot slot;
     private final Consumer<ItemStack> preview;
     private SlotProperty.ModuleSlot baseSlot = new SlotProperty.ModuleSlot(new ArrayList<>());
-    private String paketIdentifier;
     private final Container linkedInventory;
     EditView editView;
     Consumer<Slot> removeSlot;
     Consumer<Slot> addSlot;
-    public CraftingScreenHandler handler;
+    public CraftingHandler handler;
     EditOption editOption;
     Consumer<SlotProperty.ModuleSlot> selected;
     public EditOption.EditContext editContext;
@@ -76,10 +75,6 @@ public class ModuleCrafter extends InteractAbleWidget {
 
     public void setBaseSlot(SlotProperty.ModuleSlot instance) {
         baseSlot = instance;
-    }
-
-    public void setPacketIdentifier(String identifier) {
-        paketIdentifier = identifier;
     }
 
     public void setEditMode(EditOption editOption, EditOption.EditContext editContext) {
@@ -125,9 +120,9 @@ public class ModuleCrafter extends InteractAbleWidget {
                 this.children.add(detailView);
             }
             case EDIT -> {
-                editView = new EditView(this.getX(), this.getY(), this.width, this.height, stack, slot, (previewItem) -> {
+                editView = new EditView(this.getX(), this.getY(), this.width, this.height, stack, handler, slot, (previewItem) -> {
                     if (currentMode == Mode.EDIT) {
-                        preview.accept(previewItem);
+                        preview.accept((ItemStack) previewItem);
                     }
                 }, (object) -> {
                     setMode(Mode.DETAIL);
@@ -144,7 +139,7 @@ public class ModuleCrafter extends InteractAbleWidget {
                     this.craftOption = option;
                     setMode(Mode.CRAFT);
                 }, (option -> {
-                    CraftAction action = new CraftAction(editContext.getItemstack(), editContext.getSlot(), option.module(), editContext.getPlayer(), editContext.getWorkbench(), option.data().get(),editContext.getScreenHandler());
+                    CraftAction action = new CraftAction(editContext.getItemstack(), editContext.getSlot(), option.module(), editContext.getPlayer(), editContext.getWorkbench(), option.data().get(), editContext.getScreenHandler());
                     action.setItem(editContext.getLinkedInventory().getItem(0));
                     action.linkInventory(editContext.getLinkedInventory(), 1);
                     editContext.preview(action.toPacket(Networking.createBuffer()));

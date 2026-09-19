@@ -18,6 +18,7 @@ import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
+import smartin.miapi.blocks.IModularWorkbench;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
 import smartin.miapi.client.gui.MutableSlot;
 import smartin.miapi.craft.CraftAction;
@@ -39,18 +40,17 @@ import static net.minecraft.world.inventory.InventoryMenu.EMPTY_ARMOR_SLOT_SHIEL
 /**
  * This is the screen handler class for miapis default Crafting Screen.
  */
-public class CraftingScreenHandler extends AbstractContainerMenu {
+public class CraftingScreenHandler extends AbstractContainerMenu implements CraftingHandler {
     private final ContainerLevelAccess context;
     private static final String PACKET_ID = ":crafting_packet_";
     public Container inventory;
     public Inventory playerInventory;
     public @Nullable ModularWorkBenchEntity blockEntity;
     public final ContainerData delegate;
-    public final String packetID;
+    private final String packetID;
     public final String editPacketID;
-    public final String packetIDSlotAdd;
-    public final String packetIDSlotRemove;
-    public CraftingScreenHandler craftingScreenHandler;
+    private final String packetIDSlotAdd;
+    private final String packetIDSlotRemove;
     private final List<Slot> mutableSlots = new ArrayList<>();
 
     static final ResourceLocation[] EMPTY_ARMOR_SLOT_TEXTURES = new ResourceLocation[]{InventoryMenu.EMPTY_ARMOR_SLOT_BOOTS, InventoryMenu.EMPTY_ARMOR_SLOT_LEGGINGS, InventoryMenu.EMPTY_ARMOR_SLOT_CHESTPLATE, InventoryMenu.EMPTY_ARMOR_SLOT_HELMET};
@@ -66,12 +66,10 @@ public class CraftingScreenHandler extends AbstractContainerMenu {
      */
     public CraftingScreenHandler(int syncId, Inventory playerInventory) {
         this(syncId, playerInventory, null, ContainerLevelAccess.NULL, new SimpleContainerData(7));
-        craftingScreenHandler = this;
     }
 
     public CraftingScreenHandler(int syncId, Inventory playerInventory, ModularWorkBenchEntity benchEntity, ContainerData delegate) {
         this(syncId, playerInventory, benchEntity, ContainerLevelAccess.NULL, delegate);
-        craftingScreenHandler = this;
     }
 
     /**
@@ -86,7 +84,6 @@ public class CraftingScreenHandler extends AbstractContainerMenu {
      */
     public CraftingScreenHandler(int syncId, Inventory playerInventory, @Nullable ModularWorkBenchEntity benchEntity, ContainerLevelAccess context, ContainerData delegate) {
         super(RegistryInventory.craftingScreenHandler, syncId);
-        craftingScreenHandler = this;
         packetID = Miapi.MOD_ID + PACKET_ID + playerInventory.player.getStringUUID() + "_" + syncId;
         editPacketID = Miapi.MOD_ID + PACKET_ID + "_edit_" + playerInventory.player.getStringUUID() + "_" + syncId;
         packetIDSlotAdd = Miapi.MOD_ID + PACKET_ID + "_" + playerInventory.player.getStringUUID() + "_" + syncId + "_slot_add";
@@ -149,7 +146,13 @@ public class CraftingScreenHandler extends AbstractContainerMenu {
 
                 assert option != null;
                 SlotProperty.ModuleSlot finalSlot = slot;
+                CraftingScreenHandler craftingScreen = this;
                 EditOption.EditContext editContext = new EditOption.EditContext() {
+                    @Override
+                    public CraftingHandler getScreenHandler() {
+                        return craftingScreen;
+                    }
+
                     @Override
                     public void craft(FriendlyByteBuf craftBuffer) {
 
@@ -181,7 +184,7 @@ public class CraftingScreenHandler extends AbstractContainerMenu {
                     }
 
                     @Override
-                    public @Nullable ModularWorkBenchEntity getWorkbench() {
+                    public @Nullable IModularWorkbench getWorkbench() {
                         return blockEntity;
                     }
 
@@ -190,10 +193,6 @@ public class CraftingScreenHandler extends AbstractContainerMenu {
                         return inventory;
                     }
 
-                    @Override
-                    public CraftingScreenHandler getScreenHandler() {
-                        return craftingScreenHandler;
-                    }
                 };
                 if (option.isVisible(editContext)) {
                     ItemStack editedStack = option.execute(buffer, editContext);
@@ -220,11 +219,11 @@ public class CraftingScreenHandler extends AbstractContainerMenu {
                 super.setChanged();
             }
         };
-        ((SimpleContainer)inventory).addListener(new ContainerListener() {
+        ((SimpleContainer) inventory).addListener(new ContainerListener() {
             @Override
             public void containerChanged(Container container) {
                 CraftingScreenHandler.this.slotsChanged(container);
-                if(notClient()){
+                if (notClient()) {
                     ItemStack block = blockEntity.getItem();
                     ItemStack inv = inventory.getItem(0);
                     if (!ItemStack.matches(block, inv)) {
@@ -252,11 +251,11 @@ public class CraftingScreenHandler extends AbstractContainerMenu {
 
         ModifyingSlot slot = new ModifyingSlot(inventory, 0, 112 - 60 - 15 - 3, 118 + 72 - 14, blockEntity);
         this.addSlot(slot);
-        var opt = this.findSlot(inventory,0);
-        if(opt.isPresent()){
-            if(notClient()){
+        var opt = this.findSlot(inventory, 0);
+        if (opt.isPresent()) {
+            if (notClient()) {
                 SERVER_SLOT_ID = opt.getAsInt();
-            }else{
+            } else {
                 CLIENT_SLOT_ID = opt.getAsInt();
             }
         }
@@ -313,8 +312,6 @@ public class CraftingScreenHandler extends AbstractContainerMenu {
     @Override
     public void broadcastChanges() {
         super.broadcastChanges();
-        if (notClient()) {
-        }
         if (blockEntity == null && delegate.get(0) == 1) {
             short xsh = (short) delegate.get(1);
             short xsl = (short) delegate.get(2);
@@ -331,6 +328,11 @@ public class CraftingScreenHandler extends AbstractContainerMenu {
             BlockEntity be = playerInventory.player.level().getBlockEntity(new BlockPos(x, y, z));
             if (be instanceof ModularWorkBenchEntity casted) blockEntity = casted;
         }
+    }
+
+    @Override
+    public List<Slot> getActiveSlots() {
+        return slots;
     }
 
     /**
@@ -352,6 +354,21 @@ public class CraftingScreenHandler extends AbstractContainerMenu {
         buf.writeInt(slot.index);
         mutableSlots.remove(slot);
         Networking.sendC2S(packetIDSlotRemove, buf);
+    }
+
+    @Override
+    public Container getAttachedStorage() {
+        return inventory;
+    }
+
+    @Override
+    public Player getCurrentPlayer() {
+        return this.playerInventory.player;
+    }
+
+    @Override
+    public void sendEditPacket(FriendlyByteBuf buf) {
+        Networking.sendC2S(editPacketID, buf);
     }
 
     public void clearSlots() {
@@ -453,7 +470,7 @@ public class CraftingScreenHandler extends AbstractContainerMenu {
                         }
                     }
                 }
-                if ((slots.get(id ).getItem().isEmpty() || slots.get(id ).getItem().getItem().equals(itemStack2.getItem())) && !this.moveItemStackTo(itemStack2, id , id +1, true)) {
+                if ((slots.get(id).getItem().isEmpty() || slots.get(id).getItem().getItem().equals(itemStack2.getItem())) && !this.moveItemStackTo(itemStack2, id, id + 1, true)) {
                     return ItemStack.EMPTY;
                 }
                 slot.setChanged();

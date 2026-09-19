@@ -10,8 +10,9 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
-import smartin.miapi.blocks.ModularWorkBenchEntity;
+import smartin.miapi.blocks.IModularWorkbench;
 import smartin.miapi.client.gui.InteractAbleWidget;
+import smartin.miapi.client.gui.crafting.CraftingHandler;
 import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
 import smartin.miapi.client.gui.crafting.crafter.replace.CraftOption;
 import smartin.miapi.modules.ModuleInstance;
@@ -126,7 +127,7 @@ public class EditModuleCrafter extends InteractAbleWidget {
             }
 
             @Override
-            public @Nullable ModularWorkBenchEntity getWorkbench() {
+            public @Nullable IModularWorkbench getWorkbench() {
                 return context.getWorkbench();
             }
 
@@ -136,7 +137,7 @@ public class EditModuleCrafter extends InteractAbleWidget {
             }
 
             @Override
-            public CraftingScreenHandler getScreenHandler() {
+            public CraftingHandler getScreenHandler() {
                 return context.getScreenHandler();
             }
 

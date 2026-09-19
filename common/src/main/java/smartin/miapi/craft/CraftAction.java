@@ -15,8 +15,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
+import smartin.miapi.blocks.IModularWorkbench;
 import smartin.miapi.blocks.ModularWorkBenchEntity;
-import smartin.miapi.client.gui.crafting.CraftingScreenHandler;
+import smartin.miapi.client.gui.crafting.CraftingHandler;
 import smartin.miapi.item.ModularItemStackConverter;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
@@ -45,12 +46,12 @@ public class CraftAction {
     public final Level level;
     public final List<String> slotLocation = new ArrayList<>();
     private ItemStack old;
-    private final ModularWorkBenchEntity blockEntity;
+    private final IModularWorkbench blockEntity;
     private Container linkedInventory;
     private int inventoryOffset;
     public Map<ResourceLocation, JsonElement> data = new ConcurrentHashMap<>();
     public static final List<CraftingEvent> events = new ArrayList<>();
-    public CraftingScreenHandler screenHandler;
+    public CraftingHandler screenHandler;
 
     /**
      * Constructs a new instance of CraftAction, given the old item stack, the slot to modify,
@@ -68,9 +69,9 @@ public class CraftAction {
             SlotProperty.ModuleSlot slot,
             @Nullable ItemModule toAdd,
             Player player,
-            ModularWorkBenchEntity bench,
+            IModularWorkbench bench,
             Map<ResourceLocation, JsonElement> data,
-            CraftingScreenHandler craftingScreenHandler) {
+            CraftingHandler craftingScreenHandler) {
         this.screenHandler = craftingScreenHandler;
         this.old = ModularItemStackConverter.getModularVersion(old);
         this.toAdd = toAdd;
@@ -87,7 +88,7 @@ public class CraftAction {
      * @param buf   the packet byte buffer from which to construct the CraftAction
      * @param bench the workbench block entity to store in this CraftAction
      */
-    public CraftAction(FriendlyByteBuf buf, ModularWorkBenchEntity bench, CraftingScreenHandler craftingScreenHandler) {
+    public CraftAction(FriendlyByteBuf buf, IModularWorkbench bench, CraftingHandler craftingScreenHandler) {
         Level findLevel = null;
         Player findPlayer;
         int size = buf.readInt();
@@ -103,7 +104,7 @@ public class CraftAction {
         }
         findPlayer = getPlayerFromUuid(buf.readUUID());
         if (findPlayer == null) {
-            findPlayer = craftingScreenHandler.playerInventory.player;
+            findPlayer = craftingScreenHandler.getCurrentPlayer();
             var optionalFallbackPlayer = Miapi.server.getPlayerList().getPlayers().stream().findAny();
             if (optionalFallbackPlayer.isPresent()) {
                 findPlayer = optionalFallbackPlayer.get();
