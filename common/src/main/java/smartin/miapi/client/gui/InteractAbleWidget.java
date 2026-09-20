@@ -51,6 +51,7 @@ public abstract class InteractAbleWidget extends AbstractWidget implements Rende
      */
     protected InteractAbleWidget(int x, int y, int width, int height, Component title) {
         super(x, y, width, height, title);
+        sizeUpdate();
     }
 
     /*
