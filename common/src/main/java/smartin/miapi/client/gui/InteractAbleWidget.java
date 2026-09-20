@@ -52,7 +52,6 @@ public abstract class InteractAbleWidget extends AbstractWidget implements Rende
      */
     protected InteractAbleWidget(int x, int y, int width, int height, Component title) {
         super(x, y, width, height, title);
-        sizeUpdate();
     }
 
     /*
@@ -380,7 +379,7 @@ public abstract class InteractAbleWidget extends AbstractWidget implements Rende
 
     @Override
     public void setWidth(int width) {
-        super.setHeight(height);
+        super.setWidth(height);
         sizeUpdate();
     }
 
@@ -392,7 +391,15 @@ public abstract class InteractAbleWidget extends AbstractWidget implements Rende
 
     @Override
     public void setY(int y) {
-        super.setHeight(y);
+        super.setY(y);
+        sizeUpdate();
+    }
+
+    public void updateDimmensions(int x, int y, int width, int height) {
+        super.setX(x);
+        super.setY(y);
+        super.setWidth(width);
+        super.setHeight(height);
         sizeUpdate();
     }
 
