@@ -379,7 +379,7 @@ public abstract class InteractAbleWidget extends AbstractWidget implements Rende
 
     @Override
     public void setWidth(int width) {
-        super.setWidth(height);
+        super.setWidth(width);
         sizeUpdate();
     }
 
