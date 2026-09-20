@@ -16,6 +16,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.FastColor;
 import org.joml.Vector2d;
+import smartin.miapi.client.gui.state.UiAttachable;
 import smartin.miapi.config.MiapiConfig;
 
 import java.util.ArrayList;
@@ -185,6 +186,9 @@ public abstract class InteractAbleWidget extends AbstractWidget implements Rende
      */
     public void addChild(GuiEventListener element) {
         children().add(element);
+        if (element instanceof UiAttachable uiAttachable) {
+            uiAttachable.attach();
+        }
     }
 
     /**
@@ -195,6 +199,9 @@ public abstract class InteractAbleWidget extends AbstractWidget implements Rende
      */
     public void removeChild(GuiEventListener element) {
         children().remove(element);
+        if (element instanceof UiAttachable uiAttachable) {
+            uiAttachable.detach();
+        }
     }
 
     /**
@@ -427,6 +434,7 @@ public abstract class InteractAbleWidget extends AbstractWidget implements Rende
             }
         }
     }
+
 
     /**
      * intended to render additional debug context.
