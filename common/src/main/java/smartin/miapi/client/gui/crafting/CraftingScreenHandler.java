@@ -127,90 +127,7 @@ public class CraftingScreenHandler extends AbstractContainerMenu implements Craf
                     mutableSlots.remove(slot);
                 });
             });
-            Networking.registerC2SPacket(editPacketID, (buffer, player) -> {
-                String editOptionKey = buffer.readUtf();
-                EditOption option = RegistryInventory.EDIT_OPTION_MIAPI_REGISTRY.get(editOptionKey);
-                int size = buffer.readVarInt();
-                List<String> position = new ArrayList<>(size);
-                for (int i = 0; i < size; i++) {
-                    position.add(buffer.readUtf());
-                }
-                ItemStack stack = ModularItemStackConverter.getModularVersion(inventory.getItem(0));
-                ModuleInstance root = ItemModule.getModules(stack);
-                ModuleInstance current = root.getPosition(position);
-
-                SlotProperty.ModuleSlot slot = SlotProperty.getSlotIn(current);
-                if (slot == null && current != null && current.getModule() != null) {
-                    slot = new SlotProperty.ModuleSlot(AllowedSlots.getAllowedSlots(current.getModule()));
-                }
-
-                assert option != null;
-                SlotProperty.ModuleSlot finalSlot = slot;
-                CraftingScreenHandler craftingScreen = this;
-                EditOption.EditContext editContext = new EditOption.EditContext() {
-                    @Override
-                    public CraftingHandler getScreenHandler() {
-                        return craftingScreen;
-                    }
-
-                    @Override
-                    public void craft(FriendlyByteBuf craftBuffer) {
-
-                    }
-
-                    @Override
-                    public void preview(FriendlyByteBuf preview) {
-
-                    }
-
-                    @Override
-                    public SlotProperty.ModuleSlot getSlot() {
-                        return finalSlot;
-                    }
-
-                    @Override
-                    public ItemStack getItemstack() {
-                        return stack;
-                    }
-
-                    @Override
-                    public @Nullable ModuleInstance getInstance() {
-                        return current;
-                    }
-
-                    @Override
-                    public @Nullable Player getPlayer() {
-                        return player;
-                    }
-
-                    @Override
-                    public @Nullable IModularWorkbench getWorkbench() {
-                        return blockEntity;
-                    }
-
-                    @Override
-                    public Container getLinkedInventory() {
-                        return inventory;
-                    }
-
-                };
-                if (option.isVisible(editContext)) {
-                    ItemStack editedStack = option.execute(buffer, editContext);
-                    Miapi.server.execute(() -> {
-                        inventory.setItem(0, editedStack);
-                        if (blockEntity != null) {
-                            blockEntity.setItem(editedStack);
-                            blockEntity.saveAndSync();
-                        }
-                        inventory.setChanged();
-                        this.slotsChanged(inventory);
-                    });
-                } else {
-                    Miapi.LOGGER.warn("ERROR - Couldn`t verify craft action of type" + editOptionKey + " from client " + player.getStringUUID() + " " + player.getDisplayName().getString() + " This might be a bug or somebody is trying to exploit");
-                    Miapi.LOGGER.warn(String.valueOf(current));
-                    Miapi.LOGGER.warn(position.toString());
-                }
-            });
+            Networking.registerC2SPacket(editPacketID,this::handleEditPacket);
         }
         this.context = context;
         this.inventory = new SimpleContainer(54) {
@@ -303,6 +220,93 @@ public class CraftingScreenHandler extends AbstractContainerMenu implements Craf
             });
         }
         this.addDataSlots(delegate);
+    }
+
+    public void handleEditPacket(FriendlyByteBuf buffer,Player player){
+        {
+            String editOptionKey = buffer.readUtf();
+            EditOption option = RegistryInventory.EDIT_OPTION_MIAPI_REGISTRY.get(editOptionKey);
+            int size = buffer.readVarInt();
+            List<String> position = new ArrayList<>(size);
+            for (int i = 0; i < size; i++) {
+                position.add(buffer.readUtf());
+            }
+            ItemStack stack = ModularItemStackConverter.getModularVersion(inventory.getItem(0));
+            ModuleInstance root = ItemModule.getModules(stack);
+            ModuleInstance current = root.getPosition(position);
+
+            SlotProperty.ModuleSlot slot = SlotProperty.getSlotIn(current);
+            if (slot == null && current != null && current.getModule() != null) {
+                slot = new SlotProperty.ModuleSlot(AllowedSlots.getAllowedSlots(current.getModule()));
+            }
+
+            assert option != null;
+            SlotProperty.ModuleSlot finalSlot = slot;
+            CraftingScreenHandler craftingScreen = this;
+            EditOption.EditContext editContext = new EditOption.EditContext() {
+                @Override
+                public CraftingHandler getScreenHandler() {
+                    return craftingScreen;
+                }
+
+                @Override
+                public void craft(FriendlyByteBuf craftBuffer) {
+
+                }
+
+                @Override
+                public void preview(FriendlyByteBuf preview) {
+
+                }
+
+                @Override
+                public SlotProperty.ModuleSlot getSlot() {
+                    return finalSlot;
+                }
+
+                @Override
+                public ItemStack getItemstack() {
+                    return stack;
+                }
+
+                @Override
+                public @Nullable ModuleInstance getInstance() {
+                    return current;
+                }
+
+                @Override
+                public @Nullable Player getPlayer() {
+                    return player;
+                }
+
+                @Override
+                public @Nullable IModularWorkbench getWorkbench() {
+                    return blockEntity;
+                }
+
+                @Override
+                public Container getLinkedInventory() {
+                    return inventory;
+                }
+
+            };
+            if (option.isVisible(editContext)) {
+                ItemStack editedStack = option.execute(buffer, editContext);
+                Miapi.server.execute(() -> {
+                    inventory.setItem(0, editedStack);
+                    if (blockEntity != null) {
+                        blockEntity.setItem(editedStack);
+                        blockEntity.saveAndSync();
+                    }
+                    inventory.setChanged();
+                    this.slotsChanged(inventory);
+                });
+            } else {
+                Miapi.LOGGER.warn("ERROR - Couldn`t verify craft action of type" + editOptionKey + " from client " + player.getStringUUID() + " " + player.getDisplayName().getString() + " This might be a bug or somebody is trying to exploit");
+                Miapi.LOGGER.warn(String.valueOf(current));
+                Miapi.LOGGER.warn(position.toString());
+            }
+        }
     }
 
     public boolean notClient() {

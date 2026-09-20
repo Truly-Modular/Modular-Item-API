@@ -84,7 +84,7 @@ public abstract class InteractAbleWidget extends AbstractWidget implements Rende
      * coordinates (u, v) and (u2, regionHeight).
      * This is useful if a texture might be resized in the UI to still align its Edges
      *
-     * @param context   The drawContext used.
+     * @param context       The drawContext used.
      * @param texture       The texture rendered.
      * @param x             The x-coordinate to draw the texture at.
      * @param y             The y-coordinate to draw the texture at.
@@ -278,8 +278,8 @@ public abstract class InteractAbleWidget extends AbstractWidget implements Rende
     }
 
     /**
-     * @param mouseX current X Position of the Mouse
-     * @param mouseY current Y Position of the Mouse
+     * @param mouseX  current X Position of the Mouse
+     * @param mouseY  current Y Position of the Mouse
      * @param scrollX the amount horizontal scrolled since the last time this was called
      * @param scrollY the amount vertical scrolled since the last time this was called
      * @return if this consumes the action, if you previewStack an action return true, if not return false
@@ -364,9 +364,36 @@ public abstract class InteractAbleWidget extends AbstractWidget implements Rende
         return new Vector2d(x, y);
     }
 
+    @Override
     public void setHeight(int height) {
-        this.height = height;
+        super.setHeight(height);
+        sizeUpdate();
     }
+
+    @Override
+    public void setWidth(int width) {
+        super.setHeight(height);
+        sizeUpdate();
+    }
+
+    @Override
+    public void setX(int x) {
+        super.setX(x);
+        sizeUpdate();
+    }
+
+    @Override
+    public void setY(int y) {
+        super.setHeight(y);
+        sizeUpdate();
+    }
+
+    /**
+     * This function is always called when this widget gets rescaled or re-positioned.
+     * for more control overwright {@link InteractAbleWidget#setHeight(int)} or {@link InteractAbleWidget#setWidth(int)}
+     * {@link InteractAbleWidget#setX(int)} or {@link InteractAbleWidget#setY(int)}
+     */
+    public void sizeUpdate() {}
 
     /**
      * This functions handles the Rendering
@@ -380,9 +407,9 @@ public abstract class InteractAbleWidget extends AbstractWidget implements Rende
      */
     @Override
     public void renderWidget(GuiGraphics drawContext, int mouseX, int mouseY, float delta) {
-        if ((debug || MiapiConfig.getServerConfig().other.hasDeveloperMode(Minecraft.getInstance().player)) && Screen.hasAltDown()) {
+        if (isDebug()) {
             drawSquareBorder(drawContext, getX(), getY(), getWidth(), getHeight(), 1, randomColor);
-        }else{
+        } else {
             //yeah, i dont fucking know, but remove this and EMI/JEI break their rendeirng on scrolllists scissorboxes
             //nope, no clue why
             //even less to why this remotly fixes it, gi some deeprooted issue with scissors
@@ -398,6 +425,14 @@ public abstract class InteractAbleWidget extends AbstractWidget implements Rende
                 drawable.render(drawContext, mouseX, mouseY, delta);
             }
         }
+    }
+
+    /**
+     * intended to render additional debug context.
+     * normal end users will never see this true,
+     */
+    public boolean isDebug() {
+        return (debug || MiapiConfig.getServerConfig().other.hasDeveloperMode(Minecraft.getInstance().player)) && Screen.hasAltDown();
     }
 
     /**
