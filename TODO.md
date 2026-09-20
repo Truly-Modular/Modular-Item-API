@@ -2,6 +2,8 @@
 - fix dispenser behaviour
 - Spikes still don't reflect dmg
 - Twin throwing knife balancing
+- add always on potion for equipment.
+- scan every 5 seconds
 
 ### Custom damage system:
 - custom inv timers per used ID
