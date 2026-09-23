@@ -99,11 +99,15 @@ public class ExplosionProperty extends CodecProperty<ExplosionProperty.Explosion
 
         @Override
         public float getEntityDamageAmount(Explosion explosion, Entity entity) {
-            float f = entityRadius * 2.0F;
+            float diameter = entityRadius * 2.0F;
             Vec3 vec3 = explosion.center();
-            double d = Math.sqrt(entity.distanceToSqr(vec3)) / (double) f;
-            double e = (1.0 - d) * (double) Explosion.getSeenPercent(vec3, entity);
-            return Math.min(entityMaxDamage, (float) ((e * e + e) / 2.0 * entityExplosionPower * (double) f + 1.0));
+            double normalizedDistance =
+                    Math.sqrt(entity.distanceToSqr(vec3)) / (double) diameter;
+            double effectiveExposure =
+                    (1.0 - normalizedDistance)
+                    * Explosion.getSeenPercent(vec3, entity);
+            return Math.min(entityMaxDamage,
+                    (float) ((effectiveExposure * effectiveExposure + effectiveExposure) / 2.0 * entityExplosionPower * (double) diameter + 1.0));
         }
     }
 
@@ -121,7 +125,7 @@ public class ExplosionProperty extends CodecProperty<ExplosionProperty.Explosion
         public double entityRadius;
 
         public ExplosionDamageCalculator getCalculator() {
-            return new BalancedExplosionDamage((float) entityStrength, (float) entityMaxDamage, (float) entityRadius, destroyBlocks);
+            return new BalancedExplosionDamage((float) entityStrength, (float) entityRadius,(float) entityMaxDamage, destroyBlocks);
         }
 
         public void explode(Level world, Entity source, Vec3 position) {

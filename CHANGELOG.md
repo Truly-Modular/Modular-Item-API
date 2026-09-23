@@ -6,3 +6,4 @@
 ### Fixes
 - fixed bug where material effects could apply twice
 - fixed bug where Potion effects would not correctly merge
+- fixed bug where explosion range and max damage where accidentally swapped

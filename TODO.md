@@ -4,6 +4,7 @@
 - Twin throwing knife balancing
 - add always on potion for equipment.
 - scan every 5 seconds
+- add condition to create item
 
 ### Custom damage system:
 - custom inv timers per used ID
@@ -33,3 +34,5 @@ the name, tooltip and description are lang keys -> you can use %s to refer to am
 
 
 food storage pouch eat key?
+
+
