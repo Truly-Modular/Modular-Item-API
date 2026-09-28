@@ -263,4 +263,29 @@ public class MiapiRegistry<T> {
             return codec;
         }));
     }
+
+    public <R> Codec<R> dispatchCodecTo(
+            Function<T, MapCodec<? extends R>> codecFunction
+    ) {
+        return ResourceLocation.CODEC.dispatch(
+                this::findKey,
+                id -> {
+                    T type = get(id);
+                    if (type == null) {
+                        throw new IllegalArgumentException(
+                                "Unknown type: " + id + " for Type " + getName()
+                        );
+                    }
+
+                    MapCodec<? extends R> codec = codecFunction.apply(type);
+                    if (codec == null) {
+                        throw new IllegalArgumentException(
+                                "Could not get codec for " + id + " for Type " + getName()
+                        );
+                    }
+
+                    return codec;
+                }
+        );
+    }
 }
