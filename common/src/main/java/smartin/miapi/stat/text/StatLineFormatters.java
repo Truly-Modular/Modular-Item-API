@@ -30,11 +30,13 @@ public final class StatLineFormatters {
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         LiteralArgumentBuilder<CommandSourceStack> handStats = Commands.literal("miapi")
-                .then(Commands.literal("getStats")
+                .then(Commands.literal("stat"))
+                .then(Commands.literal("mainHand")
                         .executes(StatLineFormatters::executeStat));
 
         LiteralArgumentBuilder<CommandSourceStack> compareStatsCommand = Commands.literal("miapi")
-                .then(Commands.literal("compareStats")
+                .then(Commands.literal("stat"))
+                .then(Commands.literal("compareHands")
                         .executes(StatLineFormatters::executeCompare));
 
         dispatcher.register(handStats);
