@@ -27,6 +27,8 @@ public record AttributeStatData(
         @Nullable EquipmentSlot slot,
         AttributeModifier.Operation operation,
         double defaultValue,
+        double min,
+        double max,
         double fallbackValue,
         double priority
 ) implements StatMetaData<Double> {
