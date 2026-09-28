@@ -77,6 +77,7 @@ import smartin.miapi.network.Networking;
 import smartin.miapi.network.NetworkingImplCommon;
 import smartin.miapi.registries.OptionalGetter;
 import smartin.miapi.registries.RegistryInventory;
+import smartin.miapi.stat.text.StatLineFormatters;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -147,6 +148,7 @@ public class Miapi {
                         return parts;
                     }
             );
+
     public static void init() {
         CodecBehavior.registerClass(Transform.class, Transform.CODEC);
         CodecBehavior.registerClass(DoubleOperationResolvable.class, DoubleOperationResolvable.CODEC);
@@ -248,6 +250,7 @@ public class Miapi {
                                         return 1;
                                     }))));
             serverCommandSourceCommandDispatcher.register(runPose);
+            StatLineFormatters.register(serverCommandSourceCommandDispatcher);
         });
         BlueprintManager.setup();
         LootHelper.setup();

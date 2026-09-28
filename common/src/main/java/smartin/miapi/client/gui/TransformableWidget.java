@@ -20,7 +20,7 @@ public class TransformableWidget extends InteractAbleWidget {
     public Matrix4f rawProjection = new Matrix4f();
 
     /**
-     * This is a Widget build to support Children and parse the events down to them.
+     * This is a Widget register to support Children and parse the events down to them.
      * Best use in conjunction with the ParentHandledScreen as it also handles Children correct,
      * unlike the base vanilla classes.
      * If you choose to handle some Events yourself and want to support Children yourself, you need to call the correct

@@ -16,7 +16,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.FastColor;
 import org.joml.Vector2d;
-import smartin.miapi.client.gui.state.UiAttachable;
 import smartin.miapi.config.MiapiConfig;
 
 import java.util.ArrayList;
@@ -37,7 +36,7 @@ public abstract class InteractAbleWidget extends AbstractWidget implements Rende
     public int randomColor = FastColor.ARGB32.color(180, (int) (Math.random() * 255), (int) (Math.random() * 255), (int) (Math.random() * 255));
 
     /**
-     * This is a Widget build to support Children and parse the events down to them.
+     * This is a Widget register to support Children and parse the events down to them.
      * Best use in conjunction with the ParentHandledScreen as it also handles Children correct,
      * unlike the base vanilla classes.
      * If you choose to handle some Events yourself and want to support Children yourself, you need to call the correct
@@ -185,9 +184,6 @@ public abstract class InteractAbleWidget extends AbstractWidget implements Rende
      */
     public void addChild(GuiEventListener element) {
         children().add(element);
-        if (element instanceof UiAttachable uiAttachable) {
-            uiAttachable.attach();
-        }
     }
 
     /**
@@ -198,9 +194,6 @@ public abstract class InteractAbleWidget extends AbstractWidget implements Rende
      */
     public void removeChild(GuiEventListener element) {
         children().remove(element);
-        if (element instanceof UiAttachable uiAttachable) {
-            uiAttachable.detach();
-        }
     }
 
     /**

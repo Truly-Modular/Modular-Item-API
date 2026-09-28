@@ -5,6 +5,7 @@
     "compatibilityLevel": "JAVA_17",
     "mixins": [
         "ApoliStackPowerMixin",
+        "AttributeAccessor",
         "CooldownInstanceAccessor",
         "CraftingResultInventorMixin",
         "DataResultErrorMixin",
@@ -62,8 +63,6 @@
         "smithing.SmithingTransformRecipeAccessor"
     ],
     "client": [
-        "client.NativeImageAccessor",
-        "client.PoseStackMixin",
         "client.AbstractConainerScreenMixin",
         "client.BufferBuilderAccessor",
         "client.BuiltinModelItemRendererMixin",
@@ -88,7 +87,9 @@
         "client.ModelLoaderMixin",
         "client.ModelPredicateProviderRegistryAccessor",
         "client.MultiPlayerGameModeMixin",
+        "client.NativeImageAccessor",
         "client.OptionsAccessor",
+        "client.PoseStackMixin",
         "client.SpriteContentsAccessor",
         "client.SpriteContentsNativeImageGetter",
         "client.SpriteSourceListAccessor",

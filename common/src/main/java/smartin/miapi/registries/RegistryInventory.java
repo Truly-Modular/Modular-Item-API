@@ -101,6 +101,7 @@ import smartin.miapi.modules.properties.projectile.RapidfireCrossbowProperty;
 import smartin.miapi.modules.properties.render.ItemModelProperty;
 import smartin.miapi.modules.properties.util.ModuleProperty;
 import smartin.miapi.modules.synergies.SynergyManager;
+import smartin.miapi.stat.StatTypes;
 
 import java.util.EnumMap;
 import java.util.List;
@@ -319,7 +320,7 @@ public class RegistryInventory {
         //ENTITY
         // commented out because RegistrySupplier is needed... see itemProjectileType field definition above
         /*register(entityTypes, "thrown_item", () ->
-                EntityType.builder.create(ItemProjectile::new, SpawnGroup.MISC).setDimensions(0.5F, 0.5F).maxTrackingRange(4).trackingTickInterval(20).build("miapi:thrown_item"),
+                EntityType.builder.create(ItemProjectile::new, SpawnGroup.MISC).setDimensions(0.5F, 0.5F).maxTrackingRange(4).trackingTickInterval(20).register("miapi:thrown_item"),
                 type -> itemProjectileType = (EntityType<ItemProjectile>) type);*/
 
         //RECIPE SERIALIZERS
@@ -516,6 +517,8 @@ public class RegistryInventory {
             PropertyResolver.registry.forEach((pair) -> {
                 Miapi.LOGGER.info("registered resolver: " + pair.getA());
             });
+
+            StatTypes.setup();
         });
     }
 

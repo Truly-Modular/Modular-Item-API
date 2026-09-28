@@ -186,11 +186,11 @@ public class StatListWidget extends InteractAbleWidget {
         addStatDisplay(SinglePropertyStatDisplay
                 .builder(BlockProperty.property)
                 .setMax(50)
-                .setTranslationKey(BlockProperty.KEY).build());
+                .setTranslationKey(BlockProperty.KEY).register());
         addStatDisplay(SinglePropertyStatDisplay
                 .builder(AirDragProperty.property)
                 .setMax(1)
-                .setTranslationKey(AirDragProperty.KEY).build());
+                .setTranslationKey(AirDragProperty.KEY).register());
 
          */
         addStatDisplay(SinglePropertyStatDisplay
