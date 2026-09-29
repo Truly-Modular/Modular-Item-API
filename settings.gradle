@@ -14,14 +14,14 @@ include("fabric")
 include("neoforge")
 
 
-def enableAddons = providers
-        .gradleProperty("run_addons")
-        .map { it.toBoolean() }
-        .orElse(false)
+def addons = providers
+        .gradleProperty("addons")
+        .map { it.split(',')*.trim() as Set }
+        .orElse([] as Set)
         .get()
 
-if (enableAddons && System.getenv("JITPACK") == null) {
-    includeBuild("./archery")
-    //includeBuild("./arsenal")
-    includeBuild("./armory")
+if (System.getenv("JITPACK") == null) {
+    if (addons.contains("archery")) includeBuild("./archery")
+    if (addons.contains("armory")) includeBuild("./armory")
+    if (addons.contains("arsenal")) includeBuild("./arsenal")
 }
