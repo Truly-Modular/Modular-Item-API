@@ -1,5 +1,5 @@
 plugins {
-    id "com.github.johnrengelman.shadow" version "7.1.2"
+    id "com.gradleup.shadow" version "8.3.11"
 }
 architectury {
     platformSetupLoomIde()
@@ -42,13 +42,13 @@ dependencies {
     forgeRuntimeLibrary(api(include("com.ezylang:EvalEx:${rootProject.eval_ex_version}")))
     //modApi("top.theillusivec4.caelus:caelus-forge:${rootProject.forge_caelus_version}")
 
-    modApi(include("com.redpxnda.nucleus:nucleus-core-forge:${rootProject.minecraft_version}+${rootProject.nucleus_core_version}"))
-    modApi(include("com.redpxnda.nucleus:nucleus-codec-forge:${rootProject.minecraft_version}+${rootProject.nucleus_codec_version}"))
-    modApi(include("com.redpxnda.nucleus:nucleus-config-forge:${rootProject.minecraft_version}+${rootProject.nucleus_config_version}"))
-    modApi(include("com.redpxnda.nucleus:nucleus-pose-forge:${rootProject.minecraft_version}+${rootProject.nucleus_pose_version}"))
-    modApi(include("com.redpxnda.nucleus:nucleus-facet-forge:${rootProject.minecraft_version}+${rootProject.nucleus_facet_version}"))
-    modApi(include("com.redpxnda.nucleus:nucleus-trinket-forge:${rootProject.minecraft_version}+${rootProject.nucleus_trinket_version}"))
-    modApi("com.redpxnda.nucleus:nucleus-editor-forge:${rootProject.minecraft_version}+${rootProject.nucleus_editor_version}")
+    modApi(include("com.redpxnda.nucleus:nucleus-core-forge:${rootProject.nucleus_core_version}"))
+    modApi(include("com.redpxnda.nucleus:nucleus-codec-forge:${rootProject.nucleus_codec_version}"))
+    modApi(include("com.redpxnda.nucleus:nucleus-config-forge:${rootProject.nucleus_config_version}"))
+    modApi(include("com.redpxnda.nucleus:nucleus-pose-forge:${rootProject.nucleus_pose_version}"))
+    modApi(include("com.redpxnda.nucleus:nucleus-facet-forge:${rootProject.nucleus_facet_version}"))
+    modApi(include("com.redpxnda.nucleus:nucleus-trinket-forge:${rootProject.nucleus_trinket_version}"))
+    modApi("com.redpxnda.nucleus:nucleus-editor-forge:${rootProject.nucleus_editor_version}")
 
     compileOnly "curse.maven:minecolonies-245506:7700086"
 

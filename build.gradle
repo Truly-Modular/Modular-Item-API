@@ -1,239 +1,121 @@
 plugins {
-    id "architectury-plugin" version "3.4-SNAPSHOT"
-    id "dev.architectury.loom" version "1.7-SNAPSHOT" apply false
-}
-
-repositories {
-    maven {
-        name = 'ParchmentMC'
-        url = 'https://maven.parchmentmc.org'
-    }
+    id "architectury-plugin" version "3.4.164"
+    id "dev.architectury.loom" version "1.11.458" apply false
 }
 
 architectury {
     minecraft = rootProject.minecraft_version
 }
 
-tasks.register('clean-builds') {
-    dependsOn(':fabric:clean', ':neoforge:clean')
-    doLast {
-        println "Cleaned previous build"
+
+def addonNames = ["arsenal", "archery", "armory"] as Set
+def includedAddons = gradle.includedBuilds.findAll { addonNames.contains(it.name) }
+
+
+def installAddon = { String addonName ->
+    def mergedDir = rootProject.file("${addonName}/Merged")
+    if (!mergedDir.isDirectory()) {
+        throw new GradleException("No merged build directory found for ${addonName}: ${mergedDir}")
+    }
+
+    def jars = mergedDir.listFiles() ?: []
+    def findLatest = { String suffix ->
+        def candidates = jars.findAll { it.isFile() && it.name.endsWith(suffix) }
+        if (candidates.isEmpty()) {
+            throw new GradleException("No ${suffix} jar found in ${mergedDir} for ${addonName}")
+        }
+        candidates.max { it.lastModified() }
+    }
+
+    def targets = [
+            ["fabric",   findLatest("fabric.jar")],
+            ["neoforge", findLatest("neoforge.jar")]
+    ]
+
+    targets.each { platform, jarFile ->
+        def localName = rootProject.file("${platform}/libs/${addonName}-local.jar")
+
+        copy {
+            from jarFile
+            into localName.parentFile
+            rename { addonName + "-local.jar" }
+        }
+
+        copy {
+            from jarFile
+            into rootProject.file("Merged")
+        }
+    }
+
+    // The common project uses the NeoForge jar for local common-side resolution.
+    copy {
+        from targets.find { it[0] == "neoforge" }[1]
+        into rootProject.file("common/libs")
+        rename { addonName + "-local.jar" }
+    }
+
+    println "Installed ${addonName} addon jars"
+}
+
+includedAddons.each { includedBuild ->
+    def addonName = includedBuild.name
+    def taskSuffix = addonName.capitalize()
+
+    tasks.register("rebuild${taskSuffix}") {
+        group = "_tm_tasks"
+        description = "Build and install the ${addonName} addon"
+        dependsOn includedBuild.task(":buildBoth")
+        doLast {
+            installAddon(addonName)
+        }
     }
 }
 
-tasks.register('buildBoth') {
-    dependsOn('clean-builds', ':fabric:build', ':neoforge:build')
-    group = '_tm_tasks'
+tasks.register("clean-builds") {
+    group = "_tm_tasks"
+    description = "Clean the Fabric and NeoForge API builds"
+    dependsOn ":fabric:clean", ":neoforge:clean"
+}
+
+tasks.register("buildBoth") {
+    group = "_tm_tasks"
+    description = "Build and merge the Fabric and NeoForge API jars"
+    dependsOn ":fabric:build", ":neoforge:build"
+
     doLast {
         def modVersion = rootProject.mod_version
         def minecraftVersion = rootProject.minecraft_version
-        def fabricBuildDir = project(':fabric').file('build/libs')
-        def forgeBuildDir = project(':neoforge').file('build/libs')
-        def fabricJar = fabricBuildDir.listFiles().find { it.name.endsWith("${modVersion}.jar") }
-        def forgeJar = forgeBuildDir.listFiles().find { it.name.endsWith("${modVersion}.jar") }
+        def outputDir = rootProject.file("Merged")
 
-        if (fabricJar) {
+        [
+                ["fabric",   project(":fabric")],
+                ["neoforge", project(":neoforge")]
+        ].each { platform, platformProject ->
+            def jarFiles = platformProject.file("build/libs").listFiles() ?: []
+            def jarFile = jarFiles.find { it.isFile() && it.name.endsWith("${modVersion}.jar") }
+
+            if (!jarFile) {
+                throw new GradleException("Could not find ${platform} build jar in ${platformProject.file('build/libs')}")
+            }
+
             copy {
-                from fabricJar
-                into project.file('Merged')
-                rename { fileName ->
-                    "Truly-Modular-miapi-${modVersion}-${minecraftVersion}-snapshot-fabric.jar"
+                from jarFile
+                into outputDir
+                rename {
+                    "Truly-Modular-miapi-${modVersion}-${minecraftVersion}-snapshot-${platform}.jar"
                 }
             }
         }
 
-        if (forgeJar) {
-            copy {
-                from forgeJar
-                into project.file('Merged')
-                rename { fileName ->
-                    "Truly-Modular-miapi-${modVersion}-${minecraftVersion}-snapshot-neoforge.jar"
-                }
-            }
-        }
-
-        /*
-        def cacheDir = file("${gradle.gradleUserHomeDir}/caches/modules-2/files-2.1/${group}/${artifact}/${version}")
-        def jarFile = cacheDir.listFiles().find { it.name == jarName }
-        if (jarFile) {
-            jarFile.delete()
-            println "Deleted ${jarName} from the Gradle cache."
-        } else {
-            println "${jarName} not found in the Gradle cache."
-        }
-         */
-
-        println "Builds completed"
-    }
-}
-
-tasks.register('rebuildArsenal') {
-    if (rootProject.run_addons) {
-        ext.projectName = "arsenal"
-        def project = gradle.includedBuilds.find { it.name == "arsenal" }
-        if (project == null) {
-            return
-        }
-        dependsOn project.task(":buildBoth")
-        group = '_tm_tasks'
-        doLast {
-            def mergedBuildDir = rootProject.file(ext.projectName + '/Merged')
-            println mergedBuildDir
-            def fabricJars = mergedBuildDir.listFiles().findAll { it.name.endsWith("fabric.jar") }
-            def forgeJars = mergedBuildDir.listFiles().findAll { it.name.endsWith("forge.jar") }
-
-            def fabricJar = fabricJars.max { it.lastModified() }
-            def forgeJar = forgeJars.max { it.lastModified() }
-
-            if (forgeJar) {
-                copy {
-                    from forgeJar
-                    into rootProject.file('neoforge/libs')
-                    rename { fileName -> projectName + "-local.jar" }
-                }
-                copy {
-                    from forgeJar
-                    into rootProject.file('Merged')
-                }
-                copy {
-                    from forgeJar
-                    into rootProject.file('common/libs')
-                    rename { fileName -> projectName + "-local.jar" }
-                }
-            }
-            if (fabricJar) {
-                copy {
-                    from fabricJar
-                    into rootProject.file('fabric/libs')
-                    rename { fileName -> projectName + "-local.jar" }
-                }
-                copy {
-                    from fabricJar
-                    into rootProject.file('Merged')
-                }
-                copy {
-                    from fabricJar
-                    into rootProject.file('common/libs')
-                    rename { fileName -> projectName + "-local.jar" }
-                }
-            }
-            println "Builds Copied"
-        }
-    }
-}
-
-tasks.register('rebuildArchery') {
-    if (rootProject.run_addons) {
-        ext.projectName = "archery"
-        def project = gradle.includedBuilds.find { it.name == ext.projectName }
-        if (project == null) {
-            return
-        }
-        dependsOn project.task(":buildBoth")
-        group = '_tm_tasks'
-        doLast {
-            def mergedBuildDir = rootProject.file(ext.projectName + '/Merged')
-            println mergedBuildDir
-            def fabricJars = mergedBuildDir.listFiles().findAll { it.name.endsWith("fabric.jar") }
-            def forgeJars = mergedBuildDir.listFiles().findAll { it.name.endsWith("forge.jar") }
-
-            def fabricJar = fabricJars.max { it.lastModified() }
-            def forgeJar = forgeJars.max { it.lastModified() }
-
-            if (forgeJar) {
-                copy {
-                    from forgeJar
-                    into rootProject.file('neoforge/libs')
-                    rename { fileName -> projectName + "-local.jar" }
-                }
-                copy {
-                    from forgeJar
-                    into rootProject.file('Merged')
-                }
-                copy {
-                    from forgeJar
-                    into rootProject.file('common/libs')
-                    rename { fileName -> projectName + "-local.jar" }
-                }
-            }
-            if (fabricJar) {
-                copy {
-                    from fabricJar
-                    into rootProject.file('fabric/libs')
-                    rename { fileName -> projectName + "-local.jar" }
-                }
-                copy {
-                    from fabricJar
-                    into rootProject.file('Merged')
-                }
-                copy {
-                    from fabricJar
-                    into rootProject.file('common/libs')
-                    rename { fileName -> projectName + "-local.jar" }
-                }
-            }
-            println "Builds Copied"
-        }
-    }
-}
-
-tasks.register('rebuildArmory') {
-    if (rootProject.run_addons) {
-        ext.projectName = "armory"
-        def project = gradle.includedBuilds.find { it.name == ext.projectName }
-        if (project == null) {
-            return
-        }
-        dependsOn project.task(":buildBoth")
-        group = '_tm_tasks'
-        doLast {
-            def mergedBuildDir = rootProject.file(ext.projectName + '/Merged')
-            println mergedBuildDir
-            def fabricJars = mergedBuildDir.listFiles().findAll { it.name.endsWith("fabric.jar") }
-            def forgeJars = mergedBuildDir.listFiles().findAll { it.name.endsWith("forge.jar") }
-
-            def fabricJar = fabricJars.max { it.lastModified() }
-            def forgeJar = forgeJars.max { it.lastModified() }
-
-            if (forgeJar) {
-                copy {
-                    from forgeJar
-                    into rootProject.file('neoforge/libs')
-                    rename { fileName -> projectName + "-local.jar" }
-                }
-                copy {
-                    from forgeJar
-                    into rootProject.file('Merged')
-                }
-                copy {
-                    from forgeJar
-                    into rootProject.file('common/libs')
-                    rename { fileName -> projectName + "-local.jar" }
-                }
-            }
-            if (fabricJar) {
-                copy {
-                    from fabricJar
-                    into rootProject.file('fabric/libs')
-                    rename { fileName -> projectName + "-local.jar" }
-                }
-                copy {
-                    from fabricJar
-                    into rootProject.file('Merged')
-                }
-                copy {
-                    from fabricJar
-                    into rootProject.file('common/libs')
-                    rename { fileName -> projectName + "-local.jar" }
-                }
-            }
-            println "Builds Copied"
-        }
+        println "Merged Fabric and NeoForge builds"
     }
 }
 
 subprojects {
     apply plugin: "dev.architectury.loom"
+    apply plugin: "architectury-plugin"
+    apply plugin: "java"
+    apply plugin: "maven-publish"
 
     loom {
         silentMojangMappingsLicense()
@@ -241,71 +123,69 @@ subprojects {
 
     dependencies {
         minecraft "com.mojang:minecraft:${rootProject.minecraft_version}"
-        //mappings "net.fabricmc:yarn:${rootProject.yarn_mappings}"
+
+        def parchmentMinecraftVersion = rootProject.findProperty("parchment_minecraft_version") ?: rootProject.minecraft_version
+        def parchmentVersion = rootProject.findProperty("parchment_version") ?: "2024.11.17"
+
         mappings loom.layered() {
             officialMojangMappings()
-            parchment("org.parchmentmc.data:parchment-1.21:2024.06.23@zip")
+            parchment("org.parchmentmc.data:parchment-${parchmentMinecraftVersion}:${parchmentVersion}@zip")
         }
-
     }
-    apply plugin: "java"
-    apply plugin: "architectury-plugin"
-    apply plugin: "maven-publish"
 
-    archivesBaseName = rootProject.archives_base_name
+    base {
+        archivesName = rootProject.archives_base_name
+    }
     version = rootProject.mod_version
     group = rootProject.maven_group
 
     repositories {
-        maven {
-            url "https://maven.fabricmc.net/"
-        }
-        maven {
-            name = 'ParchmentMC'
-            url = 'https://maven.parchmentmc.org'
-        }
+        maven { url = "https://maven.fabricmc.net/" }
+        maven { url = "https://maven.parchmentmc.org" }
     }
-    tasks.withType(JavaCompile) {
+
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(21)
+        }
+        withSourcesJar()
+        withJavadocJar()
+    }
+
+    tasks.withType(JavaCompile).configureEach {
         options.encoding = "UTF-8"
         options.release = 21
     }
 
     tasks.withType(Javadoc).configureEach {
-        options.addStringOption('Xdoclint:none', '-quiet')
+        options.addStringOption("Xdoclint:none", "-quiet")
         failOnError = false
     }
 
-
-    processResources {
+    tasks.named("processResources") {
         def expandProps = [
-                "version"                      : mod_version,
-                "group"                        : project.group, //Else we target the task's group.
-                "minecraft_version"            : minecraft_version,
-                "architectury_version"         : architectury_version,
-                "neoforge_version"             : neoforge_version,
-                "neoforge_loader_version_range": neoforge_loader_version_range,
-                "neoforge_version_range"       : neoforge_version_range,
-                "minecraft_version_range"      : minecraft_version,
-                "fabric_api_version"           : fabric_api_version,
-                "fabric_loader_version"        : fabric_loader_version,
-                "mod_name"                     : mod_name,
-                "mod_author"                   : mod_author,
-                "mod_id"                       : mod_id,
-                "mod_description"              : mod_description,
-                "credits"                      : credits
+                "version"                      : rootProject.mod_version,
+                "group"                        : project.group,
+                "minecraft_version"            : rootProject.minecraft_version,
+                "architectury_version"         : rootProject.architectury_version,
+                "neoforge_version"             : rootProject.neoforge_version,
+                "neoforge_loader_version_range": rootProject.neoforge_loader_version_range,
+                "neoforge_version_range"       : rootProject.neoforge_version_range,
+                // The existing resource templates expect this value to be the Minecraft version.
+                "minecraft_version_range"      : rootProject.minecraft_version,
+                "fabric_api_version"           : rootProject.fabric_api_version,
+                "fabric_loader_version"        : rootProject.fabric_loader_version,
+                "mod_name"                     : rootProject.mod_name,
+                "mod_author"                   : rootProject.mod_author,
+                "mod_id"                       : rootProject.mod_id,
+                "mod_description"              : rootProject.mod_description,
+                "credits"                      : rootProject.credits
         ]
 
-        filesMatching(['pack.mcmeta', 'fabric.mod.json', 'META-INF/neoforge.mods.toml', '*.mixins.json']) {
+        inputs.properties(expandProps)
+
+        filesMatching(["pack.mcmeta", "fabric.mod.json", "META-INF/neoforge.mods.toml", "*.mixins.json"]) {
             expand expandProps
         }
     }
-
-    java {
-        withSourcesJar()
-        withJavadocJar()
-    }
-}
-
-allprojects {
-    apply plugin: "java"
 }
