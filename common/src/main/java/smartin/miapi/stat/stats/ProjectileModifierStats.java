@@ -14,19 +14,19 @@ import smartin.miapi.modules.properties.util.DoubleOperationResolvable;
 public class ProjectileModifierStats {
     public final Stat<DoubleOperationResolvable, DoubleStatData> RAPIDFIRE_CROSSBOW =
             DoubleStatData.forProperty(
-                    RapidfireCrossbowProperty.KEY,
-                    StatGroups.PROJECTILE_WEAPON,
-                    RapidfireCrossbowProperty.property
-            ).setMax(3)
+                            RapidfireCrossbowProperty.KEY,
+                            StatGroups.PROJECTILE_WEAPON,
+                            RapidfireCrossbowProperty.property
+                    ).setMax(3)
                     .setFormat("##")
                     .register();
 
     public final Stat<DoubleOperationResolvable, DoubleStatData> ARROW_RETRIEVAL =
             DoubleStatData.forProperty(
-                    ArrowRetrievalProperty.KEY,
-                    StatGroups.PROJECTILE_WEAPON,
-                    ArrowRetrievalProperty.property
-            ).setMax(1.0)
+                            ArrowRetrievalProperty.KEY,
+                            StatGroups.PROJECTILE_WEAPON,
+                            ArrowRetrievalProperty.property
+                    ).setMax(1.0)
                     .setFormat("0%")
                     .register();
 
@@ -42,5 +42,5 @@ public class ProjectileModifierStats {
                     MakesImpactSoundProperty.KEY,
                     StatGroups.PROJECTILE_MODIFIER,
                     MakesImpactSoundProperty.property
-            ).register();
+            ).setDefaultValue(true).register();
 }

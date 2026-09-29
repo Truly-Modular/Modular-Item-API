@@ -23,7 +23,6 @@ import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.ScrollList;
 import smartin.miapi.client.gui.TransformableWidget;
 import smartin.miapi.events.ClientEvents;
-import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.properties.DurabilityProperty;
 import smartin.miapi.modules.properties.FireProof;
 import smartin.miapi.modules.properties.HandheldItemProperty;
@@ -45,12 +44,9 @@ import smartin.miapi.modules.properties.projectile.stat.projectile.ProjectileDam
 import smartin.miapi.modules.properties.projectile.stat.projectile.ProjectileSpeedProperty;
 import smartin.miapi.modules.properties.projectile.stat.throwable.ThrowDamageProperty;
 import smartin.miapi.modules.properties.projectile.stat.throwable.ThrowSpeedProperty;
-import smartin.miapi.modules.properties.util.GuiWidgetSupplier;
-import smartin.miapi.registries.RegistryInventory;
 
 import java.text.DecimalFormat;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Environment(EnvType.CLIENT)
 public class StatListWidget extends InteractAbleWidget {
@@ -62,30 +58,6 @@ public class StatListWidget extends InteractAbleWidget {
     private final TransformableWidget hoverText;
     private ItemStack original = ItemStack.EMPTY;
     private ItemStack compareTo = ItemStack.EMPTY;
-
-    static {
-        statWidgetSupplier.add(new StatWidgetSupplier() {
-            @Override
-            public <T extends InteractAbleWidget & SingleStatDisplay> List<T> currentList(ItemStack original, ItemStack compareTo) {
-                Set<GuiWidgetSupplier> suppliers =
-                        RegistryInventory.MODULE_PROPERTY_MIAPI_REGISTRY.getFlatMap().values().stream()
-                                .filter(p -> p instanceof GuiWidgetSupplier)
-                                .map(p -> (GuiWidgetSupplier) p).collect(Collectors.toSet());
-                return suppliers.stream()
-                        .filter(p ->
-                                ItemModule.getModules(original).cache().getPropertyItemStack(p) != null ||
-                                ItemModule.getModules(compareTo).cache().getPropertyItemStack(p) != null
-                        )
-                        .map(guiWidgetSupplier -> (T)
-                                new JsonStatDisplay(
-                                        guiWidgetSupplier.getTitle(),
-                                        guiWidgetSupplier.getDescription(),
-                                        guiWidgetSupplier.getStatReader(),
-                                        guiWidgetSupplier.getMinValue(),
-                                        guiWidgetSupplier.getMaxValue())).toList();
-            }
-        });
-    }
 
     public static void onReload() {
         statDisplays.clear();
@@ -442,11 +414,6 @@ public class StatListWidget extends InteractAbleWidget {
         addStatDisplay(new MiningPropertyStatDisplay("hoe"));
 
         AttributeSingleDisplay.attributesWithDisplay.add(AttributeRegistry.ARMOR_CRUSHING.value());
-        RegistryInventory.MODULE_PROPERTY_MIAPI_REGISTRY.getFlatMap().values().stream()
-                .filter(StatWidgetSupplier.class::isInstance)
-                .map(StatWidgetSupplier.class::cast)
-                .filter(statWidgetSupplier::contains)
-                .forEach(statWidgetSupplier::add);
     }
 
     public static void reloadEnd() {
@@ -529,6 +496,7 @@ public class StatListWidget extends InteractAbleWidget {
                 }
             }
         }
+        /*
         for (InteractAbleWidget statDisplay : statDisplays) {
             if (statDisplay instanceof SingleStatDisplay singleStatDisplay && (singleStatDisplay.shouldRender(original, compareTo))) {
                 statDisplay.setHeight(singleStatDisplay.getHeightDesired());
@@ -537,6 +505,8 @@ public class StatListWidget extends InteractAbleWidget {
 
             }
         }
+
+         */
         List<InteractAbleWidget> sortedWidgets = new ArrayList<>();
         int shortSize = 80;
         InteractAbleWidget buffered = null;

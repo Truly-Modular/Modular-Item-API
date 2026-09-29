@@ -3,15 +3,19 @@ package smartin.miapi.stat.standardui;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
+import net.minecraft.client.Minecraft;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import org.lwjgl.glfw.GLFW;
+import smartin.miapi.client.MiapiClient;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.crafting.statdisplay.*;
+import smartin.miapi.mixin.client.KeyMappingAccessor;
+import smartin.miapi.modules.properties.LoreProperty;
 import smartin.miapi.stat.api.StatAggregator;
 import smartin.miapi.stat.api.StatGroup;
 import smartin.miapi.stat.api.StatValue;
@@ -23,13 +27,6 @@ import smartin.miapi.stat.text.*;
 import java.util.*;
 
 public final class StandardUIImpl {
-
-    private static final List<TextFormatter<?, ?>> FORMATTERS = List.of(
-            new BooleanTextFormatter(),
-            new DoubleTextFormatter(),
-            new AttributeTextFormatter(),
-            new MiningTextFormatter()
-    );
 
     private StandardUIImpl() {
     }
@@ -51,6 +48,8 @@ public final class StandardUIImpl {
                                             .setInverse(doubleStatData.inverse())
                                             .setFormat(doubleStatData.format().toPattern())
                                             .setCondition(doubleStatData::shouldBeVisible)
+                                            .setMax(doubleStatData.max())
+                                            .setMin(doubleStatData.min())
                                             .build());
                         }
                         if (stat.stat().metaData() instanceof BooleanStatDisplay booleanData) {
@@ -67,6 +66,11 @@ public final class StandardUIImpl {
                                     .setHoverDescription((item) -> stat.stat().getDescription(item))
                                     .setName((item) -> stat.stat().getName(item))
                                     .setFormat(attributeStatData.format().toPattern())
+                                    .setMax(attributeStatData.max())
+                                    .setMin(attributeStatData.min())
+                                    .setDefault(attributeStatData.defaultValue())
+                                    .setFallback(attributeStatData.fallbackValue())
+                                    .setSlot(attributeStatData.slot())
                                     .build()).forEach(attributeSingleDisplay -> {
                                 list.add((T) attributeSingleDisplay);
                             });
@@ -81,40 +85,48 @@ public final class StandardUIImpl {
                 return list;
             }
         });
+        setupClientKeybind();
+    }
+
+    public static void setupClientKeybind() {
+        LoreProperty.bottomLoreSuppliers.add(new LoreProperty.LoreSupplier() {
+            @Override
+            public List<Component> getLore(ItemStack itemStack) {
+                long window = Minecraft.getInstance().getWindow().getWindow();
+
+                if (GLFW.glfwGetKey(window, ((KeyMappingAccessor) MiapiClient.HOVER_DETAIL_BINDING).getMiapiKey().getValue()) == GLFW.GLFW_PRESS) {
+                    return TextUI.getStatComponentList(itemStack, itemStack, false);
+                }
+                return List.of();
+            }
+        });
     }
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         LiteralArgumentBuilder<CommandSourceStack> handStats = Commands.literal("miapi")
-                .then(Commands.literal("stat"))
-                .then(Commands.literal("mainHand")
-                        .executes(StandardUIImpl::executeStat));
+                .then(Commands.literal("stat")
+                        .then(Commands.literal("mainHand")
+                                .executes(StandardUIImpl::executeStat)));
 
         LiteralArgumentBuilder<CommandSourceStack> compareStatsCommand = Commands.literal("miapi")
-                .then(Commands.literal("stat"))
-                .then(Commands.literal("compareHands")
-                        .executes(StandardUIImpl::executeCompare));
+                .then(Commands.literal("stat")
+                        .then(Commands.literal("compareHands")
+                                .executes(StandardUIImpl::executeCompare)));
+
+        LiteralArgumentBuilder<CommandSourceStack> compareStatsCommandDiff = Commands.literal("miapi")
+                .then(Commands.literal("stat")
+                        .then(Commands.literal("compareHandsOnlyDiff")
+                                .executes(StandardUIImpl::executeCompareDiff)));
 
         dispatcher.register(handStats);
         dispatcher.register(compareStatsCommand);
+        dispatcher.register(compareStatsCommandDiff);
     }
 
     private static int executeStat(CommandContext<CommandSourceStack> context) {
         if (context.getSource().isPlayer()) {
             Player player = context.getSource().getPlayer();
-            context.getSource().sendSuccess(() -> {
-                MutableComponent component = Component.literal("");
-                List<Tuple<StatGroup, List<StatValue.StatWithValues<?, ?>>>> stats = StatAggregator.findAllStats(player.getMainHandItem(), player.getMainHandItem());
-                stats.forEach(groupTuple -> {
-                    component.append(groupTuple.getA().getName());
-                    component.append("\n");
-                    groupTuple.getB().forEach(stat -> {
-                        component.append("   ");
-                        component.append(format(stat, player.getMainHandItem()));
-                        component.append("\n");
-                    });
-                });
-                return component;
-            }, true);
+            context.getSource().sendSuccess(() -> TextUI.getStatComponent(Component.literal("Mainhand -> Offhand"), player.getMainHandItem(), player.getMainHandItem(), false), true);
             return 0;
         } else {
             return 1;
@@ -124,20 +136,17 @@ public final class StandardUIImpl {
     private static int executeCompare(CommandContext<CommandSourceStack> context) {
         if (context.getSource().isPlayer()) {
             Player player = context.getSource().getPlayer();
-            context.getSource().sendSuccess(() -> {
-                MutableComponent component = Component.literal("");
-                List<Tuple<StatGroup, List<StatValue.StatWithValues<?, ?>>>> stats = StatAggregator.findAllStats(player.getMainHandItem(), player.getOffhandItem());
-                stats.forEach(groupTuple -> {
-                    component.append(groupTuple.getA().getName().getString());
-                    component.append("\n");
-                    groupTuple.getB().forEach(stat -> {
-                        component.append("   ");
-                        component.append(format(stat, player.getMainHandItem()));
-                        component.append("\n");
-                    });
-                });
-                return component;
-            }, true);
+            context.getSource().sendSuccess(() -> TextUI.getStatComponent(Component.literal("Mainhand -> Offhand"), player.getMainHandItem(), player.getOffhandItem(), false), true);
+            return 0;
+        } else {
+            return 1;
+        }
+    }
+
+    private static int executeCompareDiff(CommandContext<CommandSourceStack> context) {
+        if (context.getSource().isPlayer()) {
+            Player player = context.getSource().getPlayer();
+            context.getSource().sendSuccess(() -> TextUI.getStatComponent(Component.literal("Mainhand -> Offhand"), player.getMainHandItem(), player.getOffhandItem(), true), true);
             return 0;
         } else {
             return 1;
@@ -145,43 +154,4 @@ public final class StandardUIImpl {
     }
 
 
-    public static Component format(StatValue.StatWithValues<?, ?> stat, ItemStack base) {
-        for (TextFormatter<?, ?> formatter : FORMATTERS) {
-            if (formatter.type() == stat.stat().type()) {
-                return formatTyped(formatter, stat, base);
-            }
-        }
-
-        Object baseValue = stat.baseItemValue().value();
-        Object compareValue = stat.compareItemValue().value();
-
-        if (Objects.equals(baseValue, compareValue)) {
-            return Component.literal(
-                    stat.stat().id()
-                    + ": "
-                    + valueString(baseValue)
-            );
-        }
-
-        return Component.literal(
-                stat.stat().id()
-                + ": "
-                + valueString(baseValue)
-                + " -> "
-                + valueString(compareValue)
-        );
-    }
-
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    private static Component formatTyped(
-            TextFormatter formatter,
-            StatValue.StatWithValues<?, ?> stat,
-            ItemStack baseItem
-    ) {
-        return formatter.format(stat, baseItem);
-    }
-
-    private static String valueString(Object value) {
-        return value == null ? "null" : value.toString();
-    }
 }

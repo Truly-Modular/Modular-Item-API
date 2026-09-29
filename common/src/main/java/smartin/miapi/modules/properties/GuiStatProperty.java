@@ -6,18 +6,18 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import smartin.miapi.Environment;
 import smartin.miapi.Miapi;
-import smartin.miapi.client.gui.InteractAbleWidget;
-import smartin.miapi.client.gui.crafting.statdisplay.JsonStatDisplay;
-import smartin.miapi.client.gui.crafting.statdisplay.SingleStatDisplay;
-import smartin.miapi.client.gui.crafting.statdisplay.SingleStatDisplayDouble;
-import smartin.miapi.client.gui.crafting.statdisplay.StatListWidget;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.cache.ModularItemCache;
 import smartin.miapi.modules.properties.util.*;
+import smartin.miapi.stat.api.StatAggregator;
+import smartin.miapi.stat.api.StatGroup;
+import smartin.miapi.stat.api.StatValue;
+import smartin.miapi.stat.api.data.number.DoubleStatData;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * @header GUI Stat Property
@@ -42,43 +42,32 @@ public class GuiStatProperty extends CodecProperty<Map<String, GuiStatProperty.G
     public GuiStatProperty() {
         super(CODEC);
         property = this;
-        if (Environment.isClient()) {
-            ModularItemCache.setSupplier(KEY.toString(), GuiStatProperty::getInfoCache);
-            StatListWidget.addStatDisplaySupplier(new StatListWidget.StatWidgetSupplier() {
-                @Override
-                public <T extends InteractAbleWidget & SingleStatDisplay> List<T> currentList(ItemStack original, ItemStack compareTo) {
-                    List<T> combined = new ArrayList<>();
-                    Map<String, GuiInfo> combinedMap = new LinkedHashMap<>(getInfo(original));
-                    combinedMap.putAll(getInfo(compareTo));
-                    combinedMap.forEach((key, gui) -> {
-                        JsonStatDisplay display = new JsonStatDisplay(
-                                (itemStack) -> gui.header,
-                                (itemStack) -> gui.description,
-                                new SingleStatDisplayDouble.StatReaderHelper() {
-                                    @Override
-                                    public double getValue(ItemStack itemStack) {
-                                        return GuiStatProperty.getValue(itemStack, key);
-                                    }
+        StatAggregator.AGGREGATE_STATS_EVENT.register((group, helper, baseItem, compareItem) -> {
+            Map<String, GuiInfo> combinedMap = new LinkedHashMap<>(getInfo(baseItem));
+            combinedMap.putAll(getInfo(compareItem));
 
-                                    @Override
-                                    public boolean hasValue(ItemStack itemStack) {
-                                        return GuiStatProperty.getValue(itemStack, key) != 0;
-                                    }
-                                },
-                                gui.min.getValue(),
-                                gui.max.getValue()
-
-                        ) {
-                            public DoubleOperationResolvable getResolvable(ItemStack stack) {
-                                return gui.value;
-                            }
-                        };
-                        combined.add((T) display);
-                    });
-                    return combined;
+            combinedMap.forEach((key, gui) -> {
+                StatGroup targetGroup = StatGroup.getOrRegister(gui.group);
+                if (targetGroup == group) {
+                    helper.addStat(
+                            new StatValue.StatWithValues<>(
+                                    DoubleStatData.getBuilder(
+                                                    Miapi.id("runtime_gui_stat_" + key),
+                                                    (item, resolvable, data) -> gui.header,
+                                                    (item, resolvable, data) -> gui.description,
+                                                    StatGroup.getOrRegister(gui.group),
+                                                    item -> gui.value
+                                            )
+                                            .setMin(gui.min.getValue())
+                                            .setMax(gui.max.getValue())
+                                            .build(),
+                                    baseItem,
+                                    compareItem
+                            )
+                    );
                 }
             });
-        }
+        });
     }
 
     private static Map<String, GuiInfo> getInfoCache(ItemStack itemStack) {
@@ -99,7 +88,7 @@ public class GuiStatProperty extends CodecProperty<Map<String, GuiStatProperty.G
 
     @Override
     public Map<String, GuiInfo> merge(Map<String, GuiInfo> left, Map<String, GuiInfo> right, MergeType mergeType) {
-        return MergeAble.mergeMap(left, right, mergeType, (id, l, r) -> r.merge(l,r,mergeType));
+        return MergeAble.mergeMap(left, right, mergeType, (id, l, r) -> r.merge(l, r, mergeType));
     }
 
     @Override
@@ -115,21 +104,43 @@ public class GuiStatProperty extends CodecProperty<Map<String, GuiStatProperty.G
         public DoubleOperationResolvable value;
         public Component header;
         public Component description;
+        public ResourceLocation group = Miapi.id("misc");
 
         public static final Codec<GuiInfo> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-                DoubleOperationResolvable.CODEC.optionalFieldOf("min", new DoubleOperationResolvable(0.0)).forGetter(gui -> gui.min),
-                DoubleOperationResolvable.CODEC.optionalFieldOf("max", new DoubleOperationResolvable(10.0)).forGetter(gui -> gui.max),
-                DoubleOperationResolvable.CODEC.fieldOf("value").forGetter(gui -> gui.value),
-                ComponentSerialization.CODEC.fieldOf("header").forGetter(gui -> gui.header),
-                ComponentSerialization.CODEC.optionalFieldOf("description", Component.empty()).forGetter(gui -> gui.description)
+                DoubleOperationResolvable.CODEC
+                        .optionalFieldOf("min", new DoubleOperationResolvable(0.0))
+                        .forGetter(gui -> gui.min),
+                DoubleOperationResolvable.CODEC
+                        .optionalFieldOf("max", new DoubleOperationResolvable(10.0))
+                        .forGetter(gui -> gui.max),
+                DoubleOperationResolvable.CODEC
+                        .fieldOf("value")
+                        .forGetter(gui -> gui.value),
+                ComponentSerialization.CODEC
+                        .fieldOf("header")
+                        .forGetter(gui -> gui.header),
+                ComponentSerialization.CODEC
+                        .optionalFieldOf("description", Component.empty())
+                        .forGetter(gui -> gui.description),
+                ResourceLocation.CODEC
+                        .optionalFieldOf("group", Miapi.id("misc"))
+                        .forGetter(gui -> gui.group)
         ).apply(instance, GuiInfo::new));
 
-        public GuiInfo(DoubleOperationResolvable min, DoubleOperationResolvable max, DoubleOperationResolvable value, Component header, Component description) {
+        public GuiInfo(
+                DoubleOperationResolvable min,
+                DoubleOperationResolvable max,
+                DoubleOperationResolvable value,
+                Component header,
+                Component description,
+                ResourceLocation group
+        ) {
             this.min = min;
             this.max = max;
             this.value = value;
             this.header = header;
             this.description = description;
+            this.group = group;
         }
 
         public GuiInfo() {
@@ -137,11 +148,14 @@ public class GuiStatProperty extends CodecProperty<Map<String, GuiStatProperty.G
 
         public GuiInfo initialize(ModuleInstance moduleInstance) {
             GuiInfo init = new GuiInfo();
+
             init.min = this.min.initialize(moduleInstance);
             init.max = this.max.initialize(moduleInstance);
             init.value = this.value.initialize(moduleInstance);
             init.header = this.header;
             init.description = this.description;
+            init.group = this.group;
+
             return init;
         }
 
@@ -153,11 +167,14 @@ public class GuiStatProperty extends CodecProperty<Map<String, GuiStatProperty.G
         @Override
         public GuiInfo merge(GuiInfo left, GuiInfo right, MergeType mergeType) {
             GuiInfo init = new GuiInfo();
-            init.min = MergeAble.decideLeftRight(left.max, right.max, mergeType);
+
+            init.min = MergeAble.decideLeftRight(left.min, right.min, mergeType);
             init.max = MergeAble.decideLeftRight(left.max, right.max, mergeType);
             init.value = DoubleOperationResolvable.merge(left.value, right.value, mergeType);
             init.header = this.header;
             init.description = this.description;
+            init.group = MergeAble.decideLeftRight(left.group, right.group, mergeType);
+
             return init;
         }
     }

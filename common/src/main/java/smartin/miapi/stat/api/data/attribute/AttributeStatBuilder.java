@@ -216,7 +216,7 @@ public class AttributeStatBuilder {
                 metaData
         );
         if (temp) {
-            Stat.STAT_REGISTRY.registerTemporary(id, stat);
+            Stat.STAT_REGISTRY.registerTemporary(statId, stat);
         } else {
             Stat.STAT_REGISTRY.register(statId, stat);
         }

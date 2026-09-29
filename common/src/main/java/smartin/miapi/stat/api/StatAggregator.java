@@ -15,8 +15,19 @@ public class StatAggregator {
 
     }
 
+    public static void register(
+            StatGroup group,
+            AggregateStats listener
+    ) {
+        AGGREGATE_STATS_EVENT.register((currentGroup, helper, baseItem, compareItem) -> {
+            if (currentGroup == group) {
+                listener.findStats(currentGroup, helper, baseItem, compareItem);
+            }
+        });
+    }
+
     public static List<StatValue.StatWithValues<?, ?>> findAllStats(StatGroup group, ItemStack baseItem, ItemStack compareItem) {
-        StatAggregateHelper helper = new StatAggregateHelper();
+        StatAggregateHelper helper = new StatAggregateHelper(group);
         AGGREGATE_STATS_EVENT.invoker().findStats(group, helper, baseItem, compareItem);
         return helper.asSortedCopy();
     }
@@ -35,8 +46,11 @@ public class StatAggregator {
 
     public static class StatAggregateHelper {
         private final List<StatValue.StatWithValues<?, ?>> stats = new ArrayList<>();
+        public final StatGroup currentGroup;
 
-        protected StatAggregateHelper() {}
+        protected StatAggregateHelper(StatGroup group) {
+            this.currentGroup = group;
+        }
 
         public void addStat(StatValue.StatWithValues<?, ?> stat) {
             stats.add(stat);

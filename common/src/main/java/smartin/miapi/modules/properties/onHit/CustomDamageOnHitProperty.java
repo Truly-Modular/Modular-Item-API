@@ -99,7 +99,7 @@ public class CustomDamageOnHitProperty extends CodecProperty<Map<ResourceLocatio
             }
             return EventResult.pass();
         });
-        StatAggregator.AGGREGATE_STATS_EVENT.register(new StatAggregator.AggregateStats() {
+        StatAggregator.register(StatGroups.ON_HIT, new StatAggregator.AggregateStats() {
             @Override
             public void findStats(
                     StatGroup group,
@@ -107,6 +107,7 @@ public class CustomDamageOnHitProperty extends CodecProperty<Map<ResourceLocatio
                     ItemStack baseItem,
                     ItemStack compareItem
             ) {
+
                 Map<ResourceLocation, CustomDamageData> combinedMap = new LinkedHashMap<>();
                 getData(baseItem).ifPresent(combinedMap::putAll);
                 getData(compareItem).ifPresent(combinedMap::putAll);

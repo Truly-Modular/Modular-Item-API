@@ -9,6 +9,7 @@ import smartin.miapi.stat.api.StatValue;
 import smartin.miapi.stat.api.data.number.DoubleStatData;
 
 import java.text.DecimalFormat;
+import java.util.Objects;
 
 public final class DoubleTextFormatter
         implements TextFormatter<DoubleOperationResolvable, DoubleStatData> {
@@ -23,11 +24,24 @@ public final class DoubleTextFormatter
             StatValue.StatWithValues<DoubleOperationResolvable, DoubleStatData> stat,
             DoubleOperationResolvable value,
             ItemStack baseItem) {
-        return Component.literal(
-                stat.stat().getName(baseItem)
-                + ": "
-                + value(value, stat.stat().metaData().format())
-        );
+
+        return Component.empty()
+                .append(Component.literal(stat.stat().getName(baseItem).getString())
+                        .withStyle(getNameStyle()))
+                .append(Component.literal(":")
+                        .withStyle(getDoublePOintStyle()))
+                .append(Component.literal(" " + value(stat, value, stat.stat().metaData().format()))
+                        .withStyle(getNumberStyle()));
+    }
+
+    public boolean isEqual(DoubleOperationResolvable baseValue, DoubleOperationResolvable compareValue) {
+        if (Objects.equals(baseValue, compareValue)) {
+            return true;
+        }
+        if (baseValue != null && compareValue != null) {
+            return baseValue.getValue() == compareValue.getValue();
+        }
+        return false;
     }
 
     @Override
@@ -36,19 +50,24 @@ public final class DoubleTextFormatter
             DoubleOperationResolvable baseValue,
             DoubleOperationResolvable compareValue,
             ItemStack baseItem) {
-        return Component.literal(
-                stat.stat().getName(baseItem).getString()
-                + ": "
-                + value(baseValue, stat.stat().metaData().format())
-                + " -> "
-                + value(compareValue, stat.stat().metaData().format())
-        );
+
+        return Component.empty()
+                .append(Component.literal(stat.stat().getName(baseItem).getString())
+                        .withStyle(getNameStyle()))
+                .append(Component.literal(":")
+                        .withStyle(getDoublePOintStyle()))
+                .append(Component.literal(" " + value(stat, baseValue, stat.stat().metaData().format()))
+                        .withStyle(getNumberStyle()))
+                .append(Component.literal(" -> ")
+                        .withStyle(getArrowStyle()))
+                .append(Component.literal(value(stat, compareValue, stat.stat().metaData().format()))
+                        .withStyle(getNumberStyle()));
     }
 
-    private static String value(DoubleOperationResolvable value, DecimalFormat format) {
+    private static String value(StatValue.StatWithValues<DoubleOperationResolvable, DoubleStatData> stat, DoubleOperationResolvable value, DecimalFormat format) {
 
         return value == null
-                ? "null"
+                ? format.format(stat.stat().metaData().defaultValue())
                 : format.format(value.getValue());
     }
 }

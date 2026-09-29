@@ -59,19 +59,17 @@ public class FakeEitherEnchantmentProperty extends EitherModuleProperty<
         if (Environment.isClient()) {
             setupClient();
         }
-        StatAggregator.AGGREGATE_STATS_EVENT.register((group, helper, baseItem, compareItem) -> {
+        StatAggregator.register(StatGroups.ENCHANT, (group, helper, baseItem, compareItem) -> {
             Map<Holder.Reference<Enchantment>, DoubleOperationResolvable> enchantments = new HashMap<>();
             enchantments.putAll(getEnchants(baseItem));
             enchantments.putAll(getEnchants(compareItem));
-            Miapi.LOGGER.info("running enchant check");
 
             enchantments.forEach((enchantment, data) -> {
-                Miapi.LOGGER.info("running check for enchant on tool from property " +enchantment.getRegisteredName());
                 Component desc = Component
                         .translatableWithFallback(
                                 "enchantment." + enchantment.key().location().getNamespace() + "." + enchantment.key().location().getPath() + ".desc",
                                 "");
-                //helper.addStat(
+                helper.addStat(
                         new StatValue.StatWithValues<>(
                                 DoubleStatData.getBuilder(
                                                 Miapi.id("runtime_fake_enchantment_" + enchantment.key().location().getNamespace() + "_" + enchantment.key().location().getPath()),
@@ -92,8 +90,8 @@ public class FakeEitherEnchantmentProperty extends EitherModuleProperty<
                                         .build(),
                                 baseItem,
                                 compareItem
-                        );
-                //);
+                        )
+                );
             });
         });
     }

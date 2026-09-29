@@ -30,7 +30,6 @@ import smartin.miapi.modules.properties.util.MergeAble;
 import smartin.miapi.modules.properties.util.MergeType;
 import smartin.miapi.stat.StatGroups;
 import smartin.miapi.stat.api.StatAggregator;
-import smartin.miapi.stat.api.StatGroup;
 import smartin.miapi.stat.api.StatText;
 import smartin.miapi.stat.api.StatValue;
 import smartin.miapi.stat.api.data.number.DoubleStatData;
@@ -48,35 +47,27 @@ public abstract class GenericEntityStrengthProperty extends CodecProperty<Map<Re
         if (Platform.getEnv() == EnvType.CLIENT) {
             setupToolTip();
         }
-        StatAggregator.AGGREGATE_STATS_EVENT.register(new StatAggregator.AggregateStats() {
-            @Override
-            public void findStats(
-                    StatGroup group,
-                    StatAggregator.StatAggregateHelper helper,
-                    ItemStack baseItem,
-                    ItemStack compareItem
-            ) {
-                Map<ResourceLocation, GenericEntityStrengthProperty.EntityContext> map =
-                        new HashMap<>(getData(baseItem).orElse(Map.of()));
-                map.putAll(getData(compareItem).orElse(Map.of()));
+        StatAggregator.register(StatGroups.ON_HIT, (group, helper, baseItem, compareItem) -> {
+            Map<ResourceLocation, EntityContext> map =
+                    new HashMap<>(getData(baseItem).orElse(Map.of()));
+            map.putAll(getData(compareItem).orElse(Map.of()));
 
-                map.forEach((id, edit) -> {
-                    EntityType<?> exampleType = edit.firstType();
-                    if (exampleType == null) {
-                        return;
-                    }
-                    helper.addStat(
-                            new StatValue.StatWithValues<>(
-                                    buildStat(id, edit, exampleType)
-                                            .setMin(0)
-                                            .setMax(8)
-                                            .build(),
-                                    baseItem,
-                                    compareItem
-                            )
-                    );
-                });
-            }
+            map.forEach((id, edit) -> {
+                EntityType<?> exampleType = edit.firstType();
+                if (exampleType == null) {
+                    return;
+                }
+                helper.addStat(
+                        new StatValue.StatWithValues<>(
+                                buildStat(id, edit, exampleType)
+                                        .setMin(0)
+                                        .setMax(8)
+                                        .build(),
+                                baseItem,
+                                compareItem
+                        )
+                );
+            });
         });
     }
 

@@ -22,13 +22,14 @@ public final class AttributeTextFormatter
             StatValue.StatWithValues<Double, AttributeStatData> stat,
             Double value,
             ItemStack baseItem) {
-        AttributeStatData meta = stat.stat().metaData();
 
-        return Component.literal(
-                stat.stat().getName(baseItem)
-                + " [" + meta.operation() + "]: "
-                + value(value, stat.stat().metaData().format())
-        );
+        return Component.empty()
+                .append(Component.literal(stat.stat().getName(baseItem).getString())
+                        .withStyle(getNameStyle()))
+                .append(Component.literal(":")
+                        .withStyle(getDoublePOintStyle()))
+                .append(Component.literal(" " + value(stat, value, stat.stat().metaData().format()))
+                        .withStyle(getNumberStyle()));
     }
 
     @Override
@@ -37,18 +38,20 @@ public final class AttributeTextFormatter
             Double baseValue,
             Double compareValue,
             ItemStack baseItem) {
-        AttributeStatData meta = stat.stat().metaData();
 
-        return Component.literal(
-                stat.stat().getName(baseItem).getString()
-                + " [" + meta.operation() + "]: "
-                + value(baseValue, stat.stat().metaData().format())
-                + " -> "
-                + value(compareValue, stat.stat().metaData().format())
-        );
+        return Component.empty()
+                .append(Component.literal(stat.stat().getName(baseItem).getString())
+                        .withStyle(getNameStyle()))
+                .append(Component.literal(":")
+                        .withStyle(getDoublePOintStyle()))
+                .append(Component.literal(" " + value(stat, baseValue, stat.stat().metaData().format()))
+                        .withStyle(getNumberStyle()))
+                .append(Component.literal(" -> ")
+                        .withStyle(getArrowStyle()))
+                .append(Component.literal(value(stat, compareValue, stat.stat().metaData().format()))
+                        .withStyle(getNumberStyle()));
     }
-
-    private static String value(Double value, DecimalFormat format) {
-        return value == null ? "null" : format.format(value);
+    private static String value(StatValue.StatWithValues<Double, AttributeStatData> stat, Double value, DecimalFormat format) {
+        return value == null ? format.format(stat.stat().metaData().defaultValue()) : format.format(value);
     }
 }

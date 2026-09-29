@@ -28,7 +28,7 @@ public class StatGroup {
 
     protected StatGroup(ResourceLocation id, double priority) {
         this.id = id;
-        name = Component.translatable(Miapi.MOD_ID + ".stat.group" + id.getPath() + "." + id.getNamespace().replace("/", "."));
+        name = Component.translatable(Miapi.MOD_ID + ".stat.group." + id.getPath() + "." + id.getNamespace().replace("/", "."));
         description = Component.translatable(Miapi.MOD_ID + ".stat.group" + id.getPath() + "." + id.getNamespace().replace("/", ".") + ".description");
         this.priority = priority;
     }

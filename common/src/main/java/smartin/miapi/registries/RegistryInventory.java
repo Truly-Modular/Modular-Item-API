@@ -72,6 +72,7 @@ import smartin.miapi.loot.condition.LootTableCondition;
 import smartin.miapi.material.ComponentMaterial;
 import smartin.miapi.material.base.Material;
 import smartin.miapi.material.composite.CompositeMaterial;
+import smartin.miapi.material.generated.TierManager;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.StackStorageComponent;
@@ -519,6 +520,7 @@ public class RegistryInventory {
             });
 
             StatTypes.setup();
+            TierManager.setup();
         });
     }
 

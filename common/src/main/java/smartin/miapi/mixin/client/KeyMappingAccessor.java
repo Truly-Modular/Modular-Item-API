@@ -1,5 +1,6 @@
 package smartin.miapi.mixin.client;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.KeyMapping;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
@@ -31,4 +32,7 @@ public interface KeyMappingAccessor {
     static void setMiapiCategoryOrder(Map<String, Integer> CATEGORY_SORT_ORDER) {
         throw new UnsupportedOperationException();
     }
+
+    @Accessor("key")
+    InputConstants.Key getMiapiKey();
 }

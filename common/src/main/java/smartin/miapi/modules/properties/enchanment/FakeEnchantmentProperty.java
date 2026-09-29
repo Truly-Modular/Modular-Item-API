@@ -60,29 +60,6 @@ public class FakeEnchantmentProperty extends CodecProperty<Map<ResourceLocation,
         if (Environment.isClient()) {
             setupClient();
         }
-        /*
-        StatAggregator.AGGREGATE_STATS_EVENT.register(new StatAggregator.AggregateStats() {
-            @Override
-            public void findStats(StatGroup group, StatAggregator.StatAggregateHelper helper, ItemStack baseItem, ItemStack compareItem) {
-                Set<Holder<Enchantment>> enchantments = new HashSet<>();
-                enchantments.addAll(CraftingEnchantProperty.tryConvert(getData(baseItem).orElse(new HashMap<>()), baseItem).keySet());
-                enchantments.addAll(CraftingEnchantProperty.tryConvert(getData(compareItem).orElse(new HashMap<>()), compareItem).keySet());
-                enchantments.forEach(enchantment -> {
-                    helper.addStat(
-                            new StatValue.StatWithValues<>(
-                                    DoubleStatData.getBuilder(
-                                                    Miapi.id("runtime_enchantment" + enchantment.getRegisteredName()),
-                                                    (item, resolvable, data) -> enchantment.value().description(),
-                                                    (item, resolvable, data) -> enchantment.value().description(),
-                                                    StatGroups.ENCHANT,
-                                                    item -> new DoubleOperationResolvable(EnchantmentHelper.getItemEnchantmentLevel(enchantment, item))
-                                            ).setInverse(enchantment.is(EnchantmentTags.CURSE))
-                                            .setMax(enchantment.value().getMaxLevel()).build(), baseItem, compareItem));
-                });
-            }
-        });
-
-         */
     }
 
     public Map<Holder<Enchantment>, DoubleOperationResolvable> initialize(Map<Holder<Enchantment>, DoubleOperationResolvable> property, ModuleInstance context) {
