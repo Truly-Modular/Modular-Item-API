@@ -79,13 +79,13 @@ dependencies {
         }
     }
 
-    modApi "com.redpxnda.nucleus:nucleus-core-common:${rootProject.minecraft_version}+${rootProject.nucleus_core_version}"
-    modApi "com.redpxnda.nucleus:nucleus-codec-common:${rootProject.minecraft_version}+${rootProject.nucleus_codec_version}"
-    modApi "com.redpxnda.nucleus:nucleus-config-common:${rootProject.minecraft_version}+${rootProject.nucleus_config_version}"
-    modApi "com.redpxnda.nucleus:nucleus-pose-common:${rootProject.minecraft_version}+${rootProject.nucleus_pose_version}"
-    modApi "com.redpxnda.nucleus:nucleus-facet-common:${rootProject.minecraft_version}+${rootProject.nucleus_facet_version}"
-    modApi "com.redpxnda.nucleus:nucleus-editor-common:${rootProject.minecraft_version}+${rootProject.nucleus_editor_version}"
-    modApi "com.redpxnda.nucleus:nucleus-trinket-common:${rootProject.minecraft_version}+${rootProject.nucleus_trinket_version}"
+    modApi "com.redpxnda.nucleus:nucleus-core-common:${rootProject.nucleus_core_version}"
+    modApi "com.redpxnda.nucleus:nucleus-codec-common:${rootProject.nucleus_codec_version}"
+    modApi "com.redpxnda.nucleus:nucleus-config-common:${rootProject.nucleus_config_version}"
+    modApi "com.redpxnda.nucleus:nucleus-pose-common:${rootProject.nucleus_pose_version}"
+    modApi "com.redpxnda.nucleus:nucleus-facet-common:${rootProject.nucleus_facet_version}"
+    modApi "com.redpxnda.nucleus:nucleus-editor-common:${rootProject.nucleus_editor_version}"
+    modApi "com.redpxnda.nucleus:nucleus-trinket-common:${rootProject.nucleus_trinket_version}"
     //modCompileOnly "com.github.apace100:apoli:${rootProject.apoli_version}"
 
     modImplementation("net.fabricmc:fabric-language-kotlin:1.13.6+kotlin.2.2.20")
