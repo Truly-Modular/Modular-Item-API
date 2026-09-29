@@ -15,8 +15,7 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
 
-import static net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_MULTIPLIED_BASE;
-import static net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_VALUE;
+import static net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.*;
 
 public class AttributeStatBuilder {
 
@@ -172,9 +171,20 @@ public class AttributeStatBuilder {
                 priority
         );
 
+        Stat<Double, AttributeStatData> multipliedTotal = create(
+                id.withPrefix("attribute." + group.getID().toLanguageKey() + ".")
+                        .withSuffix("_percent_total"),
+                ADD_MULTIPLIED_TOTAL,
+                0,
+                100,
+                defaultValue,
+                priority
+        );
+
         return new Stat[]{
                 additive,
-                multipliedBase
+                multipliedBase,
+                multipliedTotal
         };
     }
 

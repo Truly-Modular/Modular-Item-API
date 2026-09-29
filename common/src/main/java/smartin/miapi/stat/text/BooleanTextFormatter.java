@@ -1,6 +1,7 @@
 package smartin.miapi.stat.text;
 
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.ItemStack;
 import smartin.miapi.stat.StatTypes;
 import smartin.miapi.stat.api.StatType;
 import smartin.miapi.stat.api.StatValue;
@@ -17,10 +18,10 @@ public final class BooleanTextFormatter
     @Override
     public Component format(
             StatValue.StatWithValues<Boolean, BooleanStatData> stat,
-            Boolean value
-    ) {
+            Boolean value,
+            ItemStack baseItem) {
         return Component.literal(
-                stat.stat().id()
+                stat.stat().getName(baseItem)
                 + ": "
                 + value(value)
         );
@@ -30,10 +31,10 @@ public final class BooleanTextFormatter
     public Component format(
             StatValue.StatWithValues<Boolean, BooleanStatData> stat,
             Boolean baseValue,
-            Boolean compareValue
-    ) {
+            Boolean compareValue,
+            ItemStack baseItem) {
         return Component.literal(
-                stat.stat().id()
+                stat.stat().getName(baseItem).getString()
                 + ": "
                 + value(baseValue)
                 + " -> "

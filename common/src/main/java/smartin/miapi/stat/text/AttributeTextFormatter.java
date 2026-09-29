@@ -1,6 +1,7 @@
 package smartin.miapi.stat.text;
 
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.ItemStack;
 import smartin.miapi.stat.StatTypes;
 import smartin.miapi.stat.api.StatType;
 import smartin.miapi.stat.api.StatValue;
@@ -19,12 +20,12 @@ public final class AttributeTextFormatter
     @Override
     public Component format(
             StatValue.StatWithValues<Double, AttributeStatData> stat,
-            Double value
-    ) {
+            Double value,
+            ItemStack baseItem) {
         AttributeStatData meta = stat.stat().metaData();
 
         return Component.literal(
-                stat.stat().id()
+                stat.stat().getName(baseItem)
                 + " [" + meta.operation() + "]: "
                 + value(value, stat.stat().metaData().format())
         );
@@ -34,12 +35,12 @@ public final class AttributeTextFormatter
     public Component format(
             StatValue.StatWithValues<Double, AttributeStatData> stat,
             Double baseValue,
-            Double compareValue
-    ) {
+            Double compareValue,
+            ItemStack baseItem) {
         AttributeStatData meta = stat.stat().metaData();
 
         return Component.literal(
-                stat.stat().id()
+                stat.stat().getName(baseItem).getString()
                 + " [" + meta.operation() + "]: "
                 + value(baseValue, stat.stat().metaData().format())
                 + " -> "

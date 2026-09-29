@@ -29,6 +29,11 @@ import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.LoreProperty;
 import smartin.miapi.modules.properties.util.*;
+import smartin.miapi.stat.StatGroups;
+import smartin.miapi.stat.api.StatAggregator;
+import smartin.miapi.stat.api.StatGroup;
+import smartin.miapi.stat.api.StatValue;
+import smartin.miapi.stat.api.data.number.DoubleStatData;
 
 import java.util.*;
 
@@ -94,6 +99,57 @@ public class CustomDamageOnHitProperty extends CodecProperty<Map<ResourceLocatio
             }
             return EventResult.pass();
         });
+        StatAggregator.AGGREGATE_STATS_EVENT.register(new StatAggregator.AggregateStats() {
+            @Override
+            public void findStats(
+                    StatGroup group,
+                    StatAggregator.StatAggregateHelper helper,
+                    ItemStack baseItem,
+                    ItemStack compareItem
+            ) {
+                Map<ResourceLocation, CustomDamageData> combinedMap = new LinkedHashMap<>();
+                getData(baseItem).ifPresent(combinedMap::putAll);
+                getData(compareItem).ifPresent(combinedMap::putAll);
+
+                combinedMap.forEach((id, data) -> {
+                    helper.addStat(
+                            buildStat(baseItem, compareItem, id, data)
+                    );
+                });
+            }
+        });
+    }
+
+    private static StatValue.StatWithValues<DoubleOperationResolvable, DoubleStatData> buildStat(ItemStack baseItem, ItemStack compareItem, ResourceLocation id, CustomDamageData data) {
+        return new StatValue.StatWithValues<>(
+                DoubleStatData.getBuilder(
+                                Miapi.id("runtime_custom_damage_" + id.getNamespace() + "_" + id.getPath()),
+                                (item, resolvable, statData) ->
+                                        data.header
+                                                .map(Component::translatable)
+                                                .orElse(Component.literal(id.toString())),
+
+                                (item, resolvable, statData) ->
+                                        data.description
+                                                .map(desc -> Component.translatableWithFallback(
+                                                        desc,
+                                                        desc,
+                                                        data.amount.getValue(),
+                                                        data.defenderCooldown.getValue(),
+                                                        data.attackerCooldown.getValue()
+                                                ))
+                                                .orElse(Component.empty()),
+
+                                StatGroups.ON_HIT,
+                                item -> data.amount
+                        )
+                        .setMin(0)
+                        .setMax(data.amount.getValue())
+                        .setFormat("#")
+                        .build(),
+                baseItem,
+                compareItem
+        );
     }
 
     @Environment(EnvType.CLIENT)

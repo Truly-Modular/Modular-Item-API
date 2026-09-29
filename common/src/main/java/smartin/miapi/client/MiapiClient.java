@@ -73,6 +73,7 @@ import smartin.miapi.modules.properties.slot.AllowedSlots;
 import smartin.miapi.network.Networking;
 import smartin.miapi.registries.MiapiRegistry;
 import smartin.miapi.registries.RegistryInventory;
+import smartin.miapi.stat.standardui.StandardUIImpl;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -349,6 +350,7 @@ public class MiapiClient {
         //materialAtlasManager = new MaterialAtlasManager(client.getTextureManager());
         //ReloadListenerRegistry.register(PackType.CLIENT_RESOURCES, materialAtlasManager);
         CodecBehavior.registerClass(HumanoidPoseAnimation.PartState.class, NucleusHelper.codec);
+        StandardUIImpl.setup();
     }
 
     private static void clientReload() {

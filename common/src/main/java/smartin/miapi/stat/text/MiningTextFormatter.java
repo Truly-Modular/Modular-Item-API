@@ -1,6 +1,7 @@
 package smartin.miapi.stat.text;
 
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.ItemStack;
 import smartin.miapi.stat.StatTypes;
 import smartin.miapi.stat.api.StatType;
 import smartin.miapi.stat.api.StatValue;
@@ -18,10 +19,10 @@ public final class MiningTextFormatter
     @Override
     public Component format(
             StatValue.StatWithValues<MiningStat, MiningStatData> stat,
-            MiningStat value
-    ) {
+            MiningStat value,
+            ItemStack baseItem) {
         return Component.literal(
-                stat.stat().id()
+                stat.stat().getName(baseItem)
                 + ": "
                 + value(value)
         );
@@ -31,10 +32,10 @@ public final class MiningTextFormatter
     public Component format(
             StatValue.StatWithValues<MiningStat, MiningStatData> stat,
             MiningStat baseValue,
-            MiningStat compareValue
-    ) {
+            MiningStat compareValue,
+            ItemStack baseItem) {
         return Component.literal(
-                stat.stat().id()
+                stat.stat().getName(baseItem).getString()
                 + ": "
                 + value(baseValue)
                 + " -> "

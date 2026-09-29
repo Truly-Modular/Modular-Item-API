@@ -572,6 +572,10 @@ public class StatListWidget extends InteractAbleWidget {
     }
 
     public static void addStatDisplaySupplier(StatWidgetSupplier supplier) {
+        //statWidgetSupplier.add(supplier);
+    }
+
+    public static void addStatDisplaySupplierNew(StatWidgetSupplier supplier) {
         statWidgetSupplier.add(supplier);
     }
 

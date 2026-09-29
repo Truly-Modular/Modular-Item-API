@@ -15,6 +15,7 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Helper;
 import smartin.miapi.Miapi;
@@ -27,6 +28,12 @@ import smartin.miapi.modules.properties.util.CodecProperty;
 import smartin.miapi.modules.properties.util.DoubleOperationResolvable;
 import smartin.miapi.modules.properties.util.MergeAble;
 import smartin.miapi.modules.properties.util.MergeType;
+import smartin.miapi.stat.StatGroups;
+import smartin.miapi.stat.api.StatAggregator;
+import smartin.miapi.stat.api.StatGroup;
+import smartin.miapi.stat.api.StatText;
+import smartin.miapi.stat.api.StatValue;
+import smartin.miapi.stat.api.data.number.DoubleStatData;
 
 import java.util.*;
 
@@ -41,6 +48,83 @@ public abstract class GenericEntityStrengthProperty extends CodecProperty<Map<Re
         if (Platform.getEnv() == EnvType.CLIENT) {
             setupToolTip();
         }
+        StatAggregator.AGGREGATE_STATS_EVENT.register(new StatAggregator.AggregateStats() {
+            @Override
+            public void findStats(
+                    StatGroup group,
+                    StatAggregator.StatAggregateHelper helper,
+                    ItemStack baseItem,
+                    ItemStack compareItem
+            ) {
+                Map<ResourceLocation, GenericEntityStrengthProperty.EntityContext> map =
+                        new HashMap<>(getData(baseItem).orElse(Map.of()));
+                map.putAll(getData(compareItem).orElse(Map.of()));
+
+                map.forEach((id, edit) -> {
+                    EntityType<?> exampleType = edit.firstType();
+                    if (exampleType == null) {
+                        return;
+                    }
+                    helper.addStat(
+                            new StatValue.StatWithValues<>(
+                                    buildStat(id, edit, exampleType)
+                                            .setMin(0)
+                                            .setMax(8)
+                                            .build(),
+                                    baseItem,
+                                    compareItem
+                            )
+                    );
+                });
+            }
+        });
+    }
+
+    private DoubleStatData.DoubleStatBuilder buildStat(ResourceLocation id, EntityContext edit, EntityType<?> exampleType) {
+        return DoubleStatData.getBuilder(
+                Miapi.id("runtime_entity_strength_" + id.getNamespace() + "_" + id.getPath()),
+                (item, resolvable, statData) ->
+                        edit.name()
+                                .orElse(getFallbackName(exampleType)),
+                buiildDescription(id, edit, exampleType),
+                StatGroups.ON_HIT,
+                item -> getData(item)
+                        .filter(a -> a.containsKey(id))
+                        .map(a -> a.get(id).strength())
+                        .orElse(new DoubleOperationResolvable(0))
+        );
+    }
+
+    private @NotNull StatText<DoubleOperationResolvable, DoubleStatData> buiildDescription(ResourceLocation id, EntityContext edit, EntityType<?> exampleType) {
+        return (item, resolvable, statData) -> {
+            MutableComponent component = Component.empty();
+            component
+                    .append(edit.name().orElse(getFallbackName(exampleType)))
+                    .append("\n")
+                    .append(getBaseDescription(
+                            getData(item)
+                                    .filter(a -> a.containsKey(id))
+                                    .map(a -> a.get(id).strength().getValue())
+                                    .orElse(0.0)
+                    ))
+                    .append("\n")
+                    .append(Component.translatable("miapi.property.entity.source"))
+                    .append("\n");
+
+            edit.entities().forEach(context -> {
+                if (context instanceof HolderSet.Named<EntityType<?>> named) {
+                    component.append(Helper.getTranslation(named.key()))
+                            .append("\n");
+                } else if (context instanceof HolderSet.ListBacked<EntityType<?>> listBacked) {
+                    listBacked.forEach(type ->
+                            component.append(type.value().getDescription())
+                                    .append("\n")
+                    );
+                }
+            });
+
+            return component;
+        };
     }
 
     @Environment(EnvType.CLIENT)

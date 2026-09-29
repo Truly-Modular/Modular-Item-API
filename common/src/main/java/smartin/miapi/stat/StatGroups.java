@@ -12,12 +12,14 @@ public class StatGroups {
 
     public static final StatGroup THROW = StatGroup.getOrRegister(Miapi.id("throw"), 4);
 
-    public static final StatGroup ON_HIT = StatGroup.getOrRegister(Miapi.id("on_hit"), 5);
+    public static final StatGroup ENCHANT = StatGroup.getOrRegister(Miapi.id("enchant"), 6);
 
-    public static final StatGroup MINING_GROUP = StatGroup.getOrRegister(Miapi.id("mining"), 6);
+    public static final StatGroup ON_HIT = StatGroup.getOrRegister(Miapi.id("on_hit"), 7);
 
-    public static final StatGroup ARMOR = StatGroup.getOrRegister(Miapi.id("armor"), 7);
+    public static final StatGroup MINING_GROUP = StatGroup.getOrRegister(Miapi.id("mining"), 8);
 
-    public static final StatGroup MISC = StatGroup.getOrRegister(Miapi.id("misc"), 8);
+    public static final StatGroup ARMOR = StatGroup.getOrRegister(Miapi.id("armor"), 9);
+
+    public static final StatGroup MISC = StatGroup.getOrRegister(Miapi.id("misc"), 10);
 
 }

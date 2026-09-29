@@ -204,7 +204,7 @@ public record DoubleStatData(
         /**
          * Builds the stat definition.
          */
-        public Stat<DoubleOperationResolvable, DoubleStatData> register() {
+        public Stat<DoubleOperationResolvable, DoubleStatData> build() {
             var metaData = new DoubleStatData(
                     getter,
                     formatter,
@@ -223,6 +223,14 @@ public record DoubleStatData(
                     group,
                     metaData
             );
+            return stat;
+        }
+
+        /**
+         * Builds the stat definition.
+         */
+        public Stat<DoubleOperationResolvable, DoubleStatData> register() {
+            Stat<DoubleOperationResolvable, DoubleStatData> stat = build();
             Stat.STAT_REGISTRY.register(id, stat);
             return stat;
         }

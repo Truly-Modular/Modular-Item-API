@@ -1,6 +1,7 @@
 package smartin.miapi.stat.text;
 
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.ItemStack;
 import smartin.miapi.modules.properties.util.DoubleOperationResolvable;
 import smartin.miapi.stat.StatTypes;
 import smartin.miapi.stat.api.StatType;
@@ -20,10 +21,10 @@ public final class DoubleTextFormatter
     @Override
     public Component format(
             StatValue.StatWithValues<DoubleOperationResolvable, DoubleStatData> stat,
-            DoubleOperationResolvable value
-    ) {
+            DoubleOperationResolvable value,
+            ItemStack baseItem) {
         return Component.literal(
-                stat.stat().id()
+                stat.stat().getName(baseItem)
                 + ": "
                 + value(value, stat.stat().metaData().format())
         );
@@ -33,10 +34,10 @@ public final class DoubleTextFormatter
     public Component format(
             StatValue.StatWithValues<DoubleOperationResolvable, DoubleStatData> stat,
             DoubleOperationResolvable baseValue,
-            DoubleOperationResolvable compareValue
-    ) {
+            DoubleOperationResolvable compareValue,
+            ItemStack baseItem) {
         return Component.literal(
-                stat.stat().id()
+                stat.stat().getName(baseItem).getString()
                 + ": "
                 + value(baseValue, stat.stat().metaData().format())
                 + " -> "
