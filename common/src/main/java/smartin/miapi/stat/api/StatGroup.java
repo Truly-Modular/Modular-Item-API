@@ -18,7 +18,7 @@ public class StatGroup {
         if (group != null) {
             return group;
         }
-        return STAT_GROUP_REGISTRY.register(id, new StatGroup(id, 0));
+        return STAT_GROUP_REGISTRY.register(id, new StatGroup(id, priority));
     }
 
     ResourceLocation id;

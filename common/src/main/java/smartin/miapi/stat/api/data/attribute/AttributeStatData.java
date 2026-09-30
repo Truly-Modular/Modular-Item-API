@@ -71,12 +71,7 @@ public record AttributeStatData(
     public Double getData(ItemStack stack) {
         Attribute attribute = this.attribute.value();
         if (slot != null) {
-            return AttributeUtil.getActualValue(
-                    stack,
-                    slot,
-                    attribute,
-                    fallbackValue
-            );
+            return getOperationValue(AttributeUtil.getAttribute(stack, slot));
         }
 
         for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
@@ -145,6 +140,66 @@ public record AttributeStatData(
                 return operation.equals(ADD_VALUE)
                         ? attributeValue
                         : attributeValue * 100;
+            }
+        }
+
+        return fallbackValue;
+    }
+
+    private double getOperationValue(
+            Multimap<Attribute, AttributeModifier> modifiers
+    ) {
+        var current = modifiers.get(attribute.value());
+
+        if (current.isEmpty()) {
+            return fallbackValue;
+        }
+
+        switch (operation) {
+            case ADD_VALUE -> {
+                double value = defaultValue;
+
+                for (AttributeModifier modifier : current) {
+                    if (modifier.operation() == ADD_VALUE) {
+                        value += modifier.amount();
+                    }
+                }
+
+                return value != 0 ? value : fallbackValue;
+            }
+
+            case ADD_MULTIPLIED_BASE -> {
+                double value = 0.0;
+
+                for (AttributeModifier modifier : current) {
+                    if (modifier.operation() == ADD_MULTIPLIED_BASE) {
+                        value += modifier.amount();
+                    }
+                }
+
+                for (AttributeModifier modifier : current) {
+                    if (modifier.operation() == ADD_MULTIPLIED_TOTAL) {
+                        value = (value + 1.0)
+                                * (modifier.amount() + 1.0)
+                                - 1.0;
+                    }
+                }
+
+                return value != 0 ? value * 100.0 : fallbackValue;
+            }
+
+            case ADD_MULTIPLIED_TOTAL -> {
+                double value = 1.0;
+                boolean found = false;
+
+                for (AttributeModifier modifier : current) {
+                    if (modifier.operation() == ADD_MULTIPLIED_TOTAL) {
+                        value *= 1.0 + modifier.amount();
+                        found = true;
+                    }
+                }
+
+                return found ? (value - 1.0) * 100.0 : fallbackValue;
             }
         }
 

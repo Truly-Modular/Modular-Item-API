@@ -2,10 +2,14 @@ package smartin.miapi.stat.stats;
 
 import smartin.miapi.Miapi;
 import smartin.miapi.attributes.AttributeRegistry;
-import smartin.miapi.modules.properties.onHit.*;
+import smartin.miapi.modules.properties.HandheldItemProperty;
+import smartin.miapi.modules.properties.onHit.ComboProperty;
+import smartin.miapi.modules.properties.onHit.ComboTimeProperty;
+import smartin.miapi.modules.properties.onHit.InertiaProperty;
 import smartin.miapi.modules.properties.util.DoubleOperationResolvable;
 import smartin.miapi.stat.StatGroups;
 import smartin.miapi.stat.api.Stat;
+import smartin.miapi.stat.api.data.BooleanStatData;
 import smartin.miapi.stat.api.data.attribute.AttributeStatBuilder;
 import smartin.miapi.stat.api.data.attribute.AttributeStatData;
 import smartin.miapi.stat.api.data.number.DoubleStatData;
@@ -63,5 +67,14 @@ public class MeleeModifierStats {
                                 format.format(ComboTimeProperty.property.getValue(stack).orElse(0.0) / 20)
                         );
                     })
+                    .register();
+
+    public final Stat<Boolean, BooleanStatData> HANDHELD =
+            BooleanStatData.forProperty(
+                            HandheldItemProperty.KEY,
+                            StatGroups.MISC,
+                            HandheldItemProperty.property
+                    )
+                    .setPriority(4)
                     .register();
 }
