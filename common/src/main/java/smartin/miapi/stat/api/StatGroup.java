@@ -24,12 +24,14 @@ public class StatGroup {
     ResourceLocation id;
     Component name;
     Component description;
+    Component prefix;
     double priority;
 
     protected StatGroup(ResourceLocation id, double priority) {
         this.id = id;
         name = Component.translatable(Miapi.MOD_ID + ".stat.group." + id.getPath() + "." + id.getNamespace().replace("/", "."));
-        description = Component.translatable(Miapi.MOD_ID + ".stat.group" + id.getPath() + "." + id.getNamespace().replace("/", ".") + ".description");
+        description = Component.translatable(Miapi.MOD_ID + ".stat.group." + id.getPath() + "." + id.getNamespace().replace("/", ".") + ".description");
+        prefix = Component.translatableWithFallback(Miapi.MOD_ID + ".stat.group." + id.getPath() + "." + id.getNamespace().replace("/", ".") + ".prefix", "");
         this.priority = priority;
     }
 
@@ -44,6 +46,8 @@ public class StatGroup {
     public Component getDescription() {
         return description;
     }
+
+    public Component getPrefix() {return prefix;}
 
     public double getPriority() {
         return priority;

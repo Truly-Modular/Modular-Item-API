@@ -32,18 +32,6 @@ public class MeleeStats {
                     .setPriority(1)
                     .register();
 
-    public final Stat<Double, AttributeStatData>[] BLOCK_INTERACTION_RANGE =
-            new AttributeStatBuilder(
-                    Miapi.id("block_interaction_range"),
-                    StatGroups.MELEE_GROUP,
-                    Attributes.BLOCK_INTERACTION_RANGE
-            ).setTranslationKey("minecraft.reach")
-                    .setDefault(0)
-                    .setFormat("##.##")
-                    .setMax(2)
-                    .setPriority(2)
-                    .register();
-
     public final Stat<Double, AttributeStatData>[] ENTITY_INTERACTION_RANGE =
             new AttributeStatBuilder(
                     Miapi.id("entity_interaction_range"),

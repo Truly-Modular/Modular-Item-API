@@ -61,7 +61,14 @@ public final class MiningTextFormatter
                 .append(Component.literal(" -> ")
                         .withStyle(getArrowStyle()))
                 .append(Component.literal(value(compareValue))
-                        .withStyle(getNumberStyle()));
+                        .withStyle(getNumberStyle(
+                                toNumber(baseValue),
+                                toNumber(baseValue),
+                                false)));
+    }
+
+    double toNumber(MiningStat value) {
+        return value == null ? 1.0f : value.speed();
     }
 
     private static String value(MiningStat value) {

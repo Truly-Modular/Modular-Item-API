@@ -51,17 +51,25 @@ public final class DoubleTextFormatter
             DoubleOperationResolvable compareValue,
             ItemStack baseItem) {
 
+        boolean inverse = stat.stat().metaData().inverse();
+
         return Component.empty()
                 .append(Component.literal(stat.stat().getName(baseItem).getString())
                         .withStyle(getNameStyle()))
                 .append(Component.literal(":")
                         .withStyle(getDoublePOintStyle()))
-                .append(Component.literal(" " + value(stat, baseValue, stat.stat().metaData().format()))
+                .append(Component.literal(" " + value(
+                                stat, baseValue, stat.stat().metaData().format()))
                         .withStyle(getNumberStyle()))
                 .append(Component.literal(" -> ")
                         .withStyle(getArrowStyle()))
-                .append(Component.literal(value(stat, compareValue, stat.stat().metaData().format()))
-                        .withStyle(getNumberStyle()));
+                .append(Component.literal(value(
+                                stat, compareValue, stat.stat().metaData().format()))
+                        .withStyle(getNumberStyle(getValue(baseValue, stat), getValue(compareValue, stat), inverse)));
+    }
+
+    double getValue(DoubleOperationResolvable operationResolvable, StatValue.StatWithValues<DoubleOperationResolvable, DoubleStatData> stat) {
+        return operationResolvable == null ? stat.stat().metaData().defaultValue() : operationResolvable.getValue();
     }
 
     private static String value(StatValue.StatWithValues<DoubleOperationResolvable, DoubleStatData> stat, DoubleOperationResolvable value, DecimalFormat format) {

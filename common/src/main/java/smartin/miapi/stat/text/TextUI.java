@@ -8,6 +8,7 @@ import net.minecraft.util.Tuple;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import smartin.miapi.item.ModularItemStackConverter;
 import smartin.miapi.stat.api.StatAggregator;
 import smartin.miapi.stat.api.StatGroup;
 import smartin.miapi.stat.api.StatValue;
@@ -29,7 +30,9 @@ public class TextUI {
 
     }
 
-    public static @NotNull List<Component> getStatComponentList(ItemStack base, ItemStack compare, boolean displayOnlyDiff) {
+    public static @NotNull List<Component> getStatComponentList(ItemStack baseNonModular, ItemStack compareNonModular, boolean displayOnlyDiff) {
+        ItemStack base = ModularItemStackConverter.getModularVersion(baseNonModular);
+        ItemStack compare = ModularItemStackConverter.getModularVersion(compareNonModular);
         List<Component> list = new ArrayList<>();
         List<Tuple<StatGroup, List<StatValue.StatWithValues<?, ?>>>> stats = StatAggregator.findAllStats(base, compare);
         stats.forEach(groupTuple -> {

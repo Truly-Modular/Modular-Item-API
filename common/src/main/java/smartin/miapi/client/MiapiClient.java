@@ -102,6 +102,7 @@ public class MiapiClient {
     public static volatile AtomicInteger tick = new AtomicInteger(0);
     public static boolean isClientLoaded = false;
     public static final KeyMapping HOVER_DETAIL_BINDING = KEY_BINDINGS.register("miapi:hover_detail", new KeyMapping("miapi.gui.item_detail", 83, "miapi.keybinds"));
+    public static final KeyMapping HOVER_COMPARE_BINDING = KEY_BINDINGS.register("miapi:hover_compare", new KeyMapping("miapi.gui.item_compare", 67, "miapi.keybinds"));
 
     public static double currentTickFull() {
         double current = tick.get();

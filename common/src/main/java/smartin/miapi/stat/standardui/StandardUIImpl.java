@@ -8,6 +8,8 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Tuple;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import org.lwjgl.glfw.GLFW;
@@ -22,9 +24,12 @@ import smartin.miapi.stat.api.StatValue;
 import smartin.miapi.stat.api.data.attribute.AttributeStatData;
 import smartin.miapi.stat.api.data.mining.MiningStatData;
 import smartin.miapi.stat.api.data.number.DoubleStatData;
-import smartin.miapi.stat.text.*;
+import smartin.miapi.stat.text.TextUI;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 
 public final class StandardUIImpl {
 
@@ -44,7 +49,7 @@ public final class StandardUIImpl {
                                     (T) DoubleResolvableStatDisplay
                                             .builder((stack) -> Optional.ofNullable(doubleStatData.getData(stack)))
                                             .setHoverDescription((item) -> stat.stat().getDescription(item))
-                                            .setName((item) -> stat.stat().getName(item))
+                                            .setName((item) -> stat.stat().getNameWithPrefix(item))
                                             .setInverse(doubleStatData.inverse())
                                             .setFormat(doubleStatData.format().toPattern())
                                             .setCondition(doubleStatData::shouldBeVisible)
@@ -57,14 +62,14 @@ public final class StandardUIImpl {
                                     SimpleBooleanStatDisplay
                                             .builder((stack) -> booleanData.getValue(stack) == 0)
                                             .setHoverDescription((item) -> stat.stat().getDescription(item))
-                                            .setName((item) -> stat.stat().getName(item))
+                                            .setName((item) -> stat.stat().getNameWithPrefix(item))
                                             .build());
                         }
                         if (stat.stat().metaData() instanceof AttributeStatData attributeStatData) {
                             Arrays.stream(AttributeSingleDisplay
                                     .builder(attributeStatData.attribute())
                                     .setHoverDescription((item) -> stat.stat().getDescription(item))
-                                    .setName((item) -> stat.stat().getName(item))
+                                    .setName((item) -> stat.stat().getNameWithPrefix(item))
                                     .setFormat(attributeStatData.format().toPattern())
                                     .setMax(attributeStatData.max())
                                     .setMin(attributeStatData.min())
@@ -93,13 +98,31 @@ public final class StandardUIImpl {
             @Override
             public List<Component> getLore(ItemStack itemStack) {
                 long window = Minecraft.getInstance().getWindow().getWindow();
-
+                if (GLFW.glfwGetKey(window, ((KeyMappingAccessor) MiapiClient.HOVER_COMPARE_BINDING).getMiapiKey().getValue()) == GLFW.GLFW_PRESS) {
+                    Player player = Minecraft.getInstance().player;
+                    EquipmentSlot slot = Minecraft.getInstance().player.getEquipmentSlotForItem(itemStack);
+                    ItemStack equiped = player.getItemBySlot(slot);
+                    List<Component> lines = new ArrayList<>();
+                    lines.add(Component.translatable("miapi.ui.stat.compare", equiped.getDisplayName(), itemStack.getDisplayName()));
+                    lines.addAll(TextUI.getStatComponentList(equiped, itemStack, false));
+                    return lines;
+                }
                 if (GLFW.glfwGetKey(window, ((KeyMappingAccessor) MiapiClient.HOVER_DETAIL_BINDING).getMiapiKey().getValue()) == GLFW.GLFW_PRESS) {
                     return TextUI.getStatComponentList(itemStack, itemStack, false);
                 }
                 return List.of();
             }
         });
+    }
+
+    private static EquipmentSlot fromGroup(EquipmentSlotGroup group) {
+        List<EquipmentSlot> slots = List.of(EquipmentSlot.FEET, EquipmentSlot.LEGS, EquipmentSlot.CHEST, EquipmentSlot.HEAD);
+        for (EquipmentSlot slot : slots) {
+            if (group.test(slot)) {
+                return slot;
+            }
+        }
+        return EquipmentSlot.MAINHAND;
     }
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
@@ -152,6 +175,4 @@ public final class StandardUIImpl {
             return 1;
         }
     }
-
-
 }

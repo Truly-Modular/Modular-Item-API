@@ -39,18 +39,23 @@ public final class AttributeTextFormatter
             Double compareValue,
             ItemStack baseItem) {
 
+        boolean inverse = false;
+
         return Component.empty()
                 .append(Component.literal(stat.stat().getName(baseItem).getString())
                         .withStyle(getNameStyle()))
                 .append(Component.literal(":")
                         .withStyle(getDoublePOintStyle()))
-                .append(Component.literal(" " + value(stat, baseValue, stat.stat().metaData().format()))
+                .append(Component.literal(" " + value(
+                                stat, baseValue, stat.stat().metaData().format()))
                         .withStyle(getNumberStyle()))
                 .append(Component.literal(" -> ")
                         .withStyle(getArrowStyle()))
-                .append(Component.literal(value(stat, compareValue, stat.stat().metaData().format()))
-                        .withStyle(getNumberStyle()));
+                .append(Component.literal(value(
+                                stat, compareValue, stat.stat().metaData().format()))
+                        .withStyle(getNumberStyle(baseValue, compareValue, inverse)));
     }
+
     private static String value(StatValue.StatWithValues<Double, AttributeStatData> stat, Double value, DecimalFormat format) {
         return value == null ? format.format(stat.stat().metaData().defaultValue()) : format.format(value);
     }

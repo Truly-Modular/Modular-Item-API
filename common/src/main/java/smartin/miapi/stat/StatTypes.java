@@ -32,6 +32,7 @@ public class StatTypes {
         new ProjectileModifierStats();
         new ProjectileWeaponStats();
         new ThrowStats();
+        new OnHitStats();
         StatAggregator.AGGREGATE_STATS_EVENT.register((group, helper, baseItem, compareItem) ->
                 Stat.STAT_REGISTRY.getFlatMap().values()
                         .stream().filter(stat -> stat.group().equals(group))

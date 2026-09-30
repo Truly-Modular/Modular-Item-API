@@ -48,6 +48,23 @@ public interface TextFormatter<T, M extends StatMetaData<T>> {
         return Style.EMPTY.withBold(false).withColor(Color.WHITE.getRGB());
     }
 
+    default Style getNumberStyleBetter() {
+        return Style.EMPTY.withBold(true).withColor(Color.GREEN.getRGB());
+    }
+
+    default Style getNumberStyleWorse() {
+        return Style.EMPTY.withBold(true).withColor(Color.RED.getRGB());
+    }
+
+    default Style getNumberStyle(double baseValue, double compareValue, boolean inverse) {
+        boolean better = inverse
+                ? compareValue < baseValue
+                : compareValue > baseValue;
+
+        return better ? getNumberStyleBetter() : getNumberStyleWorse();
+    }
+
+
     default Style getArrowStyle() {
         return Style.EMPTY.withBold(false).withColor(Color.LIGHT_GRAY.getRGB());
     }
