@@ -4,18 +4,19 @@ import com.google.common.collect.Multimap;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 import org.jetbrains.annotations.Nullable;
-import smartin.miapi.stat.api.StatMetaData;
 import smartin.miapi.modules.properties.attributes.AttributeProperty;
 import smartin.miapi.modules.properties.attributes.AttributeToolTipHelper;
 import smartin.miapi.modules.properties.attributes.AttributeUtil;
 import smartin.miapi.modules.properties.attributes.EquipmentSlotGroupWrapper;
 import smartin.miapi.modules.properties.util.DoubleOperationResolvable;
+import smartin.miapi.stat.api.StatMetaData;
 
 import java.text.DecimalFormat;
 import java.util.Map;
@@ -222,14 +223,8 @@ public record AttributeStatData(
         Attribute attribute = this.attribute.value();
 
         Optional<
-                Map<
-                        net.minecraft.resources.ResourceLocation,
-                        Map<
-                                AttributeModifier.Operation,
-                                Map<EquipmentSlotGroupWrapper, DoubleOperationResolvable>
-                        >
-                >
-                > optional = AttributeProperty.property.getData(stack);
+                Map<ResourceLocation, Map<AttributeModifier.Operation, Map<EquipmentSlotGroupWrapper, DoubleOperationResolvable>>>> optional =
+                AttributeProperty.property.getData(stack);
 
         if (optional.isPresent()) {
             var attributeMap = optional.get();
