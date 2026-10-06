@@ -20,8 +20,10 @@ public class HelpGuiInfo extends InteractAbleWidget {
         super(x, y, width, height, title);
         ScrollingTextWidget header = new ScrollingTextWidget(x + 5, y + 3, width - 10, Component.translatable("miapi.gui.helper.header"));
         this.addChild(header);
-
         CraftingScreen craftingScreen = CraftingScreen.getInstance();
+        if (craftingScreen == null) {
+            return;
+        }
         int backgroundWidth = craftingScreen.getBackgroundWidth();
 
         int backgroundHeight = craftingScreen.getBackgroundHeight();
