@@ -4,6 +4,7 @@
 - added compat for LambDynamicLights
 - added new Keybind to show stats on modular item (default is S)
 - added new Keybind to show stats to compare to currently equiped item (default is C)
+- added internal raycast logic to normal models
 - added new Commands to show/compare stats on modular items
     - /miapi stat mainhand -> prints mainhand stats into chat
     - /miapi stat compareHands -> compares stats from mainhand to offhand
