@@ -16,6 +16,7 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
+import net.minecraft.util.FastColor;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ArmorItem;
@@ -32,9 +33,12 @@ import smartin.miapi.client.atlas.VertexConsumerProvider;
 import smartin.miapi.client.model.MiapiModel;
 import smartin.miapi.client.model.ModelHolder;
 import smartin.miapi.client.model.ModelTransformer;
+import smartin.miapi.client.model.collision.Ray;
+import smartin.miapi.client.model.collision.RayHit;
 import smartin.miapi.client.model.item.ItemBakedModelOverrides;
 import smartin.miapi.client.model.module.baked.BakedMiapiModelNoOverrides;
 import smartin.miapi.client.model.module.baked.BakedMiapiModelWithOverrides;
+import smartin.miapi.client.model.collision.CollisionHelper;
 import smartin.miapi.client.renderer.ObjectUVVertexConsumer;
 import smartin.miapi.client.renderer.RescaledVertexConsumer;
 import smartin.miapi.client.renderer.TrimRenderer;
@@ -63,6 +67,7 @@ public class BakedMiapiModel implements MiapiModel {
     GlintProperty.GlintSettings settings;
     int skyLight;
     int blockLight;
+    public int randomColor = FastColor.ARGB32.color(180, (int) (Math.random() * 255), (int) (Math.random() * 255), (int) (Math.random() * 255));
     float alpha;
     static VertexConsumer lastVC;
     static ColorProvider lastColor;
@@ -300,5 +305,18 @@ public class BakedMiapiModel implements MiapiModel {
             }
         }
         return model;
+    }
+
+    public Optional<RayHit> raycast(Ray ray, MiapiModel.RenderContext context) {
+        context.matrices().pushPose();
+        Transform.applyPosition(context.matrices(), modelMatrix);
+        BakedModel currentModel = resolve(model, ItemStack.EMPTY, null, 0);
+        List<Pair<TextureAtlasSprite, List<BakedQuad>>> batches = modelBatchCache.computeIfAbsent(currentModel, m -> buildBatches(m, RandomSource.create()));
+        if (context.vertexConsumers() != null) {
+            CollisionHelper.renderRedQuads(batches, context.matrices().last().pose(), context.vertexConsumers(), randomColor);
+        }
+        Optional<RayHit> hit = CollisionHelper.raycast(ray, batches, context.matrices().last().pose());
+        context.matrices().popPose();
+        return hit;
     }
 }

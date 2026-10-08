@@ -10,8 +10,11 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
+import smartin.miapi.client.model.collision.Ray;
+import smartin.miapi.client.model.collision.RayHit;
 
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * default model to implement Module level Models.
@@ -97,5 +100,9 @@ public interface MiapiModel {
             result = 31 * result + System.identityHashCode(entity);
             return result;
         }
+    }
+
+    default Optional<RayHit> raycast(Ray ray, MiapiModel.RenderContext context) {
+        return Optional.empty();
     }
 }

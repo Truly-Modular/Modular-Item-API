@@ -13,6 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import smartin.miapi.client.MiapiClient;
+import smartin.miapi.client.model.collision.Ray;
 import smartin.miapi.client.model.module.baked.passes.DeferredGlintRenderPass;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.datapack.ReloadEvents;
@@ -24,6 +25,7 @@ import smartin.miapi.modules.cache.ModularItemCache;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 
 @Environment(EnvType.CLIENT)
 public class MiapiItemModel implements MiapiModel {
@@ -187,5 +189,25 @@ public class MiapiItemModel implements MiapiModel {
 
     public interface ModelTransformer {
         PoseStack transform(PoseStack matrices, float tickDelta);
+    }
+
+    public Optional<ModuleModel.ModuleRayHit> raycast(ItemStack stack, MultiBufferSource multiBufferSource, ItemDisplayContext mode, float tickDelta, Ray ray, Matrix4f modelToRaySpace) {
+        return raycast(null, multiBufferSource, stack, mode, tickDelta, ray, modelToRaySpace);
+    }
+
+
+    public Optional<ModuleModel.ModuleRayHit> raycast(@Nullable String modelTypeRaw, MultiBufferSource multiBufferSource, ItemStack stack, ItemDisplayContext mode, float tickDelta, Ray ray, Matrix4f modelToRaySpace) {
+        if (ReloadEvents.isInReload() || !MiapiClient.isClientLoaded) {return Optional.empty();}
+        String modelType = modelTypeRaw == null ? "item" : modelTypeRaw;
+        CacheData data = localCache.computeIfAbsent(
+                new CacheKey(modelType, mode), k ->
+                        new CacheData(new ModuleModel(ItemModule.getModules(stack), stack, k.key, k.context), getTransfomers(stack, k.context, k.key)));
+        PoseStack matrices = new PoseStack();
+        matrices.last().pose().set(modelToRaySpace);
+        matrices.translate(-0.5F, -0.5F, -0.5F);
+        //MatrixUtil.mulComponentWise(matrices.last().pose(), 2.0F);
+        for (ModelTransformer transformer : data.transformers) {transformer.transform(matrices, tickDelta);}
+        MiapiModel.RenderContext renderContext = new MiapiModel.RenderContext(modelType, matrices, stack, mode, tickDelta, multiBufferSource, null, false, 0, 0);
+        return data.model.raycast(ray, renderContext);
     }
 }
