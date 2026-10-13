@@ -127,7 +127,9 @@ public class JsonMaterial implements Material {
     @Environment(EnvType.CLIENT)
     private void mergeTranslation(boolean isClient, JsonElement propertyElement) {
         if (isClient) {
-            FakeTranslation.translations.put(rawJson.getAsJsonObject().get("fake_translation").getAsString(), propertyElement.getAsString());
+            if (rawJson.getAsJsonObject().has("fake_translation")) {
+                FakeTranslation.translations.put(rawJson.getAsJsonObject().get("fake_translation").getAsString(), propertyElement.getAsString());
+            }
         }
     }
 
@@ -434,7 +436,7 @@ public class JsonMaterial implements Material {
     }
 
     @Override
-    public int hashCode(){
+    public int hashCode() {
         return getID().hashCode();
     }
 }

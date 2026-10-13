@@ -1,5 +1,6 @@
 package smartin.miapi.client;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
 import com.redpxnda.nucleus.config.ConfigManager;
@@ -73,6 +74,7 @@ import smartin.miapi.modules.properties.slot.AllowedSlots;
 import smartin.miapi.network.Networking;
 import smartin.miapi.registries.MiapiRegistry;
 import smartin.miapi.registries.RegistryInventory;
+import smartin.miapi.stat.standardui.StandardUIImpl;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -100,7 +102,8 @@ public class MiapiClient {
     public static boolean CUSTOM_SHADER_LOADED = true;
     public static volatile AtomicInteger tick = new AtomicInteger(0);
     public static boolean isClientLoaded = false;
-    //public static final KeyBinding HOVER_DETAIL_BINDING = KEY_BINDINGS.register("miapi:hover_detail", new KeyBinding("miapi.gui.item_detail", 42, "miapi.keybinds"));
+    public static final KeyMapping HOVER_DETAIL_BINDING = KEY_BINDINGS.register("miapi:hover_detail", new KeyMapping("miapi.gui.item_detail", InputConstants.KEY_I, "miapi.keybinds"));
+    public static final KeyMapping HOVER_COMPARE_BINDING = KEY_BINDINGS.register("miapi:hover_compare", new KeyMapping("miapi.gui.item_compare", InputConstants.KEY_C, "miapi.keybinds"));
 
     public static double currentTickFull() {
         double current = tick.get();
@@ -349,6 +352,7 @@ public class MiapiClient {
         //materialAtlasManager = new MaterialAtlasManager(client.getTextureManager());
         //ReloadListenerRegistry.register(PackType.CLIENT_RESOURCES, materialAtlasManager);
         CodecBehavior.registerClass(HumanoidPoseAnimation.PartState.class, NucleusHelper.codec);
+        StandardUIImpl.setup();
     }
 
     private static void clientReload() {

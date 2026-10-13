@@ -37,5 +37,32 @@
             "item": "minecraft:diamond",
             "value": 1.0
         }
+    ],
+    "variants": [
+        {
+            "condition": {
+                "type": "tag",
+                "tag": "armor"
+            },
+            "overwrite": {
+                "color_palette": {
+                    "type": "grayscale_map",
+                    "colors": {
+                        "24": "082420",
+                        "68": "0e3f36",
+                        "107": "156355",
+                        "150": "1e8a77",
+                        "183": "2cbeac",
+                        "190": "2bdbd3",
+                        "194": "2ec9b7",
+                        "209": "48e4d1",
+                        "217": "6af2e2",
+                        "229": "aefcec",
+                        "255": "edfffb"
+                    },
+                    "filler": "interpolate"
+                }
+            }
+        }
     ]
 }

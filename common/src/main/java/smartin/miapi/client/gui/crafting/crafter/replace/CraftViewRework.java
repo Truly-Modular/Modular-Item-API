@@ -123,7 +123,9 @@ public class CraftViewRework extends InteractAbleWidget {
                 ItemStack craftedStack = action.getPreview();
                 if (!ItemStack.matches(editContext.getItemstack(), craftedStack)) {
                     editContext.craft(action.toPacket(Networking.createBuffer()));
-                    CraftingScreen.getInstance().setItem(craftedStack);
+                    if(CraftingScreen.getInstance()!=null){
+                        CraftingScreen.getInstance().setItem(craftedStack);
+                    }
                 }
                 editContext.getScreenHandler().removeSlotListener(listener);
             }

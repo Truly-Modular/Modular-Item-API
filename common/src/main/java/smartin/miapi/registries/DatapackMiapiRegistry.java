@@ -16,8 +16,9 @@ public class DatapackMiapiRegistry<T> extends MiapiRegistry<T> {
             Collections.synchronizedMap(new LinkedHashMap<>());
     protected Map<ResourceLocation, T> merged;
 
-    public DatapackMiapiRegistry(Class<T> tClass) {
-        super(tClass);
+    @SuppressWarnings("unchecked")
+    public DatapackMiapiRegistry(Class<?> tClass) {
+        super((Class<T>) tClass);
     }
 
     public DatapackMiapiRegistry() {

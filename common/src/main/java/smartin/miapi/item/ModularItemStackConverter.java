@@ -39,6 +39,9 @@ public class ModularItemStackConverter {
         if (ReloadEvents.isInReload()) {
             return original;
         }
+        if (ModularItem.isModularItem(original)) {
+            return original;
+        }
         ItemStack converted = original.copy();
         if (original.getItem().getDefaultInstance().has(DataComponents.ATTRIBUTE_MODIFIERS)) {
             var oldEntries = original.getItem().getDefaultInstance().get(DataComponents.ATTRIBUTE_MODIFIERS).modifiers();

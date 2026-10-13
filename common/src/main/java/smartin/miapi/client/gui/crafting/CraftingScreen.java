@@ -135,11 +135,15 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
         this.addChild(moduleCrafter);
 
         slotDisplay = new SlotDisplay(ItemStack.EMPTY, centerX + 51 - 15, centerY + 117 - 14, 68, 87, (selected) -> {
-
+            selectSlot(selected);
+            moduleCrafter.setSelectedSlot(selected);
         });
         slotDisplay.setItem(getItem());
         this.addChild(slotDisplay);
-        smithDisplay = new SmithDisplay(centerX + 140 - 15, centerY + 117 - 14, 55, 70);
+        smithDisplay = new SmithDisplay(centerX + 140 - 15, centerY + 117 - 14, 55, 70, (selected) -> {
+            selectSlot(selected);
+            moduleCrafter.setSelectedSlot(selected);
+        });
         this.addChild(smithDisplay);
         statDisplay = new StatDisplayWidget(centerX + 213 - 15, centerY + 30 - 14, 161, 95);
         this.addChild(statDisplay);
@@ -281,6 +285,8 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
         if (moduleCrafter != null) {
             moduleCrafter.setItem(converted);
             moduleCrafter.setBaseSlot(current);
+            slotDisplay.setBaseSlot(current);
+            smithDisplay.baseSlot = current;
             moduleCrafter.setSelectedSlot(null);
             moduleCrafter.setItem(converted);
             moduleCrafter.setBaseSlot(current);

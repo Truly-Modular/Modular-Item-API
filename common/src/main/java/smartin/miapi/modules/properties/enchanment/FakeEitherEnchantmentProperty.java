@@ -22,6 +22,10 @@ import smartin.miapi.modules.properties.util.DoubleOperationResolvable;
 import smartin.miapi.modules.properties.util.EitherModuleProperty;
 import smartin.miapi.modules.properties.util.MergeAble;
 import smartin.miapi.modules.properties.util.MergeType;
+import smartin.miapi.stat.StatGroups;
+import smartin.miapi.stat.api.StatAggregator;
+import smartin.miapi.stat.api.StatValue;
+import smartin.miapi.stat.api.data.number.DoubleStatData;
 
 import java.util.*;
 
@@ -55,6 +59,41 @@ public class FakeEitherEnchantmentProperty extends EitherModuleProperty<
         if (Environment.isClient()) {
             setupClient();
         }
+        StatAggregator.register(StatGroups.ENCHANT, (group, helper, baseItem, compareItem) -> {
+            Map<Holder.Reference<Enchantment>, DoubleOperationResolvable> enchantments = new HashMap<>();
+            enchantments.putAll(getEnchants(baseItem));
+            enchantments.putAll(getEnchants(compareItem));
+
+            enchantments.forEach((enchantment, data) -> {
+                Component desc = Component
+                        .translatableWithFallback(
+                                "enchantment." + enchantment.key().location().getNamespace() + "." + enchantment.key().location().getPath() + ".desc",
+                                "");
+                helper.addStat(
+                        new StatValue.StatWithValues<>(
+                                DoubleStatData.getBuilder(
+                                                Miapi.id("runtime_fake_enchantment_" + enchantment.key().location().getNamespace() + "_" + enchantment.key().location().getPath()),
+                                                (item, resolvable, statData) -> enchantment.value().description(),
+                                                (item, resolvable, statData) ->
+                                                        Component.translatable(
+                                                                "miapi.fake_enchant.desc",
+                                                                enchantment.value().description(),
+                                                                desc
+                                                        ),
+                                                StatGroups.ENCHANT,
+                                                item -> getEnchants(item).get(enchantment)
+                                        )
+                                        .setInverse(enchantment.is(EnchantmentTags.CURSE))
+                                        .setMax(enchantment.value().getMaxLevel())
+                                        .setMin(0)
+                                        .setFormat("#")
+                                        .build(),
+                                baseItem,
+                                compareItem
+                        )
+                );
+            });
+        });
     }
 
     @Override

@@ -155,9 +155,13 @@ public class ModuleCrafter extends InteractAbleWidget {
                 this.children().clear();
                 CraftingScreen craftingScreen = CraftingScreen.getInstance();
                 this.addChild(new HelpGuiInfo(this.getX(), this.getY(), this.width, this.getHeight(), Component.literal("miapi.help.helper"), (toFocus) -> {
-                    craftingScreen.hoverElement = toFocus;
+                    if (craftingScreen != null) {
+                        craftingScreen.hoverElement = toFocus;
+                    }
                 }, (toRemove) -> {
-                    craftingScreen.hoverElement = null;
+                    if (craftingScreen != null) {
+                        craftingScreen.hoverElement = null;
+                    }
                 }));
             }
         }

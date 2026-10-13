@@ -71,13 +71,12 @@ public class AttributeSingleDisplay extends SingleStatDisplayDouble {
     }
 
     public List<Component> getHoverLines(GuiGraphics drawContext, int mouseX, int mouseY, float delta) {
-        List<Component> lines = new ArrayList<>();
+        List<Component> lines = new ArrayList<>(super.getHoverLines(drawContext, mouseX, mouseY, delta));
         if (isMouseOver(mouseX, mouseY)) {
             if (this.defaultValue != 0) {
-                lines.add(Component.translatable("miapi.attribute.ui.base_value", this.defaultValue));
+                //lines.add(Component.translatable("miapi.attribute.ui.base_value", this.defaultValue));
             }
         }
-        lines.addAll(super.getHoverLines(drawContext, mouseX, mouseY, delta));
         return lines;
     }
 

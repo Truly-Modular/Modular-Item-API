@@ -32,7 +32,7 @@ public class ModuleTagProperty extends CodecProperty<List<String>> {
     public ModuleTagProperty() {
         super(CODEC);
         property = this;
-        PropertyResolver.register("material_property", (moduleInstance, oldMap) -> {
+        PropertyResolver.register(Miapi.id("material_property"), (moduleInstance, oldMap) -> {
             Material material = MaterialProperty.getMaterial(moduleInstance);
             Map<ModuleProperty<?>, Object> returnMap = new HashMap<>(oldMap);
             if (material != null) {
@@ -65,7 +65,7 @@ public class ModuleTagProperty extends CodecProperty<List<String>> {
                 }
             }
             return returnMap;
-        });
+        }, List.of(Miapi.id("skin"), Miapi.id("synergies")));
     }
 
 
@@ -91,15 +91,15 @@ public class ModuleTagProperty extends CodecProperty<List<String>> {
     }
 
     public static List<String> getTags(Map<ModuleProperty<?>, Object> properties) {
-        List<String> tags = new ArrayList<>(getTags(properties,ModuleTagProperty.property));
-        tags.addAll(getTags(properties,ModuleTagLegacyProperty.property));
-        tags.addAll(getTags(properties,ModuleTagMaterialLegacyProperty.property));
+        List<String> tags = new ArrayList<>(getTags(properties, ModuleTagProperty.property));
+        tags.addAll(getTags(properties, ModuleTagLegacyProperty.property));
+        tags.addAll(getTags(properties, ModuleTagMaterialLegacyProperty.property));
         return tags;
     }
 
     public static List<String> getTags(Map<ModuleProperty<?>, Object> properties, CodecProperty<List<String>> property) {
         List<String> tags = (List<String>) properties.get(property);
-        if(tags==null){
+        if (tags == null) {
             return List.of();
         }
         return tags;

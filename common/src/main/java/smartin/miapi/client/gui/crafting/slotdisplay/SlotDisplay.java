@@ -7,6 +7,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
@@ -20,6 +21,10 @@ import org.joml.Vector3f;
 import org.lwjgl.opengl.GL11;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.InteractAbleWidget;
+import smartin.miapi.client.model.MiapiItemModel;
+import smartin.miapi.client.model.ModuleModel;
+import smartin.miapi.client.model.collision.Ray;
+import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.slot.SlotProperty;
 
 import java.util.ArrayList;
@@ -44,6 +49,7 @@ public class SlotDisplay extends InteractAbleWidget {
     private SlotProperty.ModuleSlot selected = null;
     private final Consumer<SlotProperty.ModuleSlot> setSelected;
     private SlotProperty.ModuleSlot baseSlot;
+    private ModuleInstance currentHover = null;
 
     public SlotDisplay(ItemStack stack, int x, int y, int height, int width, Consumer<SlotProperty.ModuleSlot> selected) {
         super(x, y, width, height, Component.literal("Item Display"));
@@ -82,6 +88,13 @@ public class SlotDisplay extends InteractAbleWidget {
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (button == 0 && isMouseOver(mouseX, mouseY)) {
             mouseDown0 = true;
+            if (currentHover != null) {
+                if (currentHover.getParent() == null) {
+                    setSelected.accept(baseSlot);
+                } else {
+                    setSelected.accept(SlotProperty.getSlotIn(currentHover));
+                }
+            }
         } else if (button == 1 && isMouseOver(mouseX, mouseY)) {
             mouseDown1 = true;
         }
@@ -161,6 +174,10 @@ public class SlotDisplay extends InteractAbleWidget {
         return size;
     }
 
+    private Vector3f position() {
+        return new Vector3f(getX() + (float) (width - 16) / 2, getY() + (float) (height - 16) / 2, (100.0F + 50));
+    }
+
     @Override
     public void renderWidget(GuiGraphics drawContext, int mouseX, int mouseY, float delta) {
         drawContext.enableScissor(this.getX(), this.getY(), this.getX() + this.width, this.getY() + this.height);
@@ -171,10 +188,6 @@ public class SlotDisplay extends InteractAbleWidget {
 
     public void select(SlotProperty.ModuleSlot selected) {
         this.selected = selected;
-    }
-
-    private Vector3f position() {
-        return new Vector3f(getX() + (float) (width - 16) / 2, getY() + (float) (height - 16) / 2, (100.0F + 50));
     }
 
     public void renderSlot(ItemStack stack, GuiGraphics context, int mouseX, int mouseY, float delta) {
@@ -197,7 +210,11 @@ public class SlotDisplay extends InteractAbleWidget {
             Lighting.setupForFlatItems();
         }
         RenderSystem.enableDepthTest();
+        Ray ray = createMouseRay(mouseX, mouseY);
+        MiapiItemModel.startRayCastMode(ray, new PoseStack(), Screen.hasAltDown());
         renderer.renderStatic(stack, ItemDisplayContext.GUI, 15728880, OverlayTexture.NO_OVERLAY, slotProjection, immediate, Minecraft.getInstance().level, 0);
+        var result = MiapiItemModel.collectAndEndRayCastMode();
+        currentHover = result.map(ModuleModel.ModuleRayHit::module).orElse(null);
         immediate.endBatch();
         //immediate.endOutlineBatch();
         RenderSystem.enableDepthTest();
@@ -208,6 +225,19 @@ public class SlotDisplay extends InteractAbleWidget {
         RenderSystem.applyModelViewMatrix();
 
         Minecraft.getInstance().renderBuffers().outlineBufferSource();
+    }
+
+    private Ray createMouseRay(double mouseX, double mouseY) {
+        Vector3f pos = position();
+        float size = getSize();
+
+        float x = (float) ((mouseX - pos.x()) / size);
+        float y = (float) ((mouseY - pos.y()) / size);
+
+        Vector3f origin = new Vector3f(x, y, 10.0F);
+        Vector3f direction = new Vector3f(0.0F, 0.0F, -1.0F);
+
+        return new Ray(origin, direction);
     }
 
     @Override

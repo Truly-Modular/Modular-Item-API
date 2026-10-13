@@ -57,6 +57,15 @@ def installAddon = { String addonName ->
     println "Installed ${addonName} addon jars"
 }
 
+tasks.register("publishAllLocal") {
+    group = "_tm_tasks"
+    dependsOn(
+            ":common:publishToMavenLocal",
+            ":fabric:publishToMavenLocal",
+            ":neoforge:publishToMavenLocal"
+    )
+}
+
 includedAddons.each { includedBuild ->
     def addonName = includedBuild.name
     def taskSuffix = addonName.capitalize()

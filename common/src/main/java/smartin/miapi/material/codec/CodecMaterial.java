@@ -369,6 +369,7 @@ public class CodecMaterial implements Material {
 
         // Merge other fields
         this.textureKeys = new ArrayList<>(this.textureKeys);
+        this.textureKeys.remove("default");
         this.textureKeys.addAll(material.textureKeys);
 
         // Merge incorrectForTool if present

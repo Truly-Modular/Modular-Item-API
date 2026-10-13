@@ -10,7 +10,6 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.Model;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.network.chat.Component;
@@ -26,7 +25,6 @@ import net.minecraft.server.packs.repository.PackSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.neoforged.api.distmarker.Dist;
@@ -59,8 +57,6 @@ import smartin.miapi.Miapi;
 import smartin.miapi.attributes.AttributeRegistry;
 import smartin.miapi.client.MiapiClient;
 import smartin.miapi.client.atlas.ArmorModelManager;
-import smartin.miapi.client.model.MiapiItemModel;
-import smartin.miapi.client.model.MiapiModel;
 import smartin.miapi.client.model.item.ItemBakedModelReplacement;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.events.MiapiEvents;
@@ -103,6 +99,7 @@ public class TrulyModularForge {
 
 
         LifecycleEvent.SERVER_STARTING.register((instance -> setupAttributes()));
+        LifecycleEvent.SETUP.register(TrulyModularForge::setupAttributes);
         ReloadEvents.START.subscribe((isClient, access, worker) -> setupAttributes());
         if (Platform.getEnv() == Dist.CLIENT) {
             //KEY_BINDINGS.addCallback((KeyBindingRegistryImpl::registerKeyBinding));
@@ -296,48 +293,13 @@ public class TrulyModularForge {
 
 
                     public @NotNull BlockEntityWithoutLevelRenderer getCustomRenderer() {
-                        return new BlockEntityWithoutLevelRenderer(Minecraft.getInstance().getBlockEntityRenderDispatcher(),
-                                Minecraft.getInstance().getEntityModels()) {
-                            public void renderByItem(ItemStack stack, ItemDisplayContext displayContext, PoseStack poseStack, MultiBufferSource buffer, int packedLight, int packedOverlay) {
-                                //
-                                //Lighting.setupFor3DItems();
-                                //Lighting.setupForFlatItems();
-                                if (displayContext.equals(ItemDisplayContext.GUI)) {
-                                    //Lighting.setupForFlatItems();
-                                    //packedLight = 15728880;
-                                    //test += 100;
-                                    //packedLight = test;
-                                    //packedLight = (int)Long.parseLong("0F0080",16);
-                                    //packedOverlay = OverlayTexture.NO_OVERLAY;
-                                    //poseStack.translate(0.0f, 0.0F, 0.0F);
-                                    //poseStack.last().transformNormal(new Vector3f(-1, -1, -1), new Vector3f(0, -1, 0));
-                                }
-                                //Lighting.setupForFlatItems();
-                                MiapiModel model = MiapiItemModel.getItemModel(stack);
-                                if (model != null) {
-                                    model.render(new MiapiModel.RenderContext(
-                                            null,
-                                            poseStack,
-                                            stack,
-                                            displayContext,
-                                            0.0f,
-                                            buffer,
-                                            null,
-                                            packedLight,
-                                            packedOverlay
-                                    ));
-                                }
-                                if (buffer instanceof MultiBufferSource.BufferSource multiBufferSource) {
-                                    //multiBufferSource.endBatch();
-                                }
-                                //Lighting.setupFor3DItems();
-                                //Lighting.setupFor3DItems();
-                            }
-                        };
+                        return new ModularRenderer(Minecraft.getInstance().getBlockEntityRenderDispatcher(),
+                                Minecraft.getInstance().getEntityModels());
                     }
 
 
-                    public Model getGenericArmorModel(LivingEntity livingEntity, ItemStack itemStack, EquipmentSlot equipmentSlot, HumanoidModel<?> original) {
+                    public Model getGenericArmorModel
+                            (LivingEntity livingEntity, ItemStack itemStack, EquipmentSlot equipmentSlot, HumanoidModel<?> original) {
                         if (VisualModularItem.isVisualModularItem(itemStack)) {
                             //Miapi.LOGGER.info("rendering armor model " + equipmentSlot.getName());
                             cache.computeIfAbsent(itemStack, (i) -> new ModelWithHumanModel((a) -> RenderType.armorEntityGlint()) {
@@ -365,7 +327,8 @@ public class TrulyModularForge {
                         return IClientItemExtensions.super.getGenericArmorModel(livingEntity, itemStack, equipmentSlot, original);
                     }
 
-                    public HumanoidModel<?> getHumanoidArmorModel(LivingEntity livingEntity, ItemStack itemStack, EquipmentSlot equipmentSlot, HumanoidModel<?> original) {
+                    public HumanoidModel<?> getHumanoidArmorModel
+                            (LivingEntity livingEntity, ItemStack itemStack, EquipmentSlot equipmentSlot, HumanoidModel<?> original) {
                         if (VisualModularItem.isVisualModularItem(itemStack)) {
                             //Miapi.LOGGER.info("rendering armor model " + equipmentSlot.getName());
                             cache.computeIfAbsent(itemStack, (i) -> new ModelWithHumanModel((a) -> RenderType.armorEntityGlint()) {
