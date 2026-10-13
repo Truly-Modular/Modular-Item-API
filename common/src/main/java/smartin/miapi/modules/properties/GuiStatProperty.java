@@ -42,6 +42,7 @@ public class GuiStatProperty extends CodecProperty<Map<String, GuiStatProperty.G
     public GuiStatProperty() {
         super(CODEC);
         property = this;
+        ModularItemCache.setSupplier(KEY.toString(), GuiStatProperty::getInfoCache);
         StatAggregator.AGGREGATE_STATS_EVENT.register((group, helper, baseItem, compareItem) -> {
             Map<String, GuiInfo> combinedMap = new LinkedHashMap<>(getInfo(baseItem));
             combinedMap.putAll(getInfo(compareItem));

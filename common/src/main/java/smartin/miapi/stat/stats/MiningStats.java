@@ -2,6 +2,7 @@ package smartin.miapi.stat.stats;
 
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import smartin.miapi.Miapi;
+import smartin.miapi.modules.properties.mining.MiningTelekinesisProperty;
 import smartin.miapi.stat.StatGroups;
 import smartin.miapi.stat.api.Stat;
 import smartin.miapi.stat.api.data.BooleanStatData;
@@ -9,7 +10,6 @@ import smartin.miapi.stat.api.data.attribute.AttributeStatBuilder;
 import smartin.miapi.stat.api.data.attribute.AttributeStatData;
 import smartin.miapi.stat.api.data.mining.MiningStat;
 import smartin.miapi.stat.api.data.mining.MiningStatData;
-import smartin.miapi.modules.properties.mining.MiningTelekinesisProperty;
 
 @SuppressWarnings("unused")
 public class MiningStats {

@@ -82,12 +82,12 @@ public class ModuleModel {
         context.matrices().popPose();
     }
 
-    public Optional<ModuleRayHit> raycast(Ray ray, MiapiModel.RenderContext context) {
+    public Optional<ModuleRayHit> raycast(Ray ray, MiapiModel.RenderContext context, boolean debug) {
         ModuleRayHit closest = null;
         for (ModelWrapper currentModuleModel : currentModuleModels) {
             context.matrices().pushPose();
             Transform.applyPosition(context.matrices(), currentModuleModel.matrix4f);
-            Optional<RayHit> rayHit = currentModuleModel.miapiModel().raycast(ray, context);
+            Optional<RayHit> rayHit = currentModuleModel.miapiModel().raycast(ray, context, debug);
             if (rayHit.isPresent()) {
                 if (closest == null || closest.hit.distance() > rayHit.get().distance()) {
                     closest = new ModuleRayHit(instance, currentModuleModel.miapiModel(), rayHit.get());
@@ -108,7 +108,7 @@ public class ModuleModel {
         if (renderSubmodules) {
             for (ModuleModel model : subModuleModules) {
                 context.matrices().pushPose();
-                Optional<ModuleRayHit> rayHit = model.raycast(ray, context);
+                Optional<ModuleRayHit> rayHit = model.raycast(ray, context,debug );
                 if (rayHit.isPresent()) {
                     if (closest == null || closest.hit.distance() > rayHit.get().hit().distance()) {
                         closest = rayHit.get();

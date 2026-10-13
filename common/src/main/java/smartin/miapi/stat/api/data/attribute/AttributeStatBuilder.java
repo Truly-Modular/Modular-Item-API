@@ -6,6 +6,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import smartin.miapi.Miapi;
 import smartin.miapi.stat.StatTypes;
 import smartin.miapi.stat.api.Stat;
 import smartin.miapi.stat.api.StatGroup;
@@ -28,7 +29,7 @@ public class AttributeStatBuilder {
     private double fallbackValue;
     private StatText<Double, AttributeStatData> name;
     private StatText<Double, AttributeStatData> description =
-            (item, data, meta) -> Component.empty();
+            (item, data, meta) -> Component.translatable("miapi.attribute.ui.base_description", name.get(item, data, meta));
 
     private double min;
     private boolean temp = false;
@@ -45,24 +46,27 @@ public class AttributeStatBuilder {
         this.id = id;
         this.group = group;
         this.attribute = attribute;
+        if (attribute != null && attribute.value() != null) {
+            double attributeDefault = attribute.value().getDefaultValue();
+            this.defaultValue = attributeDefault;
+            this.fallbackValue = attributeDefault;
+            this.min = Math.max(
+                    -2048,
+                    attribute.value().sanitizeValue(Double.MIN_VALUE)
+            );
 
-        double attributeDefault = attribute.value().getDefaultValue();
+            this.max = Math.min(
+                    2048,
+                    attribute.value().sanitizeValue(Double.MAX_VALUE)
+            );
 
-        this.defaultValue = attributeDefault;
-        this.fallbackValue = attributeDefault;
-
-        this.min = Math.max(
-                -2048,
-                attribute.value().sanitizeValue(Double.MIN_VALUE)
-        );
-
-        this.max = Math.min(
-                2048,
-                attribute.value().sanitizeValue(Double.MAX_VALUE)
-        );
-
-        this.name = (item, data, meta) ->
-                Component.translatable(attribute.value().getDescriptionId());
+            this.name = (item, data, meta) ->
+                    Component.translatable(attribute.value().getDescriptionId());
+        } else {
+            this.max = 10;
+            this.min = 0;
+            this.name = (item, data, meta) -> Component.literal("attribute missing");
+        }
     }
 
     public AttributeStatBuilder setMin(double min) {
@@ -152,6 +156,10 @@ public class AttributeStatBuilder {
     }
 
     public Stat<Double, AttributeStatData>[] register() {
+        if (attribute == null || attribute.value() == null) {
+            Miapi.LOGGER.warn("could not register stat for attribute! " + id);
+            return new Stat[]{};
+        }
         Stat<Double, AttributeStatData> additive = create(
                 id.withPrefix("attribute." + group.getID().toLanguageKey() + "."),
                 ADD_VALUE,

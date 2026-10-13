@@ -120,10 +120,12 @@ public class GeneratedMaterial implements Material {
         this.mainIngredient = mainIngredient;
         groups.add(key.toString());
         textureKeys = List.of("default");
-        if (mainIngredient.getDescriptionId().contains("ingot")) {
+        if (mainIngredient.getDescriptionId().contains("ingot") ||
+            mainIngredient.getDescriptionId().contains("metal") ||
+            mainIngredient.getDescriptionId().contains("alloy")) {
             groups.add("metal");
         }
-        if (mainIngredient.getDescriptionId().contains("stone")) {
+        if (mainIngredient.getDescriptionId().contains("stone") || mainIngredient.getDescriptionId().contains("petrif")) {
             groups.add("stone");
         }
         if (mainIngredient.getDescriptionId().contains("bone")) {
@@ -133,7 +135,11 @@ public class GeneratedMaterial implements Material {
             groups.add("wood");
         }
         if (groups.size() == 1) {
-            groups.add("crystal");
+            if (mainIngredient.getDescriptionId().contains("root") || mainIngredient.getDescriptionId().contains("plank")) {
+                groups.add("wood");
+            } else {
+                groups.add("crystal");
+            }
         }
         if (smartin.miapi.Environment.isClient()) {
             //setupClient();

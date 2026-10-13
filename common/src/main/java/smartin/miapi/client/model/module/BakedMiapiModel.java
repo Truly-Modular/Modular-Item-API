@@ -33,12 +33,12 @@ import smartin.miapi.client.atlas.VertexConsumerProvider;
 import smartin.miapi.client.model.MiapiModel;
 import smartin.miapi.client.model.ModelHolder;
 import smartin.miapi.client.model.ModelTransformer;
+import smartin.miapi.client.model.collision.CollisionHelper;
 import smartin.miapi.client.model.collision.Ray;
 import smartin.miapi.client.model.collision.RayHit;
 import smartin.miapi.client.model.item.ItemBakedModelOverrides;
 import smartin.miapi.client.model.module.baked.BakedMiapiModelNoOverrides;
 import smartin.miapi.client.model.module.baked.BakedMiapiModelWithOverrides;
-import smartin.miapi.client.model.collision.CollisionHelper;
 import smartin.miapi.client.renderer.ObjectUVVertexConsumer;
 import smartin.miapi.client.renderer.RescaledVertexConsumer;
 import smartin.miapi.client.renderer.TrimRenderer;
@@ -307,12 +307,12 @@ public class BakedMiapiModel implements MiapiModel {
         return model;
     }
 
-    public Optional<RayHit> raycast(Ray ray, MiapiModel.RenderContext context) {
+    public Optional<RayHit> raycast(Ray ray, RenderContext context, boolean debug) {
         context.matrices().pushPose();
         Transform.applyPosition(context.matrices(), modelMatrix);
         BakedModel currentModel = resolve(model, ItemStack.EMPTY, null, 0);
         List<Pair<TextureAtlasSprite, List<BakedQuad>>> batches = modelBatchCache.computeIfAbsent(currentModel, m -> buildBatches(m, RandomSource.create()));
-        if (context.vertexConsumers() != null) {
+        if (debug && context.vertexConsumers() != null) {
             CollisionHelper.renderRedQuads(batches, context.matrices().last().pose(), context.vertexConsumers(), randomColor);
         }
         Optional<RayHit> hit = CollisionHelper.raycast(ray, batches, context.matrices().last().pose());

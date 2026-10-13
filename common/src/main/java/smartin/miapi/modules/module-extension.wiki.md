@@ -1,8 +1,20 @@
 @header Module Extension
 @path /datapack/module-extension
 
-Module Extensions extend existing modules by adding or overriding properties. Extensions are loaded from `mod-id:miapi/module-extensions/any-path-and-file-name.json`.
+Module Extensions modify existing modules during the initial load AFTER inheritance by adding, overwriting, removing or merging properties.  
+Extensions are loaded from `mod-id:miapi/module-extensions/any-path-and-file-name.json`.  
+They can remove, replace or merge properties, similar to synergies. 
+ - **remove** just destroyes all prior part of these properties
+ - **replace** destroyes all prior info and adds this info instead
+ - **merge** tries to non-destructivly add the additional data ontop of existing data, each property mreges data custom
+This is intended as a way to adjust existing modules, potentially in bulk via the tag-extensions.  
+If more conditions/control is requested, a Synergy might be better, as it is very similar in effect,  
+just instead of applying during load a Synergy applies live based on additional settable conditions.
 
+You can either set 
+- `module` to target a single module
+- `tag` to target a Tag set by the ModuleTag property
+  
 ## Examples
 
 ### Module Extension
@@ -10,6 +22,7 @@ Module Extensions extend existing modules by adding or overriding properties. Ex
 ```json5
 {
 	id: 'miapi:super_blade',
+    //module id, they are resolved from the path of the target module tm_arsenal:miapi/modules/blade/normal.json will result in tm_arsenal:blade/normal as an ID
 	merge: {
 		//merges together, if it already has durability, it will be added together
 		material: 'miapi:metal/netherite',
@@ -37,7 +50,7 @@ Module Extensions extend existing modules by adding or overriding properties. Ex
 			"hardness": {
 				"strength": 2,
 				"info": {
-					"type": "translatable"
+					"type": "translatable",
 					"translate": "tm_armory.material_indication.default.armor_points",
 					"color": "dark_gray"
 				}
@@ -47,18 +60,10 @@ Module Extensions extend existing modules by adding or overriding properties. Ex
 				"info": {
 					"type": "translatable",
 					"translate": "tm_armory.material_indication.chain.flexibility",
-					"color": "dark_gray"'
+					"color": "dark_gray"
 				}
 			}
 		}
 	}
 }
 ```
-
----
-
-## Notes
-
-- Use `module` for module extensions
-- Use `tag` for tag-based extensions
-- Properties are merged with the base module

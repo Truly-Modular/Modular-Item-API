@@ -102,7 +102,7 @@ public interface MiapiModel {
         }
     }
 
-    default Optional<RayHit> raycast(Ray ray, MiapiModel.RenderContext context) {
+    default Optional<RayHit> raycast(Ray ray, RenderContext context, boolean debug) {
         return Optional.empty();
     }
 }

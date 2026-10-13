@@ -14,6 +14,7 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import smartin.miapi.client.MiapiClient;
 import smartin.miapi.client.model.collision.Ray;
+import smartin.miapi.client.model.collision.RayDebugHelper;
 import smartin.miapi.client.model.module.baked.passes.DeferredGlintRenderPass;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.datapack.ReloadEvents;
@@ -94,7 +95,7 @@ public class MiapiItemModel implements MiapiModel {
         }
         boolean hasFoil = stack.hasFoil();
         Minecraft.getInstance().getProfiler().pop();
-        data.model.render(new RenderContext(modelType,
+        RenderContext context = new RenderContext(modelType,
                 matrices,
                 stack,
                 mode,
@@ -103,7 +104,13 @@ public class MiapiItemModel implements MiapiModel {
                 entity,
                 hasFoil,
                 light,
-                overlay));
+                overlay);
+        if (!(isRayCasting && debugRayCast)) {
+            data.model.render(context);
+        }
+        if (isRayCasting) {
+            rayCastLocalSpace(data, context);
+        }
         matrices.popPose();
         //matrices.last().pose().invert();
         if (hasFoil && MiapiConfig.getClientConfig().render.optimisedModel && !isBatching) {
@@ -208,6 +215,47 @@ public class MiapiItemModel implements MiapiModel {
         //MatrixUtil.mulComponentWise(matrices.last().pose(), 2.0F);
         for (ModelTransformer transformer : data.transformers) {transformer.transform(matrices, tickDelta);}
         MiapiModel.RenderContext renderContext = new MiapiModel.RenderContext(modelType, matrices, stack, mode, tickDelta, multiBufferSource, null, false, 0, 0);
-        return data.model.raycast(ray, renderContext);
+        return data.model.raycast(ray, renderContext, multiBufferSource != null);
+    }
+
+    @Nullable
+    static ModuleModel.ModuleRayHit hit;
+    static boolean isRayCasting = false;
+    static boolean debugRayCast = false;
+    @Nullable
+    static Ray currentRay;
+
+    public static void startRayCastMode(Ray ray, PoseStack withPreTransform) {
+        startRayCastMode(ray, withPreTransform, false);
+    }
+
+    public static void startRayCastMode(Ray ray, PoseStack withPreTransform, boolean debug) {
+        Matrix4f worldToRaySpace = new Matrix4f(withPreTransform.last().pose()).invert();
+        currentRay = ray.transform(worldToRaySpace);
+        hit = null;
+        isRayCasting = true;
+        debugRayCast = debug;
+    }
+
+    public static Optional<ModuleModel.ModuleRayHit> collectAndEndRayCastMode() {
+        ModuleModel.ModuleRayHit result = hit;
+        hit = null;
+        isRayCasting = false;
+        currentRay = null;
+        debugRayCast = false;
+        return Optional.ofNullable(result);
+    }
+
+    private void rayCastLocalSpace(CacheData data, RenderContext context) {
+        if (debugRayCast) {
+            Ray objectSpaceRay = currentRay.transform(context.objectSpace());
+            RayDebugHelper.renderDebugRay(objectSpaceRay, context.matrices(), context.vertexConsumers(), 1600.0f);
+        }
+        Optional<ModuleModel.ModuleRayHit> currentHit = data.model.raycast(currentRay, context, debugRayCast);
+        if (currentHit.isPresent()) {
+            if (hit == null || hit.hit().distance() > currentHit.get().hit().distance()) {
+                hit = currentHit.get();
+            }
+        }
     }
 }

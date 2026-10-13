@@ -5,12 +5,15 @@ import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.Holder;
+import net.minecraft.core.HolderGetter;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -32,6 +35,8 @@ import smartin.miapi.modules.properties.util.MergeAble;
 import smartin.miapi.modules.properties.util.MergeType;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * This property allows modules to define and restrict which enchantments are allowed on items.
@@ -55,6 +60,7 @@ public class AllowedEnchantments extends CodecProperty<AllowedEnchantments.Allow
         super(AllowedEnchantsData.CODEC);
         property = this;
         ReloadEvents.END.subscribe((isClient, registryAccess, worker) -> {
+            SUPPORT_CACHE = new ConcurrentHashMap<>();
             enchantmentExtentionsMap = new HashMap<>(Map.of(ResourceLocation.parse("c:enchantable/pickaxe"), new ArrayList<>(), ResourceLocation.parse("c:enchantable/axe"), new ArrayList<>(), ResourceLocation.parse("c:enchantable/shovel"), new ArrayList<>(), ResourceLocation.parse("c:enchantable/hoe"), new ArrayList<>()));
             if (!isClient && Miapi.server != null) {
                 Miapi.registryAccess = Miapi.server.registryAccess();
@@ -304,6 +310,9 @@ public class AllowedEnchantments extends CodecProperty<AllowedEnchantments.Allow
                         return true;
                     }
                 }
+                if(supportsEveryItemInTag(enchantment,moduleInstance.getter(),id)){
+                    return true;
+                }
             }
             ResourceLocation proposedId = ID_LOOKUP.get(enchantment);
             if (proposedId != null) {
@@ -330,5 +339,74 @@ public class AllowedEnchantments extends CodecProperty<AllowedEnchantments.Allow
             }
             return false;
         }
+    }
+
+    private static final class EnchantmentTagKey {
+        private final HolderGetter<Item> itemRegistry;
+        private final Enchantment enchantment;
+        private final ResourceLocation itemTagId;
+        private final int hash;
+
+        private EnchantmentTagKey(
+                HolderGetter<Item> itemRegistry,
+                Enchantment enchantment,
+                ResourceLocation itemTagId
+        ) {
+            this.itemRegistry = itemRegistry;
+            this.enchantment = enchantment;
+            this.itemTagId = itemTagId;
+
+            int h = System.identityHashCode(itemRegistry);
+            h = 31 * h + System.identityHashCode(enchantment);
+            h = 31 * h + itemTagId.hashCode();
+            this.hash = h;
+        }
+
+        @Override
+        public int hashCode() {
+            return hash;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) {
+                return true;
+            }
+
+            if (!(obj instanceof EnchantmentTagKey other)) {
+                return false;
+            }
+
+            return itemRegistry == other.itemRegistry
+                   && enchantment == other.enchantment
+                   && itemTagId.equals(other.itemTagId);
+        }
+    }
+
+    private static volatile ConcurrentMap<EnchantmentTagKey, Boolean>
+            SUPPORT_CACHE = new ConcurrentHashMap<>();
+
+    public static boolean supportsEveryItemInTag(
+            Enchantment enchantment,
+            RegistryOps.RegistryInfoLookup access,
+            ResourceLocation itemTagId
+    ) {
+        HolderGetter<Item> itemRegistry = access.lookup(Registries.ITEM).get().getter();
+        EnchantmentTagKey key = new EnchantmentTagKey(itemRegistry, enchantment, itemTagId);
+        return SUPPORT_CACHE.computeIfAbsent(key, ignored -> calculateSupport(enchantment, itemRegistry, itemTagId));
+    }
+
+    private static boolean calculateSupport(
+            Enchantment enchantment,
+            HolderGetter<Item> itemRegistry,
+            ResourceLocation itemTagId
+    ) {
+        TagKey<Item> itemTag = TagKey.create(Registries.ITEM, itemTagId);
+        Optional<HolderSet.Named<Item>> items = itemRegistry.get(itemTag);
+        if (items.isEmpty() || items.get().size() == 0) {
+            return false;
+        }
+        HolderSet<Item> supported = enchantment.definition().supportedItems();
+        return items.get().stream().allMatch(supported::contains);
     }
 }

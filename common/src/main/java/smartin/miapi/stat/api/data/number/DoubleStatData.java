@@ -98,7 +98,7 @@ public record DoubleStatData(
                             new NumberWrapper(
                                     property.getValue(stack).orElse(meta.defaultValue),
                                     formatter
-                            )
+                            ).format()
                     );
 
             this.description = (stack, data, meta) ->
@@ -107,7 +107,7 @@ public record DoubleStatData(
                             new NumberWrapper(
                                     property.getValue(stack).orElse(meta.defaultValue),
                                     formatter
-                            )
+                            ).format()
                     );
 
             this.group = group;
