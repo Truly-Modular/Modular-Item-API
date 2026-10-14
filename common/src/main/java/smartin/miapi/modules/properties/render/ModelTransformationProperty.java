@@ -11,6 +11,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Quaternionf;
 import smartin.miapi.Miapi;
 import smartin.miapi.client.model.MiapiItemModel;
 import smartin.miapi.item.modular.Transform;
@@ -38,10 +39,27 @@ public class ModelTransformationProperty extends CodecProperty<ModelTransformati
         });
     }
 
+    public static void apply(boolean leftHand, PoseStack poseStack, ItemTransform transform) {
+        if (transform != transform.NO_TRANSFORM) {
+            float f = transform.rotation.x();
+            float g = transform.rotation.y();
+            float h = transform.rotation.z();
+            if (leftHand) {
+                g = -g;
+                h = -h;
+            }
+
+            int i = leftHand ? -1 : 1;
+            poseStack.translate((float) i * transform.translation.x(), transform.translation.y(), transform.translation.z());
+            poseStack.mulPose((new Quaternionf()).rotationXYZ(f * 0.017453292F, g * 0.017453292F, h * 0.017453292F));
+            poseStack.scale(transform.scale.x(), transform.scale.y(), transform.scale.z());
+        }
+    }
+
     public static void applyTransformation(ItemTransform transformation, boolean fixLeft, PoseStack matrices) {
         matrices.translate(0.5f, 0.5f, 0.5f);
         if (transformation != null) {
-            transformation.apply(fixLeft, matrices);
+            apply(fixLeft, matrices, transformation);
         }
         matrices.translate(-0.5f, -0.5f, -0.5f);
     }

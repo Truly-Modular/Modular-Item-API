@@ -11,6 +11,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.redpxnda.nucleus.codec.auto.AutoCodec;
 import com.redpxnda.nucleus.codec.behavior.CodecBehavior;
+import dev.architectury.platform.Platform;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.renderer.block.model.ItemTransform;
@@ -213,7 +214,7 @@ public class Transform {
                 1.0f / scale.y,
                 1.0f / scale.z
         );
-        return getEulerAnglesXYZ(rotationMatrix,new Vector3f()).mul(57.29577951308232f);
+        return getEulerAnglesXYZ(rotationMatrix, new Vector3f()).mul(57.29577951308232f);
     }
 
     public Vector3f getEulerAnglesXYZ(Matrix4f rotationMatrix, Vector3f dest) {
@@ -276,7 +277,12 @@ public class Transform {
     }
 
     public static void applyPosition(PoseStack matrixStack, Matrix4f matrix4f) {
-        matrixStack.mulPose(matrix4f);
+        if (false &&Platform.isNeoForge()) {
+            matrixStack.last().pose().mul(matrix4f);
+            //((PoseAccessor) (Object) matrixStack.last()).miapi$callComputeNormalMatrix();
+        } else {
+            matrixStack.mulPose(matrix4f);
+        }
     }
 
     public static void applyPosition(PoseStack matrixStack, Transform transform) {
@@ -352,7 +358,10 @@ public class Transform {
         int[] rotatedData = vertexData.clone();
 
         Matrix4f transform = this.matrix;
-        Matrix3f normalMatrix = new Matrix3f(transform);
+        //Matrix3f normalMatrix = new Matrix3f(transform);
+        Matrix3f normalMatrix = new Matrix3f(transform)
+                .invert()
+                .transpose();
 
         for (int i = 0; i < rotatedData.length; i += 8) {
             // Rotate position

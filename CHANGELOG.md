@@ -25,3 +25,4 @@
 - fixed bug where explosion range and max damage where accidentally swapped
 - fixed issue where merging material keys wouldnt work correctly.
 - fixed minor enchantment bugs where certain enchantments weren't detected correctly
+- improved issue where items would render far too dark on neoforge

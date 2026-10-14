@@ -85,12 +85,7 @@ public class DeferredGlintRenderPass implements RenderPass {
     }
 
     @Override
-    public void render(
-            MiapiModel.RenderContext context,
-            float[] colors,
-            float alpha,
-            int light
-    ) {
+    public void render(MiapiModel.RenderContext context, float[] colors, float alpha, int light) {
         if (!context.glint()) return;
         context.matrices().pushPose();
         PoseStack.Pose pose = context.matrices().last();

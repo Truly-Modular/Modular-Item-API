@@ -14,6 +14,7 @@
         "NamedAccessor",
         "NucleusMixin",
         "OptionalFieldCodecMixin",
+        "PoseAccessor",
         "PowderSnowBlockMixin",
         "RecipeManagerMixin",
         "RegistryOpsAccessor",

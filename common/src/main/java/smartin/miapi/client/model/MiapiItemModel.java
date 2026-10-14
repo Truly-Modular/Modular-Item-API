@@ -104,7 +104,7 @@ public class MiapiItemModel implements MiapiModel {
                 entity,
                 hasFoil,
                 light,
-                overlay);
+                0);
         if (!(isRayCasting && debugRayCast)) {
             data.model.render(context);
         }
