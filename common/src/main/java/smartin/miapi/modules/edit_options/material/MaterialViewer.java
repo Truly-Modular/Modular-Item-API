@@ -2,7 +2,9 @@ package smartin.miapi.modules.edit_options.material;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.crafting.CraftingScreen;
@@ -33,5 +35,15 @@ public class MaterialViewer implements EditOption {
     @Override
     public InteractAbleWidget getIconGui(int x, int y, int width, int height, Consumer<EditOption> select, Supplier<EditOption> getSelected) {
         return new EditOptionIcon(x, y, width, height, select, getSelected, CraftingScreen.BACKGROUND_TEXTURE, 339, 25 + 38 + 56 * 3,  512, 512, "miapi.ui.edit_option.hover.material", this);
+    }
+
+    @Override
+    public void renderIcon(GuiGraphics drawContext, boolean isSelected, int x, int y, float delta) {
+        drawContext.blit(CraftingScreen.BACKGROUND_TEXTURE, x, y, 356, 89, 18, 18, 512, 512);
+    }
+
+    @Override
+    public Component getHoverName() {
+        return Component.translatable("miapi.ui.edit_option.hover.material");
     }
 }

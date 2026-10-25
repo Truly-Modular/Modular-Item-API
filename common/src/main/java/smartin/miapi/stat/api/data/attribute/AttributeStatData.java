@@ -103,11 +103,6 @@ public record AttributeStatData(
                             value += modifier.amount();
                         }
                     }
-                    for (AttributeModifier modifier : currentSlot.get(attribute)) {
-                        if (modifier.operation().equals(ADD_MULTIPLIED_TOTAL)) {
-                            value = (value + 1) * (modifier.amount() + 1) - 1;
-                        }
-                    }
                     if (value != 0) {
                         return value * 100;
                     }
@@ -178,14 +173,6 @@ public record AttributeStatData(
                     }
                 }
 
-                for (AttributeModifier modifier : current) {
-                    if (modifier.operation() == ADD_MULTIPLIED_TOTAL) {
-                        value = (value + 1.0)
-                                * (modifier.amount() + 1.0)
-                                - 1.0;
-                    }
-                }
-
                 return value != 0 ? value * 100.0 : fallbackValue;
             }
 
@@ -208,9 +195,7 @@ public record AttributeStatData(
     }
 
     private boolean matchesOperation(AttributeModifier.Operation modifierOperation) {
-        return modifierOperation.equals(operation)
-                || (operation.equals(ADD_MULTIPLIED_BASE)
-                && modifierOperation.equals(ADD_MULTIPLIED_TOTAL));
+        return modifierOperation.equals(operation);
     }
 
     /**

@@ -5,9 +5,9 @@ import net.minecraft.world.level.Level;
 import smartin.miapi.craft.stat.CraftingStat;
 
 public interface IModularWorkbench {
-    BlockPos getBlockPos();
+    BlockPos getWorkbenchPos();
 
-    Level getLevel();
+    Level getWorkbenchLevel();
 
     <T> T getStat(CraftingStat<T> stat);
 

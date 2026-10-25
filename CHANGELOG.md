@@ -10,6 +10,7 @@
     - /miapi stat compareHands -> compares stats from mainhand to offhand
     - /miapi stat compareHandsOnlyDiff -> compares mainhand to offhand but prints only differences.
 - made modules clickable in the preview renderer to select them
+- added passive potion effect
 
 ### Changes
 - changed developer mode to support ALL, ADMIN and NONE

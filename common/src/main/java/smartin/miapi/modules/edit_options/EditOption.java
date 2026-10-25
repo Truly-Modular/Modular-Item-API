@@ -22,9 +22,10 @@ import java.util.function.Supplier;
  * Edits allow you to edit a Module on an Itemstack.
  * EditOptions need to be registered at {@link RegistryInventory#EDIT_OPTION_MIAPI_REGISTRY}
  */
-public interface EditOption {
+public interface EditOption extends EditOptionRender {
     /**
      * Executed for previewStack
+     *
      * @param buffer
      * @param editContext
      * @return
@@ -33,6 +34,7 @@ public interface EditOption {
 
     /**
      * Executed on the server for actual CraftAction, use this for stat increments and non result related stuff like ingredient consumption
+     *
      * @param buf
      * @param editContext
      * @return
@@ -64,19 +66,20 @@ public interface EditOption {
         @Nullable
         Player getPlayer();
 
-        @Nullable IModularWorkbench getWorkbench();
+        @Nullable
+        IModularWorkbench getWorkbench();
 
         Container getLinkedInventory();
 
         CraftingHandler getScreenHandler();
 
         @Environment(EnvType.CLIENT)
-        default void addSlot(Slot slot){
+        default void addSlot(Slot slot) {
 
         }
 
         @Environment(EnvType.CLIENT)
-        default void removeSlot(Slot slot){
+        default void removeSlot(Slot slot) {
 
         }
     }

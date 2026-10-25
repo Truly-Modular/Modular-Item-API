@@ -2,6 +2,7 @@ package smartin.miapi.modules.edit_options.CreateItemOption;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.FriendlyByteBuf;
@@ -108,6 +109,16 @@ public class CreateItemOption implements EditOption {
     @Override
     public InteractAbleWidget getIconGui(int x, int y, int width, int height, Consumer<EditOption> select, Supplier<EditOption> getSelected) {
         return new EditOptionIcon(x, y, width, height, select, getSelected, CraftingScreen.BACKGROUND_TEXTURE, 339 + 32, 25 + 140, 512, 512, "miapi.ui.edit_option.hover.create", this);
+    }
+
+    @Override
+    public void renderIcon(GuiGraphics drawContext, boolean isSelected, int x, int y, float delta) {
+        drawContext.blit(CraftingScreen.BACKGROUND_TEXTURE, x, y, 374, 71, 18, 18, 512, 512);
+    }
+
+    @Override
+    public Component getHoverName() {
+        return Component.translatable("miapi.ui.edit_option.hover.create");
     }
 
     @Environment(EnvType.CLIENT)

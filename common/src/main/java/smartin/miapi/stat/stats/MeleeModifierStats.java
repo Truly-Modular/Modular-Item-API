@@ -21,19 +21,19 @@ public class MeleeModifierStats {
     public final Stat<Double, AttributeStatData>[] BACK_STAB =
             new AttributeStatBuilder(
                     Miapi.id("back_stab"),
-                    StatGroups.MELEE_MODIFIER_GROUP,
+                    StatGroups.MELEE_GROUP,
                     AttributeRegistry.BACK_STAB
             ).setTranslationKey("miapi.back_stab")
                     .setDefault(1)
                     .setFormat("##.#")
                     .setMax(5)
-                    .setPriority(0)
+                    .setPriority(10)
                     .register();
 
     public final Stat<Double, AttributeStatData>[] SHIELD_BREAK =
             new AttributeStatBuilder(
                     Miapi.id("shield_break"),
-                    StatGroups.MELEE_MODIFIER_GROUP,
+                    StatGroups.MELEE_GROUP,
                     AttributeRegistry.SHIELD_BREAK
             ).setTranslationKey("miapi.shield_break")
                     .setDefault(0)
@@ -45,19 +45,19 @@ public class MeleeModifierStats {
     public final Stat<DoubleOperationResolvable, DoubleStatData> INERTIA =
             DoubleStatData.forProperty(
                             InertiaProperty.KEY,
-                            StatGroups.MELEE_MODIFIER_GROUP,
+                            StatGroups.MELEE_GROUP,
                             InertiaProperty.property
                     ).setMax(10)
-                    .setPriority(2)
+                    .setPriority(11)
                     .register();
 
     public final Stat<DoubleOperationResolvable, DoubleStatData> COMBO =
             DoubleStatData.forProperty(
                             ComboProperty.KEY,
-                            StatGroups.MELEE_MODIFIER_GROUP,
+                            StatGroups.MELEE_GROUP,
                             ComboProperty.property
                     ).setMax(10)
-                    .setPriority(3)
+                    .setPriority(12)
                     .setDescription((stack, data, meta) -> {
                         var format = new DecimalFormat("##.##");
                         var intFormat = new DecimalFormat("##");
@@ -72,9 +72,9 @@ public class MeleeModifierStats {
     public final Stat<Boolean, BooleanStatData> HANDHELD =
             BooleanStatData.forProperty(
                             HandheldItemProperty.KEY,
-                            StatGroups.MISC,
+                            StatGroups.MELEE_GROUP,
                             HandheldItemProperty.property
                     )
-                    .setPriority(4)
+                    .setPriority(13)
                     .register();
 }

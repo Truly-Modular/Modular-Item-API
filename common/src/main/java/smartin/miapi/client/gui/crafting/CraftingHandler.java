@@ -19,9 +19,9 @@ public interface CraftingHandler {
 
     Player getCurrentPlayer();
 
-    void removeSlotListener(ContainerListener listener);
+    void removeCraftingSlotListener(ContainerListener listener);
 
-    void addSlotListener(ContainerListener listener);
+    void addCraftingSlotListener(ContainerListener listener);
 
     void sendEditPacket(FriendlyByteBuf buf);
 }

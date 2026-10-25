@@ -7,6 +7,7 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
+import smartin.miapi.client.model.collision.ModulePos;
 import smartin.miapi.client.model.collision.Ray;
 import smartin.miapi.client.model.collision.RayHit;
 import smartin.miapi.item.modular.Transform;
@@ -16,6 +17,7 @@ import smartin.miapi.modules.properties.slot.SlotProperty;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 @Environment(EnvType.CLIENT)
 public class ModuleModel {
@@ -82,7 +84,8 @@ public class ModuleModel {
         context.matrices().popPose();
     }
 
-    public Optional<ModuleRayHit> raycast(Ray ray, MiapiModel.RenderContext context, boolean debug) {
+    public Optional<ModuleRayHit> raycast(Ray ray, MiapiModel.RenderContext context, boolean debug, Consumer<ModulePos> reportPos) {
+        reportPos.accept(new ModulePos(this.instance, new Matrix4f(context.matrices().last().pose())));
         ModuleRayHit closest = null;
         for (ModelWrapper currentModuleModel : currentModuleModels) {
             context.matrices().pushPose();
@@ -108,7 +111,7 @@ public class ModuleModel {
         if (renderSubmodules) {
             for (ModuleModel model : subModuleModules) {
                 context.matrices().pushPose();
-                Optional<ModuleRayHit> rayHit = model.raycast(ray, context,debug );
+                Optional<ModuleRayHit> rayHit = model.raycast(ray, context, debug, reportPos);
                 if (rayHit.isPresent()) {
                     if (closest == null || closest.hit.distance() > rayHit.get().hit().distance()) {
                         closest = rayHit.get();

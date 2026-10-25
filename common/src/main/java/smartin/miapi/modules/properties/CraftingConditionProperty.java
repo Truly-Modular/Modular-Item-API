@@ -114,7 +114,7 @@ public class CraftingConditionProperty extends CodecProperty<CraftingConditionPr
         CraftingConditionJson json = optional.get();
         BlockPos pos = new BlockPos(0, 0, 0);
         if (bench != null) {
-            pos = bench.getBlockPos();
+            pos = bench.getWorkbenchPos();
         } else {
             Miapi.LOGGER.error("bench is null. this should never happen");
         }

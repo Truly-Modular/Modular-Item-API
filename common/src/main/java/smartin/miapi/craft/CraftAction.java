@@ -16,7 +16,6 @@ import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
 import smartin.miapi.blocks.IModularWorkbench;
-import smartin.miapi.blocks.ModularWorkBenchEntity;
 import smartin.miapi.client.gui.crafting.CraftingHandler;
 import smartin.miapi.item.ModularItemStackConverter;
 import smartin.miapi.modules.ItemModule;
@@ -115,7 +114,7 @@ public class CraftAction {
         blockEntity = bench;
         if (findLevel == null) {
             if (blockEntity != null) {
-                findLevel = blockEntity.getLevel();
+                findLevel = blockEntity.getWorkbenchLevel();
             }
         }
 

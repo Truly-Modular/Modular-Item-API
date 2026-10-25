@@ -49,6 +49,7 @@ public abstract class CodecProperty<T> implements ModuleProperty<T>, Validator<T
 
     public boolean load(ResourceLocation id, JsonElement element, boolean isClient) throws Exception {
         T decoded = decode(element);
+        dataLoaded(decoded);
         for (EditorError editorError : validate(0, decoded, isClient)) {
             if (editorError.severity() == EditorError.ErrorSeverity.INFO) {
                 Miapi.LOGGER.info(RegistryInventory.MODULE_PROPERTY_MIAPI_REGISTRY.findKey(this) + " from " + id + " : " + editorError.message());
@@ -62,6 +63,10 @@ public abstract class CodecProperty<T> implements ModuleProperty<T>, Validator<T
             }
         }
         return true;
+    }
+
+    public void dataLoaded(T data) {
+
     }
 
     public List<EditorError> validate(int line, T property, boolean isClient) {

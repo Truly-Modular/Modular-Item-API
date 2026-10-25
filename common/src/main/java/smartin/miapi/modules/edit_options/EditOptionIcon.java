@@ -37,6 +37,7 @@ public class EditOptionIcon extends InteractAbleWidget {
         this.langKey = langKey;
     }
 
+    @Override
     public boolean isHoveredOrFocused() {
         return editOption == getSelected.get();
     }

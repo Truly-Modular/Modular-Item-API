@@ -129,7 +129,7 @@ public class ComponentProperty extends CodecProperty<Map<ResourceLocation, JsonE
                 }
             });
         });
-        updateComponent(crafting, bench.getLevel().registryAccess());
+        updateComponent(crafting, bench.getWorkbenchLevel().registryAccess());
         return crafting;
     }
 

@@ -127,7 +127,7 @@ public class CraftingScreenHandler extends AbstractContainerMenu implements Craf
                     mutableSlots.remove(slot);
                 });
             });
-            Networking.registerC2SPacket(editPacketID,this::handleEditPacket);
+            Networking.registerC2SPacket(editPacketID, this::handleEditPacket);
         }
         this.context = context;
         this.inventory = new SimpleContainer(54) {
@@ -222,7 +222,7 @@ public class CraftingScreenHandler extends AbstractContainerMenu implements Craf
         this.addDataSlots(delegate);
     }
 
-    public void handleEditPacket(FriendlyByteBuf buffer,Player player){
+    public void handleEditPacket(FriendlyByteBuf buffer, Player player) {
         {
             String editOptionKey = buffer.readUtf();
             EditOption option = RegistryInventory.EDIT_OPTION_MIAPI_REGISTRY.get(editOptionKey);
@@ -371,6 +371,16 @@ public class CraftingScreenHandler extends AbstractContainerMenu implements Craf
     }
 
     @Override
+    public void removeCraftingSlotListener(net.minecraft.world.inventory.ContainerListener listener) {
+        removeSlotListener(listener);
+    }
+
+    @Override
+    public void addCraftingSlotListener(net.minecraft.world.inventory.ContainerListener listener) {
+        addSlotListener(listener);
+    }
+
+    @Override
     public void sendEditPacket(FriendlyByteBuf buf) {
         Networking.sendC2S(editPacketID, buf);
     }
@@ -509,7 +519,7 @@ public class CraftingScreenHandler extends AbstractContainerMenu implements Craf
         }
 
         public boolean notClient() {
-            return blockEntity != null && blockEntity.hasLevel() && !blockEntity.getLevel().isClientSide;
+            return blockEntity != null && blockEntity.hasLevel() && !blockEntity.getWorkbenchLevel().isClientSide;
         }
 
         @Override
