@@ -38,7 +38,7 @@ public class GuiOffsetProperty extends CodecProperty<GuiOffsetProperty.GuiOffset
                 float[] data = getGuiOffsets(itemStack,modelType);
                 return (matrices, tickDelta) -> {
                     matrices.translate(data[0], data[1], 0);
-                    matrices.scale(data[2], data[3], data[4]);
+                    matrices.scale(data[2], data[3], 1.0f);
                     return matrices;
                 };
             }

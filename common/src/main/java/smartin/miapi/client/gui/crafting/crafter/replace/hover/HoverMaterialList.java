@@ -13,12 +13,12 @@ import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.crafting.CraftingScreen;
 import smartin.miapi.client.gui.crafting.PreviewManager;
-import smartin.miapi.material.properties.AllowedMaterial;
 import smartin.miapi.material.MaterialProperty;
 import smartin.miapi.material.base.Material;
 import smartin.miapi.material.composite.AnyIngredientComposite;
 import smartin.miapi.material.composite.CompositeMaterial;
 import smartin.miapi.material.composite.material.MaterialCopyComposite;
+import smartin.miapi.material.properties.AllowedMaterial;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.registries.RegistryInventory;
 
@@ -181,17 +181,23 @@ public class HoverMaterialList extends InteractAbleWidget {
     }
 
     public static Component getTranslation(String materialOrGroupKey) {
-        ResourceLocation id = Miapi.id(materialOrGroupKey);
-        if (MaterialProperty.MATERIAL_REGISTRY.containsKey(id)) {
-            Material material = MaterialProperty.MATERIAL_REGISTRY.get(id);
-            return material.getTranslation();
+        if (ResourceLocation.isValidPath(materialOrGroupKey)) {
+            return Component.literal("Non [a-z0-9_.-] character in namespace of location: " + materialOrGroupKey);
         }
-        Component testTranslation = Component.translatable("miapi.material_group." + materialOrGroupKey);
-        if (testTranslation.getString().equals("miapi.material_group." + materialOrGroupKey)) {
-            Miapi.LOGGER.warn("missing translation for " + "miapi.material_group." + materialOrGroupKey);
-            return Component.literal(materialOrGroupKey);
-        }
-        return testTranslation;
+        try {
+            ResourceLocation id = Miapi.id(materialOrGroupKey);
+            if (MaterialProperty.MATERIAL_REGISTRY.containsKey(id)) {
+                Material material = MaterialProperty.MATERIAL_REGISTRY.get(id);
+                return material.getTranslation();
+            }
+            Component testTranslation = Component.translatable("miapi.material_group." + materialOrGroupKey);
+            if (testTranslation.getString().equals("miapi.material_group." + materialOrGroupKey)) {
+                Miapi.LOGGER.warn("missing translation for " + "miapi.material_group." + materialOrGroupKey);
+                return Component.literal(materialOrGroupKey);
+            }
+            return testTranslation;
+        } catch (RuntimeException e){}
+        return Component.literal("Translation FAILED");
     }
 
     @Override
