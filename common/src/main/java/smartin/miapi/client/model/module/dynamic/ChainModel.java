@@ -48,7 +48,7 @@ public class ChainModel extends DynamicModel<ChainModel.ChainState> {
 
     @Override
     protected ChainState createState(Vec3 pos, RenderContext context) {
-        return new ChainState(chain, context, pos);
+        return new ChainState(chain, context, pos, new Vector3f(0, -1, 0));
     }
 
 
@@ -57,57 +57,73 @@ public class ChainModel extends DynamicModel<ChainModel.ChainState> {
         public final ChainSimulationState sim;
         public final Matrix4f lastProjection = new Matrix4f();
 
-        public ChainState(List<ChainEntry> chain, RenderContext context, Vec3 cameraPos) {
+        public ChainState(
+                List<ChainEntry> chain,
+                RenderContext context,
+                Vec3 cameraPos,
+                Vector3f gravity
+        ) {
             sim = new ChainSimulationState();
 
             int nodeCount = chain.size() + 1;
             sim.nodes = new ChainNode[nodeCount];
-            Vector3f localOrigin = new Vector3f(0, 0, 0);
-            Vector3f worldOrigin = MatrixHelper.translateVectorToWorldSpace(context.matrices(), localOrigin, cameraPos);
+
+            Vector3f localOrigin = new Vector3f();
+            Vector3f worldOrigin = MatrixHelper.translateVectorToWorldSpace(
+                    context.matrices(), localOrigin, cameraPos
+            );
+
+            Vector3f direction = new Vector3f(gravity);
+
+            if (direction.lengthSquared() < 1.0e-6f) {
+                direction.set(0, -1, 0);
+            } else {
+                direction.normalize();
+            }
 
             for (int i = 0; i < nodeCount; i++) {
                 sim.nodes[i] = new ChainNode();
-                sim.nodes[i].pos.set(worldOrigin);
-                sim.nodes[i].prevPos.set(worldOrigin);
             }
+
             sim.nodes[0].locked = true;
+
+            sim.nodes[0].pos.set(worldOrigin);
+            sim.nodes[0].prevPos.set(worldOrigin);
+
+            sim.segments = new ChainSegment[chain.size()];
 
             Vector3f cursor = new Vector3f(worldOrigin);
 
             for (int i = 0; i < chain.size(); i++) {
                 ChainEntry e = chain.get(i);
+
                 ChainNode next = sim.nodes[i + 1];
 
                 next.locked = e.locked;
                 next.collide = e.collide;
                 next.gravity = e.gravity;
 
-                float dir = (i % 2 == 0) ? 1f : -1f;
-                Vector3f localOffset = new Vector3f(0, e.length * dir, 0);
-                Vector3f worldOffset =
-                        MatrixHelper.translateVectorToWorldSpace(context.matrices(), localOffset, cameraPos)
-                                .sub(worldOrigin);
+                Vector3f localOffset = new Vector3f(0, e.length, 0);
 
-                cursor.add(worldOffset);
+                float worldLength = MatrixHelper
+                        .translateVectorToWorldSpace(context.matrices(), localOffset, cameraPos)
+                        .sub(MatrixHelper.translateVectorToWorldSpace(context.matrices(), new Vector3f(), cameraPos))
+                        .length();
+
+                cursor.fma(worldLength, direction);
+
                 next.pos.set(cursor);
                 next.prevPos.set(cursor);
-            }
-            sim.segments = new ChainSegment[chain.size()];
-            for (int i = 0; i < chain.size(); i++) {
-                ChainEntry e = chain.get(i);
 
-                Vector3f localOffset = new Vector3f(0, e.length, 0);
-                float worldLength =
-                        MatrixHelper.translateVectorToWorldSpace(context.matrices(), localOffset, cameraPos)
-                                .sub(worldOrigin)
-                                .length();
+                sim.segments[i] = new ChainSegment(
+                        i,
+                        i + 1,
+                        worldLength
+                );
 
-                sim.segments[i] = new ChainSegment(i, i + 1, worldLength);
                 sim.segments[i].collide = e.collide;
             }
         }
-
-
     }
 
     @Override
