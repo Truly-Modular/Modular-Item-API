@@ -74,4 +74,9 @@ public class RescaledVertexConsumer implements VertexConsumer {
     public VertexConsumer setNormal(float x, float y, float z) {
         return delegate.setNormal(x, y, z);
     }
+
+    @Override
+    public VertexConsumer setLight(int light) {
+        return delegate.setLight(light);
+    }
 }

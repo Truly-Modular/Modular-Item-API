@@ -79,4 +79,9 @@ public class ObjectUVVertexConsumer implements VertexConsumer {
         }
         return delegate.setNormal(x, y, z);
     }
+
+    @Override
+    public VertexConsumer setLight(int light) {
+        return delegate.setLight(light);
+    }
 }
