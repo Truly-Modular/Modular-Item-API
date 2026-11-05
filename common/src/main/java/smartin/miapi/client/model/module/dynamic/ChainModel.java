@@ -115,11 +115,7 @@ public class ChainModel extends DynamicModel<ChainModel.ChainState> {
                 next.pos.set(cursor);
                 next.prevPos.set(cursor);
 
-                sim.segments[i] = new ChainSegment(
-                        i,
-                        i + 1,
-                        worldLength
-                );
+                sim.segments[i] = new ChainSegment(i, i + 1, worldLength);
 
                 sim.segments[i].collide = e.collide;
             }

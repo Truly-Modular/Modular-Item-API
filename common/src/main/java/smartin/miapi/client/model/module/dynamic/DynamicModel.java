@@ -133,9 +133,7 @@ public abstract class DynamicModel<S extends SimulationState>
 
     @Override
     public Matrix4f subModuleMatrix(RenderContext context) {
-        S state =
-                getState(context);
-
+        S state = getState(context);
         return computeEnd(state, context.matrices());
     }
 }
