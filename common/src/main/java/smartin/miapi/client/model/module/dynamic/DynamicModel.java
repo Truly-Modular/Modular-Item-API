@@ -19,7 +19,7 @@ import java.util.Map;
  * Has State Control for different RenderContexts
  * @param <S> the State class in question
  */
-public abstract class DynamicModel<S extends SimulationState>
+public abstract class DynamicModel<S extends SimulationState<S>>
         implements MiapiModel {
 
     private final Map<ItemDisplayContext, S> states =

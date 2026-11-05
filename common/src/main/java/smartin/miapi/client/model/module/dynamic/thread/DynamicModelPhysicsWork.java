@@ -10,7 +10,7 @@ import smartin.miapi.client.model.module.dynamic.SimulationState;
 /**
  * Manages queued physics updates for {@link DynamicModel}
  */
-public record DynamicModelPhysicsWork<S extends SimulationState>(
+public record DynamicModelPhysicsWork<S extends SimulationState<S>>(
         DynamicModel<S> model,
         S state,
         ItemDisplayContext context,

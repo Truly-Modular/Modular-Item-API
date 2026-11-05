@@ -6,7 +6,17 @@ import smartin.miapi.client.model.module.dynamic.SimulationState;
 import java.util.ArrayDeque;
 import java.util.Deque;
 
-public class TrailState extends SimulationState {
+public class TrailState extends SimulationState<TrailState> {
+
+    @Override
+    public TrailState copy() {
+        return this;
+    }
+
+    @Override
+    public TrailState interpolate(float delta, TrailState other) {
+        return this;
+    }
 
     public static class TrailPoint {
         public final Vector3f worldPos;
