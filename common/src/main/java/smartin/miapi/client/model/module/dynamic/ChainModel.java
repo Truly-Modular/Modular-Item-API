@@ -64,7 +64,7 @@ public class ChainModel extends DynamicModel<ChainState> {
                 sim.prevHandlePos.set(sim.handlePos);
                 fullLastPos.lerp(currentPos, deltaPercent, sim.handlePos);
             }
-        }), minIterations * 2, true, deltaTime, 0.98f, rigidness, sim, down, iterations, ui, state.cameraPose);
+        }), minIterations * 2, true, deltaTime, 0.98f, rigidness, sim, down, iterations, ui, state.cameraPose, entity);
     }
 
     public static void drawLine(PoseStack poseStack, MultiBufferSource buffer, Vector3f start, Vector3f end, float r, float g, float b, float a) {

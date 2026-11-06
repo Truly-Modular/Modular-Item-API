@@ -55,6 +55,7 @@ public class ChainState extends SimulationState<ChainState> {
             copy.locked = original.locked;
             copy.collide = original.collide;
             copy.gravity = original.gravity;
+            copy.entityCollide = original.entityCollide;
 
             result.nodes[i] = copy;
         }

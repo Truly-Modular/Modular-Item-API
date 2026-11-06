@@ -2,6 +2,7 @@ package smartin.miapi.modules.properties.render;
 
 import com.google.gson.JsonElement;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.architectury.platform.Platform;
 import net.fabricmc.api.EnvType;
@@ -48,6 +49,12 @@ public class ChainModelProperty
             getData(moduleInstance).ifPresent(list -> {
                 for (ChainModelData data : list) {
                     data = data.copy();
+                    if (!(
+                            data.origin == null ||
+                            data.origin.isEmpty() ||
+                            data.origin.equals(key))) {
+                        continue;
+                    }
 
                     List<ChainModel.ChainEntry> entries = new ArrayList<>();
                     List<ChainModelData.SegmentData> generated = data.generateSegments();
@@ -111,8 +118,21 @@ public class ChainModelProperty
     ) {
         return MergeAble.mergeList(left, right, mergeType);
     }
-    public static class ChainModelData {
 
+    public static class ChainModelData {
+        private static final Codec<Integer> INT_KEY_CODEC =
+                Codec.STRING.comapFlatMap(
+                        key -> {
+                            try {
+                                return DataResult.success(Integer.parseInt(key));
+                            } catch (NumberFormatException e) {
+                                return DataResult.error(
+                                        () -> "Invalid segment index: " + key
+                                );
+                            }
+                        },
+                        String::valueOf
+                );
         public static final Codec<ChainModelData> CODEC =
                 RecordCodecBuilder.create(instance -> instance.group(
                         Codec.FLOAT.optionalFieldOf("chainLength", 0.75f)
@@ -131,18 +151,21 @@ public class ChainModelProperty
                         Codec.list(SegmentData.CODEC)
                                 .optionalFieldOf("baseSegments", List.of())
                                 .forGetter(d -> d.baseSegments),
-                        Codec.unboundedMap(Codec.INT, SegmentData.CODEC)
+                        Codec.unboundedMap(INT_KEY_CODEC, SegmentData.CODEC)
                                 .optionalFieldOf("overrides", Map.of())
                                 .forGetter(d -> d.overrides),
                         Transform.CODEC.optionalFieldOf("transform", Transform.IDENTITY)
                                 .forGetter(d -> d.transform),
                         Codec.BOOL.optionalFieldOf("debug", false)
-                                .forGetter(d -> d.debug)
+                                .forGetter(d -> d.debug),
+                        Codec.STRING.optionalFieldOf("origin", "item")
+                                .forGetter(d -> d.origin == null ? "item" : d.origin)
 
                 ).apply(instance, ChainModelData::new));
 
 
         public float chainLength;
+        public String origin;
         public int segments;
         public int iterations;
         public float chainRadius;
@@ -164,7 +187,8 @@ public class ChainModelProperty
                 List<SegmentData> baseSegments,
                 Map<Integer, SegmentData> overrides,
                 Transform transform,
-                boolean debug
+                boolean debug,
+                String origin
         ) {
             this.chainLength = chainLength;
             this.segments = segments;
@@ -183,6 +207,7 @@ public class ChainModelProperty
             this.transform = transform;
 
             this.debug = debug;
+            this.origin = origin;
 
             generateSegments();
         }
@@ -263,7 +288,8 @@ public class ChainModelProperty
                     baseCopy,
                     overrideCopy,
                     transform.copy(),
-                    debug
+                    debug,
+                    origin
             );
         }
 

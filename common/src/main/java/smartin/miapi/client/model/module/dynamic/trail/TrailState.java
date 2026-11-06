@@ -10,12 +10,21 @@ public class TrailState extends SimulationState<TrailState> {
 
     @Override
     public TrailState copy() {
-        return this;
+        TrailState copy = new TrailState();
+
+        for (TrailPoint point : points) {
+            TrailPoint copiedPoint = point.copy();
+            copy.points.addLast(copiedPoint);
+        }
+
+        copy.lastSpawnTime = lastSpawnTime;
+        return copy;
     }
 
     @Override
     public TrailState interpolate(float delta, TrailState other) {
-        return this;
+        //nothing to interpolate.
+        return this.copy();
     }
 
     public static class TrailPoint {
@@ -28,10 +37,14 @@ public class TrailState extends SimulationState<TrailState> {
             this.worldPos2 = worldPos2;
             this.age = 0f;
         }
+
+        public TrailPoint copy() {
+            TrailPoint copy = new TrailPoint(worldPos, worldPos2);
+            copy.age = age;
+            return copy;
+        }
     }
 
     public final Deque<TrailPoint> points = new ArrayDeque<>();
-
     public float lastSpawnTime = 0f;
-
 }

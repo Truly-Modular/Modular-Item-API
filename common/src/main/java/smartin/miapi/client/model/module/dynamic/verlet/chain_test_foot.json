@@ -1,0 +1,79 @@
+{
+    "flail_model": {
+        "chainLength": 0.1,
+        "segments": 30,
+        "rigidness": 0.5,
+        "chainRadius": 0.5,
+        "debug": false,
+        "iterations": 30,
+        "origin": "left_leg",
+        "transform": {
+            "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "translation": {
+                "x": 0.25,
+                "y": 0.25,
+                "z": 0.5
+            },
+            "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+            }
+        },
+        "baseSegments": [
+            {
+                "collide": true,
+                "gravity": 1.25,
+                "model": {
+                    "path": "miapi:models/item/chain.json",
+                    "color_provider": "parent",
+                    "transform": {
+                        "rotation": {
+                            "x": 90,
+                            "y": 0,
+                            "z": 0
+                        },
+                        "translation": {
+                            "x": -0.5,
+                            "y": 0.25,
+                            "z": 0
+                        },
+                        "scale": {
+                            "x": 1,
+                            "y": 1,
+                            "z": 1
+                        }
+                    }
+                }
+            },
+            {
+                "collide": true,
+                "gravity": 1.5,
+                "model": {
+                    "path": "miapi:models/item/chain.json",
+                    "transform": {
+                        "rotation": {
+                            "x": 90,
+                            "y": 90,
+                            "z": 0
+                        },
+                        "translation": {
+                            "x": -0.25,
+                            "y": -0.5,
+                            "z": 0
+                        },
+                        "scale": {
+                            "x": 1,
+                            "y": 1,
+                            "z": 1
+                        }
+                    }
+                }
+            }
+        ]
+    }
+}

@@ -1,11 +1,13 @@
 package smartin.miapi.client.model.module.dynamic.verlet;
 
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
 
 import java.util.List;
 
+import static smartin.miapi.client.model.module.dynamic.ChainCollisionUtil.collideNodeWithEntities;
 import static smartin.miapi.client.model.module.dynamic.ChainCollisionUtil.collideNodeWithWorld;
 
 public class VerletIntegrator {
@@ -16,7 +18,7 @@ public class VerletIntegrator {
     private static final float FIXED_DT = 1.0f / 60.0f;
     private static final float MAX_DT = 1.0f / 15.0f;
 
-    public static void runVerlet(Level level, List<ChainUpdater> updaters, int minSteps, boolean initSolve, float delta, float damping, float rigidness, ChainSimulationState sim, Vector3f gravity, int passes, boolean ui, Vec3 camPos) {
+    public static void runVerlet(Level level, List<ChainUpdater> updaters, int minSteps, boolean initSolve, float delta, float damping, float rigidness, ChainSimulationState sim, Vector3f gravity, int passes, boolean ui, Vec3 camPos, Entity noCollide) {
         float dt = Math.max(1e-4f, Math.min(delta, MAX_DT));
         int steps = Math.max(1, Math.max(minSteps, (int) Math.ceil(dt / FIXED_DT)));
         float h = dt / steps;
@@ -38,7 +40,7 @@ public class VerletIntegrator {
 
             sim.resetAngleConstraints();
             for (int p = 0; p < passes; p++) {
-                solveConstraints(sim, level, rigidness, h, ui);
+                solveConstraints(sim, level, rigidness, h, ui, noCollide);
             }
             sim.prevDt = h;
         }
@@ -69,7 +71,7 @@ public class VerletIntegrator {
         }
     }
 
-    private static void solveConstraints(ChainSimulationState s, Level level, float rigidness, float dt, boolean ui) {
+    private static void solveConstraints(ChainSimulationState s, Level level, float rigidness, float dt, boolean ui, Entity noCollide) {
         float stiffness = 1.0f - Math.max(0.0f, Math.min(1.0f, rigidness));
         float stiffnessPerStep = 1.0f - (float) Math.pow(1.0f - stiffness, dt / FIXED_DT);
         s.nodes[0].pos.set(s.handlePos);
@@ -122,6 +124,18 @@ public class VerletIntegrator {
 
                 if (b.collide && !b.locked && seg.b != 0) {
                     b.hadCollision |= collideNodeWithWorld(level, b.pos, seg.radius);
+                }
+
+                if (a.entityCollide && !a.locked && seg.a != 0) {
+                    a.hadCollision |= collideNodeWithEntities(
+                            level, noCollide, a.pos, seg.radius
+                    );
+                }
+
+                if (b.entityCollide && !b.locked && seg.b != 0) {
+                    b.hadCollision |= collideNodeWithEntities(
+                            level, noCollide, b.pos, seg.radius
+                    );
                 }
             }
         }

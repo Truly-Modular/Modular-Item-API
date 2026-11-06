@@ -2,6 +2,7 @@ package smartin.miapi.client.model.module.dynamic;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
@@ -74,6 +75,58 @@ public class ChainCollisionUtil {
             }
         }
         return collide;
+    }
+
+    public static boolean collideNodeWithEntities(
+            Level level,
+            Entity excluded,
+            Vector3f pos,
+            float radius
+    ) {
+        if (level == null || !level.isClientSide() ||
+            Minecraft.getInstance().player != null &&
+            Minecraft.getInstance().player.tickCount < 5) {
+            return false;
+        }
+
+        AABB nodeBox = new AABB(
+                pos.x - radius,
+                pos.y - radius,
+                pos.z - radius,
+                pos.x + radius,
+                pos.y + radius,
+                pos.z + radius
+        );
+
+        boolean collided = false;
+
+        for (Entity entity : level.getEntities(
+                excluded,
+                nodeBox,
+                e -> e.isAlive() && e.isPushable() && !e.isSpectator()
+        )) {
+            AABB entityBox = entity.getBoundingBox();
+
+            if (!entityBox.intersects(nodeBox)) {
+                continue;
+            }
+
+            resolveAabbPenetration(nodeBox, entityBox, pos);
+
+            collided = true;
+
+            // Update the node box after resolving penetration.
+            nodeBox = new AABB(
+                    pos.x - radius,
+                    pos.y - radius,
+                    pos.z - radius,
+                    pos.x + radius,
+                    pos.y + radius,
+                    pos.z + radius
+            );
+        }
+
+        return collided;
     }
 
     /**

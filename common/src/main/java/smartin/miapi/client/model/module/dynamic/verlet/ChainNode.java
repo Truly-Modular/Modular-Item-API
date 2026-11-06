@@ -12,6 +12,7 @@ public class ChainNode {
 
     public boolean locked = false;
     public boolean collide = false;
+    public boolean entityCollide = false;
 
     public float gravity = 1.0f;
     public float resistance = 1.0f;

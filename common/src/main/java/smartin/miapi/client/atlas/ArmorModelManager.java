@@ -116,7 +116,7 @@ public class ArmorModelManager {
                 String key = armorPart.apply(matrices, armorSlot, entity, outerModel, entityModel);
                 MiapiItemModel miapiItemModel = MiapiItemModel.getItemModel(itemStack);
                 if (miapiItemModel != null) {
-                    miapiItemModel.render(key, itemStack, matrices, ItemDisplayContext.HEAD, 0, vertexConsumers, entity, light, OverlayTexture.NO_OVERLAY);
+                    miapiItemModel.render(key, itemStack, matrices, ItemDisplayContext.HEAD, Minecraft.getInstance().getTimer().getGameTimeDeltaTicks(), vertexConsumers, entity, light, OverlayTexture.NO_OVERLAY);
                 }
                 matrices.popPose();
             });
