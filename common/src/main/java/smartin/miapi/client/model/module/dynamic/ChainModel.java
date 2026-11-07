@@ -12,6 +12,7 @@ import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import smartin.miapi.client.model.MiapiModel;
+import smartin.miapi.client.model.module.dynamic.verlet.ChainMover;
 import smartin.miapi.client.model.module.dynamic.verlet.ChainNode;
 import smartin.miapi.client.model.module.dynamic.verlet.ChainSimulationState;
 import smartin.miapi.client.model.module.dynamic.verlet.VerletIntegrator;
@@ -28,14 +29,16 @@ public class ChainModel extends DynamicModel<ChainState> {
     public final boolean debug;
     public float rigidness;
     public int iterations;
+    public float fakeDampness;
 
-    public ChainModel(List<ChainEntry> chain, float radius, float rigidness, int iterations, Transform transform, boolean debug) {
+    public ChainModel(List<ChainEntry> chain, float radius, float rigidness, int iterations, Transform transform, boolean debug, float fakeDampness) {
         this.chain = chain;
         this.radius = radius;
         this.transform = transform;
         this.iterations = iterations;
         this.debug = debug;
         this.rigidness = rigidness;
+        this.fakeDampness = Math.clamp(fakeDampness, 0.0f, 0.9f);
     }
 
     @Override
@@ -51,6 +54,13 @@ public class ChainModel extends DynamicModel<ChainState> {
         }
         Vector3f currentPos = MatrixHelper.translatePositionToWorldSpace(pose, new Vector3f(0, 0, 0), state.cameraPose);
         ChainSimulationState sim = state.sim;
+
+        if (fakeDampness > 0) {
+            Vector3f delta = new Vector3f(currentPos).sub(new Vector3f(sim.handlePos));
+            Vector3f teleport = new Vector3f(delta).mul(fakeDampness);
+            ChainMover.teleportChain(sim, teleport);
+        }
+
         Vector3f fullLastPos = new Vector3f(sim.handlePos);
 
         boolean ui = c.equals(ItemDisplayContext.GUI) || c.equals(ItemDisplayContext.FIXED) || c.equals(ItemDisplayContext.GROUND) || c.equals(ItemDisplayContext.NONE);

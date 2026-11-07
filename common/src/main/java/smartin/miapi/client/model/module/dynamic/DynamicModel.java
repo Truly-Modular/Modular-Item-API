@@ -17,6 +17,7 @@ import java.util.Map;
 /**
  * Dynamic model class with util for animation and models that move their submodules.
  * Has State Control for different RenderContexts
+ *
  * @param <S> the State class in question
  */
 public abstract class DynamicModel<S extends SimulationState<S>>
@@ -26,7 +27,6 @@ public abstract class DynamicModel<S extends SimulationState<S>>
             new EnumMap<>(ItemDisplayContext.class);
 
     protected S getState(RenderContext context) {
-
         return states.computeIfAbsent(context.transformationMode(),
                 c -> createState(MatrixHelper.getCamPos(), context)
         );
@@ -37,20 +37,22 @@ public abstract class DynamicModel<S extends SimulationState<S>>
             RenderContext context) {
         S state = getState(context);
 
-
         double now = MiapiClient.currentTickFull();
 
-        double delta = now - state.lastTime;
+        double elapsedTicks = now - state.lastTime;
+
         state.lastTime = now;
 
+        float deltaSeconds = (float) (elapsedTicks / 20.0);
+
         Minecraft.getInstance().getProfiler().push("Physics");
-        if (delta > 0) {
+        if (deltaSeconds > 0) {
             if (context.equals(ItemDisplayContext.GUI)) {
-                queuePhysicsUpdate(state, MatrixHelper.getCamPos(), new Vector3f(0, -1, 0), context);
+                queuePhysicsUpdate(state, MatrixHelper.getCamPos(), new Vector3f(0, -1, 0), context, deltaSeconds);
             } else if (context.equals(ItemDisplayContext.FIXED)) {
-                queuePhysicsUpdate(state, MatrixHelper.getCamPos(), new Vector3f(0, -1, 0), context);
+                queuePhysicsUpdate(state, MatrixHelper.getCamPos(), new Vector3f(0, -1, 0), context, deltaSeconds);
             } else {
-                queuePhysicsUpdate(state, MatrixHelper.getCamPos(), new Vector3f(0, -1, 0), context);
+                queuePhysicsUpdate(state, MatrixHelper.getCamPos(), new Vector3f(0, -1, 0), context, deltaSeconds);
             }
         }
         Minecraft.getInstance().getProfiler().pop();
@@ -70,6 +72,7 @@ public abstract class DynamicModel<S extends SimulationState<S>>
 
     /**
      * Creating the State for the current Context
+     *
      * @param context
      * @return
      */
@@ -78,11 +81,11 @@ public abstract class DynamicModel<S extends SimulationState<S>>
     protected void queuePhysicsUpdate(S state,
                                       Vec3 camPos,
                                       Vector3f down,
-                                      RenderContext context) {
+                                      RenderContext context, double deltaSecond) {
         state.pose = new PoseStack();
         state.pose.last().pose().set(context.matrices().last().pose());
         state.cameraPose = camPos;
-        updatePhysics(state, context.entity(), context.tickDelta(), context.matrices(), down, context.transformationMode());
+        updatePhysics(state, context.entity(), (float) deltaSecond, context.matrices(), down, context.transformationMode());
         /*
         PhysicsScheduler.submit(
                 new DynamicModelPhysicsWork<>(
@@ -112,6 +115,7 @@ public abstract class DynamicModel<S extends SimulationState<S>>
 
     /**
      * THe end position for the next module for the current state
+     *
      * @return
      */
     protected abstract Matrix4f computeEnd(S state, PoseStack poseStack);

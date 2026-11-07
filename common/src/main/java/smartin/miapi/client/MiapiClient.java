@@ -115,6 +115,14 @@ public class MiapiClient {
     }
 
     public static void init() {
+        ClientEvents.CLIENT_TICK.register((instance -> {
+            if (instance.level != null&&false) {
+                tick.set((int) instance.level.getGameTime());
+            } else {
+                tick.addAndGet(1);
+            }
+            ClientKeybinding.clientTick(instance);
+        }));
         var config = ConfigManager.getConfigObject(Miapi.id("server"));
         if (config.getInstance() == null) {
             config.load();
@@ -145,10 +153,6 @@ public class MiapiClient {
         }
         RegistryInventory.MODULAR_ITEMS.addCallback((MiapiClient::registerAnimations));
         //BoomerangClientRendering.setup();
-        ClientEvents.CLIENT_TICK.register((instance -> {
-            tick.addAndGet(1);
-            ClientKeybinding.clientTick(instance);
-        }));
         ClientEvents.CLIENT_RENDER_TICK.register(client -> {
             if (MiapiConfig.getClientConfig().render.animatedMaterials) {
                 Minecraft.getInstance().getProfiler().push("miapiMaterialAnimations");

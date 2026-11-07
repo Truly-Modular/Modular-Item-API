@@ -16,13 +16,20 @@ public class VerletIntegrator {
     private static final float MIN_DIST_SQ = 1e-12f;
 
     private static final float FIXED_DT = 1.0f / 60.0f;
-    private static final float MAX_DT = 1.0f / 15.0f;
+    private static final float MAX_DT = 1.0f;
+    private static final int MAX_STEPS = 10;
 
     public static void runVerlet(Level level, List<ChainUpdater> updaters, int minSteps, boolean initSolve, float delta, float damping, float rigidness, ChainSimulationState sim, Vector3f gravity, int passes, boolean ui, Vec3 camPos, Entity noCollide) {
         float dt = Math.max(1e-4f, Math.min(delta, MAX_DT));
-        int steps = Math.max(1, Math.max(minSteps, (int) Math.ceil(dt / FIXED_DT)));
+        int steps = Math.min(MAX_STEPS,Math.max(1, Math.max(minSteps, (int) Math.ceil(dt / FIXED_DT))));
         float h = dt / steps;
         float deltaPercent = 0.0f;
+        /*
+        i should explain this mess a bit
+        to stabilize the verlet a bit through changing delta times,
+        i figured i divide each movement into steps with a close to fixed Delta Time instead.
+
+         */
 
         for (int i = 0; i < steps; i++) {
             deltaPercent += 1.0f / steps;

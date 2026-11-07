@@ -91,7 +91,8 @@ public class ChainModelProperty
                             data.rigidness,
                             data.iterations,
                             data.transform,
-                            data.debug
+                            data.debug,
+                            data.dampness
                     );
 
                     models.add(model);
@@ -159,7 +160,9 @@ public class ChainModelProperty
                         Codec.BOOL.optionalFieldOf("debug", false)
                                 .forGetter(d -> d.debug),
                         Codec.STRING.optionalFieldOf("origin", "item")
-                                .forGetter(d -> d.origin == null ? "item" : d.origin)
+                                .forGetter(d -> d.origin == null ? "item" : d.origin),
+                        Codec.FLOAT.optionalFieldOf("dampness", 0.0f)
+                                .forGetter(d -> d.dampness)
 
                 ).apply(instance, ChainModelData::new));
 
@@ -174,6 +177,7 @@ public class ChainModelProperty
         public Map<Integer, SegmentData> overrides;
         public boolean debug;
         public float rigidness;
+        public float dampness;
 
         public Transform transform;
 
@@ -188,13 +192,15 @@ public class ChainModelProperty
                 Map<Integer, SegmentData> overrides,
                 Transform transform,
                 boolean debug,
-                String origin
+                String origin,
+                float dampness
         ) {
             this.chainLength = chainLength;
             this.segments = segments;
             this.chainRadius = chainRadius;
             this.iterations = iterations;
             this.rigidness = rigidness;
+            this.dampness = dampness;
 
             this.models = new ArrayList<>(models);
 
@@ -289,7 +295,8 @@ public class ChainModelProperty
                     overrideCopy,
                     transform.copy(),
                     debug,
-                    origin
+                    origin,
+                    dampness
             );
         }
 

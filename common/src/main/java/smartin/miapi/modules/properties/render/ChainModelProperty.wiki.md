@@ -30,7 +30,10 @@ Allows rendering animated chain/flail models attached to modular items. Each cha
   The radius of the chain segments.
 
 - **`rigidness`** _(number, optional, default = 0.3)_:
-  How rigid the chain is. Higher values make it stiffer.
+  How Stretchy the chain is, e.g. how much individual elements can stretch
+
+- **`dampness`** _(number, optional, default = 0.0)_:
+  How resistant to movement the chain appears/dampens the effect of outside movement.
 
 - **`models`** _(array, optional, default = [])_:
   List of models to use for chain segments. Can be empty to use default models.
