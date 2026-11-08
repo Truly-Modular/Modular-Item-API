@@ -94,7 +94,7 @@ public record MaterialSwapLootFunction(
                             .forGetter(c -> c.blacklist),
                     Codec.list(ResourceLocation.CODEC).optionalFieldOf("whitelist")
                             .forGetter(c -> c.whitelist),
-                    Codec.BOOL.optionalFieldOf("allow_stackable",false)
+                    Codec.BOOL.optionalFieldOf("allow_stackable", false)
                             .forGetter(c -> c.allowStackable())
             ).apply(instance, MaterialSwapLootFunction::new));
 
@@ -113,7 +113,7 @@ public record MaterialSwapLootFunction(
             try {
                 ModuleInstance immutable = ItemModule.getModules(modular);
                 MutableModuleInstance root = immutable.asMutable();
-                if (VisualModularItem.isVisualModularItem(stack)) {
+                if (VisualModularItem.isVisualModularItem(stack) && !ModularItem.isModularItem(stack)) {
                     return stack;
                 }
                 Material highestMaterial = MaterialProperty.getMaterial(immutable);
@@ -140,7 +140,7 @@ public record MaterialSwapLootFunction(
                 }
                 root.toRecord().writeToItem(modular);
                 modular = ItemIdProperty.changeId(modular);
-                ComponentApplyProperty.updateItemStack(modular,null);
+                ComponentApplyProperty.updateItemStack(modular, null);
             } catch (RuntimeException e) {
                 Miapi.LOGGER.error("Issue during Material Swap", e);
             }
