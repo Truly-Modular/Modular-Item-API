@@ -66,6 +66,7 @@ public class DynamicTrailModel extends DynamicModel<TrailState> {
         this.moduleInstance = moduleInstance;
         this.debug = debug;
         this.whiteList = whiteList;
+        this.multiThreadPhysicsUpdate =false;
     }
 
     @Override
