@@ -1,19 +1,9 @@
-# ChainModelProperty
+@header Chain Model property
+@path /data_types/properties/render/chain
+
+# WARNING WIP
 
 A property that configures flail/chain models to be rendered as part of modular items. Creates animated chain segments with customizable physics and model assignments.
-
-## Purpose
-
-Allows rendering animated chain/flail models attached to modular items. Each chain can have multiple segments with independent physics properties (gravity, collision, locking) and can use different models for different segments.
-
-## Behavior
-
-- Chains consist of multiple segments connected in a chain
-- Each segment can have its own length, collision, and lock settings
-- Base segments are repeated to fill the chain length
-- Override segments can customize specific segment properties
-- Models are baked and rendered for each segment
-- Supports rigidness and iteration settings for physics simulation
 
 ### Fields
 
@@ -30,7 +20,10 @@ Allows rendering animated chain/flail models attached to modular items. Each cha
   The radius of the chain segments.
 
 - **`rigidness`** _(number, optional, default = 0.3)_:
-  How rigid the chain is. Higher values make it stiffer.
+  How Stretchy the chain is, e.g. how much individual elements can stretch
+
+- **`dampness`** _(number, optional, default = 0.0)_:
+  How resistant to movement the chain appears/dampens the effect of outside movement.
 
 - **`models`** _(array, optional, default = [])_:
   List of models to use for chain segments. Can be empty to use default models.

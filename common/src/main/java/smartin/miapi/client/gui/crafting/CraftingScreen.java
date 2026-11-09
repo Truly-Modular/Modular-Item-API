@@ -32,7 +32,8 @@ import smartin.miapi.material.MaterialProperty;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.edit_options.EditOption;
-import smartin.miapi.modules.edit_options.EditOptionIcon;
+import smartin.miapi.modules.edit_options.EditOptionIconRework;
+import smartin.miapi.modules.edit_options.EditOptionRender;
 import smartin.miapi.modules.properties.slot.AllowedSlots;
 import smartin.miapi.modules.properties.slot.SlotProperty;
 import smartin.miapi.registries.RegistryInventory;
@@ -171,7 +172,18 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
             }
         }));
 
-        addChild(new EditOptionIcon(moduleCrafter.getX() - 36, moduleCrafter.getY() + 4, 32, 28, this::selectEditOption, this::getEditOption, BACKGROUND_TEXTURE, 339, 25, 512, 512, "miapi.ui.edit_option.hover.info", null));
+        //addChild(new EditOptionIcon(moduleCrafter.getX() - 36, moduleCrafter.getY() + 4, 32, 28, this::selectEditOption, this::getEditOption, BACKGROUND_TEXTURE, 339, 25, 512, 512, "miapi.ui.edit_option.hover.info", null));
+        addChild(new EditOptionIconRework(moduleCrafter.getX() - 36, moduleCrafter.getY() + 4, 32, 28, this::selectEditOption, this::getEditOption, null, new EditOptionRender() {
+            @Override
+            public void renderIcon(GuiGraphics drawContext, boolean isSelected, int x, int y, float delta) {
+                drawContext.blit(CraftingScreen.BACKGROUND_TEXTURE, x, y, 338, 53, 18, 18, 512, 512);
+            }
+
+            @Override
+            public Component getHoverName() {
+                return Component.translatable("miapi.ui.edit_option.hover.info");
+            }
+        }));
         selectEditOption(null);
         selectSlot(null);
         previewStack(menu.inventory.getItem(0));
@@ -332,7 +344,8 @@ public class CraftingScreen extends ParentHandledScreen<CraftingScreenHandler> i
         for (EditOption option : RegistryInventory.EDIT_OPTION_MIAPI_REGISTRY.getFlatMap().values()) {
             EditOption.EditContext context = get(option);
             if (option.isVisible(context)) {
-                InteractAbleWidget widget = option.getIconGui(x, y, 32, 28, this::selectEditOption, this::getEditOption);
+                //InteractAbleWidget widget = option.getIconGui(x, y, 32, 28, this::selectEditOption, this::getEditOption);
+                InteractAbleWidget widget = new EditOptionIconRework(x, y, 32, 28, this::selectEditOption, this::getEditOption, option);
                 y += editSpace;
                 editHolder.addChild(widget);
                 editOptionIcons.add(widget);

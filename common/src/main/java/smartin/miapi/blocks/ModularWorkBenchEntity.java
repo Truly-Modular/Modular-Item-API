@@ -17,6 +17,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -40,7 +41,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class ModularWorkBenchEntity extends BlockEntity implements MenuProvider, GameEventListener,IModularWorkbench {
+public class ModularWorkBenchEntity extends BlockEntity implements MenuProvider, GameEventListener, IModularWorkbench {
     public static final Map<GameEvent, CustomGameEventHandler> gameEventHandlers = MiscUtil.initialize(new ConcurrentHashMap<>(), map -> {
         map.put(RegistryInventory.statProviderCreatedEvent, (bench, world, event, emitter, emitterPos) -> {
             if (emitter.affectedState() != null) {
@@ -115,6 +116,16 @@ public class ModularWorkBenchEntity extends BlockEntity implements MenuProvider,
 
     public <T> T getStat(CraftingStat<T> stat) {
         return (T) stats.get(stat);
+    }
+
+    @Override
+    public BlockPos getWorkbenchPos() {
+        return getBlockPos();
+    }
+
+    @Override
+    public Level getWorkbenchLevel() {
+        return getLevel();
     }
 
     @Override
@@ -211,7 +222,7 @@ public class ModularWorkBenchEntity extends BlockEntity implements MenuProvider,
     @Override
     public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
         CompoundTag tag = new CompoundTag();
-        saveAdditional(tag , registries);
+        saveAdditional(tag, registries);
         return tag;
     }
 

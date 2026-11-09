@@ -3,6 +3,7 @@ package smartin.miapi.modules.edit_options.skins;
 import com.google.gson.JsonObject;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -132,5 +133,15 @@ public class SkinOptions implements EditOption {
     @Override
     public InteractAbleWidget getIconGui(int x, int y, int width, int height, Consumer<EditOption> select, Supplier<EditOption> getSelected) {
         return new EditOptionIcon(x, y, width, height, select, getSelected, CraftingScreen.BACKGROUND_TEXTURE, 339 + 32, 25 + 28 * 2, 512, 512, "miapi.ui.edit_option.hover.skin", this);
+    }
+
+    @Override
+    public void renderIcon(GuiGraphics drawContext, boolean isSelected, int x, int y, float delta) {
+        drawContext.blit(CraftingScreen.BACKGROUND_TEXTURE, x, y, 356, 71, 18, 18, 512, 512);
+    }
+
+    @Override
+    public Component getHoverName() {
+        return Component.translatable("miapi.ui.edit_option.hover.skin");
     }
 }

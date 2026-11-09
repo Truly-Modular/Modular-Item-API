@@ -1,31 +1,8 @@
-# EntityModelProperty
+@header EntityModel Property
+@path /data_types/properties/render/entity
 
 A property that configures entity models to be rendered alongside modular items. Each entity model is transformed and positioned relative to the item.
 
-## Purpose
-
-Allows rendering custom entities (mobs, items, particles) as part of a modular item's visual representation. Each entity can have its own NBT data, transformations, and rendering options.
-
-## Behavior
-
-- Entities are created from their `EntityType` and optionally loaded with NBT data
-- Each entity is transformed using the specified `Transform` matrix
-- Entities can tick independently if `tick` is enabled
-- Full bright rendering can be enabled for better visibility
-- Spin animations can be applied via `spin` settings
-
-## JSON Structure
-
-```json5
-{
-	id: 'string (required)',
-	nbt: 'object (optional)',
-	transform: 'object (optional)',
-	tick: 'boolean (optional, default = false)',
-	fullBright: 'boolean (optional, default = false)',
-	spin: 'object (optional)'
-}
-```
 
 ### Fields
 

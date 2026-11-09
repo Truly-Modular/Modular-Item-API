@@ -1,17 +1,8 @@
-# CrystalModelProperty
+@header Crystal Model Property
+@path /data_types/properties/render/crystal
 
-A property that enables or disables crystal model rendering for modular items.
-
-## Purpose
-
-Provides a simple toggle to render or hide crystal models. When enabled, a crystal model is rendered as part of the modular item. Useful for creating crystal formations, decorative crystals, or crystal-based items.
-
-## Behavior
-
-- When set to true, renders a `CrystalModel` as part of the item
-- When set to false (default), no crystal is rendered
-- The crystal model is created and rendered on the client side
-- Does not affect item functionality
+A property that enables end crystal model rendering for modular items.
+Yeah, this should be reworked to also include a transform.
 
 ## JSON Structure
 

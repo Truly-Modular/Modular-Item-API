@@ -82,7 +82,7 @@ public record ModuleSwapLootFunction(
                 return stack;
             }
             ModuleInstance root = ItemModule.getModules(modular);
-            if (VisualModularItem.isVisualModularItem(stack)) {
+            if (VisualModularItem.isVisualModularItem(stack) && !ModularItem.isModularItem(stack)) {
                 return stack;
             }
             Material highestMaterial = MaterialProperty.getMaterial(root);

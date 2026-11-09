@@ -32,7 +32,7 @@ public class ArrowStorageFacet implements EntityFacet<CompoundTag> {
             FacetRegistry.register(facetIdentifier, ArrowStorageFacet.class);
 
     /**
-     * Expiration time (ticks). Currently 30 minutes
+     * Expiration time (ticks). Currently, 30 minutes
      */
     private static final int MAX_AGE_TICKS = 20 * 60 * 30;
 

@@ -3,6 +3,7 @@ package smartin.miapi.modules.edit_options.remove;
 import com.mojang.datafixers.util.Either;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
@@ -81,6 +82,16 @@ public class RemoveModuleOption implements EditOption {
     @Environment(EnvType.CLIENT)
     @Override
     public InteractAbleWidget getIconGui(int x, int y, int width, int height, Consumer<EditOption> select, Supplier<EditOption> getSelected) {
+        return null;
+    }
+
+    @Override
+    public void renderIcon(GuiGraphics drawContext, boolean isSelected, int x, int y, float delta) {
+
+    }
+
+    @Override
+    public Component getHoverName() {
         return null;
     }
 }

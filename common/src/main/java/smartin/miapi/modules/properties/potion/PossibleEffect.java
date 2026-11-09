@@ -10,11 +10,10 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.Nullable;
+import smartin.miapi.entity.uslot.SlotSelection;
+import smartin.miapi.entity.uslot.UEquipmentSlot;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.util.DoubleOperationResolvable;
 import smartin.miapi.modules.properties.util.InitializeAble;
@@ -42,7 +41,7 @@ public record PossibleEffect(Holder<MobEffect> potion,
                              DoubleOperationResolvable showIcon,
                              DoubleOperationResolvable probability,
                              DoubleOperationResolvable targetSelf,
-                             EquipmentSlotGroup group) implements InitializeAble<PossibleEffect> {
+                             SlotSelection group) implements InitializeAble<PossibleEffect> {
     public static final Codec<PossibleEffect> CODEC = RecordCodecBuilder.create((instance) -> {
         return instance.group(
                 MobEffect.CODEC
@@ -69,8 +68,8 @@ public record PossibleEffect(Holder<MobEffect> potion,
                 DoubleOperationResolvable.CODEC
                         .optionalFieldOf("target_self", new DoubleOperationResolvable(1))
                         .forGetter(PossibleEffect::showIcon),
-                EquipmentSlotGroup.CODEC
-                        .optionalFieldOf("equipment_slot", EquipmentSlotGroup.ANY)
+                SlotSelection.CODEC
+                        .optionalFieldOf("equipment_slot", SlotSelection.ALL)
                         .forGetter(PossibleEffect::group)
         ).apply(instance, PossibleEffect::new);
     });
@@ -80,22 +79,30 @@ public record PossibleEffect(Holder<MobEffect> potion,
         return new MobEffectInstance(potion(), (int) duration().getValue(), (int) amplifier().getValue(), ambient().isTrue(), showParticle().isTrue(), showIcon().isTrue());
     }
 
-    public void apply(LivingEntity wielder, RandomSource random, @Nullable EquipmentSlot equipmentSlot, LivingEntity target, LivingEntity selfTarget) {
-        if (equipmentSlot == null || this.group().test(equipmentSlot)) {
-            if (targetSelf().isTrue()) {
-                target = selfTarget;
-            }
-            if (target != null) {
-                if (probability().getValue() == 1.0 || random.nextDouble() < probability().getValue()) {
-                    target.addEffect(getEffect(), wielder);
-                }
+    public void apply(LivingEntity wielder, RandomSource random, UEquipmentSlot equipmentSlot, LivingEntity target, LivingEntity selfTarget) {
+        if (equipmentSlot == null || this.group().matches(equipmentSlot)) {
+            applyNoCheck(wielder, random, target, selfTarget);
+        }
+    }
+
+    public void applyNoCheck(LivingEntity wielder, RandomSource random, LivingEntity target, LivingEntity selfTarget) {
+        if (targetSelf().isTrue()) {
+            target = selfTarget;
+        }
+        if (target != null) {
+            if (probability().getValue() == 1.0 || random.nextDouble() < probability().getValue()) {
+                target.addEffect(getEffect(), wielder);
             }
         }
     }
 
-    public void apply(List<PossibleEffect> effects, LivingEntity wielder, RandomSource random, EquipmentSlot equipmentSlot, LivingEntity target, LivingEntity selfTarget) {
+    public static void apply(LivingEntity wielder, Function<ItemStack, List<PossibleEffect>> effectGetter, RandomSource random, LivingEntity target, LivingEntity selfTarget) {
+        List<PossibleEffect> effects = new ArrayList<>();
+        for (UEquipmentSlot.EquipedItem item : SlotSelection.scanItems(wielder)) {
+            effects = merge(effects, effectGetter.apply(item.itemStack()).stream().filter(possibleEffect -> possibleEffect.group().matches(item.slot())).toList(), MergeType.SMART);
+        }
         effects.forEach(effect -> {
-            effect.apply(wielder, random, equipmentSlot, target, selfTarget);
+            effect.applyNoCheck(wielder, random, target, selfTarget);
         });
     }
 
@@ -120,6 +127,10 @@ public record PossibleEffect(Holder<MobEffect> potion,
         return components;
     }
 
+    /**
+    use {@link PossibleEffect#apply(LivingEntity, Function, RandomSource, LivingEntity, LivingEntity)} instead!
+     */
+    @Deprecated
     public static void applyEffects(
             LivingEntity target,
             LivingEntity selfTarget,
@@ -176,25 +187,6 @@ public record PossibleEffect(Holder<MobEffect> potion,
                                                   (combinedProbability > 1.0f ? (int) (first.duration().getValue() * (combinedProbability - 1.0f))
                                                           : first.duration().getValue()));
                     combinedProbability = Math.min(combinedProbability, 1.0f);
-
-                /*
-                MobEffectInstance mergedMobEffect = new MobEffectInstance(
-                        first.effect().getEffect(),
-                        combinedDuration,
-                        first.effect().getAmplifier(),
-                        first.effect().isAmbient(),
-                        first.effect().isVisible()
-                );
-                                             DoubleOperationResolvable amplifier,
-                             DoubleOperationResolvable duration,
-                             DoubleOperationResolvable ambient,
-                             DoubleOperationResolvable showParticle,
-                             DoubleOperationResolvable showIcon,
-                             DoubleOperationResolvable probability,
-                             DoubleOperationResolvable targetSelf,
-
-                 */
-
                     mergedList.add(new PossibleEffect(
                                     first.potion,
                                     DoubleOperationResolvable.merge(first.amplifier, possibleEffect.amplifier, mergeType),

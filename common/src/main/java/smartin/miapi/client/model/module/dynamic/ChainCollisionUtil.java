@@ -2,11 +2,11 @@ package smartin.miapi.client.model.module.dynamic;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.joml.Vector3f;
+import smartin.miapi.client.model.module.dynamic.thread.WorldPhysicsAccess;
 
 public class ChainCollisionUtil {
 
@@ -14,12 +14,11 @@ public class ChainCollisionUtil {
      * Resolves collision of a single node with the world.
      */
     public static boolean collideNodeWithWorld(
-            Level level,
+            WorldPhysicsAccess level,
             Vector3f pos,
             float radius
     ) {
-        if (!level.isClientSide() ||
-            Minecraft.getInstance().player != null && Minecraft.getInstance().player.tickCount < 5) {
+        if (Minecraft.getInstance().player != null && Minecraft.getInstance().player.tickCount < 5) {
             return false;
         }
         boolean collide = false;
@@ -46,20 +45,14 @@ public class ChainCollisionUtil {
                 for (int z = minZ; z <= maxZ; z++) {
 
                     cursor.set(x, y, z);
-                    BlockState state = level.getBlockState(cursor);
+                    VoxelShape shape = level.getVoxelShape(cursor);
+                    if (shape == null || shape.isEmpty()) continue;
 
-                    if (state.isAir()) continue;
-
-                    VoxelShape shape = state.getCollisionShape(level, cursor);
-                    if (shape.isEmpty()) continue;
-
-                    // Minecraft shapes can have multiple AABBs
                     for (AABB blockBox : shape.toAabbs()) {
                         blockBox = blockBox.move(cursor.getX(), cursor.getY(), cursor.getZ());
                         if (blockBox.intersects(nodeBox)) {
                             resolveAabbPenetration(nodeBox, blockBox, pos);
                             collide = true;
-                            // rebuild node AABB after move
                             nodeBox = new AABB(
                                     pos.x - radius,
                                     pos.y - radius,
@@ -74,6 +67,60 @@ public class ChainCollisionUtil {
             }
         }
         return collide;
+    }
+
+    public static boolean collideNodeWithEntities(
+            WorldPhysicsAccess level,
+            Entity excluded,
+            Vector3f pos,
+            float radius
+    ) {
+        if (level == null ||
+            Minecraft.getInstance().player != null &&
+            Minecraft.getInstance().player.tickCount < 5) {
+            return false;
+        }
+
+        AABB nodeBox = new AABB(
+                pos.x - radius,
+                pos.y - radius,
+                pos.z - radius,
+                pos.x + radius,
+                pos.y + radius,
+                pos.z + radius
+        );
+
+        boolean collided = false;
+
+        /*
+        for (Entity entity : level.getEntities(
+                excluded,
+                nodeBox,
+                e -> e.isAlive() && e.isPushable() && !e.isSpectator()
+        )) {
+            AABB entityBox = entity.getBoundingBox();
+
+            if (!entityBox.intersects(nodeBox)) {
+                continue;
+            }
+
+            resolveAabbPenetration(nodeBox, entityBox, pos);
+
+            collided = true;
+
+            // Update the node box after resolving penetration.
+            nodeBox = new AABB(
+                    pos.x - radius,
+                    pos.y - radius,
+                    pos.z - radius,
+                    pos.x + radius,
+                    pos.y + radius,
+                    pos.z + radius
+            );
+        }
+         */
+
+        return collided;
     }
 
     /**

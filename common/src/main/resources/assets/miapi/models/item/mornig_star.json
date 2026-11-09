@@ -1,0 +1,66 @@
+{
+	"format_version": "26.3",
+	"credit": "Made with Blockbench",
+	"textures": {
+		"2": "armory/armory-common/src/main/resources/assets/miapi/models/item/armor/model/arm_left/base/morning_star",
+		"particle": "armory/armory-common/src/main/resources/assets/miapi/models/item/armor/model/arm_left/base/morning_star"
+	},
+	"elements": [
+		{
+			"name": "normal",
+			"from": [-1, -1, -1],
+			"to": [1, 1, 1],
+			"rotation": {"angle": 0, "axis": "y", "origin": [0.5, 0, 0]},
+			"faces": {
+				"north": {"uv": [0, 0, 2, 2], "texture": "#2"},
+				"east": {"uv": [1, 0, 3, 2], "texture": "#2"},
+				"south": {"uv": [0, 2, 2, 4], "texture": "#2"},
+				"west": {"uv": [1, 0, 3, 2], "texture": "#2"},
+				"up": {"uv": [1, 0, 3, 2], "texture": "#2"},
+				"down": {"uv": [1, 0, 3, 2], "texture": "#2"}
+			}
+		},
+		{
+			"name": "x",
+			"from": [-0.75, -1, -1],
+			"to": [0.75, 1, 1],
+			"rotation": {"angle": 45, "axis": "x", "origin": [-0.5, 0, 0]},
+			"faces": {
+				"north": {"uv": [0, 0, 2, 2], "texture": "#2"},
+				"east": {"uv": [1, 0, 3, 2], "texture": "#2"},
+				"south": {"uv": [0, 2, 2, 4], "texture": "#2"},
+				"west": {"uv": [1, 0, 3, 2], "texture": "#2"},
+				"up": {"uv": [1, 0, 3, 2], "texture": "#2"},
+				"down": {"uv": [1, 0, 3, 2], "texture": "#2"}
+			}
+		},
+		{
+			"name": "y",
+			"from": [-0.875, -0.75, -0.65],
+			"to": [1.125, 0.75, 1.35],
+			"rotation": {"angle": 45, "axis": "y", "origin": [-0.375, 0, 0.35]},
+			"faces": {
+				"north": {"uv": [0, 0, 2, 2], "texture": "#2"},
+				"east": {"uv": [1, 0, 3, 2], "texture": "#2"},
+				"south": {"uv": [0, 2, 2, 4], "texture": "#2"},
+				"west": {"uv": [1, 0, 3, 2], "texture": "#2"},
+				"up": {"uv": [1, 0, 3, 2], "texture": "#2"},
+				"down": {"uv": [1, 0, 3, 2], "texture": "#2"}
+			}
+		},
+		{
+			"name": "z",
+			"from": [-0.85, -1.35, -0.75],
+			"to": [1.15, 0.65, 0.75],
+			"rotation": {"angle": 45, "axis": "z", "origin": [-0.35, -0.35, 0]},
+			"faces": {
+				"north": {"uv": [0, 0, 2, 2], "texture": "#2"},
+				"east": {"uv": [1, 0, 3, 2], "texture": "#2"},
+				"south": {"uv": [0, 2, 2, 4], "texture": "#2"},
+				"west": {"uv": [1, 0, 3, 2], "texture": "#2"},
+				"up": {"uv": [1, 0, 3, 2], "texture": "#2"},
+				"down": {"uv": [1, 0, 3, 2], "texture": "#2"}
+			}
+		}
+	]
+}

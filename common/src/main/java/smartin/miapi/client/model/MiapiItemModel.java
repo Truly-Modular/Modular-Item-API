@@ -13,6 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import smartin.miapi.client.MiapiClient;
+import smartin.miapi.client.model.collision.ModulePos;
 import smartin.miapi.client.model.collision.Ray;
 import smartin.miapi.client.model.collision.RayDebugHelper;
 import smartin.miapi.client.model.module.baked.passes.DeferredGlintRenderPass;
@@ -104,7 +105,7 @@ public class MiapiItemModel implements MiapiModel {
                 entity,
                 hasFoil,
                 light,
-                overlay);
+                0);
         if (!(isRayCasting && debugRayCast)) {
             data.model.render(context);
         }
@@ -215,7 +216,7 @@ public class MiapiItemModel implements MiapiModel {
         //MatrixUtil.mulComponentWise(matrices.last().pose(), 2.0F);
         for (ModelTransformer transformer : data.transformers) {transformer.transform(matrices, tickDelta);}
         MiapiModel.RenderContext renderContext = new MiapiModel.RenderContext(modelType, matrices, stack, mode, tickDelta, multiBufferSource, null, false, 0, 0);
-        return data.model.raycast(ray, renderContext, multiBufferSource != null);
+        return data.model.raycast(ray, renderContext, multiBufferSource != null, (pos) -> {});
     }
 
     @Nullable
@@ -224,6 +225,7 @@ public class MiapiItemModel implements MiapiModel {
     static boolean debugRayCast = false;
     @Nullable
     static Ray currentRay;
+    static List<ModulePos> modulePos = new ArrayList<>();
 
     public static void startRayCastMode(Ray ray, PoseStack withPreTransform) {
         startRayCastMode(ray, withPreTransform, false);
@@ -235,6 +237,7 @@ public class MiapiItemModel implements MiapiModel {
         hit = null;
         isRayCasting = true;
         debugRayCast = debug;
+        modulePos = new ArrayList<>();
     }
 
     public static Optional<ModuleModel.ModuleRayHit> collectAndEndRayCastMode() {
@@ -251,11 +254,17 @@ public class MiapiItemModel implements MiapiModel {
             Ray objectSpaceRay = currentRay.transform(context.objectSpace());
             RayDebugHelper.renderDebugRay(objectSpaceRay, context.matrices(), context.vertexConsumers(), 1600.0f);
         }
-        Optional<ModuleModel.ModuleRayHit> currentHit = data.model.raycast(currentRay, context, debugRayCast);
+        Optional<ModuleModel.ModuleRayHit> currentHit = data.model.raycast(currentRay, context, debugRayCast, pos -> modulePos.add(pos));
         if (currentHit.isPresent()) {
             if (hit == null || hit.hit().distance() > currentHit.get().hit().distance()) {
                 hit = currentHit.get();
             }
         }
     }
+
+    public static List<ModulePos> getAllRenderedModulePosDuringRaycast() {
+        return modulePos;
+    }
+
+
 }

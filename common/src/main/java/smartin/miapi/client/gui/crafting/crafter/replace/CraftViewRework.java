@@ -63,7 +63,7 @@ public class CraftViewRework extends InteractAbleWidget {
         this.editContext = editContext;
         this.craftOption = option;
         if (listener != null) {
-            editContext.getScreenHandler().removeSlotListener(listener);
+            editContext.getScreenHandler().removeCraftingSlotListener(listener);
         }
         listener = new SimpleScreenHandlerListener((h, slotId, itemStack) -> {
             if (slotId != CraftingScreenHandler.CLIENT_SLOT_ID) {
@@ -127,12 +127,12 @@ public class CraftViewRework extends InteractAbleWidget {
                         CraftingScreen.getInstance().setItem(craftedStack);
                     }
                 }
-                editContext.getScreenHandler().removeSlotListener(listener);
+                editContext.getScreenHandler().removeCraftingSlotListener(listener);
             }
         });
         addChild(craftButton);
 
-        editContext.getScreenHandler().addSlotListener(listener);
+        editContext.getScreenHandler().addCraftingSlotListener(listener);
     }
 
     private void update() {

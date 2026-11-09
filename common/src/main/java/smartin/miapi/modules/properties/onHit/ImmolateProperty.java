@@ -27,11 +27,12 @@ public class ImmolateProperty extends DoubleProperty {
         property = this;
         MiapiEvents.LIVING_HURT.register(event -> {
             if (!event.defender.level().isClientSide()) {
-                double immolate = getForItems(EntityHelper.getAllEquipedItems(event.defender));
-                if (immolate > 0) {
-                    event.amount *= (1 - (float) EntityArmorStrength.valueRemap(immolate));
+                if(event.defender.isOnFire()){
+                    double immolate = getForItems(EntityHelper.getAllEquipedItems(event.defender));
+                    if (immolate > 0) {
+                        event.amount *= (1 - (float) EntityArmorStrength.valueRemap(immolate));
+                    }
                 }
-
             }
             return EventResult.pass();
         });

@@ -7,6 +7,7 @@ import com.google.gson.JsonObject;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
@@ -118,6 +119,16 @@ public class PropertyInjectionDev implements EditOption {
     @Override
     public InteractAbleWidget getIconGui(int x, int y, int width, int height, Consumer<EditOption> select, Supplier<EditOption> getSelected) {
         return new EditOptionIcon(x, y, width, height, select, getSelected, CraftingScreen.BACKGROUND_TEXTURE, 339, 25 + 28 * 2, 512, 512, this);
+    }
+
+    @Override
+    public void renderIcon(GuiGraphics drawContext, boolean isSelected, int x, int y, float delta) {
+        drawContext.blit(CraftingScreen.BACKGROUND_TEXTURE, x, y, 374, 53, 18, 18, 512, 512);
+    }
+
+    @Override
+    public Component getHoverName() {
+        return Component.empty();
     }
 
     @Environment(EnvType.CLIENT)

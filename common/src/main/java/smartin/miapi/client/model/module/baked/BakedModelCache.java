@@ -17,6 +17,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * re-structure of the barebones BakedModel to organize the quads in a more performant way by sorting them by sprite,
+ * since every sprite might require a custom VC.
+ * most models will only have one sprite, but this ensures models with multiple sprites dont cause a significant performance issue.
+ */
 public class BakedModelCache {
     BakedModel model;
     DoubleQuadCache[] forward;

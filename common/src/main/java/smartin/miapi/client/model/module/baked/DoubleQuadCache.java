@@ -9,6 +9,10 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import smartin.miapi.client.atlas.MaterialSpriteManager;
 import smartin.miapi.client.atlas.VertexConsumerProvider;
 
+/**
+ * containts all the quads of one sprite for a Baked Model.
+ * used in the optimised model logic by {@link BakedModelCache}
+ */
 public class DoubleQuadCache {
     public TextureAtlasSprite sprite;
     public BakedQuad[] original;

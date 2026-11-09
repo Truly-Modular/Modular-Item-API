@@ -77,7 +77,7 @@ public class DynamicTrailModel extends DynamicModel<TrailState> {
     public void updatePhysics(
             TrailState state,
             @Nullable LivingEntity entity,
-            float delta,
+            double delta,
             PoseStack pose,
             Vector3f down,
             ItemDisplayContext context

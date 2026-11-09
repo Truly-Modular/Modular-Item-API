@@ -1,21 +1,29 @@
 package smartin.miapi.client.model.module.baked;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.datafixers.util.Pair;
 import com.redpxnda.nucleus.util.Color;
+import dev.architectury.platform.Platform;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LightTexture;
+import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.util.FastColor;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import smartin.miapi.client.model.MiapiModel;
 import smartin.miapi.client.model.ModelHolder;
+import smartin.miapi.client.model.collision.CollisionHelper;
+import smartin.miapi.client.model.collision.Ray;
+import smartin.miapi.client.model.collision.RayHit;
 import smartin.miapi.client.model.module.baked.passes.RenderPass;
 import smartin.miapi.item.modular.Transform;
+import smartin.miapi.mixin.PoseAccessor;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.properties.render.AlphaOverwriteProperty;
 import smartin.miapi.modules.properties.render.ColorProperty;
@@ -23,10 +31,18 @@ import smartin.miapi.modules.properties.render.EmissivityProperty;
 import smartin.miapi.modules.properties.util.DoubleOperationResolvable;
 
 import java.util.IdentityHashMap;
+import java.util.List;
+import java.util.Optional;
 
+/**
+ * high performance rendering of Baked Models with overwrites.
+ * this class is not meant to be interacted with from the outside!
+ * use the {@link RenderPass#COLLECT_PASSES} to add/remove things to be rendered!
+ */
 @Environment(EnvType.CLIENT)
 public class BakedMiapiModelWithOverrides implements MiapiModel {
     final IdentityHashMap<BakedModel, RenderPass[]> cache = new IdentityHashMap<>();
+    final int randomColor = FastColor.ARGB32.color(180, (int) (Math.random() * 255), (int) (Math.random() * 255), (int) (Math.random() * 255));
     final int skyLight;
     final int blockLight;
     final float[] colors;
@@ -66,21 +82,50 @@ public class BakedMiapiModelWithOverrides implements MiapiModel {
         int light = LightTexture.pack(block, sky);
 
         Transform.applyPosition(context.matrices(), modelMatrix);
-        BakedModel currentModel = resolve(holder.model(), context.stack(), context.getEntitySave(), light);
+        BakedModel currentModel = ModelHelper.resolve(holder.model(), context.stack(), context.getEntitySave(), light);
         RenderPass[] passes = cache.computeIfAbsent(currentModel, m ->
                 RenderPass.getRenderPasses(holder, instance, context.stack(), context.transformationMode(), new BakedModelCache(m), randomSource));
+        RenderContext fuckForgeContext;
+        if (Platform.isNeoForge() && context.matrices().last().normal().determinant() < 0.0001f) {
+            //yeah dont ask me
+            //its broken, but just on neo, this shitty stuff fixes it.
+            //is there a better way?
+            //prob
+            //but idgaf
+            PoseStack fuckForge = new PoseStack();
+            fuckForge.last().pose().mul(context.matrices().last().pose());
+            ((PoseAccessor) (Object) fuckForge.last()).miapi$callComputeNormalMatrix();
+            fuckForge.last().normal().invert();
+            fuckForgeContext = new RenderContext(
+                    context.modelType(),
+                    fuckForge,
+                    context.stack(),
+                    context.transformationMode(),
+                    context.tickDelta(),
+                    context.vertexConsumers(),
+                    context.entity(),
+                    context.light(),
+                    context.overlay());
+        } else {
+            fuckForgeContext = context;
+        }
         for (RenderPass pass : passes) {
-            pass.render(context, colors, alpha, light);
+            pass.render(fuckForgeContext, colors, alpha, light);
         }
         context.matrices().popPose();
         Minecraft.getInstance().getProfiler().pop();
     }
 
-    public BakedModel resolve(BakedModel model, ItemStack stack, @Nullable LivingEntity entity, int light) {
-        BakedModel override = model.getOverrides().resolve(model, stack, Minecraft.getInstance().level, entity, light);
-        if (model != null) {
-            model = override;
+    public Optional<RayHit> raycast(Ray ray, RenderContext context, boolean debug) {
+        context.matrices().pushPose();
+        Transform.applyPosition(context.matrices(), modelMatrix);
+        BakedModel currentModel = ModelHelper.resolve(holder.model(), context.stack(), context.getEntitySave(), context.light());
+        List<Pair<TextureAtlasSprite, List<BakedQuad>>> batches = ModelHelper.buildBatches(currentModel, RandomSource.create());
+        if (debug && context.vertexConsumers() != null) {
+            CollisionHelper.renderRedQuads(batches, context.matrices().last().pose(), context.vertexConsumers(), randomColor);
         }
-        return model;
+        Optional<RayHit> hit = CollisionHelper.raycast(ray, batches, context.matrices().last().pose());
+        context.matrices().popPose();
+        return hit;
     }
 }

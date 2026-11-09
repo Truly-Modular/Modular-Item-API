@@ -53,7 +53,7 @@ public class LootTableMixin {
     public void miapi$captureLootTableParamBlock(Container container, LootParams params, long seed, CallbackInfo ci) {
         /*
         LootTable lootTable = (LootTable) (Object) this;
-        miapiTryGetLootTableID(params.getLevel(), lootTable).ifPresent(id -> {
+        miapiTryGetLootTableID(params.getWorkbenchLevel(), lootTable).ifPresent(id -> {
             ((LootParamsAccessor) params).getParams().put(LOOT_TABLE_PARAM, id);
         });
 
@@ -65,7 +65,7 @@ public class LootTableMixin {
                 /*
         LootParams params = ((LootContextAccessor) context).getParams();
         LootTable lootTable = (LootTable) (Object) this;
-        miapiTryGetLootTableID(params.getLevel(), lootTable).ifPresent(id -> {
+        miapiTryGetLootTableID(params.getWorkbenchLevel(), lootTable).ifPresent(id -> {
             ((LootParamsAccessor) params).getParams().put(LOOT_TABLE_PARAM, id);
         });
         */
@@ -76,7 +76,7 @@ public class LootTableMixin {
         /*
         LootParams params = ((LootContextAccessor) context).getParams();
         LootTable lootTable = (LootTable) (Object) this;
-        miapiTryGetLootTableID(params.getLevel(), lootTable).ifPresent(id -> {
+        miapiTryGetLootTableID(params.getWorkbenchLevel(), lootTable).ifPresent(id -> {
             ((LootParamsAccessor) params).getParams().put(LOOT_TABLE_PARAM, id);
         });
 

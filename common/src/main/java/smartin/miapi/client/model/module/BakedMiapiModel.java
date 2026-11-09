@@ -92,6 +92,7 @@ public class BakedMiapiModel implements MiapiModel {
         this.instance = holder.colorProvider().adapt(moduleInstance);
         Color color = holder.colorProvider().getVertexColor().orElse(ColorProperty.getColor(stack, instance));
         this.colors = new float[]{color.redAsFloat(), color.greenAsFloat(), color.blueAsFloat()};
+        this.colors = new float[]{1f, 1f, 1f, 1f};
         this.modelMatrix = holder.matrix4f();
         this.model = holder.model();
         settings = GlintProperty.property.getGlintSettings(instance, stack);

@@ -50,7 +50,7 @@ public class ModularWorkBenchRenderer implements BlockEntityRenderer<ModularWork
                     ItemDisplayContext.FIXED,
                     light, overlay,
                     matrices, vertexConsumers,
-                    be.getLevel(), 1
+                    be.getWorkbenchLevel(), 1
             );
         } catch (Exception ignored) {
         }

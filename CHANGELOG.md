@@ -10,6 +10,7 @@
     - /miapi stat compareHands -> compares stats from mainhand to offhand
     - /miapi stat compareHandsOnlyDiff -> compares mainhand to offhand but prints only differences.
 - made modules clickable in the preview renderer to select them
+- added passive potion effect
 
 ### Changes
 - changed developer mode to support ALL, ADMIN and NONE
@@ -25,3 +26,5 @@
 - fixed bug where explosion range and max damage where accidentally swapped
 - fixed issue where merging material keys wouldnt work correctly.
 - fixed minor enchantment bugs where certain enchantments weren't detected correctly
+- improved issue where items would render far too dark on neoforge
+- fixed loot functions not working

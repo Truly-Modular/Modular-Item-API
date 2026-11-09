@@ -10,12 +10,13 @@ import smartin.miapi.client.model.module.dynamic.SimulationState;
 /**
  * Manages queued physics updates for {@link DynamicModel}
  */
-public record DynamicModelPhysicsWork<S extends SimulationState>(
+public record DynamicModelPhysicsWork<S extends SimulationState<S>>(
         DynamicModel<S> model,
         S state,
         ItemDisplayContext context,
         @Nullable LivingEntity entity,
-        Vector3f down
+        Vector3f down,
+        double deltaTime
 ) implements PhysicsWork {
 
     @Override
@@ -23,7 +24,7 @@ public record DynamicModelPhysicsWork<S extends SimulationState>(
         model.updatePhysics(
                 state,
                 entity,
-                delta,
+                deltaTime(),
                 state.pose,
                 down,
                 context

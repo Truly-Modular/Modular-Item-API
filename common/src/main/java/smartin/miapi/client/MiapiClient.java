@@ -46,6 +46,7 @@ import smartin.miapi.client.gui.crafting.crafter.replace.CraftOption;
 import smartin.miapi.client.gui.crafting.crafter.replace.ReplaceView;
 import smartin.miapi.client.gui.crafting.statdisplay.StatListWidget;
 import smartin.miapi.client.model.ModularModelPredicateProvider;
+import smartin.miapi.client.model.module.dynamic.DynamicModel;
 import smartin.miapi.client.renderer.SpriteLoader;
 import smartin.miapi.compat.elytratrim.ElytraTrimsCompat;
 import smartin.miapi.config.MiapiConfig;
@@ -115,6 +116,15 @@ public class MiapiClient {
     }
 
     public static void init() {
+        ClientEvents.CLIENT_TICK.register((instance -> {
+            if (instance.level != null && false) {
+                tick.set((int) instance.level.getGameTime());
+            } else {
+                tick.addAndGet(1);
+            }
+            ClientKeybinding.clientTick(instance);
+        }));
+        ClientEvents.CLIENT_RENDER_TICK.register(client -> DynamicModel.worldGravity());
         var config = ConfigManager.getConfigObject(Miapi.id("server"));
         if (config.getInstance() == null) {
             config.load();
@@ -145,10 +155,6 @@ public class MiapiClient {
         }
         RegistryInventory.MODULAR_ITEMS.addCallback((MiapiClient::registerAnimations));
         //BoomerangClientRendering.setup();
-        ClientEvents.CLIENT_TICK.register((instance -> {
-            tick.addAndGet(1);
-            ClientKeybinding.clientTick(instance);
-        }));
         ClientEvents.CLIENT_RENDER_TICK.register(client -> {
             if (MiapiConfig.getClientConfig().render.animatedMaterials) {
                 Minecraft.getInstance().getProfiler().push("miapiMaterialAnimations");

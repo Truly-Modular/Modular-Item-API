@@ -9,15 +9,9 @@ import java.util.concurrent.*;
  */
 public final class PhysicsScheduler {
 
-    private static final ConcurrentLinkedQueue<PhysicsWork> queue =
-            new ConcurrentLinkedQueue<>();
-
-    private static final ConcurrentHashMap<PhysicsWork, Boolean> inFlight =
-            new ConcurrentHashMap<>();
-
-    private static final int WORKER_COUNT =
-            Math.max(1, Runtime.getRuntime().availableProcessors() - 1);
-
+    private static final ConcurrentLinkedQueue<PhysicsWork> queue = new ConcurrentLinkedQueue<>();
+    private static final ConcurrentHashMap<PhysicsWork, Boolean> inFlight = new ConcurrentHashMap<>();
+    private static final int WORKER_COUNT = Math.max(1, Runtime.getRuntime().availableProcessors() - 1);
     private static final ExecutorService workers =
             Executors.newFixedThreadPool(WORKER_COUNT, r -> {
                 Thread t = new Thread(r, "Physics-Worker");
@@ -33,13 +27,9 @@ public final class PhysicsScheduler {
             });
 
     private static volatile ScheduledFuture<?> scheduledTask;
-    private static volatile long updatePeriodNanos =
-            TimeUnit.SECONDS.toNanos(1) / 60;
+    private static volatile long updatePeriodNanos = TimeUnit.SECONDS.toNanos(1) / 60;
 
-    private PhysicsScheduler() {
-    }
-
-    /* ------------------------------------------------------------ */
+    private PhysicsScheduler() {}
 
     public static void start() {
         reschedule();
@@ -49,8 +39,7 @@ public final class PhysicsScheduler {
         if (updatesPerSecond <= 0)
             throw new IllegalArgumentException("updatesPerSecond must be > 0");
 
-        updatePeriodNanos =
-                TimeUnit.SECONDS.toNanos(1) / updatesPerSecond;
+        updatePeriodNanos = TimeUnit.SECONDS.toNanos(1) / updatesPerSecond;
 
         reschedule();
     }

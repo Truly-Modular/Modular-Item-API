@@ -7,6 +7,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import smartin.miapi.client.model.module.dynamic.DynamicModel;
 import smartin.miapi.events.ClientEvents;
 
 @Mixin(GameRenderer.class)
@@ -17,7 +18,16 @@ public class GameRendererMixin {
             method = "Lnet/minecraft/client/renderer/GameRenderer;render(Lnet / minecraft / client / DeltaTracker;Z)V",
             at = @At("HEAD")
     )
-    private void miapi$customItemRenderingEntityGetter(DeltaTracker deltaTracker, boolean renderLevel, CallbackInfo ci) {
+    private void miapi$startFramer(DeltaTracker deltaTracker, boolean renderLevel, CallbackInfo ci) {
         ClientEvents.CLIENT_RENDER_TICK.invoker().register(Minecraft.getInstance());
+    }
+
+
+    @Inject(
+            method = "Lnet/minecraft/client/renderer/GameRenderer;render(Lnet / minecraft / client / DeltaTracker;Z)V",
+            at = @At("TAIL")
+    )
+    private void miapi$endFrame(DeltaTracker deltaTracker, boolean renderLevel, CallbackInfo ci) {
+        DynamicModel.worldGravity();
     }
 }

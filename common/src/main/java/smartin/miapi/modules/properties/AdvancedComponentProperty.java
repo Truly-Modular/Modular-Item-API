@@ -128,7 +128,7 @@ public class AdvancedComponentProperty extends CodecProperty<Map<ResourceLocatio
                 Miapi.LOGGER.error("raw data " + compData);
             }
         }));
-        updateComponent(crafting, bench.getLevel().registryAccess());
+        updateComponent(crafting, bench.getWorkbenchLevel().registryAccess());
         return crafting;
     }
 

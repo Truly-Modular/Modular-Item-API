@@ -23,6 +23,7 @@ import smartin.miapi.modules.properties.onHit.entity.*;
 import smartin.miapi.modules.properties.potion.OnHitDefensiveEffects;
 import smartin.miapi.modules.properties.potion.OnHitOffensiveEffects;
 import smartin.miapi.modules.properties.potion.OnKillEffects;
+import smartin.miapi.modules.properties.potion.PassiveEffects;
 import smartin.miapi.modules.properties.projectile.*;
 import smartin.miapi.modules.properties.projectile.stat.bow.BowAccuracyProperty;
 import smartin.miapi.modules.properties.projectile.stat.bow.BowDrawTimeProperty;
@@ -171,6 +172,7 @@ public class PropertyRegistry {
         RegistryInventory.registerMiapi(RegistryInventory.MODULE_PROPERTY_MIAPI_REGISTRY, AbilityMangerProperty.KEY, new AbilityMangerProperty());
         RegistryInventory.registerMiapi(RegistryInventory.MODULE_PROPERTY_MIAPI_REGISTRY, OnHitDefensiveEffects.KEY, new OnHitDefensiveEffects());
         RegistryInventory.registerMiapi(RegistryInventory.MODULE_PROPERTY_MIAPI_REGISTRY, OnHitOffensiveEffects.KEY, new OnHitOffensiveEffects());
+        RegistryInventory.registerMiapi(RegistryInventory.MODULE_PROPERTY_MIAPI_REGISTRY, PassiveEffects.KEY, PassiveEffects.property);
         RegistryInventory.registerMiapi(RegistryInventory.MODULE_PROPERTY_MIAPI_REGISTRY, OnKillEffects.KEY, new OnKillEffects());
         RegistryInventory.registerMiapi(RegistryInventory.MODULE_PROPERTY_MIAPI_REGISTRY, OnKillExplosion.KEY, new OnKillExplosion());
         RegistryInventory.registerMiapi(RegistryInventory.MODULE_PROPERTY_MIAPI_REGISTRY, CanChangeParentModule.KEY, new CanChangeParentModule());

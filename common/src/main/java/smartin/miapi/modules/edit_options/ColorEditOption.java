@@ -3,7 +3,9 @@ package smartin.miapi.modules.edit_options;
 import io.netty.buffer.ByteBuf;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
@@ -11,7 +13,10 @@ import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.gui.crafting.CraftingScreen;
 import smartin.miapi.client.gui.crafting.crafter.glint.GlintEditView;
 import smartin.miapi.item.modular.VisualModularItem;
-import smartin.miapi.modules.*;
+import smartin.miapi.modules.ItemModule;
+import smartin.miapi.modules.MiapiPermissions;
+import smartin.miapi.modules.ModuleDataPropertiesManager;
+import smartin.miapi.modules.MutableModuleInstance;
 import smartin.miapi.modules.properties.GlintProperty;
 import smartin.miapi.network.Networking;
 
@@ -30,7 +35,7 @@ public class ColorEditOption implements EditOption {
         GlintProperty.RainbowGlintSettings settings = CODEC.decode(buffer);
         boolean remove = settings.colors.length == 0;
         if (settings.isItem) {
-            moduleInstance.getUnsortedList().forEach( mutable -> {
+            moduleInstance.getUnsortedList().forEach(mutable -> {
                 ModuleDataPropertiesManager.setProperty(
                         mutable,
                         GlintProperty.property,
@@ -73,6 +78,16 @@ public class ColorEditOption implements EditOption {
     @Environment(EnvType.CLIENT)
     @Override
     public InteractAbleWidget getIconGui(int x, int y, int width, int height, Consumer<EditOption> select, Supplier<EditOption> getSelected) {
-        return new EditOptionIcon(x, y, width, height, select, getSelected, CraftingScreen.BACKGROUND_TEXTURE, 339 + 32, 25 + 196, 512, 512, "miapi.ui.edit_option.hover.glint", this);
+        return new EditOptionIcon(x, y, width, height, select, getSelected, CraftingScreen.BACKGROUND_TEXTURE, 339, 25 + 196, 512, 512, "miapi.ui.edit_option.hover.glint", this);
+    }
+
+    @Override
+    public void renderIcon(GuiGraphics drawContext, boolean isSelected, int x, int y, float delta) {
+        drawContext.blit(CraftingScreen.BACKGROUND_TEXTURE, x, y, 338, 71, 18, 18, 512, 512);
+    }
+
+    @Override
+    public Component getHoverName() {
+        return Component.translatable("miapi.ui.edit_option.hover.glint");
     }
 }

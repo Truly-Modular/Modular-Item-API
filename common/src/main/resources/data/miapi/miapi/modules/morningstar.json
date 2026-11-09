@@ -1,0 +1,105 @@
+{
+    "load_condition": {
+        "type": "not"
+    },
+    "enchantments": {
+        "allowed": [
+            "minecraft:enchantable/fire_aspect",
+            "minecraft:enchantable/weapon"
+        ]
+    },
+    "allowed_in_slots": [
+        "sword_blade_small"
+    ],
+    "allowed_material": {
+        "allowedMaterials": [
+            "wood",
+            "metal",
+            "flint",
+            "bone",
+            "stone",
+            "crystal",
+            "glass"
+        ],
+        "cost": 1
+    },
+    "attributes": [
+        {
+            "attribute": "generic.attack_speed",
+            "value": "+0.5",
+            "operation": "+",
+            "slot": "mainhand"
+        },
+        {
+            "attribute": "generic.attack_damage",
+            "value": "[material.hardness]*0.6 + [material.density]*2",
+            "operation": "+",
+            "slot": "mainhand"
+        }
+    ],
+    "display_name": "Super Morning Star",
+    "module_tag": [
+        "default",
+        "handheld",
+        "head",
+        "blade_short"
+    ],
+    "is_weapon": "true",
+    "priority": 5,
+    "repair_priority": -1,
+    "flail_model": {
+        "chainLength": 0.1,
+        "segments": 7,
+        "rigidness": 0.6,
+        "chainRadius": 0.5,
+        "debug": false,
+        "iterations": 60,
+        "dampness": 0.4,
+        "transform": {
+            "rotation": {"x": 0, "y": 0, "z": 0},
+            "translation": {"x": 0.25, "y": 0.25, "z": 0.5},
+            "scale": {"x": 1, "y": 1, "z": 1}
+        },
+        "baseSegments": [
+            {
+                "collide": false,
+                "gravity": 1.25,
+                "model": {
+                    "path": "miapi:models/item/chain.json",
+                    "color_provider": "this",
+                    "transform": {
+                        "rotation": {"x": 90, "y": 0, "z": 0},
+                        "translation": {"x": -0.5, "y": 0.25, "z": 0},
+                        "scale": {"x": 1, "y": 1, "z": 1}
+                    }
+                }
+            },
+            {
+                "collide": false,
+                "gravity": 1.5,
+                "model": {
+                    "path": "miapi:models/item/chain.json",
+                    "transform": {
+                        "rotation": {"x": 90, "y": 90, "z": 0},
+                        "translation": {"x": -0.25, "y": -0.5, "z": 0},
+                        "scale": {"x": 1, "y": 1, "z": 1}
+                    }
+                }
+            }
+        ],
+        "overrides": {
+            "6": {
+                "collide": true,
+                "gravity": 5,
+                "model": {
+                    "path": "miapi:models/item/morning_star.json",
+                    "transform": {
+                        "rotation": {"x": 90, "y": 90, "z": 0},
+                        "translation": {"x": -0.25, "y": -0.5, "z": 0},
+                        "scale": {"x": 2, "y": 2, "z": 2}
+                    }
+                }
+            }
+        }
+    }
+}

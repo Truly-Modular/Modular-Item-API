@@ -5,7 +5,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
-import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
 /**
@@ -16,68 +15,37 @@ public class MatrixHelper {
             PoseStack poseStack,
             Vector3f localPos,
             Vec3 camPos) {
-        // Get current pose matrix
         Matrix4f pose = poseStack.last().pose();
 
-        // Copy the local position to avoid mutating it
+        return translatePositionToWorldSpace(localPos, camPos, pose);
+    }
+
+    public static @NotNull Vector3f translatePositionToWorldSpace(Vector3f localPos, Vec3 camPos, Matrix4f pose) {
         Vector3f worldPos = new Vector3f(localPos);
-
-        // Transform the vector by the pose matrix
-        worldPos.mulPosition(pose); // transforms as a point (applies translation too)
-
+        worldPos.mulPosition(pose);
         worldPos.add((float) camPos.x, (float) camPos.y, (float) camPos.z);
-
         return worldPos;
     }
-
-    public static @NotNull Quaternionf translateQuaternionToWorldSpace(
-            PoseStack poseStack,
-            Quaternionf localRot
-    ) {
-        // Extract rotation from the pose matrix
-        Quaternionf poseRotation =
-                poseStack.last().pose().getNormalizedRotation(new Quaternionf());
-
-        // world = poseRotation * local
-        return new Quaternionf(poseRotation).mul(localRot);
-    }
-
-    public static @NotNull Quaternionf translateQuaternionToLocalSpace(
-            PoseStack poseStack,
-            Quaternionf worldRot
-    ) {
-        // Extract rotation from the pose matrix
-        Quaternionf poseRotation =
-                poseStack.last().pose().getNormalizedRotation(new Quaternionf());
-
-        // Invert rotation
-        Quaternionf inverse = poseRotation.invert(new Quaternionf());
-
-        // local = inverse(poseRotation) * world
-        return inverse.mul(worldRot);
-    }
-
 
 
     public static Vector3f translatePositionToLocalSpace(
             PoseStack poseStack,
             Vector3f worldPos,
             Vec3 camPos) {
+        Matrix4f pose = new Matrix4f(poseStack.last().pose());
+
+        return translatePositionToLocalSpace(worldPos, camPos, pose);
+    }
+
+    public static @NotNull Vector3f translatePositionToLocalSpace(Vector3f worldPos, Vec3 camPos, Matrix4f pose) {
         Vector3f camRelative = new Vector3f(
                 worldPos.x - (float) camPos.x,
                 worldPos.y - (float) camPos.y,
                 worldPos.z - (float) camPos.z
         );
 
-        // Get current pose matrix
-        Matrix4f pose = new Matrix4f(poseStack.last().pose());
-
-        // Invert the matrix to go from world/camera space → local model space
         Matrix4f inverse = new Matrix4f(pose).invert();
-
-        // Transform the camera-relative position into local space
         camRelative.mulPosition(inverse);
-
         return camRelative;
     }
 
@@ -93,14 +61,14 @@ public class MatrixHelper {
             PoseStack poseStack,
             Vector3f localVec,
             Vec3 camPose) {
-        // Get current pose matrix (model → camera)
         Matrix4f model = new Matrix4f(poseStack.last().pose());
 
-        // Transform the vector as a point (applies rotation + translation)
+        return translateVectorToWorldSpace(localVec, model);
+    }
+
+    public static @NotNull Vector3f translateVectorToWorldSpace(Vector3f localVec, Matrix4f model) {
         Vector3f worldVec = new Vector3f(localVec);
         worldVec.mulPosition(model);
-
-        // Add camera world position (PoseStack is camera-relative)
         Vec3 camPos = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
         worldVec.add((float) camPos.x, (float) camPos.y, (float) camPos.z);
 
@@ -119,19 +87,18 @@ public class MatrixHelper {
             PoseStack poseStack,
             Vector3f worldVec,
             Vec3 camPos) {
+        Matrix4f model = new Matrix4f(poseStack.last().pose());
+
+        return translateVectorToLocalSpace(worldVec, camPos, model);
+    }
+
+    public static @NotNull Vector3f translateVectorToLocalSpace(Vector3f worldVec, Vec3 camPos, Matrix4f model) {
         Vector3f camRelative = new Vector3f(
                 worldVec.x - (float) camPos.x,
                 worldVec.y - (float) camPos.y,
                 worldVec.z - (float) camPos.z
         );
-
-        // Get current pose matrix
-        Matrix4f model = new Matrix4f(poseStack.last().pose());
-
-        // Invert the matrix to go from camera/local space → local/model space
         Matrix4f inverse = new Matrix4f(model).invert();
-
-        // Transform the camera-relative vector into local space
         camRelative.mulPosition(inverse);
 
         return camRelative;

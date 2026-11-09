@@ -5,7 +5,8 @@
         "rigidness": 0.5,
         "chainRadius": 0.5,
         "debug": false,
-        "iterations": 30,
+        "iterations": 100,
+        "dampness": 0.3,
         "transform": {
             "rotation": {
                 "x": 0,

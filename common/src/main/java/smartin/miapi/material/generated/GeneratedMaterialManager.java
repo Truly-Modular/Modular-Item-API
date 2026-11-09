@@ -199,7 +199,7 @@ public class GeneratedMaterialManager {
                         .limit(MiapiConfig.getServerConfig().generatedMaterials.maximumGeneratedMaterials)
                         .collect(Collectors.toSet()).forEach(toolMaterial -> {
                             try {
-                                ItemStack mainIngredient = toolMaterial.getRepairIngredient().getItems()[0];
+                                ItemStack mainIngredient = toolMaterial.getRepairIngredient().findItems()[0];
                                 if (verboseLogging()) {
                                     Miapi.LOGGER.info("attempting material generation for " + mainIngredient.getHoverName().getString());
                                 }
@@ -219,7 +219,7 @@ public class GeneratedMaterialManager {
                                     }
                                 }
                             } catch (RuntimeException e) {
-                                Miapi.LOGGER.error("could not generate Material for " + toolMaterial.getRepairIngredient().getItems()[0], e);
+                                Miapi.LOGGER.error("could not generate Material for " + toolMaterial.getRepairIngredient().findItems()[0], e);
                             }
                         });
 
