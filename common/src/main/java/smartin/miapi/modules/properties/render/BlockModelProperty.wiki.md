@@ -1,29 +1,8 @@
-# BlockModelProperty
+@header Block Model Property
+@path /data_types/properties/render/block
 
 A property that configures block models to be rendered as part of modular items. Each block model can have its own NBT state, transformations, and spin animations.
 
-## Purpose
-
-Allows rendering custom blocks (with their states and NBT) as part of a modular item's visual representation. Useful for creating item frames with blocks, decorative blocks, or functional block representations.
-
-## Behavior
-
-- Blocks are loaded from their `ResourceLocation`
-- NBT can be used to set block states via block state codec
-- Spin animations can be applied to rotating blocks
-- Transform matrices position and scale the blocks
-- Blocks are rendered using `BlockRenderModel`
-
-## JSON Structure
-
-```json5
-{
-	id: 'string (required)',
-	nbt: 'object (optional)',
-	transform: 'object (optional)',
-	spin: 'object (optional)'
-}
-```
 
 ### Fields
 
