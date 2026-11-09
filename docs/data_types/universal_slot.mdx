@@ -1,0 +1,45 @@
+# Universal Equipment Slot
+
+## Description
+
+The idea is to unify slot selection/predicates across vanilla, modded and curio/accessories. 
+Universal Equipment Slot accepts a slot name, a list of slot names, or an object with `whitelist` and `blacklist` fields.
+You can use vanilla Equipment Slots `any` `mainhand` `offhand` `hand` `feet` `legs` `chest` `head` `armor`
+(any will only target vanilla slots, not curio/accessories!)
+or any curio/accessories slot by `trinket.[slotname]`  
+`trinket.any` will work on all trinket/curio/accessories slots
+To target all items, simply dont add a whiteList and have an empty black list.
+This is in most cases the default.
+## Whitelist
+
+A single slot:
+
+```json
+"mainhand"
+```
+
+Multiple allowed slots:
+
+```json
+["mainhand", "offhand"]
+```
+
+## Blacklist and whitelist
+
+```json
+{
+  "whitelist": ["mainhand", "trinket.ring"],
+  "blacklist": ["offhand"]
+}
+```
+
+- `whitelist` is optional. If omitted, all slots are allowed.
+- An empty `whitelist` (`[]`) allows no slots.
+- `blacklist` is optional and defaults to `[]`. Blacklisted slots are always excluded, even if whitelisted.
+
+To select no slots, use:
+
+```json
+{"whitelist": []}
+```
+

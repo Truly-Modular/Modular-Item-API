@@ -1,0 +1,36 @@
+# Gui Offset Property
+
+## Description
+
+A property that adjusts the GUI position and size of modular items. Applies translation and scaling transformations to items displayed in inventory or creative mode.
+
+
+### Fields
+
+- **`x`** _(number, optional, default = 0)_:
+  Horizontal offset in pixels. Positive values move the item to the right.
+
+- **`y`** _(number, optional, default = 0)_:
+  Vertical offset in pixels. Positive values move the item downward.
+
+- **`sizeX`** _(number, optional, default = 0)_:
+  Horizontal size adjustment. Positive values increase displayed width.
+
+- **`sizeY`** _(number, optional, default = 0)_:
+  Vertical size adjustment. Positive values increase the displayed height.
+
+## Examples
+
+### Offset Item Right
+
+```json5
+{
+    "gui_offset": {
+        "x": 2,
+        "y": 2,
+        "sizeX": 10,
+        "sizeY": 5
+    }
+}
+```
+

@@ -182,7 +182,7 @@ public class HoverMaterialList extends InteractAbleWidget {
 
     public static Component getTranslation(String materialOrGroupKey) {
         if (ResourceLocation.isValidPath(materialOrGroupKey)) {
-            return Component.literal("Non [a-z0-9_.-] character in namespace of location: " + materialOrGroupKey);
+            //return Component.literal("Non [a-z0-9_.-] character in namespace of location: " + materialOrGroupKey);
         }
         try {
             ResourceLocation id = Miapi.id(materialOrGroupKey);
@@ -197,7 +197,7 @@ public class HoverMaterialList extends InteractAbleWidget {
             }
             return testTranslation;
         } catch (RuntimeException e){}
-        return Component.literal("Translation FAILED");
+        return Component.literal("Non [a-z0-9_.-] character in namespace of location: " + materialOrGroupKey);
     }
 
     @Override
