@@ -24,6 +24,7 @@ public abstract class DynamicModel<S extends SimulationState<S>>
 
     private S lastState;
     private S currentState;
+    public boolean multiThreadPhysicsUpdate = true;
 
 
     private S getState(RenderContext context) {
@@ -89,16 +90,20 @@ public abstract class DynamicModel<S extends SimulationState<S>>
         state.pose.last().pose().set(context.matrices().last().pose());
         state.cameraPose = camPos;
         //updatePhysics(state, context.entity(), (float) deltaSecond, context.matrices(), down, context.transformationMode());
-        PhysicsScheduler.submit(
-                new DynamicModelPhysicsWork<>(
-                        this,
-                        state,
-                        context.transformationMode(),
-                        context.entity(),
-                        down,
-                        deltaSecond
-                )
-        );
+        if(multiThreadPhysicsUpdate){
+            PhysicsScheduler.submit(
+                    new DynamicModelPhysicsWork<>(
+                            this,
+                            state,
+                            context.transformationMode(),
+                            context.entity(),
+                            down,
+                            deltaSecond
+                    )
+            );
+        }else{
+            updatePhysics(state, context.entity(), (float) deltaSecond, context.matrices(), down, context.transformationMode());
+        }
     }
 
     /**
