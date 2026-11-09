@@ -1,9 +1,9 @@
 package smartin.miapi.client.model.module.dynamic.verlet;
 
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
+import smartin.miapi.client.model.module.dynamic.thread.WorldPhysicsAccess;
 
 import java.util.List;
 
@@ -19,10 +19,10 @@ public class VerletIntegrator {
     private static final float MAX_DT = 1.0f;
     private static final int MAX_STEPS = 10;
 
-    public static void runVerlet(Level level, List<ChainUpdater> updaters, int minSteps, boolean initSolve, float delta, float damping, float rigidness, ChainSimulationState sim, Vector3f gravity, int passes, boolean ui, Vec3 camPos, Entity noCollide) {
-        float dt = Math.max(1e-4f, Math.min(delta, MAX_DT));
-        int steps = Math.min(MAX_STEPS,Math.max(1, Math.max(minSteps, (int) Math.ceil(dt / FIXED_DT))));
-        float h = dt / steps;
+    public static void runVerlet(WorldPhysicsAccess level, List<ChainUpdater> updaters, int minSteps, boolean initSolve, double delta, float damping, float rigidness, ChainSimulationState sim, Vector3f gravity, int passes, boolean ui, Vec3 camPos, Entity noCollide) {
+        double dt = Math.max(1e-4f, Math.min(delta, MAX_DT));
+        int steps = Math.min(MAX_STEPS, Math.max(1, Math.max(minSteps, (int) Math.ceil(dt / FIXED_DT))));
+        float h = (float) dt / steps;
         float deltaPercent = 0.0f;
         /*
         i should explain this mess a bit
@@ -63,8 +63,8 @@ public class VerletIntegrator {
             }
 
             Vector3f current = new Vector3f(n.pos);
-            float dtRatio = s.prevDt > 0.0f ? dt / s.prevDt : 1.0f;
-            Vector3f velocity = new Vector3f(n.pos).sub(n.prevPos).mul(dtRatio).mul(normalizedDamping);
+            double dtRatio = s.prevDt > 0.0f ? dt / s.prevDt : 1.0f;
+            Vector3f velocity = new Vector3f(n.pos).sub(n.prevPos).mul((float) dtRatio).mul(normalizedDamping);
             n.pos.add(velocity);
 
             float resistance = n.hadCollision ? n.resistance : 1.0f;
@@ -78,7 +78,7 @@ public class VerletIntegrator {
         }
     }
 
-    private static void solveConstraints(ChainSimulationState s, Level level, float rigidness, float dt, boolean ui, Entity noCollide) {
+    private static void solveConstraints(ChainSimulationState s, WorldPhysicsAccess level, float rigidness, float dt, boolean ui, Entity noCollide) {
         float stiffness = 1.0f - Math.max(0.0f, Math.min(1.0f, rigidness));
         float stiffnessPerStep = 1.0f - (float) Math.pow(1.0f - stiffness, dt / FIXED_DT);
         s.nodes[0].pos.set(s.handlePos);

@@ -7,11 +7,12 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemDisplayContext;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
+import smartin.miapi.Miapi;
 import smartin.miapi.client.model.MiapiModel;
+import smartin.miapi.client.model.module.dynamic.thread.WorldPhysicsAccess;
 import smartin.miapi.client.model.module.dynamic.verlet.ChainMover;
 import smartin.miapi.client.model.module.dynamic.verlet.ChainNode;
 import smartin.miapi.client.model.module.dynamic.verlet.ChainSimulationState;
@@ -43,12 +44,12 @@ public class ChainModel extends DynamicModel<ChainState> {
 
     @Override
     protected ChainState createState(Vec3 pos, RenderContext context) {
-        return new ChainState(chain, context, pos, new Vector3f(0, -1, 0));
+        return new ChainState(chain, context, pos, DynamicModel.CURRENT_GRAVITY);
     }
 
 
     @Override
-    public void updatePhysics(ChainState state, LivingEntity entity, float deltaTime, PoseStack pose, Vector3f down, ItemDisplayContext c) {
+    public void updatePhysics(ChainState state, LivingEntity entity, double deltaTime, PoseStack pose, Vector3f down, ItemDisplayContext c) {
         if (deltaTime < 1e-10) {
             return;
         }
@@ -62,19 +63,17 @@ public class ChainModel extends DynamicModel<ChainState> {
         }
 
         Vector3f fullLastPos = new Vector3f(sim.handlePos);
-
         boolean ui = c.equals(ItemDisplayContext.GUI) || c.equals(ItemDisplayContext.FIXED) || c.equals(ItemDisplayContext.GROUND) || c.equals(ItemDisplayContext.NONE);
-
-        Level level = entity != null ? entity.level() : Minecraft.getInstance().level;
         int minIterations = (int) (currentPos.distance(fullLastPos) / state.sim.segments[0].restLength);
 
-        VerletIntegrator.runVerlet(level, List.of(new VerletIntegrator.ChainUpdater() {
+        VerletIntegrator.runVerlet(WorldPhysicsAccess.CLIENT_WORLD, List.of(new VerletIntegrator.ChainUpdater() {
             @Override
             public void apply(ChainSimulationState sim, float deltaPercent) {
                 sim.prevHandlePos.set(sim.handlePos);
                 fullLastPos.lerp(currentPos, deltaPercent, sim.handlePos);
             }
         }), minIterations * 2, true, deltaTime, 0.98f, rigidness, sim, down, iterations, ui, state.cameraPose, entity);
+        ChainMover.resolveTransforms(pose.last().pose(), state);
     }
 
     public static void drawLine(PoseStack poseStack, MultiBufferSource buffer, Vector3f start, Vector3f end, float r, float g, float b, float a) {
@@ -127,62 +126,41 @@ public class ChainModel extends DynamicModel<ChainState> {
     @Override
     protected void renderDynamic(RenderContext context, Vector3f start, Matrix4f end, ChainState state) {
         renderChainDynForward(context, state);
+        Minecraft.getInstance().getProfiler().push("copy test");
+        state.copy();
+        Minecraft.getInstance().getProfiler().pop();
+
+        Minecraft.getInstance().getProfiler().push("interpolation");
+        state.interpolate(2,state);
+        Minecraft.getInstance().getProfiler().pop();
     }
 
     private void renderChainDynForward(RenderContext context, ChainState state) {
-        Vector3f prevUp = new Vector3f(0, 1, 0);
+        PoseStack matrix = context.matrices();
 
-        context.matrices().pushPose();
         for (int i = 0; i < chain.size(); i++) {
-            Vector3f a = MatrixHelper.translateVectorToLocalSpace(context.matrices(), state.sim.nodes[i].pos, state.cameraPose);
-            Vector3f b = MatrixHelper.translateVectorToLocalSpace(context.matrices(), state.sim.nodes[i + 1].pos, state.cameraPose);
 
-            Vector3f delta = new Vector3f(b).sub(a);
-            Vector3f forward = new Vector3f(delta).normalize();
+            matrix.pushPose();
+            try {
+                matrix.mulPose(state.linkTransforms[i]);
 
-            // project previous up onto plane perpendicular to forward
-            Vector3f up = new Vector3f(prevUp).sub(new Vector3f(forward).mul(prevUp.dot(forward)));
+                if (debug) {
+                    drawLine(context.matrices(), context.vertexConsumers(), new Vector3f(0, 0, 0), new Vector3f(0, 0, 1.0f), 1.0f, 1.0f, 1.0f, 1.0f);
+                    drawLine(context.matrices(), context.vertexConsumers(), new Vector3f(0, 0, 0), new Vector3f(1.0f, 0, 0), 1.0f, 0.0f, 0f, 1.0f);
+                    drawLine(context.matrices(), context.vertexConsumers(), new Vector3f(0, 0, 0), new Vector3f(0, 1.0f, 0), 0f, 0.0f, 1f, 1.0f);
+                }
 
-            // degeneracy fallback
-            if (up.lengthSquared() < 1e-6f) {
-                up = Math.abs(forward.y) > 0.99f ? new Vector3f(1, 0, 0) : new Vector3f(0, 1, 0);
-
-                up.sub(new Vector3f(forward).mul(up.dot(forward)));
+                matrix.scale(10, 10, 10);
+                chain.get(i).modelData.forEach(
+                        model -> model.render(context)
+                );
+            } catch (RuntimeException e) {
+                Miapi.LOGGER.warn("caught render error", e);
+            } finally {
+                matrix.popPose();
             }
 
-            up.normalize();
-
-            Vector3f right = new Vector3f(up).cross(forward).normalize();
-
-            up = new Vector3f(forward).cross(right).normalize();
-
-            prevUp.set(up);
-            Matrix4f basis = new Matrix4f(right.x, right.y, right.z, 0, up.x, up.y, up.z, 0, forward.x, forward.y, forward.z, 0, 0, 0, 0, 1);
-
-            context.matrices().pushPose();
-            context.matrices().translate(a.x, a.y, a.z);
-            context.matrices().mulPose(basis);
-            float len = delta.length();
-            float sidelength = len;
-            float targetLength = chain.get(i).length;
-            float diff = targetLength - len;
-            if (diff != 0) {
-                sidelength = targetLength + diff / 10;
-            }
-            context.matrices().scale(sidelength, sidelength, len);
-            if (debug) {
-                drawLine(context.matrices(), context.vertexConsumers(), new Vector3f(0, 0, 0), new Vector3f(0, 0, 1.0f), 1.0f, 1.0f, 1.0f, 1.0f);
-                drawLine(context.matrices(), context.vertexConsumers(), new Vector3f(0, 0, 0), new Vector3f(1.0f, 0, 0), 1.0f, 0.0f, 0f, 1.0f);
-                drawLine(context.matrices(), context.vertexConsumers(), new Vector3f(0, 0, 0), new Vector3f(0, 1.0f, 0), 0f, 0.0f, 1f, 1.0f);
-            }
-            context.matrices().scale(10, 10, 10);
-            if (i == chain.size() - 1) {
-                state.lastProjection.set(context.matrices().last().pose());
-            }
-            chain.get(i).modelData.forEach(model -> model.render(context));
-            context.matrices().popPose();
         }
-        context.matrices().popPose();
     }
 
 

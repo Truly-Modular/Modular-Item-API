@@ -68,6 +68,7 @@
         "client.BufferBuilderAccessor",
         "client.BuiltinModelItemRendererMixin",
         "client.ClientAdvancementManagerAccessor",
+        "client.ClientLevelMixin",
         "client.ClientPlayerEntityMixin",
         "client.ConfigScreenMixin",
         "client.ElytraEntityModelAccessor",

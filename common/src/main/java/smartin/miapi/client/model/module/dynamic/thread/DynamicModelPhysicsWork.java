@@ -15,7 +15,8 @@ public record DynamicModelPhysicsWork<S extends SimulationState<S>>(
         S state,
         ItemDisplayContext context,
         @Nullable LivingEntity entity,
-        Vector3f down
+        Vector3f down,
+        double deltaTime
 ) implements PhysicsWork {
 
     @Override
@@ -23,7 +24,7 @@ public record DynamicModelPhysicsWork<S extends SimulationState<S>>(
         model.updatePhysics(
                 state,
                 entity,
-                delta,
+                deltaTime(),
                 state.pose,
                 down,
                 context

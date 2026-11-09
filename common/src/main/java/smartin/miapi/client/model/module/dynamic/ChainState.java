@@ -4,6 +4,7 @@ import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import smartin.miapi.client.model.MiapiModel;
+import smartin.miapi.client.model.module.dynamic.verlet.ChainMover;
 import smartin.miapi.client.model.module.dynamic.verlet.ChainNode;
 import smartin.miapi.client.model.module.dynamic.verlet.ChainSegment;
 import smartin.miapi.client.model.module.dynamic.verlet.ChainSimulationState;
@@ -14,6 +15,7 @@ public class ChainState extends SimulationState<ChainState> {
 
     public final ChainSimulationState sim;
     public final Matrix4f lastProjection = new Matrix4f();
+    public Matrix4f[] linkTransforms;
 
     public ChainState(List<ChainModel.ChainEntry> chain, MiapiModel.RenderContext context, Vec3 cameraPos, Vector3f gravity) {
         sim = new ChainSimulationState();
@@ -25,6 +27,11 @@ public class ChainState extends SimulationState<ChainState> {
         initializeRoot(worldOrigin);
         initializeChain(chain, worldOrigin, direction, context, cameraPos);
         initializeSimulationState(worldOrigin);
+        linkTransforms = new Matrix4f[chain.size()];
+        for (int i = 0; i < chain.size(); i++) {
+            linkTransforms[i] = new Matrix4f();
+        }
+        ChainMover.resolveTransforms(context.matrices().last().pose(), this);
     }
 
     private ChainState(ChainState source) {
@@ -137,6 +144,7 @@ public class ChainState extends SimulationState<ChainState> {
             ChainSegment segment = new ChainSegment(i, i + 1, worldLength);
 
             segment.collide = entry.collide;
+            segment.desiredLength = entry.length;
 
             sim.segments[i] = segment;
         }

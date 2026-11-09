@@ -10,9 +10,8 @@ import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import smartin.miapi.client.MiapiClient;
 import smartin.miapi.client.model.MiapiModel;
-
-import java.util.EnumMap;
-import java.util.Map;
+import smartin.miapi.client.model.module.dynamic.thread.DynamicModelPhysicsWork;
+import smartin.miapi.client.model.module.dynamic.thread.PhysicsScheduler;
 
 /**
  * Dynamic model class with util for animation and models that move their submodules.
@@ -23,19 +22,33 @@ import java.util.Map;
 public abstract class DynamicModel<S extends SimulationState<S>>
         implements MiapiModel {
 
-    private final Map<ItemDisplayContext, S> states =
-            new EnumMap<>(ItemDisplayContext.class);
+    private S lastState;
+    private S currentState;
 
-    protected S getState(RenderContext context) {
-        return states.computeIfAbsent(context.transformationMode(),
-                c -> createState(MatrixHelper.getCamPos(), context)
-        );
+
+    private S getState(RenderContext context) {
+        if (currentState == null) {
+            currentState = createState(MatrixHelper.getCamPos(), context);
+        }
+        return currentState;
     }
 
+    public static void guiGravity() {
+        CURRENT_GRAVITY = new Vector3f(0, 1, 0);
+    }
+
+    public static void worldGravity() {
+        CURRENT_GRAVITY = new Vector3f(0, -1, 0);
+    }
+
+    public static Vector3f CURRENT_GRAVITY = new Vector3f(0, -1, 0);
+
     @Override
-    public void render(
-            RenderContext context) {
+    public void render(RenderContext context) {
         S state = getState(context);
+        if (state == null) {
+            return;
+        }
 
         double now = MiapiClient.currentTickFull();
 
@@ -47,13 +60,7 @@ public abstract class DynamicModel<S extends SimulationState<S>>
 
         Minecraft.getInstance().getProfiler().push("Physics");
         if (deltaSeconds > 0) {
-            if (context.equals(ItemDisplayContext.GUI)) {
-                queuePhysicsUpdate(state, MatrixHelper.getCamPos(), new Vector3f(0, -1, 0), context, deltaSeconds);
-            } else if (context.equals(ItemDisplayContext.FIXED)) {
-                queuePhysicsUpdate(state, MatrixHelper.getCamPos(), new Vector3f(0, -1, 0), context, deltaSeconds);
-            } else {
-                queuePhysicsUpdate(state, MatrixHelper.getCamPos(), new Vector3f(0, -1, 0), context, deltaSeconds);
-            }
+            queuePhysicsUpdate(state, MatrixHelper.getCamPos(), new Vector3f(CURRENT_GRAVITY), context, deltaSeconds);
         }
         Minecraft.getInstance().getProfiler().pop();
 
@@ -61,12 +68,8 @@ public abstract class DynamicModel<S extends SimulationState<S>>
         Vector3f start = new Vector3f();
         Matrix4f end = computeEnd(state, context.matrices());
 
-        renderDynamic(
-                context,
-                start,
-                end,
-                state
-        );
+        renderDynamic(context, start, end, state);
+
         Minecraft.getInstance().getProfiler().pop();
     }
 
@@ -85,19 +88,17 @@ public abstract class DynamicModel<S extends SimulationState<S>>
         state.pose = new PoseStack();
         state.pose.last().pose().set(context.matrices().last().pose());
         state.cameraPose = camPos;
-        updatePhysics(state, context.entity(), (float) deltaSecond, context.matrices(), down, context.transformationMode());
-        /*
+        //updatePhysics(state, context.entity(), (float) deltaSecond, context.matrices(), down, context.transformationMode());
         PhysicsScheduler.submit(
                 new DynamicModelPhysicsWork<>(
                         this,
                         state,
                         context.transformationMode(),
                         context.entity(),
-                        down
+                        down,
+                        deltaSecond
                 )
         );
-
-         */
     }
 
     /**
@@ -107,7 +108,7 @@ public abstract class DynamicModel<S extends SimulationState<S>>
     public abstract void updatePhysics(
             S state,
             @Nullable LivingEntity entity,
-            float delta,
+            double delta,
             PoseStack pose,
             Vector3f down,
             ItemDisplayContext context

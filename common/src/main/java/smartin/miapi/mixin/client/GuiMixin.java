@@ -7,6 +7,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import smartin.miapi.client.model.module.dynamic.DynamicModel;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.editor.MiapiEditor;
 
@@ -18,5 +19,11 @@ public class GuiMixin {
         if (MiapiConfig.getClientConfig().other.enableEditorMixin ) {
             MiapiEditor.renderAll(guiGraphics, deltaTracker);
         }
+        DynamicModel.guiGravity();
+    }
+
+    @Inject(method = "Lnet/minecraft/client/gui/Gui;render(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/DeltaTracker;)V", at = @At("TAIL"), cancellable = true)
+    private void miapi$endGuiDraw(GuiGraphics guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) {
+        DynamicModel.worldGravity();
     }
 }

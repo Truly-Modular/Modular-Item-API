@@ -16,6 +16,7 @@ public class ChainSegment {
     public boolean collide = false;
 
     public Quaternionf rot = new Quaternionf();
+    public float desiredLength;
 
     public ChainSegment(int a, int b, float length) {
         this.a = a;

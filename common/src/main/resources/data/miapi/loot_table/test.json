@@ -1,0 +1,37 @@
+{
+    "type": "minecraft:generic",
+    "pools": [
+        {
+            "rolls": 1,
+            "entries": [
+                {
+                    "type": "minecraft:item",
+                    "name": "minecraft:diamond_sword",
+                    "functions": [
+                        {
+                            "function": "miapi:module_swap",
+                            "chance": 1.0,
+                            "whitelist": [
+                                "tm_arsenal:handle/sword",
+                                "tm_arsenal:guard/normal",
+                                "tm_arsenal:blade/normal",
+                                "tm_arsenal:pommel/round"
+                            ]
+                        },
+                        {
+                            "function": "miapi:material_swap",
+                            "chance": 1.0,
+                            "lower_bounds": -10,
+                            "whitelist": [
+                                "miapi:metal/iron",
+                                "miapi:metal/gold",
+                                "miapi:metal/copper",
+                                "miapi:crystal/diamond"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

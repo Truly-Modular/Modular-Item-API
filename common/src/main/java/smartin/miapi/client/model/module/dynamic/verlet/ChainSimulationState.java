@@ -11,7 +11,7 @@ public class ChainSimulationState {
     public AngleConstraint[] angleConstraints =
             new AngleConstraint[0];
 
-    public float prevDt = 0.0f;
+    public double prevDt = 0.0f;
 
     public Vector3f handlePos = new Vector3f();
     public Vector3f prevHandlePos = new Vector3f();
