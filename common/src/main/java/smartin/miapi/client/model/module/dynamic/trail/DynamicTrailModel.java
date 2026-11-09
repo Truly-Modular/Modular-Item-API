@@ -151,15 +151,6 @@ public class DynamicTrailModel extends DynamicModel<TrailState> {
         Vec3 camPos = state.cameraPose;
         colorProvider.getConsumer(texture, context.stack(), moduleInstance, context.transformationMode(), provider);
         VertexConsumer vc = provider.getRenderSaveVC.apply(context.vertexConsumers());
-        /*
-        VertexConsumer vc = ItemRenderer.getFoilBufferDirect(
-                context.vertexConsumers(),
-                ItemBlockRenderTypes.getRenderType(ItemStack.EMPTY, false),
-                true,
-                context.stack().hasFoil()
-        );
-
-         */
 
         TrailState.TrailPoint prev = new TrailState.TrailPoint(MatrixHelper.translatePositionToWorldSpace(
                 poseStack,

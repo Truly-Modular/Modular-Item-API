@@ -1,4 +1,4 @@
-## v2.4.1 (1.21)
+## v2.4.2 1.21)
 
 ### Fixes
-- fixed material group names being broken
+- fixed multithreading crash of trail logic

@@ -3,8 +3,8 @@ package smartin.miapi.client.model.module.dynamic.trail;
 import org.joml.Vector3f;
 import smartin.miapi.client.model.module.dynamic.SimulationState;
 
-import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.concurrent.ConcurrentLinkedDeque;
 
 public class TrailState extends SimulationState<TrailState> {
 
@@ -45,6 +45,6 @@ public class TrailState extends SimulationState<TrailState> {
         }
     }
 
-    public final Deque<TrailPoint> points = new ArrayDeque<>();
+    public final Deque<TrailPoint> points = new ConcurrentLinkedDeque<>();
     public float lastSpawnTime = 0f;
 }
