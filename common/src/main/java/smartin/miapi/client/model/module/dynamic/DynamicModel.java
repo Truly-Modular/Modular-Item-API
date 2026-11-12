@@ -10,6 +10,7 @@ import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import smartin.miapi.client.MiapiClient;
 import smartin.miapi.client.model.MiapiModel;
+import smartin.miapi.client.model.module.dynamic.processor.PhysicsProcessor;
 import smartin.miapi.client.model.module.dynamic.thread.DynamicModelPhysicsWork;
 import smartin.miapi.client.model.module.dynamic.thread.PhysicsScheduler;
 
@@ -25,11 +26,14 @@ public abstract class DynamicModel<S extends SimulationState<S>>
     private S lastState;
     private S currentState;
     public boolean multiThreadPhysicsUpdate = true;
+    public PhysicsProcessor<S> processor;
+    public boolean init = false;
+    public Matrix4f endState = new Matrix4f().identity();
 
 
     private S getState(RenderContext context) {
         if (currentState == null) {
-            currentState = createState(MatrixHelper.getCamPos(), context);
+            currentState = createState(MatrixHelper.getCamPos(), context, CURRENT_GRAVITY);
         }
         return currentState;
     }
@@ -46,6 +50,7 @@ public abstract class DynamicModel<S extends SimulationState<S>>
 
     @Override
     public void render(RenderContext context) {
+
         S state = getState(context);
         if (state == null) {
             return;
@@ -78,9 +83,10 @@ public abstract class DynamicModel<S extends SimulationState<S>>
      * Creating the State for the current Context
      *
      * @param context
+     * @param down
      * @return
      */
-    protected abstract S createState(Vec3 pos, RenderContext context);
+    public abstract S createState(Vec3 pos, RenderContext context, Vector3f down);
 
     protected void queuePhysicsUpdate(S state,
                                       Vec3 camPos,
@@ -90,7 +96,7 @@ public abstract class DynamicModel<S extends SimulationState<S>>
         state.pose.last().pose().set(context.matrices().last().pose());
         state.cameraPose = camPos;
         //updatePhysics(state, context.entity(), (float) deltaSecond, context.matrices(), down, context.transformationMode());
-        if(multiThreadPhysicsUpdate){
+        if (multiThreadPhysicsUpdate) {
             PhysicsScheduler.submit(
                     new DynamicModelPhysicsWork<>(
                             this,
@@ -101,7 +107,7 @@ public abstract class DynamicModel<S extends SimulationState<S>>
                             deltaSecond
                     )
             );
-        }else{
+        } else {
             updatePhysics(state, context.entity(), (float) deltaSecond, context.matrices(), down, context.transformationMode());
         }
     }
@@ -110,8 +116,8 @@ public abstract class DynamicModel<S extends SimulationState<S>>
      * Physics update.
      * TODO: add option to run this on worker threads without bugs.
      */
-    public abstract void updatePhysics(
-            S state,
+    public abstract S updatePhysics(
+            S lastState,
             @Nullable LivingEntity entity,
             double delta,
             PoseStack pose,

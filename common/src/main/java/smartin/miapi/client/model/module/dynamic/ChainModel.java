@@ -43,18 +43,18 @@ public class ChainModel extends DynamicModel<ChainState> {
     }
 
     @Override
-    protected ChainState createState(Vec3 pos, RenderContext context) {
+    public ChainState createState(Vec3 pos, RenderContext context, Vector3f down) {
         return new ChainState(chain, context, pos, DynamicModel.CURRENT_GRAVITY);
     }
 
 
     @Override
-    public void updatePhysics(ChainState state, LivingEntity entity, double deltaTime, PoseStack pose, Vector3f down, ItemDisplayContext c) {
+    public ChainState updatePhysics(ChainState lastState, LivingEntity entity, double deltaTime, PoseStack pose, Vector3f down, ItemDisplayContext c) {
         if (deltaTime < 1e-10) {
-            return;
+            return lastState;
         }
-        Vector3f currentPos = MatrixHelper.translatePositionToWorldSpace(pose, new Vector3f(0, 0, 0), state.cameraPose);
-        ChainSimulationState sim = state.sim;
+        Vector3f currentPos = MatrixHelper.translatePositionToWorldSpace(pose, new Vector3f(0, 0, 0), lastState.cameraPose);
+        ChainSimulationState sim = lastState.sim;
 
         if (fakeDampness > 0) {
             Vector3f delta = new Vector3f(currentPos).sub(new Vector3f(sim.handlePos));
@@ -64,7 +64,7 @@ public class ChainModel extends DynamicModel<ChainState> {
 
         Vector3f fullLastPos = new Vector3f(sim.handlePos);
         boolean ui = c.equals(ItemDisplayContext.GUI) || c.equals(ItemDisplayContext.FIXED) || c.equals(ItemDisplayContext.GROUND) || c.equals(ItemDisplayContext.NONE);
-        int minIterations = (int) (currentPos.distance(fullLastPos) / state.sim.segments[0].restLength);
+        int minIterations = (int) (currentPos.distance(fullLastPos) / lastState.sim.segments[0].restLength);
 
         VerletIntegrator.runVerlet(WorldPhysicsAccess.CLIENT_WORLD, List.of(new VerletIntegrator.ChainUpdater() {
             @Override
@@ -72,8 +72,9 @@ public class ChainModel extends DynamicModel<ChainState> {
                 sim.prevHandlePos.set(sim.handlePos);
                 fullLastPos.lerp(currentPos, deltaPercent, sim.handlePos);
             }
-        }), minIterations * 2, true, deltaTime, 0.98f, rigidness, sim, down, iterations, ui, state.cameraPose, entity);
-        ChainMover.resolveTransforms(pose.last().pose(), state);
+        }), minIterations * 2, true, deltaTime, 0.98f, rigidness, sim, down, iterations, ui, lastState.cameraPose, entity);
+        ChainMover.resolveTransforms(pose.last().pose(), lastState);
+        return lastState;
     }
 
     public static void drawLine(PoseStack poseStack, MultiBufferSource buffer, Vector3f start, Vector3f end, float r, float g, float b, float a) {

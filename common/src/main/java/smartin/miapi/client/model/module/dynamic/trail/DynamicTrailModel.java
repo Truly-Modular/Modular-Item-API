@@ -70,13 +70,13 @@ public class DynamicTrailModel extends DynamicModel<TrailState> {
     }
 
     @Override
-    protected TrailState createState(Vec3 pos, RenderContext context) {
+    public TrailState createState(Vec3 pos, RenderContext context, Vector3f down) {
         return new TrailState();
     }
 
     @Override
-    public void updatePhysics(
-            TrailState state,
+    public TrailState updatePhysics(
+            TrailState lastState,
             @Nullable LivingEntity entity,
             double delta,
             PoseStack pose,
@@ -84,13 +84,13 @@ public class DynamicTrailModel extends DynamicModel<TrailState> {
             ItemDisplayContext context
     ) {
         if (!whiteList.contains(context)) {
-            return;
+            return lastState;
         }
         pose.pushPose();
         pose.mulPose(transform.toMatrix());
         float currentTime = (float) MiapiClient.currentTickFull();
 
-        Iterator<TrailState.TrailPoint> it = state.points.iterator();
+        Iterator<TrailState.TrailPoint> it = lastState.points.iterator();
         while (it.hasNext()) {
             TrailState.TrailPoint p = it.next();
             p.age += delta;
@@ -98,33 +98,34 @@ public class DynamicTrailModel extends DynamicModel<TrailState> {
                 it.remove();
             }
         }
-        if (currentTime - state.lastSpawnTime < sampleInterval) {
+        if (currentTime - lastState.lastSpawnTime < sampleInterval) {
             pose.popPose();
-            return;
+            return lastState;
         }
-        state.lastSpawnTime = currentTime;
+        lastState.lastSpawnTime = currentTime;
 
         Vector3f localOrigin = new Vector3f(0, 0, 0);
         Vector3f worldPos = MatrixHelper.translatePositionToWorldSpace(
                 pose,
                 new Vector3f(localOrigin).sub(0, thickness, 0),
-                state.cameraPose
+                lastState.cameraPose
         );
         Vector3f worldPos2 = MatrixHelper.translatePositionToWorldSpace(
                 pose,
                 new Vector3f(localOrigin).sub(0, -thickness, 0),
-                state.cameraPose
+                lastState.cameraPose
         );
 
-        state.points.addLast(new TrailState.TrailPoint(
+        lastState.points.addLast(new TrailState.TrailPoint(
                 worldPos,
                 worldPos2
         ));
 
-        while (state.points.size() > maxPoints) {
-            state.points.removeFirst();
+        while (lastState.points.size() > maxPoints) {
+            lastState.points.removeFirst();
         }
         pose.popPose();
+        return lastState;
     }
 
 
