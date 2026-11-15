@@ -1,4 +1,4 @@
-package smartin.miapi.editor;
+package smartin.miapi.editor.live;
 
 import com.google.gson.JsonObject;
 import com.redpxnda.nucleus.editor.core.ClientLoader;
@@ -9,8 +9,9 @@ import imgui.type.ImString;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.GuiGraphics;
 import smartin.miapi.datapack.ReloadEvents;
+import smartin.miapi.editor.EditorLogger;
+import smartin.miapi.editor.MiapiEditor;
 import smartin.miapi.editor.material.MaterialListViewer;
-import smartin.miapi.modules.cache.CacheCommands;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -41,6 +42,7 @@ public class LiveDataPackViewer implements MiapiEditor {
 
     public LiveDataPackViewer(LiveDataPackManager manager) {
         this.manager = manager;
+        openUI = this;
     }
 
     public static LiveDataPackViewer openUI;
@@ -62,7 +64,7 @@ public class LiveDataPackViewer implements MiapiEditor {
     }
 
     public static boolean isEnabled() {
-        if ( openUI != null) {
+        if (openUI != null) {
             return openUI.show.get();
         } else {
             return false;
@@ -189,7 +191,7 @@ public class LiveDataPackViewer implements MiapiEditor {
 
                     ImGui.sameLine();
                     if (ImGui.button("Create Datapack & Open")) {
-                            File defaultJsonFolder = pack.directory.getAbsoluteFile();
+                        File defaultJsonFolder = pack.directory.getAbsoluteFile();
                         File zipFile = new File(defaultJsonFolder, pack.name + ".zip");
                         File dataDir = new File(pack.directory, pack.dataPath);
 
@@ -302,12 +304,11 @@ public class LiveDataPackViewer implements MiapiEditor {
                 EditorLogger.getLogger().error("Unsupported OS — cannot open file explorer.");
             }
         } catch (Exception e) {
-            EditorLogger.getLogger().error("Couldn't open:",e);
+            EditorLogger.getLogger().error("Couldn't open:", e);
         }
     }
 
     public void reload() {
         LiveDataPackManager.getInstance().checkAndValidateDatapacks(true);
-        CacheCommands.triggerServerReload();
     }
 }

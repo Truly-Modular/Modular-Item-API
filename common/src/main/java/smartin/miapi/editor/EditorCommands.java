@@ -15,13 +15,14 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 import smartin.miapi.Miapi;
 import smartin.miapi.config.MiapiConfig;
+import smartin.miapi.editor.live.LiveDataPackEditorManager;
 import smartin.miapi.editor.material.MaterialEditor;
 import smartin.miapi.editor.pose.HumanoidPoseAnimationRegistryEditor;
 import smartin.miapi.editor.syntax.CodecValidatorInterface;
 import smartin.miapi.editor.syntax.JsonSyntaxHighlighter;
 import smartin.miapi.editor.syntax.PropertyMapHighlighter;
-import smartin.miapi.material.codec.CodecMaterial;
 import smartin.miapi.material.MaterialProperty;
+import smartin.miapi.material.codec.CodecMaterial;
 import smartin.miapi.modules.ItemModule;
 import smartin.miapi.modules.ModuleInstance;
 import smartin.miapi.modules.synergies.SynergyManager;
@@ -31,6 +32,8 @@ import java.util.function.Function;
 import static smartin.miapi.editor.MiapiEditor.editors;
 
 public class EditorCommands {
+    static final String imGuiMcID = "imguimc";
+
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         LiteralArgumentBuilder<CommandSourceStack> runPose = Commands.literal("miapi")
                 .then(Commands.literal("editor")
@@ -70,10 +73,10 @@ public class EditorCommands {
 
         // Register PropertyMapHighlighter for module files
         ValidatorManager.setupValidators();
-        if (Platform.isModLoaded("veil")) {
-            VeilEditor.setup();
-        } else if (Platform.isModLoaded("nucleus_editor")) {
+        if (Platform.isModLoaded("nucleus_editor")) {
             NucleusEditor.setup();
+        } else if (Platform.isModLoaded(imGuiMcID)) {
+
         } else if (MiapiConfig.getClientConfig().other.allowEditorNoNucleus) {
 
         }
@@ -134,8 +137,10 @@ public class EditorCommands {
                 return -1;
             }
             if (!MiapiConfig.getClientConfig().other.allowEditorNoNucleus && !Platform.isModLoaded("nucleus_editor")) {
-                context.getSource().sendFailure(Component.literal("Requires Nucleus Editor to be installed!"));
-                return -1;
+                if (!Platform.isModLoaded(imGuiMcID)) {
+                    context.getSource().sendFailure(Component.literal("Requires ImGui Mc to be installed!"));
+                    return -1;
+                }
             }
             return onExecute.apply(context);
         } else {

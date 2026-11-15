@@ -7,7 +7,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
@@ -211,7 +210,7 @@ public class SlotDisplay extends InteractAbleWidget {
         }
         RenderSystem.enableDepthTest();
         Ray ray = createMouseRay(mouseX, mouseY);
-        MiapiItemModel.startRayCastMode(ray, new PoseStack(), Screen.hasAltDown());
+        MiapiItemModel.startRayCastMode(ray, new PoseStack(), isDebug());
         renderer.renderStatic(stack, ItemDisplayContext.GUI, 15728880, OverlayTexture.NO_OVERLAY, slotProjection, immediate, Minecraft.getInstance().level, 0);
         var result = MiapiItemModel.collectAndEndRayCastMode();
         currentHover = result.map(ModuleModel.ModuleRayHit::module).orElse(null);

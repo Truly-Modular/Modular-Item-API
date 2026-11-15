@@ -33,6 +33,17 @@ repositories {
         }
     }
     maven { url 'https://maven.wispforest.io/releases' }
+    exclusiveContent { // ImGuiMC
+        forRepository {
+            maven {
+                url = "https://maven.ryanhcode.dev/releases"
+                name = "RyanHCode Maven"
+            }
+        }
+        filter {
+            includeGroup("foundry.imguimc")
+        }
+    }
 }
 architectury {
     platformSetupLoomIde()
@@ -108,7 +119,9 @@ dependencies {
     modApi(include("com.redpxnda.nucleus:nucleus-pose-fabric:${rootProject.nucleus_pose_version}"))
     modApi(include("com.redpxnda.nucleus:nucleus-facet-fabric:${rootProject.nucleus_facet_version}"))
     modApi(include("com.redpxnda.nucleus:nucleus-trinket-fabric:${rootProject.nucleus_trinket_version}"))
-    modApi("com.redpxnda.nucleus:nucleus-editor-fabric:${rootProject.nucleus_editor_version}")
+    compileOnly("foundry.imguimc:imguimc-fabric-${project.imguimc_version}")
+    modLocalRuntime("com.redpxnda.nucleus:nucleus-editor-fabric:${rootProject.nucleus_editor_version}")
+    //modLocalRuntime("foundry.imguimc:imguimc-fabric-${project.imguimc_version}")
 
     //modImplementation("io.wispforest:accessories-fabric:1.1.0-beta.7+1.21.1")
 

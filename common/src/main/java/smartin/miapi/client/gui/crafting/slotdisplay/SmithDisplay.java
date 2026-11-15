@@ -5,7 +5,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -16,7 +15,6 @@ import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
-import smartin.miapi.Miapi;
 import smartin.miapi.client.gui.InteractAbleWidget;
 import smartin.miapi.client.model.MiapiItemModel;
 import smartin.miapi.client.model.ModuleModel;
@@ -88,7 +86,7 @@ public class SmithDisplay extends InteractAbleWidget {
     public void renderWidget(GuiGraphics context, int mouseX, int mouseY, float delta) {
         context.pose().pushPose();
         Ray ray = createMouseRay(mouseX, mouseY);
-        MiapiItemModel.startRayCastMode(ray, new PoseStack(), Screen.hasAltDown());
+        MiapiItemModel.startRayCastMode(ray, new PoseStack(), isDebug());
         context.pose().pushPose();
         InventoryScreen.renderEntityInInventory(
                 context,
@@ -103,13 +101,6 @@ public class SmithDisplay extends InteractAbleWidget {
         var result = MiapiItemModel.collectAndEndRayCastMode();
         context.pose().popPose();
         currentHover = result.map(ModuleModel.ModuleRayHit::module).orElse(null);
-        if (Screen.hasAltDown()) {
-            if (result.isPresent()) {
-                Miapi.LOGGER.info(result.get().module().cache().getModuleName().getString());
-            } else {
-                Miapi.LOGGER.info("nothing");
-            }
-        }
         super.renderWidget(context, mouseX, mouseY, delta);
     }
 

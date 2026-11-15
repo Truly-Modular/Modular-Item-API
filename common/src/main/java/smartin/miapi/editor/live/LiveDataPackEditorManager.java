@@ -1,7 +1,8 @@
-package smartin.miapi.editor;
+package smartin.miapi.editor.live;
 
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.GuiGraphics;
+import smartin.miapi.editor.MiapiEditor;
 
 public class LiveDataPackEditorManager implements MiapiEditor {
     private final LiveDataPackManager manager;
@@ -13,10 +14,6 @@ public class LiveDataPackEditorManager implements MiapiEditor {
     }
 
     public static LiveDataPackEditorManager openUI;
-
-    static {
-        LiveDataPackManager.isEnabled = LiveDataPackEditorManager::isEnabled;
-    }
 
     public static void openLivePackEditor() {
         if (openUI != null) {

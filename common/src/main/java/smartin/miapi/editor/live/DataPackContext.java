@@ -1,10 +1,12 @@
-package smartin.miapi.editor;
+package smartin.miapi.editor.live;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 import smartin.miapi.Miapi;
+import smartin.miapi.editor.EditorEvents;
+import smartin.miapi.editor.EditorLogger;
 import smartin.miapi.editor.syntax.EditorInterface;
 import smartin.miapi.modules.conditions.ConditionManager;
 import smartin.miapi.modules.properties.util.EditorError;

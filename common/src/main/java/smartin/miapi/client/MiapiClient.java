@@ -52,7 +52,7 @@ import smartin.miapi.compat.elytratrim.ElytraTrimsCompat;
 import smartin.miapi.config.MiapiConfig;
 import smartin.miapi.datapack.ReloadEvents;
 import smartin.miapi.editor.EditorCommands;
-import smartin.miapi.editor.LiveDataPackManager;
+import smartin.miapi.editor.live.LiveDataPackManager;
 import smartin.miapi.effects.CryoStatusEffect;
 import smartin.miapi.entity.ItemProjectileRenderer;
 import smartin.miapi.events.ClientEvents;

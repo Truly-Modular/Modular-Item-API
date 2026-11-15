@@ -1,4 +1,7 @@
-## v2.4.2 1.21)
+## v2.4.3 1.21)
 
 ### Fixes
-- fixed multithreading crash of trail logic
+- fixed editor not live applying
+- enabled soft dependency on imguimc
+- fixed excessive logging
+- fixed debug mode rendering outside of developer mode

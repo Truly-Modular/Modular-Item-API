@@ -19,7 +19,11 @@ public interface MiapiEditor extends AutoCloseable {
 
     static void renderAll(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
         // CopyOnWriteArrayList is already thread-safe, no need to copy
-        editors.forEach(miapiEditor -> miapiEditor.render(guiGraphics, deltaTracker));
+        try {
+            editors.forEach(miapiEditor -> miapiEditor.render(guiGraphics, deltaTracker));
+        } catch (RuntimeException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }

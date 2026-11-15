@@ -1,6 +1,8 @@
-package smartin.miapi.editor;
+package smartin.miapi.editor.live;
 
-import com.google.gson.*;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 import dev.architectury.event.EventResult;
 import dev.architectury.platform.Platform;
 import net.fabricmc.api.EnvType;
@@ -9,6 +11,9 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import smartin.miapi.Miapi;
 import smartin.miapi.datapack.ReloadEvents;
+import smartin.miapi.editor.EditorLogger;
+import smartin.miapi.editor.JsonEditor;
+import smartin.miapi.editor.MiapiEditor;
 import smartin.miapi.events.MiapiEvents;
 import smartin.miapi.modules.cache.CacheCommands;
 import smartin.miapi.modules.conditions.ConditionManager;
@@ -41,7 +46,7 @@ public class LiveDataPackManager implements AutoCloseable {
 
     public static void setup() {
         MiapiEvents.PLAYER_TICK_END.register(player -> {
-            if (Platform.getEnv() == EnvType.CLIENT && Miapi.server != null && INSTANCE != null) {
+            if (Platform.getEnv() == EnvType.CLIENT && Miapi.server != null && INSTANCE != null && !player.level().isClientSide()) {
                 if (INSTANCE.checkAndValidateDatapacks(false)) {
                     CacheCommands.triggerServerReload();
                 }
@@ -183,7 +188,7 @@ public class LiveDataPackManager implements AutoCloseable {
             EditorLogger.getLogger().warn("Cannot create pack with empty name or id");
             return null;
         }
-        
+
         id = id.toLowerCase();
         File newDir = new File(runtimeFolder, id);
         if (!newDir.exists()) {
@@ -232,7 +237,7 @@ public class LiveDataPackManager implements AutoCloseable {
         if (directory == null || !directory.exists()) {
             return true;
         }
-        
+
         File[] files = directory.listFiles();
         if (files != null) {
             for (File file : files) {
@@ -256,7 +261,7 @@ public class LiveDataPackManager implements AutoCloseable {
                 }
             }
         }
-        
+
         try {
             Files.delete(directory.toPath());
             return true;
@@ -331,12 +336,12 @@ public class LiveDataPackManager implements AutoCloseable {
             EditorLogger.getLogger().warn("Cannot process null event");
             return;
         }
-        
+
         for (DataPackContext context : loadedPacks) {
             if (context == null) {
                 continue;
             }
-            
+
             if (context.enabled && !context.passedValidation) {
                 Minecraft.getInstance().player.sendSystemMessage(Component.literal(context.name + " Could not load, it did not pass Validation"));
             }
@@ -495,13 +500,13 @@ public class LiveDataPackManager implements AutoCloseable {
                 EditorLogger.getLogger().error("Failed to close watch service: {}", e.getMessage());
             }
         }
-        
+
         // Cancel all watch keys
         watchKeys.forEach((key, context) -> {
             key.cancel();
         });
         watchKeys.clear();
-        
+
         // Close all opened editors
         openedEditors.forEach(editor -> {
             try {

@@ -1,4 +1,4 @@
-package smartin.miapi.editor;
+package smartin.miapi.editor.live;
 
 import imgui.ImGui;
 import imgui.flag.ImGuiCond;
@@ -9,6 +9,8 @@ import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
 import smartin.miapi.Miapi;
+import smartin.miapi.editor.JsonEditor;
+import smartin.miapi.editor.MiapiEditor;
 
 import java.io.File;
 import java.io.IOException;

@@ -23,6 +23,17 @@ repositories {
         url = 'https://api.modrinth.com/maven'
         content { includeGroup 'maven.modrinth' }
     }
+    exclusiveContent { // ImGuiMC
+        forRepository {
+            maven {
+                url = "https://maven.ryanhcode.dev/releases"
+                name = "RyanHCode Maven"
+            }
+        }
+        filter {
+            includeGroup("foundry.imguimc")
+        }
+    }
 }
 
 configurations {
@@ -48,7 +59,7 @@ dependencies {
     modApi(include("com.redpxnda.nucleus:nucleus-pose-forge:${rootProject.nucleus_pose_version}"))
     modApi(include("com.redpxnda.nucleus:nucleus-facet-forge:${rootProject.nucleus_facet_version}"))
     modApi(include("com.redpxnda.nucleus:nucleus-trinket-forge:${rootProject.nucleus_trinket_version}"))
-    modApi("com.redpxnda.nucleus:nucleus-editor-forge:${rootProject.nucleus_editor_version}")
+    compileOnly("foundry.imguimc:imguimc-neoforge-${project.imguimc_version}")
 
     compileOnly "curse.maven:minecolonies-245506:7700086"
 
