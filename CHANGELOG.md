@@ -5,3 +5,5 @@
 - enabled soft dependency on imguimc
 - fixed excessive logging
 - fixed debug mode rendering outside of developer mode
+- fixed passive potions not loading correctly
+- fixed offensive potion attacker/defender order

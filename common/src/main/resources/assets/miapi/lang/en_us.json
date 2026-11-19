@@ -218,6 +218,7 @@
     "miapi.potion.passive.tooltip": "Passive Potion Effects:",
     "miapi.potion.target.on_hit": "When Attacking Effects:",
     "miapi.potion.target.self.tooltip": " %s (self) §9%ss §g%s",
+    "miapi.potion.passive.potion.tooltip": " %1$s §g%3$s",
     "miapi.potion.target.other.tooltip": " %s §9%ss §g%s",
     "miapi.potion.damaged.on_hit": "When Damaged Effects:",
     "miapi.potion.damaged.self.tooltip": " %s (self) §b%ss §g%s",

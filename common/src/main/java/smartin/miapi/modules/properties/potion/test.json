@@ -1,0 +1,14 @@
+{
+    "passive_potion": [
+        {
+            "potion": "minecraft:speed",
+            "amplifier": 1.0,
+            "duration": 220,
+            "ambient": 1,
+            "show_particles": 0,
+            "show_icon": 1,
+            "probability": 1,
+            "equipment_slot": "HEAD"
+        }
+    ]
+}

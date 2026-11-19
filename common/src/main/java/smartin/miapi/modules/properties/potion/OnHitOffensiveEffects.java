@@ -41,7 +41,7 @@ public class OnHitOffensiveEffects extends CodecProperty<List<PossibleEffect>> {
         MiapiEvents.LIVING_HURT.register((listener) -> {
             if (listener.damageSource.getEntity() instanceof LivingEntity attacker && !attacker.level().isClientSide()) {
                 LivingEntity defender = listener.defender;
-                PossibleEffect.apply(attacker, i -> getData(i).orElse(new ArrayList<>()), defender.getRandom(), attacker, defender);
+                PossibleEffect.apply(attacker, i -> getData(i).orElse(new ArrayList<>()), defender.getRandom(), defender, attacker);
                 //PossibleEffect.applyEffects(defender, attacker, listener.getCausingItemStackAndArmorOfAttacker(), attacker, i -> getData(i).orElse(new ArrayList<>()));
             }
             return EventResult.pass();

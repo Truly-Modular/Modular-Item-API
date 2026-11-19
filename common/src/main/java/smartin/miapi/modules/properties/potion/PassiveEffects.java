@@ -1,5 +1,6 @@
 package smartin.miapi.modules.properties.potion;
 
+
 import com.mojang.serialization.Codec;
 import dev.architectury.event.EventResult;
 import net.minecraft.network.chat.Component;
@@ -19,17 +20,18 @@ import java.util.List;
 
 public class PassiveEffects extends CodecProperty<List<PossibleEffect>> {
     public static final ResourceLocation KEY = Miapi.id("passive_potion");
-    public static PassiveEffects property = new PassiveEffects();
     public static Codec<List<PossibleEffect>> CODEC = Codec.list(PossibleEffect.CODEC);
+    public static PassiveEffects property = new PassiveEffects();
     public static final EntityCacheSystem.EquipmentEntityCache<List<PossibleEffect>> CACHE =
             new EntityCacheSystem.EquipmentEntityCache<>(KEY, item -> property.getData(item.itemStack()).orElse(null));
+    public static int potionSeconds = 10;
     //public static EquipmentEffects<List<PossibleEffect>> effect = EquipmentEffect.register(KEY,(equipedItems->getAllPassiveEffects(equipedItems));
 
     protected PassiveEffects() {
         super(CODEC);
 
         MiapiEvents.LIVING_ENTITY_TICK_END.register(entity -> {
-            if (entity.tickCount % (20 * 10) == 17) {
+            if (entity.tickCount % (20 * potionSeconds) == 17) {
                 //CACHE.getData(entity);
                 PossibleEffect.apply(entity, i -> getData(i).orElse(new ArrayList<>()), entity.getRandom(), entity, entity);
             }
@@ -45,10 +47,10 @@ public class PassiveEffects extends CodecProperty<List<PossibleEffect>> {
     public void setupLore() {
         LoreProperty.loreSuppliers.add((itemStack, tooltip, context, flag) -> {
             tooltip.addAll(PossibleEffect.getTooltip(
-                    Component.translatable("miapi.potion.damaged.on_hit"),
+                    Component.translatable("miapi.potion.passive.tooltip"),
                     getData(itemStack).orElse(new ArrayList<>()),
-                    "miapi.potion.passive.tooltip",
-                    "miapi.potion.passive.tooltip"));
+                    "miapi.potion.passive.potion.tooltip",
+                    "miapi.potion.passive.potion.tooltip"));
         });
     }
 
@@ -63,7 +65,7 @@ public class PassiveEffects extends CodecProperty<List<PossibleEffect>> {
             PossibleEffect effect = e.initialize(e, module);
             effect = new PossibleEffect(
                     effect.potion(), effect.amplifier(),
-                    new DoubleOperationResolvable(20 * 11), effect.ambient(),
+                    new DoubleOperationResolvable(20 * (potionSeconds + 1)), effect.ambient(),
                     effect.showParticle(), effect.showIcon(),
                     effect.probability(), effect.targetSelf(),
                     effect.group());
