@@ -1,6 +1,8 @@
 ## v2.4.3 1.21)
 ### Changes
 - lang file now takes priority over provided translation in materials
+- added support to set translations for generated materials
+
 ### Fixes
 - fixed editor not live applying
 - enabled soft dependency on imguimc

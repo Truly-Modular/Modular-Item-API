@@ -263,9 +263,10 @@ public class GeneratedMaterial implements Material {
         }
     }
 
+    @Override
     public Component getTranslation() {
         if (this.name == null) {
-            this.name = Component.literal(NamingUtil.generateTranslation(toolItems, mainIngredient));
+            this.name = Component.translatable("miapi.material." + getStringID(), Component.literal(NamingUtil.generateTranslation(toolItems, mainIngredient)));
         }
         return this.name;
     }
