@@ -55,7 +55,7 @@ public class BufferSpriteAdder implements SpriteSource {
                             public void tickAndUpload(int x, int y) {
                                 if (dirty) {
                                     NativeImage image = NativeImageGetter.get(thisContents).nativeImage;
-                                    if (NativeImageGetter.isStillValid(image)) {
+                                    if (!NativeImageGetter.isStillValid(image)) {
                                         Miapi.LOGGER.info("Attempted to render invalid textures, clearing Caches instead");
                                         MiapiEvents.CLEAR_CACHE.invoker().onReload();
                                         dirty = true;

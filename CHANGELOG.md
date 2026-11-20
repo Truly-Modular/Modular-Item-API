@@ -10,3 +10,4 @@
 - fixed debug mode rendering outside of developer mode
 - fixed passive potions not loading correctly
 - fixed offensive potion attacker/defender order
+- fixed crash in skin menu after texture pack reload

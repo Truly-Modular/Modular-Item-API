@@ -71,22 +71,20 @@ public class MaterialSpriteManager {
             .maximumSize(CACHE_SIZE)
             .expireAfterAccess(CACHE_LIFETIME, CACHE_LIFETIME_UNIT)
             .removalListener(notification -> {
-                if (notification.wasEvicted()) {
-                    if (notification.getValue() instanceof ResourceLocation removeId) {
-                        DynamicTexture texture = nativeImageBackedTextureMap.get(removeId);
-                        if (texture != null) {
-                            texture.close();
-                        }
-                        Minecraft.getInstance().getTextureManager().release(removeId);
+                if (notification.getValue() instanceof ResourceLocation removeId) {
+                    DynamicTexture texture = nativeImageBackedTextureMap.get(removeId);
+                    if (texture != null) {
+                        texture.close();
                     }
-                    if (notification.getKey() instanceof Holder holder) {
-                        //the NativeImage should already be closed by the code above, this just kept track of the NativeImageBackedTexture to animate it
-                        animated_Textures.remove(holder);
-                        try {
-                            holder.colorer.close();
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        }
+                    Minecraft.getInstance().getTextureManager().release(removeId);
+                }
+                if (notification.getKey() instanceof Holder holder) {
+                    //the NativeImage should already be closed by the code above, this just kept track of the NativeImageBackedTexture to animate it
+                    animated_Textures.remove(holder);
+                    try {
+                        holder.colorer.close();
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
                     }
                 }
             })

@@ -31,7 +31,7 @@ public class NativeImageGetter {
     }
 
     public static boolean isStillValid(NativeImage nativeImage) {
-        return ((NativeImageAccessor) (Object) nativeImage).getPixelsMiapi() == 0L;
+        return ((NativeImageAccessor) (Object) nativeImage).getPixelsMiapi() != 0L;
     }
 
     public static ImageHolder getFromContents(NativeImage contents) {

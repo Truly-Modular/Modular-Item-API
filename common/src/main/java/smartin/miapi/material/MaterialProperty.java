@@ -181,8 +181,9 @@ public class MaterialProperty extends CodecProperty<ResourceLocation> {
 
             }
         }
-        if (property.getData(instance.owner()).isPresent()) {
-            Material material = MaterialProperty.MATERIAL_REGISTRY.get((ResourceLocation) property.getData(instance.owner()).get());
+        Optional<ResourceLocation> data = property.getData(instance.owner());
+        if (data.isPresent()) {
+            Material material = MaterialProperty.MATERIAL_REGISTRY.get(data.get());
             if (material != null) {
                 material = material.getMaterial(instance.owner(), instance.owner().cache().getPropertiesRaw(true));
                 return MaterialOverwriteProperty.property.adjustMaterial(instance.owner(), material);
