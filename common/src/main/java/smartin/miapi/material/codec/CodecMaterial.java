@@ -677,7 +677,8 @@ public class CodecMaterial implements Material {
         return id.hashCode() + 13 * variants.size();
     }
 
+    @Override
     public Component getTranslation() {
-        return translation.orElseGet(() -> Component.translatable("miapi.material." + getStringID()));
+        return Component.translatable("miapi.material." + getStringID(), translation.orElse(Component.literal("miapi.material." + getStringID())));
     }
 }
